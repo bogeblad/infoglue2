@@ -201,9 +201,12 @@ public class ViewPageFilter implements Filter
 	                repositoryVOList = getRepositoryId(httpRequest, db);
 	                logger.info("repositoryVOList:" + repositoryVOList.size());
 	                
-	                languageId = getLanguageId(httpRequest, httpSession, repositoryVOList, db);
+	                System.out.println("repositoryVOList:" + repositoryVOList);
+	                System.out.println("requestURI:" + requestURI);
+
+	            	languageId = getLanguageId(httpRequest, httpSession, repositoryVOList, requestURI, db);
 	            
-		            Integer siteNodeId = null;
+	                Integer siteNodeId = null;
 	                if(languageId != null)
 	                {
 			            String[] nodeNames = splitString(requestURI, "/");
@@ -217,6 +220,18 @@ public class ViewPageFilter implements Filter
 			            	{
 			            		nodeNameList.add(nodeName);
 			            	}
+			            	/*
+			            	else if(i < 2) //Could be a language code
+			            	{
+			            		System.out.println("nodeName:" + nodeName);
+			            		LanguageVO languageVO = LanguageDeliveryController.getLanguageDeliveryController().getLanguageWithCode(db, nodeName);
+			            		System.out.println("languageVO:" + languageVO);
+			            		if(languageVO != null)
+			            		{
+			            			System.out.println("LanguageVO:" + languageVO.getName() + " had the code of the page");
+			            		}
+			            	}
+			            	*/
 			            }
 
 	            		nodeNames = new String[nodeNameList.size()];
@@ -257,7 +272,18 @@ public class ViewPageFilter implements Filter
 		                    RepositoryVO repositoryVO = (RepositoryVO)repositorVOListIterator.next();
 		                    logger.info("Getting node from:" + repositoryVO.getName());
 		                    //TODO
-		                    siteNodeId = NodeDeliveryController.getSiteNodeIdFromPath(infoGluePrincipal, repositoryVO, nodeNames, attributeName, languageId, DeliveryContext.getDeliveryContext());
+		                    DeliveryContext deliveryContext = DeliveryContext.getDeliveryContext();
+		                    System.out.println("languageId before:" + languageId);
+		                    System.out.println("languageId before2:" + deliveryContext.getLanguageId());
+		                    siteNodeId = NodeDeliveryController.getSiteNodeIdFromPath(infoGluePrincipal, repositoryVO, nodeNames, attributeName, deliveryContext, httpSession, languageId);
+		                    System.out.println("languageId after:" + languageId);
+		                    System.out.println("languageId after2:" + deliveryContext.getLanguageId());
+		                    if(deliveryContext.getLanguageId() != null && !deliveryContext.getLanguageId().equals(languageId))
+		                    {
+		                    	languageId = deliveryContext.getLanguageId();
+		                        httpSession.setAttribute(FilterConstants.LANGUAGE_ID, languageId);
+		                    }
+		                    
 		                    if(siteNodeId != null)
 		                        break;
 		                }
@@ -381,13 +407,17 @@ public class ViewPageFilter implements Filter
         }
         */
 
-        logger.info("Trying to lookup repositoryId");
+        if(logger.isInfoEnabled())
+        	logger.info("Trying to lookup repositoryId");
         String serverName = request.getServerName();
         String portNumber = new Integer(request.getServerPort()).toString();
         String repositoryName = request.getParameter("repositoryName");
-        logger.info("serverName:" + serverName);
-        logger.info("repositoryName:" + repositoryName);
-
+        if(logger.isInfoEnabled())
+        {
+	        logger.info("serverName:" + serverName);
+	        logger.info("repositoryName:" + repositoryName);
+	    }
+        
         String repCacheKey = "" + serverName + "_" + portNumber + "_" + repositoryName;
         List repositoryVOList = (List)CacheController.getCachedObject(uriCache.CACHE_NAME, repCacheKey);
         if (repositoryVOList != null) 
@@ -396,23 +426,25 @@ public class ViewPageFilter implements Filter
             return repositoryVOList;
         }
 
-        
         List repositories = RepositoryDeliveryController.getRepositoryDeliveryController().getRepositoryVOListFromServerName(db, serverName, portNumber, repositoryName);
-        logger.info("repositories:" + repositories);
-                
-
+        if(logger.isInfoEnabled())
+        	logger.info("repositories:" + repositories);
+        
+        //System.out.println("repositories:" + repositories);
+        
         if (repositories.size() == 0)
         {
             String redirectUrl = RedirectController.getController().getRedirectUrl(request);
-            logger.info("redirectUrl:" + redirectUrl);
+            if(logger.isInfoEnabled())
+            	logger.info("redirectUrl:" + redirectUrl);
             if(redirectUrl == null || redirectUrl.length() == 0)
             {
                 if (repositories.size() == 0) 
                 {
                     try 
                     {
-                        logger.info("Adding master repository instead - is this correct?");
-                        
+                        if(logger.isInfoEnabled())
+                        	logger.info("Adding master repository instead - is this correct?");
                         repositories.add(RepositoryDeliveryController.getRepositoryDeliveryController().getMasterRepository(db));
                     } 
                     catch (Exception e1) 
@@ -431,10 +463,10 @@ public class ViewPageFilter implements Filter
         return repositories;
     }
 
-    private Integer getLanguageId(HttpServletRequest request, HttpSession session, List repositoryVOList, Database db) throws ServletException, Exception 
+    private Integer getLanguageId(HttpServletRequest request, HttpSession session, List repositoryVOList, String requestURI, Database db) throws ServletException, Exception 
     {
-        Integer languageId = null;
-        if (request.getParameter("languageId") != null) 
+    	Integer languageId = null;
+        if(request.getParameter("languageId") != null) 
         {
             logger.info("Language is explicitely given in request");
             try 
@@ -444,7 +476,50 @@ public class ViewPageFilter implements Filter
             } 
             catch (NumberFormatException e) {}
         }
+        else
+        {
+        	Iterator repositoryVOListIterator = repositoryVOList.iterator();
+        	outer: while(repositoryVOListIterator.hasNext())
+        	{
+        		RepositoryVO repositoryVO = (RepositoryVO)repositoryVOListIterator.next();
+        		String dnsName = repositoryVO.getDnsName();
+        		System.out.println("dnsName:" + dnsName);
+        		String serverName = request.getServerName();
+        		int startIndex = dnsName.indexOf(serverName);
+        		if(startIndex > -1)
+        		{
+        			System.out.println("repositoryVO " + repositoryVO.getName() + " contains the dnsname");
+        			while(startIndex > -1)
+        			{
+        				String domain = null;
+        				int endIndex = dnsName.indexOf(",", startIndex);
+        				if(endIndex > -1)
+        					domain = dnsName.substring(startIndex, endIndex);
+        				else
+        					domain = dnsName.substring(startIndex);
+        					
+        				System.out.println("domain:" + domain);
+        				if(domain.indexOf("[") > -1)
+        				{
+        					String languageCode = domain.substring(domain.indexOf("[") + 1, domain.length() - 1);
+        					System.out.println("languageCode:" + languageCode);
+        					LanguageVO languageVO = LanguageDeliveryController.getLanguageDeliveryController().getLanguageWithCode(db, languageCode);
+        					if(languageVO != null)
+        					{
+        						session.setAttribute(FilterConstants.LANGUAGE_ID, languageVO.getId());
+        						languageId = languageVO.getId();
+            					System.out.println("YES - we found that language should be used:" + languageVO.getName());
+        						break outer;
+        					}
+        				}
+        				
+        				startIndex = dnsName.indexOf(serverName, startIndex);
+        			}
+        		}
+        	}
+        }
 
+        System.out.println("Found that we should use languageId:" + languageId);
         if (languageId != null)
             return languageId;
 

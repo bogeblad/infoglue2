@@ -1073,15 +1073,15 @@ public class ComponentLogic
 	 */
 	public List getChildPages(String propertyName, boolean useInheritance, boolean escapeHTML, boolean hideUnauthorizedPages)
 	{
-		return getChildPages(propertyName, useInheritance, escapeHTML, hideUnauthorizedPages, this.useRepositoryInheritance, this.useStructureInheritance);
+		return getChildPages(propertyName, useInheritance, escapeHTML, hideUnauthorizedPages, true, this.useRepositoryInheritance, this.useStructureInheritance);
 	}
 
 	public List getChildPages(String propertyName, boolean useInheritance, boolean escapeHTML, boolean hideUnauthorizedPages, boolean useRepositoryInheritance)
 	{
-		return getChildPages(propertyName, useInheritance, escapeHTML, hideUnauthorizedPages, useRepositoryInheritance, this.useStructureInheritance);
+		return getChildPages(propertyName, useInheritance, escapeHTML, hideUnauthorizedPages, true, useRepositoryInheritance, this.useStructureInheritance);
 	}
 
-	public List getChildPages(String propertyName, boolean useInheritance, boolean escapeHTML, boolean hideUnauthorizedPages, boolean useRepositoryInheritance, boolean useStructureInheritance)
+	public List getChildPages(String propertyName, boolean useInheritance, boolean escapeHTML, boolean hideUnauthorizedPages, boolean includeHidden, boolean useRepositoryInheritance, boolean useStructureInheritance)
 	{
 	    List childPages = new ArrayList();
 	    
@@ -1093,7 +1093,7 @@ public class ComponentLogic
 			while(bindingsIterator.hasNext())
 			{
 				Integer siteNodeId = bindingsIterator.next().getEntityId();
-				childPages.addAll(getChildPages(siteNodeId));
+				childPages.addAll(getChildPages(siteNodeId, escapeHTML, hideUnauthorizedPages, includeHidden));
 			}
 		}
 
@@ -1108,6 +1108,24 @@ public class ComponentLogic
 	public List getChildPages(Integer siteNodeId)
 	{
 		List pages = templateController.getChildPages(siteNodeId);
+
+		Iterator pagesIterator = pages.iterator();
+		while(pagesIterator.hasNext())
+		{
+			WebPage webPage = (WebPage)pagesIterator.next();
+			webPage.setUrl(getPageUrl(webPage.getSiteNodeId()));
+		}
+	
+		return pages;
+	}
+
+	/**
+	 * This method returns a list of childpages.
+	 */
+
+	public List getChildPages(Integer siteNodeId, boolean escapeHTML, boolean hideUnauthorizedPages, boolean showHidden)
+	{
+		List pages = templateController.getChildPages(siteNodeId, escapeHTML, hideUnauthorizedPages, showHidden);
 
 		Iterator pagesIterator = pages.iterator();
 		while(pagesIterator.hasNext())

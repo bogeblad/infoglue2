@@ -163,7 +163,9 @@ public class RepositoryDeliveryController extends BaseDeliveryController
         {
             RepositoryVO repositoryVO = (RepositoryVO) repositoriesIterator.next();
             logger.info("repository:" + repositoryVO.getDnsName());
-            String[] dnsNames = splitStrings(repositoryVO.getDnsName());
+            System.out.println("repository:" + repositoryVO.getDnsName());
+            System.out.println("repository2:" + repositoryVO.getDnsName().replaceAll("\\[.*?\\]", ""));
+            String[] dnsNames = splitStrings(repositoryVO.getDnsName().replaceAll("\\[.*?\\]", ""));
             logger.info("dnsNames:" + dnsNames);
             for (int i=0;i<dnsNames.length;i++) 
             {
@@ -175,6 +177,7 @@ public class RepositoryDeliveryController extends BaseDeliveryController
                 
                 logger.info("Matching only server name - removed protocol if there:" + dnsName);
                 
+                System.out.println("dnsName:" + dnsName + ", serverName:" + serverName);
             	if((dnsName.indexOf(":") == -1 && dnsName.indexOf(serverName) == 0) || dnsName.indexOf(serverName + ":" + portNumber) == 0)
                 {
             	    if(repositoryName != null && repositoryName.length() > 0)

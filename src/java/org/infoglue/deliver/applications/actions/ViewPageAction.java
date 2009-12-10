@@ -88,8 +88,6 @@ import org.infoglue.deliver.util.RequestAnalyser;
 import org.infoglue.deliver.util.ThreadMonitor;
 import org.infoglue.deliver.util.Timer;
 
-import com.sun.mail.iap.Response;
-
 import webwork.action.ActionContext;
 
 
@@ -255,7 +253,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
 			else if(protectPreview.equals("true") && CmsPropertyHandler.getOperatingMode().equals("2"))
 				protectDeliver = true;
 
-			isUserRedirected = handleAccessBasedProtocolRedirect(protectedSiteNodeVersionId, this.repositoryId);
+			isUserRedirected = handleAccessBasedProtocolRedirect(protectedSiteNodeVersionId, this.repositoryId, dbWrapper.getDatabase());
 			
 			if(!isUserRedirected)
 			{
@@ -491,6 +489,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
 			String originalFullUrl = getOriginalFullURL();
 		    RequestAnalyser.getRequestAnalyser().registerPageStatistics("" + originalFullUrl, elapsedTime);
 		    
+		    //System.out.println("The page delivery took " + elapsedTime + "ms");
 		    if(elapsedTime > 10000)
 			{
 			    logger.warn("The page delivery took " + elapsedTime + "ms for request " + originalFullUrl);
@@ -518,7 +517,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
      * @return
      * @throws IOException
      */
-	private boolean handleAccessBasedProtocolRedirect(Integer protectedSiteNodeVersionId, Integer repositoryId)
+	private boolean handleAccessBasedProtocolRedirect(Integer protectedSiteNodeVersionId, Integer repositoryId, Database db)
 	{
 		boolean isUserRedirected = false;
 		
@@ -549,14 +548,21 @@ public class ViewPageAction extends InfoGlueAbstractAction
 			if(useAccessBasedProtocolRedirects)
 			{
 				String originalFullURL = getOriginalFullURL();
-				System.out.println("originalFullURL:" + originalFullURL);
-				if(protectedSiteNodeVersionId != null)
+				//System.out.println("originalFullURL:" + originalFullURL);
+		    	boolean isAnonymousAccepted = true;
+		    	if(protectedSiteNodeVersionId != null)
+		    	{
+					Principal anonymousPrincipal = getAnonymousPrincipal();
+					isAnonymousAccepted = AccessRightController.getController().getIsPrincipalAuthorized(db, (InfoGluePrincipal)anonymousPrincipal, "SiteNodeVersion.Read", protectedSiteNodeVersionId.toString());
+		    	}
+		    	
+		    	if(protectedSiteNodeVersionId != null && !isAnonymousAccepted)
 				{
 					if(originalFullURL.indexOf(unprotectedProtocolName + "://") > -1)
 					{	
 						String redirectUrl = originalFullURL.replaceFirst(unprotectedProtocolName + "://", protectedProtocolName + "://").replaceFirst(unprotectedProtocolPort, protectedProtocolPort);
 						getResponse().sendRedirect(redirectUrl);
-						System.out.println("Redirecting user to:" + redirectUrl);
+						logger.info("Redirecting user to:" + redirectUrl);
 						isUserRedirected = true;
 					}
 				}
@@ -567,7 +573,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
 						String redirectUrl = originalFullURL.replaceFirst(protectedProtocolName + "://", unprotectedProtocolName + "://").replaceFirst(protectedProtocolPort, unprotectedProtocolPort);;
 						getResponse().setStatus(new Integer(accessBasedProtocolRedirectHTTPCode));
 						getResponse().sendRedirect(redirectUrl);
-						System.out.println("Redirecting user to:" + redirectUrl);
+						logger.info("Redirecting user to:" + redirectUrl);
 						isUserRedirected = true;
 					}
 				}
@@ -865,7 +871,8 @@ public class ViewPageAction extends InfoGlueAbstractAction
 				}
 			}
 
-			String originalFullUrl = getOriginalFullURL();
+		    //System.out.println("The page delivery took " + elapsedTime + "ms");
+		    String originalFullUrl = getOriginalFullURL();
 			if(elapsedTime > 20000)
 			{
 			    logger.warn("The page delivery took " + elapsedTime + "ms for request " + originalFullUrl);
@@ -1357,6 +1364,17 @@ public class ViewPageAction extends InfoGlueAbstractAction
 							    this.getHttpSession().setAttribute("infogluePrincipal", principal);
 								this.getHttpSession().setAttribute("infoglueRemoteUser", principal.getName());
 								this.getHttpSession().setAttribute("cmsUserName", principal.getName());
+								
+								//---------------------------------------------------------
+								// Check if the principal is authorized to view this page.
+								// If not, redirect him to the unauthorized.jsp page.
+								//---------------------------------------------------------
+								if (!AccessRightController.getController().getIsPrincipalAuthorized((InfoGluePrincipal)principal, "SiteNodeVersion.Read", protectedSiteNodeVersionId.toString()))
+								{
+									String url = "ExtranetLogin!noAccess.action?referer=" + URLEncoder.encode(this.referer, "UTF-8") + "&date=" + System.currentTimeMillis();
+									getResponse().sendRedirect(url);
+									isRedirected = true;
+								}
 							}
 						}
 						else

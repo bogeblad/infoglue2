@@ -5768,9 +5768,23 @@ public class BasicTemplateController implements TemplateController
 	 */
 	private WebPage getPage(SiteNodeVO siteNodeVO, boolean escapeHTML, boolean hideUnauthorizedPages) throws Exception
 	{
+		return getPage(siteNodeVO, escapeHTML, hideUnauthorizedPages, false);
+	}
+	
+	/**
+	 * This method takes a sitenode and converts it to a webpage instead.
+	 * 
+	 * @param siteNodeVO
+	 * @param escapeHTML
+	 * @param hideUnauthorizedPages
+	 * @return
+	 * @throws Exception
+	 */
+	private WebPage getPage(SiteNodeVO siteNodeVO, boolean escapeHTML, boolean hideUnauthorizedPages, boolean showHidden) throws Exception
+	{
 		WebPage page = null;
 
-		if(!hideUnauthorizedPages || getHasUserPageAccess(siteNodeVO.getId()))
+		if((!hideUnauthorizedPages || getHasUserPageAccess(siteNodeVO.getId())) && (showHidden || !siteNodeVO.getIsHidden()))
 		{
 			try
 			{
@@ -5790,6 +5804,7 @@ public class BasicTemplateController implements TemplateController
 		
 		return page;
 	}
+
 	/**
 	 * This method takes a list of sitenodes and converts it to a page list instead.
 	 * 
@@ -5801,6 +5816,20 @@ public class BasicTemplateController implements TemplateController
 	 */
 	private List getPages(List childNodeVOList, boolean escapeHTML, boolean hideUnauthorizedPages) throws Exception
 	{
+		return getPages(childNodeVOList, escapeHTML, hideUnauthorizedPages, true);
+	}
+	
+	/**
+	 * This method takes a list of sitenodes and converts it to a page list instead.
+	 * 
+	 * @param childNodeVOList
+	 * @param escapeHTML
+	 * @param hideUnauthorizedPages
+	 * @return
+	 * @throws Exception
+	 */
+	private List getPages(List childNodeVOList, boolean escapeHTML, boolean hideUnauthorizedPages, boolean showHidden) throws Exception
+	{
 		List childPages = new ArrayList();
 
 		Iterator i = childNodeVOList.iterator();
@@ -5810,11 +5839,12 @@ public class BasicTemplateController implements TemplateController
 			
 			this.getDeliveryContext().addUsedSiteNode("siteNode_" + siteNodeVO.getId());
 			
-			if(!hideUnauthorizedPages || getHasUserPageAccess(siteNodeVO.getId()))
+			if((!hideUnauthorizedPages || getHasUserPageAccess(siteNodeVO.getId())) && (showHidden || !siteNodeVO.getIsHidden()))
 			{
+				System.out.println("Adding " + siteNodeVO.getName());
 				try
 				{
-					WebPage webPage = new WebPage();						
+					WebPage webPage = new WebPage();
 					webPage.setSiteNodeId(siteNodeVO.getSiteNodeId());
 					webPage.setLanguageId(this.languageId);
 					webPage.setContentId(null);
@@ -5860,11 +5890,21 @@ public class BasicTemplateController implements TemplateController
 	
 	public List getChildPages(Integer siteNodeId, boolean escapeHTML, boolean hideUnauthorizedPages)
 	{
+		return getChildPages(siteNodeId, escapeHTML, hideUnauthorizedPages, true);
+	}
+
+	/**
+	 * The method returns a list of WebPage-objects that is the children of the given 
+	 * siteNode. The method is great for navigation-purposes on a structured site. 
+	 */
+	
+	public List getChildPages(Integer siteNodeId, boolean escapeHTML, boolean hideUnauthorizedPages, boolean showHidden)
+	{
 		List childPages = new ArrayList();
 		try
 		{
 			List childNodeVOList = this.nodeDeliveryController.getChildSiteNodes(getDatabase(), siteNodeId);
-			childPages = getPages(childNodeVOList, escapeHTML, hideUnauthorizedPages);
+			childPages = getPages(childNodeVOList, escapeHTML, hideUnauthorizedPages, showHidden);
 		}
 		catch(Exception e)
 		{

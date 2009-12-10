@@ -1258,6 +1258,12 @@ public interface TemplateController
      * The method returns a list of WebPage-objects that is the children of the given 
      * siteNode. The method is great for navigation-purposes on a structured site. 
      */
+    public abstract List getChildPages(Integer siteNodeId, boolean escapeHTML, boolean hideUnauthorizedPages, boolean showHidden);
+
+    /**
+     * The method returns a list of WebPage-objects that is the children of the given 
+     * siteNode. The method is great for navigation-purposes on a structured site. 
+     */
     public abstract List getChildPages(Integer siteNodeId);
 
     

@@ -61,10 +61,11 @@ public class BasicURLComposer extends URLComposer
     public String composeDigitalAssetUrl(String dnsName, Integer siteNodeId, Integer contentId, Integer languageId, String assetKey, DeliveryContext deliveryContext, Database db) throws Exception
     {
     	ContentVO contentVO = ContentController.getContentController().getContentVOWithId(contentId, db);
-    	String repositoryUseAccessBasedProtocolRedirects = RepositoryDeliveryController.getRepositoryDeliveryController().getExtraPropertyValue(contentVO.getRepositoryId(), "useAccessBasedProtocolRedirects");
-		if(repositoryUseAccessBasedProtocolRedirects == null || repositoryUseAccessBasedProtocolRedirects.equals("") || !repositoryUseAccessBasedProtocolRedirects.equals("true") || !repositoryUseAccessBasedProtocolRedirects.equals("false"))
-			repositoryUseAccessBasedProtocolRedirects = CmsPropertyHandler.getUseAccessBasedProtocolRedirects();
-    	
+        
+    	String deriveProtocolWhenUsingProtocolRedirects = RepositoryDeliveryController.getRepositoryDeliveryController().getExtraPropertyValue(contentVO.getRepositoryId(), "deriveProtocolWhenUsingProtocolRedirects");
+		if(deriveProtocolWhenUsingProtocolRedirects == null || deriveProtocolWhenUsingProtocolRedirects.equals("") || !deriveProtocolWhenUsingProtocolRedirects.equals("true") || !deriveProtocolWhenUsingProtocolRedirects.equals("false"))
+			deriveProtocolWhenUsingProtocolRedirects = CmsPropertyHandler.getDeriveProtocolWhenUsingProtocolRedirects();
+
 		String protectedProtocolName = CmsPropertyHandler.getProtectedProtocolName();
 		String protectedProtocolPort = CmsPropertyHandler.getProtectedProtocolPort();
 		String unprotectedProtocolPort = CmsPropertyHandler.getUnprotectedProtocolPort();
@@ -83,7 +84,7 @@ public class BasicURLComposer extends URLComposer
         if(useDNSNameInUrls == null || useDNSNameInUrls.equalsIgnoreCase(""))
             useDNSNameInUrls = "false";
 
-        if(repositoryUseAccessBasedProtocolRedirects.equalsIgnoreCase("true"))
+        if(deriveProtocolWhenUsingProtocolRedirects.equalsIgnoreCase("true"))
         {
 	        StringBuffer sb = new StringBuffer(256);
 	        
@@ -348,11 +349,11 @@ public class BasicURLComposer extends URLComposer
 		{
 	        SiteNodeVO siteNodeVO = SiteNodeController.getController().getSmallSiteNodeVOWithId(siteNodeId, db);
 	
-	        String repositoryUseAccessBasedProtocolRedirects = RepositoryDeliveryController.getRepositoryDeliveryController().getExtraPropertyValue(siteNodeVO.getRepositoryId(), "useAccessBasedProtocolRedirects");
-			if(repositoryUseAccessBasedProtocolRedirects == null || repositoryUseAccessBasedProtocolRedirects.equals("") || !repositoryUseAccessBasedProtocolRedirects.equals("true") || !repositoryUseAccessBasedProtocolRedirects.equals("false"))
-				repositoryUseAccessBasedProtocolRedirects = CmsPropertyHandler.getUseAccessBasedProtocolRedirects();
+	        String deriveProtocolWhenUsingProtocolRedirects = RepositoryDeliveryController.getRepositoryDeliveryController().getExtraPropertyValue(siteNodeVO.getRepositoryId(), "deriveProtocolWhenUsingProtocolRedirects");
+			if(deriveProtocolWhenUsingProtocolRedirects == null || deriveProtocolWhenUsingProtocolRedirects.equals("") || !deriveProtocolWhenUsingProtocolRedirects.equals("true") || !deriveProtocolWhenUsingProtocolRedirects.equals("false"))
+				deriveProtocolWhenUsingProtocolRedirects = CmsPropertyHandler.getDeriveProtocolWhenUsingProtocolRedirects();
 			
-			if(repositoryUseAccessBasedProtocolRedirects.equalsIgnoreCase("true") && CmsPropertyHandler.getOperatingMode().equals("3"))
+			if(deriveProtocolWhenUsingProtocolRedirects.equalsIgnoreCase("true") && CmsPropertyHandler.getOperatingMode().equals("3"))
 			{
 				NodeDeliveryController nodeDeliveryController = NodeDeliveryController.getNodeDeliveryController(siteNodeId, languageId, contentId);
 		    	Integer protectedSiteNodeVersionId = nodeDeliveryController.getProtectedSiteNodeVersionId(db, siteNodeId);
@@ -459,7 +460,7 @@ public class BasicURLComposer extends URLComposer
 	    		        
 	    		    }
     		    }
-    		    
+
     		    if(repositoryPath != null)
     		    {
     		    	if(context.startsWith("/"))
@@ -512,6 +513,11 @@ public class BasicURLComposer extends URLComposer
     		    if(repositoryPath != null)
     		    	context = context + "/" + repositoryPath;
     		}
+
+		    String enableNiceURIForLanguage = CmsPropertyHandler.getEnableNiceURIForLanguage();
+        	System.out.println("enableNiceURIForLanguage:" + enableNiceURIForLanguage);
+        	if(enableNiceURIForLanguage.equalsIgnoreCase("true"))
+        		context = context + "/" + LanguageDeliveryController.getLanguageDeliveryController().getLanguageVO(db, languageId).getLanguageCode();
 
             StringBuffer sb = new StringBuffer(256);
 
@@ -578,16 +584,19 @@ public class BasicURLComposer extends URLComposer
 	            	}
 	            }
 
-	            if (languageId != null && languageId.intValue() != -1 && deliveryContext.getLanguageId().intValue() != languageId.intValue())
+	            if(!enableNiceURIForLanguage.equalsIgnoreCase("true"))
 	            {
-	                if(addedContent)
-	                    sb.append(getRequestArgumentDelimiter());
-	                else
-	                    sb.append("?");
-	                    
-	                sb.append("languageId=").append(String.valueOf(languageId));
+		            if (languageId != null && languageId.intValue() != -1 && deliveryContext.getLanguageId().intValue() != languageId.intValue())
+		            {
+		                if(addedContent)
+		                    sb.append(getRequestArgumentDelimiter());
+		                else
+		                    sb.append("?");
+		                    
+		                sb.append("languageId=").append(String.valueOf(languageId));
+		            }
 	            }
-
+	            
 	            url = (!sb.toString().equals("") ? sb.toString() : "/");
 	        } 
 	        catch (Exception e) 
@@ -727,7 +736,10 @@ public class BasicURLComposer extends URLComposer
         if(enableNiceURI == null || enableNiceURI.equalsIgnoreCase(""))
         	enableNiceURI = "false";
         
-        if(enableNiceURI.equalsIgnoreCase("true") && !deliveryContext.getDisableNiceUri())
+	    String enableNiceURIForLanguage = CmsPropertyHandler.getEnableNiceURIForLanguage();
+    	System.out.println("enableNiceURIForLanguage:" + enableNiceURIForLanguage);
+
+        if(enableNiceURI.equalsIgnoreCase("true") && !deliveryContext.getDisableNiceUri() && !enableNiceURIForLanguage.equalsIgnoreCase("true"))
         {
             if (pageUrl.indexOf("?") == -1) 
 	        {
