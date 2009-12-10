@@ -37,21 +37,25 @@ public class ChildPagesTag extends ComponentLogicTag {
     private boolean useStructureInheritance = true;
 	private boolean escapeHTML = false;
 	private boolean hideUnauthorizedPages = false;
+	private boolean includeHidden = true;
 		
-	
-    public ChildPagesTag()
-    {
-        super();
-    }
-
 	public int doEndTag() throws JspException
     {
 	    if(this.siteNodeId != null)
-	        setResultAttribute(this.getController().getChildPages(this.siteNodeId, this.escapeHTML, this.hideUnauthorizedPages));
+	        setResultAttribute(this.getController().getChildPages(this.siteNodeId, this.escapeHTML, this.hideUnauthorizedPages, this.includeHidden));
         else if(this.propertyName != null)
-            setResultAttribute(getComponentLogic().getChildPages(propertyName, useInheritance, this.escapeHTML, this.hideUnauthorizedPages, useRepositoryInheritance, useStructureInheritance));
+            setResultAttribute(getComponentLogic().getChildPages(propertyName, useInheritance, this.escapeHTML, this.hideUnauthorizedPages, this.includeHidden, useRepositoryInheritance, useStructureInheritance));
         else
             throw new JspException("You must state either propertyName or siteNodeId");
+	    
+	    this.siteNodeId = null;
+	    this.propertyName = null;
+	    this.useInheritance = true;
+	    this.useRepositoryInheritance = true;
+	    this.useStructureInheritance = true;
+	    this.escapeHTML = false;
+	    this.hideUnauthorizedPages = false;
+	    this.includeHidden = true;
 	    
 	    return EVAL_PAGE;
     }
@@ -90,5 +94,10 @@ public class ChildPagesTag extends ComponentLogicTag {
     {
         this.useStructureInheritance = useStructureInheritance;
     }
+
+	public void setIncludeHidden(boolean includeHidden) 
+	{
+		this.includeHidden = includeHidden;
+	}
 
 }
