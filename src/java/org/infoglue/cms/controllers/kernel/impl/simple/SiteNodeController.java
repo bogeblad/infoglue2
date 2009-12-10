@@ -755,22 +755,38 @@ public class SiteNodeController extends BaseController
    		Timer t = new Timer();
 
    		StringBuffer SQL = new StringBuffer();
-   		SQL.append("CALL SQL select sn.siteNodeId, sn.name, sn.publishDateTime, sn.expireDateTime, sn.isBranch, sn.isDeleted, sn.metaInfoContentId, sn.creator, (select count(*) from cmSiteNode sn2 where sn2.parentSiteNodeId = sn.siteNodeId) AS childCount, snv.sortOrder, snv.isHidden from cmSiteNode sn, cmSiteNodeVersion snv ");
-   		SQL.append("where ");
-   		SQL.append("sn.parentSiteNodeId = $1 ");
-   		SQL.append("AND sn.isDeleted = $2 ");
-   		SQL.append("AND snv.siteNodeId = sn.siteNodeId ");
-   		SQL.append("AND snv.siteNodeVersionId = ( ");
-   		SQL.append("	select max(siteNodeVersionId) from cmSiteNodeVersion snv2 ");
-   		SQL.append("	WHERE ");
-   		SQL.append("	snv2.siteNodeId = snv.siteNodeId AND ");
-   		SQL.append("	snv2.isActive = $3 AND snv2.stateId >= $4 ");
-   		SQL.append("	) ");
-   		SQL.append("order by snv.sortOrder ASC, sn.name ASC, sn.siteNodeId DESC AS org.infoglue.cms.entities.structure.impl.simple.SmallestSiteNodeImpl");
-   		
-   		//String SQL = "SELECT siteNode FROM org.infoglue.cms.entities.structure.impl.simple.SiteNodeImpl siteNode WHERE siteNode.parentSiteNode.siteNodeId = $1 AND siteNode.isDeleted = $2 ORDER BY siteNode.siteNodeId";
-    	
-   		System.out.println("SQL:" + SQL);
+    	if(CmsPropertyHandler.getUseShortTableNames() != null && CmsPropertyHandler.getUseShortTableNames().equalsIgnoreCase("true"))
+    	{
+	   		SQL.append("CALL SQL select sn.siNoId, sn.name, sn.publishDateTime, sn.expireDateTime, sn.isBranch, sn.isDeleted, sn.metaInfoContentId, sn.creator, (select count(*) from cmSiNo sn2 where sn2.parentSiNoId = sn.siNoId) AS childCount, snv.sortOrder, snv.isHidden from cmSiNo sn, cmSiNoVer snv ");
+	   		SQL.append("where ");
+	   		SQL.append("sn.parentSiNoId = $1 ");
+	   		SQL.append("AND sn.isDeleted = $2 ");
+	   		SQL.append("AND snv.siNoId = sn.siNoId ");
+	   		SQL.append("AND snv.siNoVerId = ( ");
+	   		SQL.append("	select max(siNoVerId) from cmSiNoVer snv2 ");
+	   		SQL.append("	WHERE ");
+	   		SQL.append("	snv2.siNoId = snv.siNoId AND ");
+	   		SQL.append("	snv2.isActive = $3 AND snv2.stateId >= $4 ");
+	   		SQL.append("	) ");
+	   		SQL.append("order by snv.sortOrder ASC, sn.name ASC, sn.siNoId DESC AS org.infoglue.cms.entities.structure.impl.simple.SmallestSiteNodeImpl");
+    	}
+    	else
+    	{
+	   		SQL.append("CALL SQL select sn.siteNodeId, sn.name, sn.publishDateTime, sn.expireDateTime, sn.isBranch, sn.isDeleted, sn.metaInfoContentId, sn.creator, (select count(*) from cmSiteNode sn2 where sn2.parentSiteNodeId = sn.siteNodeId) AS childCount, snv.sortOrder, snv.isHidden from cmSiteNode sn, cmSiteNodeVersion snv ");
+	   		SQL.append("where ");
+	   		SQL.append("sn.parentSiteNodeId = $1 ");
+	   		SQL.append("AND sn.isDeleted = $2 ");
+	   		SQL.append("AND snv.siteNodeId = sn.siteNodeId ");
+	   		SQL.append("AND snv.siteNodeVersionId = ( ");
+	   		SQL.append("	select max(siteNodeVersionId) from cmSiteNodeVersion snv2 ");
+	   		SQL.append("	WHERE ");
+	   		SQL.append("	snv2.siteNodeId = snv.siteNodeId AND ");
+	   		SQL.append("	snv2.isActive = $3 AND snv2.stateId >= $4 ");
+	   		SQL.append("	) ");
+	   		SQL.append("order by snv.sortOrder ASC, sn.name ASC, sn.siteNodeId DESC AS org.infoglue.cms.entities.structure.impl.simple.SmallestSiteNodeImpl");    		
+    	}
+
+    	System.out.println("SQL:" + SQL);
     	System.out.println("parentSiteNodeId:" + parentSiteNodeId);
     	System.out.println("showDeletedItems:" + showDeletedItems);
     	OQLQuery oql = db.getOQLQuery(SQL.toString());
