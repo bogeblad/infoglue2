@@ -96,11 +96,7 @@
 			
 			if (confirm('$ui.getString("tool.contenttool.languageVersionChangeWarning")'))
 			{
-				window.location.href="ViewContentVersion!standalone.action?contentId=" + contentId + "&languageId=" + languageId + "&attributeName=" + attributeName;
-			}
-			else
-			{
-				document.editForm.languageId.selectedIndex = originalIndex - 1;
+				window.location.href="ViewContentVersion!V3.action?contentId=" + contentId + "&languageId=" + languageId + "&attributeName=" + attributeName;
 			}
 		}
 	
@@ -261,7 +257,17 @@
 			}
 		}
 		
+		function toggleDropdowns(e, id)
+		{
+			var oldStyle = $("#" + id).css("display");
+			$("#" + id).slideToggle("fast");
 		
+			var e = e || window.event;
+			e.cancelBubble = true;
+			if (e.stopPropagation) e.stopPropagation();
+			return false; 
+		}
+
 		//*******************************************
 		// This is a timer that keeps track of the number of minutes the user has been on the page without saving.
 		//*******************************************
@@ -475,6 +481,67 @@
 			width            : 115px;
 		}
 		
+		#languageSelect ul.collapsablemenu {
+			display: none;
+			width: 205px; 
+			z-index: 1000; 
+		  	background-color: #fff; 
+		  	text-align: left; 
+		  	list-style:none; 
+			margin: -1px 16px 0 0;
+			padding: 0px 1px 0px 1px;
+			border: 1px solid #7d7d7d;
+		  	border-top: 0;
+		  	position: absolute;
+			}
+		
+		#languageSelect .collectionlinkgroup ul {
+			margin-top: -9px;
+			}
+		
+		#languageSelect .collapsablemenu li {
+			margin: 0;
+			padding: 0;
+			border-top: 1px solid #dfdfdf;
+			}
+		
+		#languageSelect .collapsablemenu a {
+			background: none;
+			text-decoration: none;
+			display: block;
+			padding: 1px 5px;
+			font-size: 10pt;
+			font-family: Arial,SanSerif; 
+			color: #333;
+			}
+		
+		#languageSelect .collapsablemenu li a:hover {
+			background-color: #f1f1f1;
+			}
+		
+		#languageSelect .collapsed .collapsablemenu {
+			visibility: hidden;
+			}
+		
+		#languageSelect h4 {
+			background: #fff url("images/v3/dropArrowIcon.gif") no-repeat right center;
+			font-size: 10pt;
+			font-family: Arial,SanSerif; 
+			color: #333;
+			font-weight: normal;
+			padding: 1px 20px 1px 5px;
+			margin-top: 20px;
+			margin: 0px;
+			display: block;
+			width: 182px;
+			border: 1px solid #7d7d7d;
+			}
+		
+		#languageSelect h4 a {
+			text-decoration: none;
+			color: #333;
+			}
+		
 	</style>
 #end
 
@@ -485,7 +552,21 @@
 	
 <div style="z-index: 3;">
     
-	<h3>#if($translate)$ui.getString('tool.contenttool.translationViewLabel') #else $ui.getString('tool.contenttool.editingViewLabel') #end $ui.getString('tool.contenttool.contentLabel') "$contentVO.name" ($currentLanguageVO.name)</h3>
+	<div>
+		<div style="float: left;">
+			<h3>#if($translate)$ui.getString('tool.contenttool.translationViewLabel') #else $ui.getString('tool.contenttool.editingViewLabel') #end $ui.getString('tool.contenttool.contentLabel') "$contentVO.name" ($currentLanguageVO.name)</h3>
+		</div>
+		<div id="languageSelect" style="float: left; margin-left: 10px; margin-top: 16px;">
+			<h4 id="selectLanguages" class="first" onclick="toggleDropdowns(event, 'languageList');">
+				<a href="#">$ui.getString("tool.contenttool.languageVersionsLabel")</a>
+			</h4>
+			<ul id="languageList" class="collapsablemenu">
+				#foreach($languageVO in $availableLanguages)
+					<li><a href="javascript:changeLanguage($contentId, $languageVO.id);">$languageVO.name</a></li>
+				#end
+			</ul>
+		</div>
+	</div>
 	
 	<div id="allDivs">
 	
