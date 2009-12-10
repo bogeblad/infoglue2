@@ -33,7 +33,7 @@
 			if(liveUrl != "")
 				dnsString = dnsString + ",live=" + liveUrl;
 			if(extraUrls != "")
-				dnsString = dnsString + "," + extraUrls;
+				dnsString = dnsString + "," + extraUrls.replace(/\n\r?/g, ',');
 			if(workingPath != "")
 				dnsString = dnsString + ",workingPath=" + workingPath;
 			if(livePath != "")
@@ -125,7 +125,7 @@
 					Working URL (used for site lookup when using nice uri in working deliver):<br/> <input class="longtextfield" style="width: 600px;" type="textfield" id="workingUrl" name="workingUrl" value="$!repositoryVO.workingBaseUrl"/><br/><br/>
 					Preview URL (used for site lookup when using nice uri in preview deliver):<br/> <input class="longtextfield" style="width: 600px;" type="textfield" id="previewUrl" name="previewUrl" value="$!repositoryVO.previewBaseUrl"/><br/><br/>
 					Live URL (used for site lookup when using nice uri in live deliver):<br/> <input class="longtextfield" type="textfield" style="width: 600px;" id="liveUrl" name="liveUrl" value="$!repositoryVO.liveBaseUrl"/><br/><br/>
-					Extra URL's (complementary addresses for site lookup when using nice uri in live deliver):<br/> <textarea class="normaltextarea" style="width: 600px; height: 50px;" id="extraUrls" name="extraUrls">$!repositoryVO.extraUrls</textarea><br/><br/>
+					Extra URL's (complementary addresses for site lookup when using nice uri in live deliver):<br/> <textarea class="normaltextarea" style="width: 600px; height: 50px;" id="extraUrls" name="extraUrls">$!repositoryVO.extraUrlsFormatted</textarea><br/><br/>
 					Working path (used for site lookup when using nice uri in working deliver - overrides live path):<br/> <input class="longtextfield" style="width: 600px;" type="textfield" id="workingPath" name="workingPath" value="$!repositoryVO.workingPath"/><br/><br/>
 					Live path (used for site lookup when using nice uri in deliver):<br/> <input class="longtextfield" type="textfield" style="width: 600px;" id="livePath" name="livePath" value="$!repositoryVO.path"/><br/><br/>
 					<a href="#" onclick="$('#dnsFields').hide('slow');">Close</a>

@@ -174,6 +174,11 @@ public class RepositoryVO implements BaseEntityVO
 	    
 	    return extraUrls;
 	}
+	
+	public String getExtraUrlsFormatted()
+	{
+	    return getExtraUrls().replaceAll(",", "\n");
+	}
 
 	public String getWorkingPath()
 	{
