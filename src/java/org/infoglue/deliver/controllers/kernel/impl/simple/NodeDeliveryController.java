@@ -1728,12 +1728,12 @@ public class NodeDeliveryController extends BaseDeliveryController
 
     public String getPageNavigationPath(Database db, InfoGluePrincipal infogluePrincipal, Integer siteNodeId, Integer languageId, Integer contentId, DeliveryContext deliveryContext) throws SystemException, Exception
     {
-        StringBuffer path = null; //new StringBuffer("/");
+    	StringBuilder path = null; //new StringBuffer("/");
 
         SiteNodeVO parentSiteNode = this.getParentSiteNode(db, siteNodeId);
         if (parentSiteNode != null)
         {
-            path = new StringBuffer(getPageNavigationPath(db, infogluePrincipal, parentSiteNode.getId(), languageId, null, deliveryContext)).append("/");
+            path = new StringBuilder(getPageNavigationPath(db, infogluePrincipal, parentSiteNode.getId(), languageId, null, deliveryContext)).append("/");
         } 
         else 
         {

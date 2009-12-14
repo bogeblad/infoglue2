@@ -124,7 +124,7 @@ public class PageEditorHelper extends BaseDeliveryController
 	    if(request.getParameter("skipPropertiesDiv") != null && request.getParameter("skipPropertiesDiv").equalsIgnoreCase("true"))
 	        return "";
 
-	    StringBuffer sb = new StringBuffer();
+	    StringBuilder sb = new StringBuilder();
 	    
 		String componentEditorUrl = CmsPropertyHandler.getComponentEditorUrl();
 
@@ -878,7 +878,7 @@ public class PageEditorHelper extends BaseDeliveryController
 			 boolean treeItem) throws Exception
 		{	
 		
-		StringBuffer sb = new StringBuffer();
+		StringBuilder sb = new StringBuilder();
 
 		String componentEditorUrl = CmsPropertyHandler.getComponentEditorUrl();
 		String componentRendererUrl = CmsPropertyHandler.getComponentRendererUrl();
@@ -942,7 +942,7 @@ public class PageEditorHelper extends BaseDeliveryController
 		    
 		    if(component.getIsInherited())
 			{
-			    StringBuffer sb2 = new StringBuffer();
+		    	StringBuilder sb2 = new StringBuilder();
 				return sb2.toString();
 			}
 		    
@@ -1143,7 +1143,7 @@ public class PageEditorHelper extends BaseDeliveryController
 
 	public String getComponentStructureDiv(Database db, InfoGluePrincipal principal, HttpServletRequest request, Locale locale, Integer repositoryId, Integer siteNodeId, Integer languageId, Integer contentId, String showSimple, String originalFullURL, String showLegend, String targetDiv) throws Exception
 	{
-		StringBuffer sb = new StringBuffer();
+		StringBuilder sb = new StringBuilder();
 		
 		//String componentEditorUrl = CmsPropertyHandler.getComponentEditorUrl();
 		//String componentRendererUrl = CmsPropertyHandler.getComponentRendererUrl();
@@ -1192,7 +1192,7 @@ public class PageEditorHelper extends BaseDeliveryController
 	 * This method renders the component tree visually
 	 */
 	
-	private void renderComponentTree(Database db, StringBuffer sb, InfoGlueComponent component, int level, int position, int maxPosition, String contextPath, Integer repositoryId, Integer siteNodeId, Integer languageId, Integer contentId, String showSimple, String originalUrl) throws Exception
+	private void renderComponentTree(Database db, StringBuilder sb, InfoGlueComponent component, int level, int position, int maxPosition, String contextPath, Integer repositoryId, Integer siteNodeId, Integer languageId, Integer contentId, String showSimple, String originalUrl) throws Exception
 	{
 		String componentEditorUrl = CmsPropertyHandler.getComponentEditorUrl();
 
@@ -1638,7 +1638,7 @@ public class PageEditorHelper extends BaseDeliveryController
 		//String attributeName = "ComponentStructure";
 
 	    String cachedPageComponentsString = (String)CacheController.getCachedObjectFromAdvancedCache(cacheName, cacheKey);
-	    //Set contentVersionId = (Set)CacheController.getCachedObjectFromAdvancedCache("contentVersionIdCache", versionKey);
+	    //Set contentVersionId = (Set)CacheController.getCachedObjectFromAdvancedCache("componentEditorVersionIdCache", versionKey);
 
 		if(cachedPageComponentsString != null)
 		{			
@@ -1760,7 +1760,7 @@ public class PageEditorHelper extends BaseDeliveryController
 	
 	public String getAvailableComponentsDiv(Database db, InfoGluePrincipal principal, Locale locale, Integer repositoryId, Integer languageId, Integer componentContentId, String slotName, String showLegend, String showNames, String targetDiv)
 	{
-		StringBuffer sb = new StringBuffer();
+		StringBuilder sb = new StringBuilder();
 		
 	    try
 	    {
