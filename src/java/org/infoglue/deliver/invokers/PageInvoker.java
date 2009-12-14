@@ -320,7 +320,7 @@ public abstract class PageInvoker
 
 		if(this.getRequest().getParameter("includeUsedEntities") != null && this.getRequest().getParameter("includeUsedEntities").equals("true") && (!CmsPropertyHandler.getOperatingMode().equals("3") || CmsPropertyHandler.getLivePublicationThreadClass().equalsIgnoreCase("org.infoglue.deliver.util.SelectiveLivePublicationThread")))
 		{
-			StringBuffer sb = new StringBuffer("<usedEntities>");
+			StringBuilder sb = new StringBuilder("<usedEntities>");
 			String[] usedEntities = this.getDeliveryContext().getAllUsedEntities();
 			for(int i=0; i<usedEntities.length; i++)
 				sb.append(usedEntities[i]).append(",");
@@ -504,7 +504,7 @@ public abstract class PageInvoker
 		{
 			pageString = this.getTemplateController().decoratePage(pageString);
 			
-			StringBuffer sb = null;
+			StringBuilder sb = null;
 			
 			List htmlHeadItems = this.getTemplateController().getDeliveryContext().getHtmlHeadItems();
 			if(htmlHeadItems != null || htmlHeadItems.size() > 0)
@@ -515,7 +515,7 @@ public abstract class PageInvoker
 	
 				if(indexOfHeadEndTag != -1)
 				{
-					sb = new StringBuffer(pageString);
+					sb = new StringBuilder(pageString);
 					Iterator htmlHeadItemsIterator = htmlHeadItems.iterator();
 					while(htmlHeadItemsIterator.hasNext())
 					{
@@ -538,7 +538,7 @@ public abstract class PageInvoker
 				if(lastModifiedDateTimeIndex > -1)
 				{
 					if(sb == null)
-						sb = new StringBuffer(pageString);
+						sb = new StringBuilder(pageString);
 
 					int lastModifiedDateTimeEndIndex = sb.indexOf("</ig:lastModifiedDateTime>", lastModifiedDateTimeIndex);
 	

@@ -404,7 +404,7 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 		//String versionKey 	= attributeKey + "_contentVersionId";
 
 	    String cachedPageComponentsString = (String)CacheController.getCachedObjectFromAdvancedCache(cacheName, cacheKey);
-	    Set contentVersionId = (Set)CacheController.getCachedObjectFromAdvancedCache("contentVersionIdCache", versionKey);
+	    Set contentVersionId = (Set)CacheController.getCachedObjectFromAdvancedCache("componentEditorVersionIdCache", versionKey);
 
 		if(cachedPageComponentsString != null)
 		{
@@ -448,7 +448,7 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 		
 		if(groups.size() > 0)
 		{
-			CacheController.cacheObjectInAdvancedCacheWithGroupsAsSet("contentVersionIdCache", versionKey, contentVersionIds, groups, true);
+			CacheController.cacheObjectInAdvancedCacheWithGroupsAsSet("componentEditorVersionIdCache", versionKey, contentVersionIds, groups, true);
 		}
 		
 		return pageComponentsString;
@@ -929,7 +929,7 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 			logger.debug("slotName: " + component.getSlotName());
 		}
 		
-		StringBuffer decoratedComponent = new StringBuffer();
+		StringBuilder decoratedComponent = new StringBuilder();
 		
 		String componentEditorUrl = CmsPropertyHandler.getComponentEditorUrl();
 		templateController.setComponentLogic(new ComponentLogic(templateController, component));
@@ -965,7 +965,7 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 		}
 		else
 		{
-			StringBuffer componentCacheKeySB = new StringBuffer();
+			StringBuilder componentCacheKeySB = new StringBuilder();
 			componentCacheKeySB.append(templateController.getComponentLogic().getComponentDeliveryContext().getPageKey()).append("_")
 							   .append(component.getId()).append("_")
 							   .append(component.getSlotName()).append("_")
@@ -1141,7 +1141,7 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 			logger.debug("slotName: " + component.getSlotName());
 		}
 		
-		StringBuffer decoratedComponent = new StringBuffer();
+		StringBuilder decoratedComponent = new StringBuilder();
 		
 		templateController.setComponentLogic(new ComponentLogic(templateController, component));
 		templateController.getDeliveryContext().getUsageListeners().add(templateController.getComponentLogic().getComponentDeliveryContext());
