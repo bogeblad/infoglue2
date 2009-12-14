@@ -152,8 +152,31 @@ public class CacheController extends Thread
     public static Date expireDateTime = null;
     public static Date publishDateTime = null;
 
-    private static boolean useHashCode = true;
+    private static Boolean useHashCodeInCaches = null;
+    private static Boolean useSynchronizationOnCaches = null;
     
+    public static void resetSpecial()
+    {
+    	useHashCodeInCaches = null;
+    	useSynchronizationOnCaches = null;
+    }
+    
+    private static Boolean getUseHashCodeInCaches()
+    {
+    	if(useHashCodeInCaches == null)
+    		useHashCodeInCaches = CmsPropertyHandler.getUseHashCodeInCaches();
+    	
+    	return useHashCodeInCaches;
+    }
+
+    private static Boolean getUseSynchronizationOnCaches()
+    {
+    	if(useSynchronizationOnCaches == null)
+    		useSynchronizationOnCaches = CmsPropertyHandler.getUseSynchronizationOnCaches();
+    	
+    	return useSynchronizationOnCaches;
+    }
+
 	public CacheController()
 	{
 		super();
@@ -191,7 +214,7 @@ public class CacheController extends Thread
 		clearCache("encodedStringsCache");
 		clearCache("principalToolPropertiesCache");
    	}
-
+	
 	public static void cacheObject(String cacheName, Object key, Object value)
 	{
 		if(cacheName == null || key == null || value == null)
@@ -209,13 +232,23 @@ public class CacheController extends Thread
 			Map cacheInstance = (Map)caches.get(cacheName);
 			if(cacheInstance != null && key != null && value != null)
 		    {
-			    synchronized(cacheInstance)
-		        {
-			    	if(useHashCode)
+				if(getUseSynchronizationOnCaches())
+				{
+					synchronized(cacheInstance)
+					{
+				    	if(getUseHashCodeInCaches())
+				    		cacheInstance.put("" + key.hashCode(), value);
+				    	else
+				    		cacheInstance.put(key, value);
+				    }
+				}
+				else
+				{
+				   	if(getUseHashCodeInCaches())
 			    		cacheInstance.put("" + key.hashCode(), value);
 			    	else
 			    		cacheInstance.put(key, value);
-				}
+			 	}
 		    }
 		//}
 	}	
@@ -230,9 +263,20 @@ public class CacheController extends Thread
 			Map cacheInstance = (Map)caches.get(cacheName);
 			if(cacheInstance != null)
 		    {
-				synchronized(cacheInstance)
+				//TODO
+				if(getUseSynchronizationOnCaches())
 				{
-					if(useHashCode)
+					synchronized(cacheInstance)
+					{
+						if(getUseHashCodeInCaches())
+							return cacheInstance.get("" + key.hashCode());
+						else
+							return cacheInstance.get(key);
+					}
+				}
+				else
+				{
+					if(getUseHashCodeInCaches())
 						return cacheInstance.get("" + key.hashCode());
 					else
 						return cacheInstance.get(key);
@@ -299,7 +343,11 @@ public class CacheController extends Thread
 					cacheCapacity = "2000";
 				if(cacheName != null && cacheName.equalsIgnoreCase("componentPropertyCache"))
 					cacheCapacity = "1500";
+				if(cacheName != null && cacheName.equalsIgnoreCase("componentPropertyIdCache"))
+					cacheCapacity = "1500";
 				if(cacheName != null && cacheName.equalsIgnoreCase("componentEditorCache"))
+		    		cacheCapacity = "5000";
+				if(cacheName != null && cacheName.equalsIgnoreCase("componentEditorVersionIdCache"))
 		    		cacheCapacity = "5000";
 				if(cacheName != null && cacheName.equalsIgnoreCase("contentVersionIdCache"))
 		    		cacheCapacity = "40000";
@@ -336,23 +384,60 @@ public class CacheController extends Thread
 		    }
 		    
 			GeneralCacheAdministrator cacheAdministrator = (GeneralCacheAdministrator)caches.get(cacheName);
-			synchronized(cacheAdministrator)
+			
+			//TODO
+			if(useSynchronizationOnCaches)
 			{
-				if(useGroups)
+				synchronized(cacheAdministrator)
 				{
-					if(useHashCode)
-						cacheAdministrator.putInCache("" + key.toString().hashCode(), value, groups);
-					else
-						cacheAdministrator.putInCache(key.toString(), value, groups);
-				}
-				else
-				{
-					if(useHashCode)
-						cacheAdministrator.putInCache("" + key.toString().hashCode(), value);
-					else
-					    cacheAdministrator.putInCache(key.toString(), value);
+					try
+					{
+						if(useGroups)
+						{
+							if(getUseHashCodeInCaches())
+								cacheAdministrator.putInCache("" + key.toString().hashCode(), value, groups);
+							else
+								cacheAdministrator.putInCache(key.toString(), value, groups);
+						}
+						else
+						{
+							if(getUseHashCodeInCaches())
+								cacheAdministrator.putInCache("" + key.toString().hashCode(), value);
+							else
+							    cacheAdministrator.putInCache(key.toString(), value);
+						}
+					}
+					catch (Exception e) 
+					{
+						logger.error("Error putting in cache:" + e.getMessage());
+					}
 				}
 			}
+			else
+			{
+				try
+				{
+					if(useGroups)
+					{
+						if(getUseHashCodeInCaches())
+							cacheAdministrator.putInCache("" + key.toString().hashCode(), value, groups);
+						else
+							cacheAdministrator.putInCache(key.toString(), value, groups);
+					}
+					else
+					{
+						if(getUseHashCodeInCaches())
+							cacheAdministrator.putInCache("" + key.toString().hashCode(), value);
+						else
+						    cacheAdministrator.putInCache(key.toString(), value);
+					}
+				}
+				catch (Exception e) 
+				{
+					logger.error("Error putting in cache:" + e.getMessage());
+				}
+			}
+				
 		    if(useFileCacheFallback && !useGroups)
 		    {
 		    	if(logger.isInfoEnabled())
@@ -385,11 +470,44 @@ public class CacheController extends Thread
 	    	GeneralCacheAdministrator cacheAdministrator = (GeneralCacheAdministrator)caches.get(cacheName);
 		    if(cacheAdministrator != null)
 		    {
-		    	synchronized(cacheAdministrator)
+		    	//TODO
+		    	if(useSynchronizationOnCaches)
+				{
+		    		synchronized(cacheAdministrator)
+		    		{
+					    try 
+					    {
+							if(getUseHashCodeInCaches())
+								value = (cacheAdministrator == null) ? null : cacheAdministrator.getFromCache("" + key.hashCode(), CacheEntry.INDEFINITE_EXPIRY);
+							else
+								value = (cacheAdministrator == null) ? null : cacheAdministrator.getFromCache(key, CacheEntry.INDEFINITE_EXPIRY);
+					    } 
+					    catch (NeedsRefreshException nre) 
+					    {
+					    	if(useFileCacheFallback && nre.getCacheContent() != null)
+					    	{
+					    		stopUseFileCacheFallback = true;
+					    	}
+					    	
+					    	try
+					    	{
+								if(getUseHashCodeInCaches())
+									cacheAdministrator.cancelUpdate("" + key.hashCode());
+								else
+									cacheAdministrator.cancelUpdate(key);
+					    	}
+					    	catch (Exception e) 
+					    	{
+					    		logger.error("Error:" + e.getMessage());
+							}
+						}
+		    		}
+				}
+		    	else
 		    	{
 				    try 
 				    {
-						if(useHashCode)
+						if(getUseHashCodeInCaches())
 							value = (cacheAdministrator == null) ? null : cacheAdministrator.getFromCache("" + key.hashCode(), CacheEntry.INDEFINITE_EXPIRY);
 						else
 							value = (cacheAdministrator == null) ? null : cacheAdministrator.getFromCache(key, CacheEntry.INDEFINITE_EXPIRY);
@@ -401,12 +519,19 @@ public class CacheController extends Thread
 				    		stopUseFileCacheFallback = true;
 				    	}
 				    	
-						if(useHashCode)
-							cacheAdministrator.cancelUpdate("" + key.hashCode());
-						else
-							cacheAdministrator.cancelUpdate(key);
+				    	try
+				    	{
+							if(getUseHashCodeInCaches())
+								cacheAdministrator.cancelUpdate("" + key.hashCode());
+							else
+								cacheAdministrator.cancelUpdate(key);
+				    	}
+				    	catch (Exception e) 
+				    	{
+				    		logger.error("Error:" + e.getMessage());
+						}
 					}
-				}
+		    	}
 		    }
 	    	if(value == null && useFileCacheFallback && !stopUseFileCacheFallback)
 	    	{				    		
@@ -417,7 +542,7 @@ public class CacheController extends Thread
 	    		{
 	    			if(logger.isInfoEnabled())
 	        			logger.info("Got cached content from file as it did not exist in memory...:" + value.toString().length());
-					if(useHashCode)
+					if(getUseHashCodeInCaches())
 						cacheObjectInAdvancedCache(cacheName, "" + key.hashCode(), value);
 					else
 						cacheObjectInAdvancedCache(cacheName, key, value);
@@ -449,11 +574,37 @@ public class CacheController extends Thread
 		    GeneralCacheAdministrator cacheAdministrator = (GeneralCacheAdministrator)caches.get(cacheName);
 		    if(cacheAdministrator != null)
 		    {
-		    	synchronized(cacheAdministrator)
+		    	//TODO
+		    	if(useSynchronizationOnCaches)
 		    	{
-				    try 
+		    		synchronized(cacheAdministrator)
+		    		{
+					    try 
+					    {
+					        if(getUseHashCodeInCaches())
+					        	value = (cacheAdministrator == null) ? null : cacheAdministrator.getFromCache("" + key.hashCode(), updateInterval);
+					        else
+					        	value = (cacheAdministrator == null) ? null : cacheAdministrator.getFromCache(key, updateInterval);
+					    } 
+					    catch (NeedsRefreshException nre) 
+					    {
+					    	if(useFileCacheFallback && nre.getCacheContent() != null)
+					    	{
+					    		stopUseFileCacheFallback = true;
+					    	}
+					    	
+					        if(getUseHashCodeInCaches())
+					        	cacheAdministrator.cancelUpdate("" + key.hashCode());
+					        else
+					        	cacheAdministrator.cancelUpdate(key);
+						}
+		    		}
+		    	}
+		    	else
+		    	{
+		    		try 
 				    {
-				        if(useHashCode)
+				        if(getUseHashCodeInCaches())
 				        	value = (cacheAdministrator == null) ? null : cacheAdministrator.getFromCache("" + key.hashCode(), updateInterval);
 				        else
 				        	value = (cacheAdministrator == null) ? null : cacheAdministrator.getFromCache(key, updateInterval);
@@ -465,13 +616,14 @@ public class CacheController extends Thread
 				    		stopUseFileCacheFallback = true;
 				    	}
 				    	
-				        if(useHashCode)
+				        if(getUseHashCodeInCaches())
 				        	cacheAdministrator.cancelUpdate("" + key.hashCode());
 				        else
 				        	cacheAdministrator.cancelUpdate(key);
 					}
-				}
-		    	if(useFileCacheFallback && !stopUseFileCacheFallback)
+		    	}
+		    	
+				if(useFileCacheFallback && !stopUseFileCacheFallback)
 		    	{				    		
 		    		if(logger.isInfoEnabled())
 		    			logger.info("Getting cache content from file..");
@@ -480,7 +632,7 @@ public class CacheController extends Thread
 		    		{
 		    			if(logger.isInfoEnabled())
 		        			logger.info("Got cached content from file as it did not exist in memory...:" + value.toString().length());
-				        if(useHashCode)
+				        if(getUseHashCodeInCaches())
 				        	cacheObjectInAdvancedCache(cacheName, "" + key.hashCode(), value);
 				        else
 				        	cacheObjectInAdvancedCache(cacheName, key, value);
@@ -735,6 +887,10 @@ public class CacheController extends Thread
 					{	
 						clear = true;
 					}
+					if(cacheName.equalsIgnoreCase("componentEditorVersionIdCache") && (entity.indexOf("SiteNode") > 0 || entity.indexOf("Content") > 0))
+					{	
+						clear = true;
+					}
 					if(cacheName.equalsIgnoreCase("masterLanguageCache") && (entity.indexOf("Repository") > 0 || entity.indexOf("Language") > 0))
 					{	
 						clear = true;
@@ -786,6 +942,11 @@ public class CacheController extends Thread
 						selectiveCacheUpdate = true;
 					}
 					if(cacheName.equalsIgnoreCase("componentPropertyCache") && (entity.indexOf("SiteNode") > -1 || entity.indexOf("ContentVersion") > -1 || entity.indexOf("AccessRight") > 0 || entity.indexOf("SystemUser") > 0 || entity.indexOf("Role") > 0  || entity.indexOf("Group") > 0))
+					{	
+						clear = true;
+						selectiveCacheUpdate = true;
+					}
+					if(cacheName.equalsIgnoreCase("componentPropertyVersionIdCache") && (entity.indexOf("SiteNode") > -1 || entity.indexOf("ContentVersion") > -1 || entity.indexOf("AccessRight") > 0 || entity.indexOf("SystemUser") > 0 || entity.indexOf("Role") > 0  || entity.indexOf("Group") > 0))
 					{	
 						clear = true;
 						selectiveCacheUpdate = true;
@@ -1486,7 +1647,7 @@ public class CacheController extends Thread
     			//System.out.println("EventListener:" + cacheEntryEventListener);
     			if(cacheEntryEventListener == null)
     			{
-    				logger.error("cacheEntryEventListener was null - lets clear it: " + key);
+    				logger.warn("cacheEntryEventListener was null - lets clear it: " + key);
     				clearCache(key);
     			}
     		}

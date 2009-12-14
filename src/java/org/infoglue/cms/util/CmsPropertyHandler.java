@@ -303,7 +303,12 @@ public class CmsPropertyHandler
 
 	public static String getServerNodeProperty(String key, boolean inherit, String defaultValue)
 	{
-		return getServerNodeProperty(null, key, inherit, defaultValue);
+		return getServerNodeProperty(null, key, inherit, defaultValue, false);
+	}
+
+	public static String getServerNodeProperty(String key, boolean inherit, String defaultValue, boolean skipCaches)
+	{
+		return getServerNodeProperty(null, key, inherit, defaultValue, skipCaches);
 	}
 
 	/**
@@ -313,8 +318,12 @@ public class CmsPropertyHandler
 	 * @param inherit
 	 * @return
 	 */
-	
 	public static String getServerNodeProperty(String prefix, String key, boolean inherit, String defaultValue)
+	{
+		return getServerNodeProperty(prefix, key, inherit, defaultValue, false);
+	}
+	
+	public static String getServerNodeProperty(String prefix, String key, boolean inherit, String defaultValue, boolean skipCaches)
 	{
 		String value = null;
 	    Object valueObject = null;
@@ -328,7 +337,9 @@ public class CmsPropertyHandler
 		if(logger.isInfoEnabled())
 			logger.info("cacheKey:" + cacheKey);
 		
-		valueObject = CacheController.getCachedObject(cacheName, cacheKey);
+		if(!skipCaches)
+			valueObject = CacheController.getCachedObject(cacheName, cacheKey);
+		
 		if(valueObject != null)
 		{
 			if(valueObject instanceof NullObject)
@@ -396,11 +407,14 @@ public class CmsPropertyHandler
 	    if(value != null)
 	    	value = value.trim();
 	    
-	    if(value != null)
-	    	CacheController.cacheObject(cacheName, cacheKey, value);
-	    else
-	    	CacheController.cacheObject(cacheName, cacheKey, new NullObject());
-	    	
+	    if(!skipCaches)
+	    {
+		    if(value != null)
+		    	CacheController.cacheObject(cacheName, cacheKey, value);
+		    else
+		    	CacheController.cacheObject(cacheName, cacheKey, new NullObject());
+	    }
+	    
 	    if(logger.isInfoEnabled())
 			logger.info("Getting property " + cacheKey + " took:" + timer.getElapsedTime());
 	    
@@ -973,7 +987,36 @@ public class CmsPropertyHandler
 		return killLiveRequestWhichTimedout;
 	}
 
-	
+	public static Boolean getUseHashCodeInCaches()
+	{
+		boolean useHashCodeInCaches = false;
+		try
+		{
+			useHashCodeInCaches = Boolean.parseBoolean(getServerNodeProperty("useHashCodeInCaches", true, "true", true));
+		}
+		catch(Exception e)
+		{
+			logger.warn("Error parsing useHashCodeInCaches:" + e.getMessage());
+		}
+		
+		return useHashCodeInCaches;
+	}
+
+	public static Boolean getUseSynchronizationOnCaches()
+	{
+		boolean useSynchronizationOnCaches = false;
+		try
+		{
+			useSynchronizationOnCaches = Boolean.parseBoolean(getServerNodeProperty("useSynchronizationOnCaches", true, "true", true));
+		}
+		catch(Exception e)
+		{
+			logger.warn("Error parsing useSynchronizationOnCaches:" + e.getMessage());
+		}
+		
+		return useSynchronizationOnCaches;
+	}
+
 	public static String getUseHighLoadLimiter()
 	{
 	    return getServerNodeProperty("useHighLoadLimiter", true, "false");
@@ -1762,25 +1805,34 @@ public class CmsPropertyHandler
 		
 		return propertySet;
 	}
-	
+
 	public static String getPropertySetValue(String key)
+	{
+		return getPropertySetValue(key, false);
+	}
+
+	public static String getPropertySetValue(String key, boolean skipCaches)
 	{
 	    String value = null;
 	    
         String cacheKey = "" + key;
         String cacheName = "propertySetCache";
 		//logger.info("cacheKey:" + cacheKey);
-		value = (String)CacheController.getCachedObject(cacheName, cacheKey);
-		if(value != null)
+        if(!skipCaches)
+        	value = (String)CacheController.getCachedObject(cacheName, cacheKey);
+		
+        if(value != null)
 		{
-		    logger.info("Returning property " + cacheKey + " value " + value);
+        	if(logger.isInfoEnabled())
+        		logger.info("Returning property " + cacheKey + " value " + value);
 			return value;
 		}
 	    
 		value = getPropertySet().getString(key);
 		logger.info("propertySetCache did not have value... refetched:" + value);
 	    
-	    CacheController.cacheObject(cacheName, cacheKey, value);
+		if(!skipCaches)
+			CacheController.cacheObject(cacheName, cacheKey, value);
 	    
 	    return value;
 	}
