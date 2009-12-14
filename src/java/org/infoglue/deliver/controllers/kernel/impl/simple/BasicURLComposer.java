@@ -92,7 +92,7 @@ public class BasicURLComposer extends URLComposer
 
         if(repositoryUseAccessBasedProtocolRedirects.equalsIgnoreCase("true"))
         {
-	        StringBuffer sb = new StringBuffer(256);
+        	StringBuilder sb = new StringBuilder(256);
 	        
 	        String originalUrl = deliveryContext.getHttpServletRequest().getRequestURL().toString();
             int indexOfProtocol = originalUrl.indexOf("://");
@@ -116,7 +116,7 @@ public class BasicURLComposer extends URLComposer
         }
         else if(enableNiceURI.equalsIgnoreCase("true") || useDNSNameInUrls.equalsIgnoreCase("false"))
         {
-	        StringBuffer sb = new StringBuffer(256);
+        	StringBuilder sb = new StringBuilder(256);
 	        
 	        if(deliveryContext.getUseFullUrl())
 	        {
@@ -222,7 +222,7 @@ public class BasicURLComposer extends URLComposer
 
         if(enableNiceURI.equalsIgnoreCase("true") || useDNSNameInUrls.equalsIgnoreCase("false"))
         {
-	        StringBuffer sb = new StringBuffer(256);
+        	StringBuilder sb = new StringBuilder(256);
 	        
 	        if(deliveryContext.getUseFullUrl())
 	        {
@@ -530,7 +530,7 @@ public class BasicURLComposer extends URLComposer
     		    	context = context + "/" + repositoryPath;
     		}
 
-            StringBuffer sb = new StringBuffer(256);
+    		StringBuilder sb = new StringBuilder(256);
 
             if(deliveryContext.getUseFullUrl() || makeAccessBasedProtocolAdjustments)
 	        {
@@ -609,7 +609,7 @@ public class BasicURLComposer extends URLComposer
 	        } 
 	        catch (Exception e) 
 			{
-	            e.printStackTrace();
+	            logger.warn("Error generating url:" + e.getMessage());
 	        }
         }
         else
@@ -680,7 +680,7 @@ public class BasicURLComposer extends URLComposer
             }
             else
             {
-                StringBuffer sb = new StringBuffer(256);
+            	StringBuilder sb = new StringBuilder(256);
                 if(deliveryContext.getUseFullUrl() || makeAccessBasedProtocolAdjustments)
     	        {
     		        String originalUrl = deliveryContext.getHttpServletRequest().getRequestURL().toString();
