@@ -99,6 +99,7 @@ public class ExpireCacheJob implements Job
             {
     			logger.info("Finally clearing page cache as this was a publishing-update");
     			CacheController.clearCache("componentEditorCache");
+    			CacheController.clearCache("componentEditorVersionIdCache");
     		    CacheController.clearCache("pageCache");
     		    CacheController.clearCache("pageCacheExtra");
     		    lastCacheCleanup = System.currentTimeMillis();
