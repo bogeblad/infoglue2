@@ -40,6 +40,7 @@ import org.infoglue.cms.exception.ConstraintException;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.security.InfoGluePrincipal;
 import org.infoglue.cms.util.ChangeNotificationController;
+import org.infoglue.cms.util.CmsPropertyHandler;
 import org.infoglue.cms.util.StringManager;
 import org.infoglue.cms.util.StringManagerFactory;
 import org.infoglue.deliver.util.BrowserBean;
@@ -160,7 +161,8 @@ public abstract class WebworkAbstractAction implements Action, ServletRequestAwa
         
         try
         {
-        	ChangeNotificationController.notifyListeners();
+        	if(CmsPropertyHandler.getApplicationName().equalsIgnoreCase("cms"))
+        		ChangeNotificationController.notifyListeners();
         }
         catch(Exception e)
         {
