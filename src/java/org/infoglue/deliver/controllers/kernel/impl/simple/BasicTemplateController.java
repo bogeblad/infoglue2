@@ -2619,7 +2619,7 @@ public class BasicTemplateController implements TemplateController
 		}
 		catch(Exception e)
 		{
-			logger.error("An error occurred trying to get assetUrl on content with id: " + contentId + ":" + e.getMessage());
+			logger.warn("An error occurred trying to get assetUrl on content with id: " + contentId + ":" + e.getMessage());
 		}
 				
 		return assetUrl;
@@ -2666,7 +2666,7 @@ public class BasicTemplateController implements TemplateController
 		}
 		catch(Exception e)
 		{
-			logger.error("An error occurred trying to get assetUrl on content with id: " + contentId + " and assetKey:" + assetKey + " : " + e.getMessage());
+			logger.warn("An error occurred trying to get assetUrl on content with id: " + contentId + " and assetKey:" + assetKey + " : " + e.getMessage());
 		}
 				
 		return assetUrl;
@@ -2686,7 +2686,7 @@ public class BasicTemplateController implements TemplateController
 		}
 		catch(Exception e)
 		{
-			logger.error("An error occurred trying to get assetUrl on content with id: " + contentId + " and assetKey:" + assetKey + " : " + e.getMessage());
+			logger.warn("An error occurred trying to get assetUrl on content with id: " + contentId + " and assetKey:" + assetKey + " : " + e.getMessage());
 		}
 				
 		return assetUrl;
@@ -2849,7 +2849,7 @@ public class BasicTemplateController implements TemplateController
 		}
 		catch(Exception e)
 		{
-			logger.error("An error occurred trying to get assetUrl on content with id: " + this.contentId + ":" + e.getMessage());
+			logger.warn("An error occurred trying to get assetUrl on content with id: " + this.contentId + ":" + e.getMessage());
 		}
 				
 		return assetUrl;
@@ -2873,7 +2873,7 @@ public class BasicTemplateController implements TemplateController
 		}
 		catch(Exception e)
 		{
-			logger.error("\nError on url: " + this.getOriginalFullURL() + "\nAn error occurred trying to get InlineAssetUrl for contentId: " + contentId + " with assetKey: " + assetKey + "\nReason:" + e.getMessage());
+			logger.warn("\nError on url: " + this.getOriginalFullURL() + "\nAn error occurred trying to get InlineAssetUrl for contentId: " + contentId + " with assetKey: " + assetKey + "\nReason:" + e.getMessage());
 		}
 				
 		return assetUrl;
