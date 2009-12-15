@@ -135,7 +135,7 @@ public class SelectiveLivePublicationThread extends PublicationThread
 				    String objectName = cacheEvictionBean.getObjectName();
 					String typeId = cacheEvictionBean.getTypeId();
 					
-				    logger.warn("className:" + className + " objectId:" + objectId + " objectName: " + objectName + " typeId: " + typeId);
+				    logger.info("className:" + className + " objectId:" + objectId + " objectName: " + objectName + " typeId: " + typeId);
 	
 			        boolean isDependsClass = false;
 				    if(className != null && className.equalsIgnoreCase(PublicationDetailImpl.class.getName()))
