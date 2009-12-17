@@ -360,7 +360,9 @@ public class BasicURLComposer extends URLComposer
 			if(deriveProtocolWhenUsingProtocolRedirects == null || deriveProtocolWhenUsingProtocolRedirects.equals("") || !deriveProtocolWhenUsingProtocolRedirects.equals("true") || !deriveProtocolWhenUsingProtocolRedirects.equals("false"))
 				deriveProtocolWhenUsingProtocolRedirects = CmsPropertyHandler.getDeriveProtocolWhenUsingProtocolRedirects();
 			
-			if(deriveProtocolWhenUsingProtocolRedirects.equalsIgnoreCase("true") && CmsPropertyHandler.getOperatingMode().equals("3"))
+			if(logger.isInfoEnabled())
+				logger.info("Scheme:" + deliveryContext.getHttpServletRequest().getScheme());
+			if(deriveProtocolWhenUsingProtocolRedirects.equalsIgnoreCase("true") && CmsPropertyHandler.getOperatingMode().equals("3") && !deliveryContext.getHttpServletRequest().getScheme().equalsIgnoreCase("https"))
 			{
 				NodeDeliveryController nodeDeliveryController = NodeDeliveryController.getNodeDeliveryController(siteNodeId, languageId, contentId);
 		    	Integer protectedSiteNodeVersionId = nodeDeliveryController.getProtectedSiteNodeVersionId(db, siteNodeId);
@@ -450,9 +452,13 @@ public class BasicURLComposer extends URLComposer
         	    	}
     	    	}
 
-
-    	    	logger.info("repositoryPath in constructing new url:" + repositoryPath);    	
-
+    			if(logger.isInfoEnabled())
+    	    	{
+    				logger.info("repositoryPath in constructing new url:" + repositoryPath);    	
+    				logger.info("dnsName:" + dnsName);
+    				logger.info("repositoryPath:" + repositoryPath);
+    	    	}
+    	    	
     		    if(dnsName != null)
     		    {
 	    		    int startIndex = dnsName.indexOf(keyword);
@@ -477,6 +483,13 @@ public class BasicURLComposer extends URLComposer
 	    		    }
     		    }
     		    
+    		    if(logger.isInfoEnabled())
+    		    	logger.info("A4:" + dnsName);
+			    if(deliveryContext.getHttpServletRequest().getScheme().equalsIgnoreCase("https"))
+			    	dnsName = dnsName.replaceFirst(unprotectedProtocolName + "://", protectedProtocolName + "://").replaceFirst(unprotectedProtocolPort, protectedProtocolPort);
+            	if(logger.isInfoEnabled())
+    		    	logger.info("A42:" + dnsName);
+
     		    if(repositoryPath != null)
     		    {
     		    	if(context.startsWith("/"))
@@ -491,6 +504,10 @@ public class BasicURLComposer extends URLComposer
         		    else
         		    	context = dnsName + "/" + context;
         		}
+
+            	if(logger.isInfoEnabled())
+    		    	logger.info("A5:" + context);
+
     		}
     		else
     		{
@@ -532,7 +549,7 @@ public class BasicURLComposer extends URLComposer
 
     		StringBuilder sb = new StringBuilder(256);
 
-            if(deliveryContext.getUseFullUrl() || makeAccessBasedProtocolAdjustments)
+            if((deliveryContext.getUseFullUrl() || makeAccessBasedProtocolAdjustments) && context.indexOf("://") == -1)
 	        {
 		        String originalUrl = deliveryContext.getHttpServletRequest().getRequestURL().toString();
 	            int indexOfProtocol = originalUrl.indexOf("://");
@@ -641,6 +658,8 @@ public class BasicURLComposer extends URLComposer
 			    if(operatingMode.equalsIgnoreCase("3"))
 			        keyword = "live=";
 			    
+			    if(logger.isInfoEnabled())
+    		    	logger.info("dnsName:" + dnsName);
 			    if(dnsName != null)
 			    {
 	    		    int startIndex = dnsName.indexOf(keyword);
@@ -665,6 +684,9 @@ public class BasicURLComposer extends URLComposer
 	    		    }
 			    }
 
+			    if(deliveryContext.getHttpServletRequest().getScheme().equalsIgnoreCase("https"))
+					url = url.replaceFirst(unprotectedProtocolName + "://", protectedProtocolName + "://").replaceFirst(unprotectedProtocolPort, protectedProtocolPort);
+			    
 	            String context = CmsPropertyHandler.getServletContext();
 
 	            url = dnsName + context + "/" + CmsPropertyHandler.getApplicationBaseAction() + "?" + arguments;
@@ -716,7 +738,12 @@ public class BasicURLComposer extends URLComposer
             }
         }
         
-        logger.info("url:" + url);
+        if(logger.isInfoEnabled())
+    	{
+    		logger.info("url:" + url);
+    		logger.info("makeAccessBasedProtocolAdjustments:" + makeAccessBasedProtocolAdjustments);
+        }
+        
         if(makeAccessBasedProtocolAdjustments)
         {
         	if(logger.isInfoEnabled())
