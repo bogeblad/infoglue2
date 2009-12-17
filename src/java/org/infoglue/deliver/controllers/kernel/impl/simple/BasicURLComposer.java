@@ -68,10 +68,11 @@ public class BasicURLComposer extends URLComposer
     public String composeDigitalAssetUrl(String dnsName, Integer siteNodeId, Integer contentId, Integer languageId, String assetKey, DeliveryContext deliveryContext, Database db) throws Exception
     {
     	ContentVO contentVO = ContentController.getContentController().getContentVOWithId(contentId, db);
-    	String repositoryUseAccessBasedProtocolRedirects = RepositoryDeliveryController.getRepositoryDeliveryController().getExtraPropertyValue(contentVO.getRepositoryId(), "useAccessBasedProtocolRedirects");
-		if(repositoryUseAccessBasedProtocolRedirects == null || repositoryUseAccessBasedProtocolRedirects.equals("") || !repositoryUseAccessBasedProtocolRedirects.equals("true") || !repositoryUseAccessBasedProtocolRedirects.equals("false"))
-			repositoryUseAccessBasedProtocolRedirects = CmsPropertyHandler.getUseAccessBasedProtocolRedirects();
-    	
+   
+    	String deriveProtocolWhenUsingProtocolRedirects = RepositoryDeliveryController.getRepositoryDeliveryController().getExtraPropertyValue(contentVO.getRepositoryId(), "deriveProtocolWhenUsingProtocolRedirects");
+		if(deriveProtocolWhenUsingProtocolRedirects == null || deriveProtocolWhenUsingProtocolRedirects.equals("") || !deriveProtocolWhenUsingProtocolRedirects.equals("true") || !deriveProtocolWhenUsingProtocolRedirects.equals("false"))
+			deriveProtocolWhenUsingProtocolRedirects = CmsPropertyHandler.getDeriveProtocolWhenUsingProtocolRedirects();
+		
 		String protectedProtocolName = CmsPropertyHandler.getProtectedProtocolName();
 		String protectedProtocolPort = CmsPropertyHandler.getProtectedProtocolPort();
 		String unprotectedProtocolPort = CmsPropertyHandler.getUnprotectedProtocolPort();
@@ -90,7 +91,7 @@ public class BasicURLComposer extends URLComposer
         if(useDNSNameInUrls == null || useDNSNameInUrls.equalsIgnoreCase(""))
             useDNSNameInUrls = "false";
 
-        if(repositoryUseAccessBasedProtocolRedirects.equalsIgnoreCase("true"))
+        if(deriveProtocolWhenUsingProtocolRedirects.equalsIgnoreCase("true"))
         {
         	StringBuilder sb = new StringBuilder(256);
 	        
@@ -355,17 +356,16 @@ public class BasicURLComposer extends URLComposer
 		{
 	        SiteNodeVO siteNodeVO = SiteNodeController.getController().getSmallSiteNodeVOWithId(siteNodeId, db);
 	
-	        String repositoryUseAccessBasedProtocolRedirects = RepositoryDeliveryController.getRepositoryDeliveryController().getExtraPropertyValue(siteNodeVO.getRepositoryId(), "useAccessBasedProtocolRedirects");
-			if(repositoryUseAccessBasedProtocolRedirects == null || repositoryUseAccessBasedProtocolRedirects.equals("") || !repositoryUseAccessBasedProtocolRedirects.equals("true") || !repositoryUseAccessBasedProtocolRedirects.equals("false"))
-				repositoryUseAccessBasedProtocolRedirects = CmsPropertyHandler.getUseAccessBasedProtocolRedirects();
+	        String deriveProtocolWhenUsingProtocolRedirects = RepositoryDeliveryController.getRepositoryDeliveryController().getExtraPropertyValue(siteNodeVO.getRepositoryId(), "deriveProtocolWhenUsingProtocolRedirects");
+			if(deriveProtocolWhenUsingProtocolRedirects == null || deriveProtocolWhenUsingProtocolRedirects.equals("") || !deriveProtocolWhenUsingProtocolRedirects.equals("true") || !deriveProtocolWhenUsingProtocolRedirects.equals("false"))
+				deriveProtocolWhenUsingProtocolRedirects = CmsPropertyHandler.getDeriveProtocolWhenUsingProtocolRedirects();
 			
-			if(repositoryUseAccessBasedProtocolRedirects.equalsIgnoreCase("true") && CmsPropertyHandler.getOperatingMode().equals("3"))
+			if(deriveProtocolWhenUsingProtocolRedirects.equalsIgnoreCase("true") && CmsPropertyHandler.getOperatingMode().equals("3"))
 			{
 				NodeDeliveryController nodeDeliveryController = NodeDeliveryController.getNodeDeliveryController(siteNodeId, languageId, contentId);
 		    	Integer protectedSiteNodeVersionId = nodeDeliveryController.getProtectedSiteNodeVersionId(db, siteNodeId);
 		    	String originalFullURL = deliveryContext.getOriginalFullURL();
 		    	
-		    	//System.out.println("protectedSiteNodeVersionId:" + protectedSiteNodeVersionId);
 		    	boolean isAnonymousAccepted = true;
 		    	if(protectedSiteNodeVersionId != null)
 		    	{

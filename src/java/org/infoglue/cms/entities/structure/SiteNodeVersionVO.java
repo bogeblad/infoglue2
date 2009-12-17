@@ -42,7 +42,12 @@ public class SiteNodeVersionVO implements BaseEntityVO
 	public static final Integer NO 			= new Integer(0);
 	public static final Integer YES 		= new Integer(1);
 	public static final Integer INHERITED 	= new Integer(2);
-	
+
+	public static final Integer INHERIT_SECURE 	= new Integer(0);
+	public static final Integer NORMAL_SECURE 	= new Integer(1);
+	public static final Integer ALLOW_SECURE 	= new Integer(2);
+	public static final Integer FORCE_SECURE 	= new Integer(3);
+
     private Integer siteNodeVersionId;
     private Integer stateId       		= WORKING_STATE;
     private Integer versionNumber 		= new Integer(1);
@@ -57,6 +62,7 @@ public class SiteNodeVersionVO implements BaseEntityVO
 	private Integer disableEditOnSight	= INHERITED;
 	private Integer disableLanguages    = INHERITED;
 	private Integer disableForceIdentityCheck = INHERITED;
+	private Integer forceProtocolChange = INHERIT_SECURE;
 	private String contentType 			= "text/html";
   	private String pageCacheKey			= "default";
   	private String pageCacheTimeout		= null;
@@ -239,6 +245,16 @@ public class SiteNodeVersionVO implements BaseEntityVO
 		this.disableForceIdentityCheck = disableForceIdentityCheck;
 	}
 
+	public Integer getForceProtocolChange()
+	{
+		return forceProtocolChange;
+	}
+
+	public void setForceProtocolChange(Integer forceProtocolChange)
+	{
+		this.forceProtocolChange = forceProtocolChange;
+	}
+
 	public String getVersionModifier()
 	{
 		return this.versionModifier;
@@ -276,6 +292,7 @@ public class SiteNodeVersionVO implements BaseEntityVO
 	    sb.append("disableEditOnSight:" + disableEditOnSight + '\n');
 	    sb.append("disableLanguages:" + disableLanguages + '\n');
 	    sb.append("disableForceIdentityCheck:" + disableForceIdentityCheck + '\n');
+	    sb.append("forceProtocolChange:" + forceProtocolChange + '\n');
 	    sb.append("contentType:" + contentType + '\n');
 	    sb.append("pageCacheKey:" + pageCacheKey + '\n');
 	    sb.append("pageCacheTimeout:" + pageCacheTimeout + '\n');

@@ -233,14 +233,16 @@
 	
 	function onOk(contentId, assetKey, assetUrl)
 	{
+		var decodedAssetKey = decodeURIComponent(assetKey);
 		//alert("Adding contentId:" + contentId + " and assetKey:" + assetKey + " and assetUrl:" + assetUrl);
+		//alert("decodedAssetKey:" + decodedAssetKey);
 		if(contentId == '' || contentId == '${select}' || assetKey == '')
 		{
 			alert("You must choose a content and a asset before you can save");
 		}
 		else
 		{
-			var binding = new AssetBinding(contentId, assetKey, assetUrl);
+			var binding = new AssetBinding(contentId, decodedAssetKey, assetUrl);
 			siteNodesVector.addElement(binding);
 			drawList();
 		}

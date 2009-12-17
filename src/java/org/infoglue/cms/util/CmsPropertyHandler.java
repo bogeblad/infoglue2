@@ -1910,6 +1910,11 @@ public class CmsPropertyHandler
 	{
 		return getServerNodeProperty("useAccessBasedProtocolRedirects", true, "false");
 	}
+	
+	public static String getDeriveProtocolWhenUsingProtocolRedirects()
+	{
+		return getServerNodeProperty("deriveProtocolWhenUsingProtocolRedirects", true, "true");
+	}
 
 	public static String getUnprotectedProtocolName()
 	{

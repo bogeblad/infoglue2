@@ -24,6 +24,7 @@
 package org.infoglue.cms.applications.managementtool.actions;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -36,6 +37,7 @@ import org.infoglue.cms.controllers.kernel.impl.simple.UserControllerProxy;
 import org.infoglue.cms.entities.management.ContentTypeDefinitionVO;
 import org.infoglue.cms.security.InfoGlueGroup;
 import org.infoglue.cms.util.CmsPropertyHandler;
+import org.infoglue.cms.util.sorters.ReflectionComparator;
 
 public class ViewGroupAction extends InfoGlueAbstractAction
 {
@@ -118,6 +120,8 @@ public class ViewGroupAction extends InfoGlueAbstractAction
 	
 	public List getAssignedInfoGluePrincipals() throws Exception
 	{
+	    Collections.sort(this.assignedInfoGluePrincipals, new ReflectionComparator("name"));
+
 		return this.assignedInfoGluePrincipals;
 	}
 

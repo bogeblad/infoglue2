@@ -147,9 +147,13 @@ public class ViewContentAction extends InfoGlueAbstractAction
         {
             throw ce;
         }
+        catch(SystemException e) 
+        {
+            logger.warn("Could not show content:" + e.getMessage());
+        }
         catch(Exception e) 
         {
-            e.printStackTrace();
+            logger.error("Error showing content:" + e.getMessage(), e);
         }
         
         return Action.NONE;

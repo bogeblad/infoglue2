@@ -469,6 +469,22 @@ public class ViewContentVersionAction extends InfoGlueAbstractAction
 		
 		this.repositories = RepositoryController.getController().getAuthorizedRepositoryVOList(this.getInfoGluePrincipal(), true);
 
+		if(this.assetKey != null)
+		{
+			logger.info("this.assetKey before:" + this.assetKey);
+
+			String fromEncoding = CmsPropertyHandler.getAssetKeyFromEncoding();
+			if(fromEncoding == null)
+				fromEncoding = "iso-8859-1";
+			
+			String toEncoding = CmsPropertyHandler.getAssetKeyToEncoding();
+			if(toEncoding == null)
+				toEncoding = "utf-8";
+			
+			this.assetKey = new String(assetKey.getBytes(fromEncoding), toEncoding);
+			logger.info("this.assetKey after conversion:" + this.assetKey);
+		}
+
 		return "viewAssetBrowserForComponentBindingV3";
 	}
 
@@ -887,8 +903,8 @@ public class ViewContentVersionAction extends InfoGlueAbstractAction
        			while(digitalAssetsIterator.hasNext())
        			{
        				DigitalAssetVO assetVO = (DigitalAssetVO)digitalAssetsIterator.next();
-       				//if(!assetVO.getAssetContentType().matches(this.assetTypeFilter))
-	     			if(!this.assetTypeFilter.equals("*") && this.assetTypeFilter.indexOf(assetVO.getAssetContentType()) == -1)
+       				System.out.println("assetVO:" + assetVO.getAssetKey() + " - " + assetVO.getAssetContentType() + " VS " + this.assetTypeFilter);
+       				if(!this.assetTypeFilter.equals("*") && this.assetTypeFilter.indexOf(assetVO.getAssetContentType()) == -1)
        				{
        					digitalAssetsIterator.remove();
        				}

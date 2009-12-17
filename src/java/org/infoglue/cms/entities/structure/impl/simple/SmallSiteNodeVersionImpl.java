@@ -265,6 +265,16 @@ public class SmallSiteNodeVersionImpl extends SiteNodeVersionImpl
 		this.valueObject.setDisableForceIdentityCheck(disableForceIdentityCheck);
 	}
 
+	public Integer getForceProtocolChange()
+	{
+		return this.valueObject.getForceProtocolChange();
+	}
+
+	public void setForceProtocolChange(Integer forceProtocolChange)
+	{
+		this.valueObject.setForceProtocolChange(forceProtocolChange);
+	}
+
 	public void setSiteNodeId(Integer siteNodeId)
 	{
 		this.valueObject.setSiteNodeId(siteNodeId);

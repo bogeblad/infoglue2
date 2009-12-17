@@ -117,7 +117,7 @@ Filter:
 	#set($denyUrlStart = "<a title='Deny content, $publicationName, and send it back to content provider' href=")
 	#set($denyUrlEnd="><img src=images/deny.gif border=0></a>")
 
-	#set($rowUrl = "ViewContent.action?contentId=$contentVO.getContentId()&title=Content%20details")
+	#set($detailUrl = "")
 
 	#if($publicationEvent.entityClass.indexOf("ContentVersion") > -1)
 		#if($publicationEvent.typeId == 3)
@@ -125,12 +125,16 @@ Filter:
 		#else
 			#set($icon = "<img src='images/tree/contentItem.gif' border=0>")
 		#end
+		#set($owningContent = $this.getOwningContent($publicationEvent.entityId))
+		#set($detailUrl = "ViewContent.action?contentId=$owningContent.id")
 	#else
 		#if($publicationEvent.typeId == 3)
 			#set($icon = "<img src='images/tree/unpublishSiteNodeItem.gif' border=0>")
 		#else
 			#set($icon = "<img src='images/tree/siteNodeItem.gif' border=0>")
 		#end
+		#set($owningSiteNode = $this.getOwningSiteNode($publicationEvent.entityId))
+		#set($detailUrl = "ViewSiteNode.action?siteNodeId=$owningSiteNode.id")
 	#end
 
 	#if($publicationEvent.description.length() > 50)
@@ -146,8 +150,8 @@ Filter:
 	#end
 	#set($modifiedDate = $formatter.formatDate($publicationEvent.creationDateTime, "yyyy-MM-dd HH:mm"))
 	##set( $row = ["$icon $publicationEvent.name ($description)","$modifiedDate", "$denyUrlStart$deny$denyUrlEnd"] )
-	#set($span = "<span onmouseover='return overlib(${fnutt}${formatter.cleanForJavascriptStrings($publicationEvent.description)}${fnutt}, WIDTH, 400, BGCOLOR, ${fnutt}#FFFFFF${fnutt});' onmouseout='return nd();'>($description)</span>")
-	#set( $row = ["$icon $publicationEvent.name $span", "$modifiedDate", "$creatorDisplayName"] )
+	#set($span = "<span onmouseover='return overlib(${fnutt}${formatter.cleanForJavascriptStrings($publicationEvent.description)}${fnutt}, WIDTH, 400, BGCOLOR, ${fnutt}#FFFFFF${fnutt});' onmouseout='return nd();'>($cId) - $description</span>")
+	#set( $row = ["$icon <a href='$detailUrl' target='_blank'>$publicationEvent.name</a> $span", "$modifiedDate", "$creatorDisplayName"] )
 	#set($cnt = $cnt + 1)
 
 	#lvAddRow($row $cnt $cId)

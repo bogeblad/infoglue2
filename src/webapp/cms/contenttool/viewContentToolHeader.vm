@@ -105,6 +105,22 @@
     		return false;
     	}
 		
+		function postContentIdSearchForm()
+		{
+			var contentId = document.searchForm.contentIdField.value;
+
+			var agt=navigator.userAgent.toLowerCase();
+    		if(agt.indexOf("safari")!=-1)
+    		{
+				parent.frames[3].document.location = "ViewContent.action?contentId=" + contentId;
+    		}
+    		else
+    		{
+				parent.frames["main"].document.location.href = "ViewContent.action?contentId=" + contentId;
+    		}
+    		
+			return false;
+		}
 	</script>
 	
 	<link rel="stylesheet" type="text/css" href="css/cms.css" /> 
@@ -147,9 +163,14 @@
 			<input type="hidden" name="repositoryId" value="$!repositoryId" />	
 			<input type="text" class="searchfield" name="searchString" value="" style="vertical-align:top"  />
 			<img src="images/trans.gif" width="5" height="19" />
-			<img onclick="return postSearchForm();" src="$ui.getString("images.contenttool.ok")" width="31px" height="19px" border="0"/>
+			<img onclick="return postSearchForm();" src="$ui.getString("images.contenttool.ok")" width="31" height="19" border="0"/>
 			<img src="images/trans.gif" width="5" height="19"/>
 			<img onclick="return openSearchForm();" src="$ui.getString("images.contenttool.advanced")" width="62" height="19" border="0"/>
+			<img src="images/trans.gif" width="5" height="19"/>
+			<img src="$ui.getString("images.contenttool.jumpToContentLabel")" width="54" height="19" />
+			<input type="text" class="contentIdField" name="contentIdField" value="" style="vertical-align:top;" />
+			<img src="images/trans.gif" width="5" height="19" />
+			<img onclick="return postContentIdSearchForm();" src="$ui.getString("images.contenttool.jumpToContentId")" width="34" height="19" border="0"/>
 		</form>
 	</td>
 	<td class="toolheader" width="70%"><img src="images/trans.gif" width="1" height="1" /></td>

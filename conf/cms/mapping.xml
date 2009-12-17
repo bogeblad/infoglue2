@@ -386,6 +386,9 @@
     <field name="disableForceIdentityCheck" type="java.lang.Integer">
       <sql name="disableForceIDCheck" type="integer" dirty="check" />
     </field>
+    <field name="forceProtocolChange" type="java.lang.Integer">
+      <sql name="forceProtocolChange" type="integer" dirty="check" />
+    </field>
     <field name="owningSiteNode" type="org.infoglue.cms.entities.structure.impl.simple.SiteNodeImpl">
       <sql name="siteNodeId"/>
     </field>
@@ -446,6 +449,9 @@
     </field>
     <field name="disableForceIdentityCheck" type="java.lang.Integer">
       <sql name="disableForceIDCheck" type="integer" dirty="check" />
+    </field>
+    <field name="forceProtocolChange" type="java.lang.Integer">
+      <sql name="forceProtocolChange" type="integer" dirty="check" />
     </field>
     <field name="siteNodeId" type="java.lang.Integer">
       <sql name="siteNodeId"/>

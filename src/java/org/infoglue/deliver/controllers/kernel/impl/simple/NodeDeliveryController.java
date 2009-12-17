@@ -1002,6 +1002,47 @@ public class NodeDeliveryController extends BaseDeliveryController
 		return protectedSiteNodeVersionId;
 	}
 
+	/**
+	 * This method returns the id of the siteNodeVersion that is protected if any.
+	 */
+	
+	public Integer getForceProtocolChangeSettingForPageCache(Database db, Integer siteNodeId)
+	{
+		if(siteNodeId != null && this.deliveryContext != null)
+			this.deliveryContext.addUsedSiteNode("siteNode_" + siteNodeId);
+
+		Integer forceProtocolChangeSetting = SiteNodeVersionVO.NORMAL_SECURE;
+		
+		if(getOperatingMode() == 3)
+		{
+			try
+			{
+				SiteNodeVersionVO siteNodeVersionVO = this.getLatestActiveSiteNodeVersionVOForPageCache(db, siteNodeId);
+				if(siteNodeVersionVO != null && siteNodeVersionVO.getForceProtocolChange() != null)
+				{	
+					//System.out.println("siteNodeVersionVO:" + siteNodeVersionVO.getId() + ":" + siteNodeVersionVO.getForceProtocolChange());
+					if(logger.isInfoEnabled())
+						logger.info("siteNodeVersionVO:" + siteNodeVersionVO.getId() + ":" + siteNodeVersionVO.getForceProtocolChange());
+					
+					if(siteNodeVersionVO.getForceProtocolChange().intValue() != SiteNodeVersionVO.INHERIT_SECURE.intValue())
+						forceProtocolChangeSetting = siteNodeVersionVO.getForceProtocolChange();
+					else
+					{
+						SiteNodeVO parentSiteNode = this.getParentSiteNodeForPageCache(db, siteNodeId);
+						if(parentSiteNode != null)
+							forceProtocolChangeSetting = getForceProtocolChangeSettingForPageCache(db, parentSiteNode.getSiteNodeId()); 
+					}
+				}
+			}
+			catch(Exception e)
+			{
+				logger.warn("An error occurred trying to get if the siteNodeVersion has forceProtocolChangeSetting:" + e.getMessage(), e);
+			}
+		}
+		
+		return forceProtocolChangeSetting;
+	}
+
 	
 	/**
 	 * This method returns the id of the siteNodeVersion that has disabled languages if any.

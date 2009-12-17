@@ -89,6 +89,10 @@ public interface SiteNodeVersion extends IBaseEntity
 
 	public void setDisableForceIdentityCheck(Integer disableForceIdentityCheck);
 
+	public Integer getForceProtocolChange();
+
+	public void setForceProtocolChange(Integer forceProtocolChange);
+
 	public Integer getIsProtected();
 
 	public void setIsProtected(Integer isProtected);

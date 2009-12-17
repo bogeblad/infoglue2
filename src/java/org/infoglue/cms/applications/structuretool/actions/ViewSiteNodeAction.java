@@ -672,6 +672,16 @@ public class ViewSiteNodeAction extends InfoGlueAbstractAction
 		this.siteNodeVersionVO.setDisableForceIdentityCheck(disableForceIdentityCheck);
 	}
 
+	public Integer getForceProtocolChange()
+	{
+		return this.siteNodeVersionVO.getForceProtocolChange();
+	}
+
+	public void setForceProtocolChange(Integer forceProtocolChange)
+	{
+		this.siteNodeVersionVO.setForceProtocolChange(forceProtocolChange);
+	}
+
 
 	public Integer getDisableLanguages()
 	{
@@ -938,6 +948,15 @@ public class ViewSiteNodeAction extends InfoGlueAbstractAction
 		}
 		
 		return eventVO;
+	}
+	
+	public Boolean getUseAccessBasedProtocolRedirects()
+	{
+		String useAccessBasedProtocolRedirects = CmsPropertyHandler.getUseAccessBasedProtocolRedirects();
+		if(useAccessBasedProtocolRedirects.equalsIgnoreCase("true"))
+			return true;
+		else
+			return false;
 	}
 	
 	public SiteNodeVersionVO getSiteNodeVersionVO()

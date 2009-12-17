@@ -239,6 +239,8 @@ public class ViewPageAction extends InfoGlueAbstractAction
 				    	
 	    	boolean isUserRedirected = false;
 			Integer protectedSiteNodeVersionId = this.nodeDeliveryController.getProtectedSiteNodeVersionIdForPageCache(dbWrapper.getDatabase(), siteNodeId);
+			Integer forceProtocolChangeSetting = this.nodeDeliveryController.getForceProtocolChangeSettingForPageCache(dbWrapper.getDatabase(), siteNodeId);
+			//System.out.println("forceProtocolChangeSetting:" + forceProtocolChangeSetting);
 			
 			if(logger.isInfoEnabled())
 				logger.info("protectedSiteNodeVersionId:" + protectedSiteNodeVersionId);
@@ -252,7 +254,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
 			else if(protectPreview.equals("true") && CmsPropertyHandler.getOperatingMode().equals("2"))
 				protectDeliver = true;
 
-			isUserRedirected = handleAccessBasedProtocolRedirect(protectedSiteNodeVersionId, this.repositoryId, dbWrapper.getDatabase());
+			isUserRedirected = handleAccessBasedProtocolRedirect(protectedSiteNodeVersionId, this.repositoryId, forceProtocolChangeSetting, dbWrapper.getDatabase());
 			
 			if(!isUserRedirected)
 			{
@@ -516,7 +518,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
      * @return
      * @throws IOException
      */
-	private boolean handleAccessBasedProtocolRedirect(Integer protectedSiteNodeVersionId, Integer repositoryId, Database db)
+	private boolean handleAccessBasedProtocolRedirect(Integer protectedSiteNodeVersionId, Integer repositoryId, Integer forceProtocolChangeSetting, Database db)
 	{
 		boolean isUserRedirected = false;
 		
@@ -525,7 +527,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
 			String repositoryUseAccessBasedProtocolRedirects = RepositoryDeliveryController.getRepositoryDeliveryController().getExtraPropertyValue(repositoryId, "useAccessBasedProtocolRedirects");
 			if(repositoryUseAccessBasedProtocolRedirects == null || repositoryUseAccessBasedProtocolRedirects.equals("") || !repositoryUseAccessBasedProtocolRedirects.equals("true") || !repositoryUseAccessBasedProtocolRedirects.equals("false"))
 				repositoryUseAccessBasedProtocolRedirects = CmsPropertyHandler.getUseAccessBasedProtocolRedirects();
-			
+
 			//String useAccessBasedProtocolRedirectsString = CmsPropertyHandler.getUseAccessBasedProtocolRedirects();
 			String unprotectedProtocolName = CmsPropertyHandler.getUnprotectedProtocolName();
 			String unprotectedProtocolPort = CmsPropertyHandler.getUnprotectedProtocolPort();
@@ -544,7 +546,9 @@ public class ViewPageAction extends InfoGlueAbstractAction
 			if(repositoryUseAccessBasedProtocolRedirects.equals("true") && CmsPropertyHandler.getOperatingMode().equals("3"))
 				useAccessBasedProtocolRedirects = true;
 			
-			if(useAccessBasedProtocolRedirects)
+			//System.out.println("\n\nuseAccessBasedProtocolRedirects 2:" + useAccessBasedProtocolRedirects);
+			//System.out.println("forceProtocolChangeSetting 2:" + forceProtocolChangeSetting);
+			if(useAccessBasedProtocolRedirects || forceProtocolChangeSetting.equals(SiteNodeVersionVO.FORCE_SECURE))
 			{
 				String originalFullURL = getOriginalFullURL();
 				//System.out.println("originalFullURL:" + originalFullURL);
@@ -555,7 +559,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
 					isAnonymousAccepted = AccessRightController.getController().getIsPrincipalAuthorized(db, (InfoGluePrincipal)anonymousPrincipal, "SiteNodeVersion.Read", protectedSiteNodeVersionId.toString());
 		    	}
 		    	
-		    	if(protectedSiteNodeVersionId != null && !isAnonymousAccepted)
+		    	if((protectedSiteNodeVersionId != null && !isAnonymousAccepted) || forceProtocolChangeSetting.equals(SiteNodeVersionVO.FORCE_SECURE))
 				{
 					if(originalFullURL.indexOf(unprotectedProtocolName + "://") > -1)
 					{	
@@ -567,13 +571,16 @@ public class ViewPageAction extends InfoGlueAbstractAction
 				}
 				else
 				{
-					if(originalFullURL.indexOf(protectedProtocolName + "://") > -1)
-					{	
-						String redirectUrl = originalFullURL.replaceFirst(protectedProtocolName + "://", unprotectedProtocolName + "://").replaceFirst(protectedProtocolPort, unprotectedProtocolPort);;
-						getResponse().setStatus(new Integer(accessBasedProtocolRedirectHTTPCode));
-						getResponse().sendRedirect(redirectUrl);
-						logger.info("Redirecting user to:" + redirectUrl);
-						isUserRedirected = true;
+					if(!forceProtocolChangeSetting.equals(SiteNodeVersionVO.ALLOW_SECURE))
+					{
+						if(originalFullURL.indexOf(protectedProtocolName + "://") > -1)
+						{	
+							String redirectUrl = originalFullURL.replaceFirst(protectedProtocolName + "://", unprotectedProtocolName + "://").replaceFirst(protectedProtocolPort, unprotectedProtocolPort);;
+							getResponse().setStatus(new Integer(accessBasedProtocolRedirectHTTPCode));
+							getResponse().sendRedirect(redirectUrl);
+							logger.info("Redirecting user to:" + redirectUrl);
+							isUserRedirected = true;
+						}
 					}
 				}
 			}

@@ -62,6 +62,21 @@
 </form>
 </div>
 
+<div style="color: black; margin-left: 32px; margin-top: 10px; margin-bottom: 10px;">
+#if($slotId > 0)
+#set($previousSlotId = $slotId - 1)
+<a href="ViewListSystemUser.action?slotId=$previousSlotId">Previous</a>
+#end
+#foreach($additionalSlotId in [0..$numberOfSlots])
+	#if($slotId == $additionalSlotId)<span style="font-weight: bold; border: 1px solid black; color: red; padding: 2px;">$additionalSlotId</span>
+	#else<a href="ViewListSystemUser.action?slotId=$additionalSlotId">$additionalSlotId</a>#end
+#end
+#if($slotId < $numberOfSlots)
+#set($nextSlotId = $slotId + 1)
+ <a href="ViewListSystemUser.action?slotId=$nextSlotId">Next</a>
+#end
+</div>
+
 #set($lvConstraint = 1) 
 #lvHead(["Username", "Full Name","Defined Roles"] "tool.managementtool.deleteSystemUsers.header" "DeleteSystemUser.action" "ViewListSystemUser.action?title=SystemUsers" "tool.managementtool.deleteSystemUsers.text")
 
@@ -77,21 +92,19 @@
 
 #lvEnd()
 
-<div style="color: black; padding-left: 32px;">
-<br/>
+<div style="color: black; margin-left: 32px; margin-top: 10px; margin-bottom: 10px;">
 #if($slotId > 0)
 #set($previousSlotId = $slotId - 1)
 <a href="ViewListSystemUser.action?slotId=$previousSlotId">Previous</a>
 #end
 #foreach($additionalSlotId in [0..$numberOfSlots])
-	#if($slotId == $additionalSlotId)<strong>$additionalSlotId</strong>
+	#if($slotId == $additionalSlotId)<span style="font-weight: bold; border: 1px solid black; color: red; padding: 2px;">$additionalSlotId</span>
 	#else<a href="ViewListSystemUser.action?slotId=$additionalSlotId">$additionalSlotId</a>#end
 #end
 #if($slotId < $numberOfSlots)
 #set($nextSlotId = $slotId + 1)
  <a href="ViewListSystemUser.action?slotId=$nextSlotId">Next</a>
 #end
-<br/>
 </div>
 
 <script type="text/javascript">

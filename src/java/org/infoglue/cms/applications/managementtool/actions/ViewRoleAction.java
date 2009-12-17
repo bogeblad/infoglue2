@@ -25,6 +25,7 @@ package org.infoglue.cms.applications.managementtool.actions;
 
 import java.net.URLDecoder;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -36,6 +37,7 @@ import org.infoglue.cms.controllers.kernel.impl.simple.UserControllerProxy;
 import org.infoglue.cms.entities.management.ContentTypeDefinitionVO;
 import org.infoglue.cms.security.InfoGlueRole;
 import org.infoglue.cms.util.CmsPropertyHandler;
+import org.infoglue.cms.util.sorters.ReflectionComparator;
 
 public class ViewRoleAction extends InfoGlueAbstractAction
 {
@@ -118,7 +120,9 @@ public class ViewRoleAction extends InfoGlueAbstractAction
 	
 	public List getAssignedInfoGluePrincipals() throws Exception
 	{
-		return this.assignedInfoGluePrincipals;
+	    Collections.sort(this.assignedInfoGluePrincipals, new ReflectionComparator("name"));
+
+	    return this.assignedInfoGluePrincipals;
 	}
 
 	public List getAssignedContentTypeDefinitionVOList()
