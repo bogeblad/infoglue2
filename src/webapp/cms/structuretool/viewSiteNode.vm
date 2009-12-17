@@ -227,7 +227,7 @@ function changeSiteNodeState(siteNodeVersionId)
 	<tr>
 		<td>
 			$ui.getString("entity.SiteNode.forceProtocolChange.label")<br>
-			<select name="forceProtocolChange" style="width: 115px;">
+			<select name="forceProtocolChange" style="width: 250px;">
 				<option value="0" #if($!forceProtocolChange == 0) selected="1" #end $readonly> $ui.getString("tool.common.inherit")</option>	
 				<option value="1" #if($!forceProtocolChange == 1) selected="1" #end $readonly> $ui.getString("entity.SiteNode.forceProtocolChangeNormallabel")</option>	
 				<option value="2" #if($!forceProtocolChange == 2) selected="1" #end $readonly> $ui.getString("entity.SiteNode.forceProtocolChangeAllowSecurelabel")</option>	
