@@ -1913,7 +1913,7 @@ public class CmsPropertyHandler
 	
 	public static String getDeriveProtocolWhenUsingProtocolRedirects()
 	{
-		return getServerNodeProperty("deriveProtocolWhenUsingProtocolRedirects", true, "true");
+		return getServerNodeProperty("deriveProtocolWhenUsingProtocolRedirects", true, "false");
 	}
 
 	public static String getUnprotectedProtocolName()

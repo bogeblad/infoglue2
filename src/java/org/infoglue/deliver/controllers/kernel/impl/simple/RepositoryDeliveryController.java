@@ -172,7 +172,11 @@ public class RepositoryDeliveryController extends BaseDeliveryController
             	int protocolIndex = dnsName.indexOf("://");
                 if(protocolIndex > -1)
                     dnsName = dnsName.substring(protocolIndex + 3);
-                
+
+            	int portIndex = dnsName.indexOf(":");
+                if(portIndex > -1)
+                    dnsName = dnsName.substring(0, portIndex);
+
                 logger.info("Matching only server name - removed protocol if there:" + dnsName);
                 
             	if((dnsName.indexOf(":") == -1 && dnsName.indexOf(serverName) == 0) || dnsName.indexOf(serverName + ":" + portNumber) == 0)
