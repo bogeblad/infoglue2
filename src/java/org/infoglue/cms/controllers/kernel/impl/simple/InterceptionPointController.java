@@ -93,6 +93,7 @@ public class InterceptionPointController extends BaseController
 	    systemInterceptionPoints.put("ContentVersion.Publish", new InterceptionPointVO("ContentVersion", "ContentVersion.Publish", "Intercepts the direct publishing of a content version", true));
 	    
 	    systemInterceptionPoints.put("Repository.Read", new InterceptionPointVO("Repository", "Repository.Read", "Gives a user access to look at a repository", true));
+	    systemInterceptionPoints.put("Repository.Write", new InterceptionPointVO("Repository", "Repository.Write", "Gives a user possible access to write in the repository", true));
 	    systemInterceptionPoints.put("Repository.ReadForBinding", new InterceptionPointVO("Repository", "Repository.ReadForBinding", "This point intercepts when a user tries to read the repository in a binding dialog", true));
 	    
 	    systemInterceptionPoints.put("SiteNodeVersion.Read", new InterceptionPointVO("SiteNodeVersion", "SiteNodeVersion.Read", "Intercepts the read of a SiteNodeVersion", true));

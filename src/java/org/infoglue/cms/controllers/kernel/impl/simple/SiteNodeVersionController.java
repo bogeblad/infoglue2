@@ -1112,7 +1112,7 @@ public class SiteNodeVersionController extends BaseController
 		                boolean allowedSiteNodeVersion = repositoryId.intValue() == siteNodeRepositoryId.intValue();
 		                if(CmsPropertyHandler.getAllowCrossSiteSubmitToPublish().equalsIgnoreCase("true"))
 		                {
-		                	if(AccessRightController.getController().getIsPrincipalAuthorized(db, principal, "Repository.Read", "" + repositoryId))
+		                	if(AccessRightController.getController().getIsPrincipalAuthorized(db, principal, "Repository.Read", "" + repositoryId) || AccessRightController.getController().getIsPrincipalAuthorized(db, principal, "Repository.Write", "" + repositoryId))
 		                	{
 		            			Integer protectedSiteNodeVersionId = SiteNodeVersionControllerProxy.getSiteNodeVersionControllerProxy().getProtectedSiteNodeVersionId(relatedSiteNodeVersion.getId(), db);
 		            			if(protectedSiteNodeVersionId == null || AccessRightController.getController().getIsPrincipalAuthorized(principal, "SiteNodeVersion.SubmitToPublish", protectedSiteNodeVersionId.toString()))
@@ -1145,7 +1145,7 @@ public class SiteNodeVersionController extends BaseController
 			                boolean allowedContent = repositoryId.intValue() == siteNodeRepositoryId.intValue();
 			                if(CmsPropertyHandler.getAllowCrossSiteSubmitToPublish().equalsIgnoreCase("true"))
 			                {
-			                	if(AccessRightController.getController().getIsPrincipalAuthorized(db, principal, "Repository.Read", "" + repositoryId))
+			                	if(AccessRightController.getController().getIsPrincipalAuthorized(db, principal, "Repository.Read", "" + repositoryId) || AccessRightController.getController().getIsPrincipalAuthorized(db, principal, "Repository.Write", "" + repositoryId))
 			                	{
 				                	Integer protectedContentId = ContentControllerProxy.getController().getProtectedContentId(relatedContent.getId(), db);
 				        			if(protectedContentId == null || AccessRightController.getController().getIsPrincipalAuthorized(db, principal, "Content.SubmitToPublish", protectedContentId.toString()))

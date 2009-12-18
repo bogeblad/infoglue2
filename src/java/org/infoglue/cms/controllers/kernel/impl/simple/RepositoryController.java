@@ -307,13 +307,23 @@ public class RepositoryController extends BaseController
 		return repositoryVOList;
     }
 
-    
+
 	/**
 	 * This method can be used by actions and use-case-controllers that only need to have simple access to the
 	 * functionality. They don't get the transaction-safety but probably just wants to show the info.
 	 */	
 	
 	public List getAuthorizedRepositoryVOList(InfoGluePrincipal infoGluePrincipal, boolean isBindingDialog) throws ConstraintException, SystemException, Bug
+	{    	
+		return getAuthorizedRepositoryVOList(infoGluePrincipal, isBindingDialog, false);
+	}
+	
+	/**
+	 * This method can be used by actions and use-case-controllers that only need to have simple access to the
+	 * functionality. They don't get the transaction-safety but probably just wants to show the info.
+	 */	
+	
+	public List getAuthorizedRepositoryVOList(InfoGluePrincipal infoGluePrincipal, boolean isBindingDialog, boolean allowIfWriteAccess) throws ConstraintException, SystemException, Bug
 	{    	
 		List accessableRepositories = new ArrayList();
     	
@@ -322,7 +332,7 @@ public class RepositoryController extends BaseController
 		while(i.hasNext())
 		{
 			RepositoryVO repositoryVO = (RepositoryVO)i.next();
-			if(getIsAccessApproved(repositoryVO.getRepositoryId(), infoGluePrincipal, isBindingDialog))
+			if(getIsAccessApproved(repositoryVO.getRepositoryId(), infoGluePrincipal, isBindingDialog, allowIfWriteAccess))
 			{
 				accessableRepositories.add(repositoryVO);
 			}
@@ -393,7 +403,7 @@ public class RepositoryController extends BaseController
 	 * This method returns true if the user should have access to the repository sent in.
 	 */
     
-	public boolean getIsAccessApproved(Integer repositoryId, InfoGluePrincipal infoGluePrincipal, boolean isBindingDialog) throws SystemException
+	public boolean getIsAccessApproved(Integer repositoryId, InfoGluePrincipal infoGluePrincipal, boolean isBindingDialog, boolean allowIfWriteAccess) throws SystemException
 	{
 		logger.info("getIsAccessApproved for " + repositoryId + " AND " + infoGluePrincipal + " AND " + isBindingDialog);
 		boolean hasAccess = false;
@@ -406,9 +416,11 @@ public class RepositoryController extends BaseController
 		{ 
 		    if(isBindingDialog)
 		        hasAccess = (AccessRightController.getController().getIsPrincipalAuthorized(db, infoGluePrincipal, "Repository.Read", repositoryId.toString()) || AccessRightController.getController().getIsPrincipalAuthorized(db, infoGluePrincipal, "Repository.ReadForBinding", repositoryId.toString()));
+		    else if(allowIfWriteAccess)
+		        hasAccess = (AccessRightController.getController().getIsPrincipalAuthorized(db, infoGluePrincipal, "Repository.Read", repositoryId.toString()) || AccessRightController.getController().getIsPrincipalAuthorized(db, infoGluePrincipal, "Repository.Write", repositoryId.toString())); 
 		    else
 		        hasAccess = AccessRightController.getController().getIsPrincipalAuthorized(db, infoGluePrincipal, "Repository.Read", repositoryId.toString()); 
-		        
+		    	
 			commitTransaction(db);
 		}
 		catch(Exception e)

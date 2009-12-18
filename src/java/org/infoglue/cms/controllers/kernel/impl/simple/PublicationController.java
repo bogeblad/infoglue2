@@ -1036,6 +1036,8 @@ public class PublicationController extends BaseController
 			if(hasAccessToPublishingTool)
 			{
 				boolean hasAccessToRepository = hasAccessTo("Repository.Read", "" + repositoryId, infogluePrincipal);
+				if(!hasAccessToRepository)
+					hasAccessToRepository = hasAccessTo("Repository.Write", "" + repositoryId, infogluePrincipal);
 				if(hasAccessToRepository)
 				{
 					if(recipients.indexOf(infogluePrincipal.getEmail()) == -1)

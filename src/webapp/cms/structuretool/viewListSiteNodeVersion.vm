@@ -123,7 +123,7 @@
 
 <div class="fullymarginalized">
 
-#if($this.hasAccessTo("PublishingTool.Read") && $this.hasAccessTo("Repository.Read", "$!repositoryId"))
+#if($this.hasAccessTo("PublishingTool.Read") && ($this.hasAccessTo("Repository.Read", "$!repositoryId") || $this.hasAccessTo("Repository.Write", "$!repositoryId")))
 <a href="javascript:submitToPublish('true');">
 <img src="$ui.getString("images.contenttool.buttons.publish")" width="60" height="25" border="0">
 </a>

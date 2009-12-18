@@ -371,6 +371,10 @@ public class ImportRepositoryAction extends InfoGlueAbstractAction
 		    if(interceptionPointVO != null)
 		    	allAccessRights.addAll(AccessRightController.getController().getAccessRightListOnlyReadOnly(interceptionPointVO.getId(), repository.getId().toString(), db));
 
+		    interceptionPointVO = InterceptionPointController.getController().getInterceptionPointVOWithName("Repository.Write", db);
+		    if(interceptionPointVO != null)
+		    	allAccessRights.addAll(AccessRightController.getController().getAccessRightListOnlyReadOnly(interceptionPointVO.getId(), repository.getId().toString(), db));
+
 		    interceptionPointVO = InterceptionPointController.getController().getInterceptionPointVOWithName("Repository.ReadForBinding", db);
 		    if(interceptionPointVO != null)
 		    	allAccessRights.addAll(AccessRightController.getController().getAccessRightListOnlyReadOnly(interceptionPointVO.getId(), repository.getId().toString(), db));
