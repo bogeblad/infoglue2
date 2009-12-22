@@ -54,7 +54,8 @@ public class DeploymentController
 	public static List<String> getAvailableTags(VersionControlServerBean serverBean) throws Exception
 	{
 		List<String> availableTags = new ArrayList<String>();
-
+		availableTags.add("HEAD");
+		
 		try
 		{			
 			String cvsRoot 		= serverBean.getCVSROOT();
@@ -62,7 +63,7 @@ public class DeploymentController
 			String localPath	= CmsPropertyHandler.getDigitalAssetUploadPath() + File.separator + "checkout";
 						
 		    VCConnector connector = new NetBeansConnector(cvsRoot, localPath, password);
-		    availableTags = connector.getTags(serverBean.getModuleName());
+		    availableTags.addAll(connector.getTags(serverBean.getModuleName()));
 		} 
 		catch (Exception e)
 		{
@@ -92,6 +93,9 @@ public class DeploymentController
 			String localPath	= CmsPropertyHandler.getDigitalAssetUploadPath() + File.separator + "checkout";
 						
 		    VCConnector connector = new NetBeansConnector(cvsRoot, localPath, password);
+		    if(tagName.equals("HEAD"))
+		    	tagName = null;
+		    
 		    List<File> taggedFiles = connector.checkOutModuleFromTag(versionControlServerBean.getModuleName(), tagName);
 		    logger.info("taggedFiles:" + taggedFiles);
 		    
@@ -119,14 +123,19 @@ public class DeploymentController
 		return deploymentCompareBeans;
 	}
 	
-	private static void getDeploymentComparisonBeansRecursive(File parentFile, List<DeploymentCompareBean> deploymentCompareBeans, Content parentContent, Database db, InfoGluePrincipal principal, int cvsFakeContentId) throws Exception
+	private static void getDeploymentComparisonBeansRecursive(File parentFile, List<DeploymentCompareBean> deploymentCompareBeans, final Content parentContent, Database db, InfoGluePrincipal principal, int cvsFakeContentId) throws Exception
 	{
+		Content localParentContent = parentContent;
+		
 		String fileContent = "";
 		if(parentFile.isFile())
 			fileContent = FileHelper.getFileAsString(parentFile, "iso-8859-1");
 		
 		Repository repository = null;
-		
+
+		if(parentContent != null)
+			logger.info("\n\n****************************\nparentContent in top:" + parentContent.getName() + "= File:" + parentFile.getName());
+
 		if(!parentFile.getName().equalsIgnoreCase("localIG3") && 
 		   !parentFile.getName().equalsIgnoreCase("WebContent") && 
 		   !parentFile.getParentFile().getName().equalsIgnoreCase("WebContent"))
@@ -137,18 +146,19 @@ public class DeploymentController
 			{
 				ContentVO cvsContent = new ContentVO();
 				cvsContent.setContentId(cvsFakeContentId);
-				cvsContent.setName(parentContent.getName());
+				cvsContent.setName(localParentContent.getName());
 				cvsContent.setFullPath(parentFile.getPath());
 				
 				//ContentVersionVO cvsVersion = new ContentVersionVO();
 				//cvsVersion.setVersionValue(fileContent);
 				cvsContent.setVersions(new String[]{fileContent});
 
-				LanguageVO masterLanguageVO = LanguageController.getController().getMasterLanguage(db, parentContent.getRepositoryId()).getValueObject();
-				ContentVersionVO localVersion = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(parentContent.getId(), masterLanguageVO.getId());
+				LanguageVO masterLanguageVO = LanguageController.getController().getMasterLanguage(db, localParentContent.getRepositoryId()).getValueObject();
+				ContentVersionVO localVersion = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(localParentContent.getId(), masterLanguageVO.getId());
 
-				ContentVO localContentVO = parentContent.getValueObject();
+				ContentVO localContentVO = localParentContent.getValueObject();
 				logger.info("localContentVO:" + localContentVO);
+				//System.out.println("localContentVO:" + localContentVO);
 				
 				if(localVersion != null)
 				{
@@ -161,6 +171,7 @@ public class DeploymentController
 				deploymentCompareBean.setRemoteVersion(cvsContent);
 				deploymentCompareBean.setLocalVersion(localContentVO);
 				
+				logger.info("Adding:" + localContentVO.getName() + " = " + cvsContent.getName());
 				deploymentCompareBeans.add(deploymentCompareBean);
 			}
 		}
@@ -169,13 +180,14 @@ public class DeploymentController
 			logger.info("This was a repository:" + parentFile);
 			repository = RepositoryController.getController().getRepositoryWithName(parentFile.getName(), db);
 			logger.info("Found repository:" + repository.getName());
-			parentContent = ContentController.getContentController().getRootContent(db, repository.getId(), principal.getName(), false);
+			localParentContent = ContentController.getContentController().getRootContent(db, repository.getId(), principal.getName(), false);
 		}
 		else
 		{
 			logger.info("This was the webcontent file:" + parentFile);
 		}
 		
+		logger.info("Now going through children files to:" + parentFile.getName());
 		File[] childFiles = parentFile.listFiles();
 		if(childFiles != null)
 		{
@@ -185,28 +197,35 @@ public class DeploymentController
 				logger.info("childFile:" + childFile.getName());
 				if(!childFile.getName().equals("CVS"))
 				{
-					if(parentContent != null)
+					//System.out.println("childFile:" + childFile.getName());
+					Content newParentContent = null;
+					if(localParentContent != null)
 					{
-						LanguageVO masterLanguageVO = LanguageController.getController().getMasterLanguage(db, parentContent.getRepositoryId()).getValueObject();
+						LanguageVO masterLanguageVO = LanguageController.getController().getMasterLanguage(db, localParentContent.getRepositoryId()).getValueObject();
 
-						logger.info("Looking for children on " + parentContent.getName());
-						Iterator childContents = parentContent.getChildren().iterator();
+						logger.info("Looking for children on " + localParentContent.getName() + " - matching " + childFile.getName());
+						Iterator childContents = localParentContent.getChildren().iterator();
 						while(childContents.hasNext())
 						{
 							Content childContent = (Content)childContents.next();
 							logger.info("childContent " + childContent.getName());
-
+							
 							if(childFile.getName().equalsIgnoreCase(childContent.getName()) || childFile.getName().equalsIgnoreCase(childContent.getName() + "_" + masterLanguageVO.getId() + ".xml"))
 							{
-								parentContent = childContent;
+								logger.info("Match " + childContent.getName() + "=" + childFile.getName());
+								newParentContent = childContent;
+								//getDeploymentComparisonBeansRecursive(childFile, deploymentCompareBeans, childContent, db, principal, cvsFakeContentId+1);
+
 								break;
 							}
 						}
 					}
 
-					getDeploymentComparisonBeansRecursive(childFile, deploymentCompareBeans, parentContent, db, principal, cvsFakeContentId++);
+					getDeploymentComparisonBeansRecursive(childFile, deploymentCompareBeans, newParentContent, db, principal, cvsFakeContentId+1);
 				}
 			}
-		}		
+		}
+		
+		logger.info("End" + parentFile.getName() + " - continuing loop...");
 	}
 }
