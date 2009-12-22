@@ -233,8 +233,10 @@
 	
 	function onOk(contentId, assetKey, assetUrl)
 	{
-		var decodedAssetKey = decodeURIComponent(assetKey);
 		//alert("Adding contentId:" + contentId + " and assetKey:" + assetKey + " and assetUrl:" + assetUrl);
+		assetKey = assetKey.replace(/\+/g, " ");
+		//alert("assetKey:" + assetKey);
+		var decodedAssetKey = decodeURIComponent(assetKey);
 		//alert("decodedAssetKey:" + decodedAssetKey);
 		if(contentId == '' || contentId == '${select}' || assetKey == '')
 		{
