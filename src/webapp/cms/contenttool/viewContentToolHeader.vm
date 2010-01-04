@@ -89,25 +89,45 @@
 
 		function postSearchForm()
 		{	
-			var repositoryId = document.searchForm.repositoryId.value;
-			var searchString = document.searchForm.searchString.value;
+			var stringSearch = $('#searchString').hasClass("focus");
+			if(!stringSearch)
+				stringSearch = $('#okButton').hasClass("focus");
+			
+			//alert("stringSearch:" + stringSearch);
 
-			var agt=navigator.userAgent.toLowerCase();
-    		if(agt.indexOf("safari")!=-1)
-    		{
-				parent.frames[3].document.location = "SearchContent.action?repositoryId=" + repositoryId + "&searchString=" + escape(searchString);
-    		}
-    		else
-    		{
-				parent.frames["main"].document.location.href = "SearchContent.action?repositoryId=" + repositoryId + "&searchString=" + escape(searchString);
-    		}
-    		
+			var contentIdSearch = $('#contentIdField').hasClass("focus");
+			if(!contentIdSearch)
+				contentIdSearch = $('#jumpButton').hasClass("focus");
+			
+			//alert("contentIdSearch:" + contentIdSearch);
+
+			if(stringSearch)
+			{
+				var repositoryId = document.searchForm.repositoryId.value;
+				var searchString = document.searchForm.searchString.value;
+
+				var agt=navigator.userAgent.toLowerCase();
+	    		if(agt.indexOf("safari")!=-1)
+	    		{
+					parent.frames[3].document.location = "SearchContent.action?repositoryId=" + repositoryId + "&searchString=" + escape(searchString);
+	    		}
+	    		else
+	    		{
+					parent.frames["main"].document.location.href = "SearchContent.action?repositoryId=" + repositoryId + "&searchString=" + escape(searchString);
+	    		}
+	    	}
+	    	else if(contentIdSearch)
+	    	{
+	    		postContentIdSearchForm();
+	    	}
+	    	
     		return false;
     	}
 		
 		function postContentIdSearchForm()
 		{
 			var contentId = document.searchForm.contentIdField.value;
+			contentId = contentId.replace(/^\s+|\s+$/g, '');
 
 			var agt=navigator.userAgent.toLowerCase();
     		if(agt.indexOf("safari")!=-1)
@@ -121,6 +141,38 @@
     		
 			return false;
 		}
+		
+		$(document).ready(function() {    
+		    $('#searchString').blur(function(){
+		    	$('#searchString').removeClass("focus");
+		    })
+		    .focus(function() {                
+		    	$(this).addClass("focus")
+		    });
+
+			$('#okButton').blur(function(){
+		    	$('#okButton').removeClass("focus");
+		    })
+		    .focus(function() {                
+		    	$(this).addClass("focus")
+		    });
+		    		    		
+		    $('#contentIdField').blur(function(){
+		    	$('#contentIdField').removeClass("focus");
+		    })
+		    .focus(function() {                
+		    	$(this).addClass("focus")
+		    });
+		
+		    $('#jumpButton').blur(function(){
+		    	$('#jumpButton').removeClass("focus");
+		    })
+		    .focus(function() {                
+		    	$(this).addClass("focus")
+		    });
+		    
+		});
+				
 	</script>
 	
 	<link rel="stylesheet" type="text/css" href="css/cms.css" /> 
@@ -161,16 +213,18 @@
 	<td class="toolheader" style="white-space:nowrap">
 		<form name="searchForm" method="post" action="#" target="main" onsubmit="return postSearchForm();">
 			<input type="hidden" name="repositoryId" value="$!repositoryId" />	
-			<input type="text" class="searchfield" name="searchString" value="" style="vertical-align:top"  />
+			<input id="searchString" type="text" class="searchfield" name="searchString" value="" style="vertical-align:top"  />
 			<img src="images/trans.gif" width="5" height="19" />
-			<img onclick="return postSearchForm();" src="$ui.getString("images.contenttool.ok")" width="31" height="19" border="0"/>
+			##<img onclick="return postSearchForm();" src="$ui.getString("images.contenttool.ok")" width="31" height="19" border="0"/>
+			<input id="okButton" type="image" src="$ui.getString("images.contenttool.ok")" width="31" height="19" border="0" alt="" />
 			<img src="images/trans.gif" width="5" height="19"/>
 			<img onclick="return openSearchForm();" src="$ui.getString("images.contenttool.advanced")" width="62" height="19" border="0"/>
 			<img src="images/trans.gif" width="5" height="19"/>
 			<img src="$ui.getString("images.contenttool.jumpToContentLabel")" width="54" height="19" />
-			<input type="text" class="contentIdField" name="contentIdField" value="" style="vertical-align:top;" />
+			<input id="contentIdField" type="text" class="contentIdField" name="contentIdField" value="" style="vertical-align:top;" />
 			<img src="images/trans.gif" width="5" height="19" />
-			<img onclick="return postContentIdSearchForm();" src="$ui.getString("images.contenttool.jumpToContentId")" width="34" height="19" border="0"/>
+			##<img onclick="return postContentIdSearchForm();" src="$ui.getString("images.contenttool.jumpToContentId")" width="34" height="19" border="0"/>
+			<input id="jumpButton" type="image" src="$ui.getString("images.contenttool.jumpToContentId")" width="34" height="19" border="0" alt="" />
 		</form>
 	</td>
 	<td class="toolheader" width="70%"><img src="images/trans.gif" width="1" height="1" /></td>
