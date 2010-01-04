@@ -947,7 +947,7 @@ function openAssignDialog(warningText, assignUrl)
 {
  	if(checkDirty(warningText))
  	{
- 		details = "toolbar=no,status=yes,scrollbars=yes,location=no,menubar=no,directories=no,resizable=no,width=300,height=600,left=5,top=5";
+ 		details = "toolbar=no,status=yes,scrollbars=yes,location=no,menubar=no,directories=no,resizable=no,width=800,height=600,left=5,top=5";
  		newWin = window.open(assignUrl, 'Assign', details);
  		if(newWin)
 			newWin.focus();
