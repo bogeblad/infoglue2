@@ -23,14 +23,23 @@
 
 package org.infoglue.cms.applications.managementtool.actions;
 
+import java.io.PrintWriter;
+
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
+import org.infoglue.cms.controllers.kernel.impl.simple.AccessRightController;
+import org.infoglue.cms.controllers.kernel.impl.simple.ContentControllerProxy;
+import org.infoglue.cms.controllers.kernel.impl.simple.LanguageController;
 import org.infoglue.cms.controllers.kernel.impl.simple.RepositoryController;
+import org.infoglue.cms.entities.content.ContentVO;
+import org.infoglue.cms.entities.management.LanguageVO;
 import org.infoglue.cms.entities.management.RepositoryVO;
 import org.infoglue.cms.util.ConstraintExceptionBuffer;
 
 public class CreateRepositoryAction extends InfoGlueAbstractAction
 {
 	private RepositoryVO repositoryVO;
+	private String languageName = null;
+	private Boolean assignAutomaticRights = true;
 	private ConstraintExceptionBuffer ceb;
 
 	
@@ -80,6 +89,15 @@ public class CreateRepositoryAction extends InfoGlueAbstractAction
        	this.repositoryVO.setDnsName(dnsName);
     }
 
+    public void setLanguageName(String languageName)
+    {
+       	this.languageName = languageName;
+    }
+
+    public void setAssignAutomaticRights(Boolean assignAutomaticRights)
+    {
+       	this.assignAutomaticRights = assignAutomaticRights;
+    }
 
     public String doExecute() throws Exception
     {
@@ -88,9 +106,66 @@ public class CreateRepositoryAction extends InfoGlueAbstractAction
     	
 		this.repositoryVO = RepositoryController.getController().create(repositoryVO);
 		
+		if(this.languageName != null)
+		{
+			if(this.languageName.equalsIgnoreCase("masterLanguage"))
+			{
+				LanguageVO firstLanguageVO = (LanguageVO)LanguageController.getController().getLanguageVOList().get(0);
+				RepositoryController.getController().update(repositoryVO, new String[]{"" + firstLanguageVO.getId()});
+			}
+			else
+			{
+				LanguageVO masterLanguageVO = (LanguageVO)LanguageController.getController().getLanguageVOWithCode(this.languageName);
+				if(masterLanguageVO != null)
+					RepositoryController.getController().update(repositoryVO, new String[]{"" + masterLanguageVO.getId()});
+			}
+		}
+		
+		if(this.assignAutomaticRights)
+		{
+			AccessRightController.getController().addUserRights(new String[]{"Repository.Read", "Repository.Write"}, "" + this.repositoryVO.getId(), getInfoGluePrincipal());
+		}
+		
         return "success";
     }
-        
+
+    public String doXML() throws Exception
+    {
+		ceb.add(this.repositoryVO.validate());
+    	ceb.throwIfNotEmpty();				
+    	
+		this.repositoryVO = RepositoryController.getController().create(repositoryVO);
+		
+		if(this.languageName != null)
+		{
+			if(this.languageName.equalsIgnoreCase("masterLanguage"))
+			{
+				LanguageVO firstLanguageVO = (LanguageVO)LanguageController.getController().getLanguageVOList().get(0);
+				RepositoryController.getController().update(repositoryVO, new String[]{"" + firstLanguageVO.getId()});
+			}
+			else
+			{
+				LanguageVO masterLanguageVO = (LanguageVO)LanguageController.getController().getLanguageVOWithCode(this.languageName);
+				if(masterLanguageVO != null)
+					RepositoryController.getController().update(repositoryVO, new String[]{"" + masterLanguageVO.getId()});
+			}
+		}
+		
+		if(this.assignAutomaticRights)
+		{
+			AccessRightController.getController().addUserRights(new String[]{"Repository.Read", "Repository.Write"}, "" + this.repositoryVO.getId(), getInfoGluePrincipal());
+		}
+		
+		ContentVO contentVO = ContentControllerProxy.getController().getRootContentVO(repositoryVO.getId(), getInfoGluePrincipal().getName());
+		
+		getResponse().setContentType("text/xml");
+		PrintWriter out = getResponse().getWriter();
+		out.println("<repositoryId>" + repositoryVO.getId() + "</repositoryId>");
+		out.println("<rootContentId>" + contentVO.getId() + "</rootContentId>");
+
+    	return NONE;
+    }
+
     public String doInput() throws Exception
     {
     	return "input";

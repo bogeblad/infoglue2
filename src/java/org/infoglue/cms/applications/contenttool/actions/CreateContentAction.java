@@ -23,6 +23,7 @@
 
 package org.infoglue.cms.applications.contenttool.actions;
 
+import java.io.PrintWriter;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -208,7 +209,7 @@ public class CreateContentAction extends InfoGlueAbstractAction
             }
             if ( defaultContentTypeName != null )
             {
-            ps.setString("content_" + this.getContentId() + "_defaultContentTypeName", defaultContentTypeName );
+            	ps.setString("content_" + this.getContentId() + "_defaultContentTypeName", defaultContentTypeName );
             }
             if ( initialLanguageId != null )
             {
@@ -217,7 +218,31 @@ public class CreateContentAction extends InfoGlueAbstractAction
         }        
     	return "success";
     }
-    
+
+    public String doXML() throws Exception
+    {
+    	try
+    	{
+    		
+		this.contentVO.setCreatorName(this.getInfoGluePrincipal().getName());
+
+    	ceb = this.contentVO.validate();
+    	ceb.throwIfNotEmpty();
+    			
+    	newContentVO = ContentControllerProxy.getController().acCreate(this.getInfoGluePrincipal(), parentContentId, contentTypeDefinitionId, repositoryId, contentVO);
+
+		getResponse().setContentType("text/xml");
+		PrintWriter out = getResponse().getWriter();
+		out.println("" + newContentVO.getId());
+    	}
+    	catch (Exception e) 
+    	{
+    		e.printStackTrace();
+		}
+    	
+    	return NONE;
+    }
+
 	public String doBindingView() throws Exception
 	{
 		doExecute();

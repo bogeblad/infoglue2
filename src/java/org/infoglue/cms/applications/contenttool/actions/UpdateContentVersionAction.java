@@ -170,6 +170,12 @@ public class UpdateContentVersionAction extends ViewContentVersionAction
 		super.initialize(this.contentVersionId, this.contentId, this.languageId);
 		ceb.throwIfNotEmpty();
 		
+		if(this.attributeName == null)
+			this.attributeName = "";
+		
+		if(this.currentEditorId == null)
+			this.currentEditorId = 1;
+		
 		try
 		{
 			this.contentVersionVO.setVersionModifier(this.getInfoGluePrincipal().getName());
@@ -290,7 +296,7 @@ public class UpdateContentVersionAction extends ViewContentVersionAction
 		xmlWriter.write(DocumentHelper.parseText(xmlResult));
         xmlWriter.flush();
 		
-		return null;
+		return NONE;
 	}
 	
 	public void setContentVersionId(Integer contentVersionId)

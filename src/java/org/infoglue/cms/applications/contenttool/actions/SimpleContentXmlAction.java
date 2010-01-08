@@ -165,7 +165,22 @@ public class SimpleContentXmlAction extends SimpleXmlServiceAction
         
         return elm;
     }
-    
+
+    public Element getPlainContentElement(ContentVO vo) throws Bug, Exception
+    {
+        Element elm = DocumentHelper.createElement("content");
+        
+    	elm.addAttribute("id", "" + vo.getContentId());
+    	elm.addAttribute("creatorName", "" + vo.getCreatorName());
+    	elm.addAttribute("name", "" + vo.getName());
+    	elm.addAttribute("typedefid", "" + vo.getContentTypeDefinitionId());
+    	elm.addAttribute("expiredatetime", "" + vo.getExpireDateTime().getTime());
+    	elm.addAttribute("publishdatetime", "" + vo.getPublishDateTime().getTime());
+    	elm.addAttribute("isbranch", "" + vo.getIsBranch());
+        
+        return elm;
+    }
+
     public Element getContentVersionElement(Integer contentVersionId) throws SystemException, Bug, UnsupportedEncodingException
     {
 		ContentVersionController contentVersionController = ContentVersionController.getContentVersionController();
@@ -230,6 +245,7 @@ public class SimpleContentXmlAction extends SimpleXmlServiceAction
         doc.add(getContentVersionElement(parent));
 	    return out(getFormattedDocument(doc));
 	}
+
     public String doContent() throws Exception
 	{
         Document doc = DocumentHelper.createDocument();
@@ -237,6 +253,20 @@ public class SimpleContentXmlAction extends SimpleXmlServiceAction
 	    return out(getFormattedDocument(doc));
 	}
     
+    public String doRootContent() throws Exception
+	{
+        Document doc = DocumentHelper.createDocument();
+        ContentVO rootContent = ContentController.getContentController().getRootContentVO(repositoryId, getInfoGluePrincipal().getName(), true);
+        doc.add(getPlainContentElement(rootContent));
+	    return out(getFormattedDocument(doc));
+	}
+
+    public String doMasterLanguage() throws Exception
+	{
+        LanguageVO masterLanguageVO = LanguageController.getController().getMasterLanguage(repositoryId);
+	    return out("" + masterLanguageVO.getId());
+	}
+
     /*
      * Returns head only for a single contentVersion (parent)
      */
