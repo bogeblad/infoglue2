@@ -1,0 +1,1 @@
+alter table cmSiNoVer add forceProtocolChange number default 0 NOT NULL;
