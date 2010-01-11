@@ -493,7 +493,7 @@ public class SubscriptionsInterceptor extends BaseController implements InfoGlue
 			logger.info("Was a simple subscription without filters:" + email);
 			
 			if(email != null)
-				MailServiceFactory.getService().sendEmail(CmsPropertyHandler.getSystemEmailSender(), email, null, null, transactionQueueVO.getSubject(), transactionQueueVO.getDescription(), "utf-8");
+				MailServiceFactory.getService().sendEmail(CmsPropertyHandler.getMailContentType(), CmsPropertyHandler.getSystemEmailSender(), email, null, null, null, null, transactionQueueVO.getSubject(), transactionQueueVO.getDescription(), "utf-8");
 		}
 		else
 		{

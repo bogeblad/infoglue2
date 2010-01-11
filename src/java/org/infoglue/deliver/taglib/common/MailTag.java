@@ -48,6 +48,8 @@ public class MailTag extends TemplateControllerTag
 	private String cc;
 	private String bcc;
 	private String recipients;
+	private String bounceAddresses;
+	private String replyToAddress;
 	private String subject;
 	private String type;
 	private String charset;
@@ -68,6 +70,9 @@ public class MailTag extends TemplateControllerTag
 			else
 				emailRegexp = defaultEmailRegexp;
 					
+			bounceAddresses = bounceAddresses.trim().toLowerCase();
+			replyToAddress = replyToAddress.trim().toLowerCase();
+
 			from = from.trim().toLowerCase();
 			to = to.trim().toLowerCase();
 			
@@ -143,7 +148,7 @@ public class MailTag extends TemplateControllerTag
 			if(charset == null)
 				charset = "utf-8";
 						
-			MailServiceFactory.getService().sendEmail(type, from, to, cc, bcc, subject, message, charset);
+			MailServiceFactory.getService().sendEmail(type, from, to, cc, bcc, bounceAddresses, replyToAddress, subject, message, charset);
 			setResultAttribute(true);
         } 
 		catch (AddressException e)
@@ -166,6 +171,8 @@ public class MailTag extends TemplateControllerTag
 			logger.error("	to:" + to);
 			logger.error("	cc:" + cc);
 			logger.error("	bcc:" + bcc);
+			logger.error("	bounceAddresses:" + bounceAddresses);
+			logger.error("	replyToAddress:" + replyToAddress);
 			logger.error("	Subject:" + subject);
 			logger.error("	message:" + message);
 			setResultAttribute(false);
@@ -175,6 +182,8 @@ public class MailTag extends TemplateControllerTag
 		type = null;
 		charset = null;
 		recipients = null;
+		bounceAddresses = null;
+		replyToAddress = null;
 		cc = null;
 		bcc = null;
 		validationRegexp = null;
@@ -210,6 +219,16 @@ public class MailTag extends TemplateControllerTag
 	public void setBcc(String bcc) throws JspException
 	{
 		this.bcc = evaluateString("MailTag", "bcc", bcc);
+	}
+
+	public void setReplyToAddress(String replyToAddress) throws JspException
+	{
+		this.replyToAddress = evaluateString("MailTag", "replyToAddress", replyToAddress);
+	}
+
+	public void setBounceAddresses(String bounceAddresses) throws JspException
+	{
+		this.bounceAddresses = evaluateString("MailTag", "bounceAddresses", bounceAddresses);
 	}
 
 	public void setSubject(String subject) throws JspException

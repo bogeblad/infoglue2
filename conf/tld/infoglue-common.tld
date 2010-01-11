@@ -998,6 +998,16 @@
 	        <rtexprvalue>true</rtexprvalue>
 		</attribute>
 	    <attribute>
+			<name>bounceAddresses</name>
+	    	<required>false</required>
+	        <rtexprvalue>true</rtexprvalue>
+		</attribute>
+	    <attribute>
+			<name>replyToAddress</name>
+	    	<required>false</required>
+	        <rtexprvalue>true</rtexprvalue>
+		</attribute>
+	    <attribute>
 			<name>subject</name>
 	    	<required>true</required>
 	        <rtexprvalue>true</rtexprvalue>

@@ -477,7 +477,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
 						try
 						{
 							logger.warn("Sending warning mail:" + (int)percentLeft + ":" + (int)memoryLeft + ":" + Runtime.getRuntime().maxMemory() / 1024 / 1024);
-							MailServiceFactory.getService().sendEmail(warningEmailReceiver, warningEmailReceiver, null, subject, mailBody, "utf-8");
+							MailServiceFactory.getService().sendEmail(CmsPropertyHandler.getMailContentType(), warningEmailReceiver, warningEmailReceiver, null, null, null, null, subject, mailBody, "utf-8");
 						} 
 						catch (Exception e)
 						{
@@ -867,7 +867,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
 						try
 						{
 							logger.warn("Sending warning mail:" + (int)percentLeft + ":" + (int)memoryLeft + ":" + Runtime.getRuntime().maxMemory() / 1024f / 1024f);
-							MailServiceFactory.getService().sendEmail(warningEmailReceiver, warningEmailReceiver, null, subject, mailBody, "utf-8");
+							MailServiceFactory.getService().sendEmail(CmsPropertyHandler.getMailContentType(), warningEmailReceiver, warningEmailReceiver, null, null, null, null, subject, mailBody, "utf-8");
 						} 
 						catch (Exception e)
 						{

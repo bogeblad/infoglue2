@@ -131,10 +131,12 @@ public class MailService
 	 * @param content the body of the email.
 	 * @throws SystemException if the email couldn't be sent due to some mail server exception.
 	 */
+	/*
 	public void sendEmail(String from, String to, String bcc, String subject, String content, String encoding) throws SystemException 
 	{
 		sendEmail(from, to, null, bcc, subject, content, encoding);
 	}
+	*/
 	
 	/**
 	 *
@@ -144,6 +146,7 @@ public class MailService
 	 * @param content the body of the email.
 	 * @throws SystemException if the email couldn't be sent due to some mail server exception.
 	 */
+	/*
 	public void sendEmail(String from, String to, String cc, String bcc, String subject, String content, String encoding) throws SystemException 
 	{
         String contentType = CmsPropertyHandler.getMailContentType();
@@ -155,7 +158,8 @@ public class MailService
 	    else
 	        sendPlain(from, to, cc, bcc, subject, content, encoding);
 	}
-
+	*/
+	
 	/**
 	 *
 	 * @param from the sender of the email.
@@ -164,12 +168,12 @@ public class MailService
 	 * @param content the body of the email.
 	 * @throws SystemException if the email couldn't be sent due to some mail server exception.
 	 */
-	public void sendEmail(String contentType, String from, String to, String cc, String bcc, String subject, String content, String encoding) throws SystemException 
+	public void sendEmail(String contentType, String from, String to, String cc, String bcc, String bounceAddresses, String replyToAddress, String subject, String content, String encoding) throws SystemException 
 	{
    	    if(contentType.equalsIgnoreCase("text/html"))
-	    	sendHTML(from, to, cc, bcc, subject, content, encoding);
+	    	sendHTML(from, to, cc, bcc, bounceAddresses, replyToAddress, subject, content, encoding);
 	    else
-	        sendPlain(from, to, cc, bcc, subject, content, encoding);
+	        sendPlain(from, to, cc, bcc, bounceAddresses, replyToAddress, subject, content, encoding);
 	}
 
 	/**
@@ -180,7 +184,7 @@ public class MailService
 	 * @param content the body of the email.
 	 * @throws SystemException if the email couldn't be sent due to some mail server exception.
 	 */
-	public void sendHTML(String from, String to, String cc, String bcc, String subject, String content, String encoding) throws SystemException 
+	public void sendHTML(String from, String to, String cc, String bcc, String bounceAddresses, String replyToAddress, String subject, String content, String encoding) throws SystemException 
 	{
 		try 
 		{
@@ -211,7 +215,6 @@ public class MailService
 				email.setAuthentication(userName, password);
 			} 
 		    
-		    email.setBounceAddress(systemEmailSender);
 		    email.setCharset(encoding);
 		   
 		    if(logger.isInfoEnabled())
@@ -225,7 +228,7 @@ public class MailService
 		    	logger.info("bcc:" + bcc);
 		    	logger.info("subject:" + subject);
 		    }
-		    
+
 		    if(to.indexOf(";") > -1)
 		    {
 		    	cc = to;
@@ -254,6 +257,14 @@ public class MailService
 				}
 		    }
 		    
+		    if(replyToAddress != null && !replyToAddress.equals(""))
+		    	email.addReplyTo(replyToAddress);
+		    
+		    if(bounceAddresses != null && !bounceAddresses.equals(""))
+			    email.setBounceAddress(bounceAddresses);
+		    else
+		        email.setBounceAddress(systemEmailSender);
+		    	
 		    email.addTo(to, to);
 		    email.setFrom(from, from);
 		    if(cc != null)
@@ -286,7 +297,7 @@ public class MailService
 	 * @param content the body of the email.
 	 * @throws SystemException if the email couldn't be sent due to some mail server exception.
 	 */
-	public void sendPlain(String from, String to, String cc, String bcc, String subject, String content, String encoding) throws SystemException 
+	public void sendPlain(String from, String to, String cc, String bcc, String bounceAddresses, String replyToAddress, String subject, String content, String encoding) throws SystemException 
 	{
 		try 
 		{
@@ -317,7 +328,6 @@ public class MailService
 				email.setAuthentication(userName, password);
 			} 
 		    
-		    email.setBounceAddress(systemEmailSender);
 		    email.setCharset(encoding);
 		   
 		    if(to.indexOf(";") > -1)
@@ -347,6 +357,14 @@ public class MailService
 		    		logger.error("Exception validating number of recipients in mailservice:" + e.getMessage(), e);
 				}
 		    }
+
+		    if(replyToAddress != null && !replyToAddress.equals(""))
+		    	email.addReplyTo(replyToAddress);
+		    
+		    if(bounceAddresses != null && !bounceAddresses.equals(""))
+			    email.setBounceAddress(bounceAddresses);
+		    else
+		        email.setBounceAddress(systemEmailSender);
 
 		    email.addTo(to, to);
 		    email.setFrom(from, from);
