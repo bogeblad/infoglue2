@@ -1,3 +1,8 @@
+<%@ page contentType="text/html; charset=utf-8" %>
+<% 
+response.setStatus(401);
+%>
+
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "DTD/xhtml1-strict.dtd">
 
