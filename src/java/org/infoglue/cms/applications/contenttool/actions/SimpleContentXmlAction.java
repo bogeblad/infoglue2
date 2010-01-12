@@ -185,6 +185,17 @@ public class SimpleContentXmlAction extends SimpleXmlServiceAction
     {
 		ContentVersionController contentVersionController = ContentVersionController.getContentVersionController();
         ContentVersionVO vo = contentVersionController.getContentVersionVOWithId(contentVersionId);
+        if(vo.getLanguageName() == null || vo.getLanguageName().equals("") && vo.getLanguageId() != null)
+        {
+        	try
+        	{
+        		vo.setLanguageName(LanguageController.getController().getLanguageVOWithId(vo.getLanguageId()).getLanguageCode());
+        	}
+        	catch (Exception e) 
+        	{
+        		logger.error("No language found:" + e.getMessage(), e);
+			}
+        }
         return getContentVersionElement(vo);
     }
     
@@ -192,6 +203,18 @@ public class SimpleContentXmlAction extends SimpleXmlServiceAction
     {
 		ContentVersionController contentVersionController = ContentVersionController.getContentVersionController();
         ContentVersionVO vo = contentVersionController.getContentVersionVOWithId(contentVersionId);
+        if(vo.getLanguageName() == null || vo.getLanguageName().equals("") && vo.getLanguageId() != null)
+        {
+        	try
+        	{
+        		vo.setLanguageName(LanguageController.getController().getLanguageVOWithId(vo.getLanguageId()).getLanguageCode());
+        	}
+        	catch (Exception e) 
+        	{
+        		logger.error("No language found:" + e.getMessage(), e);
+			}
+        }
+        
         return getContentVersionHeadElement(vo);
     }
     
