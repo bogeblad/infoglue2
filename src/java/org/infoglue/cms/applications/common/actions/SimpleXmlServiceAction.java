@@ -79,7 +79,7 @@ public abstract class SimpleXmlServiceAction extends InfoGlueAbstractAction
 
     private static final String protectedPropertyFragments = "password,administrator,authorizer,authenticator,masterserver,slaveserver,log";
     
-    protected static final String SERVICEREVISION = "$Revision: 1.24 $"; 
+    protected static final String SERVICEREVISION = "$Revision: 1.24.2.1 $"; 
 	protected static String ENCODING = "UTF-8";
     protected static String TYPE_FOLDER = "Folder";
     protected static String TYPE_ITEM = "Item";
@@ -158,7 +158,7 @@ public abstract class SimpleXmlServiceAction extends InfoGlueAbstractAction
 
 		PrintWriter out = getResponse().getWriter();
 		out.println(string);
-		return null;
+		return NONE;
     }
 	
     /*
