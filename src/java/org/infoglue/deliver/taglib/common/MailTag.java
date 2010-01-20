@@ -70,8 +70,11 @@ public class MailTag extends TemplateControllerTag
 			else
 				emailRegexp = defaultEmailRegexp;
 					
-			bounceAddresses = bounceAddresses.trim().toLowerCase();
-			replyToAddress = replyToAddress.trim().toLowerCase();
+			if(bounceAddresses != null)
+				bounceAddresses = bounceAddresses.trim().toLowerCase();
+			
+			if(replyToAddress != null)
+				replyToAddress = replyToAddress.trim().toLowerCase();
 
 			from = from.trim().toLowerCase();
 			to = to.trim().toLowerCase();
