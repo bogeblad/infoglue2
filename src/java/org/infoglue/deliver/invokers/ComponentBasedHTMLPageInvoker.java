@@ -1208,7 +1208,6 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 		}
 		catch(Exception e)
 		{
-			e.printStackTrace();
 		    logger.warn("An component with either an empty template or with no template in the sitelanguages was found:" + e.getMessage(), e);	
 		}    	
 		
@@ -1846,14 +1845,14 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 					}
 					catch(Exception e)
 					{		
-						logger.warn("An component with either an empty template or with no template in the sitelanguages was found:" + e.getMessage(), e);	
+						logger.warn("An component with either an empty template or with no template in the sitelanguages was found:" + e.getMessage());	
 					}
 					
 					components.add(component);
 				}
 				catch(Exception e)
 				{
-					logger.warn("There was deleted referenced component or some other problem when rendering siteNode: " + templateController.getCurrentPagePath() + "(" + templateController.getSiteNodeId() + ") in language " + templateController.getLanguageId() + ":" + e.getMessage(), e);
+					logger.warn("There was deleted referenced component or some other problem when rendering siteNode: " + templateController.getCurrentPagePath() + "(" + templateController.getSiteNodeId() + ") in language " + templateController.getLanguageId() + ":" + e.getMessage());
 				}
 				slotPosition++;
 			}			

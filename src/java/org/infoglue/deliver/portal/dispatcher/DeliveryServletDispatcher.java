@@ -39,7 +39,7 @@ import webwork.util.ServletValueStack;
  *
  * @author Rickard Öberg (rickard@middleware-company.com)
  * @author Matt Baldree (matt@smallleap.com)
- * @version $Revision: 1.8 $
+ * @version $Revision: 1.8.2.1 $
  */
 public class DeliveryServletDispatcher extends ServletDispatcher
 {
@@ -63,58 +63,68 @@ public class DeliveryServletDispatcher extends ServletDispatcher
        //wrap request if needed
        if(CmsPropertyHandler.getApplicationName().equalsIgnoreCase("cms"))
        {
+           String servletPath = (String) aRequest.getAttribute("javax.servlet.include.servlet_path");
+           if (servletPath == null)
+        	   servletPath = aRequest.getServletPath();
+          
+           //System.out.println("servletPath:" + servletPath);
+
            super.service(aRequest, aResponse);
            return;
        }
        
-      // Get action
-      String servletPath = (String) aRequest.getAttribute("javax.servlet.include.servlet_path");
-      if (servletPath == null)
-         servletPath = aRequest.getServletPath();
+       // Get action
+       String servletPath = (String) aRequest.getAttribute("javax.servlet.include.servlet_path");
+       if (servletPath == null)
+    	   servletPath = aRequest.getServletPath();
       
+       //System.out.println("servletPath:" + servletPath);
       
-      String actionName = getActionName(servletPath);
-      GenericDispatcher gd = new GenericDispatcher(actionName, false);
-      ActionContext context = gd.prepareContext();
+       String actionName = getActionName(servletPath);
+       GenericDispatcher gd = new GenericDispatcher(actionName, false);
+       ActionContext context = gd.prepareContext();
+       
+       //System.out.println("actionName:" + actionName);
 
-      InfoGluePrincipal principal = (InfoGluePrincipal)aRequest.getSession().getAttribute("infogluePrincipal");
-      if(principal != null)
-          aRequest.setAttribute("infoglueRemoteUser", principal.getName());
+       InfoGluePrincipal principal = (InfoGluePrincipal)aRequest.getSession().getAttribute("infogluePrincipal");
+       if(principal != null)
+    	   aRequest.setAttribute("infoglueRemoteUser", principal.getName());
 
-      aRequest.setAttribute("webwork.request_url", aRequest.getRequestURL());
+       aRequest.setAttribute("webwork.request_url", aRequest.getRequestURL());
 
-      ServletActionContext.setContext(aRequest, aResponse, getServletContext(), actionName);
+       ServletActionContext.setContext(aRequest, aResponse, getServletContext(), actionName);
 
-      gd.prepareValueStack();
-      ActionResult ar = null;
-      try 
-      {
+       gd.prepareValueStack();
+       ActionResult ar = null;
+       try 
+       {
            gd.executeAction();
            ar = gd.finish();
-      } 
-      catch (Throwable e) 
-      {
-          log.error("Could not execute action", e);
-          try 
-          {
-              aResponse.sendError(404, "Could not execute action [" + actionName + "]:" + e.getMessage() + getHTMLErrorMessage(e));
-          } 
-          catch (IOException e1) 
-          {
-          }
-      }
+       } 
+       catch (Throwable e) 
+       {
+    	   	log.warn("Could not execute action:" + e.getMessage());
+          	try 
+          	{
+              	aResponse.sendError(404, "Could not execute action [" + actionName + "]:" + e.getMessage() + getHTMLErrorMessage(e));
+          	} 
+          	catch (IOException e1) 
+          	{
+          	}
+       }
 
-      if (ar != null && ar.getActionException() != null) 
-      {
-          log.error("Could not execute action", ar.getActionException());
-          try 
-          {
-              aResponse.sendError(500, ar.getActionException().getMessage() + getHTMLErrorMessage(ar.getActionException()));
-          } 
-          catch (IOException e1) 
-          {
-          }
-      }
+       if (ar != null && ar.getActionException() != null) 
+       {
+    	   log.warn("Could not execute action:" + ar.getActionException().getMessage());
+    	   //log.error("Could not execute action", ar.getActionException());
+    	   try 
+    	   {
+    		   aResponse.sendError(500, ar.getActionException().getMessage() + getHTMLErrorMessage(ar.getActionException()));
+    	   } 
+    	   catch (IOException e1) 
+    	   {
+    	   }
+       }
 
       // check if no view exists
       if (ar != null && ar.getResult() != null && ar.getView() == null && !ar.getResult().equals(Action.NONE)) {
@@ -168,7 +178,13 @@ public class DeliveryServletDispatcher extends ServletDispatcher
           } 
           catch (IOException e) 
           {
+        	  e.printStackTrace();
               throw new ServletException(e);
+          } 
+          catch (Exception e) 
+          {
+        	  e.printStackTrace();
+        	  throw new ServletException(e);
           } 
           finally 
           {

@@ -822,9 +822,9 @@ public class ViewApplicationStateAction extends InfoGlueAbstractAction
         this.clearFileCache = clearFileCache;
     }
 
-    public List getSessionInfoBeanList() throws Exception
+    public int getActiveNumberOfSessions() throws Exception
     {
-    	return CmsSessionContextListener.getSessionInfoBeanList();
+    	return CmsSessionContextListener.getActiveSessions();
     }
     
     public String getServerName()

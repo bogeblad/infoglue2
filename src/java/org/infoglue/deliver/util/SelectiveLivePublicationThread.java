@@ -111,7 +111,6 @@ public class SelectiveLivePublicationThread extends PublicationThread
 	public synchronized void run()
 	{
 		logger.info("Run in SelectiveLivePublicationThread....");
-		System.out.println("Run in SelectiveLivePublicationThread....");
 		
 		int publicationDelay = 5000;
 	    String publicationThreadDelay = CmsPropertyHandler.getPublicationThreadDelay();
@@ -417,7 +416,7 @@ public class SelectiveLivePublicationThread extends PublicationThread
 							logger.info("Shortening page stats");
 							RequestAnalyser.shortenPageStatistics();
 
-						    logger.warn("Updating all caches from SelectiveLivePublicationThread as this was a publishing-update\n\n\n");
+						    logger.info("Updating all caches from SelectiveLivePublicationThread as this was a publishing-update\n\n\n");
 						    //CacheController.clearCastorCaches();
 
 						    String[] excludedCaches = CacheController.getPublicationPersistentCacheNames();

@@ -9,5 +9,5 @@
 		<item name="$formatter.escapeExtendedHTML($state.get(0))">$formatter.escapeExtendedHTML("$state.get(1)")</item>
   	#end
 	</items>
-	<sessionCount>$sessionInfoBeanList.size()</sessionCount>
+	<sessionCount>$activeNumberOfSessions</sessionCount>
 </applicationState>
