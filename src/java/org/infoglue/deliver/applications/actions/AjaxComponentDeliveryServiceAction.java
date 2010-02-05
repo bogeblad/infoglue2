@@ -144,6 +144,7 @@ public class AjaxComponentDeliveryServiceAction extends InfoGlueAbstractAction
                 logger.info("Returning:" + propertiesDiv.toString());
 
             this.getResponse().setContentType("text/plain");
+            this.getResponse().setCharacterEncoding("utf-8");
     		this.getResponse().getWriter().println(propertiesDiv.toString());
     	}
     	else
@@ -157,6 +158,7 @@ public class AjaxComponentDeliveryServiceAction extends InfoGlueAbstractAction
 		    String secondPart = template.substring(template.indexOf("$propertiesDiv") + 14);
 		    template = firstPart + "" + propertiesDiv.toString() + secondPart;
             this.getResponse().setContentType("text/html");
+            this.getResponse().setCharacterEncoding("utf-8");
     		this.getResponse().getWriter().println(template);
     	}
     	
@@ -244,6 +246,7 @@ public class AjaxComponentDeliveryServiceAction extends InfoGlueAbstractAction
 		}
     	
         this.getResponse().setContentType("text/plain");
+        this.getResponse().setCharacterEncoding("utf-8");
         this.getResponse().getWriter().println(tasksDiv.toString());
 
         if(logger.isInfoEnabled())
@@ -315,6 +318,7 @@ public class AjaxComponentDeliveryServiceAction extends InfoGlueAbstractAction
 		}
      	    	
         this.getResponse().setContentType("text/plain");
+        this.getResponse().setCharacterEncoding("utf-8");
         this.getResponse().getWriter().println(availableComponentDiv);
 
         if(logger.isInfoEnabled())
@@ -377,6 +381,7 @@ public class AjaxComponentDeliveryServiceAction extends InfoGlueAbstractAction
 		}
     	
         this.getResponse().setContentType("text/plain");
+        this.getResponse().setCharacterEncoding("utf-8");
         this.getResponse().getWriter().println(componentStructureDiv.toString());
 
         if(logger.isInfoEnabled())
