@@ -121,6 +121,8 @@ public class ViewServerNodePropertiesAction extends InfoGluePropertiesAbstractAc
 	    populate(ps, "deliverRequestTimeout");
 	    populate(ps, "liveDeliverRequestTimeout");
 	    populate(ps, "killLiveRequestWhichTimedout");
+	    populate(ps, "useSynchronizationOnCaches");
+	    populate(ps, "useHashCodeInCaches");
 	    populate(ps, "useHighLoadLimiter");
 	    populate(ps, "maxActiveRequests");
 	    populate(ps, "maxRequestTime");
