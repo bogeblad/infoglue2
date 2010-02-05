@@ -1792,7 +1792,7 @@ public class ComponentLogic
 				    NodeDeliveryController nodeDeliveryController = NodeDeliveryController.getNodeDeliveryController(this.templateController.getSiteNodeId(), this.templateController.getLanguageId(), this.templateController.getContentId());
 					
 				    List usedRepositoryIds = new ArrayList();
-					SiteNodeVO parentSiteNodeVO = nodeDeliveryController.getSiteNode(templateController.getDatabase(), this.templateController.getSiteNodeId()).getValueObject();
+					SiteNodeVO parentSiteNodeVO = nodeDeliveryController.getSiteNodeVO(templateController.getDatabase(), this.templateController.getSiteNodeId());
 				    while(property == null && parentSiteNodeVO != null)
 					{				    	
 				    	usedRepositoryIds.add(parentSiteNodeVO.getRepositoryId());
@@ -1851,7 +1851,7 @@ public class ComponentLogic
 			try
 			{
 			    NodeDeliveryController nodeDeliveryController = NodeDeliveryController.getNodeDeliveryController(siteNodeId, this.templateController.getLanguageId(), this.templateController.getContentId());
-				SiteNodeVO parentSiteNodeVO = nodeDeliveryController.getSiteNode(templateController.getDatabase(), siteNodeId).getValueObject();
+				SiteNodeVO parentSiteNodeVO = nodeDeliveryController.getSiteNodeVO(templateController.getDatabase(), siteNodeId);
 
 				while(property == null && parentSiteNodeVO != null)
 				{
@@ -2396,7 +2396,7 @@ public class ComponentLogic
 			{
 			    NodeDeliveryController nodeDeliveryController = NodeDeliveryController.getNodeDeliveryController(siteNodeId, this.templateController.getLanguageId(), this.templateController.getContentId());
 			
-				SiteNodeVO parentSiteNodeVO = nodeDeliveryController.getSiteNode(templateController.getDatabase(), siteNodeId).getValueObject();
+				SiteNodeVO parentSiteNodeVO = nodeDeliveryController.getSiteNodeVO(templateController.getDatabase(), siteNodeId);
 				while(properties == null || properties.size() == 0 && parentSiteNodeVO != null)
 				{
 					properties = getInheritedComponentProperties(this.templateController, parentSiteNodeVO.getId(), this.templateController.getLanguageId(), this.templateController.getContentId(), this.infoGlueComponent.getId(), propertyName);

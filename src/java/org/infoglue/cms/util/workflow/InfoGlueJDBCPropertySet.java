@@ -785,7 +785,7 @@ public class InfoGlueJDBCPropertySet extends JDBCPropertySet
     
     public void setupDriver(String connectURI, String userName, String password) throws Exception 
     {
-    	String validationQuery = "SELECT count(*) FROM " + tableName;
+    	String validationQuery = "select 1 from cmInfoGlueProperties";
     	
     	logger.info("Setting up driver.");
         Class.forName(this.driverClassName).newInstance();

@@ -49,7 +49,7 @@ public class Counter
     private static Long maxElapsedTime = new Long(0);
     private static Map allComponentsStatistics = new HashMap();
     private static Map allPageStatistics = new HashMap();
-    private static LinkedBlockingQueue latestPublications = new LinkedBlockingQueue(5);
+    private static LinkedBlockingQueue latestPublications = new LinkedBlockingQueue(10);
     
     private Counter(){}
 
@@ -95,14 +95,14 @@ public class Counter
         return latestPublicationsList;
     }
 
-    synchronized static void addPublication(Date publicationDate)
+    synchronized static void addPublication(String description)
     {
     	synchronized (latestPublications)
 		{
     		if(latestPublications.remainingCapacity() == 0)
     			latestPublications.poll();
     		
-    		latestPublications.add(publicationDate);
+    		latestPublications.add(description);
 		}
     }
 
@@ -175,10 +175,11 @@ public class Counter
     	return pageStatistics;
     }
 
-    synchronized static void registerComponentStatistics(String componentName, long elapsedTime)
+    static void registerComponentStatistics(String componentName, long elapsedTime)
     {
     	Map componentStatistics = getComponentStatistics(componentName);   
-    	synchronized (componentStatistics) 
+    	//synchronized (componentStatistics) 
+    	try
     	{
         	Long oldTotalElapsedTime = (Long)componentStatistics.get("totalElapsedTime");
         	Long totalElapsedTime = new Long(oldTotalElapsedTime.longValue() + elapsedTime);			
@@ -187,13 +188,18 @@ public class Counter
         	Integer oldTotalNumberOfInvokations = (Integer)componentStatistics.get("totalNumberOfInvokations");
         	Integer totalNumberOfInvokations = new Integer(oldTotalNumberOfInvokations.intValue() + 1);			
         	componentStatistics.put("totalNumberOfInvokations", totalNumberOfInvokations);
-    	}    	
+    	}  
+    	catch (Exception e) 
+    	{
+    		System.out.println("Error in registerComponentStatistics: " + e.getMessage());
+		}
     }
 
-    synchronized static void registerPageStatistics(String pageUrl, long elapsedTime)
+    static void registerPageStatistics(String pageUrl, long elapsedTime)
     {
     	Map pageStatistics = getPageStatistics(pageUrl);   
-    	synchronized (pageStatistics) 
+    	//synchronized (pageStatistics) 
+    	try
     	{
         	Long oldTotalElapsedTime = (Long)pageStatistics.get("totalElapsedTime");
            	Long totalElapsedTime = new Long(oldTotalElapsedTime.longValue() + elapsedTime);			
@@ -203,6 +209,10 @@ public class Counter
         	Integer totalNumberOfInvokations = new Integer(oldTotalNumberOfInvokations.intValue() + 1);			
         	pageStatistics.put("totalNumberOfInvokations", totalNumberOfInvokations);
     	}    	
+    	catch (Exception e) 
+    	{
+    		System.out.println("Error in registerPageStatistics: " + e.getMessage());
+		}
     }
 
     static long getAverageElapsedTime(String componentName)

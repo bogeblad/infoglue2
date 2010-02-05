@@ -254,6 +254,10 @@
 			#editPropertyFieldCSS("ServerNode.property.cacheExpireInterval" "cacheExpireInterval" "$this.getPropertyValue('cacheExpireInterval')" "51" "$!serverNodeId")
 			#editPropertyFieldCSS("ServerNode.property.deliverRequestTimeout" "deliverRequestTimeout" "$this.getPropertyValue('deliverRequestTimeout')" "51" "$!serverNodeId")
 			#editPropertyFieldCSS("ServerNode.property.liveDeliverRequestTimeout" "liveDeliverRequestTimeout" "$this.getPropertyValue('liveDeliverRequestTimeout')" "51" "$!serverNodeId")
+			
+			#yesNoDropDownWithInheritCSS("ServerNode.property.useSynchronizationOnCaches" "useSynchronizationOnCaches" "$this.getPropertyValue('useSynchronizationOnCaches')")
+			#yesNoDropDownWithInheritCSS("ServerNode.property.useHashCodeInCaches" "useHashCodeInCaches" "$this.getPropertyValue('useHashCodeInCaches')")
+			
 			#yesNoDropDownWithInheritCSS("ServerNode.property.killLiveRequestWhichTimedout" "killLiveRequestWhichTimedout" "$this.getPropertyValue('killLiveRequestWhichTimedout')")
 			#yesNoDropDownWithInheritCSS("ServerNode.property.useHighLoadLimiter" "useHighLoadLimiter" "$this.getPropertyValue('useHighLoadLimiter')")
 			#editPropertyFieldCSS("ServerNode.property.maxActiveRequests" "maxActiveRequests" "$this.getPropertyValue('maxActiveRequests')" "51" "$!serverNodeId")

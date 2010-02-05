@@ -179,9 +179,10 @@ public class ViewPageFilter implements Filter
 	        	}
 	        	*/
 	        	
-	            while(!CmsPropertyHandler.getOperatingMode().equals("3") && RequestAnalyser.getRequestAnalyser().getBlockRequests())
+	            while(CmsPropertyHandler.getActuallyBlockOnBlockRequests() && RequestAnalyser.getRequestAnalyser().getBlockRequests())
 	            {
-	            	logger.warn("Queing up requests as cache eviction are taking place..");
+	            	if(logger.isInfoEnabled())
+	            		logger.info("Queing up requests as cache eviction are taking place..");
 	            	try { Thread.sleep(10); } catch (Exception e) {}
 	            }
 

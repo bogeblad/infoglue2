@@ -4540,7 +4540,7 @@ public class BasicTemplateController implements TemplateController
 
 		try
 		{
-			siteNodeVO = this.nodeDeliveryController.getSiteNode(getDatabase(), this.siteNodeId).getValueObject();
+			siteNodeVO = this.nodeDeliveryController.getSiteNodeVO(getDatabase(), this.siteNodeId);
 		}
 		catch(Exception e)
 		{
@@ -4561,7 +4561,7 @@ public class BasicTemplateController implements TemplateController
 
 		try
 		{
-			siteNodeVO = this.nodeDeliveryController.getSiteNode(getDatabase(), siteNodeId).getValueObject();
+			siteNodeVO = this.nodeDeliveryController.getSiteNodeVO(getDatabase(), siteNodeId);
 		}
 		catch(Exception e)
 		{

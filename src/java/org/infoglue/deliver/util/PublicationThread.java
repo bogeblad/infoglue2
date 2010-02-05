@@ -22,6 +22,8 @@
 */
 package org.infoglue.deliver.util;
 
+import java.util.Random;
+
 import org.apache.log4j.Logger;
 import org.infoglue.cms.util.CmsPropertyHandler;
 
@@ -48,6 +50,10 @@ public class PublicationThread extends Thread
 		    if(publicationThreadDelay != null && !publicationThreadDelay.equalsIgnoreCase("") && publicationThreadDelay.indexOf("publicationThreadDelay") == -1)
 		        publicationDelay = Integer.parseInt(publicationThreadDelay);
 		    
+		    Random r = new Random();
+		    int randint = (Math.abs(r.nextInt()) % 11) / 8 * 1000;
+		    publicationDelay = publicationDelay + randint;
+
 		    logger.info("\n\n\nSleeping " + publicationDelay + "ms.\n\n\n");
 			sleep(publicationDelay);
 		

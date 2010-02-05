@@ -58,7 +58,8 @@ public class ThreadMonitor implements Runnable
 	private boolean kill = false;
 	private long threadId;
 	private static long lastSentTimer = System.currentTimeMillis();
-	
+	private long startTimeInNs;
+		
 	/// Constructor.  Give it a thread to watch, and a timeout in milliseconds.
 	// After the timeout has elapsed, the thread gets killed.  If you want
 	// to cancel the kill, just call done().
@@ -124,6 +125,10 @@ public class ThreadMonitor implements Runnable
 	{
 		Thread me = Thread.currentThread();
 		me.setPriority(Thread.MAX_PRIORITY);
+
+		ThreadMXBean threadMXBean = ManagementFactory.getThreadMXBean();
+    	startTimeInNs = threadMXBean.getCurrentThreadCpuTime();
+
 		if (enabled)
 		{
 			do
@@ -146,6 +151,7 @@ public class ThreadMonitor implements Runnable
 			if(kill)
 			{
 				logger.error("Trying to kill thread with id:" + threadId);
+				//targetThread.interrupt();
 				//targetThread.stop();
 			}
 		}
@@ -160,7 +166,12 @@ public class ThreadMonitor implements Runnable
 		if((now - lastSentTimer) > 3000)
 		{			
 	    	StackTraceElement[] el = targetThread.getStackTrace();
-	        
+
+	        ThreadMXBean threadMXBean = ManagementFactory.getThreadMXBean();
+        	long stopTimeInNs = threadMXBean.getCurrentThreadCpuTime();
+	        long diff = (stopTimeInNs - startTimeInNs) / 1000000000;
+        	//System.out.println("diff:" + diff);
+        	
 	        StringBuffer stackString = new StringBuffer("\n\n" + message + "\n\n");
 	        stackString.append("ServerName: " + getServerName() + "\n");
 	        stackString.append("Maximum memory (MB): " + (Runtime.getRuntime().maxMemory() / 1024 / 1024) + "\n");
@@ -170,6 +181,7 @@ public class ThreadMonitor implements Runnable
 	        stackString.append("Number of current requests: " + RequestAnalyser.getRequestAnalyser().getNumberOfCurrentRequests() + "\n");
 	        stackString.append("Number of active requests: " + RequestAnalyser.getRequestAnalyser().getNumberOfActiveRequests() + "\n");
 	        stackString.append("Number of long requests: " + RequestAnalyser.getLongThreadMonitors().size() + "\n");
+	        stackString.append("Current thread time: " + diff + " seconds\n");
 	        stackString.append("Average time: " + RequestAnalyser.getRequestAnalyser().getAverageElapsedTime() + "\n");
 	        stackString.append("Longest time: " + RequestAnalyser.getRequestAnalyser().getMaxElapsedTime() + "\n");
 	        stackString.append("Original url: " + getOriginalFullURL() + "\n");
@@ -186,7 +198,7 @@ public class ThreadMonitor implements Runnable
 	            	else	
 	            		stackString.append("    ").append(frame.toString()).append("\n");
 	            	
-	            	if(j > 20) 
+	            	if((stackString.indexOf("infoglue") > -1 && j > 20) || j > 35)
 	            		break;
 				}                    
 	       	}

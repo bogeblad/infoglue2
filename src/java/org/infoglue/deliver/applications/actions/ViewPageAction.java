@@ -174,7 +174,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
         }
                     	    	
         //TODO - Can this be removed perhaps
-        while(!CmsPropertyHandler.getOperatingMode().equals("3") && RequestAnalyser.getRequestAnalyser().getBlockRequests())
+        while(CmsPropertyHandler.getActuallyBlockOnBlockRequests() && RequestAnalyser.getRequestAnalyser().getBlockRequests())
         {
         	//System.out.println("Queing up requests as cache eviction are taking place..");
         	Thread.sleep(10);
@@ -233,7 +233,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
    		try
 		{
 			validateAndModifyInputParameters(dbWrapper.getDatabase());
-	    	
+
 	    	this.nodeDeliveryController			= NodeDeliveryController.getNodeDeliveryController(this.siteNodeId, this.languageId, this.contentId);
 			this.integrationDeliveryController	= IntegrationDeliveryController.getIntegrationDeliveryController(this.siteNodeId, this.languageId, this.contentId);
 				    	
@@ -255,7 +255,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
 				protectDeliver = true;
 
 			isUserRedirected = handleAccessBasedProtocolRedirect(protectedSiteNodeVersionId, this.repositoryId, forceProtocolChangeSetting, dbWrapper.getDatabase());
-			
+
 			if(!isUserRedirected)
 			{
 				if(logger.isInfoEnabled())
@@ -301,7 +301,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
 	    		logger.info("pageKey:" + pageKey);
 
 	    	templateController = getTemplateController(dbWrapper, getSiteNodeId(), getLanguageId(), getContentId(), getRequest(), (InfoGluePrincipal)this.principal, false);
-			
+
 			if(logger.isInfoEnabled())
 				logger.info("handled extranet users: " + isUserRedirected);
 	
@@ -546,8 +546,6 @@ public class ViewPageAction extends InfoGlueAbstractAction
 			if(repositoryUseAccessBasedProtocolRedirects.equals("true") && CmsPropertyHandler.getOperatingMode().equals("3"))
 				useAccessBasedProtocolRedirects = true;
 			
-			//System.out.println("\n\nuseAccessBasedProtocolRedirects 2:" + useAccessBasedProtocolRedirects);
-			//System.out.println("forceProtocolChangeSetting 2:" + forceProtocolChangeSetting);
 			if(useAccessBasedProtocolRedirects || forceProtocolChangeSetting.equals(SiteNodeVersionVO.FORCE_SECURE))
 			{
 				String originalFullURL = getOriginalFullURL();
@@ -604,7 +602,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
 		if(CmsPropertyHandler.getOperatingMode().equals("3"))
 			return doExecute();
 				
-        while(!CmsPropertyHandler.getOperatingMode().equals("3") && RequestAnalyser.getRequestAnalyser().getBlockRequests())
+        while(CmsPropertyHandler.getActuallyBlockOnBlockRequests() && RequestAnalyser.getRequestAnalyser().getBlockRequests())
         {
         	//System.out.println("Queing up requests as cache eviction are taking place..");
         	Thread.sleep(10);
@@ -1033,7 +1031,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
 
 				
 				NodeDeliveryController ndc = NodeDeliveryController.getNodeDeliveryController(siteNodeId, languageId, contentId);
-				boolean isMasterLanguageValid = LanguageDeliveryController.getLanguageDeliveryController().getIsValidLanguage(db, ndc, ndc.getSiteNode(db, siteNodeId), masterLanguageVO.getId());
+				boolean isMasterLanguageValid = LanguageDeliveryController.getLanguageDeliveryController().getIsValidLanguage(db, ndc, ndc.getSiteNodeVO(db, siteNodeId), masterLanguageVO.getId());
 				if(!isMasterLanguageValid)
 				{
 				    logger.info("Master language was not allowed on this sitenode... let's take the next on in order");
@@ -1042,7 +1040,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
 				    while(languagesIterator.hasNext())
 				    {
 				        LanguageVO currentLanguage = (LanguageVO)languagesIterator.next();
-				        boolean isCurrentLanguageValid = LanguageDeliveryController.getLanguageDeliveryController().getIsValidLanguage(db, ndc, ndc.getSiteNode(db, siteNodeId), currentLanguage.getId());
+				        boolean isCurrentLanguageValid = LanguageDeliveryController.getLanguageDeliveryController().getIsValidLanguage(db, ndc, ndc.getSiteNodeVO(db, siteNodeId), currentLanguage.getId());
 					    logger.info("currentLanguage validity:" + isCurrentLanguageValid);
 				        if(isCurrentLanguageValid)
 				        {
@@ -1075,7 +1073,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
 					throw new SystemException("There was no master language for the siteNode " + getSiteNodeId());
 				
 				NodeDeliveryController ndc = NodeDeliveryController.getNodeDeliveryController(siteNodeId, languageId, contentId);
-				boolean isMasterLanguageValid = LanguageDeliveryController.getLanguageDeliveryController().getIsValidLanguage(db, ndc, ndc.getSiteNode(db, siteNodeId), masterLanguageVO.getId());
+				boolean isMasterLanguageValid = LanguageDeliveryController.getLanguageDeliveryController().getIsValidLanguage(db, ndc, ndc.getSiteNodeVO(db, siteNodeId), masterLanguageVO.getId());
 				if(!isMasterLanguageValid)
 				{
 				    logger.info("Master language was not allowed on this sitenode... let's take the next on in order");
@@ -1084,7 +1082,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
 				    while(languagesIterator.hasNext())
 				    {
 				        LanguageVO currentLanguage = (LanguageVO)languagesIterator.next();
-				        boolean isCurrentLanguageValid = LanguageDeliveryController.getLanguageDeliveryController().getIsValidLanguage(db, ndc, ndc.getSiteNode(db, siteNodeId), currentLanguage.getId());
+				        boolean isCurrentLanguageValid = LanguageDeliveryController.getLanguageDeliveryController().getIsValidLanguage(db, ndc, ndc.getSiteNodeVO(db, siteNodeId), currentLanguage.getId());
 					    logger.info("currentLanguage validity:" + isCurrentLanguageValid);
 				        if(isCurrentLanguageValid)
 				        {

@@ -230,9 +230,7 @@ public class RepositoryController extends BaseController
 		{
 			beginTransaction(db);
 
-			Repository repository = getRepositoryWithName(name, db);
-			if(repository != null)
-				repositoryVO = repository.getValueObject();
+			repositoryVO = getRepositoryVOWithName(name, db);
 			
 			commitTransaction(db);
 		} 
@@ -245,7 +243,46 @@ public class RepositoryController extends BaseController
 		
 		return repositoryVO;	
 	}
-	
+
+	/**
+	 * Returns the Repository with the given name fetched within a given transaction.
+	 * 
+	 * @param name
+	 * @param db
+	 * @return
+	 * @throws SystemException
+	 * @throws Bug
+	 */
+
+	public RepositoryVO getRepositoryVOWithName(String name, Database db) throws SystemException, Bug
+	{
+		RepositoryVO repositoryVO = null;
+		
+		try
+		{
+			OQLQuery oql = db.getOQLQuery("SELECT f FROM org.infoglue.cms.entities.management.impl.simple.RepositoryImpl f WHERE f.name = $1");
+			oql.bind(name);
+			
+			QueryResults results = oql.execute(Database.ReadOnly);
+			this.logger.info("Fetching entity in read/write mode" + name);
+
+			if (results.hasMore()) 
+			{
+				Repository repository = (Repository)results.next();
+				repositoryVO = repository.getValueObject();
+			}
+			
+			results.close();
+			oql.close();
+		}
+		catch(Exception e)
+		{
+			throw new SystemException("An error occurred when we tried to fetch a named repository. Reason:" + e.getMessage(), e);    
+		}
+		
+		return repositoryVO;		
+	}
+
 	/**
 	 * Returns the Repository with the given name fetched within a given transaction.
 	 * 

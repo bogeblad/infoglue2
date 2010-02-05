@@ -197,7 +197,7 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 		
 		NodeDeliveryController nodeDeliveryController = NodeDeliveryController.getNodeDeliveryController(this.getDeliveryContext());
 		
-		Integer repositoryId = nodeDeliveryController.getSiteNode(getDatabase(), this.getDeliveryContext().getSiteNodeId()).getRepository().getId();
+		Integer repositoryId = nodeDeliveryController.getSiteNodeVO(getDatabase(), this.getDeliveryContext().getSiteNodeId()).getRepositoryId();
 
 		String componentXML = getPageComponentsString(getDatabase(), this.getTemplateController(), this.getDeliveryContext().getSiteNodeId(), this.getDeliveryContext().getLanguageId(), this.getDeliveryContext().getContentId());
 		componentXML = appendPagePartTemplates(componentXML);

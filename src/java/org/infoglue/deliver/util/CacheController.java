@@ -47,6 +47,7 @@ import org.apache.pluto.portalImpl.services.ServiceManager;
 import org.apache.pluto.portalImpl.services.portletentityregistry.PortletEntityRegistry;
 import org.exolab.castor.jdo.CacheManager;
 import org.exolab.castor.jdo.Database;
+import org.infoglue.cms.applications.common.VisualFormatter;
 import org.infoglue.cms.controllers.kernel.impl.simple.CastorDatabaseService;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentVersionController;
 import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeVersionController;
@@ -132,6 +133,7 @@ import com.opensymphony.oscache.general.GeneralCacheAdministrator;
 public class CacheController extends Thread
 { 
     public final static Logger logger = Logger.getLogger(CacheController.class.getName());
+	private static VisualFormatter formatter = new VisualFormatter();
 
 	public static final String SETTINGSPROPERTIESCACHENAME = "serverNodePropertiesCache";
 	public static final String SETTINGSPROPERTIESDOCUMENTCACHENAME = "serverNodePropertiesDocumentCache";
@@ -151,32 +153,8 @@ public class CacheController extends Thread
 	
     public static Date expireDateTime = null;
     public static Date publishDateTime = null;
-
-    private static Boolean useHashCodeInCaches = null;
-    private static Boolean useSynchronizationOnCaches = null;
-    
-    public static void resetSpecial()
-    {
-    	useHashCodeInCaches = null;
-    	useSynchronizationOnCaches = null;
-    }
-    
-    private static Boolean getUseHashCodeInCaches()
-    {
-    	if(useHashCodeInCaches == null)
-    		useHashCodeInCaches = CmsPropertyHandler.getUseHashCodeInCaches();
-    	
-    	return useHashCodeInCaches;
-    }
-
-    private static Boolean getUseSynchronizationOnCaches()
-    {
-    	if(useSynchronizationOnCaches == null)
-    		useSynchronizationOnCaches = CmsPropertyHandler.getUseSynchronizationOnCaches();
-    	
-    	return useSynchronizationOnCaches;
-    }
-
+     
+   
 	public CacheController()
 	{
 		super();
@@ -213,6 +191,7 @@ public class CacheController extends Thread
 		clearCache("serverNodePropertiesCache");
 		clearCache("encodedStringsCache");
 		clearCache("principalToolPropertiesCache");
+		CmsPropertyHandler.resetHardCachedSettings();
    	}
 	
 	public static void cacheObject(String cacheName, Object key, Object value)
@@ -232,11 +211,11 @@ public class CacheController extends Thread
 			Map cacheInstance = (Map)caches.get(cacheName);
 			if(cacheInstance != null && key != null && value != null)
 		    {
-				if(getUseSynchronizationOnCaches())
+				if(CmsPropertyHandler.getUseSynchronizationOnCaches())
 				{
 					synchronized(cacheInstance)
 					{
-				    	if(getUseHashCodeInCaches())
+				    	if(CmsPropertyHandler.getUseHashCodeInCaches())
 				    		cacheInstance.put("" + key.hashCode(), value);
 				    	else
 				    		cacheInstance.put(key, value);
@@ -244,7 +223,7 @@ public class CacheController extends Thread
 				}
 				else
 				{
-				   	if(getUseHashCodeInCaches())
+				   	if(CmsPropertyHandler.getUseHashCodeInCaches())
 			    		cacheInstance.put("" + key.hashCode(), value);
 			    	else
 			    		cacheInstance.put(key, value);
@@ -264,11 +243,11 @@ public class CacheController extends Thread
 			if(cacheInstance != null)
 		    {
 				//TODO
-				if(getUseSynchronizationOnCaches())
+				if(CmsPropertyHandler.getUseSynchronizationOnCaches())
 				{
 					synchronized(cacheInstance)
 					{
-						if(getUseHashCodeInCaches())
+						if(CmsPropertyHandler.getUseHashCodeInCaches())
 							return cacheInstance.get("" + key.hashCode());
 						else
 							return cacheInstance.get(key);
@@ -276,7 +255,7 @@ public class CacheController extends Thread
 				}
 				else
 				{
-					if(getUseHashCodeInCaches())
+					if(CmsPropertyHandler.getUseHashCodeInCaches())
 						return cacheInstance.get("" + key.hashCode());
 					else
 						return cacheInstance.get(key);
@@ -386,7 +365,7 @@ public class CacheController extends Thread
 			GeneralCacheAdministrator cacheAdministrator = (GeneralCacheAdministrator)caches.get(cacheName);
 			
 			//TODO
-			if(useSynchronizationOnCaches)
+			if(CmsPropertyHandler.getUseSynchronizationOnCaches())
 			{
 				synchronized(cacheAdministrator)
 				{
@@ -394,14 +373,14 @@ public class CacheController extends Thread
 					{
 						if(useGroups)
 						{
-							if(getUseHashCodeInCaches())
+							if(CmsPropertyHandler.getUseHashCodeInCaches())
 								cacheAdministrator.putInCache("" + key.toString().hashCode(), value, groups);
 							else
 								cacheAdministrator.putInCache(key.toString(), value, groups);
 						}
 						else
 						{
-							if(getUseHashCodeInCaches())
+							if(CmsPropertyHandler.getUseHashCodeInCaches())
 								cacheAdministrator.putInCache("" + key.toString().hashCode(), value);
 							else
 							    cacheAdministrator.putInCache(key.toString(), value);
@@ -419,14 +398,14 @@ public class CacheController extends Thread
 				{
 					if(useGroups)
 					{
-						if(getUseHashCodeInCaches())
+						if(CmsPropertyHandler.getUseHashCodeInCaches())
 							cacheAdministrator.putInCache("" + key.toString().hashCode(), value, groups);
 						else
 							cacheAdministrator.putInCache(key.toString(), value, groups);
 					}
 					else
 					{
-						if(getUseHashCodeInCaches())
+						if(CmsPropertyHandler.getUseHashCodeInCaches())
 							cacheAdministrator.putInCache("" + key.toString().hashCode(), value);
 						else
 						    cacheAdministrator.putInCache(key.toString(), value);
@@ -471,13 +450,13 @@ public class CacheController extends Thread
 		    if(cacheAdministrator != null)
 		    {
 		    	//TODO
-		    	if(useSynchronizationOnCaches)
+		    	if(CmsPropertyHandler.getUseSynchronizationOnCaches())
 				{
 		    		synchronized(cacheAdministrator)
 		    		{
 					    try 
 					    {
-							if(getUseHashCodeInCaches())
+							if(CmsPropertyHandler.getUseHashCodeInCaches())
 								value = (cacheAdministrator == null) ? null : cacheAdministrator.getFromCache("" + key.hashCode(), CacheEntry.INDEFINITE_EXPIRY);
 							else
 								value = (cacheAdministrator == null) ? null : cacheAdministrator.getFromCache(key, CacheEntry.INDEFINITE_EXPIRY);
@@ -491,7 +470,7 @@ public class CacheController extends Thread
 					    	
 					    	try
 					    	{
-								if(getUseHashCodeInCaches())
+								if(CmsPropertyHandler.getUseHashCodeInCaches())
 									cacheAdministrator.cancelUpdate("" + key.hashCode());
 								else
 									cacheAdministrator.cancelUpdate(key);
@@ -507,7 +486,7 @@ public class CacheController extends Thread
 		    	{
 				    try 
 				    {
-						if(getUseHashCodeInCaches())
+						if(CmsPropertyHandler.getUseHashCodeInCaches())
 							value = (cacheAdministrator == null) ? null : cacheAdministrator.getFromCache("" + key.hashCode(), CacheEntry.INDEFINITE_EXPIRY);
 						else
 							value = (cacheAdministrator == null) ? null : cacheAdministrator.getFromCache(key, CacheEntry.INDEFINITE_EXPIRY);
@@ -521,7 +500,7 @@ public class CacheController extends Thread
 				    	
 				    	try
 				    	{
-							if(getUseHashCodeInCaches())
+							if(CmsPropertyHandler.getUseHashCodeInCaches())
 								cacheAdministrator.cancelUpdate("" + key.hashCode());
 							else
 								cacheAdministrator.cancelUpdate(key);
@@ -542,7 +521,7 @@ public class CacheController extends Thread
 	    		{
 	    			if(logger.isInfoEnabled())
 	        			logger.info("Got cached content from file as it did not exist in memory...:" + value.toString().length());
-					if(getUseHashCodeInCaches())
+					if(CmsPropertyHandler.getUseHashCodeInCaches())
 						cacheObjectInAdvancedCache(cacheName, "" + key.hashCode(), value);
 					else
 						cacheObjectInAdvancedCache(cacheName, key, value);
@@ -575,13 +554,13 @@ public class CacheController extends Thread
 		    if(cacheAdministrator != null)
 		    {
 		    	//TODO
-		    	if(useSynchronizationOnCaches)
+		    	if(CmsPropertyHandler.getUseSynchronizationOnCaches())
 		    	{
 		    		synchronized(cacheAdministrator)
 		    		{
 					    try 
 					    {
-					        if(getUseHashCodeInCaches())
+					        if(CmsPropertyHandler.getUseHashCodeInCaches())
 					        	value = (cacheAdministrator == null) ? null : cacheAdministrator.getFromCache("" + key.hashCode(), updateInterval);
 					        else
 					        	value = (cacheAdministrator == null) ? null : cacheAdministrator.getFromCache(key, updateInterval);
@@ -593,7 +572,7 @@ public class CacheController extends Thread
 					    		stopUseFileCacheFallback = true;
 					    	}
 					    	
-					        if(getUseHashCodeInCaches())
+					        if(CmsPropertyHandler.getUseHashCodeInCaches())
 					        	cacheAdministrator.cancelUpdate("" + key.hashCode());
 					        else
 					        	cacheAdministrator.cancelUpdate(key);
@@ -604,7 +583,7 @@ public class CacheController extends Thread
 		    	{
 		    		try 
 				    {
-				        if(getUseHashCodeInCaches())
+				        if(CmsPropertyHandler.getUseHashCodeInCaches())
 				        	value = (cacheAdministrator == null) ? null : cacheAdministrator.getFromCache("" + key.hashCode(), updateInterval);
 				        else
 				        	value = (cacheAdministrator == null) ? null : cacheAdministrator.getFromCache(key, updateInterval);
@@ -616,7 +595,7 @@ public class CacheController extends Thread
 				    		stopUseFileCacheFallback = true;
 				    	}
 				    	
-				        if(getUseHashCodeInCaches())
+				        if(CmsPropertyHandler.getUseHashCodeInCaches())
 				        	cacheAdministrator.cancelUpdate("" + key.hashCode());
 				        else
 				        	cacheAdministrator.cancelUpdate(key);
@@ -632,7 +611,7 @@ public class CacheController extends Thread
 		    		{
 		    			if(logger.isInfoEnabled())
 		        			logger.info("Got cached content from file as it did not exist in memory...:" + value.toString().length());
-				        if(getUseHashCodeInCaches())
+				        if(CmsPropertyHandler.getUseHashCodeInCaches())
 				        	cacheObjectInAdvancedCache(cacheName, "" + key.hashCode(), value);
 				        else
 				        	cacheObjectInAdvancedCache(cacheName, key, value);
@@ -1660,6 +1639,7 @@ public class CacheController extends Thread
 	    {
 	       	if(RequestAnalyser.getRequestAnalyser().getBlockRequests())
 		    {
+			    //System.out.println("evictWaitingCache allready in progress - returning to avoid conflict");
 			    logger.info("evictWaitingCache allready in progress - returning to avoid conflict");
 		        return;
 		    }
@@ -1680,7 +1660,7 @@ public class CacheController extends Thread
 	    	if(operatingMode != null && operatingMode.equalsIgnoreCase("3")) //If published-mode we update entire cache to be sure..
 			{
 	        	if(livePublicationThreadClass.equalsIgnoreCase("org.infoglue.deliver.util.SelectiveLivePublicationThread"))
-	    			pt = new SelectiveLivePublicationThread();
+	    			pt = new SelectiveLivePublicationThread(notifications);
 	        }
     	}
     	catch (Exception e) 
@@ -1691,104 +1671,87 @@ public class CacheController extends Thread
     	List localNotifications = new ArrayList();
     	
     	boolean startedThread = false;
-    	logger.info("before notifications:" + notifications.size());
-	    synchronized(notifications)
-        {
-	    	localNotifications.addAll(notifications);
-	    	notifications.clear();
-        }
-	    
-    	Iterator i = localNotifications.iterator();
-		while(i.hasNext())
-		{
-		    CacheEvictionBean cacheEvictionBean = (CacheEvictionBean)i.next();
-		    String className = cacheEvictionBean.getClassName();
-		    String objectId = cacheEvictionBean.getObjectId();
-		    String objectName = cacheEvictionBean.getObjectName();
-			String typeId = cacheEvictionBean.getTypeId();
 
-			logger.info("className:" + className);
-			logger.info("pt:" + pt);
-			RequestAnalyser.getRequestAnalyser().addPublication(new Date());
-			
-		    if(pt == null)
-		    	wpt.getCacheEvictionBeans().add(cacheEvictionBean);
-		    else
-		    	pt.getCacheEvictionBeans().add(cacheEvictionBean);
+    	if(pt == null)
+    	{
+	    	logger.info("before notifications:" + notifications.size());
+		    synchronized(notifications)
+	        {
+		    	localNotifications.addAll(notifications);
+		    	notifications.clear();
+	        }
 		    
-		    //wpt.getCacheEvictionBeans().add(cacheEvictionBean);
-		    
-		    
-			try
-		    {
-				//Here we do what we need to if the server properties has changed.
-			    if(className != null && className.equalsIgnoreCase("ServerNodeProperties"))
-			    {
-					try 
-					{
-						logger.info("clearing InfoGlueAuthenticationFilter");
-						clearServerNodeProperty(true);
-						logger.info("cleared InfoGlueAuthenticationFilter");
-						InfoGlueAuthenticationFilter.initializeProperties();
-						logger.info("initialized InfoGlueAuthenticationFilter");
-						logger.info("Shortening page stats");
-						RequestAnalyser.shortenPageStatistics();
-					} 
-					catch (Exception e1) 
-					{
-						logger.warn("Could not refresh authentication filter:" + e1.getMessage(), e1);
-					}
-					catch (Throwable t) 
-					{
-						logger.warn("Could not refresh authentication filter:" + t.getMessage(), t);
-					}
-			    }
-
-			    if(operatingMode != null && !operatingMode.equalsIgnoreCase("3") && className != null && className.equalsIgnoreCase("PortletRegistry"))
-			    {
-					logger.info("clearing portletRegistry");
-					clearPortlets();
-					logger.info("cleared portletRegistry");
-			    }
-
-			    /*
-			 	//if(operatingMode != null && operatingMode.equalsIgnoreCase("0")) //If published-mode we update entire cache to be sure..
-				if(CmsPropertyHandler.getOperatingMode() != null && CmsPropertyHandler.getOperatingMode().equalsIgnoreCase("3")) //If published-mode we update entire cache to be sure..
-				{
-		            logger.info("Starting publication thread...");
-	            	PublicationThread pt = new PublicationThread();
-	            	pt.setPriority(Thread.MIN_PRIORITY);
-	            	pt.start();
-	            	startedThread = true;
-	            	logger.info("Done starting publication thread...");
-	            }
-	            */
-	            
-			    //if(operatingMode != null && operatingMode.equalsIgnoreCase("0")) //If published-mode we update entire cache to be sure..
-				if(operatingMode != null && operatingMode.equalsIgnoreCase("3")) //If published-mode we update entire cache to be sure..
-				{
-					if(!livePublicationThreadClass.equalsIgnoreCase("org.infoglue.deliver.util.SelectiveLivePublicationThread"))
-					{	
-			    	    logger.info("Starting publication thread...");
-		            	PublicationThread lpt = new PublicationThread();
-		            	lpt.setPriority(Thread.MIN_PRIORITY);
-		            	lpt.start();
-		            	startedThread = true;
-		            	logger.info("Done starting publication thread...");
-		            }
-	            }
+	    	Iterator i = localNotifications.iterator();
+			while(i.hasNext())
+			{
+			    CacheEvictionBean cacheEvictionBean = (CacheEvictionBean)i.next();
+			    String className = cacheEvictionBean.getClassName();
+			    
+				logger.info("className:" + className);
+				logger.info("pt:" + pt);
+				RequestAnalyser.getRequestAnalyser().addPublication("" + formatter.formatDate(new Date(), "yyyy-MM-dd HH:mm:ss") + " - " + cacheEvictionBean.getClassName() + " - " + cacheEvictionBean.getObjectId());
 				
-		    }
-		    catch(Exception e)
-		    {
-		        logger.error("Cache eviction reported an error:" + e.getMessage(), e);
-		    }
-
-	        logger.info("Cache evicted..");
-
-			i.remove();
-		}
-
+			    if(pt == null)
+			    	wpt.getCacheEvictionBeans().add(cacheEvictionBean);
+			    //else
+			    //	pt.getCacheEvictionBeans().add(cacheEvictionBean);
+			       
+				try
+			    {
+					//Here we do what we need to if the server properties has changed.
+				    if(className != null && className.equalsIgnoreCase("ServerNodeProperties"))
+				    {
+						try 
+						{
+							logger.info("clearing InfoGlueAuthenticationFilter");
+							clearServerNodeProperty(true);
+							logger.info("cleared InfoGlueAuthenticationFilter");
+							InfoGlueAuthenticationFilter.initializeProperties();
+							logger.info("initialized InfoGlueAuthenticationFilter");
+							logger.info("Shortening page stats");
+							RequestAnalyser.shortenPageStatistics();
+						} 
+						catch (Exception e1) 
+						{
+							logger.warn("Could not refresh authentication filter:" + e1.getMessage(), e1);
+						}
+						catch (Throwable t) 
+						{
+							logger.warn("Could not refresh authentication filter:" + t.getMessage(), t);
+						}
+				    }
+	
+				    if(operatingMode != null && !operatingMode.equalsIgnoreCase("3") && className != null && className.equalsIgnoreCase("PortletRegistry"))
+				    {
+						logger.info("clearing portletRegistry");
+						clearPortlets();
+						logger.info("cleared portletRegistry");
+				    }
+	
+					if(operatingMode != null && operatingMode.equalsIgnoreCase("3")) //If published-mode we update entire cache to be sure..
+					{
+						if(!livePublicationThreadClass.equalsIgnoreCase("org.infoglue.deliver.util.SelectiveLivePublicationThread"))
+						{	
+				    	    logger.info("Starting publication thread...");
+			            	PublicationThread lpt = new PublicationThread();
+			            	lpt.setPriority(Thread.MIN_PRIORITY);
+			            	lpt.start();
+			            	startedThread = true;
+			            	logger.info("Done starting publication thread...");
+			            }
+		            }
+			    }
+			    catch(Exception e)
+			    {
+			        logger.error("Cache eviction reported an error:" + e.getMessage(), e);
+			    }
+	
+		        logger.info("Cache evicted..");
+	
+				i.remove();
+			}
+    	}
+    	
 		if(operatingMode != null && !operatingMode.equalsIgnoreCase("3"))
 		{
 			logger.info("Starting the work method");
@@ -1799,13 +1762,22 @@ public class CacheController extends Thread
         	logger.info("Done starting working publication thread...");
 		}
 
-		if(operatingMode != null && operatingMode.equalsIgnoreCase("3") && pt != null && pt.getCacheEvictionBeans().size() > 0) //If published-mode we update entire cache to be sure..
+		if(operatingMode != null && operatingMode.equalsIgnoreCase("3") && pt != null) //If published-mode we update entire cache to be sure..
 		{
-			logger.info("Starting selective publication thread [" + pt.getClass().getName() + "]");
-	    	pt.setPriority(Thread.MIN_PRIORITY);
-	    	pt.start();
-	    	startedThread = true;
-	    	logger.info("Done starting publication thread...");
+			int size = 0;
+			synchronized(notifications)
+	        {
+				size = notifications.size();
+	        }
+			
+			if(size > 0)
+			{
+				logger.info("Starting selective publication thread [" + pt.getClass().getName() + "]");
+		    	pt.setPriority(Thread.MIN_PRIORITY);
+		    	pt.start();
+		    	startedThread = true;
+		    	logger.info("Done starting publication thread...");
+			}
 		}
 		
 	    if(!startedThread)

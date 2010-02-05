@@ -2146,7 +2146,8 @@ public class NodeDeliveryController extends BaseDeliveryController
 			}
 			
 	        logger.info("Fetching the root siteNode for the repository " + repositoryId);
-			OQLQuery oql = db.getOQLQuery( "SELECT c FROM org.infoglue.cms.entities.structure.impl.simple.SiteNodeImpl c WHERE is_undefined(c.parentSiteNode) AND c.repository = $1");
+			//OQLQuery oql = db.getOQLQuery( "SELECT c FROM org.infoglue.cms.entities.structure.impl.simple.SiteNodeImpl c WHERE is_undefined(c.parentSiteNode) AND c.repository = $1");
+			OQLQuery oql = db.getOQLQuery( "SELECT c FROM org.infoglue.cms.entities.structure.impl.simple.SmallSiteNodeImpl c WHERE is_undefined(c.parentSiteNode) AND c.repositoryId = $1");
 			oql.bind(repositoryId);
 			
 	    	QueryResults results = oql.execute(Database.ReadOnly);
@@ -2154,13 +2155,15 @@ public class NodeDeliveryController extends BaseDeliveryController
 	    	if (results.hasMore()) 
 	        {
 	        	siteNodeVO = ((SiteNode)results.next()).getValueObject();
-				logger.info("The root node was found:" + siteNodeVO.getName());
+				if(logger.isInfoEnabled())
+					logger.info("The root node was found:" + siteNodeVO.getName());
 	        }
 
 	    	results.close();
 			oql.close();
 
-			logger.info("siteNodeVO:" + siteNodeVO);
+			if(logger.isInfoEnabled())
+				logger.info("siteNodeVO:" + siteNodeVO);
 
 			CacheController.cacheObject("rootSiteNodeCache", key, siteNodeVO);
 		}

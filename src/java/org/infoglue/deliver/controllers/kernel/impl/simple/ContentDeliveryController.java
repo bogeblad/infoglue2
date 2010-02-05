@@ -1665,7 +1665,7 @@ public class ContentDeliveryController extends BaseDeliveryController
 		if(contentId == null || contentId.intValue() < 1)
 			return "";
 
-	    SiteNodeVO siteNodeVO = SiteNodeController.getController().getSiteNodeVOWithId(siteNodeId, db);
+	    SiteNodeVO siteNodeVO = SiteNodeController.getController().getSmallSiteNodeVOWithId(siteNodeId, db);
 
 	    String assetCacheKey = "" + languageId + "_" + contentId + "_" + siteNodeVO.getRepositoryId() + "_" + assetKey + "_" + useLanguageFallback + "_" + deliveryContext.getUseFullUrl() + "_" + deliveryContext.getUseDownloadAction();
 	    
@@ -2502,10 +2502,12 @@ public class ContentDeliveryController extends BaseDeliveryController
 			}
 		}
 		*/
+		//Timer t = new Timer();
 		
 		deliveryContext.addUsedContent("selectiveCacheUpdateNonApplicable");
 
-		OQLQuery oql = db.getOQLQuery("SELECT content FROM org.infoglue.cms.entities.content.impl.simple.ContentImpl content WHERE content.parentContent.contentId = $1 ORDER BY content.contentId");
+		OQLQuery oql = db.getOQLQuery("SELECT content FROM org.infoglue.cms.entities.content.impl.simple.SmallContentImpl content WHERE content.parentContentId = $1 ORDER BY content.contentId");
+		//OQLQuery oql = db.getOQLQuery("SELECT content FROM org.infoglue.cms.entities.content.impl.simple.ContentImpl content WHERE content.parentContent.contentId = $1 ORDER BY content.contentId");
     	oql.bind(contentId);
     	
     	QueryResults results = oql.execute(Database.ReadOnly);
@@ -2525,6 +2527,8 @@ public class ContentDeliveryController extends BaseDeliveryController
 		
 		results.close();
 		oql.close();
+		
+		//t.printElapsedTime("getChildContents took");
 	}
 
 	

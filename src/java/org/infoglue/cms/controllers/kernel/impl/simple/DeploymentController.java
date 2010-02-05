@@ -36,8 +36,10 @@ import org.infoglue.cms.applications.managementtool.actions.deployment.VersionCo
 import org.infoglue.cms.entities.content.Content;
 import org.infoglue.cms.entities.content.ContentVO;
 import org.infoglue.cms.entities.content.ContentVersionVO;
+import org.infoglue.cms.entities.management.Language;
 import org.infoglue.cms.entities.management.LanguageVO;
 import org.infoglue.cms.entities.management.Repository;
+import org.infoglue.cms.entities.management.RepositoryVO;
 import org.infoglue.cms.exception.ConstraintException;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.io.FileHelper;
@@ -100,7 +102,7 @@ public class DeploymentController
 		    logger.info("taggedFiles:" + taggedFiles);
 		    
 		    File moduleRoot = new File(localPath + File.separator + versionControlServerBean.getModuleName());
-		    getDeploymentComparisonBeansRecursive(moduleRoot, deploymentCompareBeans, null, db, principal, cvsFakeContentId);
+		    getDeploymentComparisonBeansRecursive(moduleRoot, deploymentCompareBeans, null, db, principal, cvsFakeContentId, false, false, false);
 	
 			ceb.throwIfNotEmpty();
             
@@ -123,7 +125,7 @@ public class DeploymentController
 		return deploymentCompareBeans;
 	}
 	
-	private static void getDeploymentComparisonBeansRecursive(File parentFile, List<DeploymentCompareBean> deploymentCompareBeans, final Content parentContent, Database db, InfoGluePrincipal principal, int cvsFakeContentId) throws Exception
+	private static void getDeploymentComparisonBeansRecursive(File parentFile, List<DeploymentCompareBean> deploymentCompareBeans, final Content parentContent, Database db, InfoGluePrincipal principal, int cvsFakeContentId, boolean isWebContentLevel, boolean isRepositoryLevel, boolean isComponentLevel) throws Exception
 	{
 		Content localParentContent = parentContent;
 		
@@ -131,34 +133,60 @@ public class DeploymentController
 		if(parentFile.isFile())
 			fileContent = FileHelper.getFileAsString(parentFile, "iso-8859-1");
 		
-		Repository repository = null;
+		RepositoryVO repositoryVO = null;
 
 		if(parentContent != null)
 			logger.info("\n\n****************************\nparentContent in top:" + parentContent.getName() + "= File:" + parentFile.getName());
 
-		if(!parentFile.getName().equalsIgnoreCase("localIG3") && 
-		   !parentFile.getName().equalsIgnoreCase("WebContent") && 
-		   !parentFile.getParentFile().getName().equalsIgnoreCase("WebContent"))
+
+		boolean newIsWebContentLevel = isWebContentLevel;
+		boolean newIsRepositoryLevel = isRepositoryLevel;
+		boolean newIsComponentLevel = isComponentLevel;
+		
+		LanguageVO masterLanguageVO = null;
+
+		logger.info("isWebContentLevel:" + isWebContentLevel + "\n" + "isRepositoryLevel:" + isRepositoryLevel + "\n" + "isComponentLevel:" + isComponentLevel);
+		if(!isWebContentLevel && parentFile.getName().equalsIgnoreCase("WebContent"))
 		{
-			logger.info("This was a content:" + parentFile.getName());
+			logger.info("Reached WebContent... activating");
+			newIsWebContentLevel = true;
+		}
+		else if(isWebContentLevel && !isRepositoryLevel)
+		{
+			logger.info("Reached Repository level... activating:" + parentFile.getName());
+			logger.info("This was a repository:" + parentFile.getPath());
+			repositoryVO = RepositoryController.getController().getRepositoryVOWithName(parentFile.getName(), db);
+			if(repositoryVO != null)
+			{
+				localParentContent = ContentController.getContentController().getRootContent(db, repositoryVO.getId(), principal.getName(), false);
+				masterLanguageVO = LanguageController.getController().getMasterLanguage(db, localParentContent.getRepositoryId()).getValueObject();
+			}
 			
-			if(parentContent != null)
+			newIsRepositoryLevel = true;
+		}
+		else if(isWebContentLevel && isRepositoryLevel && !isComponentLevel)
+		{
+			logger.info("Reached component... activating");
+			newIsComponentLevel = true;
+		}
+
+		if(isComponentLevel)
+		{
+			logger.info("This was a component content:" + parentFile.getName());
+			
+			if(localParentContent != null)
 			{
 				ContentVO cvsContent = new ContentVO();
 				cvsContent.setContentId(cvsFakeContentId);
 				cvsContent.setName(localParentContent.getName());
 				cvsContent.setFullPath(parentFile.getPath());
 				
-				//ContentVersionVO cvsVersion = new ContentVersionVO();
-				//cvsVersion.setVersionValue(fileContent);
 				cvsContent.setVersions(new String[]{fileContent});
 
-				LanguageVO masterLanguageVO = LanguageController.getController().getMasterLanguage(db, localParentContent.getRepositoryId()).getValueObject();
 				ContentVersionVO localVersion = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(localParentContent.getId(), masterLanguageVO.getId());
 
 				ContentVO localContentVO = localParentContent.getValueObject();
-				logger.info("localContentVO:" + localContentVO);
-				//System.out.println("localContentVO:" + localContentVO);
+				logger.info("localContentVO:" + localContentVO.getName());
 				
 				if(localVersion != null)
 				{
@@ -174,19 +202,29 @@ public class DeploymentController
 				logger.info("Adding:" + localContentVO.getName() + " = " + cvsContent.getName());
 				deploymentCompareBeans.add(deploymentCompareBean);
 			}
-		}
-		else if(parentFile.getParentFile().getName().equalsIgnoreCase("WebContent") && !parentFile.getName().equals("CVS"))
-		{
-			logger.info("This was a repository:" + parentFile);
-			repository = RepositoryController.getController().getRepositoryWithName(parentFile.getName(), db);
-			logger.info("Found repository:" + repository.getName());
-			localParentContent = ContentController.getContentController().getRootContent(db, repository.getId(), principal.getName(), false);
-		}
-		else
-		{
-			logger.info("This was the webcontent file:" + parentFile);
+			else
+			{
+				logger.info("No local version of " + parentFile.getName());
+				ContentVO cvsContent = new ContentVO();
+				cvsContent.setContentId(cvsFakeContentId);
+				cvsContent.setName(parentFile.getName());
+				cvsContent.setFullPath(parentFile.getPath());
+				
+				cvsContent.setVersions(new String[]{fileContent});
+				
+				ContentVO localContent = new ContentVO();
+				
+				DeploymentCompareBean deploymentCompareBean = new DeploymentCompareBean();
+				deploymentCompareBean.setRemoteVersion(cvsContent);
+				deploymentCompareBean.setLocalVersion(null);
+				
+				logger.info("Adding:" + null + " = " + cvsContent.getName());
+				deploymentCompareBeans.add(deploymentCompareBean);
+			}
 		}
 		
+		logger.info("Before children with:" + parentFile.getName() + ":" + newIsWebContentLevel + ":" + newIsRepositoryLevel + ":" + newIsComponentLevel);
+
 		logger.info("Now going through children files to:" + parentFile.getName());
 		File[] childFiles = parentFile.listFiles();
 		if(childFiles != null)
@@ -194,20 +232,18 @@ public class DeploymentController
 			for(int i=0; i<childFiles.length; i++)
 			{
 				File childFile = childFiles[i];
-				logger.info("childFile:" + childFile.getName());
 				if(!childFile.getName().equals("CVS"))
 				{
-					//System.out.println("childFile:" + childFile.getName());
+					logger.info("childFile:" + childFile.getName());
 					Content newParentContent = null;
 					if(localParentContent != null)
 					{
-						LanguageVO masterLanguageVO = LanguageController.getController().getMasterLanguage(db, localParentContent.getRepositoryId()).getValueObject();
-
+						List childContents = ContentController.getContentController().getContentChildrenVOList(localParentContent.getId(), new String[]{"HTMLTemplate"}, false);
 						logger.info("Looking for children on " + localParentContent.getName() + " - matching " + childFile.getName());
-						Iterator childContents = localParentContent.getChildren().iterator();
-						while(childContents.hasNext())
+						Iterator childContentsIterator = childContents.iterator();
+						while(childContentsIterator.hasNext())
 						{
-							Content childContent = (Content)childContents.next();
+							Content childContent = (Content)childContentsIterator.next();
 							logger.info("childContent " + childContent.getName());
 							
 							if(childFile.getName().equalsIgnoreCase(childContent.getName()) || childFile.getName().equalsIgnoreCase(childContent.getName() + "_" + masterLanguageVO.getId() + ".xml"))
@@ -221,11 +257,11 @@ public class DeploymentController
 						}
 					}
 
-					getDeploymentComparisonBeansRecursive(childFile, deploymentCompareBeans, newParentContent, db, principal, cvsFakeContentId+1);
+					logger.info("Before next getDeploymentComparisonBeansRecursive with:" + childFile.getName() + ":" + newIsWebContentLevel + ":" + newIsRepositoryLevel + ":" + newIsComponentLevel);
+					getDeploymentComparisonBeansRecursive(childFile, deploymentCompareBeans, newParentContent, db, principal, cvsFakeContentId+1, newIsWebContentLevel, newIsRepositoryLevel, newIsComponentLevel);
 				}
 			}
 		}
-		
 		logger.info("End" + parentFile.getName() + " - continuing loop...");
 	}
 }

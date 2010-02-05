@@ -1218,15 +1218,25 @@ public class ContentController extends BaseController
    	/**
    	 * This method returns a list of the children a content has.
    	 */
-   	/*
-   	public List getContentChildrenVOList(Integer parentContentId) throws ConstraintException, SystemException
+   	
+   	public List<ContentVO> getContentChildrenVOList(Integer parentContentId, String[] allowedContentTypeIds, Boolean showDeletedItems) throws ConstraintException, SystemException
     {
-   		String key = "" + parentContentId;
-		logger.info("key:" + key);
-		List cachedChildContentVOList = (List)CacheController.getCachedObject("childContentCache", key);
+   		String allowedContentTypeIdsString = "";
+   		if(allowedContentTypeIds != null)
+   		{
+	   		for(int i=0; i < allowedContentTypeIds.length; i++)
+	   			allowedContentTypeIdsString += "_" + allowedContentTypeIds[i];
+   		}
+   		
+   		String key = "" + parentContentId + allowedContentTypeIdsString + "_" + showDeletedItems;
+		if(logger.isInfoEnabled())
+			logger.info("key:" + key);
+		
+		List<ContentVO> cachedChildContentVOList = (List<ContentVO>)CacheController.getCachedObject("childContentCache", key);
 		if(cachedChildContentVOList != null)
 		{
-			logger.info("There was an cached childContentVOList:" + cachedChildContentVOList.size());
+			if(logger.isInfoEnabled())
+				logger.info("There was an cached childContentVOList:" + cachedChildContentVOList.size());
 			return cachedChildContentVOList;
 		}
 		
@@ -1237,11 +1247,61 @@ public class ContentController extends BaseController
 
         beginTransaction(db);
 
+   		Timer t = new Timer();
+   		
+   		/*
         try
         {
-    		OQLQuery oql = db.getOQLQuery( "SELECT content FROM org.infoglue.cms.entities.content.impl.simple.SmallishContentImpl content WHERE content.parentContentId = $1 ORDER BY content.contentId");
-    		oql.bind(parentContentId);
+            Content content = getReadOnlyContentWithId(parentContentId, db);
+            Collection children = content.getChildren();
+        	childrenVOList = ContentController.toVOList(children);
+        	System.out.println("childrenVOList under:" + content.getName() + ":" + childrenVOList.size());
         	
+            //If any of the validations or setMethods reported an error, we throw them up now before create.
+            ceb.throwIfNotEmpty();
+            
+            commitTransaction(db);
+        }
+        catch(Exception e)
+        {
+            logger.error("An error occurred so we should not complete the transaction:" + e, e);
+            rollbackTransaction(db);
+            throw new SystemException(e.getMessage());
+        }
+		*/
+   		
+        try
+        {
+        	String contentTypeINClause = "";
+        	if(allowedContentTypeIds != null && allowedContentTypeIds.length > 0)
+        	{
+	        	contentTypeINClause = " AND content.contentTypeDefinitionId IN LIST (";
+	        	for(int i=0; i < allowedContentTypeIds.length; i++)
+	        	{
+	        		if(i > 0)
+	        			contentTypeINClause += ",";
+	        		contentTypeINClause += "$" + (i+3);
+	        	}
+	        	contentTypeINClause += ")";
+        	}
+        	
+        	String showDeletedItemsClause = " AND content.isDeleted = $2";
+        	
+        	String SQL = "SELECT content FROM org.infoglue.cms.entities.content.impl.simple.SmallishContentImpl content WHERE content.parentContentId = $1 " + showDeletedItemsClause + contentTypeINClause + " ORDER BY content.contentId";
+        	//System.out.println("SQL:" + SQL);
+        	OQLQuery oql = db.getOQLQuery(SQL);
+    		//OQLQuery oql = db.getOQLQuery( "SELECT content FROM org.infoglue.cms.entities.content.impl.simple.SmallishContentImpl content WHERE content.parentContentId = $1 ORDER BY content.contentId");
+    		oql.bind(parentContentId);
+    		oql.bind(showDeletedItems);
+    		if(allowedContentTypeIds != null)
+    		{
+	        	for(int i=0; i < allowedContentTypeIds.length; i++)
+	        	{
+	        		logger.info("allowedContentTypeIds[i]:" + allowedContentTypeIds[i]);
+	        		oql.bind(allowedContentTypeIds[i]);
+	        	}
+    		}
+    		
     		QueryResults results = oql.execute(Database.ReadOnly);
     		while (results.hasMore()) 
     		{
@@ -1269,12 +1329,11 @@ public class ContentController extends BaseController
             rollbackTransaction(db);
             throw new SystemException(e.getMessage());
         }
-        
+   		
 		CacheController.cacheObject("childContentCache", key, childrenVOList);
         
         return childrenVOList;
     } 
-   	*/
 	
 	/**
 	 * This method returns the contentTypeDefinitionVO which is associated with this content.
@@ -1638,21 +1697,23 @@ public class ContentController extends BaseController
 		for(int i=0; i<paths.length; ++i) 
 		{
 			final String name = paths[i];
-			final ContentVO childContent = getChildVOWithName(content.getContentId(), name, db);
-			if(childContent != null)
-				content = childContent;
-			else if(childContent == null && !forceFolders)
-				throw new SystemException("There exists no content with the path [" + path + "].");
-			else 
+			if(!name.equals(""))
 			{
-			    logger.info("   CREATE " + name);
-				ContentVO contentVO = new ContentVO();
-				contentVO.setIsBranch(Boolean.TRUE);
-				contentVO.setCreatorName(creator.getName());
-				contentVO.setName(name);
-				Content newContent = create(db, content.getId(), null, repositoryId, contentVO);
-				if(newContent != null)
-					content = newContent.getValueObject();
+				final ContentVO childContent = getChildVOWithName(content.getContentId(), name, db);
+				if(childContent != null)
+					content = childContent;
+				else if(childContent == null && !forceFolders)
+					throw new SystemException("There exists no content with the path [" + path + "].");
+				else 
+				{
+					ContentVO contentVO = new ContentVO();
+					contentVO.setIsBranch(Boolean.TRUE);
+					contentVO.setCreatorName(creator.getName());
+					contentVO.setName(name);
+					Content newContent = create(db, content.getId(), null, repositoryId, contentVO);
+					if(newContent != null)
+						content = newContent.getValueObject();
+				}
 			}
 		}
 		return content;

@@ -85,6 +85,20 @@ public class CmsPropertyHandler
 	private static Date startupTime					= null;
 	private static String servletContext 			= null;
 	
+	//Variables which are caches very hard but must be cleared roughly
+	private static String inputCharacterEncoding 			= null;
+	private static String enforceRigidContentAccess 		= null;
+	private static String niceURIEncoding					= null;
+	private static String defaultNumberOfYearsBeforeExpire 	= null;
+	private static String setDerivedLastModifiedInLive 		= null;
+	private static String digitalAssetPath0					= null;
+	private static String enableNiceURI						= null;
+	private static String useImprovedContentCategorySearch	= null;
+	private static String enablePortal						= null;
+	private static String useAccessBasedProtocolRedirects	= null;
+	private static Boolean useHashCodeInCaches 				= null;
+	private static Boolean useSynchronizationOnCaches 		= null;
+	   
 	public static void setApplicationName(String theApplicationName)
 	{
 		CmsPropertyHandler.applicationName = theApplicationName;
@@ -203,7 +217,39 @@ public class CmsPropertyHandler
 			logger.error("Error loading properties from file " + "/" + applicationName + ".properties" + ". Reason:" + e.getMessage());
 			e.printStackTrace();
 		}
+	}
+	
+	public static void resetHardCachedSettings()
+	{
+		System.out.println("Resetting hard cached settings...");
 		
+		String newInputCharacterEncoding = getInputCharacterEncoding(SetCharacterEncodingFilter.defaultEncoding, true);
+		String newEnforceRigidContentAccess = getEnforceRigidContentAccess(true);
+		String newNiceURIEncodingg = getNiceURIEncoding(true);
+		String newDefaultNumberOfYearsBeforeExpire = getDefaultNumberOfYearsBeforeExpire(true);
+		String newSetDerivedLastModifiedInLive = getSetDerivedLastModifiedInLive(true);
+		String newDigitalAssetPath0 = getDigitalAssetPath0(true);
+		String newEnableNiceURI = getEnableNiceURI(true);
+		String newUseImprovedContentCategorySearch = getUseImprovedContentCategorySearch(true);
+		String newEnablePortal = getEnablePortal(true);
+		String newUseAccessBasedProtocolRedirects = getUseAccessBasedProtocolRedirects(true);
+		Boolean newUseHashCodeInCaches = getUseHashCodeInCaches(true);
+		Boolean newUseSynchronizationOnCaches = getUseSynchronizationOnCaches(true);
+		
+		inputCharacterEncoding 				= newInputCharacterEncoding;
+		enforceRigidContentAccess 			= newEnforceRigidContentAccess;
+		niceURIEncoding						= newNiceURIEncodingg;
+		defaultNumberOfYearsBeforeExpire 	= newDefaultNumberOfYearsBeforeExpire;
+		setDerivedLastModifiedInLive 		= newSetDerivedLastModifiedInLive;
+		digitalAssetPath0					= newDigitalAssetPath0;
+		enableNiceURI						= newEnableNiceURI;
+		useImprovedContentCategorySearch	= newUseImprovedContentCategorySearch;
+		enablePortal						= newEnablePortal;
+		useAccessBasedProtocolRedirects 	= newUseAccessBasedProtocolRedirects;
+		useHashCodeInCaches 				= newUseHashCodeInCaches;
+		useSynchronizationOnCaches 			= newUseSynchronizationOnCaches;
+		
+		System.out.println("Done resetting hard cached settings...");
 	}
 	
 	public static String getServerName()
@@ -556,22 +602,34 @@ public class CmsPropertyHandler
 		else
 			return operatingMode; //getProperty("operatingMode"); Concurrency issues...
 	}
-	
+
+	public static boolean getActuallyBlockOnBlockRequests()
+	{
+		if(!getOperatingMode().equalsIgnoreCase("3"))
+			return true;
+		else
+			return false;
+	}
+
 	//TODO - refresh if changed....
-	//private static String inputCharacterEncoding = null;
 	public static String getInputCharacterEncoding(String defaultEncoding)
 	{
-		//if(inputCharacterEncoding == null)
-		//{
+		return getInputCharacterEncoding(defaultEncoding, false);
+	}
+	
+	public static String getInputCharacterEncoding(String defaultEncoding, boolean skipHardCache)
+	{
+		if(inputCharacterEncoding == null || skipHardCache)
+		{
 			String applicationName = CmsPropertyHandler.getApplicationName();
 			String newInputCharacterEncoding = CmsPropertyHandler.getServerNodeProperty("inputCharacterEncoding", true, defaultEncoding);
 			if(!applicationName.equalsIgnoreCase("cms"))
 				newInputCharacterEncoding = CmsPropertyHandler.getServerNodeProperty("deliver", "inputCharacterEncoding", true, defaultEncoding);
 
-			//inputCharacterEncoding = newInputCharacterEncoding;
-			//}
-			return newInputCharacterEncoding;
-		//return inputCharacterEncoding;
+			inputCharacterEncoding = newInputCharacterEncoding;
+		}
+		//return newInputCharacterEncoding;
+		return inputCharacterEncoding;
 	}
 	
 	public static String getUp2dateUrl()
@@ -803,7 +861,17 @@ public class CmsPropertyHandler
 
 	public static String getEnforceRigidContentAccess()
 	{
-		return getServerNodeProperty("enforceRigidContentAccess", true, "false");
+		return getEnforceRigidContentAccess(false);
+	}
+	
+	public static String getEnforceRigidContentAccess(boolean skipHardCache)
+	{
+		if(enforceRigidContentAccess == null || skipHardCache)
+		{
+			enforceRigidContentAccess = getServerNodeProperty("enforceRigidContentAccess", true, "false");
+		}
+		
+		return enforceRigidContentAccess;
 	}
 
 	public static String getDisableEmptyUrls()
@@ -909,7 +977,17 @@ public class CmsPropertyHandler
 
 	public static String getDefaultNumberOfYearsBeforeExpire()
 	{
-		return getServerNodeProperty("defaultNumberOfYearsBeforeExpire", true, "50");
+		return getDefaultNumberOfYearsBeforeExpire(false);
+	}
+	
+	public static String getDefaultNumberOfYearsBeforeExpire(boolean skipHardCache)
+	{
+		if(defaultNumberOfYearsBeforeExpire == null || skipHardCache)
+		{
+			defaultNumberOfYearsBeforeExpire = getServerNodeProperty("defaultNumberOfYearsBeforeExpire", true, "50");
+		}
+		
+		return defaultNumberOfYearsBeforeExpire;
 	}
 
 	public static String getEnableDateTimeDirectEditing()
@@ -989,14 +1067,23 @@ public class CmsPropertyHandler
 
 	public static Boolean getUseHashCodeInCaches()
 	{
-		boolean useHashCodeInCaches = false;
-		try
+		return getUseHashCodeInCaches(false);
+	}
+	
+	public static Boolean getUseHashCodeInCaches(boolean skipHardCache)
+	{
+		if(useHashCodeInCaches == null || skipHardCache)
 		{
-			useHashCodeInCaches = Boolean.parseBoolean(getServerNodeProperty("useHashCodeInCaches", true, "true", true));
-		}
-		catch(Exception e)
-		{
-			logger.warn("Error parsing useHashCodeInCaches:" + e.getMessage());
+			boolean newUseHashCodeInCaches = false;
+			try
+			{
+				newUseHashCodeInCaches = Boolean.parseBoolean(getServerNodeProperty("useHashCodeInCaches", true, "true", true));
+			}
+			catch(Exception e)
+			{
+				logger.warn("Error parsing useHashCodeInCaches:" + e.getMessage());
+			}
+			useHashCodeInCaches = newUseHashCodeInCaches;
 		}
 		
 		return useHashCodeInCaches;
@@ -1004,16 +1091,28 @@ public class CmsPropertyHandler
 
 	public static Boolean getUseSynchronizationOnCaches()
 	{
-		boolean useSynchronizationOnCaches = false;
-		try
+		return getUseSynchronizationOnCaches(false);
+	}
+	
+	public static Boolean getUseSynchronizationOnCaches(boolean skipHardCache)
+	{
+		if(useSynchronizationOnCaches == null || skipHardCache)
 		{
-			useSynchronizationOnCaches = Boolean.parseBoolean(getServerNodeProperty("useSynchronizationOnCaches", true, "true", true));
+			boolean newUseSynchronizationOnCaches = false;
+			try
+			{
+				newUseSynchronizationOnCaches = Boolean.parseBoolean(getServerNodeProperty("useSynchronizationOnCaches", true, "true", true));
+			}
+			catch(Exception e)
+			{
+				logger.warn("Error parsing useSynchronizationOnCaches:" + e.getMessage());
+			}
+			System.out.println("Slow query for newUseSynchronizationOnCaches:" + newUseSynchronizationOnCaches);
+			useSynchronizationOnCaches = newUseSynchronizationOnCaches;
 		}
-		catch(Exception e)
-		{
-			logger.warn("Error parsing useSynchronizationOnCaches:" + e.getMessage());
-		}
-		
+
+		//System.out.println("useSynchronizationOnCaches:" + useSynchronizationOnCaches);
+
 		return useSynchronizationOnCaches;
 	}
 
@@ -1152,23 +1251,45 @@ public class CmsPropertyHandler
 
 	public static String getDigitalAssetPath0()
 	{
-	    return getServerNodeProperty("digitalAssetPath.0", true, "" + contextRootPath + "digitalAssets");
+		return getDigitalAssetPath0(false);
+	}
+	
+	public static String getDigitalAssetPath0(boolean skipHardCache)
+	{
+		if(digitalAssetPath0 == null || skipHardCache)
+		{
+			digitalAssetPath0 = getServerNodeProperty("digitalAssetPath.0", true, "" + contextRootPath + "digitalAssets");
+		}
+		
+	    return digitalAssetPath0;
 	}
 
 	public static String getEnableDiskAssets()
 	{
 	    return getServerNodeProperty("enableDiskAssets", true, "false");
 	}
-	
+
 	public static String getEnableNiceURI()
 	{
-		String value = null;
-		if(!getOperatingMode().equals("3"))
-			value = getServerNodeProperty("enableNiceURIInWorking", true, "true");
-		else
-			value = getServerNodeProperty("enableNiceURI", true, "true");
-
-		return value;
+		return getEnableNiceURI(false);
+	}
+	
+	public static String getEnableNiceURI(boolean skipHardCache)
+	{
+		if(enableNiceURI == null || skipHardCache)
+		{
+			//if(!skipHardCache)
+			//	System.out.println("New value read and not because it was a recache");
+			String value = null;
+			if(!getOperatingMode().equals("3"))
+				value = getServerNodeProperty("enableNiceURIInWorking", true, "true");
+			else
+				value = getServerNodeProperty("enableNiceURI", true, "true");
+		
+			enableNiceURI = value;
+		}
+		
+		return enableNiceURI;
 	}
 
 	public static String getNiceURIDisableNiceURIForContent()
@@ -1178,7 +1299,17 @@ public class CmsPropertyHandler
 
 	public static String getNiceURIEncoding()
 	{
-	    return getServerNodeProperty("niceURIEncoding", true, "UTF-8");
+		return getNiceURIEncoding(false);
+	}
+	
+	public static String getNiceURIEncoding(boolean skipHardCache)
+	{
+		if(niceURIEncoding == null || skipHardCache)
+		{
+			niceURIEncoding = getServerNodeProperty("niceURIEncoding", true, "UTF-8");
+		}
+		
+	    return niceURIEncoding;
 	}
 
 	public static String getNiceURIAttributeName()
@@ -1248,7 +1379,17 @@ public class CmsPropertyHandler
 
 	public static String getUseImprovedContentCategorySearch()
 	{
-	    return getServerNodeProperty("useImprovedContentCategorySearch", true, "true");
+		return getUseImprovedContentCategorySearch(false);
+	}
+	
+	public static String getUseImprovedContentCategorySearch(boolean skipHardCache)
+	{
+		if(useImprovedContentCategorySearch == null || skipHardCache)
+		{
+			useImprovedContentCategorySearch = getServerNodeProperty("useImprovedContentCategorySearch", true, "true");
+		}
+		
+	    return useImprovedContentCategorySearch;
 	}
 
 	public static String getDatabaseEngine()
@@ -1283,7 +1424,17 @@ public class CmsPropertyHandler
 
 	public static String getEnablePortal()
 	{
-	    return getServerNodeProperty("enablePortal", true, "true");
+		return getEnablePortal(false);
+	}
+	
+	public static String getEnablePortal(boolean skipHardCache)
+	{
+		if(enablePortal == null || skipHardCache)
+		{
+			enablePortal = getServerNodeProperty("enablePortal", true, "true");
+		}
+		
+	    return enablePortal;
 	}
 
 	public static String getPortletBase()
@@ -1445,7 +1596,17 @@ public class CmsPropertyHandler
 
 	public static String getSetDerivedLastModifiedInLive()
 	{
-        return getServerNodeProperty("setDerivedLastModifiedInLive", true, "true");
+		return getSetDerivedLastModifiedInLive(false);
+	}
+	
+	public static String getSetDerivedLastModifiedInLive(boolean skipHardCache)
+	{
+		if(setDerivedLastModifiedInLive == null || skipHardCache)
+		{
+			setDerivedLastModifiedInLive = getServerNodeProperty("setDerivedLastModifiedInLive", true, "true");
+		}
+		
+		return setDerivedLastModifiedInLive;
 	}
 
 	public static Integer getMaxNumberOfVersionsForDerivedLastModifiedInLive()
@@ -1908,7 +2069,17 @@ public class CmsPropertyHandler
 
 	public static String getUseAccessBasedProtocolRedirects()
 	{
-		return getServerNodeProperty("useAccessBasedProtocolRedirects", true, "false");
+		return getUseAccessBasedProtocolRedirects(false);
+	}
+
+	public static String getUseAccessBasedProtocolRedirects(boolean skipHardCache)
+	{
+		if(useAccessBasedProtocolRedirects == null || skipHardCache)
+		{
+			useAccessBasedProtocolRedirects = getServerNodeProperty("useAccessBasedProtocolRedirects", true, "false");
+		}
+		
+		return useAccessBasedProtocolRedirects;
 	}
 	
 	public static String getDeriveProtocolWhenUsingProtocolRedirects()
@@ -1972,16 +2143,6 @@ public class CmsPropertyHandler
         }
         
         return useSQLServerDialect.booleanValue();
-	}
-
-	public static String getTrashcanFolderName()
-	{
-		return getServerNodeProperty("trashcanFolderName", true, "TRASHCAN");		
-	}
-
-	public static String getTrashcanator()
-	{
-		return getServerNodeProperty("trashcanator", true, "cmsUser");	
 	}
 
 }
