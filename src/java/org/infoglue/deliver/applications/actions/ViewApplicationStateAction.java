@@ -382,7 +382,7 @@ public class ViewApplicationStateAction extends InfoGlueAbstractAction
         CacheController.clearServerNodeProperty(true);
         CacheController.clearCastorCaches();
         CacheController.clearCaches(null, null, null);
-        CacheController.resetSpecial();
+        //CacheController.resetSpecial();
         if(clearFileCache)
         	CacheController.clearFileCaches();
         
@@ -736,8 +736,8 @@ public class ViewApplicationStateAction extends InfoGlueAbstractAction
         Iterator publicationsIterator = publications.iterator();
         while(publicationsIterator.hasNext())
         {
-        	Date publicationDate = (Date)publicationsIterator.next();
-        	states.add(getList("Date:", "" + formatter.formatDate(publicationDate, "yyyy-MM-dd HH:mm:ss")));
+        	String publication = (String)publicationsIterator.next();
+        	states.add(getList("Date/type:", "" + publication));
         }
 		        
     	getApplicationAttributes();
