@@ -101,12 +101,6 @@ public class SelectiveLivePublicationThread extends PublicationThread
     	this.notifications = notifiations;
 	}
 	
-    /*
-	public List getCacheEvictionBeans()
-	{
-		return cacheEvictionBeans;
-	}
-	*/
 
 	public synchronized void run()
 	{
@@ -120,7 +114,7 @@ public class SelectiveLivePublicationThread extends PublicationThread
 	    Random r = new Random();
 	    int randint = (Math.abs(r.nextInt()) % 11) / 8 * 1000;
 	    publicationDelay = publicationDelay + randint;
-	    System.out.println("publicationDelay:" + publicationDelay);
+	    //System.out.println("publicationDelay:" + publicationDelay);
 	    
 	    logger.info("\n\n\nSleeping " + publicationDelay + "ms.\n\n\n");
 		try 
@@ -161,7 +155,6 @@ public class SelectiveLivePublicationThread extends PublicationThread
 	    }
 
 		logger.info("cacheEvictionBeans.size:" + cacheEvictionBeans.size() + ":" + RequestAnalyser.getRequestAnalyser().getBlockRequests());
-        System.out.println("cacheEvictionBeans.size:" + cacheEvictionBeans.size());
 		if(cacheEvictionBeans.size() > 0)
 		{
 			try
@@ -395,7 +388,9 @@ public class SelectiveLivePublicationThread extends PublicationThread
 								
 							}
 						}
-						recacheEntities(cacheEvictionBean);
+						
+						if(CmsPropertyHandler.getServerNodeProperty("recacheEntities", true).equals("true"))
+							recacheEntities(cacheEvictionBean);
 					}	
 					else
 					{
@@ -468,7 +463,6 @@ public class SelectiveLivePublicationThread extends PublicationThread
 			}
 			finally
 			{
-				System.out.println("released block \n\n DONE---");
 		        logger.info("released block \n\n DONE---");
 				RequestAnalyser.getRequestAnalyser().setBlockRequests(false);
 			}

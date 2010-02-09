@@ -78,7 +78,7 @@ public class CacheEvictionFilter implements Filter
 
             if(logger.isInfoEnabled())
             	logger.info("userAgent:" + userAgent);
-            
+            //System.out.println("userAgent:" + userAgent);
             if (!uriMatcher.matches(requestURI) && userAgent != null && userAgent.indexOf("java") == -1 && userAgent.indexOf("axis") == -1) 
             {
                 CacheController.evictWaitingCache();

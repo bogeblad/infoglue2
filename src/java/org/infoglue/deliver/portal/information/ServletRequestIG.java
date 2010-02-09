@@ -50,7 +50,6 @@ public class ServletRequestIG extends HttpServletRequestWrapper {
 
     public ServletRequestIG(PortletWindow window, HttpServletRequest req) {
         super(req);
-
         PortalControlURL url = new PortalControlURL(req);
         this.paramMap = url.getRenderParameterMap(window);
         this.paramMap.putAll(url.getQueryParameterMap(window)); // in case of namespace-params.
@@ -68,6 +67,15 @@ public class ServletRequestIG extends HttpServletRequestWrapper {
             log.debug("Available params: " + str);
         }
     }
+
+    protected void finalize() throws Throwable {
+  	  super.finalize();
+  	  this.paramMap.clear();
+  	  this.paramMap = null;
+
+  	  this.attributeMap.clear();
+  	  this.attributeMap = null;
+}
 
     /* (non-Javadoc)
      * @see javax.servlet.ServletRequest#getParameter(java.lang.String)
