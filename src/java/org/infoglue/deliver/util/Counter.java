@@ -306,8 +306,8 @@ public class Counter
 	
 	            Collections.sort(unsortedPageUrls, new AverageInvokingTimeComparator());
 	            
-	            if(unsortedPageUrls.size() > 5)
-	            	unsortedPageUrls = unsortedPageUrls.subList(0, 5);
+	            if(unsortedPageUrls.size() > 50)
+	            	unsortedPageUrls = unsortedPageUrls.subList(0, 50);
 	            
 	            Iterator unsortedPageUrlsIterator = unsortedPageUrls.iterator();
 	            while(unsortedPageUrlsIterator.hasNext())

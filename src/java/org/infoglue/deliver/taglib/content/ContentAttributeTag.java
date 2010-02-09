@@ -180,6 +180,8 @@ public class ContentAttributeTag extends ComponentLogicTag
 	    mapKeyName = null;;
 	    disableEditOnSight = false;
 	    useInheritance = true;
+    	useRepositoryInheritance = true;
+        useStructureInheritance = true;
 	    useAttributeLanguageFallback = true;
 	    parse = false;
 	    fullBaseUrl	= false;

@@ -69,6 +69,9 @@ public class SizeTag extends AbstractTag
 		else
 			throw new JspException("You must set either map or collection attribute on common:size-tag");
 		
+		this.collection = null;
+		this.map = null;
+
         return EVAL_PAGE;
     }
 
