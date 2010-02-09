@@ -389,7 +389,7 @@ public class SelectiveLivePublicationThread extends PublicationThread
 							}
 						}
 						
-						if(CmsPropertyHandler.getServerNodeProperty("recacheEntities", true).equals("true"))
+						if(CmsPropertyHandler.getServerNodeProperty("recacheEntities", true, "false").equals("true"))
 							recacheEntities(cacheEvictionBean);
 					}	
 					else
