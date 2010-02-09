@@ -98,7 +98,6 @@ public class ComponentController extends BaseController
 		}
 		catch ( Exception e )
 		{
-		    e.printStackTrace();
 			rollbackTransaction(db);
 			throw new SystemException("An error occurred when we tried to fetch a list of users in this group. Reason:" + e.getMessage(), e);			
 		}		
@@ -155,21 +154,29 @@ public class ComponentController extends BaseController
 			    ContentVO contentVO = (ContentVO)componentsIterator.next();
 			    
 			    LanguageVO masterLanguage = LanguageController.getController().getMasterLanguage(contentVO.getRepositoryId(), db); //.getMasterLanguage(db, contentVO.getRepositoryId());
-				ContentVersion contentVersion = ContentVersionController.getContentVersionController().getLatestActiveContentVersion(contentVO.getId(), masterLanguage.getId(), db);
-				
-				String groupName = "Unknown";
-				String description = "Unknown";
-				
-				if(contentVersion != null)
-				{
-				    groupName = ContentVersionController.getContentVersionController().getAttributeValue(contentVersion.getValueObject(), "GroupName", false);
-				    description = ContentVersionController.getContentVersionController().getAttributeValue(contentVersion.getValueObject(), "Description", false);
-				}
-	
-				contentVO.getExtraProperties().put("GroupName", groupName);
-				contentVO.getExtraProperties().put("Description", description);
+				//System.out.println("masterLanguage:" + masterLanguage);
+			    if(masterLanguage != null)
+			    {
+					ContentVersionVO contentVersionVO = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(contentVO.getId(), masterLanguage.getId(), db);
+					
+					String groupName = "Unknown";
+					String description = "Unknown";
+					
+					if(contentVersionVO != null)
+					{
+					    groupName = ContentVersionController.getContentVersionController().getAttributeValue(contentVersionVO, "GroupName", false);
+					    description = ContentVersionController.getContentVersionController().getAttributeValue(contentVersionVO, "Description", false);
+					}
+		
+					contentVO.getExtraProperties().put("GroupName", groupName);
+					contentVO.getExtraProperties().put("Description", description);
+			    }
+			    else
+			    {
+			    	componentsIterator.remove();
+			    }
 			}
-			
+
 			CacheController.cacheObject("componentContentsCache", componentsKey, components);
 		}
 		
@@ -325,19 +332,22 @@ public class ComponentController extends BaseController
 			boolean isPartOfAllowedComponentGroupNames = false;
 			if(allowedComponentGroups != null && allowedComponentGroups.length > 0)
 			{
-				LanguageVO masterLanguageVO = LanguageController.getController().getMasterLanguage(contentVO.getRepositoryId());		
-
-	        	ContentVersionVO contentVersionVO = ContentVersionController.getContentVersionController().getLatestContentVersionVO(contentVO.getContentId(), masterLanguageVO.getId());
-	        	String groupName = null;
-	        	if(contentVersionVO != null)
-	        		groupName = ContentVersionController.getContentVersionController().getAttributeValue(contentVersionVO, "GroupName", false);
-
-		        for(int i=0; i<allowedComponentGroups.length; i++)
-		        {
-		        	String allowedComponentGroup = allowedComponentGroups[i];
-		        	if(groupName != null && groupName.indexOf(allowedComponentGroup) > -1)
-		        		isPartOfAllowedComponentGroupNames = true;
-		        }
+				LanguageVO masterLanguageVO = LanguageController.getController().getMasterLanguage(contentVO.getRepositoryId(), db);
+				if(masterLanguageVO != null)
+				{
+					//System.out.println("masterLanguageVO for " + contentVO.getRepositoryId() + " is " + masterLanguageVO);
+		        	ContentVersionVO contentVersionVO = ContentVersionController.getContentVersionController().getLatestContentVersionVO(contentVO.getContentId(), masterLanguageVO.getId());
+		        	String groupName = null;
+		        	if(contentVersionVO != null)
+		        		groupName = ContentVersionController.getContentVersionController().getAttributeValue(contentVersionVO, "GroupName", false);
+	
+			        for(int i=0; i<allowedComponentGroups.length; i++)
+			        {
+			        	String allowedComponentGroup = allowedComponentGroups[i];
+			        	if(groupName != null && groupName.indexOf(allowedComponentGroup) > -1)
+			        		isPartOfAllowedComponentGroupNames = true;
+			        }
+				}
 			}
 
 			boolean isPartOfDisallowedComponentNames = false;
@@ -416,7 +426,11 @@ public class ComponentController extends BaseController
 				ContentTypeDefinitionVO createContentTypeDefinitionVO = ContentTypeDefinitionController.getController().getContentTypeDefinitionVOWithName(allowedContentTypeName, db);
 				logger.info("method:" + method);
 				logger.info("path:" + path);
-				logger.info("createContentTypeDefinitionVO:" + createContentTypeDefinitionVO.getName());
+				logger.info("createContentTypeDefinitionVO:" + createContentTypeDefinitionVO);
+				
+				if(createContentTypeDefinitionVO == null || method == null)
+					continue;
+					
 				if(path.indexOf("/") == 0)
 					path = path.substring(1);
 				

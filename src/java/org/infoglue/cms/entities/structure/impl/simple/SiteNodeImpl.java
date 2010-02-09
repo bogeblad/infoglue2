@@ -150,8 +150,17 @@ public class SiteNodeImpl implements SiteNode
         this.parentSiteNode = parentSiteNode;
 
         if(parentSiteNode != null)
-        	this.valueObject.setParentSiteNodeId(parentSiteNode.getId());
+        {
+        	//this.valueObject.setParentSiteNodeId(parentSiteNode.getId());
+        	setParentSiteNodeId(parentSiteNode.getId());
+        }
     }
+    
+	public void setParentSiteNodeId(Integer parentSiteNodeId)
+	{
+		this.valueObject.setParentSiteNodeId(parentSiteNodeId);
+	}
+
       
     public java.util.Collection getChildSiteNodes()
     {
