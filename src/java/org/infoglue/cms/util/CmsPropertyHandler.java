@@ -1083,6 +1083,7 @@ public class CmsPropertyHandler
 			{
 				logger.warn("Error parsing useHashCodeInCaches:" + e.getMessage());
 			}
+			System.out.println("Slow query for newUseHashCodeInCaches:" + newUseHashCodeInCaches);
 			useHashCodeInCaches = newUseHashCodeInCaches;
 		}
 		
