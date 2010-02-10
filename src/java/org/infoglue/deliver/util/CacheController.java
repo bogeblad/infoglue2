@@ -312,7 +312,7 @@ public class CacheController extends Thread
 		    	
 		    	String cacheCapacity = (String)cacheSettings.get("CACHE_CAPACITY_" + cacheName);
 		    	if(cacheCapacity == null || !cacheCapacity.equals(""))
-		    		cacheCapacity = "10000";
+		    		cacheCapacity = "30000";
 		    	
 		    	if(cacheName != null && cacheName.equalsIgnoreCase("pageCache"))
 		    		cacheCapacity = "5000";
@@ -332,7 +332,7 @@ public class CacheController extends Thread
 		    		cacheCapacity = "40000";
 				if(cacheName != null && cacheName.equalsIgnoreCase("contentVersionCache"))
 		    		cacheCapacity = "30000";
-				
+				/*
 				if(cacheName != null && (cacheName.equalsIgnoreCase("contentAttributeCache_Title") || 
 										 cacheName.equalsIgnoreCase("contentAttributeCache_NavigationTitle") || 
 										 cacheName.equalsIgnoreCase("contentAttributeCache_hideInNavigation") || 
@@ -340,6 +340,7 @@ public class CacheController extends Thread
 				{
 					cacheCapacity = "100000";
 				}
+				*/
 				
 				if(cacheCapacity != null && !cacheCapacity.equals(""))
 		    	{
