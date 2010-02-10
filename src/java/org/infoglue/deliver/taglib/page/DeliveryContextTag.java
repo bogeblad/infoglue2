@@ -102,5 +102,10 @@ public class DeliveryContextTag extends TemplateControllerTag
 		if(selectiveCacheUpdateNonApplicable != null && selectiveCacheUpdateNonApplicable.equalsIgnoreCase("true"))
 			getController().getDeliveryContext().addUsedContent("selectiveCacheUpdateNonApplicable");
 	}
-	
+
+	public void setOperatingMode(String operatingMode) throws JspException
+	{
+	    getController().getDeliveryContext().setOperatingMode(operatingMode);
+	}
+
 }

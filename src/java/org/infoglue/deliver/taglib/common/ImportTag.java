@@ -259,6 +259,11 @@ public class ImportTag extends TemplateControllerTag
         this.fileCacheCharEncoding = evaluateString("importTag", "fileCacheCharEncoding", fileCacheCharEncoding);
     }
 
+    public void setCacheName(String cacheName) throws JspException
+    {
+        this.cacheName = evaluateString("importTag", "cacheName", cacheName);
+    }
+
     public void setCacheKey(String cacheKey) throws JspException
     {
         this.cacheKey = evaluateString("importTag", "cacheKey", cacheKey);

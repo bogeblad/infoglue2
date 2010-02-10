@@ -4933,8 +4933,6 @@ public class BasicTemplateController implements TemplateController
 		Integer operatingMode = new Integer(0); //Default is working
 		try
 		{
-			System.out.println("this.getDeliveryContext().getOperatingMode():" + this.getDeliveryContext().getOperatingMode());
-
 			if(this.getDeliveryContext().getOperatingMode() != null)
 			{
 				try
