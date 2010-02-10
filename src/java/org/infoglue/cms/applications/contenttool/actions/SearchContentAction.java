@@ -610,7 +610,8 @@ public class SearchContentAction extends InfoGlueAbstractAction
 
 	public void setAssetTypeFilter(String assetTypeFilter)
 	{
-		this.assetTypeFilter = assetTypeFilter;
+		if(assetTypeFilter != null && !assetTypeFilter.equals(""))
+			this.assetTypeFilter = assetTypeFilter;
 	}
 	
 	public List<DigitalAssetVO> getDigitalAssetVOList()

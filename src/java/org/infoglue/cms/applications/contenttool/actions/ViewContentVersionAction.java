@@ -1916,7 +1916,8 @@ public class ViewContentVersionAction extends InfoGlueAbstractAction
 
 	public void setAssetTypeFilter(String assetTypeFilter)
 	{
-		this.assetTypeFilter = assetTypeFilter;
+		if(assetTypeFilter != null && !assetTypeFilter.equals(""))
+			this.assetTypeFilter = assetTypeFilter;
 	}
 
 

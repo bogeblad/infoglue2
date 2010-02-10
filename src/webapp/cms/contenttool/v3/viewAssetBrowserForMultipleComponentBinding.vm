@@ -188,7 +188,7 @@
 		  		{
 			  		if($("#contentVersionAssetSearchFrame").attr("src") == "")
 			  		{
-			  			$("#contentVersionAssetSearchFrame").attr("src", "SearchContent!inputInlineAssetV3.action?assetTypeFilter=$assetTypeFilter"); 
+			  			$("#contentVersionAssetSearchFrame").attr("src", "SearchContent!inputInlineAssetV3.action?repositoryId=$repositoryId&assetTypeFilter=$assetTypeFilter"); 
 					}	
 			  	}
 			  } 
