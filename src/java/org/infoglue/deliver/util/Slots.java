@@ -26,10 +26,17 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.apache.log4j.Logger;
+import org.infoglue.deliver.taglib.common.SlotsTag;
+
 /**
  * 
  */
-public class Slots {
+public class Slots 
+{
+
+    private final static Logger logger = Logger.getLogger(Slots.class.getName());
+
 	/**
 	 * The total valuespace. 
 	 */
@@ -38,7 +45,7 @@ public class Slots {
 	/**
 	 * The index of the current slot.
 	 */
-	private final int currentSlot;
+	private int currentSlot;
 	
 	/**
 	 * The maximum number of elements contained in a slot.
@@ -138,7 +145,8 @@ public class Slots {
 		}
 		if(currentSlot > maxSlots)
 		{
-			throw new IllegalArgumentException("Current slot is not a valid slot [" + currentSlot + ">" + maxSlots + "]");
+			logger.warn("Current slot is not a valid slot [" + currentSlot + ">" + maxSlots + "]. Setting current slot to maxSlots");
+			currentSlot = maxSlots;
 		}
 	}
 	

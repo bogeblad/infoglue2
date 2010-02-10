@@ -91,6 +91,14 @@ public class SlotsTag extends AbstractTag
 	public int doEndTag() throws JspException
     {
 		calculateSlots();
+		
+		this.visibleElementsId = null;
+		this.visibleSlotsId = null;
+		this.lastSlotId = null;
+		this.elements = null;
+		this.currentSlot = 1;
+		this.slotCount = 0;
+		
         return EVAL_PAGE;
     }
 	

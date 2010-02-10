@@ -1338,8 +1338,7 @@ public class DigitalAssetController extends BaseController
         }
         catch(Exception e)
         {
-            logger.info("An error occurred when we tried to cache and show the digital asset:" + e);
-            e.printStackTrace();
+            logger.warn("An error occurred when we tried to cache and show the digital asset:" + e.getMessage());
             rollbackTransaction(db);
             throw new SystemException(e.getMessage());
         }
@@ -1353,7 +1352,12 @@ public class DigitalAssetController extends BaseController
 	   	
 	public static String getDigitalAssetUrl(Integer contentId, Integer languageId, String assetKey, boolean useLanguageFallback, Database db) throws SystemException, Bug, Exception
     {
-    	String assetUrl = null;
+		if(contentId == null || assetKey == null)
+		{
+			logger.warn("Asset key was null or contentId was null:" + contentId + ":" + assetKey);
+		}
+		
+		String assetUrl = null;
 
     	Content content = ContentController.getContentController().getContentWithId(contentId, db);
     	if(logger.isInfoEnabled())
@@ -1364,15 +1368,18 @@ public class DigitalAssetController extends BaseController
 	    	logger.info("assetKey:" + assetKey);
     	}
     	
-		String fromEncoding = CmsPropertyHandler.getAssetKeyFromEncoding();
-		if(fromEncoding == null)
-			fromEncoding = "iso-8859-1";
-		
-		String toEncoding = CmsPropertyHandler.getAssetKeyToEncoding();
-		if(toEncoding == null)
-			toEncoding = "utf-8";
-		
-		assetKey = new String(assetKey.getBytes(fromEncoding), toEncoding);
+		if(assetKey != null)
+		{
+			String fromEncoding = CmsPropertyHandler.getAssetKeyFromEncoding();
+			if(fromEncoding == null)
+				fromEncoding = "iso-8859-1";
+			
+			String toEncoding = CmsPropertyHandler.getAssetKeyToEncoding();
+			if(toEncoding == null)
+				toEncoding = "utf-8";
+			
+			assetKey = new String(assetKey.getBytes(fromEncoding), toEncoding);
+		}
 		
 		StringBuffer sb = new StringBuffer(256);
 			
