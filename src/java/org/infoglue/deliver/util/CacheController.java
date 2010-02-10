@@ -312,7 +312,7 @@ public class CacheController extends Thread
 		    	
 		    	String cacheCapacity = (String)cacheSettings.get("CACHE_CAPACITY_" + cacheName);
 		    	if(cacheCapacity == null || !cacheCapacity.equals(""))
-		    		cacheCapacity = "30000";
+		    		cacheCapacity = "10000";
 		    	
 		    	if(cacheName != null && cacheName.equalsIgnoreCase("pageCache"))
 		    		cacheCapacity = "5000";
