@@ -903,7 +903,7 @@ public class ViewContentVersionAction extends InfoGlueAbstractAction
        			while(digitalAssetsIterator.hasNext())
        			{
        				DigitalAssetVO assetVO = (DigitalAssetVO)digitalAssetsIterator.next();
-       				System.out.println("assetVO:" + assetVO.getAssetKey() + " - " + assetVO.getAssetContentType() + " VS " + this.assetTypeFilter);
+       				logger.info("assetVO:" + assetVO.getAssetKey() + " - " + assetVO.getAssetContentType() + " VS " + this.assetTypeFilter);
        				if(!this.assetTypeFilter.equals("*") && this.assetTypeFilter.indexOf(assetVO.getAssetContentType()) == -1)
        				{
        					digitalAssetsIterator.remove();
