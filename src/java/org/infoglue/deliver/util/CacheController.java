@@ -333,6 +333,14 @@ public class CacheController extends Thread
 				if(cacheName != null && cacheName.equalsIgnoreCase("contentVersionCache"))
 		    		cacheCapacity = "30000";
 				
+				if(cacheName != null && (cacheName.equalsIgnoreCase("contentAttributeCache_Title") || 
+										 cacheName.equalsIgnoreCase("contentAttributeCache_NavigationTitle") || 
+										 cacheName.equalsIgnoreCase("contentAttributeCache_hideInNavigation") || 
+										 cacheName.equalsIgnoreCase("contentAttributeCache_SortOrder")))
+				{
+					cacheCapacity = "100000";
+				}
+				
 				if(cacheCapacity != null && !cacheCapacity.equals(""))
 		    	{
 					Properties p = new Properties();
