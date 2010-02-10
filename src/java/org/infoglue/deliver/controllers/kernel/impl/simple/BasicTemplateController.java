@@ -4829,7 +4829,7 @@ public class BasicTemplateController implements TemplateController
 
 		deliveryContext.addUsedContent("selectiveCacheUpdateNonApplicable");
 		
-		if((freeText != null && !freeText.equals("")) || (freeTextAttributeNames != null && freeTextAttributeNames.size() > 0) || fromDate != null || toDate != null || expireFromDate != null || expireToDate != null || (versionModifier != null && !versionModifier.equals("")))
+		if((freeText != null && !freeText.equals("")) || (freeTextAttributeNames != null && freeTextAttributeNames.size() > 0) || fromDate != null || toDate != null || expireFromDate != null || expireToDate != null || (versionModifier != null && !versionModifier.equals("")) || !deliveryContext.getOperatingMode().equals(CmsPropertyHandler.getOperatingMode()))
 			cacheResult = false;
 
 		//TODO - add cache here
@@ -4933,7 +4933,21 @@ public class BasicTemplateController implements TemplateController
 		Integer operatingMode = new Integer(0); //Default is working
 		try
 		{
-			operatingMode = new Integer(CmsPropertyHandler.getOperatingMode());
+			System.out.println("this.getDeliveryContext().getOperatingMode():" + this.getDeliveryContext().getOperatingMode());
+
+			if(this.getDeliveryContext().getOperatingMode() != null)
+			{
+				try
+				{
+					operatingMode = new Integer(this.getDeliveryContext().getOperatingMode());
+				}
+				catch (Exception e) 
+				{
+					operatingMode = new Integer(CmsPropertyHandler.getOperatingMode());
+				}
+			}
+			else
+				operatingMode = new Integer(CmsPropertyHandler.getOperatingMode());
 			//logger.info("Operating mode is:" + operatingMode);
 		}
 		catch(Exception e)

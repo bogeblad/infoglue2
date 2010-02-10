@@ -451,6 +451,8 @@ class SqlBuilder
 		final List clauses = new ArrayList();
 
 		String mode = CmsPropertyHandler.getOperatingMode();
+		if(!criterias.getStateId().toString().equals(mode))
+			mode = "" + criterias.getStateId();
 		if(criterias.getForcedOperatingMode() != null)
 			mode = "" + criterias.getStateId();
 		
