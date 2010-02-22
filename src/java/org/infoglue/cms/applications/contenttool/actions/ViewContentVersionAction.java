@@ -671,7 +671,7 @@ public class ViewContentVersionAction extends InfoGlueAbstractAction
 		{
 			if(contentVersionId != null)
 			{
-				ContentVersion contentVersion = ContentVersionController.getContentVersionController().getContentVersionWithId(contentVersionId);
+				ContentVersionVO contentVersion = ContentVersionController.getContentVersionController().getContentVersionVOWithId(contentVersionId);
 				List events = EventController.getEventVOListForEntity(ContentVersion.class.getName(), contentVersion.getId());
 				if(events != null && events.size() > 0)
 					eventVO = (EventVO)events.get(0);
