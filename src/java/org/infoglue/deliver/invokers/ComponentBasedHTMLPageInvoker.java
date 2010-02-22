@@ -24,6 +24,7 @@
 package org.infoglue.deliver.invokers;
 
 import java.io.PrintWriter;
+import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -62,16 +63,20 @@ import org.infoglue.deliver.applications.databeans.ComponentRestriction;
 import org.infoglue.deliver.applications.databeans.Slot;
 import org.infoglue.deliver.controllers.kernel.impl.simple.ComponentLogic;
 import org.infoglue.deliver.controllers.kernel.impl.simple.ContentDeliveryController;
-import org.infoglue.deliver.controllers.kernel.impl.simple.InfoGlueHashSet;
-import org.infoglue.deliver.controllers.kernel.impl.simple.IntegrationDeliveryController;
 import org.infoglue.deliver.controllers.kernel.impl.simple.LanguageDeliveryController;
 import org.infoglue.deliver.controllers.kernel.impl.simple.NodeDeliveryController;
 import org.infoglue.deliver.controllers.kernel.impl.simple.RepositoryDeliveryController;
 import org.infoglue.deliver.controllers.kernel.impl.simple.TemplateController;
 import org.infoglue.deliver.util.CacheController;
 import org.infoglue.deliver.util.NullObject;
+import org.infoglue.deliver.util.RequestAnalyser;
 import org.infoglue.deliver.util.Timer;
 import org.infoglue.deliver.util.VelocityTemplateProcessor;
+import org.xmlpull.v1.builder.XmlAttribute;
+import org.xmlpull.v1.builder.XmlDocument;
+import org.xmlpull.v1.builder.XmlElement;
+import org.xmlpull.v1.builder.XmlInfosetBuilder;
+import org.xmlpull.v1.builder.xpath.Xb1XPath;
 
 /**
 * @author Mattias Bogeblad
@@ -206,22 +211,49 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 		
    		if(componentXML != null && componentXML.length() != 0)
 		{
-   			Document document = domBuilder.getDocument(componentXML);
+   			Timer t = new Timer();
 			
    			List unsortedPageComponents = new ArrayList();
-			List pageComponents = getPageComponents(getDatabase(), componentXML, document.getRootElement(), "base", this.getTemplateController(), null, unsortedPageComponents);
 			
-			preProcessComponents(nodeDeliveryController, repositoryId, unsortedPageComponents, pageComponents);
+   			
+   			try
+   			{
+	   			//DOM4J
+   				/*
+	   			Document document = domBuilder.getDocument(componentXML);
+	   			RequestAnalyser.getRequestAnalyser().registerComponentStatistics("document with DOM4J", t.getElapsedTime());
+	
+	   			List pageComponents = getPageComponentsWithDOM4j(getDatabase(), componentXML, document.getRootElement(), "base", this.getTemplateController(), null, unsortedPageComponents);
+				RequestAnalyser.getRequestAnalyser().registerComponentStatistics("getPageComponentsWithDOM4j", t.getElapsedTime());
+				System.out.println("pageComponents:" + pageComponents.size());
+	   			*/
+	   			//XPP3
+		        XmlInfosetBuilder builder = XmlInfosetBuilder.newInstance();
+		        XmlDocument doc = builder.parseReader(new StringReader( componentXML ) );
+				//RequestAnalyser.getRequestAnalyser().registerComponentStatistics("document with XPP3", t.getElapsedTime());
+	
+				List pageComponents = getPageComponentsWithXPP3(getDatabase(), componentXML, doc.getDocumentElement(), "base", this.getTemplateController(), null, unsortedPageComponents);
+				//RequestAnalyser.getRequestAnalyser().registerComponentStatistics("getPageComponentsWithXPP3", t.getElapsedTime());
+				
+				//System.out.println("pageComponents:" + pageComponents.size());
+
+				preProcessComponents(nodeDeliveryController, repositoryId, unsortedPageComponents, pageComponents);
+				
+				if(pageComponents.size() > 0)
+				{
+					baseComponent = (InfoGlueComponent)pageComponents.get(0);
+				}
 			
-			if(pageComponents.size() > 0)
-			{
-				baseComponent = (InfoGlueComponent)pageComponents.get(0);
-			}
-		
-			if(baseComponent != null)
-			{
-				ContentVO metaInfoContentVO = nodeDeliveryController.getBoundContent(getDatabase(), this.getTemplateController().getPrincipal(), this.getDeliveryContext().getSiteNodeId(), this.getDeliveryContext().getLanguageId(), true, "Meta information", this.getDeliveryContext());
-				pageContent = renderComponent(baseComponent, this.getTemplateController(), repositoryId, this.getDeliveryContext().getSiteNodeId(), this.getDeliveryContext().getLanguageId(), this.getDeliveryContext().getContentId(), metaInfoContentVO.getId(), 15, 0);
+				if(baseComponent != null)
+				{
+					ContentVO metaInfoContentVO = nodeDeliveryController.getBoundContent(getDatabase(), this.getTemplateController().getPrincipal(), this.getDeliveryContext().getSiteNodeId(), this.getDeliveryContext().getLanguageId(), true, "Meta information", this.getDeliveryContext());
+					pageContent = renderComponent(baseComponent, this.getTemplateController(), repositoryId, this.getDeliveryContext().getSiteNodeId(), this.getDeliveryContext().getLanguageId(), this.getDeliveryContext().getContentId(), metaInfoContentVO.getId(), 15, 0);
+				}
+
+   			}
+   			catch (Exception e) 
+   			{
+   				logger.error("Error parsing page:" + e.getMessage(), e);
 			}
 		}
 
@@ -417,6 +449,7 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 					templateController.getDeliveryContext().addUsedContentVersion("contentVersion_" + currentContentVersionId);
 			    	//logger.info("\nThere was a cached page string and the meta info content version was " + contentVersionId);
 			    	templateController.getDeliveryContext().getUsedPageMetaInfoContentVersionIdSet().add(currentContentVersionId);
+			    	templateController.getDeliveryContext().getUsedPageComponentsMetaInfoContentVersionIdSet().add(currentContentVersionId);
 				}
 			}
 			
@@ -434,11 +467,11 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 	
 		CacheController.cacheObjectInAdvancedCache(cacheName, cacheKey, pageComponentsString);
 		
-	    Set contentVersionIds = new InfoGlueHashSet();
+	    Set contentVersionIds = new HashSet();
 	    //TODO - måste fixa så att inte nulls slängs in i getUsedPageMetaInfoContentVersionIdSet... hur det kan hända
 	    contentVersionIds.addAll(templateController.getDeliveryContext().getUsedPageMetaInfoContentVersionIdSet());
-	    
-		Set groups = new InfoGlueHashSet();
+    	
+		Set groups = new HashSet();
 		if(templateController.getDeliveryContext().getUsedPageMetaInfoContentVersionIdSet().size() > 0)
 		{
 			ContentVersionVO contentVersionVO = ContentVersionController.getContentVersionController().getContentVersionVOWithId((Integer)templateController.getDeliveryContext().getUsedPageMetaInfoContentVersionIdSet().toArray()[0], templateController.getDatabase());
@@ -483,9 +516,11 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 	/**
 	 * This method gets a Map of the components available on the page.
 	 */
-
-	protected Map getComponents(Database db, Element element, TemplateController templateController, InfoGlueComponent parentComponent) throws Exception
+	/*
+	protected Map getComponentsWithDOM4j(Database db, Element element, TemplateController templateController, InfoGlueComponent parentComponent) throws Exception
 	{
+		System.out.println("getComponentsWithDOM4j");
+
 		InfoGlueComponent component = null;
 
 		Locale locale = LanguageDeliveryController.getLanguageDeliveryController().getLocaleWithId(db, templateController.getLanguageId());
@@ -626,7 +661,7 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 			}
 			
 			
-			getComponentRestrictions(child, component, locale, templateController);
+			getComponentRestrictionsWithDOM4j(child, component, locale, templateController);
 
 			
 			//Getting slots for the component
@@ -721,7 +756,7 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 			    slot.setAddComponentText(addComponentText);
 			    slot.setAllowedNumberOfComponents(new Integer(allowedNumberOfComponentsInt));
 			    
-			  	List subComponents = getComponents(db, templateController, component, templateController.getSiteNodeId(), slotId);
+			  	List subComponents = getComponentsWithDOM4j(db, templateController, component, templateController.getSiteNodeId(), slotId);
 			  	slot.setComponents(subComponents);
 			  	
 			  	component.getSlotList().add(slot);
@@ -735,7 +770,301 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 			if(anl.size() > 0)
 			{
 				Element componentsElement = (Element)anl.get(0);
-				component.setComponents(getComponents(db, componentsElement, templateController, component));
+				component.setComponents(getComponentsWithDOM4j(db, componentsElement, templateController, component));
+			}
+			
+			components.put(name, component);
+		}
+		
+		return components;
+	}
+	*/
+	
+	protected Map getComponentsWithXPP3(Database db, XmlElement element, TemplateController templateController, InfoGlueComponent parentComponent) throws Exception
+	{
+		//System.out.println("Getting components");
+
+		InfoGlueComponent component = null;
+
+		Locale locale = LanguageDeliveryController.getLanguageDeliveryController().getLocaleWithId(db, templateController.getLanguageId());
+		
+		Map components = new HashMap();
+		
+		String componentXPath = "component";
+
+		Xb1XPath xpathObject = (Xb1XPath)cachedXPathObjects.get(componentXPath);
+        if(xpathObject == null)
+        {
+        	xpathObject = new Xb1XPath(componentXPath);
+        	cachedXPathObjects.put(componentXPath, xpathObject);
+        }
+
+        List componentNodeList = xpathObject.selectNodes( element );
+		Iterator componentNodeListIterator = componentNodeList.iterator();
+		while(componentNodeListIterator.hasNext())
+		{
+			XmlElement child 	= (XmlElement)componentNodeListIterator.next();
+			Integer id 			= new Integer(child.getAttributeValue(child.getNamespaceName(), "id"));
+			Integer contentId 	= new Integer(child.getAttributeValue(child.getNamespaceName(), "contentId"));
+			String name 	  	= child.getAttributeValue(child.getNamespaceName(), "name");
+			
+			//logger.info("id 2:" + id);
+			//logger.info("contentId 2:" + contentId);
+			//logger.info("name 2:" + name);
+			
+			ContentVO contentVO = ContentDeliveryController.getContentDeliveryController().getContentVO(contentId, db);
+			
+			component = new InfoGlueComponent();
+			component.setId(id);
+			component.setContentId(contentId);
+			component.setName(contentVO.getName());
+			//component.setName(name);
+			component.setSlotName(name);
+			component.setParentComponent(parentComponent);
+			if(parentComponent != null)
+				component.setIsInherited(parentComponent.getIsInherited());
+				
+			Xb1XPath xpathObject2 = (Xb1XPath)cachedXPathObjects.get("properties");
+	        if(xpathObject2 == null)
+	        {
+	        	xpathObject2 = new Xb1XPath("properties");
+	        	cachedXPathObjects.put("properties", xpathObject2);
+	        }
+
+	        List propertiesNodeList = xpathObject2.selectNodes( child );
+			if(propertiesNodeList.size() > 0)
+			{
+				XmlElement propertiesElement = (XmlElement)propertiesNodeList.get(0);
+				
+				Xb1XPath xpathObject3 = (Xb1XPath)cachedXPathObjects.get("property");
+		        if(xpathObject3 == null)
+		        {
+		        	xpathObject3 = new Xb1XPath("property");
+		        	cachedXPathObjects.put("property", xpathObject3);
+		        }
+
+		        List propertyNodeList = xpathObject3.selectNodes(propertiesElement);
+				//logger.info("propertyNodeList:" + propertyNodeList.getLength());
+				Iterator propertyNodeListIterator = propertyNodeList.iterator();
+				while(propertyNodeListIterator.hasNext())
+				{
+					XmlElement propertyElement = (XmlElement)propertyNodeListIterator.next();
+					
+					String propertyName = propertyElement.getAttributeValue(propertyElement.getNamespaceName(), "name");
+					String type = propertyElement.getAttributeValue(propertyElement.getNamespaceName(), "type");
+					String path = propertyElement.getAttributeValue(propertyElement.getNamespaceName(), "path");
+
+					if(path == null)
+					{
+						LanguageVO langaugeVO = LanguageDeliveryController.getLanguageDeliveryController().getMasterLanguageForSiteNode(getDatabase(), templateController.getSiteNodeId());
+						if(propertyElement.getAttributeValue(propertyElement.getNamespaceName(), "path_" + langaugeVO.getLanguageCode()) != null)
+							path = propertyElement.getAttributeValue(propertyElement.getNamespaceName(), "path_" + langaugeVO.getLanguageCode());
+					}
+
+					//logger.info("path:" + "path_" + locale.getLanguage() + ":" + propertyElement.attributeValue("path_" + locale.getLanguage()));
+					if(propertyElement.getAttributeValue(propertyElement.getNamespaceName(), "path_" + locale.getLanguage()) != null)
+						path = propertyElement.getAttributeValue(propertyElement.getNamespaceName(), "path_" + locale.getLanguage());
+
+					if(path == null || path.equals(""))
+					{
+						logger.info("Falling back to content master language 1 for property:" + propertyName);
+						LanguageVO contentMasterLangaugeVO = LanguageDeliveryController.getLanguageDeliveryController().getMasterLanguageForRepository(getDatabase(), contentVO.getRepositoryId());
+						if(propertyElement.getAttributeValue(propertyElement.getNamespaceName(), "path_" + contentMasterLangaugeVO.getLanguageCode()) != null)
+							path = propertyElement.getAttributeValue(propertyElement.getNamespaceName(), "path_" + contentMasterLangaugeVO.getLanguageCode());	
+					}
+					
+					Map property = new HashMap();
+					property.put("name", propertyName);
+					property.put("path", path);
+					property.put("type", type);
+					
+					Iterator attributesIterator = propertyElement.attributes();
+					while(attributesIterator.hasNext())
+					{
+						XmlAttribute attribute = (XmlAttribute)attributesIterator.next();
+						if(attribute.getName().startsWith("path_"))
+							property.put(attribute.getName(), attribute.getValue());
+					}
+					
+					if(path != null)
+					{
+						if(propertyName.equals(InfoGlueComponent.CACHE_RESULT_PROPERTYNAME) && (path.equalsIgnoreCase("true") || path.equalsIgnoreCase("yes")))
+						{
+							component.setCacheResult(true);
+						}
+						if(propertyName.equals(InfoGlueComponent.UPDATE_INTERVAL_PROPERTYNAME) && !path.equals(""))
+						{
+							try { component.setUpdateInterval(Integer.parseInt(path)); } catch (Exception e) { logger.warn("The component " + component.getName() + " " + InfoGlueComponent.UPDATE_INTERVAL_PROPERTYNAME + " with a faulty value on page " + this.getTemplateController().getOriginalFullURL() + ":" + e.getMessage()); }
+						}
+						if(propertyName.equals(InfoGlueComponent.CACHE_KEY_PROPERTYNAME) && !path.equals(""))
+						{
+							component.setCacheKey(path);
+						}
+						if(propertyName.equals(InfoGlueComponent.PREPROCESSING_ORDER_PROPERTYNAME) && !path.equals(""))
+						{
+							component.setPreProcessingOrder(path);
+						}
+					}
+					
+					List bindings = new ArrayList();
+					
+					Xb1XPath xpathObject4 = (Xb1XPath)cachedXPathObjects.get("binding");
+			        if(xpathObject4 == null)
+			        {
+			        	xpathObject4 = new Xb1XPath("binding");
+			        	cachedXPathObjects.put("binding", xpathObject4);
+			        }
+
+			        List bindingNodeList = xpathObject4.selectNodes(propertyElement);
+					//logger.info("bindingNodeList:" + bindingNodeList.getLength());
+					Iterator bindingNodeListIterator = bindingNodeList.iterator();
+					while(bindingNodeListIterator.hasNext())
+					{
+						XmlElement bindingElement = (XmlElement)bindingNodeListIterator.next();
+						String entity = bindingElement.getAttributeValue(bindingElement.getNamespaceName(), "entity");
+						String entityId = bindingElement.getAttributeValue(bindingElement.getNamespaceName(), "entityId");
+						String assetKey = bindingElement.getAttributeValue(bindingElement.getNamespaceName(), "assetKey");
+						//logger.info("Binding found:" + entity + ":" + entityId);
+
+						ComponentBinding componentBinding = new ComponentBinding();
+						//componentBinding.setId(new Integer(id));
+						//componentBinding.setComponentId(componentId);
+						componentBinding.setEntityClass(entity);
+						componentBinding.setEntityId(new Integer(entityId));
+						componentBinding.setAssetKey(assetKey);
+						componentBinding.setBindingPath(path);
+						
+						bindings.add(componentBinding);
+					}
+	
+					property.put("bindings", bindings);
+					
+					component.getProperties().put(propertyName, property);
+
+					//TEST
+					//component.getProperties().put(propertyName, property);
+
+				}
+			}
+			
+			
+			getComponentRestrictionsWithXPP3(child, component, locale, templateController);
+
+			
+			//Getting slots for the component
+			String componentString = this.getComponentString(templateController, contentId, component);
+			//logger.info("Getting the slots for component.......");
+			//logger.info("componentString:" + componentString);
+			int offset = 0;
+			int slotStartIndex = componentString.indexOf("<ig:slot", offset);
+			while(slotStartIndex > -1)
+			{
+				int slotStopIndex = componentString.indexOf("</ig:slot>", slotStartIndex);
+				String slotString = componentString.substring(slotStartIndex, slotStopIndex + 10);
+				String slotId = slotString.substring(slotString.indexOf("id") + 4, slotString.indexOf("\"", slotString.indexOf("id") + 4));
+
+				boolean inherit = true;
+				int inheritIndex = slotString.indexOf("inherit");
+				if(inheritIndex > -1)
+				{    
+				    String inheritString = slotString.substring(inheritIndex + 9, slotString.indexOf("\"", inheritIndex + 9));
+				    inherit = Boolean.parseBoolean(inheritString);
+				}
+
+				boolean disableAccessControl = false;
+				int disableAccessControlIndex = slotString.indexOf("disableAccessControl");
+				if(disableAccessControlIndex > -1)
+				{    
+				    String disableAccessControlString = slotString.substring(disableAccessControlIndex + "disableAccessControl".length() + 2, slotString.indexOf("\"", disableAccessControlIndex + "disableAccessControl".length() + 2));
+				    disableAccessControl = Boolean.parseBoolean(disableAccessControlString);
+				}
+
+				String[] allowedComponentNamesArray = null;
+				int allowedComponentNamesIndex = slotString.indexOf(" allowedComponentNames");
+				if(allowedComponentNamesIndex > -1)
+				{    
+				    String allowedComponentNames = slotString.substring(allowedComponentNamesIndex + 24, slotString.indexOf("\"", allowedComponentNamesIndex + 24));
+				    allowedComponentNamesArray = allowedComponentNames.split(",");
+				}
+
+				String[] disallowedComponentNamesArray = null;
+				int disallowedComponentNamesIndex = slotString.indexOf(" disallowedComponentNames");
+				if(disallowedComponentNamesIndex > -1)
+				{    
+				    String disallowedComponentNames = slotString.substring(disallowedComponentNamesIndex + 27, slotString.indexOf("\"", disallowedComponentNamesIndex + 27));
+				    disallowedComponentNamesArray = disallowedComponentNames.split(",");
+				}
+
+				String[] allowedComponentGroupNamesArray = null;
+				int allowedComponentGroupNamesIndex = slotString.indexOf(" allowedComponentGroupNames");
+				if(allowedComponentGroupNamesIndex > -1)
+				{    
+				    String allowedComponentGroupNames = slotString.substring(allowedComponentGroupNamesIndex + 29, slotString.indexOf("\"", allowedComponentGroupNamesIndex + 29));
+				    allowedComponentGroupNamesArray = allowedComponentGroupNames.split(",");
+				}
+
+				String addComponentText = null;
+				int addComponentTextIndex = slotString.indexOf("addComponentText");
+				if(addComponentTextIndex > -1)
+				{    
+				    addComponentText = slotString.substring(addComponentTextIndex + "addComponentText".length() + 2, slotString.indexOf("\"", addComponentTextIndex + "addComponentText".length() + 2));
+				}
+
+				String addComponentLinkHTML = null;
+				int addComponentLinkHTMLIndex = slotString.indexOf("addComponentLinkHTML");
+				if(addComponentLinkHTMLIndex > -1)
+				{    
+				    addComponentLinkHTML = slotString.substring(addComponentLinkHTMLIndex + "addComponentLinkHTML".length() + 2, slotString.indexOf("\"", addComponentLinkHTMLIndex + "addComponentLinkHTML".length() + 2));
+				}
+
+				int allowedNumberOfComponentsInt = -1;
+				int allowedNumberOfComponentsIndex = slotString.indexOf("allowedNumberOfComponents");
+				if(allowedNumberOfComponentsIndex > -1)
+				{    
+					String allowedNumberOfComponents = slotString.substring(allowedNumberOfComponentsIndex + "allowedNumberOfComponents".length() + 2, slotString.indexOf("\"", allowedNumberOfComponentsIndex + "allowedNumberOfComponents".length() + 2));
+					try
+					{
+						allowedNumberOfComponentsInt = new Integer(allowedNumberOfComponents);
+					}
+					catch (Exception e) 
+					{
+						allowedNumberOfComponentsInt = -1;
+					}
+				}
+
+			  	Slot slot = new Slot();
+			  	slot.setId(slotId);
+			    slot.setInherit(inherit);
+			    slot.setDisableAccessControl(disableAccessControl);
+			  	slot.setAllowedComponentsArray(allowedComponentNamesArray);
+			  	slot.setDisallowedComponentsArray(disallowedComponentNamesArray);
+			  	slot.setAllowedComponentGroupsArray(allowedComponentGroupNamesArray);
+			    slot.setAddComponentLinkHTML(addComponentLinkHTML);
+			    slot.setAddComponentText(addComponentText);
+			    slot.setAllowedNumberOfComponents(new Integer(allowedNumberOfComponentsInt));
+			    
+			  	List subComponents = getComponentsWithXPP3(db, templateController, component, templateController.getSiteNodeId(), slotId);
+			  	slot.setComponents(subComponents);
+			  	
+			  	component.getSlotList().add(slot);
+
+			  	offset = slotStopIndex; // + 10;
+				slotStartIndex = componentString.indexOf("<ig:slot", offset);
+			}
+			
+			
+			Xb1XPath xpathObject5 = (Xb1XPath)cachedXPathObjects.get("components");
+	        if(xpathObject5 == null)
+	        {
+	        	xpathObject5 = new Xb1XPath("components");
+	        	cachedXPathObjects.put("components", xpathObject5);
+	        }
+
+			List anl = xpathObject5.selectNodes(child);
+			if(anl.size() > 0)
+			{
+				XmlElement componentsElement = (XmlElement)anl.get(0);
+				component.setComponents(getComponentsWithXPP3(db, componentsElement, templateController, component));
 			}
 			
 			components.put(name, component);
@@ -748,9 +1077,13 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 	/**
 	 * This method gets a specific component.
 	 */
-
-	protected Map getComponent(Database db, Element element, String componentName, TemplateController templateController, InfoGlueComponent parentComponent) throws Exception
+	/*
+	protected Map getComponentWithDOM4j(Database db, Element element, String componentName, TemplateController templateController, InfoGlueComponent parentComponent) throws Exception
 	{
+		System.out.println("getComponentWithDOM4j");
+
+		Timer t = new Timer();
+		
 		//logger.info("Getting component with name:" + componentName);
 		InfoGlueComponent component = null;
 
@@ -885,14 +1218,203 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 				}
 			}
 			
-			getComponentRestrictions(child, component, locale, templateController);
+			getComponentRestrictionsWithDOM4j(child, component, locale, templateController);
 			
 			List anl = child.selectNodes("components");
 			////logger.info("Components NL:" + anl.getLength());
 			if(anl.size() > 0)
 			{
 				Element componentsElement = (Element)anl.get(0);
-				component.setComponents(getComponents(db, componentsElement, templateController, component));
+				component.setComponents(getComponentsWithDOM4j(db, componentsElement, templateController, component));
+			}
+			
+			List componentList = new ArrayList();
+			if(components.containsKey(name))
+				componentList = (List)components.get(name);
+				
+			componentList.add(component);
+			
+			components.put(name, componentList);
+		}
+		
+		RequestAnalyser.getRequestAnalyser().registerComponentStatistics("Getting component with name", t.getElapsedTime());
+		
+		return components;
+	}
+	*/
+	
+	protected Map getComponentWithXPP3(Database db, XmlElement element, String componentName, TemplateController templateController, InfoGlueComponent parentComponent) throws Exception
+	{
+		InfoGlueComponent component = null;
+
+		Locale locale = LanguageDeliveryController.getLanguageDeliveryController().getLocaleWithId(db, templateController.getLanguageId());
+
+		Map components = new HashMap();
+		
+		String componentXPath = getComponentXPath(parentComponent) + "/components/component[@name='" + componentName + "']";
+		//logger.info("componentXPath:" + componentXPath);
+		
+		Xb1XPath xpathObject = (Xb1XPath)cachedXPathObjects.get(componentXPath);
+        if(xpathObject == null)
+        {
+        	xpathObject = new Xb1XPath( componentXPath );
+        	cachedXPathObjects.put(componentXPath, xpathObject);
+        }
+
+        List componentNodeList = xpathObject.selectNodes( element );
+		Iterator componentNodeListIterator = componentNodeList.iterator();
+		while(componentNodeListIterator.hasNext())
+		{
+			XmlElement child 	= (XmlElement)componentNodeListIterator.next();
+			Integer id 			= new Integer(child.getAttributeValue(child.getNamespaceName(), "id"));
+			Integer contentId 	= new Integer(child.getAttributeValue(child.getNamespaceName(), "contentId"));
+			String name 	  	= child.getAttributeValue(child.getNamespaceName(), "name");
+	
+			ContentVO contentVO = ContentDeliveryController.getContentDeliveryController().getContentVO(contentId, db);
+			
+			component = new InfoGlueComponent();
+			component.setId(id);
+			component.setContentId(contentId);
+			component.setName(contentVO.getName());
+			//component.setName(name);
+			component.setSlotName(name);
+			component.setParentComponent(parentComponent);
+			if(parentComponent != null)
+				component.setIsInherited(parentComponent.getIsInherited());
+
+			Xb1XPath xpathObject2 = (Xb1XPath)cachedXPathObjects.get("properties");
+	        if(xpathObject2 == null)
+	        {
+	        	xpathObject2 = new Xb1XPath( "properties" );
+	        	cachedXPathObjects.put("properties", xpathObject2);
+	        }
+
+			List propertiesNodeList = xpathObject2.selectNodes(child);
+			////logger.info("propertiesNodeList:" + propertiesNodeList.getLength());
+			if(propertiesNodeList.size() > 0)
+			{
+				XmlElement propertiesElement = (XmlElement)propertiesNodeList.get(0);
+
+				Xb1XPath xpathObject3 = (Xb1XPath)cachedXPathObjects.get("property");
+		        if(xpathObject3 == null)
+		        {
+		        	xpathObject3 = new Xb1XPath( "property" );
+		        	cachedXPathObjects.put("property", xpathObject3);
+		        }
+
+				List propertyNodeList = xpathObject3.selectNodes(propertiesElement);
+				Iterator propertyNodeListIterator = propertyNodeList.iterator();
+				while(propertyNodeListIterator.hasNext())
+				{
+					XmlElement propertyElement = (XmlElement)propertyNodeListIterator.next();
+					
+					String propertyName = propertyElement.getAttributeValue(propertyElement.getNamespaceName(), "name");
+					String type = propertyElement.getAttributeValue(propertyElement.getNamespaceName(), "type");
+					String path = propertyElement.getAttributeValue(propertyElement.getNamespaceName(), "path");
+
+					if(path == null)
+					{
+						LanguageVO langaugeVO = LanguageDeliveryController.getLanguageDeliveryController().getMasterLanguageForSiteNode(getDatabase(), templateController.getSiteNodeId());
+						if(propertyElement.getAttributeValue(propertyElement.getNamespaceName(), "path_" + langaugeVO.getLanguageCode()) != null)
+							path = propertyElement.getAttributeValue(propertyElement.getNamespaceName(), "path_" + langaugeVO.getLanguageCode());
+					}
+
+					//logger.info("path:" + "path_" + locale.getLanguage() + ":" + propertyElement.attributeValue("path_" + locale.getLanguage()));
+					if(propertyElement.getAttributeValue(propertyElement.getNamespaceName(), "path_" + locale.getLanguage()) != null)
+						path = propertyElement.getAttributeValue(propertyElement.getNamespaceName(), "path_" + locale.getLanguage());
+					//logger.info("path:" + path);
+
+					if(path == null || path.equals(""))
+					{
+						logger.info("Falling back to content master language 2 for property:" + propertyName);
+						LanguageVO contentMasterLangaugeVO = LanguageDeliveryController.getLanguageDeliveryController().getMasterLanguageForRepository(getDatabase(), contentVO.getRepositoryId());
+						if(propertyElement.getAttributeValue(propertyElement.getNamespaceName(), "path_" + contentMasterLangaugeVO.getLanguageCode()) != null)
+							path = propertyElement.getAttributeValue(propertyElement.getNamespaceName(), "path_" + contentMasterLangaugeVO.getLanguageCode());	
+					}
+
+					Map property = new HashMap();
+					property.put("name", propertyName);
+					property.put("path", path);
+					property.put("type", type);
+					
+					Iterator attributesIterator = propertyElement.attributes();
+					while(attributesIterator.hasNext())
+					{
+						XmlAttribute attribute = (XmlAttribute)attributesIterator.next();
+						if(attribute.getName().startsWith("path_"))
+							property.put(attribute.getName(), attribute.getValue());
+					}
+					
+					if(path != null)
+					{
+						if(propertyName.equals(InfoGlueComponent.CACHE_RESULT_PROPERTYNAME) && (path.equalsIgnoreCase("true") || path.equalsIgnoreCase("yes")))
+						{
+							component.setCacheResult(true);
+						}
+						if(propertyName.equals(InfoGlueComponent.UPDATE_INTERVAL_PROPERTYNAME) && !path.equals(""))
+						{
+							try { component.setUpdateInterval(Integer.parseInt(path)); } catch (Exception e) { logger.warn("The component " + component.getName() + " " + InfoGlueComponent.UPDATE_INTERVAL_PROPERTYNAME + " with a faulty value on page " + this.getTemplateController().getOriginalFullURL() + ":" + e.getMessage()); }
+						}
+						if(propertyName.equals(InfoGlueComponent.CACHE_KEY_PROPERTYNAME) && !path.equals(""))
+						{
+							component.setCacheKey(path);
+						}
+						if(propertyName.equals(InfoGlueComponent.PREPROCESSING_ORDER_PROPERTYNAME) && !path.equals(""))
+						{
+							component.setPreProcessingOrder(path);
+						}
+					}
+					
+					List bindings = new ArrayList();
+
+					Xb1XPath xpathObject4 = (Xb1XPath)cachedXPathObjects.get("binding");
+			        if(xpathObject4 == null)
+			        {
+			        	xpathObject4 = new Xb1XPath( "binding" );
+			        	cachedXPathObjects.put("binding", xpathObject4);
+			        }
+
+					List bindingNodeList = xpathObject4.selectNodes(propertyElement);
+					Iterator bindingNodeListIterator = bindingNodeList.iterator();
+					while(bindingNodeListIterator.hasNext())
+					{
+						XmlElement bindingElement = (XmlElement)bindingNodeListIterator.next();
+						String entity = bindingElement.getAttributeValue(bindingElement.getNamespaceName(), "entity");
+						String entityId = bindingElement.getAttributeValue(bindingElement.getNamespaceName(), "entityId");
+						String assetKey = bindingElement.getAttributeValue(bindingElement.getNamespaceName(), "assetKey");
+						////logger.info("Binding found:" + entity + ":" + entityId);
+						
+						ComponentBinding componentBinding = new ComponentBinding();
+						//componentBinding.setId(new Integer(id));
+						//componentBinding.setComponentId(componentId);
+						componentBinding.setEntityClass(entity);
+						componentBinding.setEntityId(new Integer(entityId));
+						componentBinding.setAssetKey(assetKey);
+						componentBinding.setBindingPath(path);
+						
+						bindings.add(componentBinding);
+					}
+	
+					property.put("bindings", bindings);
+					
+					component.getProperties().put(propertyName, property);
+				}
+			}
+			
+			getComponentRestrictionsWithXPP3(child, component, locale, templateController);
+			
+			Xb1XPath xpathObject5 = (Xb1XPath)cachedXPathObjects.get("components");
+	        if(xpathObject5 == null)
+	        {
+	        	xpathObject5 = new Xb1XPath( "components" );
+	        	cachedXPathObjects.put("components", xpathObject5);
+	        }
+
+			List anl = xpathObject5.selectNodes(child);
+			if(anl.size() > 0)
+			{
+				XmlElement componentsElement = (XmlElement)anl.get(0);
+				component.setComponents(getComponentsWithXPP3(db, componentsElement, templateController, component));
 			}
 			
 			List componentList = new ArrayList();
@@ -906,7 +1428,7 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 		
 		return components;
 	}
-	
+
 	
 	/**
 	 * This method renders the base component and all it's children.
@@ -1247,8 +1769,10 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
                 template = "<div style=\"position:relative; padding: 5px 5px 5px 5px; font-family:verdana, sans-serif; font-size:10px; border: 1px solid black;\">" + component.getName() + slots + "</div>";
 		    }
 		    else
-		        template = templateController.getContentAttribute(contentId, templateController.getTemplateAttributeName(), true);
-
+		    {
+		    	template = templateController.getContentAttribute(contentId, templateController.getTemplateAttributeName(), true);
+		    }
+		    
 			if(template == null)
 				throw new SystemException("There was no template available on the content with id " + contentId + ". Check so that the templates language are active on your site.");	
 		}
@@ -1330,9 +1854,7 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 		}
 		while(inheritedComponents.size() == 0 && parentSiteNodeVO != null && inherit && !restrictAll)
 		{
-		    //logger.info("*********************************************");
-		    //logger.info("*         INHERITING COMPONENTS             *");
-		    //logger.info("*********************************************");
+			//System.out.println("INHERITING COMPONENTS");
 			String componentXML = this.getPageComponentsString(db, templateController, parentSiteNodeVO.getId(), templateController.getLanguageId(), component.getContentId());
 			//logger.info("componentXML:" + componentXML);
 			//logger.info("id:" + id);
@@ -1343,24 +1865,23 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 			Map components = (Map)CacheController.getCachedObjectFromAdvancedCache("componentPropertyCache", mapKey);
 			if(components == null)
 			{
-				//logger.info("No components...");
-				Object componentsCandidate = CacheController.getCachedObjectFromAdvancedCache("componentPropertyCache", key);
-				Document document = null;
-				if(componentsCandidate == null)
-				{
-					//logger.info("Parsing dom document..." + key);
-					document = domBuilder.getDocument(componentXML);
-					//TODO - could be enabled perhaps....
-					//CacheController.cacheObjectInAdvancedCache("componentPropertyCache", key, document, new String[]{}, false);
-				}
-				else
-				{
-					document = (Document)componentsCandidate;
-				}
+				Timer t = new Timer();
 				
-				components = getComponent(db, document.getRootElement(), id, templateController, component);
+				//DOM4j
+				/*
+				Document document = domBuilder.getDocument(componentXML);
+				components = getComponentWithDOM4j(db, document.getRootElement(), id, templateController, component);
+				RequestAnalyser.getRequestAnalyser().registerComponentStatistics("INHERITING COMPONENTS WITH DOM4J", t.getElapsedTime());
+				*/
+				
+	   			//XPP3
+		        XmlInfosetBuilder builder = XmlInfosetBuilder.newInstance();
+		        XmlDocument doc = builder.parseReader(new StringReader( componentXML ) );
+				components = getComponentWithXPP3(db, doc.getDocumentElement(), id, templateController, component);
+				RequestAnalyser.getRequestAnalyser().registerComponentStatistics("INHERITING COMPONENTS WITH XPP3", t.getElapsedTime());
+
 				//logger.info("components:" + components);
-				//TODO
+				
 				if(components != null)
 					CacheController.cacheObjectInAdvancedCache("componentPropertyCache", mapKey, components, null, false);
 			}
@@ -1413,13 +1934,10 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 	/**
 	 * This method fetches a subcomponent from either the current page or from a parent node if it's not defined.
 	 */
-   
-	protected InfoGlueComponent getComponent(Database db, TemplateController templateController, InfoGlueComponent component, Integer siteNodeId, String id) throws Exception
+   /*
+	protected InfoGlueComponent getComponentWithDOM4j(Database db, TemplateController templateController, InfoGlueComponent component, Integer siteNodeId, String id) throws Exception
 	{
-		//logger.info("Inside getComponent");
-		//logger.info("component:" + component.getName());
-		//logger.info("siteNodeId:" + siteNodeId);
-		//logger.info("id:" + id);
+		System.out.println("getComponentWithDOM4j");
 		
 		NodeDeliveryController nodeDeliveryController = NodeDeliveryController.getNodeDeliveryController(templateController.getSiteNodeId(), templateController.getLanguageId(), templateController.getContentId());
 
@@ -1428,7 +1946,7 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 
 		Document document = domBuilder.getDocument(componentXML);
 			
-		Map components = getComponent(db, document.getRootElement(), id, templateController, component);
+		Map components = getComponentWithDOM4j(db, document.getRootElement(), id, templateController, component);
 		
 		InfoGlueComponent infoGlueComponent = (InfoGlueComponent)components.get(id);
 		//logger.info("infoGlueComponent:" + infoGlueComponent);
@@ -1443,7 +1961,54 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 		
 			document = domBuilder.getDocument(componentXML);
 						
-			components = getComponent(db, document.getRootElement(), id, templateController, component);
+			components = getComponentWithDOM4j(db, document.getRootElement(), id, templateController, component);
+			
+			infoGlueComponent = (InfoGlueComponent)components.get(id);
+			//logger.info("infoGlueComponent:" + infoGlueComponent);
+			if(infoGlueComponent != null)
+				infoGlueComponent.setIsInherited(true);
+			
+			parentSiteNodeVO = nodeDeliveryController.getParentSiteNode(db, parentSiteNodeVO.getId());
+			//logger.info("parentSiteNodeVO:" + parentSiteNodeVO);	
+		}
+			
+		//logger.info("*************************STOP**********************");
+   	
+		return infoGlueComponent;
+	}
+	*/
+
+	/**
+	 * This method fetches a subcomponent from either the current page or from a parent node if it's not defined.
+	 */
+   
+	protected InfoGlueComponent getComponentWithXPP3(Database db, TemplateController templateController, InfoGlueComponent component, Integer siteNodeId, String id) throws Exception
+	{
+		NodeDeliveryController nodeDeliveryController = NodeDeliveryController.getNodeDeliveryController(templateController.getSiteNodeId(), templateController.getLanguageId(), templateController.getContentId());
+
+		String componentXML = this.getPageComponentsString(db, templateController, siteNodeId, templateController.getLanguageId(), component.getContentId());
+		//logger.info("componentXML:" + componentXML);
+
+        XmlInfosetBuilder builder = XmlInfosetBuilder.newInstance();
+        XmlDocument doc = builder.parseReader(new StringReader( componentXML ) );
+			
+		Map components = getComponentWithXPP3(db, doc.getDocumentElement(), id, templateController, component);
+		
+		InfoGlueComponent infoGlueComponent = (InfoGlueComponent)components.get(id);
+		//logger.info("infoGlueComponent:" + infoGlueComponent);
+					
+		SiteNodeVO parentSiteNodeVO = nodeDeliveryController.getParentSiteNode(db, siteNodeId);
+		//logger.info("parentSiteNodeVO:" + parentSiteNodeVO);
+
+		while(infoGlueComponent == null && parentSiteNodeVO != null)
+		{
+			componentXML = this.getPageComponentsString(db, templateController, parentSiteNodeVO.getId(), templateController.getLanguageId(), component.getContentId());
+			//logger.info("componentXML:" + componentXML);
+		
+	        builder = XmlInfosetBuilder.newInstance();
+	        doc = builder.parseReader(new StringReader( componentXML ) );
+						
+			components = getComponentWithXPP3(db, doc.getDocumentElement(), id, templateController, component);
 			
 			infoGlueComponent = (InfoGlueComponent)components.get(id);
 			//logger.info("infoGlueComponent:" + infoGlueComponent);
@@ -1463,64 +2028,119 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 	/**
 	 * This method fetches a subcomponent from either the current page or from a parent node if it's not defined.
 	 */
-   
-	protected List getComponents(Database db, TemplateController templateController, InfoGlueComponent component, Integer siteNodeId, String id) throws Exception
+   /*
+	protected List getComponentsWithDOM4j(Database db, TemplateController templateController, InfoGlueComponent component, Integer siteNodeId, String id) throws Exception
 	{
-		//logger.info("Inside getComponents");
-		//logger.info("component:" + component.getName());
-		//logger.info("siteNodeId:" + siteNodeId);
-		//logger.info("id:" + id);
-		
+		System.out.println("getComponentsWithDOM4j");
+
 		List subComponents = new ArrayList();
 
 		try
 		{
-		
-		NodeDeliveryController nodeDeliveryController = NodeDeliveryController.getNodeDeliveryController(templateController.getSiteNodeId(), templateController.getLanguageId(), templateController.getContentId());
-
-		String componentStructureXML = this.getPageComponentsString(db, templateController, siteNodeId, templateController.getLanguageId(), component.getContentId());
-		//logger.info("componentStructureXML:" + componentStructureXML);
-
-		Document document = domBuilder.getDocument(componentStructureXML);
-			
-		Map components = getComponent(db, document.getRootElement(), id, templateController, component);
-		
-		if(components.containsKey(id))
-			subComponents = (List)components.get(id);
-		
-		SiteNodeVO parentSiteNodeVO = nodeDeliveryController.getParentSiteNode(db, siteNodeId);
-		//logger.info("parentSiteNodeVO:" + parentSiteNodeVO);
-
-		while((subComponents == null || subComponents.size() == 0) && parentSiteNodeVO != null)
-		{
-			//logger.info("parentSiteNodeVO:" + parentSiteNodeVO);
-			//logger.info("component:" + component);
-			componentStructureXML = this.getPageComponentsString(db, templateController, parentSiteNodeVO.getId(), templateController.getLanguageId(), component.getContentId());
+			NodeDeliveryController nodeDeliveryController = NodeDeliveryController.getNodeDeliveryController(templateController.getSiteNodeId(), templateController.getLanguageId(), templateController.getContentId());
+	
+			String componentStructureXML = this.getPageComponentsString(db, templateController, siteNodeId, templateController.getLanguageId(), component.getContentId());
 			//logger.info("componentStructureXML:" + componentStructureXML);
-		
-			document = domBuilder.getDocument(componentStructureXML);
-						
-			components = getComponent(db, document.getRootElement(), id, templateController, component);
+	
+			Document document = domBuilder.getDocument(componentStructureXML);
+				
+			Map components = getComponentWithDOM4j(db, document.getRootElement(), id, templateController, component);
 			
 			if(components.containsKey(id))
 				subComponents = (List)components.get(id);
-				
-			if(subComponents != null)
+			
+			SiteNodeVO parentSiteNodeVO = nodeDeliveryController.getParentSiteNode(db, siteNodeId);
+			//logger.info("parentSiteNodeVO:" + parentSiteNodeVO);
+	
+			while((subComponents == null || subComponents.size() == 0) && parentSiteNodeVO != null)
 			{
-				//logger.info("infoGlueComponent:" + infoGlueComponent);
-				Iterator inheritedComponentsIterator = subComponents.iterator();
-				while(inheritedComponentsIterator.hasNext())
+				//logger.info("parentSiteNodeVO:" + parentSiteNodeVO);
+				//logger.info("component:" + component);
+				componentStructureXML = this.getPageComponentsString(db, templateController, parentSiteNodeVO.getId(), templateController.getLanguageId(), component.getContentId());
+				//logger.info("componentStructureXML:" + componentStructureXML);
+			
+				document = domBuilder.getDocument(componentStructureXML);
+							
+				components = getComponentWithDOM4j(db, document.getRootElement(), id, templateController, component);
+				
+				if(components.containsKey(id))
+					subComponents = (List)components.get(id);
+					
+				if(subComponents != null)
 				{
-					InfoGlueComponent infoGlueComponent = (InfoGlueComponent)inheritedComponentsIterator.next();
-					infoGlueComponent.setIsInherited(true);
+					//logger.info("infoGlueComponent:" + infoGlueComponent);
+					Iterator inheritedComponentsIterator = subComponents.iterator();
+					while(inheritedComponentsIterator.hasNext())
+					{
+						InfoGlueComponent infoGlueComponent = (InfoGlueComponent)inheritedComponentsIterator.next();
+						infoGlueComponent.setIsInherited(true);
+					}
 				}
+				
+				parentSiteNodeVO = nodeDeliveryController.getParentSiteNode(db, parentSiteNodeVO.getId());
+				//logger.info("parentSiteNodeVO:" + parentSiteNodeVO);	
 			}
-			
-			parentSiteNodeVO = nodeDeliveryController.getParentSiteNode(db, parentSiteNodeVO.getId());
-			//logger.info("parentSiteNodeVO:" + parentSiteNodeVO);	
 		}
+		catch(Exception e)
+		{
+        	logger.warn("An error occurred: " + e.getMessage(), e);
+			throw e;
+		}
+		
+		return subComponents;
+	}
+	*/
+	protected List getComponentsWithXPP3(Database db, TemplateController templateController, InfoGlueComponent component, Integer siteNodeId, String id) throws Exception
+	{
+		List subComponents = new ArrayList();
+
+		try
+		{
+			NodeDeliveryController nodeDeliveryController = NodeDeliveryController.getNodeDeliveryController(templateController.getSiteNodeId(), templateController.getLanguageId(), templateController.getContentId());
+	
+			String componentStructureXML = this.getPageComponentsString(db, templateController, siteNodeId, templateController.getLanguageId(), component.getContentId());
+			//logger.info("componentStructureXML:" + componentStructureXML);
+	
+	        XmlInfosetBuilder builder = XmlInfosetBuilder.newInstance();
+	        XmlDocument doc = builder.parseReader(new StringReader( componentStructureXML ) );
+	
+			Map components = getComponentWithXPP3(db, doc.getDocumentElement(), id, templateController, component);
 			
-		//logger.info("*************************STOP**********************");
+			if(components.containsKey(id))
+				subComponents = (List)components.get(id);
+			
+			SiteNodeVO parentSiteNodeVO = nodeDeliveryController.getParentSiteNode(db, siteNodeId);
+			//logger.info("parentSiteNodeVO:" + parentSiteNodeVO);
+	
+			while((subComponents == null || subComponents.size() == 0) && parentSiteNodeVO != null)
+			{
+				//logger.info("parentSiteNodeVO:" + parentSiteNodeVO);
+				//logger.info("component:" + component);
+				componentStructureXML = this.getPageComponentsString(db, templateController, parentSiteNodeVO.getId(), templateController.getLanguageId(), component.getContentId());
+				//logger.info("componentStructureXML:" + componentStructureXML);
+			
+		        builder = XmlInfosetBuilder.newInstance();
+		        doc = builder.parseReader(new StringReader( componentStructureXML ) );
+							
+				components = getComponentWithXPP3(db, doc.getDocumentElement(), id, templateController, component);
+				
+				if(components.containsKey(id))
+					subComponents = (List)components.get(id);
+					
+				if(subComponents != null)
+				{
+					//logger.info("infoGlueComponent:" + infoGlueComponent);
+					Iterator inheritedComponentsIterator = subComponents.iterator();
+					while(inheritedComponentsIterator.hasNext())
+					{
+						InfoGlueComponent infoGlueComponent = (InfoGlueComponent)inheritedComponentsIterator.next();
+						infoGlueComponent.setIsInherited(true);
+					}
+				}
+				
+				parentSiteNodeVO = nodeDeliveryController.getParentSiteNode(db, parentSiteNodeVO.getId());
+				//logger.info("parentSiteNodeVO:" + parentSiteNodeVO);	
+			}
 		}
 		catch(Exception e)
 		{
@@ -1543,18 +2163,18 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 		return getPageComponents(db, componentXML, element, slotName, templateController, parentComponent, null);
 	}
 	*/
-	protected List getPageComponents(Database db, String componentXML, Element element, String slotName, TemplateController templateController, InfoGlueComponent parentComponent, List sortedPageComponents) throws Exception
+	private static Map cachedXPathObjects = new HashMap();
+	/*
+	protected List getPageComponentsWithDOM4j(Database db, String componentXML, Element element, String slotName, TemplateController templateController, InfoGlueComponent parentComponent, List sortedPageComponents) throws Exception
 	{
-		//List components = new ArrayList();
-		
 		Locale locale = LanguageDeliveryController.getLanguageDeliveryController().getLocaleWithId(db, templateController.getLanguageId());
 
-		String key = "" + componentXML.hashCode() + "_" +  templateController.getLanguageId() + "_" + slotName;
+		StringBuilder key = new StringBuilder("" + componentXML.hashCode()).append("_").append(templateController.getLanguageId()).append("_").append(slotName);
 		if(parentComponent != null)
-			key = "" + componentXML.hashCode() + "_" +  templateController.getLanguageId() + "_" + slotName + "_" + parentComponent.getId() + "_" + parentComponent.getName() + "_" + parentComponent.getIsInherited();
+			key = new StringBuilder("" + componentXML.hashCode()).append("_").append(templateController.getLanguageId()).append("_").append(slotName).append("_").append(parentComponent.getId()).append("_").append(parentComponent.getName()).append("_").append(parentComponent.getIsInherited());
 		String keyChildComponents = key + "_childComponents";
 			
-		Object componentsCandidate = CacheController.getCachedObjectFromAdvancedCache("pageComponentsCache", key);
+		Object componentsCandidate = CacheController.getCachedObjectFromAdvancedCache("pageComponentsCache", key.toString());
 		Object childComponentsCandidate = CacheController.getCachedObjectFromAdvancedCache("pageComponentsCache", keyChildComponents);
 		List components = new ArrayList();
 		List childComponents = new ArrayList();
@@ -1577,9 +2197,15 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 		}
 		else
 		{
+			Timer t = new Timer();
+			
+			//System.out.println("key:" + key);
 			String componentXPath = "component[@name='" + slotName + "']";
 			//logger.info("componentXPath:" + componentXPath);
+			
 			List componentElements = element.selectNodes(componentXPath);
+			//RequestAnalyser.getRequestAnalyser().registerComponentStatistics("DOM4J selectNodes size:" + componentElements.size(), t.getElapsedTime());
+			
 			//logger.info("componentElements:" + componentElements.size());
 			Iterator componentIterator = componentElements.iterator();
 			int slotPosition = 0;
@@ -1598,10 +2224,11 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 				//logger.info("name 1: " + name);
 				//logger.info("isInherited 1: " + isInherited);
 				//logger.info("pagePartTemplateContentId 1: " + pagePartTemplateContentId);
-				
+
 				try
 				{
 				    ContentVO contentVO = ContentDeliveryController.getContentDeliveryController().getContentVO(contentId, db);
+			    	//RequestAnalyser.getRequestAnalyser().registerComponentStatistics("2 took", t.getElapsedTime());
 				    
 				    //logger.info("slotName:" + slotName + " should get connected with content_" + contentVO.getId());
 				    
@@ -1639,7 +2266,10 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 			
 					//Use this later
 					//getComponentProperties(componentElement, component, locale, templateController);
+			    	
 					List propertiesNodeList = componentElement.selectNodes("properties");
+			    	//RequestAnalyser.getRequestAnalyser().registerComponentStatistics("propertiesNodeList LOG4J size: " + propertiesNodeList.size(), t.getElapsedTime());
+
 					if(propertiesNodeList.size() > 0)
 					{
 						Element propertiesElement = (Element)propertiesNodeList.get(0);
@@ -1708,6 +2338,7 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 							
 							List<ComponentBinding> bindings = new ArrayList<ComponentBinding>();
 							List bindingNodeList = propertyElement.selectNodes("binding");
+					    	//RequestAnalyser.getRequestAnalyser().registerComponentStatistics("bindingNodeList LOG4J size: " + bindingNodeList.size(), t.getElapsedTime());
 							Iterator bindingNodeListIterator = bindingNodeList.iterator();
 							while(bindingNodeListIterator.hasNext())
 							{
@@ -1733,13 +2364,14 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 						}
 					}
 					
-					
-					getComponentRestrictions(componentElement, component, locale, templateController);
+					getComponentRestrictionsWithDOM4j(componentElement, component, locale, templateController);
+			    	//RequestAnalyser.getRequestAnalyser().registerComponentStatistics("getComponentRestrictionsWithDOM4j", t.getElapsedTime());
 					
 					//Getting slots for the component
 					try
 					{
 						String componentString = this.getComponentString(templateController, contentId, component);
+				    	//RequestAnalyser.getRequestAnalyser().registerComponentStatistics("getComponentString", t.getElapsedTime());
 						int offset = 0;
 						int slotStartIndex = componentString.indexOf("<ig:slot", offset);
 						while(slotStartIndex > -1)
@@ -1828,12 +2460,16 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 						    slot.setAddComponentText(addComponentText);
 						    slot.setAllowedNumberOfComponents(new Integer(allowedNumberOfComponentsInt));
 
+							//RequestAnalyser.getRequestAnalyser().registerComponentStatistics("Parsing slots DOM4J", t.getElapsedTime());
+
 							Element componentsElement = (Element)componentElement.selectSingleNode("components");
-							
+							//RequestAnalyser.getRequestAnalyser().registerComponentStatistics("DOM4J componentsElement:" + componentsElement, t.getElapsedTime());
+							//System.out.println("componentsElement:" + componentsElement);
+
 							//groups = new String[]{"content_" + contentVO.getId()};
 							
 							List tempChildComponents = new ArrayList();
-							List subComponents = getPageComponents(db, componentXML, componentsElement, slotId, templateController, component, childComponents);
+							List subComponents = getPageComponentsWithDOM4j(db, componentXML, componentsElement, slotId, templateController, component, childComponents);
 							childComponents.addAll(tempChildComponents);
 							slot.setComponents(subComponents);
 							
@@ -1857,6 +2493,396 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 				slotPosition++;
 			}			
 
+	    	//RequestAnalyser.getRequestAnalyser().registerComponentStatistics("All page components", t.getElapsedTime());
+			
+			if(groups == null)
+				groups = new String[]{"selectiveCacheUpdateNonApplicable"};
+			
+			if(components != null)
+			{
+				CacheController.cacheObjectInAdvancedCache("pageComponentsCache", key, components, groups, false);				
+				CacheController.cacheObjectInAdvancedCache("pageComponentsCache", keyChildComponents, childComponents, groups, false);				
+			}
+			else
+			{
+				CacheController.cacheObjectInAdvancedCache("pageComponentsCache", key, new NullObject(), groups, false);
+				CacheController.cacheObjectInAdvancedCache("pageComponentsCache", keyChildComponents, new NullObject(), groups, false);
+			}
+		}		
+		
+		//logger.info("sortedPageComponents:" + sortedPageComponents.size());
+		//logger.info("childComponents:" + childComponents.size());
+		if(sortedPageComponents != null)
+		{
+			sortedPageComponents.addAll(components);
+			sortedPageComponents.addAll(childComponents);
+		}
+		
+		return components;
+	}
+	*/
+	protected List getPageComponentsWithXPP3(Database db, String componentXML, XmlElement element, String slotName, TemplateController templateController, InfoGlueComponent parentComponent, List sortedPageComponents) throws Exception
+	{
+		Locale locale = LanguageDeliveryController.getLanguageDeliveryController().getLocaleWithId(db, templateController.getLanguageId());
+
+		StringBuilder key = new StringBuilder("" + componentXML.hashCode()).append("_").append(templateController.getLanguageId()).append("_").append(slotName);
+		if(parentComponent != null)
+			key = new StringBuilder("" + componentXML.hashCode()).append("_").append(templateController.getLanguageId()).append("_").append(slotName).append("_").append(parentComponent.getId()).append("_").append(parentComponent.getName()).append("_").append(parentComponent.getIsInherited());
+		String keyChildComponents = key + "_childComponents";
+			
+		Object componentsCandidate = CacheController.getCachedObjectFromAdvancedCache("pageComponentsCache", key.toString());
+		Object childComponentsCandidate = CacheController.getCachedObjectFromAdvancedCache("pageComponentsCache", keyChildComponents);
+		List components = new ArrayList();
+		List childComponents = new ArrayList();
+		String[] groups = null;
+
+		if(childComponentsCandidate != null)
+		{
+			if(componentsCandidate instanceof NullObject)
+				childComponents = Collections.EMPTY_LIST;
+			else
+				childComponents = (List)childComponentsCandidate;
+		}
+
+		if(componentsCandidate != null)
+		{
+			if(componentsCandidate instanceof NullObject)
+				components = null;
+			else
+				components = (List)componentsCandidate;
+		}
+		else
+		{
+			Timer t = new Timer();
+			
+			//System.out.println("key:" + key);
+			String componentXPath = "component[@name='" + slotName + "']";
+			//logger.info("componentXPath:" + componentXPath);
+			
+			Xb1XPath xpathObject = (Xb1XPath)cachedXPathObjects.get(componentXPath);
+	        if(xpathObject == null)
+	        {
+	        	xpathObject = new Xb1XPath( componentXPath );
+	        	cachedXPathObjects.put(componentXPath, xpathObject);
+	        }
+
+	        List anl = xpathObject.selectNodes( element );
+			//RequestAnalyser.getRequestAnalyser().registerComponentStatistics("XPP3 selectNodes size:" + anl.size(), t.getElapsedTime());
+			//System.out.println("anl:" + anl.size());
+			
+			//logger.info("componentElements:" + componentElements.size());
+			Iterator componentIterator = anl.iterator();
+			int slotPosition = 0;
+			while(componentIterator.hasNext())
+			{
+				XmlElement componentElement = (XmlElement)componentIterator.next();
+			
+				Integer id 							= new Integer(componentElement.getAttributeValue(componentElement.getNamespaceName(), "id"));
+				Integer contentId 					= new Integer(componentElement.getAttributeValue(componentElement.getNamespaceName(), "contentId"));
+				String name 	  					= componentElement.getAttributeValue(componentElement.getNamespaceName(), "name");
+				String isInherited 					= componentElement.getAttributeValue(componentElement.getNamespaceName(), "isInherited");
+				String pagePartTemplateContentId 	= componentElement.getAttributeValue(componentElement.getNamespaceName(), "pagePartTemplateContentId");
+								
+		    	//RequestAnalyser.getRequestAnalyser().registerComponentStatistics("XPP 1 took", t.getElapsedTime());
+
+				try
+				{
+				    ContentVO contentVO = ContentDeliveryController.getContentDeliveryController().getContentVO(contentId, db);
+				    //logger.info("slotName:" + slotName + " should get connected with content_" + contentVO.getId());
+				    
+				    groups = new String[]{"content_" + contentVO.getId()};
+				    
+					InfoGlueComponent component = new InfoGlueComponent();
+					component.setPositionInSlot(new Integer(slotPosition));
+					component.setId(id);
+					component.setContentId(contentId);
+					component.setName(contentVO.getName());
+					component.setSlotName(name);
+					component.setParentComponent(parentComponent);
+					if(isInherited != null && isInherited.equals("true"))
+						component.setIsInherited(true);
+					else if(parentComponent != null)
+						component.setIsInherited(parentComponent.getIsInherited());
+
+					if(pagePartTemplateContentId != null && !pagePartTemplateContentId.equals("") && !pagePartTemplateContentId.equals("-1"))
+					{
+						Integer pptContentId = new Integer(pagePartTemplateContentId);
+					    ContentVO pptContentIdContentVO = ContentDeliveryController.getContentDeliveryController().getContentVO(pptContentId, db);
+
+						InfoGlueComponent partTemplateReferenceComponent = new InfoGlueComponent();
+						partTemplateReferenceComponent.setPositionInSlot(new Integer(slotPosition));
+						partTemplateReferenceComponent.setId(id);
+						partTemplateReferenceComponent.setContentId(pptContentId);
+						partTemplateReferenceComponent.setName(pptContentIdContentVO.getName());
+						partTemplateReferenceComponent.setSlotName(name);
+						partTemplateReferenceComponent.setParentComponent(parentComponent);
+						partTemplateReferenceComponent.setIsInherited(true);
+						
+						component.setPagePartTemplateContentId(pptContentId);
+						component.setPagePartTemplateComponent(partTemplateReferenceComponent);
+					}
+			
+			    	//RequestAnalyser.getRequestAnalyser().registerComponentStatistics("3 took", t.getElapsedTime());
+					
+					Xb1XPath xpathObject3 = (Xb1XPath)cachedXPathObjects.get("properties");
+			        if(xpathObject3 == null)
+			        {
+			        	xpathObject3 = new Xb1XPath("properties");
+			        	cachedXPathObjects.put("properties", xpathObject3);
+			        }
+
+			        List propertiesNodeList = xpathObject3.selectNodes( componentElement );
+					//RequestAnalyser.getRequestAnalyser().registerComponentStatistics("XPP3 propertiesNodeList:" + propertiesNodeList.size(), t.getElapsedTime());
+					//System.out.println("XPP3 componentElement:" + componentElement);
+
+					if(propertiesNodeList.size() > 0)
+					{
+						XmlElement propertiesElement = (XmlElement)propertiesNodeList.get(0);
+
+						Xb1XPath xpathObject4 = (Xb1XPath)cachedXPathObjects.get("property");
+				        if(xpathObject4 == null)
+				        {
+				        	xpathObject4 = new Xb1XPath("property");
+				        	cachedXPathObjects.put("property", xpathObject4);
+				        }
+
+				        List propertyNodeList = xpathObject4.selectNodes( propertiesElement );
+						//RequestAnalyser.getRequestAnalyser().registerComponentStatistics("XPP3 propertyNodeList:" + propertyNodeList.size(), t.getElapsedTime());
+
+						Iterator propertyNodeListIterator = propertyNodeList.iterator();
+						while(propertyNodeListIterator.hasNext())
+						{
+							XmlElement propertyElement = (XmlElement)propertyNodeListIterator.next();
+							
+							String propertyName = propertyElement.getAttributeValue(propertyElement.getNamespaceName(), "name");
+							String type = propertyElement.getAttributeValue(propertyElement.getNamespaceName(), "type");
+							String path = propertyElement.getAttributeValue(propertyElement.getNamespaceName(), "path");
+			
+							if(path == null)
+							{
+								LanguageVO langaugeVO = LanguageDeliveryController.getLanguageDeliveryController().getMasterLanguageForSiteNode(getDatabase(), templateController.getSiteNodeId());
+								if(propertyElement.getAttributeValue(propertyElement.getNamespaceName(), "path_" + langaugeVO.getLanguageCode()) != null)
+									path = propertyElement.getAttributeValue(propertyElement.getNamespaceName(), "path_" + langaugeVO.getLanguageCode());
+							}
+								
+							if(propertyElement.getAttributeValue(propertyElement.getNamespaceName(), "path_" + locale.getLanguage()) != null)
+								path = propertyElement.getAttributeValue(propertyElement.getNamespaceName(), "path_" + locale.getLanguage());
+					
+							if(path == null || path.equals(""))
+							{
+								logger.info("Falling back to content master language 1 for property:" + propertyName);
+								LanguageVO contentMasterLangaugeVO = LanguageDeliveryController.getLanguageDeliveryController().getMasterLanguageForRepository(getDatabase(), contentVO.getRepositoryId());
+								if(propertyElement.getAttributeValue(propertyElement.getNamespaceName(), "path_" + contentMasterLangaugeVO.getLanguageCode()) != null)
+									path = propertyElement.getAttributeValue(propertyElement.getNamespaceName(), "path_" + contentMasterLangaugeVO.getLanguageCode());	
+							}
+							
+							Map property = new HashMap();
+							property.put("name", propertyName);
+							property.put("path", path);
+							property.put("type", type);
+							
+							Iterator attributesIterator = propertyElement.attributes();
+							while(attributesIterator.hasNext())
+							{
+								XmlAttribute attribute = (XmlAttribute)attributesIterator.next();
+								if(attribute.getName().startsWith("path_"))
+									property.put(attribute.getName(), attribute.getValue());
+							}
+							
+							if(path != null)
+							{
+								if(propertyName.equals(InfoGlueComponent.CACHE_RESULT_PROPERTYNAME) && (path.equalsIgnoreCase("true") || path.equalsIgnoreCase("yes")))
+								{
+									component.setCacheResult(true);
+								}
+								if(propertyName.equals(InfoGlueComponent.UPDATE_INTERVAL_PROPERTYNAME) && !path.equals(""))
+								{
+									try { component.setUpdateInterval(Integer.parseInt(path)); } catch (Exception e) { logger.warn("The component " + component.getName() + " " + InfoGlueComponent.UPDATE_INTERVAL_PROPERTYNAME + " with a faulty value on page " + this.getTemplateController().getOriginalFullURL() + ":" + e.getMessage()); }
+								}
+								if(propertyName.equals(InfoGlueComponent.CACHE_KEY_PROPERTYNAME) && !path.equals(""))
+								{
+									component.setCacheKey(path);
+								}
+								if(propertyName.equals(InfoGlueComponent.PREPROCESSING_ORDER_PROPERTYNAME) && !path.equals(""))
+								{
+									component.setPreProcessingOrder(path);
+								}
+							}
+
+							List<ComponentBinding> bindings = new ArrayList<ComponentBinding>();
+
+							Xb1XPath xpathObject5 = (Xb1XPath)cachedXPathObjects.get("binding");
+					        if(xpathObject5 == null)
+					        {
+					        	xpathObject5 = new Xb1XPath("binding");
+					        	cachedXPathObjects.put("binding", xpathObject5);
+					        }
+
+					        List bindingNodeList = xpathObject5.selectNodes( propertyElement );
+							//RequestAnalyser.getRequestAnalyser().registerComponentStatistics("XPP3 bindingNodeList:" + bindingNodeList.size(), t.getElapsedTime());
+							Iterator bindingNodeListIterator = bindingNodeList.iterator();
+							while(bindingNodeListIterator.hasNext())
+							{
+								XmlElement bindingElement = (XmlElement)bindingNodeListIterator.next();
+								String entity = bindingElement.getAttributeValue(bindingElement.getNamespaceName(), "entity");
+								String entityId = bindingElement.getAttributeValue(bindingElement.getNamespaceName(), "entityId");
+								String assetKey = bindingElement.getAttributeValue(bindingElement.getNamespaceName(), "assetKey");
+
+								ComponentBinding componentBinding = new ComponentBinding();
+								//componentBinding.setId(new Integer(id));
+								//componentBinding.setComponentId(componentId);
+								componentBinding.setEntityClass(entity);
+								componentBinding.setEntityId(new Integer(entityId));
+								componentBinding.setAssetKey(assetKey);
+								componentBinding.setBindingPath(path);
+								
+								bindings.add(componentBinding);
+							}
+			
+							property.put("bindings", bindings);
+							
+							component.getProperties().put(propertyName, property);
+						}
+					}
+					
+					getComponentRestrictionsWithXPP3(componentElement, component, locale, templateController);
+			    	//RequestAnalyser.getRequestAnalyser().registerComponentStatistics("getComponentRestrictions", t.getElapsedTime());
+					
+					//Getting slots for the component
+					try
+					{
+						String componentString = this.getComponentString(templateController, contentId, component);
+				    	//RequestAnalyser.getRequestAnalyser().registerComponentStatistics("getComponentString", t.getElapsedTime());
+						int offset = 0;
+						int slotStartIndex = componentString.indexOf("<ig:slot", offset);
+						while(slotStartIndex > -1)
+						{
+							int slotStopIndex = componentString.indexOf("</ig:slot>", slotStartIndex);
+							String slotString = componentString.substring(slotStartIndex, slotStopIndex + 10);
+							String slotId = slotString.substring(slotString.indexOf("id") + 4, slotString.indexOf("\"", slotString.indexOf("id") + 4));
+							
+							boolean inherit = true;
+							int inheritIndex = slotString.indexOf("inherit");
+							if(inheritIndex > -1)
+							{    
+							    String inheritString = slotString.substring(inheritIndex + 9, slotString.indexOf("\"", inheritIndex + 9));
+							    inherit = Boolean.parseBoolean(inheritString);
+							}
+	
+							boolean disableAccessControl = false;
+							int disableAccessControlIndex = slotString.indexOf("disableAccessControl");
+							if(disableAccessControlIndex > -1)
+							{    
+							    String disableAccessControlString = slotString.substring(disableAccessControlIndex + "disableAccessControl".length() + 2, slotString.indexOf("\"", disableAccessControlIndex + "disableAccessControl".length() + 2));
+							    disableAccessControl = Boolean.parseBoolean(disableAccessControlString);
+							}
+
+							String[] allowedComponentNamesArray = null;
+							int allowedComponentNamesIndex = slotString.indexOf(" allowedComponentNames");
+							if(allowedComponentNamesIndex > -1)
+							{    
+							    String allowedComponentNames = slotString.substring(allowedComponentNamesIndex + 24, slotString.indexOf("\"", allowedComponentNamesIndex + 24));
+							    allowedComponentNamesArray = allowedComponentNames.split(",");
+							}
+
+							String[] disallowedComponentNamesArray = null;
+							int disallowedComponentNamesIndex = slotString.indexOf(" disallowedComponentNames");
+							if(disallowedComponentNamesIndex > -1)
+							{    
+							    String disallowedComponentNames = slotString.substring(disallowedComponentNamesIndex + 27, slotString.indexOf("\"", disallowedComponentNamesIndex + 27));
+							    disallowedComponentNamesArray = disallowedComponentNames.split(",");
+							}
+							
+							String[] allowedComponentGroupNamesArray = null;
+							int allowedComponentGroupNamesIndex = slotString.indexOf(" allowedComponentGroupNames");
+							if(allowedComponentGroupNamesIndex > -1)
+							{    
+							    String allowedComponentGroupNames = slotString.substring(allowedComponentGroupNamesIndex + 29, slotString.indexOf("\"", allowedComponentGroupNamesIndex + 29));
+							    allowedComponentGroupNamesArray = allowedComponentGroupNames.split(",");
+							}
+
+							String addComponentText = null;
+							int addComponentTextIndex = slotString.indexOf("addComponentText");
+							if(addComponentTextIndex > -1)
+							{    
+							    addComponentText = slotString.substring(addComponentTextIndex + "addComponentText".length() + 2, slotString.indexOf("\"", addComponentTextIndex + "addComponentText".length() + 2));
+							}
+
+							String addComponentLinkHTML = null;
+							int addComponentLinkHTMLIndex = slotString.indexOf("addComponentLinkHTML");
+							if(addComponentLinkHTMLIndex > -1)
+							{    
+							    addComponentLinkHTML = slotString.substring(addComponentLinkHTMLIndex + "addComponentLinkHTML".length() + 2, slotString.indexOf("\"", addComponentLinkHTMLIndex + "addComponentLinkHTML".length() + 2));
+							}
+
+							int allowedNumberOfComponentsInt = -1;
+							int allowedNumberOfComponentsIndex = slotString.indexOf("allowedNumberOfComponents");
+							if(allowedNumberOfComponentsIndex > -1)
+							{    
+								String allowedNumberOfComponents = slotString.substring(allowedNumberOfComponentsIndex + "allowedNumberOfComponents".length() + 2, slotString.indexOf("\"", allowedNumberOfComponentsIndex + "allowedNumberOfComponents".length() + 2));
+								try
+								{
+									allowedNumberOfComponentsInt = new Integer(allowedNumberOfComponents);
+								}
+								catch (Exception e) 
+								{
+									allowedNumberOfComponentsInt = -1;
+								}
+							}
+
+							Slot slot = new Slot();
+							slot.setId(slotId);
+							slot.setInherit(inherit);
+							slot.setDisableAccessControl(disableAccessControl);
+							slot.setAllowedComponentsArray(allowedComponentNamesArray);
+							slot.setDisallowedComponentsArray(disallowedComponentNamesArray);
+							slot.setAllowedComponentGroupsArray(allowedComponentGroupNamesArray);
+						    slot.setAddComponentLinkHTML(addComponentLinkHTML);
+						    slot.setAddComponentText(addComponentText);
+						    slot.setAllowedNumberOfComponents(new Integer(allowedNumberOfComponentsInt));
+
+							//RequestAnalyser.getRequestAnalyser().registerComponentStatistics("Parsing slots", t.getElapsedTime());
+
+							Xb1XPath xpathObject2 = (Xb1XPath)cachedXPathObjects.get("components");
+					        if(xpathObject2 == null)
+					        {
+					        	xpathObject2 = new Xb1XPath("components");
+					        	cachedXPathObjects.put("components", xpathObject2);
+					        }
+
+					        XmlElement componentsElement = (XmlElement)xpathObject2.selectSingleNode( componentElement );
+							//RequestAnalyser.getRequestAnalyser().registerComponentStatistics("XPP3 componentsElement:" + componentsElement, t.getElapsedTime());
+							//System.out.println("componentsElement:" + componentsElement);
+
+							//groups = new String[]{"content_" + contentVO.getId()};
+							
+							List tempChildComponents = new ArrayList();
+							List subComponents = getPageComponentsWithXPP3(db, componentXML, componentsElement, slotId, templateController, component, childComponents);
+							childComponents.addAll(tempChildComponents);
+							slot.setComponents(subComponents);
+							
+							component.getSlotList().add(slot);
+					
+							offset = slotStopIndex;
+							slotStartIndex = componentString.indexOf("<ig:slot", offset);
+						}
+					}
+					catch(Exception e)
+					{		
+						logger.warn("An component with either an empty template or with no template in the sitelanguages was found:" + e.getMessage());	
+					}
+					
+					components.add(component);
+				}
+				catch(Exception e)
+				{
+					logger.warn("There was deleted referenced component or some other problem when rendering siteNode: " + templateController.getCurrentPagePath() + "(" + templateController.getSiteNodeId() + ") in language " + templateController.getLanguageId() + ":" + e.getMessage());
+				}
+				slotPosition++;
+			}			
+
+	    	//RequestAnalyser.getRequestAnalyser().registerComponentStatistics("All page components", t.getElapsedTime());
+			
 			if(groups == null)
 				groups = new String[]{"selectiveCacheUpdateNonApplicable"};
 			
@@ -1965,7 +2991,8 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 	/**
 	 * This method gets the restrictions for this component
 	 */
-	private void getComponentRestrictions(Element child, InfoGlueComponent component, Locale locale, TemplateController templateController) throws Exception
+	/*
+	private void getComponentRestrictionsWithDOM4j(Element child, InfoGlueComponent component, Locale locale, TemplateController templateController) throws Exception
 	{
 	    //logger.info("Getting restrictions for " + component.getId() + ":" + child.getName());
 		List restrictionsNodeList = child.selectNodes("restrictions");
@@ -1988,6 +3015,56 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 				{
 				    String slotId = restrictionElement.attributeValue("slotId");
 				    String arguments = restrictionElement.attributeValue("arguments");
+
+				    restriction.setType(type);
+					restriction.setSlotId(slotId);
+					restriction.setArguments(arguments);
+				}
+				
+				component.getRestrictions().add(restriction);
+			}
+		}
+	}
+	*/
+	/**
+	 * This method gets the restrictions for this component
+	 */
+	private void getComponentRestrictionsWithXPP3(XmlElement child, InfoGlueComponent component, Locale locale, TemplateController templateController) throws Exception
+	{
+		Xb1XPath xpathObject = (Xb1XPath)cachedXPathObjects.get("restrictions");
+        if(xpathObject == null)
+        {
+        	xpathObject = new Xb1XPath("restrictions");
+        	cachedXPathObjects.put("restrictions", xpathObject);
+        }
+
+        List restrictionsNodeList = xpathObject.selectNodes( child );
+		//logger.info("restrictionsNodeList:" + restrictionsNodeList.getLength());
+		if(restrictionsNodeList.size() > 0)
+		{
+			XmlElement restrictionsElement = (XmlElement)restrictionsNodeList.get(0);
+
+			Xb1XPath xpathObject2 = (Xb1XPath)cachedXPathObjects.get("restriction");
+	        if(xpathObject2 == null)
+	        {
+	        	xpathObject2 = new Xb1XPath("restriction");
+	        	cachedXPathObjects.put("restriction", xpathObject2);
+	        }
+
+	        List restrictionNodeList = xpathObject2.selectNodes( restrictionsElement );
+			//logger.info("restrictionNodeList:" + restrictionNodeList.getLength());
+			Iterator restrictionNodeListIterator = restrictionNodeList.iterator();
+			while(restrictionNodeListIterator.hasNext())
+			{
+				XmlElement restrictionElement = (XmlElement)restrictionNodeListIterator.next();
+				
+				ComponentRestriction restriction = new ComponentRestriction();
+			    
+				String type = restrictionElement.getAttributeValue(restrictionElement.getNamespaceName(), "type");
+				if(type.equals("blockComponents"))
+				{
+				    String slotId = restrictionElement.getAttributeValue(restrictionElement.getNamespaceName(), "slotId");
+				    String arguments = restrictionElement.getAttributeValue(restrictionElement.getNamespaceName(), "arguments");
 
 				    restriction.setType(type);
 					restriction.setSlotId(slotId);
