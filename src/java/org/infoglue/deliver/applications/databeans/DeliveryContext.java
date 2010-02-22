@@ -37,12 +37,7 @@ import java.util.Set;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.infoglue.cms.applications.common.Session;
-import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
-import org.infoglue.cms.controllers.kernel.impl.simple.ContentVersionController;
-import org.infoglue.cms.entities.content.ContentVersionVO;
 import org.infoglue.cms.util.CmsPropertyHandler;
-import org.infoglue.deliver.controllers.kernel.impl.simple.InfoGlueHashSet;
 
 /**
  * @author Mattias Bogeblad
@@ -103,6 +98,7 @@ public class DeliveryContext implements UsageListener
 	private Set usedSiteNodeVersions = new HashSet();
 	
 	private Set usedPageMetaInfoContentVersionIdSet = new HashSet();
+	private Set usedPageComponentsMetaInfoContentVersionIdSet = new HashSet();
 	
 	private Date lastModifiedDateTime = null;
 	private boolean registerLastModifiedDate = false;
@@ -480,6 +476,11 @@ public class DeliveryContext implements UsageListener
 	public Set getUsedPageMetaInfoContentVersionIdSet() 
 	{
 		return usedPageMetaInfoContentVersionIdSet;
+	}
+
+	public Set getUsedPageComponentsMetaInfoContentVersionIdSet() 
+	{
+		return usedPageComponentsMetaInfoContentVersionIdSet;
 	}
 
 	public Map getPageAttributes() 
