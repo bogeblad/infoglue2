@@ -29,20 +29,23 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 import org.apache.pluto.PortletContainerException;
 import org.apache.pluto.om.window.PortletWindow;
 import org.apache.pluto.portalImpl.services.ServiceManager;
 import org.infoglue.deliver.portal.services.PortletWindowRegistryService;
+import org.infoglue.deliver.util.ThreadMonitor;
 
 /**
  * @author robert lerner
  * @author jan danils
  * @author jöran stark
  */
-public class PortalController {
+public class PortalController 
+{
     public static final String NAME = "portalLogic";
 
-    private static final Log log = LogFactory.getLog(PortalController.class);
+    private final static Logger logger = Logger.getLogger(PortalController.class.getName());
 
     private HttpServletRequest request;
 
@@ -93,24 +96,32 @@ public class PortalController {
     {
         try 
         {
+        	if(portletID == null || portletID.equals(""))
+        		throw new NameNotFoundException("Undefined or empty portletID not allowed");
+        	
             PortletWindowRegistryService windowService = (PortletWindowRegistryService) ServiceManager.getService(PortletWindowRegistryService.class);
             PortletWindow renderWindow = windowService.createPortletWindow(windowID, portletID);
-            log.info("Portlet window of " + portletID + "," + windowID + ": " + renderWindow);
+            logger.info("Portlet window of " + portletID + "," + windowID + ": " + renderWindow);
             return new PortletWindowIGImpl(renderWindow, request, response);
         } 
+        catch (NameNotFoundException e) 
+        {
+        	logger.error("Could not find portlet by ID:" + portletID + " and windowID:" + windowID + " on URL:" + request.getRequestURL() + (request.getQueryString() != null ? "?" + request.getQueryString() : ""));
+        	throw new PortalException(e);
+		}
         catch (PortletException e) 
         {
-            log.error("", e);
+        	logger.error("Error:" + e.getMessage(), e);
             throw new PortalException(e);
         } 
         catch (PortletContainerException e) 
         {
-            log.error("", e);
+        	logger.error("Error:" + e.getMessage(), e);
             throw new PortalException(e);
         } 
         catch (Throwable e) 
         {
-            log.error("", e);
+        	logger.error("Error:" + e.getMessage(), e);
             throw new PortalException(e);
         }
     }
