@@ -151,6 +151,13 @@ public abstract class WebworkAbstractAction implements Action, ServletRequestAwa
             setError(e, e.getCause());
             result = ERROR;
         } 
+        catch(ThreadDeath e) 
+        {
+            logger.error("Thread died: " + e);
+            final SystemException exception = new SystemException("Page took to long to load! Please try again later.");
+            setError(exception, e);
+            result = ERROR;
+        }
         catch(Throwable e) 
         {
             logger.error("Throwable " + e, new Exception(e));
