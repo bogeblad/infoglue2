@@ -67,13 +67,13 @@ public class ExpireCacheJob implements Job
 			try
 	        {
 				logger.info("Validating caches in " + CmsPropertyHandler.getApplicationName() + " - " + Thread.currentThread().getId());
-		    	CacheController.validateCaches();
+		    	//CacheController.validateCaches();
 				RequestAnalyser.shortenPageStatistics();
 		    	lastCacheCheck = System.currentTimeMillis();
 	        }
 	        catch(Exception e)
 	        {
-	            logger.error("An error occurred when we tried to clear caches:" + e.getMessage(), e);
+	            logger.error("An error occurred when we tried to validate caches:" + e.getMessage(), e);
 	        }
 		    
 		    logger.info("releasing block");
@@ -84,6 +84,7 @@ public class ExpireCacheJob implements Job
     	if(diff > 3600)
     	{
     		logger.info("Cleaning heavy caches so memory footprint is kept low:" + diff);
+            /*
             synchronized(RequestAnalyser.getRequestAnalyser()) 
     	    {
     	       	if(RequestAnalyser.getRequestAnalyser().getBlockRequests())
@@ -94,23 +95,30 @@ public class ExpireCacheJob implements Job
 
     	       	RequestAnalyser.getRequestAnalyser().setBlockRequests(true);
     		}
-
+            
 			try
             {
     			logger.info("Finally clearing page cache as this was a publishing-update");
-    			CacheController.clearCache("componentEditorCache");
-    			CacheController.clearCache("componentEditorVersionIdCache");
-    		    CacheController.clearCache("pageCache");
-    		    CacheController.clearCache("pageCacheExtra");
+    			//logger.error("Flushing heavy caches..");
+    			//CacheController.clearCache("contentVersionCache");
+    			//CacheController.clearCache("componentPropertyCache");
+    			//CacheController.clearCache("componentPropertyVersionIdCache");
+    			//CacheController.clearCachesStartingWith("contentAttributeCache");
+    			//CacheController.clearCachesStartingWith("contentVersionIdCache");
+    			//CacheController.clearCache("componentEditorCache");
+    			//CacheController.clearCache("componentEditorVersionIdCache");
+    			//CacheController.clearCache("pageCache");
+    			//CacheController.clearCache("pageCacheExtra");
+    		    logger.error("Done flushing heavy caches..");
     		    lastCacheCleanup = System.currentTimeMillis();
             }
             catch(Exception e)
             {
                 logger.error("An error occurred when we tried to clear caches:" + e.getMessage(), e);
             }
-		    
 		    logger.info("releasing block");
 		    RequestAnalyser.getRequestAnalyser().setBlockRequests(false);
+		    */
     	}
 
         try
