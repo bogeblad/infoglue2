@@ -147,8 +147,6 @@ public class ViewPageAction extends InfoGlueAbstractAction
 	private static Thread lastThread = null;
 	private static boolean memoryWarningSent = false;
 	
-	private ThreadMonitor tk = null;
-	
 	private static Random random = new Random();
 
 	
@@ -210,7 +208,8 @@ public class ViewPageAction extends InfoGlueAbstractAction
         }
         
         HttpServletRequest request = getRequest();
-        
+
+        ThreadMonitor tk = null;
     	if(!CmsPropertyHandler.getOperatingMode().equals("3"))
     		tk = new ThreadMonitor(new Long(CmsPropertyHandler.getDeliverRequestTimeout()).longValue(), request, "Page view took to long!", true);
     	else
@@ -505,8 +504,10 @@ public class ViewPageAction extends InfoGlueAbstractAction
 				}
 			}
 
-	    	if(tk != null)
+	    	if(tk != null && !tk.getIsDoneRunning())
 	    		tk.done();
+	    	else
+	    		logger.warn("Done had allready been run... skipping");
 		}
 		
         return NONE;
@@ -617,6 +618,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
 		
         HttpServletRequest request = getRequest();
 
+        ThreadMonitor tk = null;
     	if(!CmsPropertyHandler.getOperatingMode().equals("3"))
     		tk = new ThreadMonitor(new Long(CmsPropertyHandler.getDeliverRequestTimeout()).longValue(), request, "Page view took to long!", true);
     	else
@@ -806,8 +808,12 @@ public class ViewPageAction extends InfoGlueAbstractAction
 			extraInformation += "Referer: " + getRequest().getHeader("Referer") + "\n";
 			extraInformation += "UserAgent: " + getRequest().getHeader("User-Agent") + "\n";
 			extraInformation += "User IP: " + getRequest().getRemoteAddr();
-
-			logger.error("An error occurred so we should not complete the transaction:" + e.getMessage() + "\n" + extraInformation, e);
+			
+			if(e instanceof java.net.SocketException)
+				logger.warn("An error occurred so we should not complete the transaction:" + e.getMessage() + "\n" + extraInformation);
+			else
+				logger.error("An error occurred so we should not complete the transaction:" + e.getMessage() + "\n" + extraInformation, e);
+				
 			rollbackTransaction(dbWrapper.getDatabase());
 			
 			throw new SystemException(e.getMessage());
@@ -887,8 +893,10 @@ public class ViewPageAction extends InfoGlueAbstractAction
 			    logger.info("The memory consumption was " + (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) + "(" + Runtime.getRuntime().totalMemory() + "/" + Runtime.getRuntime().maxMemory() + ") bytes");
 			}
 
-			if(tk != null)
+	    	if(tk != null && !tk.getIsDoneRunning())
 	    		tk.done();
+	    	else
+	    		logger.warn("Done had allready been run... skipping");
 		}
 		
 		return NONE;

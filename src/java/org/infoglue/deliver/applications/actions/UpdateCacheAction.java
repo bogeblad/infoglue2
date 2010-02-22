@@ -64,8 +64,6 @@ public class UpdateCacheAction extends InfoGlueAbstractAction
 	
 	private static boolean cachingInProgress = false;
 	
-	private ThreadMonitor tk = null;
-
 	/**
 	 * The constructor for this action - contains nothing right now.
 	 */
@@ -138,6 +136,8 @@ public class UpdateCacheAction extends InfoGlueAbstractAction
          
     public String doExecute() throws Exception
     {
+    	ThreadMonitor tk = null;
+    	
     	if(!CmsPropertyHandler.getOperatingMode().equals("3"))
     		tk = new ThreadMonitor(2000, this.getRequest(), "Update cache took to long", false);
 
@@ -160,7 +160,7 @@ public class UpdateCacheAction extends InfoGlueAbstractAction
 	        
         }
         
-		try
+        try
 		{  
 			//Iterate through all registered listeners and call them... dont place logic here... have specialized handlers.			
 
