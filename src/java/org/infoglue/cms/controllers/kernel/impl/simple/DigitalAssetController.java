@@ -55,6 +55,7 @@ import org.exolab.castor.jdo.QueryResults;
 import org.infoglue.cms.applications.common.VisualFormatter;
 import org.infoglue.cms.applications.databeans.OptimizationBeanList;
 import org.infoglue.cms.entities.content.Content;
+import org.infoglue.cms.entities.content.ContentVO;
 import org.infoglue.cms.entities.content.ContentVersion;
 import org.infoglue.cms.entities.content.ContentVersionVO;
 import org.infoglue.cms.entities.content.DigitalAsset;
@@ -1359,11 +1360,11 @@ public class DigitalAssetController extends BaseController
 		
 		String assetUrl = null;
 
-    	Content content = ContentController.getContentController().getContentWithId(contentId, db);
+    	ContentVO contentVO = ContentController.getContentController().getContentVOWithId(contentId, db);
     	if(logger.isInfoEnabled())
     	{
-	    	logger.info("content:" + content.getName());
-	    	logger.info("repositoryId:" + content.getRepository().getId());
+	    	logger.info("content:" + contentVO.getName());
+	    	logger.info("repositoryId:" + contentVO.getRepositoryId());
 	    	logger.info("languageId:" + languageId);
 	    	logger.info("assetKey:" + assetKey);
     	}
@@ -1397,12 +1398,14 @@ public class DigitalAssetController extends BaseController
         	sb.append("/");
 
     	ContentVersion contentVersion = ContentVersionController.getContentVersionController().getLatestActiveContentVersion(contentId, languageId, db);
-    	LanguageVO masterLanguageVO = LanguageDeliveryController.getLanguageDeliveryController().getMasterLanguageForRepository(content.getRepository().getRepositoryId(), db);	
-		logger.info("contentVersion:" + contentVersion);
+    	LanguageVO masterLanguageVO = LanguageDeliveryController.getLanguageDeliveryController().getMasterLanguageForRepository(contentVO.getRepositoryId(), db);	
+		if(logger.isInfoEnabled())
+			logger.info("contentVersion:" + contentVersion);
 		if(contentVersion != null)
 		{
 			DigitalAssetVO digitalAssetVO = getLatestDigitalAssetVO(contentVersion.getContentVersionId(), assetKey, db);
-			logger.info("digitalAssetVO:" + digitalAssetVO);
+			if(logger.isInfoEnabled())
+				logger.info("digitalAssetVO:" + digitalAssetVO);
 			if(digitalAssetVO != null)
 			{
 				String folderName = "" + (digitalAssetVO.getDigitalAssetId().intValue() / 1000);
