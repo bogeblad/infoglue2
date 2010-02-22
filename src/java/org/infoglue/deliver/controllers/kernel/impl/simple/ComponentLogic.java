@@ -28,6 +28,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
@@ -384,7 +385,7 @@ public class ComponentLogic
 		}
 		catch(Exception e)
 		{
-			e.printStackTrace();
+			logger.warn("Error getting getAssetThumbnailUrl: " + propertyName + " on assetKey " + assetKey, e);
 		}
 		
 		return assetUrl;
@@ -612,7 +613,7 @@ public class ComponentLogic
 			}
 			catch (Exception e) 
 			{
-				e.printStackTrace();
+				logger.error("Error getting propertyValue on + " + propertyName + ":" + e.getMessage(), e);
 			}
 		}
 				
@@ -627,7 +628,7 @@ public class ComponentLogic
 		String propertyValue = "";
 
 		Locale locale = LanguageDeliveryController.getLanguageDeliveryController().getLocaleWithId(templateController.getDatabase(), templateController.getLanguageId());
-
+		
 		Map property = getInheritedComponentProperty(component, propertyName, useInheritance, useRepositoryInheritance, useStructureInheritance, useComponentInheritance);
 		if(property != null)
 		{	
@@ -651,7 +652,7 @@ public class ComponentLogic
 			}
 			catch (Exception e) 
 			{
-				e.printStackTrace();
+				logger.error("Error getting propertyValue on + " + propertyName + ":" + e.getMessage(), e);
 			}
 		}
 
@@ -697,7 +698,7 @@ public class ComponentLogic
 			}
 			catch (Exception e) 
 			{
-				e.printStackTrace();
+				logger.error("Error getting propertyValue on + " + propertyName + ":" + e.getMessage(), e);
 			}
 		}
 
@@ -743,7 +744,7 @@ public class ComponentLogic
 			}
 			catch (Exception e) 
 			{
-				e.printStackTrace();
+				logger.error("Error getting propertyValue on + " + propertyName + ":" + e.getMessage(), e);
 			}
 		}
 
@@ -1384,9 +1385,9 @@ public class ComponentLogic
 	{
 		Map property = null;
 		
-	    Set contentVersionIdList = new InfoGlueHashSet();
-	    if(templateController.getDeliveryContext().getUsedPageMetaInfoContentVersionIdSet().size() > 0)
-	    	contentVersionIdList.addAll(templateController.getDeliveryContext().getUsedPageMetaInfoContentVersionIdSet());
+	    Set contentVersionIdList = new HashSet();
+	    if(templateController.getDeliveryContext().getUsedPageComponentsMetaInfoContentVersionIdSet().size() > 0)
+	    	contentVersionIdList.addAll(templateController.getDeliveryContext().getUsedPageComponentsMetaInfoContentVersionIdSet());
 	    	
 	    try
 		{
@@ -1394,7 +1395,7 @@ public class ComponentLogic
 		    String versionKey = key + "_contentVersionIds";
 			Object propertyCandidate = CacheController.getCachedObjectFromAdvancedCache("componentPropertyCache", key);
 			Set propertyCandidateVersions = (Set)CacheController.getCachedObjectFromAdvancedCache("componentPropertyVersionIdCache", versionKey);
-
+			
 			if(propertyCandidate != null)
 			{
 				if(propertyCandidate instanceof NullObject)
@@ -1407,8 +1408,8 @@ public class ComponentLogic
 			}
 			else
 			{
-		    	property = getComponentProperty(propertyName, useInheritance, useStructureInheritance, contentVersionIdList, useRepositoryInheritance);
-				if(property == null)
+				property = getComponentProperty(propertyName, useInheritance, useStructureInheritance, contentVersionIdList, useRepositoryInheritance);
+		    	if(property == null)
 				{	
 					property = (Map)component.getProperties().get(propertyName);
 					InfoGlueComponent parentComponent = component.getParentComponent();
@@ -1420,7 +1421,7 @@ public class ComponentLogic
 					}
 				}
 				
-			    Set groups = new InfoGlueHashSet();
+			    Set groups = new HashSet();
 				Iterator contentVersionIdListIterator = contentVersionIdList.iterator();
 			    while(contentVersionIdListIterator.hasNext())
 			    {
@@ -1432,12 +1433,12 @@ public class ComponentLogic
 
 			    //System.out.println("Adding group: " + "siteNode_" + templateController.getSiteNodeId());
 			    groups.add("siteNode_" + templateController.getSiteNodeId());
-
-			    if(templateController.getDeliveryContext().getUsedContents().contains("selectiveCacheUpdateNonApplicable"))
-			    	groups.add("selectiveCacheUpdateNonApplicable");
 			    
-			    CacheController.cacheObjectInAdvancedCacheWithGroupsAsSet("componentPropertyCache", key, property, groups, true);
-			    CacheController.cacheObjectInAdvancedCacheWithGroupsAsSet("componentPropertyVersionIdCache", versionKey, contentVersionIdList, groups, true);
+			    if(groups.size() < 26)
+			    {
+			    	CacheController.cacheObjectInAdvancedCacheWithGroupsAsSet("componentPropertyCache", key, property, groups, true);
+				    CacheController.cacheObjectInAdvancedCacheWithGroupsAsSet("componentPropertyVersionIdCache", versionKey, contentVersionIdList, groups, true);
+			    }
 			}
 		}
 		catch(Exception e)
@@ -1481,7 +1482,7 @@ public class ComponentLogic
 		}
 		catch(Exception e)
 		{
-			e.printStackTrace();
+			logger.error("Error getting propertyValue on + " + propertyName + ":" + e.getMessage(), e);
 		}
 		
 		return null;
@@ -1531,7 +1532,7 @@ public class ComponentLogic
 		}
 		catch(Exception e)
 		{
-			e.printStackTrace();
+			logger.error("Error getting inherited component properties on + " + propertyName + ":" + e.getMessage(), e);
 		}
 		
 		return null;
@@ -1574,7 +1575,7 @@ public class ComponentLogic
 	{
 		Map property = null;
 		
-	    Set contentVersionIdList = new InfoGlueHashSet();
+	    Set contentVersionIdList = new HashSet();
 
 	    try
 		{
@@ -1680,26 +1681,30 @@ public class ComponentLogic
 					
 					if(property != null && contentVersionIdList.size() > 0)
 			        {
-					    Set groups = new InfoGlueHashSet();
+					    Set groups = new HashSet();
 						Iterator contentVersionIdListIterator = contentVersionIdList.iterator();
 					    while(contentVersionIdListIterator.hasNext())
 					    {
 							Integer contentVersionId = (Integer)contentVersionIdListIterator.next();
-							//if(contentVersionId != null)
-							//{
+							try
+							{
 								ContentVersionVO contentVersionVO = ContentVersionController.getContentVersionController().getContentVersionVOWithId(contentVersionId, this.templateController.getDatabase());
 							    groups.add("contentVersion_" + contentVersionId);
 							    groups.add("content_" + contentVersionVO.getContentId());
-							//}
+							}
+							catch (Exception e) 
+							{
+								logger.error("Could not load version...");
+							}
 					    }
 					    
 					    groups.add("siteNode_" + templateController.getSiteNodeId());
 					    
-					    if(templateController.getDeliveryContext().getUsedContents().contains("selectiveCacheUpdateNonApplicable"))
-					    	groups.add("selectiveCacheUpdateNonApplicable");
-
-					    CacheController.cacheObjectInAdvancedCacheWithGroupsAsSet("componentPropertyCache", key, property, groups, true);
-					    CacheController.cacheObjectInAdvancedCacheWithGroupsAsSet("componentPropertyVersionIdCache", versionKey, contentVersionIdList, groups, true);
+					    if(groups.size() < 20)
+					    {
+						    CacheController.cacheObjectInAdvancedCacheWithGroupsAsSet("componentPropertyCache", key, property, groups, true);
+						    CacheController.cacheObjectInAdvancedCacheWithGroupsAsSet("componentPropertyVersionIdCache", versionKey, contentVersionIdList, groups, true);
+					    }
 			        }
 					//TODO - TEST
 					/*
@@ -1707,7 +1712,7 @@ public class ComponentLogic
 					{
 						if(property == null && contentVersionIdList.size() > 0)
 						{
-						    Set groups = new InfoGlueHashSet();
+						    Set groups = new HashSet();
 							Iterator contentVersionIdListIterator = contentVersionIdList.iterator();
 						    while(contentVersionIdListIterator.hasNext())
 						    {
@@ -1825,7 +1830,7 @@ public class ComponentLogic
 			}
 			catch(Exception e)
 			{
-				e.printStackTrace();
+				logger.warn("Could not get componentProperty:" + propertyName + ":" + this.templateController.getSiteNodeId() + " / " + this.templateController.getLanguageId() + ":" + e.getMessage(), e);
 			}
 		}
 
@@ -1840,7 +1845,7 @@ public class ComponentLogic
 	
 	private Map getComponentProperty(Integer siteNodeId, String propertyName, boolean useInheritance) throws Exception
 	{
-	    Set contentVersionIdList = new InfoGlueHashSet();
+	    Set contentVersionIdList = new HashSet();
 
 		//Map property = (Map)this.infoGlueComponent.getProperties().get(propertyName);
 		//logger.info("property1:" + property);
@@ -1895,9 +1900,10 @@ public class ComponentLogic
 	 
 	private Map getInheritedComponentProperty(TemplateController templateController, Integer siteNodeId, Integer languageId, Integer contentId, Integer componentId, String propertyName, Set contentVersionIdList) throws Exception
 	{
-	    String key = "inherited_" + templateController.getSiteNodeId() + "_" + siteNodeId + "_" + languageId + "_" + componentId + "_" + propertyName;
-	    String versionKey = key + "_contentVersionIds";
-		Object propertyCandidate = CacheController.getCachedObjectFromAdvancedCache("componentPropertyCache", key);
+	    StringBuilder key = new StringBuilder("inherited_").append(siteNodeId).append("_").append(languageId).append("_").append(componentId).append("_").append(propertyName);
+	    //StringBuilder key = new StringBuilder("inherited_").append(templateController.getSiteNodeId()).append("_").append(siteNodeId).append("_").append(languageId).append("_").append(componentId).append("_").append(propertyName);
+	    String versionKey = key.toString() + "_contentVersionIds";
+		Object propertyCandidate = CacheController.getCachedObjectFromAdvancedCache("componentPropertyCache", key.toString());
 		Set propertyCandidateVersions = (Set)CacheController.getCachedObjectFromAdvancedCache("componentPropertyVersionIdCache", versionKey);
 		Map property = null;
 			
@@ -1936,52 +1942,66 @@ public class ComponentLogic
 			
 			if(property != null && contentVersionIdList.size() > 0)
 	        {
-			    Set groups = new InfoGlueHashSet();
+			    Set groups = new HashSet();
 			    Iterator contentVersionIdListIterator = contentVersionIdList.iterator();
 			    while(contentVersionIdListIterator.hasNext())
 			    {
 					Integer contentVersionId = (Integer)contentVersionIdListIterator.next();
-					//if(contentVersionId != null)
-					//{
+					try
+					{
 				        ContentVersionVO contentVersionVO = ContentVersionController.getContentVersionController().getContentVersionVOWithId(contentVersionId, this.templateController.getDatabase());
 					    groups.add("contentVersion_" + contentVersionId);
 					    groups.add("content_" + contentVersionVO.getContentId());
-					//}
+					}
+					catch (Exception e) 
+					{
+					    if(contentVersionId != null)
+					    	groups.add("contentVersion_" + contentVersionId);
+						logger.warn("Could not fetch contentVersionVO to set correct groups:" + e.getMessage());
+					}
 				}
-			    
-			    //TODO
-		    	//CacheController.cacheObjectInAdvancedCacheWithGroupsAsSet("componentPropertyCache", key, property, groups, true);
-			    //CacheController.cacheObjectInAdvancedCacheWithGroupsAsSet("componentPropertyVersionIdCache", versionKey, contentVersionIdList, groups, true);
+			    			    
+			    groups.add("siteNode_" + templateController.getSiteNodeId());
+			    groups.add("siteNode_" + siteNodeId);
+
+			    //TODO - TEST - NOT SAFE
+			    CacheController.cacheObjectInAdvancedCacheWithGroupsAsSet("componentPropertyCache", key, property, groups, true);
+			    CacheController.cacheObjectInAdvancedCacheWithGroupsAsSet("componentPropertyVersionIdCache", versionKey, contentVersionIdList, groups, true);
 		    }
 			else
 			{
 				if(property == null && contentVersionIdList.size() > 0)
 				{
-				    Set groups = new InfoGlueHashSet();
+				    Set groups = new HashSet();
 					Iterator contentVersionIdListIterator = contentVersionIdList.iterator();
 				    while(contentVersionIdListIterator.hasNext())
 				    {
 						Integer contentVersionId = (Integer)contentVersionIdListIterator.next();
-						//if(contentVersionId != null)
-						//{
+						try
+						{
 							ContentVersionVO contentVersionVO = ContentVersionController.getContentVersionController().getContentVersionVOWithId(contentVersionId, this.templateController.getDatabase());
 						    groups.add("contentVersion_" + contentVersionId);
 						    groups.add("content_" + contentVersionVO.getContentId());
-						//}
+						}
+						catch (Exception e) 
+						{
+						    if(contentVersionId != null)
+						    	groups.add("contentVersion_" + contentVersionId);
+							logger.warn("Could not fetch contentVersionVO to set correct groups:" + e.getMessage());
+						}
 					}
 				    
-				    if(templateController.getDeliveryContext().getUsedContents().contains("selectiveCacheUpdateNonApplicable"))
-				    	groups.add("selectiveCacheUpdateNonApplicable");
+				    groups.add("siteNode_" + templateController.getSiteNodeId());
+				    groups.add("siteNode_" + siteNodeId);
 
 //				  	TODO - TEST - NOT SAFE
-				    //CacheController.cacheObjectInAdvancedCacheWithGroupsAsSet("componentPropertyCache", key, new NullObject(), groups, true);
-				    //CacheController.cacheObjectInAdvancedCacheWithGroupsAsSet("componentPropertyVersionIdCache", versionKey, contentVersionIdList, groups, true);
+				    CacheController.cacheObjectInAdvancedCacheWithGroupsAsSet("componentPropertyCache", key.toString(), new NullObject(), groups, true);
+				    CacheController.cacheObjectInAdvancedCacheWithGroupsAsSet("componentPropertyVersionIdCache", versionKey, contentVersionIdList, groups, true);
 				}
 				else
 				{
 //					TODO - TEST - NOT SAFE
-					//logger.info("Caching property without content versions: NullObject for key " + key);
-					//CacheController.cacheObjectInAdvancedCache("componentPropertyCache", key, new NullObject(), new String[]{}, false);
+					CacheController.cacheObjectInAdvancedCache("componentPropertyCache", key.toString(), new NullObject(), new String[]{}, false);
 				}
 			}
 		}
@@ -2249,7 +2269,7 @@ public class ComponentLogic
 		
         XmlInfosetBuilder builder = XmlInfosetBuilder.newInstance();
         XmlDocument doc = builder.parseReader(new StringReader( inheritedPageComponentsXML ) );
-
+        
 		String propertyXPath = "//component[@id=" + componentId + "]/properties/property[@name='" + propertyName + "']";
 		
 		Xb1XPath xpathObject = (Xb1XPath)cachedXPathObjects.get(propertyXPath);
@@ -2258,7 +2278,7 @@ public class ComponentLogic
         	xpathObject = new Xb1XPath( propertyXPath );
         	cachedXPathObjects.put(propertyXPath, xpathObject);
         }
-        
+
         List anl = xpathObject.selectNodes( doc );
 
 		//If not found on the same component id - let's check them all and use the first we find.
@@ -2269,7 +2289,7 @@ public class ComponentLogic
 			Xb1XPath globalXpathObject = new Xb1XPath( globalPropertyXPath );
 	        anl = globalXpathObject.selectNodes( doc );
 		}			
-				
+
 		Iterator anlIterator = anl.iterator();
 		while(anlIterator.hasNext())
 		{
@@ -2417,7 +2437,7 @@ public class ComponentLogic
 			}
 			catch(Exception e)
 			{
-				e.printStackTrace();
+				logger.warn("Error getting component properties: " + propertyName + " on siteNode " + siteNodeId, e);
 			}
 		}
 
@@ -2431,7 +2451,7 @@ public class ComponentLogic
 	 
 	private List getInheritedComponentProperties(TemplateController templateController, Integer siteNodeId, Integer languageId, Integer contentId, Integer componentId, String propertyName) throws Exception
 	{
-		Set contentVersionIdList = new InfoGlueHashSet();
+		Set contentVersionIdList = new HashSet();
 	    
 	    //logger.info("Checking for property " + propertyName + " on siteNodeId " + siteNodeId);
 		String inheritedPageComponentsXML = getPageComponentsString(templateController, siteNodeId, languageId, contentId, contentVersionIdList);
@@ -2545,7 +2565,7 @@ public class ComponentLogic
 			
 			if(properties != null && contentVersionIdList.size() > 0)
 	        {
-			    Set groups = new InfoGlueHashSet();
+			    Set groups = new HashSet();
 				Iterator contentVersionIdListIterator = contentVersionIdList.iterator();
 			    while(contentVersionIdListIterator.hasNext())
 			    {
@@ -2558,11 +2578,11 @@ public class ComponentLogic
 				
 			    groups.add("siteNode_" + templateController.getSiteNodeId());
 
-			    if(templateController.getDeliveryContext().getUsedContents().contains("selectiveCacheUpdateNonApplicable"))
-			    	groups.add("selectiveCacheUpdateNonApplicable");
-
-			    CacheController.cacheObjectInAdvancedCacheWithGroupsAsSet("componentPropertyCache", key, properties, groups, true);
-			    CacheController.cacheObjectInAdvancedCacheWithGroupsAsSet("componentPropertyVersionIdCache", versionKey, contentVersionIdList, groups, true);
+			    if(groups.size() < 20)
+			    {
+				    CacheController.cacheObjectInAdvancedCacheWithGroupsAsSet("componentPropertyCache", key, properties, groups, true);
+				    CacheController.cacheObjectInAdvancedCacheWithGroupsAsSet("componentPropertyVersionIdCache", versionKey, contentVersionIdList, groups, true);
+			    }
 	        }
 		}
 		
@@ -2607,7 +2627,7 @@ public class ComponentLogic
 	
 	public String getComponentPropertyValue(Integer siteNodeId, Integer componentId, Integer languageId, Integer contentId, String name) throws Exception
 	{
-        Set contentVersionIdList = new InfoGlueHashSet();
+        Set contentVersionIdList = new HashSet();
 
 		String componentXML = getPageComponentsString(templateController, siteNodeId, languageId, contentId, contentVersionIdList);
 
@@ -2846,7 +2866,7 @@ public class ComponentLogic
 	        		}
 	        		catch (Exception e) 
 	        		{
-	        			e.printStackTrace();
+	    				logger.error("Error filtering child components: " + e.getMessage(), e);
 	        		}
 	        	}
 	        	
@@ -2902,7 +2922,7 @@ public class ComponentLogic
 		
 		if(usedContentVersionId != null && usedContentVersionId.size() > 0)
 		{
-		    Set groups = new InfoGlueHashSet();
+		    Set groups = new HashSet();
 			Iterator contentVersionIdListIterator = usedContentVersionId.iterator();
 		    while(contentVersionIdListIterator.hasNext())
 		    {
@@ -2912,7 +2932,7 @@ public class ComponentLogic
 			    groups.add("content_" + contentVersionVO.getContentId());
 			}
 
-		    CacheController.cacheObjectInAdvancedCacheWithGroupsAsSet("contentVersionIdCache", versionKey, usedContentVersionId, groups, true);
+		    CacheController.cacheObjectInAdvancedCacheWithGroupsAsSet("componentEditorVersionIdCache", versionKey, usedContentVersionId, groups, true);
 		}
 		
 		return pageComponentsString;

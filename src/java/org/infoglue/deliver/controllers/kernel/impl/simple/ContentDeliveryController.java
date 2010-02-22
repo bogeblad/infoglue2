@@ -44,6 +44,7 @@ import org.exolab.castor.jdo.QueryResults;
 import org.infoglue.cms.applications.common.VisualFormatter;
 import org.infoglue.cms.controllers.kernel.impl.simple.AccessRightController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentCategoryController;
+import org.infoglue.cms.controllers.kernel.impl.simple.ContentController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentTypeDefinitionController;
 import org.infoglue.cms.controllers.kernel.impl.simple.DigitalAssetController;
 import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeController;
@@ -842,6 +843,7 @@ public class ContentDeliveryController extends BaseDeliveryController
 		}
 		
 		StringBuilder attributeKeySB = new StringBuilder();
+		StringBuilder versionKeySB = new StringBuilder();
 		
 		if(!isMetaInfoQuery && !isTemplateQuery)
 			attributeKeySB.append("")
@@ -860,17 +862,35 @@ public class ContentDeliveryController extends BaseDeliveryController
 			.append(useLanguageFallback).append("_")
 			.append(escapeHTML);
 
+		if(!isMetaInfoQuery && !isTemplateQuery)
+			versionKeySB.append("")
+			.append(contentId).append("_")
+			.append(languageId).append("_")
+			.append(siteNodeId).append("_");
+
+		else
+			versionKeySB.append("")
+			.append(contentId).append("_")
+			.append(languageId).append("_");
+
 		String attributeKey = attributeKeySB.toString();
-		String versionKey = attributeKeySB.append("_contentVersionId").toString();
+		String versionKey = versionKeySB.append("_contentVersionId").toString();
 		
-		String attribute = (String)CacheController.getCachedObjectFromAdvancedCache("contentAttributeCache_" + attributeName, attributeKey);
+		//ContentVO contentVO = this.getContentVO(contentId, db);
+		//String matcher = "_" + contentVO.getContentTypeDefinitionId() + "_" + contentVO.getRepositoryId() + "_" + attributeName;
+		//String matcher = "_" + contentVO.getRepositoryId();
+		String matcher = "";
+		String cacheName = "contentAttributeCache" + matcher;
+		String contentVersionIdCacheName = "contentVersionIdCache" + matcher;
+		
+		String attribute = (String)CacheController.getCachedObjectFromAdvancedCache(cacheName, attributeKey);
 		Integer contentVersionId = null;
 		
 	    try
 	    {
 			if(attribute != null)
 			{
-				contentVersionId = (Integer)CacheController.getCachedObjectFromAdvancedCache("contentVersionIdCache", versionKey);
+				contentVersionId = (Integer)CacheController.getCachedObjectFromAdvancedCache(contentVersionIdCacheName, versionKey);
 				//logger.info("There was an cached content attribute:" + attribute);
 			}
 			else
@@ -890,10 +910,10 @@ public class ContentDeliveryController extends BaseDeliveryController
 	        	StringBuilder groupKey1 = new StringBuilder("contentVersion_").append(contentVersionId);
 	        	StringBuilder groupKey2 = new StringBuilder("content_").append(contentId);
 	        	
-	        	CacheController.cacheObjectInAdvancedCache("contentAttributeCache_" + attributeName, attributeKey, attribute, new String[]{groupKey1.toString(), groupKey2.toString()}, true);
-				if(contentVersionId != null)
+	        	CacheController.cacheObjectInAdvancedCache(cacheName, attributeKey, attribute, new String[]{groupKey1.toString(), groupKey2.toString()}, true);
+	    		if(contentVersionId != null)
 				{
-				    CacheController.cacheObjectInAdvancedCache("contentVersionIdCache", versionKey, contentVersionId, new String[]{groupKey1.toString(), groupKey2.toString()}, true);
+    				CacheController.cacheObjectInAdvancedCache(contentVersionIdCacheName, versionKey, contentVersionId, new String[]{groupKey1.toString(), groupKey2.toString()}, true);
 				}
 			}
 			
@@ -902,6 +922,8 @@ public class ContentDeliveryController extends BaseDeliveryController
 				deliveryContext.addUsedContentVersion("contentVersion_" + contentVersionId);
 				if(isMetaInfoQuery && contentVersionId != null)
 					deliveryContext.getUsedPageMetaInfoContentVersionIdSet().add(contentVersionId);
+				if(attributeName.equals("ComponentStructure"))
+					deliveryContext.getUsedPageComponentsMetaInfoContentVersionIdSet().add(contentVersionId);
 			}
 	
 			if(usedContentVersionId != null && contentVersionId != null)
