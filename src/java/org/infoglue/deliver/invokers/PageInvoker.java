@@ -178,6 +178,9 @@ public abstract class PageInvoker
 		String isPageCacheOn = CmsPropertyHandler.getIsPageCacheOn();
 		String refresh = this.getRequest().getParameter("refresh");
 		
+		String pageCacheName = "pageCache"; // + this.getTemplateController().getRepositoryId();
+		String pageCacheExtraName = "pageCacheExtra"; // + this.getTemplateController().getRepositoryId();
+		
 		if(logger.isInfoEnabled())
 			logger.info("isPageCacheOn:" + isPageCacheOn);
 		
@@ -195,13 +198,13 @@ public abstract class PageInvoker
 				byte[] cachedCompressedData = null;
 				if(pageCacheTimeout == null)
 				{
-				    cachedCompressedData = (byte[])CacheController.getCachedObjectFromAdvancedCache("pageCache", this.getDeliveryContext().getPageKey());
-				    cachedExtraData = (Map)CacheController.getCachedObjectFromAdvancedCache("pageCacheExtra", this.getDeliveryContext().getPageKey());
+				    cachedCompressedData = (byte[])CacheController.getCachedObjectFromAdvancedCache(pageCacheName, this.getDeliveryContext().getPageKey());
+				    cachedExtraData = (Map)CacheController.getCachedObjectFromAdvancedCache(pageCacheExtraName, this.getDeliveryContext().getPageKey());
 				}
 				else
 				{
-				    cachedCompressedData = (byte[])CacheController.getCachedObjectFromAdvancedCache("pageCache", this.getDeliveryContext().getPageKey(), pageCacheTimeout.intValue());
-				    cachedExtraData = (Map)CacheController.getCachedObjectFromAdvancedCache("pageCacheExtra", this.getDeliveryContext().getPageKey(), pageCacheTimeout.intValue());
+				    cachedCompressedData = (byte[])CacheController.getCachedObjectFromAdvancedCache(pageCacheName, this.getDeliveryContext().getPageKey(), pageCacheTimeout.intValue());
+				    cachedExtraData = (Map)CacheController.getCachedObjectFromAdvancedCache(pageCacheExtraName, this.getDeliveryContext().getPageKey(), pageCacheTimeout.intValue());
 				}
 				
 			    if(cachedCompressedData != null)
@@ -213,13 +216,13 @@ public abstract class PageInvoker
 			{
 				if(pageCacheTimeout == null)
 				{
-					this.pageString = (String)CacheController.getCachedObjectFromAdvancedCache("pageCache", this.getDeliveryContext().getPageKey());
-					cachedExtraData = (Map)CacheController.getCachedObjectFromAdvancedCache("pageCacheExtra", this.getDeliveryContext().getPageKey());
+					this.pageString = (String)CacheController.getCachedObjectFromAdvancedCache(pageCacheName, this.getDeliveryContext().getPageKey());
+					cachedExtraData = (Map)CacheController.getCachedObjectFromAdvancedCache(pageCacheExtraName, this.getDeliveryContext().getPageKey());
 				}
 				else
 				{
-					this.pageString = (String)CacheController.getCachedObjectFromAdvancedCache("pageCache", this.getDeliveryContext().getPageKey(), pageCacheTimeout.intValue());
-					cachedExtraData = (Map)CacheController.getCachedObjectFromAdvancedCache("pageCacheExtra", this.getDeliveryContext().getPageKey(), pageCacheTimeout.intValue());
+					this.pageString = (String)CacheController.getCachedObjectFromAdvancedCache(pageCacheName, this.getDeliveryContext().getPageKey(), pageCacheTimeout.intValue());
+					cachedExtraData = (Map)CacheController.getCachedObjectFromAdvancedCache(pageCacheExtraName, this.getDeliveryContext().getPageKey(), pageCacheTimeout.intValue());
 				}
 			    if(cachedExtraData != null)
 			    	this.getDeliveryContext().populateExtraData(cachedExtraData);					
@@ -244,6 +247,10 @@ public abstract class PageInvoker
 					
 					String pageKey = this.getDeliveryContext().getPageKey();
 					String[] allUsedEntitiesCopy = this.getDeliveryContext().getAllUsedEntities().clone();
+					//System.out.println("allUsedEntitiesCopy:" + allUsedEntitiesCopy.length);
+					//for(int i=0; i<allUsedEntitiesCopy.length; i++)
+					//	System.out.println("  " + allUsedEntitiesCopy[i]);
+					
 					Object extraData = this.getDeliveryContext().getExtraData();
 					
 				    if(compressPageCache != null && compressPageCache.equalsIgnoreCase("true"))
@@ -253,30 +260,30 @@ public abstract class PageInvoker
 					    logger.info("Compressing page for pageCache took " + (System.currentTimeMillis() - startCompression) + " with a compressionFactor of " + (this.pageString.length() / compressedData.length));
 						if(this.getTemplateController().getOperatingMode().intValue() == 3 && !CmsPropertyHandler.getLivePublicationThreadClass().equalsIgnoreCase("org.infoglue.deliver.util.SelectiveLivePublicationThread"))
 						{
-							CacheController.cacheObjectInAdvancedCache("pageCache", pageKey, compressedData, allUsedEntitiesCopy, false);
-							CacheController.cacheObjectInAdvancedCache("pageCacheExtra", pageKey, extraData, allUsedEntitiesCopy, false);
-				    		CacheController.cacheObjectInAdvancedCache("pageCacheExtra", pageKey + "_pageCacheTimeout", newPageCacheTimeout, allUsedEntitiesCopy, false);    
+							CacheController.cacheObjectInAdvancedCache(pageCacheName, pageKey, compressedData, allUsedEntitiesCopy, false);
+							CacheController.cacheObjectInAdvancedCache(pageCacheExtraName, pageKey, extraData, allUsedEntitiesCopy, false);
+				    		CacheController.cacheObjectInAdvancedCache(pageCacheExtraName, pageKey + "_pageCacheTimeout", newPageCacheTimeout, allUsedEntitiesCopy, false);    
 						}
 						else
 						{
-						    CacheController.cacheObjectInAdvancedCache("pageCache", pageKey, compressedData, allUsedEntitiesCopy, true);
-						    CacheController.cacheObjectInAdvancedCache("pageCacheExtra", pageKey, extraData, allUsedEntitiesCopy, true);
-				    		CacheController.cacheObjectInAdvancedCache("pageCacheExtra", pageKey + "_pageCacheTimeout", newPageCacheTimeout, allUsedEntitiesCopy, true);    
+						    CacheController.cacheObjectInAdvancedCache(pageCacheName, pageKey, compressedData, allUsedEntitiesCopy, true);
+						    CacheController.cacheObjectInAdvancedCache(pageCacheExtraName, pageKey, extraData, allUsedEntitiesCopy, true);
+				    		CacheController.cacheObjectInAdvancedCache(pageCacheExtraName, pageKey + "_pageCacheTimeout", newPageCacheTimeout, allUsedEntitiesCopy, true);    
 						}
 					}
 				    else
 				    {
 				        if(this.getTemplateController().getOperatingMode().intValue() == 3 && !CmsPropertyHandler.getLivePublicationThreadClass().equalsIgnoreCase("org.infoglue.deliver.util.SelectiveLivePublicationThread"))
 				        {
-				        	CacheController.cacheObjectInAdvancedCache("pageCache", pageKey, pageString, allUsedEntitiesCopy, false);
-				        	CacheController.cacheObjectInAdvancedCache("pageCacheExtra", pageKey, extraData, allUsedEntitiesCopy, false);
-				    		CacheController.cacheObjectInAdvancedCache("pageCacheExtra", pageKey + "_pageCacheTimeout", newPageCacheTimeout, allUsedEntitiesCopy, false);    
+				        	CacheController.cacheObjectInAdvancedCache(pageCacheName, pageKey, pageString, allUsedEntitiesCopy, false);
+				        	CacheController.cacheObjectInAdvancedCache(pageCacheExtraName, pageKey, extraData, allUsedEntitiesCopy, false);
+				    		CacheController.cacheObjectInAdvancedCache(pageCacheExtraName, pageKey + "_pageCacheTimeout", newPageCacheTimeout, allUsedEntitiesCopy, false);    
 				        }
 				    	else
 				    	{
-				    		CacheController.cacheObjectInAdvancedCache("pageCache", pageKey, pageString, allUsedEntitiesCopy, true);    
-				    		CacheController.cacheObjectInAdvancedCache("pageCacheExtra", pageKey, extraData, allUsedEntitiesCopy, true);
-				    		CacheController.cacheObjectInAdvancedCache("pageCacheExtra", pageKey + "_pageCacheTimeout", newPageCacheTimeout, allUsedEntitiesCopy, true);    
+				    		CacheController.cacheObjectInAdvancedCache(pageCacheName, pageKey, pageString, allUsedEntitiesCopy, true);    
+				    		CacheController.cacheObjectInAdvancedCache(pageCacheExtraName, pageKey, extraData, allUsedEntitiesCopy, true);
+				    		CacheController.cacheObjectInAdvancedCache(pageCacheExtraName, pageKey + "_pageCacheTimeout", newPageCacheTimeout, allUsedEntitiesCopy, true);    
 				    	}
 				    }
 				}
