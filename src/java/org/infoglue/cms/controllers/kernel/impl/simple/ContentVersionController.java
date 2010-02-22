@@ -483,30 +483,9 @@ public class ContentVersionController extends BaseController
 
         try
         {
-        	ContentVersion contentVersion = null;
-        	
-			contentVersion = getLatestActiveContentVersion(contentId, languageId, db);
-            /*
-            Collection contentVersions = content.getContentVersions();
+        	contentVersionVO = getLatestActiveContentVersionVO(contentId, languageId, db);
             
-            Iterator i = contentVersions.iterator();
-            
-            while(i.hasNext())
-            {
-            	ContentVersion currentContentVersion = (ContentVersion)i.next();
-            	logger.info("found one candidate:" + currentContentVersion.getValueObject());
-				if(contentVersion == null || (currentContentVersion.getId().intValue() > contentVersion.getId().intValue()))
-				{
-					if(currentContentVersion.getIsActive().booleanValue() &&  currentContentVersion.getLanguage().getId().intValue() == languageId.intValue())
-						contentVersion = currentContentVersion;
-				}
-            }
-            */
-            
-            if(contentVersion != null)
-	            contentVersionVO = contentVersion.getValueObject();
-            
-            commitTransaction(db);
+            rollbackTransaction(db);
         }
         catch(Exception e)
         {
@@ -518,12 +497,33 @@ public class ContentVersionController extends BaseController
 		return contentVersionVO;
     }
 
-    /**
-     * This method returns the latest active content version.
-     */
+   	/**
+	 * This method returns the latest active content version.
+	 */
     
-   	public ContentVersionVO getLatestActiveContentVersionVO(Integer contentId, Integer languageId, Database db) throws SystemException, Bug
-    {
+	public ContentVersionVO getLatestActiveContentVersionVO(Integer contentId, Integer languageId, Database db) throws SystemException, Bug, Exception
+	{
+/*
+		ContentVersionVO contentVersionVO = null;
+
+        OQLQuery oql = db.getOQLQuery( "SELECT cv FROM org.infoglue.cms.entities.content.impl.simple.SmallContentVersionImpl cv WHERE cv.contentId = $1 AND cv.languageId = $2 AND cv.isActive = $3 ORDER BY cv.contentVersionId desc");
+    	oql.bind(contentId);
+    	oql.bind(languageId);
+		oql.bind(true);
+    	
+    	QueryResults results = oql.execute(Database.ReadOnly);
+		
+		if (results.hasMore()) 
+        {
+			ContentVersion contentVersion = (ContentVersion)results.next();
+			contentVersionVO = contentVersion.getValueObject();
+        }
+		
+		results.close();
+		oql.close();
+
+		return contentVersionVO;
+*/
     	ContentVersionVO contentVersionVO = null;
 
        	ContentVersion contentVersion = getLatestActiveContentVersionReadOnly(contentId, languageId, db);
@@ -557,9 +557,9 @@ public class ContentVersionController extends BaseController
 	    }
 	    */
 		
-		Content content = ContentController.getContentController().getContentWithId(contentId, db);
-    	Collection contentVersions = content.getContentVersions();
-    	if(logger.isInfoEnabled())
+		Content content = ContentController.getContentController().getReadOnlyContentWithId(contentId, db);
+		Collection contentVersions = content.getContentVersions();
+		if(logger.isInfoEnabled())
     	{
 	    	logger.info("contentId:" + contentId);
 	    	logger.info("languageId:" + languageId);
@@ -597,7 +597,7 @@ public class ContentVersionController extends BaseController
 	{
 		ContentVersion contentVersion = null;
     	
-		Content content = ContentController.getContentController().getReadOnlyContentWithId(contentId, db);
+		Content content = ContentController.getContentController().getReadOnlyMediumContentWithId(contentId, db);
 		Collection contentVersions = content.getContentVersions();
 		if(logger.isInfoEnabled())
 		{
@@ -1037,6 +1037,7 @@ public class ContentVersionController extends BaseController
             
             ContentVersion contentVersion = null;
             
+			contentVersionVO.setModifiedDateTime(new Date());
 	        if(contentVersionVO.getId() == null)
 	    	{
 	    		logger.info("Creating the entity because there was no version at all for: " + contentId + " " + languageId);
