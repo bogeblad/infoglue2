@@ -428,8 +428,7 @@ public class SelectiveLivePublicationThread extends PublicationThread
 							logger.info("Finally clearing page cache and some other caches as this was a publishing-update\n\n\n");
 							//CacheController.clearCache("ServerNodeProperties");
 							//CacheController.clearCache("serverNodePropertiesCache");
-						    CacheController.clearCache("boundContentCache");
-							CacheController.clearCache("pageCache");
+						    CacheController.clearCache("pageCache");
 							CacheController.clearCache("pageCacheExtra");
 							CacheController.clearCache("componentCache");
 							CacheController.clearCache("NavigationCache");
