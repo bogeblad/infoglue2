@@ -170,10 +170,53 @@ public class ViewApplicationStateAction extends InfoGlueAbstractAction
         	CacheController.clearFileCaches(cacheName);
         
         //this.getHttpSession().invalidate();
+        if(this.returnAddress != null && !this.returnAddress.equals(""))
+        {
+            this.getResponse().sendRedirect(this.returnAddress);
+            
+            return NONE;
+        }
+ 
+        return "cleared";
+    }
+
+    /**
+     * This action allows clearing of the given cache manually.
+     */
+    public String doClearCacheStartingWith() throws Exception
+    {
+        if(!ServerNodeController.getController().getIsIPAllowed(this.getRequest()))
+        {
+        	logger.error("A user from an IP(" + this.getRequest().getRemoteAddr() + ") which is not allowed tried to call doReCache.");
+
+            this.getResponse().setContentType("text/plain");
+            this.getResponse().setStatus(HttpServletResponse.SC_FORBIDDEN);
+            this.getResponse().getWriter().println("You have no access to this view - talk to your administrator if you should.");
+            
+            return NONE;
+        }
+        
+        Map caches = getCaches();
+        Iterator cachesIterator = caches.keySet().iterator();
+        while(cachesIterator.hasNext())
+        {
+        	String cacheName = (String)cachesIterator.next();
+        	if(cacheName.startsWith(getRequest().getParameter("cacheNamePrefix")))
+        		CacheController.clearCache(cacheName);
+        }
+        
+        if(this.returnAddress != null && !this.returnAddress.equals(""))
+        {
+            this.getResponse().sendRedirect(this.returnAddress);
+            
+            return NONE;
+        }
+
         
         return "cleared";
     }
 
+    
     /**
      * This action allows clearing of the given cache manually.
      */
@@ -794,6 +837,15 @@ public class ViewApplicationStateAction extends InfoGlueAbstractAction
 		return CacheController.getCaches();
 	}
 
+	public List getSortedCaches()
+	{
+		List cacheNames = new ArrayList();
+		cacheNames.addAll(CacheController.getCaches().keySet());
+		Collections.sort(cacheNames);
+		
+		return cacheNames;
+	}
+
 	public ServletCache getOSCache()
 	{
 		ServletCacheAdministrator servletCacheAdministrator = ServletCacheAdministrator.getInstance(ActionContext.getServletContext());
@@ -834,7 +886,7 @@ public class ViewApplicationStateAction extends InfoGlueAbstractAction
     	try
     	{
 		    InetAddress localhost = InetAddress.getLocalHost();
-		    serverName = localhost.getHostName();
+		    serverName = localhost.getHostName(); 
     	}
     	catch(Exception e)
     	{
@@ -844,6 +896,57 @@ public class ViewApplicationStateAction extends InfoGlueAbstractAction
 	    return serverName;
     }
 
+    public Map parseData(String originalSummary, String originalStats)
+    {
+    	Map data = new HashMap();
+    	try
+    	{
+	    	data.put("originalSummary", originalSummary);
+	    	data.put("originalStats", originalStats);
+	    	
+	    	if(originalSummary != null && originalStats != null)
+	    	{
+		    	int startLocation = originalSummary.indexOf("Approximate size");
+		    	//System.out.println("startLocation:" + startLocation);
+		    	String size = originalSummary.substring(startLocation + 17, originalSummary.indexOf("KB") + 2);
+		    	//System.out.println("size:" + size);
+		    	data.put("estimatedSize", "" + size);
+		
+		    	int startHitLocation = originalStats.indexOf("Hit count");
+		    	String hits = originalStats.substring(startHitLocation + 12, originalStats.indexOf(",", startHitLocation));
+		    	
+		    	//System.out.println("originalStats:" + originalStats);
+		    	int startMissLocation = originalStats.indexOf("miss count");
+		    	//System.out.println("startMissLocation:" + startMissLocation);
+		    	String miss = originalStats.substring(startMissLocation + 13);
+		    	
+		    	//System.out.println("hits:" + hits);
+		    	//System.out.println("miss:" + miss);
+		    	
+		    	try
+		    	{
+		    		int missInt = Integer.parseInt(miss.trim());
+		    		int hitInt = Integer.parseInt(hits.trim());
+		    		if(missInt > 0 && hitInt > 0)
+		    			data.put("hitMissRatio", "" + (int)((float)missInt / (float)hitInt * 100));
+		    		else if(missInt == 0)
+		    			data.put("hitMissRatio", "0");
+		    		else if(hitInt == 0)
+		    			data.put("hitMissRatio", "100");
+		    	}
+		    	catch (Exception e) 
+		    	{
+		    		logger.error("Could not parse hits / miss:" + e.getMessage() + " (" + miss.trim() + " / " + hits.trim() + ")");
+				}
+	    	}
+    	}
+    	catch (Exception e) 
+    	{
+    		logger.error("Problem parsing data:" + e.getMessage(), e);
+		}
+    	return data;
+    }
+    
 	public void setClassName(String className) 
 	{
 		this.className = className;
