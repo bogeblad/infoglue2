@@ -30,6 +30,7 @@ public class CachingIOResultHandler implements IOResultHandler
 	private String cacheName;
 	private String cacheKey;
 	private String fileCacheCharEncoding;
+	private Boolean useMemoryCache;
 	private Boolean useFileCacheFallback;
 	private Object value;
 
@@ -65,10 +66,18 @@ public class CachingIOResultHandler implements IOResultHandler
 	{
 		this.useFileCacheFallback = useFileCacheFallback;
 	}
+	public Boolean getMemoryCache()
+	{
+		return useMemoryCache;
+	}
+	public void setUseMemoryCache(Boolean useMemoryCache)
+	{
+		this.useMemoryCache = useMemoryCache;
+	}
 
 	public void handleResult(String resultData)
 	{	
-		CacheController.cacheObjectInAdvancedCache(cacheName, cacheKey, resultData, useFileCacheFallback, fileCacheCharEncoding);
+		CacheController.cacheObjectInAdvancedCache(cacheName, cacheKey, resultData, null, false, useFileCacheFallback, useMemoryCache, fileCacheCharEncoding);
 	}
 
 }
