@@ -99,14 +99,20 @@ public class CmsJDOCallback implements CallbackInterceptor
 
     public Class loaded(Object object, short accessMode) throws Exception
     {
-		System.out.println("Loaded " + object.getClass().getName() + " accessMode:" + accessMode);
-    	// return ( (Persistent) object ).jdoLoad(accessMode);
+		//System.out.println("Loaded " + object.getClass().getName() + " accessMode:" + accessMode);
+		//if(accessMode == AccessMode.Shared.getId())
+    	//	Thread.dumpStack();
+		
+		// return ( (Persistent) object ).jdoLoad(accessMode);
         return null;
     }
 
 	public Class loaded(Object arg0, AccessMode arg1) throws Exception 
 	{
-		//System.out.println("Loaded " + object.getClass().getName() + " accessMode:" + accessMode);
+		//System.out.println("Loaded " + arg0.getClass().getName() + " accessMode:" + arg1);
+		//if(arg1.getId() == AccessMode.Shared.getId())
+		//	Thread.dumpStack();
+		
 		return null;
 	}
 
@@ -114,7 +120,10 @@ public class CmsJDOCallback implements CallbackInterceptor
     {
 		//System.out.println("storing...:" + object + ":" + modified);
         // ( (Persistent) object ).jdoStore( modified );
-   		
+		//if(object.getClass().getName().indexOf("Small") > -1 || object.getClass().getName().indexOf("RepositoryLanguage") > -1 || object.getClass().getName().indexOf("ContentImpl") > -1 || object.getClass().getName().indexOf("SiteNodeImpl") > -1 || object.getClass().getName().indexOf("AccessRight") > -1 || object.getClass().getName().indexOf("StructureTool.Read") > -1)
+		//if(object.getClass().getName().indexOf("ContentImpl") > -1)
+		//	Thread.dumpStack();
+
    		//logger.info("Should we store -------------->" + object + ":" + modified);
     	if (TransactionHistoryImpl.class.getName().indexOf(object.getClass().getName()) == -1 && 
     		RegistryImpl.class.getName().indexOf(object.getClass().getName()) == -1 && 
@@ -225,6 +234,10 @@ public class CmsJDOCallback implements CallbackInterceptor
 				clearCache(MediumDigitalAssetImpl.class);
 				//System.out.println("We should delete all images with digitalAssetId " + getObjectIdentity(object));
 				DigitalAssetController.deleteCachedDigitalAssets((Integer)getObjectIdentity(object));
+			}
+			else if(object.getClass().getName().equals(SiteNodeImpl.class.getName()))
+			{
+				CacheController.clearCache("childSiteNodesCache");
 			}
 			else if(object.getClass().getName().equals(SiteNodeVersionImpl.class.getName()))
 			{
@@ -541,6 +554,7 @@ public class CmsJDOCallback implements CallbackInterceptor
 			{
 			    RegistryController.getController().clearRegistryForReferencedEntity(SiteNode.class.getName(), getObjectIdentity(object).toString());
 				RegistryController.getController().clearRegistryForReferencingEntityCompletingName(SiteNode.class.getName(), getObjectIdentity(object).toString());
+				CacheController.clearCache("childSiteNodesCache");
 			}
 			else if(object.getClass().getName().equals(SiteNodeVersionImpl.class.getName()))
 			{

@@ -40,6 +40,11 @@ public class ChangeVersionLanguageAction extends InfoGlueAbstractAction
 	private Integer contentId;
 	private Integer contentVersionId;
 	private Integer languageId;
+	
+	private String returnAddress;
+   	private String userSessionKey;
+    private String originalAddress;
+
 		    
 	private List languageVOList = null;
 
@@ -50,11 +55,36 @@ public class ChangeVersionLanguageAction extends InfoGlueAbstractAction
 		return INPUT;
 	}
 
+	public String doInputV3() throws Exception
+	{      		
+		this.languageVOList = LanguageController.getController().getLanguageVOList(repositoryId);
+		
+		return INPUT + "V3";
+	}
+
     public String doExecute() throws Exception
     {      		
     	ContentVersionController.getContentVersionController().changeVersionLanguage(contentVersionId, languageId);
     	
        	return SUCCESS;
+    }
+
+    public String doV3() throws Exception
+    {      		
+    	ContentVersionController.getContentVersionController().changeVersionLanguage(contentVersionId, languageId);
+    	
+		if(this.returnAddress != null && !this.returnAddress.equals(""))
+	    {
+	        String arguments 	= "userSessionKey=" + userSessionKey;
+	        String messageUrl 	= returnAddress + (returnAddress.indexOf("?") > -1 ? "&" : "?") + arguments;
+	        
+	        this.getResponse().sendRedirect(messageUrl);
+	        return NONE;
+	    }
+	    else
+	    {
+	    	return SUCCESS;
+	    }
     }
 
 	public Integer getRepositoryId()
@@ -101,5 +131,35 @@ public class ChangeVersionLanguageAction extends InfoGlueAbstractAction
 	{
 		return languageVOList;
 	}
-        
+     
+	public String getReturnAddress() 
+	{
+		return returnAddress;
+	}
+
+	public void setReturnAddress(String returnAddress) 
+	{
+		this.returnAddress = returnAddress;
+	}
+
+	public String getUserSessionKey()
+	{
+		return userSessionKey;
+	}
+
+	public void setUserSessionKey(String userSessionKey)
+	{
+		this.userSessionKey = userSessionKey;
+	}
+
+	public String getOriginalAddress()
+	{
+		return originalAddress;
+	}
+
+	public void setOriginalAddress(String originalAddress)
+	{
+		this.originalAddress = originalAddress;
+	}
+
 }

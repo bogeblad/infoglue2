@@ -41,6 +41,7 @@ import org.infoglue.cms.applications.common.Session;
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentVersionController;
 import org.infoglue.cms.entities.content.ContentVersionVO;
+import org.infoglue.cms.util.CmsPropertyHandler;
 import org.infoglue.deliver.controllers.kernel.impl.simple.InfoGlueHashSet;
 
 /**
@@ -96,10 +97,10 @@ public class DeliveryContext implements UsageListener
 	//This section has control over what contents and sitenodes are used where so the pagecache can be selectively updated.
 	private List usageListeners = new ArrayList();
 	
-	private Set usedContents = new InfoGlueHashSet();
-	private Set usedContentVersions = new InfoGlueHashSet();
-	private Set usedSiteNodes = new InfoGlueHashSet();
-	private Set usedSiteNodeVersions = new InfoGlueHashSet();
+	private Set usedContents = new HashSet();
+	private Set usedContentVersions = new HashSet();
+	private Set usedSiteNodes = new HashSet();
+	private Set usedSiteNodeVersions = new HashSet();
 	
 	private Set usedPageMetaInfoContentVersionIdSet = new InfoGlueHashSet();
 	
@@ -130,6 +131,8 @@ public class DeliveryContext implements UsageListener
 
 	//This variable controls if tags and logic should consider the logged in editor principal even if the ordinary principal is anonymous when checking for access rights etc.
 	private boolean considerEditorInDecoratedMode = true;
+	
+	private String operatingMode = CmsPropertyHandler.getOperatingMode();
 	
 	private Map pageAttributes = new HashMap();
 	private List htmlHeadItems = new ArrayList();
@@ -170,6 +173,12 @@ public class DeliveryContext implements UsageListener
 			this.usedPageMetaInfoContentVersionIdSet.clear();
 			this.usedSiteNodes.clear();
 			this.usedSiteNodeVersions.clear();
+			
+			this.usedContents = null;
+			this.usedContentVersions = null;
+			this.usedPageMetaInfoContentVersionIdSet = null;
+			this.usedSiteNodes = null;
+			this.usedSiteNodeVersions = null;
 		}
 		catch (Exception e) 
 		{
@@ -548,6 +557,16 @@ public class DeliveryContext implements UsageListener
 	{
 		this.lastModifiedDateTime = lastModifiedDateTime;
 		getHttpHeaders().put("Last-Modified", lastModifiedDateTime);
+	}
+
+	public String getOperatingMode()
+	{
+		return this.operatingMode;
+	}
+
+	public void setOperatingMode(String operatingMode)
+	{
+		this.operatingMode = operatingMode;
 	}
 
 	public Integer getPageCacheTimeout()

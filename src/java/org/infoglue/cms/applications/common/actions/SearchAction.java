@@ -33,6 +33,7 @@ import org.apache.log4j.Logger;
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentTypeDefinitionController;
+import org.infoglue.cms.controllers.kernel.impl.simple.DigitalAssetController;
 import org.infoglue.cms.controllers.kernel.impl.simple.LanguageController;
 import org.infoglue.cms.controllers.kernel.impl.simple.RepositoryController;
 import org.infoglue.cms.controllers.kernel.impl.simple.SearchController;
@@ -40,7 +41,9 @@ import org.infoglue.cms.controllers.kernel.impl.simple.UserControllerProxy;
 import org.infoglue.cms.entities.content.ContentVO;
 import org.infoglue.cms.entities.content.DigitalAssetVO;
 import org.infoglue.cms.entities.kernel.BaseEntityVO;
+import org.infoglue.cms.entities.management.ContentTypeDefinitionVO;
 import org.infoglue.cms.entities.management.LanguageVO;
+import org.infoglue.cms.entities.structure.SiteNodeVersionVO;
 import org.infoglue.cms.util.CmsPropertyHandler;
 import org.infoglue.deliver.util.Timer;
 
@@ -67,6 +70,7 @@ public class SearchAction extends InfoGlueAbstractAction
 	private List<BaseEntityVO> baseEntityVOList = new ArrayList<BaseEntityVO>();
 	private Set contentVOSet;
 	private List<DigitalAssetVO> digitalAssetVOList = null;
+	private List<SiteNodeVersionVO> siteNodeVersionVOList = new ArrayList<SiteNodeVersionVO>();
 	private Integer repositoryId;
 	private String searchString;
 	private String name;
@@ -155,6 +159,7 @@ public class SearchAction extends InfoGlueAbstractAction
 		}
 		else
 		{
+			System.out.println("repositoryIdToSearch:" + repositoryIdToSearch);
 			if(repositoryIdToSearch != null)
 			{
 				Integer[] repositoryIdAsIntegerToSearch = new Integer[repositoryIdToSearch.length];
@@ -164,11 +169,20 @@ public class SearchAction extends InfoGlueAbstractAction
 					selectedRepositoryIdList.add(repositoryIdToSearch[i]);
 				}
 				
-				contentVersionVOList = searchController.getContentVersionVOList(repositoryIdAsIntegerToSearch, this.getSearchString(), maxRows, name, languageId, new Integer[]{contentTypeDefinitionId}, caseSensitive, stateId, includeAssets);
+				ContentTypeDefinitionVO ctd = ContentTypeDefinitionController.getController().getContentTypeDefinitionVOWithName("Meta info");
+				
+				contentVersionVOList = searchController.getContentVersionVOList(repositoryIdAsIntegerToSearch, this.getSearchString(), maxRows, name, languageId, new Integer[]{contentTypeDefinitionId}, new Integer[]{ctd.getId()}, caseSensitive, stateId, false);
+				siteNodeVersionVOList = searchController.getSiteNodeVersionVOList(repositoryIdAsIntegerToSearch, this.getSearchString(), maxRows, name, languageId, caseSensitive, stateId);
+				digitalAssetVOList = SearchController.getDigitalAssets(repositoryIdAsIntegerToSearch, this.getSearchString(), null, maxRows);
 			}
 			else
 			{
-				contentVersionVOList = searchController.getContentVersionVOList(this.repositoryId, this.getSearchString(), maxRows, name, languageId, new Integer[]{contentTypeDefinitionId}, caseSensitive, stateId, includeAssets);
+				System.out.println("repositoryId:" + this.repositoryId);
+				ContentTypeDefinitionVO ctd = ContentTypeDefinitionController.getController().getContentTypeDefinitionVOWithName("Meta info");
+
+				contentVersionVOList = searchController.getContentVersionVOList(new Integer[] {this.repositoryId}, this.getSearchString(), maxRows, name, languageId, new Integer[]{contentTypeDefinitionId}, new Integer[]{ctd.getId()}, caseSensitive, stateId, includeAssets);
+				siteNodeVersionVOList = searchController.getSiteNodeVersionVOList(new Integer[]{this.repositoryId}, this.getSearchString(), maxRows, name, languageId, caseSensitive, stateId);
+				digitalAssetVOList = SearchController.getDigitalAssets(new Integer[]{this.repositoryId}, this.getSearchString(), assetTypeFilter, maxRows);
 				selectedRepositoryIdList.add("" + this.repositoryId);
 			}
 		}
@@ -178,7 +192,7 @@ public class SearchAction extends InfoGlueAbstractAction
 			allowCaseSensitive = false;
 		}
 
-	    this.principals = UserControllerProxy.getController().getAllUsers();
+	    //this.principals = UserControllerProxy.getController().getAllUsers();
 	    this.availableLanguages = LanguageController.getController().getLanguageVOList(this.repositoryId);
 	    this.contentTypeDefinitions = ContentTypeDefinitionController.getController().getContentTypeDefinitionVOList();
 		this.repositories = RepositoryController.getController().getAuthorizedRepositoryVOList(this.getInfoGluePrincipal(), false);
@@ -615,6 +629,11 @@ public class SearchAction extends InfoGlueAbstractAction
 	public List<DigitalAssetVO> getDigitalAssetVOList()
 	{
 		return digitalAssetVOList;
+	}
+
+	public List<SiteNodeVersionVO> getSiteNodeVersionVOList()
+	{
+		return this.siteNodeVersionVOList;
 	}
 
 	public List<BaseEntityVO> getBaseEntityVOList()

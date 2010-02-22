@@ -164,7 +164,7 @@ public class SiteNodeController extends BaseController
 	 * Returns a repository list marked for deletion.
 	 */
 	
-	public List<SiteNodeVO> getSiteNodeVOListMarkedForDeletion() throws SystemException, Bug
+	public List<SiteNodeVO> getSiteNodeVOListMarkedForDeletion(Integer repositoryId) throws SystemException, Bug
 	{
 		Database db = CastorDatabaseService.getDatabase();
 		
@@ -174,10 +174,16 @@ public class SiteNodeController extends BaseController
 		{
 			beginTransaction(db);
 		
-			OQLQuery oql = db.getOQLQuery("SELECT sn FROM org.infoglue.cms.entities.structure.impl.simple.SiteNodeImpl sn WHERE sn.isDeleted = $1 ORDER BY sn.siteNodeId");
-			oql.bind(true);
+			String sql = "SELECT sn FROM org.infoglue.cms.entities.structure.impl.simple.SiteNodeImpl sn WHERE sn.isDeleted = $1 ORDER BY sn.siteNodeId";
+			if(repositoryId != null && repositoryId != -1)
+				sql = "SELECT sn FROM org.infoglue.cms.entities.structure.impl.simple.SiteNodeImpl sn WHERE sn.isDeleted = $1 AND sn.repository = $2 ORDER BY sn.siteNodeId";
 			
-			QueryResults results = oql.execute();
+			OQLQuery oql = db.getOQLQuery(sql);
+			oql.bind(true);
+			if(repositoryId != null && repositoryId != -1)
+				oql.bind(repositoryId);
+				
+			QueryResults results = oql.execute(Database.READONLY);
 			while(results.hasMore()) 
             {
 				SiteNode siteNode = (SiteNode)results.next();
@@ -215,7 +221,7 @@ public class SiteNodeController extends BaseController
 			oql.bind(principal.getName());
 			oql.bind(30);
 			
-			QueryResults results = oql.execute();
+			QueryResults results = oql.execute(Database.READONLY);
 			while(results.hasMore()) 
             {
 				SiteNodeVersion siteNodeVersion = (SiteNodeVersion)results.next();
@@ -236,6 +242,17 @@ public class SiteNodeController extends BaseController
 		return siteNodeVOList;		
 	}
 
+	/**
+	 * This method deletes a siteNode and also erases all the children and all versions.
+	 */
+	    
+    public void delete(Integer siteNodeId, InfoGluePrincipal infogluePrincipal) throws ConstraintException, SystemException
+    {
+    	SiteNodeVO siteNodeVO = SiteNodeControllerProxy.getController().getSiteNodeVOWithId(siteNodeId);
+    	
+    	delete(siteNodeVO, infogluePrincipal);
+    }
+    
 	/**
 	 * This method deletes a siteNode and also erases all the children and all versions.
 	 */
@@ -409,7 +426,7 @@ public class SiteNodeController extends BaseController
     {
         List referenceBeanList = RegistryController.getController().getReferencingObjectsForSiteNode(siteNode.getId(), -1, db);
 		if(referenceBeanList != null && referenceBeanList.size() > 0 && !forceDelete)
-			throw new ConstraintException("SiteNode.stateId", "3405");
+			throw new ConstraintException("SiteNode.stateId", "3405", "<br/><br/>" + siteNode.getName() + " (" + siteNode.getId() + ")");
 
         Collection children = siteNode.getChildSiteNodes();
 		Iterator i = children.iterator();
@@ -452,6 +469,12 @@ public class SiteNodeController extends BaseController
         	SiteNode siteNode = getSiteNodeWithId(siteNodeId, db);
         	siteNode.setIsDeleted(false);
 	    	
+			while(siteNode.getParentSiteNode() != null && siteNode.getParentSiteNode().getIsDeleted())
+			{
+				siteNode = siteNode.getParentSiteNode();
+				siteNode.setIsDeleted(false);
+			}
+
 	    	commitTransaction(db);
         }
         catch(Exception e)
@@ -786,9 +809,9 @@ public class SiteNodeController extends BaseController
 	   		SQL.append("order by snv.sortOrder ASC, sn.name ASC, sn.siteNodeId DESC AS org.infoglue.cms.entities.structure.impl.simple.SmallestSiteNodeImpl");    		
     	}
 
-    	System.out.println("SQL:" + SQL);
-    	System.out.println("parentSiteNodeId:" + parentSiteNodeId);
-    	System.out.println("showDeletedItems:" + showDeletedItems);
+    	//System.out.println("SQL:" + SQL);
+    	//System.out.println("parentSiteNodeId:" + parentSiteNodeId);
+    	//System.out.println("showDeletedItems:" + showDeletedItems);
     	OQLQuery oql = db.getOQLQuery(SQL.toString());
 		oql.bind(parentSiteNodeId);
 		oql.bind(showDeletedItems);
@@ -883,27 +906,36 @@ public class SiteNodeController extends BaseController
         
         return siteNodes;
     }
-	/**
+
+    /**
 	 * This method fetches the root siteNode for a particular repository.
 	 */
 	        
    	public SiteNodeVO getRootSiteNodeVO(Integer repositoryId) throws ConstraintException, SystemException
    	{
-        Database db = CastorDatabaseService.getDatabase();
-        ConstraintExceptionBuffer ceb = new ConstraintExceptionBuffer();
+   		String key = "rootSiteNode_" + repositoryId;
+   		SiteNodeVO cachedRootNodeVO = (SiteNodeVO)CacheController.getCachedObject("repositoryRootNodesCache", key);
+		if(cachedRootNodeVO != null)
+		{
+			if(logger.isInfoEnabled())
+				logger.info("There was an cachedRootNodeVO:" + cachedRootNodeVO);
+			return cachedRootNodeVO;
+		}
 
-        SiteNode siteNode = null;
+        Database db = CastorDatabaseService.getDatabase();
+
+        SiteNodeVO siteNodeVO = null;
 
         beginTransaction(db);
 
         try
         {
-        	siteNode = getRootSiteNode(repositoryId, db);
+        	siteNodeVO = getRootSiteNodeVO(repositoryId, db);
 			
-			commitTransaction(db);
+    		if(siteNodeVO != null)
+    			CacheController.cacheObject("repositoryRootNodesCache", key, siteNodeVO);
 
-            //If any of the validations or setMethods reported an error, we throw them up now before create. 
-            ceb.throwIfNotEmpty();
+			commitTransaction(db);
         }
         catch(Exception e)
         {
@@ -912,8 +944,32 @@ public class SiteNodeController extends BaseController
             throw new SystemException(e.getMessage());
         }
 
-        return (siteNode == null) ? null : siteNode.getValueObject();
+        return siteNodeVO;
    	}
+
+	/**
+	 * This method fetches the root siteNode for a particular repository within a certain transaction.
+	 */
+	        
+	public SiteNodeVO getRootSiteNodeVO(Integer repositoryId, Database db) throws ConstraintException, SystemException, Exception
+	{
+		SiteNodeVO siteNodeVO = null;
+		
+		OQLQuery oql = db.getOQLQuery( "SELECT s FROM org.infoglue.cms.entities.structure.impl.simple.SmallSiteNodeImpl s WHERE is_undefined(s.parentSiteNode) AND s.repositoryId = $1");
+		oql.bind(repositoryId);
+		
+		QueryResults results = oql.execute(Database.ReadOnly);
+		if (results.hasMore()) 
+		{
+			SiteNode siteNode = (SiteNode)results.next();
+			siteNodeVO = siteNode.getValueObject();
+		}
+
+		results.close();
+		oql.close();
+
+		return siteNodeVO;
+	}
 
 	/**
 	 * This method fetches the root siteNode for a particular repository within a certain transaction.
@@ -1507,6 +1563,27 @@ public class SiteNodeController extends BaseController
         
         return siteNodeVO;
     }       
+
+    public SiteNodeVO getSiteNodeVOWithMetaInfoContentId(Database db, Integer contentId) throws ConstraintException, SystemException, Exception
+    {
+		SiteNodeVO siteNodeVO = null;
+
+		OQLQuery oql = db.getOQLQuery("SELECT sn FROM org.infoglue.cms.entities.structure.impl.simple.SmallSiteNodeImpl sn WHERE sn.metaInfoContentId = $1");
+    	oql.bind(contentId);
+    	
+    	QueryResults results = oql.execute(Database.READONLY);
+		
+		if(results.hasMore()) 
+        {
+			SiteNode siteNode = (SiteNodeImpl)results.next();
+			siteNodeVO = siteNode.getValueObject();
+        }
+
+		results.close();
+		oql.close();
+
+		return siteNodeVO;
+    }
 
     public SiteNode getSiteNodeWithMetaInfoContentId(Database db, Integer contentId) throws ConstraintException, SystemException, Exception
     {

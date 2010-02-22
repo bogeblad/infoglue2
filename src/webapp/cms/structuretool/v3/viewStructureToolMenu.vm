@@ -5,11 +5,12 @@
 <html>
 <head>
 	<title>Menus</title>
-	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
 	<link rel="stylesheet" type="text/css" href="css/v3/infoglue.css" />
 	<link rel="stylesheet" type="text/css" href="css/skins/${theme}/menu.css" />
 	<script type="text/javascript" src="script/listview.js"></script>
-	<script type="text/javascript" src="script/jquery/jquery-1.3.2.min.js"></script>
+
+	#includeLatestJQuery()
 	
 	<script type="text/javascript">
 	<!-- 
@@ -24,67 +25,50 @@
 			window.location.reload(false);
 		}	
 		
+		/*
 		function openUrlInWorkArea(url)
 		{
 			//alert("htmlTreeItemClick:" + url);
 			if(parent.openUrlInWorkArea)
 				parent.openUrlInWorkArea(url);
 		}
-
+		*/
+		
 		function syncWithTree(path, repositoryId)
 		{
+			alert("syncWithTree");
 			var timeout = 500;
-			//alert("AAA:" + path + " - " + repositoryId + ":" + currentRepositoryId + ":" + parent);
 			if(repositoryId && currentRepositoryId != repositoryId)
 			{
 				parent.frames['header'].changeRepository(repositoryId, escape(path));
 				timeout = 2000;
 			}
 			
-			#if($tree == "applet")
-				alert('Not implemented in this tree');
-			#else
-				//syncWhenReady(path);
-				//window.setTimeout(function () {syncWhenReady(path);}, 1000);
-				
-				window.setTimeout(function () {
-					frames['itreeFrame'].syncWithTree(path);
-					}, timeout);
-			
-			#end
+			window.setTimeout(function () {
+				frames['itreeFrame'].syncWithTree(path);
+				}, timeout);
 		}
 		
 		function treeView()
 		{
-			#if($tree == "applet")
-				return document.getElementById("CMSTree");
-			#else
-				return document.getElementById("itreeFrame");
-			#end
+			return document.getElementById("itreeFrame");
 		}
-
-		/*		
-		function htmlTreeItemClick(itemId, repoId, path)
-		{
-			refreshStructureToolBar('$this.getCMSBaseUrl()', 'tool.structuretool.siteNodeComponentsHeader', 'tool.structuretool.siteNodeComponentsHeader', 'siteNodeId=' + itemId + '&repositoryId=' + repoId + '&isBranch=true', '$!unrefreshedNodeId', '$!changeTypeId', '$!siteNodeId');
-			parent.frames['main'].location.href="$this.getCMSBaseUrl()/ViewSiteNode.action?siteNodeId=" + itemId + "&repositoryId=" + repoId;
-		}
-		*/
 
 		function htmlTreeItemClick(itemId, repoId, path)
 		{
 			//alert("htmlTreeItemClick:" + itemId + repoId);
 
-			//if(parent.htmlTreeItemClick)
-			//	parent.htmlTreeItemClick(itemId, repoId, path);
 			openUrlInWorkArea("ViewSiteNode.action?siteNodeId=" + itemId + "&repositoryId=" + repoId, path);
+			//setTimeout(function() { openUrlInWorkArea("ViewSiteNode.action?siteNodeId=" + itemId + "&repositoryId=" + repoId, path); }, 10);
+			//alert("after openUrlInWorkArea:" + itemId + repoId);
+			
 		}
 		
 		function openUrlInWorkArea(url, titel)
 		{
 			//alert("openUrlInWorkArea:" + url);
 			if(parent.openUrlInWorkArea)
-				parent.openUrlInWorkArea(url, titel, 'structure');
+				parent.openUrlInWorkArea(url, titel, 'structure', "$ui.getString("tool.common.pageTabLabelPrefix")");
 		}
 				
 		function loadMainArea(siteNodeId, repositoryId, path)
@@ -203,12 +187,11 @@
 	   	
 		$(document).ready(function(){
 			resize();
-			//alert('path: $!path');
-			//alert('exp: $!exp');
-			if("$!path" != "")
+			#if($path && $path != "")
 				syncWithTree("$!path", currentRepositoryId);
- 			//else
-			//	openUrlInWorkArea("ViewStructureToolStartPage!V3.action?repositoryId=$repositoryId", '');
+ 			##else
+			##	openUrlInWorkArea("ViewStructureToolStartPage!V3.action?repositoryId=$repositoryId", '');
+			#end
 		});
  		
 	-->
@@ -219,7 +202,7 @@
 <body class="generaltooledit">
 
     <div class="onlyExpanded" id="treeDiv" style="position:absolute; margin-top: 10px; margin-left: 6px; top: 0px; bottom: 6px; float: left;">
-		<iframe frameborder="0" name="itreeFrame" id="itreeFrame" src="ViewStructureHtmlTree!V3.action?repositoryId=${repositoryId}" width="220" height="550" align="baseline"></iframe>
+		<iframe frameborder="0" name="itreeFrame" id="itreeFrame" src="ViewStructureHtmlTree!V3.action?repositoryId=${repositoryId}" width="220" height="550" ></iframe>
     </div>
 	
 </body>

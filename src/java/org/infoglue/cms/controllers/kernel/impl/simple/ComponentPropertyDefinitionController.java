@@ -90,6 +90,11 @@ public class ComponentPropertyDefinitionController extends BaseController
 	    
 	    try
 	    {
+	    	//System.out.println("xml:" + xml);
+	    	xml = xml.replaceAll("<!--igescaped-->", "");
+	    	//xml = xml.replaceAll("<!--igescaped-->", "");
+	    	//System.out.println("xml:" + xml);
+	    	
 	        InputSource xmlSource = new InputSource(new StringReader(xml));
 
 			DOMParser parser = new DOMParser();

@@ -38,9 +38,6 @@ import org.infoglue.cms.applications.databeans.LinkBean;
 
 public class ViewInlineOperationMessagesAction extends InfoGlueAbstractAction 
 {
-    /**
-	 * 
-	 */
 	private static final long serialVersionUID = -739264056619967471L;
 	private final static Logger logger = Logger.getLogger(ViewInlineOperationMessagesAction.class.getName());
     
@@ -48,6 +45,10 @@ public class ViewInlineOperationMessagesAction extends InfoGlueAbstractAction
     private String userSessionKey;
     private List<LinkBean> actionLinks;
     private boolean isAutomaticRedirect = false;
+    private boolean automaticClose = false;
+    private String actionUrl;
+	private String target;
+    private String targetTitle;
     
     /**
      * This method is the application entry-point. The parameters has been set through the setters
@@ -186,4 +187,45 @@ public class ViewInlineOperationMessagesAction extends InfoGlueAbstractAction
 	{
 		this.userSessionKey = userSessionKey;
 	}
+	
+    public boolean getAutomaticClose()
+	{
+		return automaticClose;
+	}
+
+	public void setAutomaticClose(boolean automaticClose)
+	{
+		this.automaticClose = automaticClose;
+	}
+
+	public String getActionUrl()
+	{
+		return actionUrl;
+	}
+
+	public void setActionUrl(String actionUrl)
+	{
+		this.actionUrl = actionUrl;
+	}
+
+	public String getTarget()
+	{
+		return target;
+	}
+
+	public void setTarget(String target)
+	{
+		this.target = target;
+	}
+
+	public String getTargetTitle()
+	{
+		return targetTitle;
+	}
+
+	public void setTargetTitle(String targetTitle)
+	{
+		this.targetTitle = targetTitle;
+	}
+
 }

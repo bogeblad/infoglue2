@@ -6,25 +6,9 @@
 <!--
 		function checkMarkedVersions()
 		{
-			var listForm = document.listForm;
-			var lengthselContents = null;
-			var ret = 0;
-			if (listForm.sel != null)				
-				lengthsel = listForm.sel.length;
-
-			if (lengthsel == null && listForm.sel != null)
-		  	{
-		  		if (listForm.sel.checked)
-			    	ret++;
-		  	}
-			else
-			{
-			  	for (i=0; i<lengthsel; i++)
-			   		if (listForm.sel[i].checked)
-			    		ret++;
-			}
-			    		
-			return ret;
+			var lengthSel = $("input[name='sel']:checked").length;
+			
+			return lengthSel;
 		}
 		
 		function checkUncheckAll(checkbox)
@@ -158,7 +142,7 @@
 		#foreach($c in $contents)
 			#set( $row = ["<img src='images/v3/contentIcon.gif'> $c.getName() ($c.getId())", $ui.getString("tool.common.publishing.typeContentLabel")] )
 			#set($cnt = $cnt + 1)
-			#lvAddRowV3($row $cnt $c.getId())
+			#lvAddRowV3($row $cnt $c.id false)
 		#end
 
 		#lvEnd()

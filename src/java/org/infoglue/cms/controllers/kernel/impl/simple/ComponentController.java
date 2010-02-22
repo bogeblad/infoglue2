@@ -50,6 +50,7 @@ import org.infoglue.cms.util.sorters.ContentComparator;
 import org.infoglue.deliver.applications.databeans.DeliveryContext;
 import org.infoglue.deliver.controllers.kernel.impl.simple.NodeDeliveryController;
 import org.infoglue.deliver.util.CacheController;
+import org.infoglue.deliver.util.Timer;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
@@ -98,7 +99,6 @@ public class ComponentController extends BaseController
 		}
 		catch ( Exception e )
 		{
-		    e.printStackTrace();
 			rollbackTransaction(db);
 			throw new SystemException("An error occurred when we tried to fetch a list of users in this group. Reason:" + e.getMessage(), e);			
 		}		
@@ -149,27 +149,37 @@ public class ComponentController extends BaseController
 		else
 		{
 		    components = getComponents(allowedComponentNames, disallowedComponentNames, allowedComponentGroupNames, principal, db);
+	        
 		    Iterator componentsIterator = components.iterator();
 			while(componentsIterator.hasNext())
 			{
 			    ContentVO contentVO = (ContentVO)componentsIterator.next();
 			    
+				//System.out.println("contentVO:" + contentVO.getName() + ":" + contentVO.getRepositoryId() + ":" + contentVO.getId());
 			    LanguageVO masterLanguage = LanguageController.getController().getMasterLanguage(contentVO.getRepositoryId(), db); //.getMasterLanguage(db, contentVO.getRepositoryId());
-				ContentVersion contentVersion = ContentVersionController.getContentVersionController().getLatestActiveContentVersion(contentVO.getId(), masterLanguage.getId(), db);
-				
-				String groupName = "Unknown";
-				String description = "Unknown";
-				
-				if(contentVersion != null)
-				{
-				    groupName = ContentVersionController.getContentVersionController().getAttributeValue(contentVersion.getValueObject(), "GroupName", false);
-				    description = ContentVersionController.getContentVersionController().getAttributeValue(contentVersion.getValueObject(), "Description", false);
-				}
-	
-				contentVO.getExtraProperties().put("GroupName", groupName);
-				contentVO.getExtraProperties().put("Description", description);
+				//System.out.println("masterLanguage:" + masterLanguage);
+			    if(masterLanguage != null)
+			    {
+					ContentVersionVO contentVersionVO = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(contentVO.getId(), masterLanguage.getId(), db);
+					
+					String groupName = "Unknown";
+					String description = "Unknown";
+					
+					if(contentVersionVO != null)
+					{
+					    groupName = ContentVersionController.getContentVersionController().getAttributeValue(contentVersionVO, "GroupName", false);
+					    description = ContentVersionController.getContentVersionController().getAttributeValue(contentVersionVO, "Description", false);
+					}
+		
+					contentVO.getExtraProperties().put("GroupName", groupName);
+					contentVO.getExtraProperties().put("Description", description);
+			    }
+			    else
+			    {
+			    	componentsIterator.remove();
+			    }
 			}
-			
+
 			CacheController.cacheObject("componentContentsCache", componentsKey, components);
 		}
 		
@@ -293,6 +303,8 @@ public class ComponentController extends BaseController
 	
 	public List getComponents(String[] allowedComponentNames, String[] disallowedComponentNames, String[] allowedComponentGroups/*, String[] disallowedComponentGroups*/, InfoGluePrincipal principal, Database db) throws Exception
 	{
+		Timer t = new Timer();
+		
 		HashMap arguments = new HashMap();
 		arguments.put("method", "selectListOnContentTypeName");
 		
@@ -323,21 +335,24 @@ public class ComponentController extends BaseController
 			}
 			
 			boolean isPartOfAllowedComponentGroupNames = false;
-			if(allowedComponentGroups != null && allowedComponentGroups.length > 0)
+			if(allowedComponentGroups != null && allowedComponentGroups.length > 0 && contentVO.getRepositoryId() != null)
 			{
-				LanguageVO masterLanguageVO = LanguageController.getController().getMasterLanguage(contentVO.getRepositoryId());		
-
-	        	ContentVersionVO contentVersionVO = ContentVersionController.getContentVersionController().getLatestContentVersionVO(contentVO.getContentId(), masterLanguageVO.getId());
-	        	String groupName = null;
-	        	if(contentVersionVO != null)
-	        		groupName = ContentVersionController.getContentVersionController().getAttributeValue(contentVersionVO, "GroupName", false);
-
-		        for(int i=0; i<allowedComponentGroups.length; i++)
-		        {
-		        	String allowedComponentGroup = allowedComponentGroups[i];
-		        	if(groupName != null && groupName.indexOf(allowedComponentGroup) > -1)
-		        		isPartOfAllowedComponentGroupNames = true;
-		        }
+				LanguageVO masterLanguageVO = LanguageController.getController().getMasterLanguage(contentVO.getRepositoryId(), db);
+				if(masterLanguageVO != null)
+				{
+					//System.out.println("masterLanguageVO for " + contentVO.getRepositoryId() + " is " + masterLanguageVO);
+		        	ContentVersionVO contentVersionVO = ContentVersionController.getContentVersionController().getLatestContentVersionVO(contentVO.getContentId(), masterLanguageVO.getId());
+		        	String groupName = null;
+		        	if(contentVersionVO != null)
+		        		groupName = ContentVersionController.getContentVersionController().getAttributeValue(contentVersionVO, "GroupName", false);
+	
+			        for(int i=0; i<allowedComponentGroups.length; i++)
+			        {
+			        	String allowedComponentGroup = allowedComponentGroups[i];
+			        	if(groupName != null && groupName.indexOf(allowedComponentGroup) > -1)
+			        		isPartOfAllowedComponentGroupNames = true;
+			        }
+				}
 			}
 
 			boolean isPartOfDisallowedComponentNames = false;
@@ -374,6 +389,8 @@ public class ComponentController extends BaseController
 			}
 	    }
 		
+	    //t.printElapsedTime("Getting components took");
+	    
 		return results;	
 	}
 

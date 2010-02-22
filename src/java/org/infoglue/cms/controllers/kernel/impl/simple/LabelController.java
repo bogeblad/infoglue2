@@ -195,7 +195,7 @@ public class LabelController extends BaseController implements StringManager
 		
 		ResourceBundle resourceBundle = null;
 
-		t.printElapsedTime("1");
+		//t.printElapsedTime("1");
 
 		if(!(cachedBundle instanceof NullObject))
 		{
@@ -260,7 +260,7 @@ public class LabelController extends BaseController implements StringManager
 
 		ResourceBundle resourceBundle = null;
 
-		t.printElapsedTime("1");
+		//t.printElapsedTime("1");
 
 		if(!(cachedBundle instanceof NullObject))
 		{
@@ -295,7 +295,7 @@ public class LabelController extends BaseController implements StringManager
 			}
 		}			
 		//t.printElapsedTime("2");
-		System.out.println("\n\n:args:" + args[0]);
+		//System.out.println("\n\n:args:" + args[0]);
 		if(resourceBundle != null)
 		{
 			value = MessageFormat.format(resourceBundle.getString(key), args);
@@ -314,8 +314,19 @@ public class LabelController extends BaseController implements StringManager
 	private String getLocalizedSystemString(Locale locale, String key) 
   	{
     	StringManager stringManager = StringManagerFactory.getPresentationStringManager("org.infoglue.cms.applications", locale);
-
-    	return stringManager.getString(key);
+    	return stringManager.getString(key);    		
+    	/*
+    	try
+    	{
+        	return stringManager.getString(key);    		
+    	}
+    	catch (Throwable t) 
+    	{
+    		System.out.println("There was no string:" + key + " in locale:" + locale);
+    		stringManager = StringManagerFactory.getPresentationStringManager("org.infoglue.cms.applications", Locale.ENGLISH);
+    		return stringManager.getString(key); 
+		}
+		*/
   	}
 
 	private String getLocalizedSystemString(Locale locale, String key, Object arg1) 
@@ -323,6 +334,18 @@ public class LabelController extends BaseController implements StringManager
     	StringManager stringManager = StringManagerFactory.getPresentationStringManager("org.infoglue.cms.applications", locale);
 
     	return stringManager.getString(key, arg1);
+    	/*
+    	try
+    	{
+        	return stringManager.getString(key, arg1);    		
+    	}
+    	catch (Throwable t) 
+    	{
+    		System.out.println("There was no string:" + key + " in locale:" + locale);
+    		stringManager = StringManagerFactory.getPresentationStringManager("org.infoglue.cms.applications", Locale.ENGLISH);
+    		return stringManager.getString(key, arg1); 
+		}
+		*/
   	}
 
 	private String getLocalizedSystemString(Locale locale, String key, Object arg1, Object arg2) 
@@ -330,6 +353,18 @@ public class LabelController extends BaseController implements StringManager
     	StringManager stringManager = StringManagerFactory.getPresentationStringManager("org.infoglue.cms.applications", locale);
 
     	return stringManager.getString(key, arg1, arg2);
+    	/*
+    	try
+    	{
+        	return stringManager.getString(key, arg1, arg2);    		
+    	}
+    	catch (Throwable t) 
+    	{
+    		System.out.println("There was no string:" + key + " in locale:" + locale);
+    		stringManager = StringManagerFactory.getPresentationStringManager("org.infoglue.cms.applications", Locale.ENGLISH);
+    		return stringManager.getString(key, arg1, arg2); 
+		}
+		*/
   	}
 	
 	private String getLocalizedSystemString(Locale locale, String key, Object[] args) 
@@ -337,6 +372,18 @@ public class LabelController extends BaseController implements StringManager
     	StringManager stringManager = StringManagerFactory.getPresentationStringManager("org.infoglue.cms.applications", locale);
 
     	return stringManager.getString(key, args);
+    	/*
+    	try
+    	{
+        	return stringManager.getString(key, arg1, arg2);	
+    	}
+    	catch (Throwable t) 
+    	{
+    		System.out.println("There was no string:" + key + " in locale:" + locale);
+    		stringManager = StringManagerFactory.getPresentationStringManager("org.infoglue.cms.applications", Locale.ENGLISH);
+    		return stringManager.getString(key, arg1, arg2);
+		}
+		*/
   	}
 	
 	public ResourceBundle getResourceBundle(Locale locale)
@@ -452,19 +499,19 @@ public class LabelController extends BaseController implements StringManager
 
 			List assets = getDigitalAssetByName(file.getName(), db);
 			
-			System.out.println("assets:" + assets);
+			//System.out.println("assets:" + assets);
 			
 			Iterator assetsIterator = assets.iterator();
 			if(assetsIterator.hasNext())
 			{
 				File translationsDir = new File(CmsPropertyHandler.getContextRootPath() + File.separator + "translations");
 				
-				System.out.println("translationsDir:" + translationsDir);
+				//System.out.println("translationsDir:" + translationsDir);
 				
 				DigitalAsset da = (DigitalAsset)assetsIterator.next();
 				String themeName = da.getAssetFileName();
 
-				System.out.println("themeName:" + themeName);
+				//System.out.println("themeName:" + themeName);
 
 				File presentationStringFile = new File(CmsPropertyHandler.getContextRootPath() + File.separator + "translations" + File.separator + da.getAssetFileName());
 				logger.info("Caching " + presentationStringFile + " at " + translationsDir);
@@ -479,7 +526,7 @@ public class LabelController extends BaseController implements StringManager
 	            
 	            resourceBundle = getResourceBundle(locale);
 
-	            System.out.println("Checking resourceBundle: " + resourceBundle);
+	            //System.out.println("Checking resourceBundle: " + resourceBundle);
 			}
 		}
         catch(Exception e)

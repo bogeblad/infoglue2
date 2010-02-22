@@ -45,6 +45,7 @@ import org.infoglue.cms.exception.ConstraintException;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.util.ConstraintExceptionBuffer;
 import org.infoglue.deliver.util.CacheController;
+import org.infoglue.deliver.util.Timer;
 
 /**
  * This class handles all interaction with Languages and persistence of them.
@@ -470,14 +471,7 @@ public class LanguageController extends BaseController
 
         try
         {
-			Repository repository = RepositoryController.getController().getRepositoryWithId(repositoryId, db);
-            Collection repositoryLanguageList = repository.getRepositoryLanguages();
-        	Iterator repositoryLanguageIterator = repositoryLanguageList.iterator();
-        	while(repositoryLanguageIterator.hasNext())
-			{
-				RepositoryLanguage repositoryLanguage = (RepositoryLanguage)repositoryLanguageIterator.next();
-				languageVOList.add(repositoryLanguage.getLanguage().getValueObject());
-			}
+        	languageVOList = getLanguageVOList(repositoryId, db);
         	
             //If any of the validations or setMethods reported an error, we throw them up now before create.
             ceb.throwIfNotEmpty();
@@ -499,7 +493,49 @@ public class LanguageController extends BaseController
 
         return languageVOList;
     }
-    
+
+	/**
+	 * This method returns all languages for a certain repository.
+	 * 
+	 * @param repositoryId
+	 * @return
+	 * @throws SystemException
+	 * @throws Exception
+	 */
+
+	public List getLanguageVOList(Integer repositoryId, Database db) throws SystemException, Exception
+    {
+		String key = "" + repositoryId + "_allLanguages";
+		logger.info("key:" + key);
+		List list = (List)CacheController.getCachedObject("languageCache", key);
+		if(list != null)
+		{
+			logger.info("There was an cached list:" + list);
+		}
+		else
+		{
+			list = new ArrayList();
+	
+			OQLQuery oql = db.getOQLQuery( "SELECT l FROM org.infoglue.cms.entities.management.impl.simple.LanguageImpl l WHERE l.repositoryLanguages.repository = $1 ORDER BY l.repositoryLanguages.sortOrder, l.languageId");
+			oql.bind(repositoryId);
+			
+	    	QueryResults results = oql.execute(Database.ReadOnly);
+			while(results.hasMore()) 
+	        {
+				Language language = (Language)results.next();
+                list.add(language.getValueObject());
+	        }
+	          
+			results.close();
+			oql.close();
+				
+	        if(list.size() > 0)
+	            CacheController.cacheObject("languageCache", key, list);				
+		}
+	        
+        return list;
+    } 
+	/*
     public List getLanguageVOList(Integer repositoryId, Database db) throws ConstraintException, SystemException
     {
         List languageVOList = new ArrayList();
@@ -515,6 +551,7 @@ public class LanguageController extends BaseController
         	
         return languageVOList;
     }
+    */
 
 
 
@@ -557,6 +594,11 @@ public class LanguageController extends BaseController
     public List getLanguageVOList() throws SystemException, Bug
     {
         return getAllVOObjects(LanguageImpl.class, "languageId");
+    }
+
+    public List getLanguageList(Database db) throws SystemException, Bug
+    {
+        return getAllObjects(LanguageImpl.class, "languageId", db);
     }
 
 	/**

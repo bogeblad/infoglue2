@@ -50,7 +50,7 @@ public final class CmsContextListener implements ServletContextListener
 {
     private final static Logger logger = Logger.getLogger(CmsContextListener.class.getName());
 
-	private static CacheController cacheController = new CacheController();
+	//private static CacheController cacheController = new CacheController();
 	
 	/**
 	 * This method is called when the servlet context is 
@@ -92,18 +92,25 @@ public final class CmsContextListener implements ServletContextListener
 
 			String URIEncoding = CmsPropertyHandler.getURIEncoding();
 			
-			String expireCacheAutomaticallyString = CmsPropertyHandler.getExpireCacheAutomatically();
-			if(expireCacheAutomaticallyString != null)
-				cacheController.setExpireCacheAutomatically(Boolean.parseBoolean(expireCacheAutomaticallyString));
-
-			String intervalString = CmsPropertyHandler.getCacheExpireInterval();
-			if(intervalString != null)
-				cacheController.setCacheExpireInterval(Integer.parseInt(intervalString));
-		
 			//Starting the cache-expire-thread
-			if(cacheController.getExpireCacheAutomatically())
-				cacheController.start();
-
+			String expireCacheAutomaticallyString = CmsPropertyHandler.getExpireCacheAutomatically();
+			Boolean expireCacheAutomatically = false;
+			if(expireCacheAutomaticallyString != null)
+				expireCacheAutomatically = Boolean.parseBoolean(expireCacheAutomaticallyString);
+			
+			if(expireCacheAutomatically)
+			{
+				CacheController cacheController = new CacheController();
+				cacheController.setExpireCacheAutomatically(expireCacheAutomatically);
+	
+				String intervalString = CmsPropertyHandler.getCacheExpireInterval();
+				if(intervalString != null)
+					cacheController.setCacheExpireInterval(Integer.parseInt(intervalString));
+			
+				if(cacheController.getExpireCacheAutomatically())
+					cacheController.start();
+			}
+			
 			OSCacheUtility.setServletCacheParams(event.getServletContext());
 			
 			CmsPropertyHandler.setStartupTime(new Date()); 

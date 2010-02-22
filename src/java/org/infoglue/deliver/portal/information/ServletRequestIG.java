@@ -50,7 +50,6 @@ public class ServletRequestIG extends HttpServletRequestWrapper {
 
     public ServletRequestIG(PortletWindow window, HttpServletRequest req) {
         super(req);
-
         PortalControlURL url = new PortalControlURL(req);
         this.paramMap = url.getRenderParameterMap(window);
         this.paramMap.putAll(url.getQueryParameterMap(window)); // in case of namespace-params.
@@ -68,6 +67,15 @@ public class ServletRequestIG extends HttpServletRequestWrapper {
             log.debug("Available params: " + str);
         }
     }
+
+    protected void finalize() throws Throwable {
+  	  super.finalize();
+  	  this.paramMap.clear();
+  	  this.paramMap = null;
+
+  	  this.attributeMap.clear();
+  	  this.attributeMap = null;
+}
 
     /* (non-Javadoc)
      * @see javax.servlet.ServletRequest#getParameter(java.lang.String)
@@ -104,8 +112,28 @@ public class ServletRequestIG extends HttpServletRequestWrapper {
     /* (non-Javadoc)
      * @see javax.servlet.ServletRequest#setAttribute(java.lang.String, java.lang.Object)
      */
-    public void setAttribute(String key, Object value) {
-        this.attributeMap.put(key, value);
+    public void setAttribute(String key, Object value) 
+    {
+    	if(key.indexOf("HIBERNATE") > -1 || key.indexOf("webwork") > -1)
+    	{
+	    	System.out.println("key:" + key);
+	    	System.out.println("value:" + value.getClass().getName());
+    	}
+    	this.attributeMap.put(key, value);
+    }
+
+    /* (non-Javadoc)
+     * @see javax.servlet.ServletRequest#removeAttribute(java.lang.String)
+     */
+    public void removeAttribute(String key) 
+    {
+    	System.out.println("Removing key:" + key);
+    	if(key.indexOf("HIBERNATE") > -1 || key.indexOf("webwork") > -1)
+    	{
+	    	System.out.println("Removing key:" + key);
+    	}
+
+    	this.attributeMap.remove(key);
     }
 
     /* (non-Javadoc)

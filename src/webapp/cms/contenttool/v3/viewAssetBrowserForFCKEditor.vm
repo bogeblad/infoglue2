@@ -46,6 +46,12 @@
 		setTimeout("resizeInlineTabDivs()", 100);
 	});
 
+	var txtUrl = "";
+	function getTextUrl()
+	{
+		return txtUrl;
+	}
+
 	function getRequestParameter(url, parameterName)
 	{
 		var value = "";
@@ -66,35 +72,18 @@
 		#if($contentVO)
 			//alert(top.opener.document.title);
 			
-			//alert("Hepp:" + window.top.opener.CKEDITOR.instances["Leadin"]._.filebrowserSe.filebrowser.target);
-			//alert("Hepp:" + window.top.opener.CKEDITOR.instances["Leadin"]._.filebrowserSe.filebrowser.url);
-			/*
-			var sourceElement = window.opener.CKEDITOR.instances[editor]._.filebrowserSe;
-		    var dialog = sourceElement.getDialog();
-		    var targetElement = sourceElement.filebrowser.target || null;
-		    url = fileUrl.replace( /#/g, '%23' );
-		    */  
-			//alert("TOP:" + window.top.opener.CKEDITOR.getDialog());
-			
-			
-			//alert("Hepp originalElement:" + window.top.opener.CKEDITOR.instances["Leadin"]._.filebrowserSe.getDialog().getSelectedElement().getAttribute("src"));
-			
 			var txtUrl = "";
-			if(top.opener.document.title == "Image Properties")
+			if(typeof(window.top.opener.CKEDITOR) != 'undefined')
 			{
-				txtUrl = top.opener.document.getElementById("txtLnkUrl").value;
-				if(txtUrl == null || txtUrl == "")
-				{
-					//txtUrl = top.opener.document.getElementById("txtUrl").value;
-					if(typeof(window.top.opener.CKEDITOR) != 'undefined' && window.top.opener.CKEDITOR.instances["Leadin"]._.filebrowserSe.getDialog().getSelectedElement())
-						txtUrl = window.top.opener.CKEDITOR.instances["Leadin"]._.filebrowserSe.getDialog().getSelectedElement().getAttribute("src");
-				}
+				var instanceName = getRequestParameter(window.location.href, "CKEditor");
+				if(window.top.opener.CKEDITOR.instances[instanceName]._.filebrowserSe.getDialog()._.contents.info.url)
+					txtUrl = window.top.opener.CKEDITOR.instances[instanceName]._.filebrowserSe.getDialog()._.contents.info.url._.initValue;
+				else if(window.top.opener.CKEDITOR.instances[instanceName]._.filebrowserSe.getDialog()._.contents.info.txtUrl)
+					txtUrl = window.top.opener.CKEDITOR.instances[instanceName]._.filebrowserSe.getDialog()._.contents.info.txtUrl._.initValue;
 			}
 			else
 			{
-				if(typeof(window.top.opener.CKEDITOR) != 'undefined' && window.top.opener.CKEDITOR.instances["Leadin"]._.filebrowserSe.getDialog().getSelectedElement())
-					txtUrl = window.top.opener.CKEDITOR.instances["Leadin"]._.filebrowserSe.getDialog().getSelectedElement().getAttribute("src");
-				//txtUrl = top.opener.document.getElementById("txtUrl").value;
+				txtUrl = top.opener.document.getElementById("txtLnkUrl").value;
 			}
 			
 			var contentId = getRequestParameter(txtUrl, "contentId");
@@ -146,23 +135,23 @@
 		#if($contentVO.id)
 		<div id="currentContentAssetsTab" class="inlineTabDiv">
 			#if($oldContentId > 0)
-				<IFRAME frameborder="0" name="contentVersionAssetsFrame" id="contentVersionAssetsFrame" src="" width="670" height="410" align="baseline"></IFRAME>
+				<IFRAME frameborder="0" name="contentVersionAssetsFrame" id="contentVersionAssetsFrame" src="" width="670" height="410" ></IFRAME>
 			#else
-				<IFRAME frameborder="0" name="contentVersionAssetsFrame" id="contentVersionAssetsFrame" src="" width="670" height="410" align="baseline"></IFRAME>
+				<IFRAME frameborder="0" name="contentVersionAssetsFrame" id="contentVersionAssetsFrame" src="" width="670" height="410" ></IFRAME>
 			#end
 		</div>
 		#end
 		
 		<div id="latestUploadedTab" class="inlineTabDiv">
-			<IFRAME frameborder="0" name="latestAssetsFrame" id="latestAssetsFrame" src="" width="670" height="410" align="baseline"></IFRAME>
+			<IFRAME frameborder="0" name="latestAssetsFrame" id="latestAssetsFrame" src="" width="670" height="410" ></IFRAME>
 		</div>
 		
 		<div id="repositoryBrowserTab" class="inlineTabDiv">
-			<IFRAME frameborder="0" name="repositoryBrowserFrame" id="repositoryBrowserFrame" src="" width="670" height="410" align="baseline"></IFRAME>
+			<IFRAME frameborder="0" name="repositoryBrowserFrame" id="repositoryBrowserFrame" src="" width="670" height="410" ></IFRAME>
 		</div>
 			
 		<div id="searchTab" class="inlineTabDiv">
-			<IFRAME frameborder="0" name="contentVersionAssetSearchFrame" id="contentVersionAssetSearchFrame" src="" width="670" height="410" align="baseline"></IFRAME>
+			<IFRAME frameborder="0" name="contentVersionAssetSearchFrame" id="contentVersionAssetSearchFrame" src="" width="670" height="410" ></IFRAME>
 		</div>
 
 	</div>

@@ -112,18 +112,27 @@ public class CreateEditionAction extends ViewPublicationsAction
     	
         return "success";
     }
-        
+
+    public String doV3() throws Exception
+    {
+    	doExecute();
+    	
+        return "successV3";
+    }
+    
     public String doInput() throws Exception
     {
     	this.publicationVO.PrepareValidation();
     	setEvents(getRequest().getParameterValues("sel"));
-    	//String[] events = getRequest().getParameterValues("sel");
-    	//String[] siteNodes = getRequest().getParameterValues("sit");
-    	//setContentToPublish(PublicationController.getContentVersionVOToPublish(contents));
-    	//setSiteNodeToPublish(PublicationController.getSiteNodeVersionVOToPublish(siteNodes));
     	return "input";
     }    
 
+    public String doInputV3() throws Exception
+    {
+    	this.publicationVO.PrepareValidation();
+    	setEvents(getRequest().getParameterValues("sel"));
+    	return "inputV3";
+    }    
 
 	private void setEvents(String[] eventArguments) throws SystemException, Exception
 	{

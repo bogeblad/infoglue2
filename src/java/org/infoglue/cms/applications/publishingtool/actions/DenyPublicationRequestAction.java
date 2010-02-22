@@ -85,9 +85,22 @@ public class DenyPublicationRequestAction extends InfoGlueAbstractAction
 		return "success";
 	}
 
+	public String doV3() throws Exception 
+	{
+		setEvents(getRequest().getParameterValues("sel"));
+		
+		PublicationController.denyPublicationRequest(this.events, this.getInfoGluePrincipal(), this.comment, getApplicationBaseUrl(getRequest()));
+		return "successV3";
+	}
+
 	public String doComment() throws Exception 
 	{		
 		return "comment";
+	}
+
+	public String doCommentV3() throws Exception 
+	{		
+		return "commentV3";
 	}
 
 	private String getApplicationBaseUrl(HttpServletRequest request)

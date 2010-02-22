@@ -970,7 +970,6 @@ function assignComponent(siteNodeId, languageId, contentId, parentComponentId, s
 		//alert("parentComponentId" + parentComponentId);
 		//alert("slotId" + slotId);
 		//alert("specifyBaseTemplate" + specifyBaseTemplate);
-		
 		insertUrl = componentEditorUrl + "ViewSiteNodePageComponents!addComponent.action?siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&parentComponentId=" + parentComponentId + "&componentId=" + draggedComponentId + "&slotId=" + slotId + "&slotPositionComponentId=" + slotPositionComponentId + "&specifyBaseTemplate=" + specifyBaseTemplate + "&" + allowedComponentNamesUrlEncodedString + "&" + disallowedComponentNamesUrlEncodedString + "&" + allowedComponentGroupNamesAsUrlEncodedString;
 		//alert("insertUrl:" + insertUrl);
 		document.location.href = insertUrl;
@@ -1014,7 +1013,7 @@ function edit(editUrl)
 	}
 	else
 	{
-		openInlineDiv(editUrl, 700, 750, true);
+		openInlineDiv(editUrl, 700, 850, true);
 	}
 	
 	return false;
@@ -1075,8 +1074,10 @@ function editInline(selectedRepositoryId, selectedContentId, selectedLanguageId,
 					
 					var element = $(this).get(0);
 		
+					var thisTotalWidth = $(this).width();
 					var totalWidth = $(this).parent().width();
-					
+					//alert("thisTotalWidth on :" + $(this).get(0).id + "=" + thisTotalWidth);
+					//alert("totalWidth on :" + $(this).parent().get(0).id + "=" + totalWidth);
 					var totalHeight = 100;
 					$("#attribute" + selectedContentId + attributeName + " > *").each(function(i){
 						totalHeight = totalHeight + $(this).outerHeight();
@@ -1087,8 +1088,8 @@ function editInline(selectedRepositoryId, selectedContentId, selectedLanguageId,
 					
 					if(totalHeight < 300)
 						totalHeight = 300;
-					if(windowHeight < totalHeight + 150)
-						totalHeight = windowHeight - 150;
+					if(windowHeight < totalHeight + 200)
+						totalHeight = windowHeight - 200;
 					if(totalHeight > 800)
 						totalHeight = 800;
 
@@ -1106,19 +1107,36 @@ function editInline(selectedRepositoryId, selectedContentId, selectedLanguageId,
 						 
 						 	if(enableWYSIWYG == "true")
 						 	{
-							 	var oFCKeditor = new FCKeditor($this.get(0).id);
-							 	oFCKeditor.BasePath = "" + componentEditorUrl + "applications/FCKEditor/" ;
-							 	oFCKeditor.Config["CustomConfigurationsPath"] = "" + componentEditorUrl + "WYSIWYGProperties.action?" + parameterString;
-							 	oFCKeditor.Config["AutoDetectLanguage"] = false ;
-							 	oFCKeditor.ToolbarSet = WYSIWYGToolbar;
-							 	if(WYSIWYGExtraConfig && WYSIWYGExtraConfig != '')
-							 		eval(WYSIWYGExtraConfig);
-							 
-							 	oFCKeditor.Height = totalHeight;
-							 	if(totalWidth > 100)
-									oFCKeditor.Width = totalWidth;
-							 	oFCKeditor.Value = plainAttribute;
-							 	$this.html(oFCKeditor.CreateHtml());
+						 		if(userPrefferredWYSIWYG  == "ckeditor3" || userPrefferredWYSIWYG  == "" || typeof(userPrefferredWYSIWYG )=="undefined")
+						 		{
+						 			var usedWidth = totalWidth;
+						 			if(totalWidth < 100)
+						 				usedWidth = 100;
+						 			
+					 				var configString = "{'height': " + totalHeight + ",'customConfig': '" + componentEditorUrl + "WYSIWYGProperties.action?" + parameterString + "','language': '" + userPrefferredLanguageCode + "', 'toolbar': '" + WYSIWYGToolbar + "'}";
+						 			if(WYSIWYGExtraConfig && WYSIWYGExtraConfig != '')
+						 				configString = "{'height': " + totalHeight + ",'customConfig': '" + componentEditorUrl + "WYSIWYGProperties.action?" + parameterString + "','language': '" + userPrefferredLanguageCode + "', 'toolbar': '" + WYSIWYGToolbar + "'," + WYSIWYGExtraConfig + "}";
+						 			var configObject = eval('(' + configString + ')');
+						 			
+						 			var editor = CKEDITOR.replace( $this.get(0).id, configObject );
+						 			editor.setData( plainAttribute );
+						 		}
+						 		else
+						 		{
+							 		var oFCKeditor = new FCKeditor($this.get(0).id);
+								 	oFCKeditor.BasePath = "" + componentEditorUrl + "applications/FCKEditor/" ;
+								 	oFCKeditor.Config["CustomConfigurationsPath"] = "" + componentEditorUrl + "WYSIWYGProperties.action?" + parameterString;
+								 	oFCKeditor.Config["AutoDetectLanguage"] = false ;
+								 	oFCKeditor.ToolbarSet = WYSIWYGToolbar;
+								 	if(WYSIWYGExtraConfig && WYSIWYGExtraConfig != '')
+								 		eval(WYSIWYGExtraConfig);
+								 
+								 	oFCKeditor.Height = totalHeight;
+								 	if(totalWidth > 100)
+										oFCKeditor.Width = totalWidth;
+								 	oFCKeditor.Value = plainAttribute;
+								 	$this.html(oFCKeditor.CreateHtml());
+						 		}
 						 	}
 						 	else
 						 	{
@@ -1201,7 +1219,7 @@ function editInline(selectedRepositoryId, selectedContentId, selectedLanguageId,
 				
 		var topOffset = firstElement.offset().top - 10;
 		//alert("topOffset:" + topOffset);
-		window.scroll(0, topOffset);
+		//window.scrollTo(0, topOffset);
 		firstElement = null;
 
 		var saveLabel = "Save";
@@ -1214,6 +1232,8 @@ function editInline(selectedRepositoryId, selectedContentId, selectedLanguageId,
 		
 		$lastThis.after("<div id=\"saveButtons" + selectedContentId + "\"><a class='igButton' onclick='saveAttributes(" + selectedContentId + ", " + selectedLanguageId + ");'' title='" + saveLabel + "'><span class='igButtonOuterSpan'><span class='linkSave'>" + saveLabel + "</span></span></a><a class='igButton' onclick='cancelSaveAttributes(" + selectedContentId + ", " + selectedLanguageId + ");' title='" + cancelLabel + "'><span class='igButtonOuterSpan'><span class='linkCancel'>" + cancelLabel + "</span></span></a></div><div style='clear:both;'></div>");
 		isInInlineEditingMode["" + selectedContentId] = "true"
+			
+		setTimeout("window.scrollTo(0, " + topOffset + ");", 300);
 	//}
 }
 
@@ -1301,9 +1321,16 @@ function saveAttribute(selectedContentId, selectedLanguageId, selectedAttributeN
 		var value = "";
 		if(enableWYSIWYG == "true")
 		{
-			var oEditor = FCKeditorAPI.GetInstance("attribute" + selectedContentId + selectedAttributeName) ;
-			value = oEditor.GetXHTML( true )
-			//alert("Value: " + value);
+	 		if(userPrefferredWYSIWYG  == "ckeditor3" || userPrefferredWYSIWYG  == "" || typeof(userPrefferredWYSIWYG )=="undefined")
+	 		{
+	 			var value = CKEDITOR.instances["attribute" + selectedContentId + selectedAttributeName].getData();
+	 		}
+	 		else
+	 		{
+				var oEditor = FCKeditorAPI.GetInstance("attribute" + selectedContentId + selectedAttributeName) ;
+				value = oEditor.GetXHTML( true )
+				//alert("Value: " + value);
+	 		}
 			value = Url.encode(value);
 			//alert("Value: " + value);
 		}
@@ -1315,22 +1342,31 @@ function saveAttribute(selectedContentId, selectedLanguageId, selectedAttributeN
 		var data = "contentId=" + selectedContentId + "&languageId=" + selectedLanguageId + "&attributeName=" + selectedAttributeName + "&" + selectedAttributeName + "=" + value + "&deliverContext=" + currentContext;
 
 		$.ajax({
-		   type: "POST",
-		   url: "" + componentEditorUrl + "UpdateContentVersionAttribute!saveAndReturnValue.action",
-		   data: data,
-		   success: function(msg){
-		   	 //alert( "Data Saved: " + msg );
-		     if(enableWYSIWYG == "true")
-			 {	
-			     var oEditor = FCKeditorAPI.GetInstance("attribute" + selectedContentId + selectedAttributeName) ;
-				 //$(oEditor.LinkedField.parentNode.parentNode).html(msg);
-				 $(oEditor.LinkedField.parentNode).html(msg);
-			 }
-		     else
-		     {
-		     	$("#inputattribute" + selectedContentId + selectedAttributeName).replaceWith(msg);
-		     }
-		     completeEditInlineSave(selectedContentId, selectedAttributeName);
+			type: "POST",
+			url: "" + componentEditorUrl + "UpdateContentVersionAttribute!saveAndReturnValue.action",
+			data: data,
+			success: function(msg){
+				//alert( "Data Saved: " + msg );
+		     	if(enableWYSIWYG == "true")
+		     	{	
+		     		if(userPrefferredWYSIWYG  == "ckeditor3" || userPrefferredWYSIWYG  == "" || typeof(userPrefferredWYSIWYG )=="undefined")
+		     		{
+		     			CKEDITOR.instances["attribute" + selectedContentId + selectedAttributeName].destroy();
+		     			$("#attribute" + selectedContentId + selectedAttributeName).html(msg);
+		     		}
+		     		else
+		     		{
+		     			var oEditor = FCKeditorAPI.GetInstance("attribute" + selectedContentId + selectedAttributeName) ;
+		     			//$(oEditor.LinkedField.parentNode.parentNode).html(msg);
+		     			$(oEditor.LinkedField.parentNode).html(msg);
+		     		}
+		     	}
+		     	else
+		     	{
+		     		$("#inputattribute" + selectedContentId + selectedAttributeName).replaceWith(msg);
+		     	}
+
+     			completeEditInlineSave(selectedContentId, selectedAttributeName);
 		   },
 		   error: function (XMLHttpRequest, textStatus, errorThrown) {
 			   if(XMLHttpRequest.status == 403)
@@ -1363,8 +1399,8 @@ function saveAttribute(selectedContentId, selectedLanguageId, selectedAttributeN
 		   	url: "" + componentEditorUrl + "UpdateContentVersionAttribute!saveAndReturnValue.action",
 		   	data: data,
 		   	success: function(msg){
-				//alert( "Data Saved: " + msg );
-		     	$("#spanInput" + key).replaceWith(msg);
+				//alert( "Data Saved: " + msg + ":" + $("#spanInput" + key).parent().size());
+				$("#spanInput" + key).parent().html(msg);
 			    completeEditInlineSave(selectedContentId, selectedAttributeName);
 		   	},
 		   error: function (XMLHttpRequest, textStatus, errorThrown) {
@@ -1401,9 +1437,15 @@ function cancelSaveAttribute(selectedContentId, selectedLanguageId, selectedAttr
 		   	success: function(msg){
 		   		if(enableWYSIWYG == "true")
 				{
-		     		var oEditor = FCKeditorAPI.GetInstance("attribute" + selectedContentId + selectedAttributeName) ;
-		     		//$(oEditor.LinkedField.parentNode.parentNode).html(msg);
-		     		$(oEditor.LinkedField.parentNode).html(msg);
+		     		if(userPrefferredWYSIWYG  == "ckeditor3" || userPrefferredWYSIWYG  == "" || typeof(userPrefferredWYSIWYG )=="undefined")
+		     		{
+		     			CKEDITOR.instances["attribute" + selectedContentId + selectedAttributeName].destroy();
+		     		}
+		     		else
+		     		{
+			     		var oEditor = FCKeditorAPI.GetInstance("attribute" + selectedContentId + selectedAttributeName) ;
+			     		$(oEditor.LinkedField.parentNode).html(msg);
+		     		}
 		     	}
 		     	else
 		     	{
@@ -1424,7 +1466,8 @@ function cancelSaveAttribute(selectedContentId, selectedLanguageId, selectedAttr
 		   url: "" + componentEditorUrl + "UpdateContentVersionAttribute!getAttributeValue.action",
 		   data: data,
 		   success: function(msg){
-		     $("#spanInput" + key).replaceWith(msg);
+			 $("#spanInput" + key).parent().html(msg);
+		     //$("#spanInput" + key).replaceWith(msg);
 		   }
 		 });
 	}
@@ -1593,7 +1636,17 @@ function changeComponent()
 
 function invokeAddress(url) 
 {
+	return invokeAddressImpl(url, true)
+}
+
+function invokeAddressImpl(url, unescapeAmps) 
+{
+	if(unescapeAmps)   		
+		url = url.replace(/\&amp;/g,'&');
+		
 	document.location.href = url;
+	
+	return false;
 }
 
 function showComponent(e) 
@@ -1924,6 +1977,10 @@ function viewSource()
 		
 	function initializeSlotEventHandler(id, insertUrl, deleteUrl, changeUrl, slotId, slotContentIdVar)
 	{
+		insertUrl = insertUrl.replace(/\&amp;/g,'&');
+		deleteUrl = deleteUrl.replace(/\&amp;/g,'&');
+		changeUrl = changeUrl.replace(/\&amp;/g,'&');
+
 		//alert("initializeSlotEventHandler:" + id + ":" + slotId);
 		var object = new emptySlotEventHandler(id, id, insertUrl, deleteUrl, changeUrl, slotId, slotContentIdVar);
 	}
@@ -1975,6 +2032,10 @@ function viewSource()
 	
 	function initializeComponentEventHandler(id, compId, insertUrl, deleteUrl, changeUrl)
 	{
+		insertUrl = insertUrl.replace(/\&amp;/g,'&');
+		deleteUrl = deleteUrl.replace(/\&amp;/g,'&');
+		changeUrl = changeUrl.replace(/\&amp;/g,'&');
+
 		//alert("initializeComponentEventHandler" + id + " " + deleteUrl);
 		var object = new componentEventHandler(id, id, compId, insertUrl, deleteUrl, changeUrl);
 	}
@@ -2027,6 +2088,10 @@ function viewSource()
 	
 	function initializeComponentInTreeEventHandler(id, compId, insertUrl, deleteUrl, changeUrl, slotId, slotContentIdVar)
 	{
+		insertUrl = insertUrl.replace(/\&amp;/g,'&');
+		deleteUrl = deleteUrl.replace(/\&amp;/g,'&');
+		changeUrl = changeUrl.replace(/\&amp;/g,'&');
+
 		//alert("initializeComponentInTreeEventHandler" + id + " " + deleteUrl + " " + slotId);
 		var object = new componentInTreeEventHandler(id, id, compId, insertUrl, deleteUrl, changeUrl, slotId, slotContentIdVar);
 	}

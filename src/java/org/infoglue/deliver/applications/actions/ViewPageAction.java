@@ -175,7 +175,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
         }
                     	    	
         //TODO - Can this be removed perhaps
-        while(!CmsPropertyHandler.getOperatingMode().equals("3") && RequestAnalyser.getRequestAnalyser().getBlockRequests())
+        while(CmsPropertyHandler.getActuallyBlockOnBlockRequests() && RequestAnalyser.getRequestAnalyser().getBlockRequests())
         {
         	//System.out.println("Queing up requests as cache eviction are taking place..");
         	Thread.sleep(10);
@@ -240,6 +240,8 @@ public class ViewPageAction extends InfoGlueAbstractAction
 				    	
 	    	boolean isUserRedirected = false;
 			Integer protectedSiteNodeVersionId = this.nodeDeliveryController.getProtectedSiteNodeVersionIdForPageCache(dbWrapper.getDatabase(), siteNodeId);
+			Integer forceProtocolChangeSetting = this.nodeDeliveryController.getForceProtocolChangeSettingForPageCache(dbWrapper.getDatabase(), siteNodeId);
+			System.out.println("forceProtocolChangeSetting:" + forceProtocolChangeSetting);
 			
 			if(logger.isInfoEnabled())
 				logger.info("protectedSiteNodeVersionId:" + protectedSiteNodeVersionId);
@@ -253,7 +255,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
 			else if(protectPreview.equals("true") && CmsPropertyHandler.getOperatingMode().equals("2"))
 				protectDeliver = true;
 
-			isUserRedirected = handleAccessBasedProtocolRedirect(protectedSiteNodeVersionId, this.repositoryId, dbWrapper.getDatabase());
+			isUserRedirected = handleAccessBasedProtocolRedirect(protectedSiteNodeVersionId, this.repositoryId, forceProtocolChangeSetting, dbWrapper.getDatabase());
 			
 			if(!isUserRedirected)
 			{
@@ -476,7 +478,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
 						try
 						{
 							logger.warn("Sending warning mail:" + (int)percentLeft + ":" + (int)memoryLeft + ":" + Runtime.getRuntime().maxMemory() / 1024 / 1024);
-							MailServiceFactory.getService().sendEmail("text/html", warningEmailReceiver, warningEmailReceiver, null, null, null, subject, mailBody, "utf-8");
+							MailServiceFactory.getService().sendEmail("text/html", warningEmailReceiver, warningEmailReceiver, null, null, null, null, subject, mailBody, "utf-8");
 						} 
 						catch (Exception e)
 						{
@@ -489,7 +491,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
 			String originalFullUrl = getOriginalFullURL();
 		    RequestAnalyser.getRequestAnalyser().registerPageStatistics("" + originalFullUrl, elapsedTime);
 		    
-		    //System.out.println("The page delivery took " + elapsedTime + "ms");
+		    System.out.println("The page delivery took " + elapsedTime + "ms");
 		    if(elapsedTime > 10000)
 			{
 			    logger.warn("The page delivery took " + elapsedTime + "ms for request " + originalFullUrl);
@@ -517,7 +519,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
      * @return
      * @throws IOException
      */
-	private boolean handleAccessBasedProtocolRedirect(Integer protectedSiteNodeVersionId, Integer repositoryId, Database db)
+	private boolean handleAccessBasedProtocolRedirect(Integer protectedSiteNodeVersionId, Integer repositoryId, Integer forceProtocolChangeSetting, Database db)
 	{
 		boolean isUserRedirected = false;
 		
@@ -526,7 +528,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
 			String repositoryUseAccessBasedProtocolRedirects = RepositoryDeliveryController.getRepositoryDeliveryController().getExtraPropertyValue(repositoryId, "useAccessBasedProtocolRedirects");
 			if(repositoryUseAccessBasedProtocolRedirects == null || repositoryUseAccessBasedProtocolRedirects.equals("") || !repositoryUseAccessBasedProtocolRedirects.equals("true") || !repositoryUseAccessBasedProtocolRedirects.equals("false"))
 				repositoryUseAccessBasedProtocolRedirects = CmsPropertyHandler.getUseAccessBasedProtocolRedirects();
-			
+
 			//String useAccessBasedProtocolRedirectsString = CmsPropertyHandler.getUseAccessBasedProtocolRedirects();
 			String unprotectedProtocolName = CmsPropertyHandler.getUnprotectedProtocolName();
 			String unprotectedProtocolPort = CmsPropertyHandler.getUnprotectedProtocolPort();
@@ -545,7 +547,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
 			if(repositoryUseAccessBasedProtocolRedirects.equals("true") && CmsPropertyHandler.getOperatingMode().equals("3"))
 				useAccessBasedProtocolRedirects = true;
 			
-			if(useAccessBasedProtocolRedirects)
+			if(useAccessBasedProtocolRedirects || forceProtocolChangeSetting.equals(SiteNodeVersionVO.FORCE_SECURE))
 			{
 				String originalFullURL = getOriginalFullURL();
 				//System.out.println("originalFullURL:" + originalFullURL);
@@ -553,10 +555,10 @@ public class ViewPageAction extends InfoGlueAbstractAction
 		    	if(protectedSiteNodeVersionId != null)
 		    	{
 					Principal anonymousPrincipal = getAnonymousPrincipal();
-					isAnonymousAccepted = AccessRightController.getController().getIsPrincipalAuthorized(db, (InfoGluePrincipal)anonymousPrincipal, "SiteNodeVersion.Read", protectedSiteNodeVersionId.toString());
+					isAnonymousAccepted = AccessRightController.getController().getIsPrincipalAuthorized(db, (InfoGluePrincipal)anonymousPrincipal, "SiteNodeVersion.Read", protectedSiteNodeVersionId.toString(), true);
 		    	}
 		    	
-		    	if(protectedSiteNodeVersionId != null && !isAnonymousAccepted)
+		    	if((protectedSiteNodeVersionId != null && !isAnonymousAccepted) || forceProtocolChangeSetting.equals(SiteNodeVersionVO.FORCE_SECURE))
 				{
 					if(originalFullURL.indexOf(unprotectedProtocolName + "://") > -1)
 					{	
@@ -568,13 +570,16 @@ public class ViewPageAction extends InfoGlueAbstractAction
 				}
 				else
 				{
-					if(originalFullURL.indexOf(protectedProtocolName + "://") > -1)
-					{	
-						String redirectUrl = originalFullURL.replaceFirst(protectedProtocolName + "://", unprotectedProtocolName + "://").replaceFirst(protectedProtocolPort, unprotectedProtocolPort);;
-						getResponse().setStatus(new Integer(accessBasedProtocolRedirectHTTPCode));
-						getResponse().sendRedirect(redirectUrl);
-						logger.info("Redirecting user to:" + redirectUrl);
-						isUserRedirected = true;
+					if(!forceProtocolChangeSetting.equals(SiteNodeVersionVO.ALLOW_SECURE))
+					{
+						if(originalFullURL.indexOf(protectedProtocolName + "://") > -1)
+						{	
+							String redirectUrl = originalFullURL.replaceFirst(protectedProtocolName + "://", unprotectedProtocolName + "://").replaceFirst(protectedProtocolPort, unprotectedProtocolPort);;
+							getResponse().setStatus(new Integer(accessBasedProtocolRedirectHTTPCode));
+							getResponse().sendRedirect(redirectUrl);
+							logger.info("Redirecting user to:" + redirectUrl);
+							isUserRedirected = true;
+						}
 					}
 				}
 			}
@@ -598,7 +603,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
 		if(CmsPropertyHandler.getOperatingMode().equals("3"))
 			return doExecute();
 				
-        while(!CmsPropertyHandler.getOperatingMode().equals("3") && RequestAnalyser.getRequestAnalyser().getBlockRequests())
+        while(CmsPropertyHandler.getActuallyBlockOnBlockRequests() && RequestAnalyser.getRequestAnalyser().getBlockRequests())
         {
         	//System.out.println("Queing up requests as cache eviction are taking place..");
         	Thread.sleep(10);
@@ -861,7 +866,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
 						try
 						{
 							logger.warn("Sending warning mail:" + (int)percentLeft + ":" + (int)memoryLeft + ":" + Runtime.getRuntime().maxMemory() / 1024f / 1024f);
-							MailServiceFactory.getService().sendEmail("text/html", warningEmailReceiver, warningEmailReceiver, null, null, null, subject, mailBody, "utf-8");
+							MailServiceFactory.getService().sendEmail("text/html", warningEmailReceiver, warningEmailReceiver, null, null, null, null, subject, mailBody, "utf-8");
 						} 
 						catch (Exception e)
 						{
@@ -1157,7 +1162,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
 			if(principal == null && !protectDeliver)
 			{
 				Principal anonymousPrincipal = getAnonymousPrincipal();
-				boolean isAuthorized = AccessRightController.getController().getIsPrincipalAuthorized(db, (InfoGluePrincipal)anonymousPrincipal, "SiteNodeVersion.Read", protectedSiteNodeVersionId.toString());
+				boolean isAuthorized = AccessRightController.getController().getIsPrincipalAuthorized(db, (InfoGluePrincipal)anonymousPrincipal, "SiteNodeVersion.Read", protectedSiteNodeVersionId.toString(), true);
 				if(isAuthorized)
 				{	
 					principal = anonymousPrincipal;
@@ -1213,7 +1218,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
 								
 								boolean isAuthorized = false;
 								if(!protectDeliver)
-									isAuthorized = AccessRightController.getController().getIsPrincipalAuthorized(db, (InfoGluePrincipal)principal, "SiteNodeVersion.Read", protectedSiteNodeVersionId.toString());
+									isAuthorized = AccessRightController.getController().getIsPrincipalAuthorized(db, (InfoGluePrincipal)principal, "SiteNodeVersion.Read", protectedSiteNodeVersionId.toString(), true);
 								
 								if(!isAuthorized)
 								{	
@@ -1254,14 +1259,14 @@ public class ViewPageAction extends InfoGlueAbstractAction
 						if(logger.isInfoEnabled())
 							logger.info("protectedSiteNodeVersionId:" + protectedSiteNodeVersionId);
 						
-						isAuthorized = AccessRightController.getController().getIsPrincipalAuthorized((InfoGluePrincipal)this.getAnonymousPrincipal(), "SiteNodeVersion.Read", protectedSiteNodeVersionId.toString());
+						isAuthorized = AccessRightController.getController().getIsPrincipalAuthorized((InfoGluePrincipal)this.getAnonymousPrincipal(), "SiteNodeVersion.Read", protectedSiteNodeVersionId.toString(), true);
 						
 						if(logger.isInfoEnabled())
 							logger.info("Anonymous auth:" + isAuthorized);
 						
 						if(!isAuthorized)
 						{
-							isAuthorized = AccessRightController.getController().getIsPrincipalAuthorized(db, (InfoGluePrincipal)principal, "SiteNodeVersion.Read", protectedSiteNodeVersionId.toString());
+							isAuthorized = AccessRightController.getController().getIsPrincipalAuthorized(db, (InfoGluePrincipal)principal, "SiteNodeVersion.Read", protectedSiteNodeVersionId.toString(), true);
 						
 							if(logger.isInfoEnabled())
 								logger.info("" + principal + " auth:" + isAuthorized);
@@ -1271,10 +1276,12 @@ public class ViewPageAction extends InfoGlueAbstractAction
 							logger.info("protectedSiteNodeVersionId:" + protectedSiteNodeVersionId);
 						
 					}
+					/*
 					else if(!protectDeliver)
 					{
-						isAuthorized = AccessRightController.getController().getIsPrincipalAuthorized(db, (InfoGluePrincipal)principal, "SiteNodeVersion.Read", protectedSiteNodeVersionId.toString());
+						isAuthorized = AccessRightController.getController().getIsPrincipalAuthorized(db, (InfoGluePrincipal)principal, "SiteNodeVersion.Read", protectedSiteNodeVersionId.toString(), true);
 					}
+					*/
 					
 					if(logger.isInfoEnabled())
 					{
@@ -1303,7 +1310,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
 						else
 						{
 							logger.info("SiteNode is protected and user has no access - sending him to no access page.");
-						    String url = "ExtranetLogin!noAccess.action?referer=" + URLEncoder.encode(this.referer, "UTF-8") + "&date=" + System.currentTimeMillis();
+						    String url = "ExtranetLogin!noAccess.action?siteNodeId=" + this.getSiteNodeId() + "&referer=" + URLEncoder.encode(this.referer, "UTF-8") + "&date=" + System.currentTimeMillis();
 							getResponse().sendRedirect(url);
 							isRedirected = true;
 						}
@@ -1333,7 +1340,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
 			        logger.info("The user " + alternativePrincipal.getName() + " was approved.");
 			    }
 				else if(protectedSiteNodeVersionId != null && !AccessRightController.getController().getIsPrincipalAuthorized((InfoGluePrincipal)principal, "SiteNodeVersion.Read", protectedSiteNodeVersionId.toString()) &&  !AccessRightController.getController().getIsPrincipalAuthorized((InfoGluePrincipal)this.getAnonymousPrincipal(), "SiteNodeVersion.Read", protectedSiteNodeVersionId.toString()))
-				{	
+				{
 					if(logger.isInfoEnabled())
 					{
 						logger.info("principal:" + principal);
@@ -1371,7 +1378,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
 								//---------------------------------------------------------
 								if (!AccessRightController.getController().getIsPrincipalAuthorized((InfoGluePrincipal)principal, "SiteNodeVersion.Read", protectedSiteNodeVersionId.toString()))
 								{
-									String url = "ExtranetLogin!noAccess.action?referer=" + URLEncoder.encode(this.referer, "UTF-8") + "&date=" + System.currentTimeMillis();
+									String url = "ExtranetLogin!noAccess.action?siteNodeId=" + this.getSiteNodeId() + "&referer=" + URLEncoder.encode(this.referer, "UTF-8") + "&date=" + System.currentTimeMillis();
 									getResponse().sendRedirect(url);
 									isRedirected = true;
 								}
@@ -1392,7 +1399,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
 					else
 					{
 						logger.info("SiteNode is protected and neither " + principal + " or " + this.getAnonymousPrincipal() + " has access - sending him to no access page.");
-						String url = "ExtranetLogin!noAccess.action?referer=" + URLEncoder.encode(this.referer, "UTF-8") + "&date=" + System.currentTimeMillis();
+						String url = "ExtranetLogin!noAccess.action?siteNodeId=" + this.getSiteNodeId() + "&referer=" + URLEncoder.encode(this.referer, "UTF-8") + "&date=" + System.currentTimeMillis();
 
 						getResponse().sendRedirect(url);
 						isRedirected = true;

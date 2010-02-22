@@ -4,7 +4,7 @@
 	<script language="JavaScript" src="script/listview.js"></script>
 	<META HTTP-EQUIV="pragma" CONTENT="no-cache" />
 	<META HTTP-EQUIV="expires" CONTENT="-1" />
-	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
 	<style>
 	<!--
 		.marginalized {
@@ -17,41 +17,44 @@
 
 <body class="marginalized" style="background-color: WHITE;">
 
-<div style="aTOP:0px; aLEFT:0px; aposition:absolute; color: 000000; font-family: verdana, arial, sans-serif; font-size: 8pt;">
-
-#set( $row = "<h4>Items in publication</h4>")
-#foreach ($publicationEvent in $publicationDetailVOList)
-
-	#if($publicationEvent.entityClass.indexOf("ContentVersion") > -1)
-		#if($publicationEvent.typeId == 3)
-			#set($icon = "<img src='images/tree/unpublishContentItem.gif' border=0>")
-		#else
-			#set($icon = "<img src='images/tree/contentItem.gif' border=0>")
-		#end
-	#else
-		#if($publicationEvent.typeId == 3)
-			#set($icon = "<img src='images/tree/unpublishSiteNodeItem.gif' border=0>")
-		#else
-			#set($icon = "<img src='images/tree/siteNodeItem.gif' border=0>")
-		#end
-	#end
-
-	#if($velocityCount != $publicationDetailVOList.size() || $publicationDetailVOList.size() > 0)
-		#set( $tree = "<img src='images/tree/space05.gif'><img src='images/tree/space0.gif'><img src='images/tree/space3.gif'>  $icon")
-		#set($newLine = "<br/><img src='images/tree/space05.gif'><img src='images/tree/space0.gif'><img src='images/tree/space1.gif'> <img src='images/tree/space0.gif'>")
-	#else
-		#set( $tree = "<img src='images/tree/space05.gif'><img src='images/tree/space0.gif'><img src='images/tree/space2.gif'> $icon")
-		#set($newLine = "<br/><img src='images/tree/space05.gif'><img src='images/tree/space0.gif'><img src='images/tree/space0.gif'> <img src='images/tree/space0.gif'>")
-	#end
-
-	#set($modifiedDate = $formatter.formatDate($publicationEvent.creationDateTime, "yyyy-MM-dd HH:mm"))
-	#set( $row = "$row<nobr>$tree $publicationEvent.name ($publicationEvent.description) $newLine <font color=669999><small>modified: $modifiedDate </small></font></nobr> <br>")
+	<div style="color: 000000; font-family: verdana, arial, sans-serif; font-size: 8pt;">
 	
-#end
-$row
-<br>
-<br>
-<a href="javascript:window.close();"><img border="0" src="$ui.getString("images.contenttool.buttons.close")" width="50" height="25"></a>
-</div>
+		#set( $row = "<h4>Items in publication</h4>")
+		#foreach ($publicationEvent in $publicationDetailVOList)
+		
+			#if($publicationEvent.entityClass.indexOf("ContentVersion") > -1)
+				#if($publicationEvent.typeId == 3)
+					#set($icon = "<img src='images/tree/unpublishContentItem.gif' border=0>")
+				#else
+					#set($icon = "<img src='images/tree/contentItem.gif' border=0>")
+				#end
+			#else
+				#if($publicationEvent.typeId == 3)
+					#set($icon = "<img src='images/tree/unpublishSiteNodeItem.gif' border=0>")
+				#else
+					#set($icon = "<img src='images/tree/siteNodeItem.gif' border=0>")
+				#end
+			#end
+		
+			#if($velocityCount != $publicationDetailVOList.size() || $publicationDetailVOList.size() > 0)
+				#set( $tree = "<img src='images/tree/space05.gif' alt=''><img src='images/tree/space0.gif'><img src='images/tree/space3.gif' alt=''>  $icon")
+				#set($newLine = "<br/><img src='images/tree/space05.gif'><img src='images/tree/space0.gif' alt=''><img src='images/tree/space1.gif' alt=''> <img src='images/tree/space0.gif' alt=''>")
+			#else
+				#set( $tree = "<img src='images/tree/space05.gif' alt=''><img src='images/tree/space0.gif'><img src='images/tree/space2.gif' alt=''> $icon")
+				#set($newLine = "<br/><img src='images/tree/space05.gif'><img src='images/tree/space0.gif' alt=''><img src='images/tree/space0.gif' alt=''> <img src='images/tree/space0.gif' alt=''>")
+			#end
+		
+			#set($modifiedDate = $formatter.formatDate($publicationEvent.creationDateTime, "yyyy-MM-dd HH:mm"))
+			#set( $row = "$row<nobr>$tree $publicationEvent.name ($publicationEvent.description) $newLine <font color=669999><small>modified: $modifiedDate </small></font></nobr> <br>")
+			
+		#end
+		$row
+
+		<br>
+		<br>
+		<a href="#" onclick="if(parent && parent.closeInlineDiv) parent.closeInlineDiv(); else if(parent && parent.closeDialog) parent.closeDialog(); else window.close();"><img border="0" src="$ui.getString("images.contenttool.buttons.close")" width="50" height="25"></a>
+
+	</div>
+
 </body>
 </html>

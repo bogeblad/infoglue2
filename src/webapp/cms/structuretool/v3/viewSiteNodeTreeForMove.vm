@@ -58,7 +58,7 @@
 		<h3>$ui.getString("tool.structuretool.moveSiteNode.headline")</h3>
 		
 		<p>
-			<iframe frameborder="0" name="itreeFrame" id="itreeFrame" src="ViewStructureHtmlTree!V3.action?showLeafs=no&repositoryId=${repositoryId}" width="350" height="460" align="baseline"></iframe>
+			<iframe frameborder="0" name="itreeFrame" id="itreeFrame" src="ViewStructureHtmlTree!V3.action?showLeafs=no&repositoryId=${repositoryId}" width="350" height="460" ></iframe>
 		</p>
 	
 		#lightFooterToolbar($footerButtons)

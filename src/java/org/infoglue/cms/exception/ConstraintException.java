@@ -23,6 +23,11 @@
 
 package org.infoglue.cms.exception;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.infoglue.cms.applications.databeans.LinkBean;
+
 
 /**
  * <p>Thrown to indicate that some business rule rule has been violated. Examples
@@ -37,26 +42,27 @@ package org.infoglue.cms.exception;
  */
 public class ConstraintException extends Exception 
 {
-  // --- [Constants] -----------------------------------------------------------
-  // --- [Attributes] ----------------------------------------------------------
+    // Indicates the error type (basically a resource bundle key).
+	private String errorCode;
+  
+	// The name of the (entity) field causing the exception.
+	private String fieldName;
+  
+	//Extra info about the entity causing the exception.
+	private String extraInformation = "";
+  
+	//Extra info about the entity causing the exception.
+	private String result = null;
+  
+	// The next ConstraintException in the chain (may be null).
+	private ConstraintException chainedException;
 
-  // Indicates the error type (basically a resource bundle key).
-  private String errorCode;
-  // The name of the (entity) field causing the exception.
-  private String fieldName;
-  //Extra info about the entity causing the exception.
-  private String extraInformation = "";
-  //Extra info about the entity causing the exception.
-  private String result = null;
-  // The next ConstraintException in the chain (may be null).
-  private ConstraintException chainedException;
+	private List<LinkBean> linkBeans = new ArrayList<LinkBean>();
+	
+	// --- [Static] --------------------------------------------------------------
+	// --- [Constructors] --------------------------------------------------------
 
-
-
-  // --- [Static] --------------------------------------------------------------
-  // --- [Constructors] --------------------------------------------------------
-
-  /**
+/**
    * Construct a ConstraintException with the specified field name and error code.
    *
    * @param fieldName the name of the (entity) field causing the exception.
@@ -211,6 +217,10 @@ public class ConstraintException extends Exception
   }
 
 
+	public List<LinkBean> getLinkBeans() 
+	{
+		return linkBeans;
+	}
 
   // --- [Package protected] ---------------------------------------------------
   // --- [Private] -------------------------------------------------------------

@@ -414,7 +414,7 @@ public class ViewPageFilter implements Filter
         if(logger.isInfoEnabled())
         	logger.info("repositories:" + repositories);
         
-        //System.out.println("repositories:" + repositories);
+        System.out.println("repositories:" + repositories);
         
         if (repositories.size() == 0)
         {

@@ -97,13 +97,13 @@ public class UpdateAccessRightsAction extends InfoGlueAbstractAction
 			for(int i=0; i<this.extraMultiParameter.length; i++)
 			{
 				//System.out.println("this.extraMultiParameters[i]:" + this.extraMultiParameter[i]);
-				AccessRightController.getController().update(this.extraMultiParameter[i], this.getRequest());			
+				AccessRightController.getController().update(this.extraMultiParameter[i], this.getRequest(), interceptionPointCategory);			
 			}
 		}
 		else
 		{
 			//System.out.println("this.parameters:" + this.parameters);
-			AccessRightController.getController().update(this.parameters, this.getRequest());			
+			AccessRightController.getController().update(this.parameters, this.getRequest(), interceptionPointCategory);			
 		}
 	
 		this.url = getResponse().encodeRedirectURL(this.returnAddress);
@@ -306,9 +306,12 @@ public class UpdateAccessRightsAction extends InfoGlueAbstractAction
 
 	public String doSaveAndExitV3() throws Exception
     {
-		doExecute();
-						
-		return "saveAndExitV3";
+		String result = doExecute();
+		System.out.println("result:" + result);
+		if(result.equals("none"))
+			return result;
+		else
+			return "saveAndExitV3";
 	}
 
 	public String getReturnAddress()

@@ -22,7 +22,7 @@
 	<script type="text/javascript" src="applications/HTMLArea/htmlarea.js"></script>
 	<META HTTP-EQUIV="pragma" CONTENT="no-cache" />
 	<META HTTP-EQUIV="expires" CONTENT="-1" />
-	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
 	
 	<script language="JavaScript"> 
 		//window.resizeTo(800,700);

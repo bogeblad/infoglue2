@@ -48,7 +48,8 @@ public class MailTag extends TemplateControllerTag
 	private String cc;
 	private String bcc;
 	private String recipients;
-	private String replyTo;
+	private String bounceAddresses;
+	private String replyToAddress;
 	private String subject;
 	private String type;
 	private String charset;
@@ -69,6 +70,12 @@ public class MailTag extends TemplateControllerTag
 			else
 				emailRegexp = defaultEmailRegexp;
 					
+			if(bounceAddresses != null)
+				bounceAddresses = bounceAddresses.trim().toLowerCase();
+			
+			if(replyToAddress != null)
+				replyToAddress = replyToAddress.trim().toLowerCase();
+
 			from = from.trim().toLowerCase();
 			to = to.trim().toLowerCase();
 			
@@ -136,43 +143,15 @@ public class MailTag extends TemplateControllerTag
 			    	bcc = null;
 			}
 			
-			if(replyTo != null && !replyTo.equals(""))
-			{
-				StringBuffer sb = new StringBuffer();
-				String[] emailAddresses = replyTo.split(";");
-			    for(int i=0; i<emailAddresses.length; i++)
-			    {
-			        String email = emailAddresses[i].trim().toLowerCase();
-		        	boolean emailOk = email.matches(emailRegexp);
-	    			if(!emailOk && emailAddresses.length == 1)
-		        	{
-		        		throw new AddressException("Invalid replyTo address:" + email);
-		        	}
-		        	else if(emailOk)
-		        	{
-		        		if(sb.length() > 0)
-		        			sb.append(";");
-		        		sb.append(email);
-		        	}
-			    }
-			    
-			    replyTo = sb.toString();
-			    if(replyTo.equals(""))
-			    	replyTo = null;
-			}
-			
 		    if(bcc != null && bcc.equals(""))
 		    	bcc = null;
-
-		    if(replyTo != null && replyTo.equals(""))
-		    	replyTo = null;
 
 			if(type == null)
 				type = "text/html";
 			if(charset == null)
 				charset = "utf-8";
 						
-			MailServiceFactory.getService().sendEmail(type, from, to, cc, bcc, replyTo, subject, message, charset);
+			MailServiceFactory.getService().sendEmail(type, from, to, cc, bcc, bounceAddresses, replyToAddress, subject, message, charset);
 			setResultAttribute(true);
         } 
 		catch (AddressException e)
@@ -195,6 +174,8 @@ public class MailTag extends TemplateControllerTag
 			logger.error("	to:" + to);
 			logger.error("	cc:" + cc);
 			logger.error("	bcc:" + bcc);
+			logger.error("	bounceAddresses:" + bounceAddresses);
+			logger.error("	replyToAddress:" + replyToAddress);
 			logger.error("	Subject:" + subject);
 			logger.error("	message:" + message);
 			setResultAttribute(false);
@@ -204,6 +185,8 @@ public class MailTag extends TemplateControllerTag
 		type = null;
 		charset = null;
 		recipients = null;
+		bounceAddresses = null;
+		replyToAddress = null;
 		cc = null;
 		bcc = null;
 		validationRegexp = null;
@@ -241,9 +224,14 @@ public class MailTag extends TemplateControllerTag
 		this.bcc = evaluateString("MailTag", "bcc", bcc);
 	}
 
-	public void setReplyTo(String replyTo) throws JspException
+	public void setReplyToAddress(String replyToAddress) throws JspException
 	{
-		this.replyTo = evaluateString("MailTag", "replyTo", replyTo);
+		this.replyToAddress = evaluateString("MailTag", "replyToAddress", replyToAddress);
+	}
+
+	public void setBounceAddresses(String bounceAddresses) throws JspException
+	{
+		this.bounceAddresses = evaluateString("MailTag", "bounceAddresses", bounceAddresses);
 	}
 
 	public void setSubject(String subject) throws JspException

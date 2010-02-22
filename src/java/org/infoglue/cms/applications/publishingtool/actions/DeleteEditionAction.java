@@ -69,9 +69,22 @@ public class DeleteEditionAction extends ViewPublicationsAction
 	
 	public String doCheckForModifiedVersions() throws Exception
 	{
-			return doExecute();
+		return doExecute();
 	}
+
+	/**
+	 * This method checks if some of the versions has later working-versions and if so we show another dialog 
+	 * asking the editor to confirm what to do with the interfering version. If there are no interfering versions
+	 * we unpublish all.
+	 */
 	
+	public String doV3() throws Exception
+	{
+		doExecute();
+		
+		 return "successV3";
+	}
+
 	/**
 	 * This method checks if some of the versions has later working-versions and if so we show another dialog 
 	 * asking the editor to confirm what to do with the interfering version. If there are no interfering versions

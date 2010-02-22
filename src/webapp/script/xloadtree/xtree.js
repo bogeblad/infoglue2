@@ -92,10 +92,10 @@ var webFXTreeHandler = {
 	all       : {},
 	behavior  : null,
 	selected  : null,
-	onSelect  : function (oItem) {onTreeItemSelect(oItem);}, //    null, /* should be part of tree, not handler */
+	onSelect  : function (oItem) {/*alert("onSelect:" + oItem.id);*/ onTreeItemSelect(oItem);}, //    null, /* should be part of tree, not handler */
 	getId     : function() { return this.idPrefix + this.idCounter++; },
 	toggle    : function (oItem) { this.all[oItem.id.replace('-plus','')].toggle(); },
-	select    : function (oItem) { this.all[oItem.id.replace('-icon','')].select(); },
+	select    : function (oItem) { /*alert("Selected:" + oItem.id);*/this.all[oItem.id.replace('-icon','')].select(); },
 	focus     : function (oItem) { this.all[oItem.id.replace('-anchor','')].focus(); },
 	blur      : function (oItem) { this.all[oItem.id.replace('-anchor','')].blur(); },
 	keydown   : function (oItem, e) { return this.all[oItem.id].keydown(e.keyCode); },
@@ -265,11 +265,14 @@ WebFXTreeAbstractNode.prototype.select = function() {
 }
 
 WebFXTreeAbstractNode.prototype.deSelect = function() {
+	//$("#debug").append("Deselecting" + this.id);
 	document.getElementById(this.id + '-anchor').className = '';
 	webFXTreeHandler.selected = null;
 }
 
 WebFXTreeAbstractNode.prototype.focus = function() {
+	//$("#debug").append("Focusing on" + this.id + ":" + (webFXTreeHandler.selected ? webFXTreeHandler.selected.id : "") + "<br/>");
+	//alert("Focusing on" + this.id + ":" + (webFXTreeHandler.selected ? webFXTreeHandler.selected.id : ""));
 	if ((webFXTreeHandler.selected) && (webFXTreeHandler.selected != this)) { webFXTreeHandler.selected.deSelect(); }
 	webFXTreeHandler.selected = this;
 	if ((this.openIcon) && (webFXTreeHandler.behavior != 'classic')) { document.getElementById(this.id + '-icon').src = this.openIcon; }
@@ -279,6 +282,7 @@ WebFXTreeAbstractNode.prototype.focus = function() {
 }
 
 WebFXTreeAbstractNode.prototype.blur = function() {
+	//alert("Blur");
 	if ((this.openIcon) && (webFXTreeHandler.behavior != 'classic')) { document.getElementById(this.id + '-icon').src = this.icon; }
 	document.getElementById(this.id + '-anchor').className = 'selected-inactive';
 }
@@ -717,7 +721,7 @@ WebFXTreeItem.prototype.toString = function (nItem, nItemCount) {
 	var str = "<div id=\"" + this.id + "\" ondblclick=\"webFXTreeHandler.toggle(this);\" class=\"webfx-tree-item\" onkeydown=\"return webFXTreeHandler.keydown(this, event)\">";
 	str += indent;
 	str += "<img id=\"" + this.id + "-plus\" src=\"" + ((this.folder)?((this.open)?((this.parentNode._last)?webFXTreeConfig.lMinusIcon:webFXTreeConfig.tMinusIcon):((this.parentNode._last)?webFXTreeConfig.lPlusIcon:webFXTreeConfig.tPlusIcon)):((this.parentNode._last)?webFXTreeConfig.lIcon:webFXTreeConfig.tIcon)) + "\" onclick=\"webFXTreeHandler.toggle(this);\">"
-	str += "<img id=\"" + this.id + "-icon\" class=\"webfx-tree-icon\" src=\"" + ((webFXTreeHandler.behavior == 'classic' && this.open)?this.openIcon:this.icon) + "\" onclick=\"javascript:onTreeItemSelect('" + this.id + "');" + this.action + "\"><a isContainer=\"" + isContainer + "\" entityId=\"" + this.myId + "\" parentEntityId=\"" + this.parentNode.myId + "\" href=\"javascript:void(" + this.myId + ");\" id=\"" + this.id + "-anchor\" oncontextmenu=\"return showContextMenu(" + this.myId + ", event)\" onclick=\"javascript:onTreeItemSelect('" + this.id + "');" + this.action + "\" onfocus=\"webFXTreeHandler.focus(this);\" style=\"" + styleInfo + "\">" + label + stateInfo + "</a></div>";
+	str += "<img id=\"" + this.id + "-icon\" class=\"webfx-tree-icon\" src=\"" + ((webFXTreeHandler.behavior == 'classic' && this.open)?this.openIcon:this.icon) + "\" onclick=\"onTreeItemSelect('" + this.id + "');" + this.action + "\"><a isContainer=\"" + isContainer + "\" entityId=\"" + this.myId + "\" parentEntityId=\"" + this.parentNode.myId + "\" href=\"javascript:void(" + this.myId + ");\" id=\"" + this.id + "-anchor\" oncontextmenu=\"return showContextMenu(" + this.myId + ", event)\" onclick=\"/*alert('clicked on" + this.id + "');*/ webFXTreeHandler.focus(this); onTreeItemSelect('" + this.id + "');" + this.action + "\" ondblclick=\"if(window.onTreeItemDblClick)onTreeItemDblClick('" + this.myId + "', '" + label + "');\" onfocus=\"/*alert('onfocus" + this.id + "');*/ webFXTreeHandler.focus(this);\" style=\"" + styleInfo + "\">" + label + stateInfo + "</a></div>";
 	str += "<div id=\"" + this.id + "-cont\" class=\"webfx-tree-container\" style=\"display: " + ((this.open)?'block':'none') + ";\">";
 	for (var i = 0; i < this.childNodes.length; i++) {
 		str += this.childNodes[i].toString(i,this.childNodes.length);

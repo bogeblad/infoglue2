@@ -75,6 +75,7 @@ public class DeleteContentAction extends InfoGlueAbstractAction
 	public String doExecute() throws Exception 
 	{
 		this.referenceBeanList = RegistryController.getController().getReferencingObjectsForContent(this.contentVO.getContentId());
+
 		if(this.referenceBeanList != null && this.referenceBeanList.size() > 0)
 		{
 		    return "showRelations";
@@ -91,8 +92,8 @@ public class DeleteContentAction extends InfoGlueAbstractAction
 			}
 
 	    	//ContentControllerProxy.getController().acDelete(this.getInfoGluePrincipal(), this.contentVO);	    
-	    	ContentControllerProxy.getController().acMarkForDelete(this.getInfoGluePrincipal(), this.contentVO);	    
-			
+    		ContentControllerProxy.getController().acMarkForDelete(this.getInfoGluePrincipal(), this.contentVO);	    
+
 	    	return "success";
 	    }
 	}	
@@ -106,8 +107,8 @@ public class DeleteContentAction extends InfoGlueAbstractAction
         	ContentVO contentVO = ContentController.getContentController().getContentVOWithId(this.contentVO.getContentId());
         	String contentName = contentVO.getName();
         	
-        	doExecute();
-        	
+            doExecute();
+            
     		String deleteContentInlineOperationDoneHeader = getLocalizedString(getLocale(), "tool.contenttool.deleteContentInlineOperationDoneHeader", contentName);
     		String deleteContentInlineOperationViewDeletedContentParentLinkText = getLocalizedString(getLocale(), "tool.contenttool.deleteContentInlineOperationViewDeletedContentParentLinkText");
     		String deleteContentInlineOperationViewDeletedContentParentTitleText = getLocalizedString(getLocale(), "tool.contenttool.deleteContentInlineOperationViewDeletedContentParentTitleText");
@@ -125,10 +126,8 @@ public class DeleteContentAction extends InfoGlueAbstractAction
         }
         catch(ConstraintException ce)
         {
+        	ce.printStackTrace();
         	logger.warn("An error occurred so we should not complete the transaction:" + ce);
-
-        	//parentContentVO = SiteNodeControllerProxy.getController().getSiteNodeVOWithId(parentSiteNodeId);
-
 			ce.setResult(INPUT + "V3");
 			throw ce;
         }

@@ -254,6 +254,19 @@ public class ViewAndCreateContentForServiceBindingAction extends InfoGlueAbstrac
 		return "success";
     }
        
+	/**
+	 * We first checks if there is a bound content linked - if not one is created in a special folder and
+	 * a new service binding is created to it. The content is then shown to the user for editing. Most of this method should 
+	 * be moved to an controller.
+	 */
+	
+    public String doInline() throws Exception
+    {		
+    	doExecute();
+    	
+    	return "successInline";
+    }
+    
 	public LanguageVO getInitialLanguageVO(Integer contentId, Database db) throws Exception
 	{
 		Map args = new HashMap();

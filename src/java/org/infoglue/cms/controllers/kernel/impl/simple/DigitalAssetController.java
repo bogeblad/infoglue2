@@ -55,6 +55,7 @@ import org.exolab.castor.jdo.QueryResults;
 import org.infoglue.cms.applications.common.VisualFormatter;
 import org.infoglue.cms.applications.databeans.OptimizationBeanList;
 import org.infoglue.cms.entities.content.Content;
+import org.infoglue.cms.entities.content.ContentVO;
 import org.infoglue.cms.entities.content.ContentVersion;
 import org.infoglue.cms.entities.content.ContentVersionVO;
 import org.infoglue.cms.entities.content.DigitalAsset;
@@ -728,12 +729,14 @@ public class DigitalAssetController extends BaseController
 
 		digitalAssetVOList = new ArrayList();
 		
-    	Content content = ContentController.getContentController().getContentWithId(contentId, db);
+    	//Content content = ContentController.getContentController().getContentWithId(contentId, db);
+    	ContentVO content = ContentController.getContentController().getContentVOWithId(contentId, db);
     	logger.info("content:" + content.getName());
-    	logger.info("repositoryId:" + content.getRepository().getId());
+    	logger.info("repositoryId:" + content.getRepositoryId());
     	logger.info("languageId:" + languageId);
-    	ContentVersion contentVersion = ContentVersionController.getContentVersionController().getLatestActiveContentVersion(contentId, languageId, db);
-    	LanguageVO masterLanguageVO = LanguageDeliveryController.getLanguageDeliveryController().getMasterLanguageForRepository(content.getRepository().getRepositoryId(), db);	
+    	//ContentVersion contentVersion = ContentVersionController.getContentVersionController().getLatestActiveContentVersion(contentId, languageId, db);
+    	ContentVersionVO contentVersion = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(contentId, languageId, db);
+    	LanguageVO masterLanguageVO = LanguageDeliveryController.getLanguageDeliveryController().getMasterLanguageForRepository(content.getRepositoryId(), db);	
 		
     	logger.info("contentVersion:" + contentVersion);
 		if(contentVersion != null)
@@ -762,7 +765,8 @@ public class DigitalAssetController extends BaseController
 		}
 		else if(useLanguageFallback && languageId.intValue() != masterLanguageVO.getId().intValue())
 		{
-		    contentVersion = ContentVersionController.getContentVersionController().getLatestActiveContentVersion(contentId, masterLanguageVO.getId(), db);
+		    //contentVersion = ContentVersionController.getContentVersionController().getLatestActiveContentVersion(contentId, masterLanguageVO.getId(), db);
+		    contentVersion = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(contentId, masterLanguageVO.getId(), db);
 	    	
 	    	logger.info("contentVersion:" + contentVersion);
 			if(contentVersion != null)
@@ -827,7 +831,7 @@ public class DigitalAssetController extends BaseController
 
         try
         {
-        	DigitalAsset digitalAsset = getSmallDigitalAssetWithId(digitalAssetId, db);
+        	DigitalAssetVO digitalAsset = getSmallDigitalAssetVOWithId(digitalAssetId, db);
 
 			if(digitalAsset != null)
 			{
@@ -840,7 +844,7 @@ public class DigitalAssetController extends BaseController
 				//String fileName = digitalAsset.getDigitalAssetId() + "_" + digitalAsset.getAssetFileName();
 				String fileName = digitalAsset.getDigitalAssetId() + "_" + digitalAsset.getAssetFileName();
 				String filePath = CmsPropertyHandler.getDigitalAssetPath() + File.separator + folderName;
-				boolean fileExists = dumpDigitalAsset(digitalAsset.getValueObject(), fileName, filePath, db);
+				boolean fileExists = dumpDigitalAsset(digitalAsset, fileName, filePath, db);
 				
 				//File outputFile = new File(filePath + File.separator + fileName);
 				if(!fileExists)
@@ -1163,7 +1167,7 @@ public class DigitalAssetController extends BaseController
 
         try
         {
-			DigitalAsset digitalAsset = getSmallDigitalAssetWithId(digitalAssetId, db);
+			DigitalAssetVO digitalAsset = getSmallDigitalAssetVOWithId(digitalAssetId, db);
 			if(digitalAsset != null)
 			{
 				String folderName = "" + (digitalAsset.getDigitalAssetId().intValue() / 1000);
@@ -1192,7 +1196,7 @@ public class DigitalAssetController extends BaseController
 					if(!originalFile.exists())
 					{
 						logger.info("No file there - let's try getting it again.");
-						String originalUrl = DigitalAssetController.getController().getDigitalAssetUrl(digitalAsset.getValueObject(), db);
+						String originalUrl = DigitalAssetController.getController().getDigitalAssetUrl(digitalAsset, db);
 						logger.info("originalUrl:" + originalUrl);
 						originalFile = new File(filePath + File.separator + fileName);
 					}
@@ -1338,8 +1342,7 @@ public class DigitalAssetController extends BaseController
         }
         catch(Exception e)
         {
-            logger.info("An error occurred when we tried to cache and show the digital asset:" + e);
-            e.printStackTrace();
+            logger.warn("An error occurred when we tried to cache and show the digital asset:" + e.getMessage());
             rollbackTransaction(db);
             throw new SystemException(e.getMessage());
         }
@@ -1353,26 +1356,36 @@ public class DigitalAssetController extends BaseController
 	   	
 	public static String getDigitalAssetUrl(Integer contentId, Integer languageId, String assetKey, boolean useLanguageFallback, Database db) throws SystemException, Bug, Exception
     {
+		if(contentId == null || assetKey == null)
+		{
+			logger.warn("Asset key was null or contentId was null:" + contentId + ":" + assetKey);
+		}
+		
+
     	String assetUrl = null;
 
-    	Content content = ContentController.getContentController().getContentWithId(contentId, db);
+    	ContentVO contentVO = ContentController.getContentController().getContentVOWithId(contentId, db);
+    	
     	if(logger.isInfoEnabled())
     	{
-	    	logger.info("content:" + content.getName());
-	    	logger.info("repositoryId:" + content.getRepository().getId());
+	    	logger.info("content:" + contentVO.getName());
+	    	logger.info("repositoryId:" + contentVO.getRepositoryId());
 	    	logger.info("languageId:" + languageId);
 	    	logger.info("assetKey:" + assetKey);
     	}
     	
-		String fromEncoding = CmsPropertyHandler.getAssetKeyFromEncoding();
-		if(fromEncoding == null)
-			fromEncoding = "iso-8859-1";
-		
-		String toEncoding = CmsPropertyHandler.getAssetKeyToEncoding();
-		if(toEncoding == null)
-			toEncoding = "utf-8";
-		
-		assetKey = new String(assetKey.getBytes(fromEncoding), toEncoding);
+		if(assetKey != null)
+		{
+			String fromEncoding = CmsPropertyHandler.getAssetKeyFromEncoding();
+			if(fromEncoding == null)
+				fromEncoding = "iso-8859-1";
+			
+			String toEncoding = CmsPropertyHandler.getAssetKeyToEncoding();
+			if(toEncoding == null)
+				toEncoding = "utf-8";
+			
+			assetKey = new String(assetKey.getBytes(fromEncoding), toEncoding);
+		}
 		
 		StringBuffer sb = new StringBuffer(256);
 			
@@ -1389,12 +1402,13 @@ public class DigitalAssetController extends BaseController
         if(!sb.toString().endsWith("/"))
         	sb.append("/");
 
-    	ContentVersion contentVersion = ContentVersionController.getContentVersionController().getLatestActiveContentVersion(contentId, languageId, db);
-    	LanguageVO masterLanguageVO = LanguageDeliveryController.getLanguageDeliveryController().getMasterLanguageForRepository(content.getRepository().getRepositoryId(), db);	
-		logger.info("contentVersion:" + contentVersion);
-		if(contentVersion != null)
+    	ContentVersionVO contentVersionVO = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(contentId, languageId, db);
+    	LanguageVO masterLanguageVO = LanguageDeliveryController.getLanguageDeliveryController().getMasterLanguageForRepository(contentVO.getRepositoryId(), db);	
+
+		logger.info("contentVersionVO:" + contentVersionVO);
+		if(contentVersionVO != null)
 		{
-			DigitalAssetVO digitalAssetVO = getLatestDigitalAssetVO(contentVersion.getContentVersionId(), assetKey, db);
+			DigitalAssetVO digitalAssetVO = getLatestDigitalAssetVO(contentVersionVO.getContentVersionId(), assetKey, db);
 			logger.info("digitalAssetVO:" + digitalAssetVO);
 			if(digitalAssetVO != null)
 			{
@@ -1420,12 +1434,12 @@ public class DigitalAssetController extends BaseController
 		}
 		else if(useLanguageFallback && languageId.intValue() != masterLanguageVO.getId().intValue())
 		{
-		    contentVersion = ContentVersionController.getContentVersionController().getLatestActiveContentVersion(contentId, masterLanguageVO.getId(), db);
+			contentVersionVO = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(contentId, masterLanguageVO.getId(), db);
 	    	
-	    	logger.info("contentVersion:" + contentVersion);
-			if(contentVersion != null)
+	    	logger.info("contentVersion:" + contentVersionVO);
+			if(contentVersionVO != null)
 			{
-			    DigitalAssetVO digitalAssetVO = getLatestDigitalAssetVO(contentVersion.getId(), assetKey, db);
+			    DigitalAssetVO digitalAssetVO = getLatestDigitalAssetVO(contentVersionVO.getId(), assetKey, db);
 				logger.info("digitalAssetVO:" + digitalAssetVO);
 				if(digitalAssetVO != null)
 				{
@@ -1444,7 +1458,7 @@ public class DigitalAssetController extends BaseController
 				}
 			}
 		}
-		
+
 		return assetUrl;
     }
 
@@ -1626,14 +1640,15 @@ public class DigitalAssetController extends BaseController
         try
         {
 			DigitalAsset mediumDigitalAsset = getMediumDigitalAssetWithIdReadOnly(digitalAssetId, db);
+
 			if(mediumDigitalAsset.getContentVersions() != null && mediumDigitalAsset.getContentVersions().size() > 0)
 			{
 				ContentVersion cv = (ContentVersion)mediumDigitalAsset.getContentVersions().iterator().next();
 				if(cv != null)
 					contentId = cv.getValueObject().getContentId();
 			}
-			            
-            commitTransaction(db);
+			   
+			rollbackTransaction(db);
         }
         catch(Exception e)
         {

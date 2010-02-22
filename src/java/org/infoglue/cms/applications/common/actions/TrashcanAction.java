@@ -35,10 +35,12 @@ import org.apache.log4j.Logger;
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.CategoryController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentController;
+import org.infoglue.cms.controllers.kernel.impl.simple.ContentControllerProxy;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentTypeDefinitionController;
 import org.infoglue.cms.controllers.kernel.impl.simple.InterceptionPointController;
 import org.infoglue.cms.controllers.kernel.impl.simple.RepositoryController;
 import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeController;
+import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeControllerProxy;
 import org.infoglue.cms.controllers.kernel.impl.simple.SubscriptionController;
 import org.infoglue.cms.entities.content.Content;
 import org.infoglue.cms.entities.content.ContentVO;
@@ -64,21 +66,22 @@ public class TrashcanAction extends InfoGlueAbstractAction
 
 	private static final long serialVersionUID = 1L;
 	
-	private String userSessionKey;
-
 	//private static SubscriptionController subscriptionsController = SubscriptionController.getController();
 	private List<RepositoryVO> repositoriesMarkedForDeletion = new ArrayList<RepositoryVO>();
 	private List<ContentVO> contentsMarkedForDeletion = new ArrayList<ContentVO>();
 	private List<SiteNodeVO> siteNodesMarkedForDeletion = new ArrayList<SiteNodeVO>();
 	
+	private Integer repositoryFilter = null;
+	
 	private String entity = "";
 	private Integer entityId = -1;
+	
 	
 	protected String doExecute() throws Exception
     {
 		this.repositoriesMarkedForDeletion = RepositoryController.getController().getRepositoryVOListMarkedForDeletion();
-		this.contentsMarkedForDeletion = ContentController.getContentController().getContentVOListMarkedForDeletion();
-		this.siteNodesMarkedForDeletion = SiteNodeController.getController().getSiteNodeVOListMarkedForDeletion();
+		this.contentsMarkedForDeletion = ContentController.getContentController().getContentVOListMarkedForDeletion(repositoryFilter);
+		this.siteNodesMarkedForDeletion = SiteNodeController.getController().getSiteNodeVOListMarkedForDeletion(repositoryFilter);
 		
 		return Action.SUCCESS;
     }
@@ -93,6 +96,76 @@ public class TrashcanAction extends InfoGlueAbstractAction
 				ContentController.getContentController().restoreContent(new Integer(entityId), getInfoGluePrincipal());
 			else if(entity.equalsIgnoreCase("SiteNode"))
 				SiteNodeController.getController().restoreSiteNode(new Integer(entityId), getInfoGluePrincipal());
+		}
+		
+		return doExecute();
+    }
+
+	public String doDelete() throws Exception
+    {
+		validateSecurityCode();
+		
+		if(entity != null && !entity.equals("") && entityId != null && !entityId.equals(""))
+		{
+			if(entity.equalsIgnoreCase("Repository"))
+				RepositoryController.getController().delete(new Integer(entityId), getInfoGluePrincipal().getName(), true, getInfoGluePrincipal());
+			else if(entity.equalsIgnoreCase("Content"))
+				ContentController.getContentController().delete(new Integer(entityId), getInfoGluePrincipal(), true);
+			else if(entity.equalsIgnoreCase("SiteNode"))
+				SiteNodeController.getController().delete(new Integer(entityId), getInfoGluePrincipal());
+		}
+		
+		return doExecute();
+    }
+
+	public String doEmpty() throws Exception
+    {
+		validateSecurityCode();
+
+		this.repositoriesMarkedForDeletion = RepositoryController.getController().getRepositoryVOListMarkedForDeletion();
+		this.contentsMarkedForDeletion = ContentController.getContentController().getContentVOListMarkedForDeletion(this.repositoryFilter);
+		this.siteNodesMarkedForDeletion = SiteNodeController.getController().getSiteNodeVOListMarkedForDeletion(this.repositoryFilter);
+
+		Iterator<SiteNodeVO> siteNodesMarkedForDeletionIterator = siteNodesMarkedForDeletion.iterator();
+		while(siteNodesMarkedForDeletionIterator.hasNext())
+		{
+			SiteNodeVO siteNodeVO = siteNodesMarkedForDeletionIterator.next();
+			try
+			{
+				SiteNodeControllerProxy.getSiteNodeControllerProxy().acDelete(getInfoGluePrincipal(), siteNodeVO);
+			}
+			catch (Exception e) 
+			{
+				logger.error("Could not delete page[" + siteNodeVO.getName() + "]:" + e.getMessage(), e);
+			}
+		}
+
+		Iterator<ContentVO> contentsMarkedForDeletionIterator = contentsMarkedForDeletion.iterator();
+		while(contentsMarkedForDeletionIterator.hasNext())
+		{
+			ContentVO contentVO = contentsMarkedForDeletionIterator.next();
+			try
+			{
+				ContentControllerProxy.getController().acDelete(getInfoGluePrincipal(), contentVO);
+			}
+			catch (Exception e) 
+			{
+				logger.error("Could not delete content[" + contentVO.getName() + "]:" + e.getMessage(), e);
+			}
+		}
+
+		Iterator<RepositoryVO> repositoriesMarkedForDeletionIterator = repositoriesMarkedForDeletion.iterator();
+		while(repositoriesMarkedForDeletionIterator.hasNext())
+		{
+			RepositoryVO repositoryVO = repositoriesMarkedForDeletionIterator.next();
+			try
+			{
+				RepositoryController.getController().delete(repositoryVO, getInfoGluePrincipal().getName(), true, getInfoGluePrincipal());
+			}
+			catch (Exception e) 
+			{
+				logger.error("Could not delete repository[" + repositoryVO.getName() + "]:" + e.getMessage(), e);
+			}
 		}
 		
 		return doExecute();
@@ -133,5 +206,14 @@ public class TrashcanAction extends InfoGlueAbstractAction
 		this.entityId = entityId;
 	}
     
-	
+	public Integer getRepositoryFilter()
+	{
+		return repositoryFilter;
+	}
+
+	public void setRepositoryFilter(Integer repositoryFilter)
+	{
+		this.repositoryFilter = repositoryFilter;
+	}
+
 }

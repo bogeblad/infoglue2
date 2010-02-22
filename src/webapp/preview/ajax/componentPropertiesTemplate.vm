@@ -18,7 +18,9 @@
 	<link rel="stylesheet" type="text/css" href="css/cms.css" />
 
 	<script type="text/javascript" src="/infoglueDeliverWorking/script/ajaxComponentEditor.js"></script>
-	<script type="text/javascript" src="/infoglueDeliverWorking/script/jquery/jquery-1.3.2.min.js"></script>
+
+	#includeLatestJQuery()
+
 	<script type="text/javascript" src="/infoglueDeliverWorking/applications/FCKEditor/fckeditor.js"></script>
 	<script type="text/javascript" src="/infoglueDeliverWorking/applications/jscalendar/calendar.js"></script>
 	<script type="text/javascript" src="/infoglueDeliverWorking/applications/jscalendar/lang/calendar-en.js"></script>

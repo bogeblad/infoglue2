@@ -1,0 +1,46 @@
+#define($extraMarkup)
+
+#end
+#beginLightCommonToolV3Impl("tool.contenttool.contentVersionAsXMLHeader" "" "" false true false $extraMarkup)
+
+#lightMenuToolbar("" $buttons $rightButtons)
+
+<div style="clear: both;" onfocus="this.blur();"></div>
+
+<h3>$ui.getString("tool.contenttool.contentVersionAsXMLHeader")</h3>
+ 
+<div onfocus="this.blur();">
+
+	<div class="inlineTabDiv" onfocus="this.blur();">
+	
+	<form method="POST" name="editForm" action="UpdateContentVersion!updateVersionXMLV3.action">
+	<table width="300" border="0" cellpadding="0" cellspacing="0">
+		<tr>
+			<td colspan="3">
+				<textarea name="versionValue" style="width: 800px; height: 500px">$formatter.escapeHTML($!contentVersionVO.versionValue)</textarea>
+			</td>
+		</tr>		
+		<tr>
+			<td colspan="3"><img src="images/trans.gif" height="10" width="1"></td>
+		</tr>
+		<tr>
+			<td colspan="3"><img src="images/trans.gif" height="10" width="1"></td>
+		</tr>
+		<tr>
+			<input type="hidden" name="contentId" value="$!contentId">
+			<input type="hidden" name="repositoryId" value="$!repositoryId">
+			<input type="hidden" name="languageId" value="$!contentVersionVO.languageId">
+			<input type="hidden" name="contentVersionId" value="$!contentVersionId">
+			<td colspan="3">
+				<input type="image" src="$ui.getString("images.contenttool.buttons.save")" width="50" height="25" border="0">
+			</td>
+		</tr>		
+	</table>
+	</form>
+		
+	</div>
+</div>
+
+#lightFooterToolbar($footerButtons)
+
+#endCommonToolV3()

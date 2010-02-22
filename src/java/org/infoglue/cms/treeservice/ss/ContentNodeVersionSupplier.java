@@ -97,7 +97,7 @@ public class ContentNodeVersionSupplier extends BaseNodeSupplier
 		List l = null;
 		try
 		{
-			l = ContentController.getContentController().getContentChildrenVOList(parentNode);
+			l = ContentController.getContentController().getContentChildrenVOList(parentNode, null, false);
 		}
 		catch (ConstraintException e)
 		{

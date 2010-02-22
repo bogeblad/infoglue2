@@ -117,8 +117,8 @@
 	
 		function submitForm()
 		{
-			var $boxes = $('input[type=checkbox]'); 
-			if($boxes.filter(':checked').length < 1)
+			var boxes = $('input[type=checkbox]'); 
+			if(boxes.filter(':checked').length < 1)
 				alert("$ui.getString("tool.managementtool.deploymentQuick.mustMarkAtLeastOneLabel")");
 			else
 				document.editForm.submit();
@@ -127,7 +127,7 @@
 		$(document).ready(function(){
 		
 			#foreach($deviatingContent in $deviatingContents)
-				#if($deviatingContent.remoteVersion)
+				#if($deviatingContent.remoteVersion && $deviatingContent.localVersion)
 					#set($remoteVersions = $!converter.getListFromArray($!deviatingContent.remoteVersion.versions))
 					#set($localVersions = $!converter.getListFromArray($!deviatingContent.localVersion.versions))
 					
@@ -197,6 +197,14 @@
 					<td style="padding-left: 16px" colspan="3">
 						<input type="checkbox" id="missingContentId" name="missingContentId" value="$deviatingContent.localVersion.id"/> 
 						Missing remote version of $deviatingContent.localVersion.name <br/> ($deviatingContent.localVersion.fullPath)
+					<td width="20">&nbsp;</td>
+				  </tr>
+	 			  #set( $rowCount = $rowCount + 1)
+				#elseif(!$deviatingContent.localVersion)
+				  <tr $class>
+					<td style="padding-left: 16px" colspan="3">
+						<input type="checkbox" id="missingRemoteContentPath" name="missingRemoteContentPath" value="$deviatingContent.remoteVersion.fullPath"/> 
+						Missing local version of $deviatingContent.remoteVersion.name <br/> ($deviatingContent.remoteVersion.fullPath)
 					<td width="20">&nbsp;</td>
 				  </tr>
 	 			  #set( $rowCount = $rowCount + 1)

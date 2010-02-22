@@ -70,6 +70,14 @@ public class RepositoryController extends BaseController
         return ent.getValueObject();
     }     
 
+    public Repository create(RepositoryVO vo, Database db) throws ConstraintException, SystemException, Exception
+    {
+        Repository ent = new RepositoryImpl();
+        ent.setValueObject(vo);
+        ent = (Repository) createEntity(ent, db);
+        return ent;
+    }     
+
 	/**
 	 * This method removes a Repository from the system and also cleans out all depending repositoryLanguages.
 	 */
@@ -200,6 +208,18 @@ public class RepositoryController extends BaseController
     public void delete(RepositoryVO repositoryVO, String userName, InfoGluePrincipal infoGluePrincipal) throws ConstraintException, SystemException
     {
     	delete(repositoryVO, userName, false, infoGluePrincipal);
+    }
+
+    
+	/**
+	 * This method removes a Repository from the system and also cleans out all depending repositoryLanguages.
+	 */
+	
+    public void delete(Integer repositoryId, String userName, boolean forceDelete, InfoGluePrincipal infoGluePrincipal) throws ConstraintException, SystemException
+    {
+    	RepositoryVO repositoryVO = getRepositoryVOWithId(repositoryId);
+    	
+    	delete(repositoryVO, userName, forceDelete, infoGluePrincipal);
     }
     
 	/**
@@ -353,9 +373,7 @@ public class RepositoryController extends BaseController
 		{
 			beginTransaction(db);
 
-			Repository repository = getRepositoryWithName(name, db);
-			if(repository != null)
-				repositoryVO = repository.getValueObject();
+			repositoryVO = getRepositoryVOWithName(name, db);
 			
 			commitTransaction(db);
 		} 
@@ -368,7 +386,46 @@ public class RepositoryController extends BaseController
 		
 		return repositoryVO;	
 	}
-	
+
+	/**
+	 * Returns the Repository with the given name fetched within a given transaction.
+	 * 
+	 * @param name
+	 * @param db
+	 * @return
+	 * @throws SystemException
+	 * @throws Bug
+	 */
+
+	public RepositoryVO getRepositoryVOWithName(String name, Database db) throws SystemException, Bug
+	{
+		RepositoryVO repositoryVO = null;
+		
+		try
+		{
+			OQLQuery oql = db.getOQLQuery("SELECT f FROM org.infoglue.cms.entities.management.impl.simple.RepositoryImpl f WHERE f.name = $1");
+			oql.bind(name);
+			
+			QueryResults results = oql.execute(Database.READONLY);
+			this.logger.info("Fetching entity in read/write mode" + name);
+
+			if (results.hasMore()) 
+			{
+				Repository repository = (Repository)results.next();
+				repositoryVO = repository.getValueObject();
+			}
+			
+			results.close();
+			oql.close();
+		}
+		catch(Exception e)
+		{
+			throw new SystemException("An error occurred when we tried to fetch a named repository. Reason:" + e.getMessage(), e);    
+		}
+		
+		return repositoryVO;		
+	}
+
 	/**
 	 * Returns the Repository with the given name fetched within a given transaction.
 	 * 
@@ -474,7 +531,7 @@ public class RepositoryController extends BaseController
 			OQLQuery oql = db.getOQLQuery("SELECT r FROM org.infoglue.cms.entities.management.impl.simple.RepositoryImpl r WHERE r.isDeleted = $1 ORDER BY r.repositoryId");
 			oql.bind(true);
 			
-			QueryResults results = oql.execute();
+			QueryResults results = oql.execute(Database.READONLY);
 			if (results.hasMore()) 
             {
                 Repository repository = (Repository)results.next();

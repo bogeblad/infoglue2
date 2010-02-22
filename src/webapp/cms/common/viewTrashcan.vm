@@ -1,6 +1,11 @@
-#beginLightCommonToolV3("tool.common.subscriptions.header" "" "" false true $!disableCloseButton)
+#beginLightCommonToolV3("tool.common.trashcan.title" "" "" false true $!disableCloseButton)
 
 <link rel="stylesheet" type="text/css" href="css/cms.css" />
+
+<style type="text/css" title="currentStyle">
+	@import "script/jqueryplugins/dataTables/media/css/ig_table.css";
+</style>
+<script type="text/javascript" language="javascript" src="script/jqueryplugins/dataTables/media/js/jquery.dataTables.min.js"></script>
 
 <script type="text/javascript">
 <!--
@@ -8,7 +13,7 @@
 	{
 		document.editForm.submit();
 	}
-	
+		
 	$(document).ready(function(){
 		#set($selectedCode = ", selected: 0")
 		#if("$entity" == "Content")
@@ -17,68 +22,205 @@
 			#set($selectedCode = ", selected: 2 ")
 		#end
 		$("#tabsContainer").tabs({ show:function() { resizeInlineTabDivs();}$selectedCode });
+
+		$('#repositories').dataTable({
+				"sPaginationType": "full_numbers",
+			    "iDisplayLength": 20,
+			    "bAutoWidth": false,
+			    "oLanguage": {
+							"sLengthMenu": "$ui.getString("tool.common.datatable.sLengthMenu")",
+							"sZeroRecords": "$ui.getString("tool.common.datatable.sZeroRecords")",
+							"sInfo": "$ui.getString("tool.common.datatable.sInfo")",
+							"sInfoEmtpy": "$ui.getString("tool.common.datatable.sInfoEmtpy")",
+							"sInfoFiltered": "$ui.getString("tool.common.datatable.sInfoFiltered")",
+							"sSearch": "$ui.getString("tool.common.datatable.sSearch")",
+							"oPaginate": {
+								"sFirst":    "$ui.getString("tool.common.datatable.oPaginate.sFirst")",
+								"sPrevious": "$ui.getString("tool.common.datatable.oPaginate.sPrevious")",
+								"sNext":     "$ui.getString("tool.common.datatable.oPaginate.sNext")",
+								"sLast":     "$ui.getString("tool.common.datatable.oPaginate.sLast")"
+							}
+						}
+			});
+			
+		$('#contents').dataTable({
+				"sPaginationType": "full_numbers",
+			    "iDisplayLength": 20,
+			    "bAutoWidth": false,
+			    "oLanguage": {
+							"sLengthMenu": "$ui.getString("tool.common.datatable.sLengthMenu")",
+							"sZeroRecords": "$ui.getString("tool.common.datatable.sZeroRecords")",
+							"sInfo": "$ui.getString("tool.common.datatable.sInfo")",
+							"sInfoEmtpy": "$ui.getString("tool.common.datatable.sInfoEmtpy")",
+							"sInfoFiltered": "$ui.getString("tool.common.datatable.sInfoFiltered")",
+							"sSearch": "$ui.getString("tool.common.datatable.sSearch")",
+							"oPaginate": {
+								"sFirst":    "$ui.getString("tool.common.datatable.oPaginate.sFirst")",
+								"sPrevious": "$ui.getString("tool.common.datatable.oPaginate.sPrevious")",
+								"sNext":     "$ui.getString("tool.common.datatable.oPaginate.sNext")",
+								"sLast":     "$ui.getString("tool.common.datatable.oPaginate.sLast")"
+							}
+						}
+			});
+			
+		$('#pages').dataTable({
+				"sPaginationType": "full_numbers",
+			    "iDisplayLength": 20,
+			    "bAutoWidth": false,
+			    "oLanguage": {
+							"sLengthMenu": "$ui.getString("tool.common.datatable.sLengthMenu")",
+							"sZeroRecords": "$ui.getString("tool.common.datatable.sZeroRecords")",
+							"sInfo": "$ui.getString("tool.common.datatable.sInfo")",
+							"sInfoEmtpy": "$ui.getString("tool.common.datatable.sInfoEmtpy")",
+							"sInfoFiltered": "$ui.getString("tool.common.datatable.sInfoFiltered")",
+							"sSearch": "$ui.getString("tool.common.datatable.sSearch")",
+							"oPaginate": {
+								"sFirst":    "$ui.getString("tool.common.datatable.oPaginate.sFirst")",
+								"sPrevious": "$ui.getString("tool.common.datatable.oPaginate.sPrevious")",
+								"sNext":     "$ui.getString("tool.common.datatable.oPaginate.sNext")",
+								"sLast":     "$ui.getString("tool.common.datatable.oPaginate.sLast")"
+							}
+						}
+			});
+			
+		$('#filterRepositorySelect').change(function () {
+          	$("#filterRepositorySelect option:selected").each(function () {
+                document.location.href = "Trashcan.action?repositoryFilter=" + $(this).val();
+            	});
+        	});
 	});
 	
 //-->
 </script>
 
+#set($repositories = $repositoriesMarkedForDeletion)
+#set($contents = $contentsMarkedForDeletion)
+#set($siteNodes = $siteNodesMarkedForDeletion)
+
 #lightMenuToolbar("" $buttons $rightButtons)
 
 <div style="clear: both;"></div>
 
-<h3 style="text-indent: 16px;">
+<h3>
 	$ui.getString("tool.common.trashcan.title")
 	#if($errorMessage && $!errorMessage != "")<span style="color:red">$errorMessage</span>#end
 </h3>
 
+<div style="position: absolute; z-index: 50; top: 90px; right: 20px;">
+	<label for="filterRepositorySelect">$ui.getString("tool.common.trashcanDialog.repositoryFilterLabel")</label>
+	<select name="filterRepositorySelect" id="filterRepositorySelect">
+		<option value="-1">$ui.getString("tool.common.trashcanDialog.noFilterLabel")</option>
+		#foreach($repositoryVO in $authorizedRepositoryVOList)
+		<option value="$repositoryVO.id" #if($repositoryVO.id == $repositoryFilter) selected="selected"#end>$repositoryVO.name</option>
+		#end
+	</select>
+</div>
+
 <div onfocus="this.blur();">
-    
+
 	<form method="POST" name="editForm" action="Trashcan!delete.action">
 		<input type="hidden" name="returnAddress" value="$returnAddress"/>
 		<input type="hidden" name="userSessionKey" value="$userSessionKey"/>
-		
-		<div id="tabsContainer" class="flora">      
-		
-			<ul>
-		        <li><a href="#repositoriesTab"><span>$ui.getString("tool.common.trashcanDialog.repositoriesTabLabel")</span></a></li>	        
-		        <li><a href="#contentsTab"><span>$ui.getString("tool.common.trashcanDialog.contentsTabLabel")</span></a></li>	        
-		        <li><a href="#siteNodesTab"><span>$ui.getString("tool.common.trashcanDialog.pagesTabLabel")</span></a></li>	        
-		    </ul>
-		
-			<div id="repositoriesTab" class="inlineTabDiv">
-				##<h4 style="margin-left: 0px;">Repositories</h4>
-				<ul>
-				#foreach($repositoryVO in $repositoriesMarkedForDeletion)
-					<li class="repository" style="border-bottom: 1px solid #ddd; margin-top: 4px;">
-						$repositoryVO.name <a href="Trashcan!restore.action?entity=Repository&entityId=$repositoryVO.id" style="float: right;">Restore</a>
-					</li>
-				#end
-				</ul>
-			</div>
-			<div id="contentsTab" class="inlineTabDiv">
-				##<h4 style="margin-left: 0px;">Contents</h4>
-				<ul>
-				#foreach($contentVO in $contentsMarkedForDeletion)
-					<li class="content" style="border-bottom: 1px solid #ddd; margin-top: 4px;">
-						$contentVO.name <a href="Trashcan!restore.action?entity=Content&entityId=$contentVO.id" style="float: right;">Restore</a>
-					</li>
-				#end
-				</ul>
-			</div>
-			<div id="siteNodesTab" class="inlineTabDiv">
-				##<h4 style="margin-left: 0px;">Pages</h4>
-				<ul>
-				#foreach($siteNodeVO in $siteNodesMarkedForDeletion)
-					<li class="page" style="border-bottom: 1px solid #ddd; margin-top: 4px;">
-						$siteNodeVO.name <a href="Trashcan!restore.action?entity=SiteNode&entityId=$siteNodeVO.id" style="float: right;">Restore</a>
-					</li>
-				#end
-				</ul>
-			</div>
+		<input type="hidden" name="filterRepositorySelect" value="$filterRepositorySelect"/>
+    
+	<div id="tabsContainer" class="flora">      
+	
+		<ul>
+	        <li><a href="#repositoriesTab"><span>$ui.getString("tool.common.trashcanDialog.repositoriesTabLabel") ($repositories.size())</span></a></li>	        
+	        <li><a href="#contentsTab"><span>$ui.getString("tool.common.trashcanDialog.contentsTabLabel") ($contents.size())</span></a></li>	        
+	        <li><a href="#siteNodesTab"><span>$ui.getString("tool.common.trashcanDialog.pagesTabLabel") ($siteNodes.size())</span></a></li>	        
+	    </ul>
+	
+		<div id="repositoriesTab" class="inlineTabDiv">
+			<table cellpadding="0" cellspacing="0" border="0" class="display" id="repositories" width="100%">
+				<thead>
+					<tr>
+						<th>$ui.getString("tool.common.trashcanDialog.repositoriesTabLabel")</th>
+						<th></th>
+						<th></th>
+					</tr>
+				</thead>
+				<tbody>
+				
+					#foreach($repositoryVO in $repositoriesMarkedForDeletion)
+						<tr>
+							<td>
+								$repositoryVO.name
+							</td>
+							<td>
+								<a href="Trashcan!restore.action?entity=Repository&entityId=$repositoryVO.id" style="float: right;">Restore</a>
+							</td>
+							<td>
+								<a href="Trashcan!delete.action?entity=Repository&entityId=$repositoryVO.id&igSecurityCode=$securityCode" style="float: right;">Delete</a>
+							</td>
+						</tr>
+					#end
+					
+				</tbody>
+			</table>
+		</div>
 
-	</form>
-		
-</div>
+		<div id="contentsTab" class="inlineTabDiv">
+			<table cellpadding="0" cellspacing="0" border="0" class="display" id="contents" width="100%">
+				<thead>
+					<tr>
+						<th>$ui.getString("tool.common.trashcanDialog.contentsTabLabel")</th>
+						<th></th>
+						<th></th>
+					</tr>
+				</thead>
+				<tbody>
+				
+					#foreach($contentVO in $contents)
+						<tr>
+							<td>
+								$this.getContentPath($contentVO.id).replaceAll(' ', '&nbsp;').replaceAll('/', '&nbsp;/&nbsp;')
+							</td>
+							<td>
+								<a href="Trashcan!restore.action?entity=Content&entityId=$contentVO.id" style="float: right;">Restore</a>
+							</td>
+							<td>
+								<a href="Trashcan!delete.action?entity=Content&entityId=$contentVO.id&igSecurityCode=$securityCode" style="float: right;">Delete</a>
+							</td>
+						</tr>
+					#end
+					
+				</tbody>
+			</table>
+		</div>
+
+		<div id="siteNodesTab" class="inlineTabDiv">
+			<table cellpadding="0" cellspacing="0" border="0" class="display" id="pages" width="100%">
+				<thead>
+					<tr>
+						<th>$ui.getString("tool.common.trashcanDialog.pagesTabLabel")</th>
+						<th></th>
+						<th></th>
+					</tr>
+				</thead>
+				<tbody>
+				
+					#foreach($siteNodeVO in $siteNodes)
+						<tr>
+							<td>
+								$this.getSiteNodePath($siteNodeVO.id).replaceAll(' ', '&nbsp;').replaceAll('/', '&nbsp;/&nbsp;')
+							</td>
+							<td>
+								<a href="Trashcan!restore.action?entity=SiteNode&entityId=$siteNodeVO.id" style="float: right;">Restore</a>
+							</td>
+							<td>
+								<a href="Trashcan!delete.action?entity=SiteNode&entityId=$siteNodeVO.id&igSecurityCode=$securityCode" style="float: right;">Delete</a>
+							</td>
+						</tr>
+					#end
+					
+				</tbody>
+			</table>
+		</div>
+				
+	</div>
+
+	</form>		
 
 #lightFooterToolbar($footerButtons)
 

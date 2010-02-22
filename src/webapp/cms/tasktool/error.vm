@@ -61,7 +61,7 @@
 	</style> 
 	
 	<link type="text/css" href="script/jqueryplugins/ui/jquery-ui-1.7.2.full.redmond/css/redmond/jquery-ui-1.7.2.custom.css" rel="stylesheet" />	
-	<script type="text/javascript" src="script/jquery/jquery-1.3.2.min.js"></script>
+	<script type="text/javascript" src="script/jquery/jquery-1.4.min.js"></script>
 	<script type="text/javascript" src="script/jqueryplugins/ui/jquery-ui-1.7.2.full.redmond/js/jquery-ui-1.7.2.custom.min.js"></script>
 
 	<script type="text/javascript">
@@ -139,9 +139,9 @@
 
 <div id="reportBugDialog" title="Report bug">
 	<form id="bugForm" method="post" action="http://www.infoglue.org/bugs/bugreport" target="_blank">
-		<input type="hidden" name="currentUrl" id="currentUrl" value="$getCurrentURL"/>
+		<input type="hidden" name="currentUrl" id="currentUrl" value="$currentURL"/>
 		<input type="hidden" name="referer" id="referer" value="$request.getHeader("Referer")"/>
-		<input type="hidden" name="principal" id="principal" value="$infoGluePrincipal"/>
+		<input type="hidden" name="principal" id="principal" value="#if($infoGluePrincipal)$!infoGluePrincipal#end"/>
 		<input type="hidden" name="userAgent" id="userAgent" value="$request.getHeader("User-Agent")" />
 		<input type="hidden" name="stacktrace" id="stacktrace" value="$error.getCauseStackTrace()"/>
 		<input type="hidden" name="infoglueVersion" id="$infoGlueVersion - $infoGlueVersionReleaseDate" />

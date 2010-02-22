@@ -76,6 +76,7 @@ public class ViewContentAction extends InfoGlueAbstractAction
    	private Integer languageId 				= null;
    	private String stay 					= null;
 	private List referenceBeanList 			= new ArrayList();
+	private Boolean inline					= false;
 
     private ContentVO contentVO;
 
@@ -427,13 +428,23 @@ public class ViewContentAction extends InfoGlueAbstractAction
 	public LanguageVO getInitialLanguageVO() throws Exception
 	{
 		String initialLanguageId = InfoGlueSettingsController.getInfoGlueSettingsController().getProperty("content_" + this.getContentId() + "_initialLanguageId", "applicationProperties", null, false, false, false, false, null);
-		ContentVO parentContentVO = ContentController.getContentController().getParentContent(this.getContentId()); 
+		ContentVO contentVO = ContentController.getContentController().getContentVOWithId(this.getContentId());
+		
+		while((initialLanguageId == null || initialLanguageId.equalsIgnoreCase("-1")) && contentVO.getParentContentId() != null)
+	    {
+		    initialLanguageId = InfoGlueSettingsController.getInfoGlueSettingsController().getProperty("content_" + contentVO.getParentContentId() + "_initialLanguageId", "applicationProperties", null, false, false, false, false, null);
+		    contentVO = ContentController.getContentController().getContentVOWithId(contentVO.getParentContentId());
+	    }
+	    
+		/*
+		ContentController.getContentController().getParentContent(this.getContentId()); 
 	    while((initialLanguageId == null || initialLanguageId.equalsIgnoreCase("-1")) && parentContentVO != null)
 	    {
 	    	//initialLanguageId = ps.getString("content_" + parentContentVO.getId() + "_initialLanguageId");
 		    initialLanguageId = InfoGlueSettingsController.getInfoGlueSettingsController().getProperty("content_" + parentContentVO.getId() + "_initialLanguageId", "applicationProperties", null, false, false, false, false, null);
 	        parentContentVO = ContentController.getContentController().getParentContent(parentContentVO.getId()); 
 	    }
+	    */
 	    
 	    if(initialLanguageId != null && !initialLanguageId.equals("") && !initialLanguageId.equals("-1"))
 	        return LanguageController.getController().getLanguageVOWithId(new Integer(initialLanguageId));
@@ -451,11 +462,21 @@ public class ViewContentAction extends InfoGlueAbstractAction
         return stay;
     }
     
+    public void setInline(Boolean inline)
+    {
+        this.inline = inline;
+    }
+
+    public Boolean getInline()
+    {
+        return inline;
+    }
+    
     public void setStay(String stay)
     {
         this.stay = stay;
     }
-    
+
     public List getReferenceBeanList()
     {
         return referenceBeanList;

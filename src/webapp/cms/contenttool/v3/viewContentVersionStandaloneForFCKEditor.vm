@@ -56,10 +56,19 @@
 
 #else
 
-
 #beginLightCommonToolV3("tool.contenttool.contentVersionStandaloneHeader" "$!contentVersionId" "contentId=$!contentId&languageId=$languageId" false false $!disableCloseButton)
 
-	<script type="text/javascript" src="${root}/applications/FCKEditor/fckeditor.js"></script>
+ 	#if($prefferedWYSIWYG == "ckeditor3")
+
+ 		<script type="text/javascript" src="${root}/applications/ckeditor/ckeditor.js"></script>
+		<script type="text/javascript" src="${root}/script/editorForFCKEditor.js"></script>
+
+	#else
+	 	
+		<script type="text/javascript" src="${root}/applications/FCKEditor/fckeditor.js"></script>
+		<script type="text/javascript" src="${root}/script/editorForFCKEditor.js"></script>
+	
+	#end
 
 	<script type="text/javascript">
 		
@@ -106,7 +115,6 @@
  
 	<script type="text/javascript" src="${root}/script/listview.js"></script>
 	<script type="text/javascript" src="${root}/script/calendar1.js"></script>
-	<script type="text/javascript" src="${root}/script/editorForFCKEditor.js"></script>
 	<script type="text/javascript" src="${root}/script/hotkeys.js"></script>
 
 </head>
@@ -151,11 +159,19 @@
 		for (var i in plainEditors) 
 		{
 			var plainTextAreaName = plainEditors[i];
-			oEditor = FCKeditorAPI.GetInstance(plainTextAreaName);
-			if(oEditor.IsDirty())
-				isDirty = true;
+
+			#if($prefferedWYSIWYG == "ckeditor3")
+				oEditor = CKEDITOR.instances["FullText"];
+				oEditor = CKEDITOR.instances[plainTextAreaName];
+				if(oEditor.checkDirty())
+					isDirty = true;
+			#else
+				oEditor = FCKeditorAPI.GetInstance(plainTextAreaName);
+				if(oEditor.IsDirty())
+					isDirty = true;
+			#end
 		}
-		
+			
 		return isDirty;
 	}
 	
@@ -227,33 +243,53 @@
 	function generateWYSIWYGS()
 	{
 		#if($readonly == "")
-			for (var i in plainEditors) 
-			{
-				var plainTextAreaName = plainEditors[i];
-				var WYSIWYGToolbar = plainEditorsToolbars[plainTextAreaName];
-				var WYSIWYGExtraConfig = plainEditorsExtraConfig[plainTextAreaName];
-				//alert("Creating a textarea for " + plainTextAreaName + " = " + i);
-				document.getElementById(plainTextAreaName).value = transformAttribute(document.getElementById(plainTextAreaName).value);
-				
-				var oFCKeditor = new FCKeditor(plainTextAreaName);
-				oFCKeditor.Width = document.getElementById(plainTextAreaName).style.width;
-				oFCKeditor.Height = document.getElementById(plainTextAreaName).style.height;
-				oFCKeditor.BasePath = "${root}/applications/FCKEditor/";
-				oFCKeditor.Config["CustomConfigurationsPath"] = "${root}/WYSIWYGProperties.action?repositoryId=$!repositoryId&contentId=$!contentId&languageId=$languageId&contentVersionId=$!contentVersionId";
-				oFCKeditor.Config["AutoDetectLanguage"] = false ;
-				oFCKeditor.Config["DefaultLanguage"]    = '$languageCode' ;
-				oFCKeditor.ToolbarSet = WYSIWYGToolbar ;
-				
-				if(WYSIWYGExtraConfig && WYSIWYGExtraConfig != '')
-					eval(WYSIWYGExtraConfig);
+
+			#if($prefferedWYSIWYG == "ckeditor3")
+
+				for(var i in plainEditors)
+				{
+					var plainTextAreaName = plainEditors[i];
+					var WYSIWYGToolbar = plainEditorsToolbars[plainTextAreaName];
+					var WYSIWYGExtraConfig = plainEditorsExtraConfig[plainTextAreaName];
+					//alert("Creating a textarea for " + plainTextAreaName + " = " + i);
+					document.getElementById(plainTextAreaName).value = transformAttribute(document.getElementById(plainTextAreaName).value);
+
+					var configString = "{'customConfig': '${root}/WYSIWYGProperties.action?repositoryId=$!repositoryId&contentId=$!contentId&languageId=$languageId&contentVersionId=$!contentVersionId','language': '$languageCode', 'toolbar': '" + WYSIWYGToolbar + "'}";
+		 			if(WYSIWYGExtraConfig && WYSIWYGExtraConfig != '')
+		 				configString = "{'customConfig': '${root}/WYSIWYGProperties.action?repositoryId=$!repositoryId&contentId=$!contentId&languageId=$languageId&contentVersionId=$!contentVersionId','language': '$languageCode', 'toolbar': '" + WYSIWYGToolbar + "'," + WYSIWYGExtraConfig + "}";
+		 			var configObject = eval('(' + configString + ')');
+		
+					CKEDITOR.replace( plainTextAreaName, configObject);
+				}
 					
-				//oFCKeditor.Config["ToolbarStartExpanded"] = false;
-				//oFCKeditor.ToolbarStartExpanded = false ;
-				oFCKeditor.ReplaceTextarea();
+			#else
+				for (var i in plainEditors) 
+				{
+					var plainTextAreaName = plainEditors[i];
+					var WYSIWYGToolbar = plainEditorsToolbars[plainTextAreaName];
+					var WYSIWYGExtraConfig = plainEditorsExtraConfig[plainTextAreaName];
+					//alert("Creating a textarea for " + plainTextAreaName + " = " + i);
+					document.getElementById(plainTextAreaName).value = transformAttribute(document.getElementById(plainTextAreaName).value);
 				
-				htmlEditors[plainTextAreaName + "WYSIWYGEditor"] = oFCKeditor;
+					var oFCKeditor = new FCKeditor(plainTextAreaName);
+					oFCKeditor.Width = document.getElementById(plainTextAreaName).style.width;
+					oFCKeditor.Height = document.getElementById(plainTextAreaName).style.height;
+					oFCKeditor.BasePath = "${root}/applications/FCKEditor/";
+					oFCKeditor.Config["CustomConfigurationsPath"] = "${root}/WYSIWYGProperties.action?repositoryId=$!repositoryId&contentId=$!contentId&languageId=$languageId&contentVersionId=$!contentVersionId";
+					oFCKeditor.Config["AutoDetectLanguage"] = false ;
+					oFCKeditor.Config["DefaultLanguage"]    = '$languageCode' ;
+					oFCKeditor.ToolbarSet = WYSIWYGToolbar ;
 				
-			}
+					if(WYSIWYGExtraConfig && WYSIWYGExtraConfig != '')
+						eval(WYSIWYGExtraConfig);
+					
+					//oFCKeditor.Config["ToolbarStartExpanded"] = false;
+					//oFCKeditor.ToolbarStartExpanded = false ;
+					oFCKeditor.ReplaceTextarea();
+				
+					htmlEditors[plainTextAreaName + "WYSIWYGEditor"] = oFCKeditor;
+				}
+			#end
 		#end
 		
 		#if($readonly == "disabled")
@@ -317,6 +353,29 @@
 
 <script type="text/javascript">
 <!--
+	function loadFrame(index)
+	{
+		var assetSrcUrl 						= "ViewContentVersion!viewContentAssetsForFCKEditorV3.action?contentVersionId=$!contentVersionId&assetTypeFilter=.*";
+		var contentCoverSrcUrl 					= "ViewContent!V3.action?contentId=$!contentId&stay=true";
+		var contentHistorySrcUrl 				= "ViewContentVersionHistory!V3.action?contentId=$!contentId";
+		var contentReferencesSrcUrl 			= "ViewContentReferences.action?contentId=$!contentId";
+		var contentAccessRightsSrcUrl 			= "ViewAccessRights!V3.action?interceptionPointCategory=Content&extraParameters=$!contentId";
+		var contentVersionAccessRightsSrcUrl 	= "ViewAccessRights!V3.action?interceptionPointCategory=ContentVersion&extraParameters=$!contentVersionId";
+		//alert("index:" + index);
+		if(index == 2) 
+			$("#contentVersionAssetsFrame").attr("src", assetSrcUrl);
+		else if(index == 3) 
+			$("#contentCoverFrame").attr("src", contentCoverSrcUrl);
+		else if(index == 4) 
+			$("#contentHistoryFrame").attr("src", contentHistorySrcUrl);
+		else if(index == 5)
+			$("#contentReferencesFrame").attr("src", contentReferencesSrcUrl);
+		else if(index == 6)
+			$("#contentAccessRightsFrame").attr("src", contentAccessRightsSrcUrl);
+		else if(index == 7)
+			$("#contentVersionAccessRightsFrame").attr("src", contentVersionAccessRightsSrcUrl);
+	}
+
 	$(document).ready(function(){
 		var assetSrcUrl = "${root}/ViewContentVersion!viewContentAssetsForFCKEditorV3.action?contentVersionId=$!contentVersionId&assetTypeFilter=.*";
 		
@@ -333,7 +392,13 @@
 		    	alert("Anchor: $anchor");
 	  		#end
 	  	#else
-	  		$("#tabsContainer").tabs({ cache: false, show:function() { resizeInlineTabDivs();}, select: function(e, ui) { if (ui.index == 2) { $("#contentVersionAssetsFrame").attr("src", assetSrcUrl); }} });
+	  		$("#tabsContainer").tabs(
+	  			{ 
+	  				cache: false, 
+	  				show:function() { resizeInlineTabDivsWithoutSubDivs(138, 16);}, 
+	  				select: function(e, ui) { loadFrame(ui.index); }
+	  			} 
+	  		);
 		#end	
 		
 		#if($translate)
@@ -374,13 +439,17 @@
 	
 	<div id="allDivs">
 	
-	<div id="tabsContainer" aclass="flora" style="#if($translate == false)width: 95%;#else width: 550px; #end float:left;">
+	<div id="tabsContainer" style="#if($translate == false)width: 100%;#else width: 550px; #end float:left;">
 	
 	<ul>
         <li><a href="#contentVersionDiv"><span>$ui.getString('tool.contenttool.textContentTab')</span></a></li>
         <li><a href="#contentVersionCategoriesDiv"><span>$ui.getString('tool.contenttool.categoriesTab')</span></a></li>
         <li><a href="#contentVersionAssetsDiv"><span>$ui.getString('tool.contenttool.assetsTab')</span></a></li>
         <li><a href="#contentCoverDiv"><span>$ui.getString('tool.contenttool.coverTab')</span></a></li>
+        <li><a href="#contentHistoryDiv"><span>$ui.getString('tool.contenttool.contentHistoryTab')</span></a></li>
+        <li><a href="#contentReferencesDiv"><span>$ui.getString('tool.contenttool.contentReferencesTab')</span></a></li>
+        <li><a href="#contentAccessRightsDiv"><span>$ui.getString('tool.contenttool.contentAccessRightsTab')</span></a></li>
+        <li><a href="#contentVersionAccessRightsDiv"><span>$ui.getString('tool.contenttool.contentVersionAccessRightsTab')</span></a></li>
     </ul>
 	
 	<div id="contentVersionDiv" class="inlineTabDiv">
@@ -902,11 +971,15 @@
 				   				//alert("currentEditorId:" + currentEditorId);
 								if(currentEditorId == 1)
 								{
-									var wysiwygEditor = htmlEditors["${attribute.name}WYSIWYGEditor"];
-									var oEditor = FCKeditorAPI.GetInstance('${attribute.name}') ;
-									
-									//alert("untransformedAttribute:" + untransformedAttribute);
-									document.getElementById("$attribute.name").value = untransformAttribute(oEditor.GetXHTML(false));
+									#if($prefferedWYSIWYG == "ckeditor3")
+	    								var editor_data = CKEDITOR.instances.${attribute.name}.getData();
+	    								document.getElementById("$attribute.name").value = untransformAttribute(editor_data);
+    								#else
+										var wysiwygEditor = htmlEditors["${attribute.name}WYSIWYGEditor"];
+										var oEditor = FCKeditorAPI.GetInstance('${attribute.name}') ;
+										//alert("untransformedAttribute:" + untransformedAttribute);
+										document.getElementById("$attribute.name").value = untransformAttribute(oEditor.GetXHTML(false));
+									#end
 								}
 								else if(currentEditorId == 2)
 								{
@@ -1083,31 +1156,25 @@
 					#set($availableCategories = $this.getAvailableCategories($categoryKey.categoryId))
 					<table border="0" width="100%" cellspacing="0" style="background-color: white;">
 						<tr valign="bottom" class="sectionDivider">
-							<td width="80%">$categoryKey.title ("$keyAttribute") - $categoryKey.description</td>
-							<td align="right">
+							<td width="80%" style="background-image: url(images/v3/footerBackground.gif); font-weight: bold;">$categoryKey.title ("$keyAttribute") - $categoryKey.description</td>
+							<td align="right" style="background-image: url(images/v3/footerBackground.gif); font-weight: bold;">
                             #if($contentVersionId)
 								#addCategorySelect($dropdownName $availableCategories "")
 							#end
 							</td>
-							<td align="right">
+							<td align="right" style="background-image: url(images/v3/footerBackground.gif); font-weight: bold;">
                             #if($contentVersionId)
 								<a href="javascript:addCategory('${keyAttribute}', '${dropdownName}');"><img src="$ui.getString("images.contenttool.buttons.addCategory")" border="0"/></a>
 							#end
 							</td>
 						</tr>
 					</table>
-					<table border="0" width="100%" cellspacing="0" cellpadding="2" aclass="bordered" style="border-top: 1px solid black;">
+					<table border="0" width="100%" cellspacing="0" cellpadding="2" style="border-top: 1px solid #ccc;">
 					#set($relatedCategories = $this.getRelatedCategories($keyAttribute))
 					#foreach($relation in $relatedCategories)
-                        #set($isOdd = $velocityCount % 2)
-						#set($class = "class='white'")
-						#if($isOdd == 0)
-							##set($class = "class='darkgreen'")
-							#set($class = "class='lightgreen'")
-						#end
-						<tr $class>
-							<td width="50%">$relation.category.getLocalizedDisplayName($this.languageCode, "none") ($relation.category.name)</td>
-							<td width="50%" align="right">
+                        <tr style="border-bottom: 1px solid #ccc;">
+							<td width="50%" style="border-bottom: 1px solid #ccc; padding-top: 4px;">$relation.category.getLocalizedDisplayName($this.languageCode, "none") ($relation.category.name)</td>
+							<td width="50%" style="border-bottom: 1px solid #ccc; padding-top: 4px;" align="right">
 								<a href="javascript:deleteCategory('$relation.contentCategoryId', '$contentId', '$languageId');"><img src="images/delete.gif" border="0"/></a>
 							</td>
 						</tr>
@@ -1144,14 +1211,30 @@
 		</div>
 		
 		
-		<div id="contentVersionAssetsDiv" class="inlineTabDiv">
-			<iframe id="contentVersionAssetsFrame" name="contentVersionAssetsFrame" src="" asrc="${root}/ViewContentVersion!viewContentAssetsForFCKEditorV3.action?contentVersionId=$!contentVersionId&assetTypeFilter=.*" border="0" width="100%" height="500px" frameborder="0"></iframe>
-		</div>
-		
-		<div id="contentCoverDiv" class="inlineTabDiv">
-			<iframe src="${root}/ViewContent!v3.action?contentId=$contentId&stay=true" border="0" width="100%" height="500px" frameborder="0"></iframe>
-		</div>
-		
+    	<div id="contentVersionAssetsDiv" class="inlineTabDiv">
+    		<iframe id="contentVersionAssetsFrame" name="contentVersionAssetsFrame" src="" border="0" width="100%" height="500px" frameborder="0"></iframe>
+    	</div>
+    		
+    	<div id="contentCoverDiv" class="inlineTabDiv">
+    		<iframe id="contentCoverFrame" src="" border="0" width="100%" height="500px" frameborder="0"></iframe>
+    	</div>
+    		
+    	<div id="contentHistoryDiv" class="inlineTabDiv">
+    		<iframe id="contentHistoryFrame" src="" border="0" width="100%" height="500px" frameborder="0"></iframe>
+    	</div>
+			
+		<div id="contentReferencesDiv" class="inlineTabDiv">
+    		<iframe id="contentReferencesFrame" src="" border="0" width="100%" height="500px" frameborder="0"></iframe>
+    	</div>
+
+    	<div id="contentAccessRightsDiv" class="inlineTabDiv">
+    		<iframe id="contentAccessRightsFrame" src="" border="0" width="100%" height="500px" frameborder="0"></iframe>
+    	</div>
+
+    	<div id="contentVersionAccessRightsDiv" class="inlineTabDiv">
+    		<iframe id="contentVersionAccessRightsFrame" src="" border="0" width="100%" height="500px" frameborder="0"></iframe>
+    	</div>
+    				
 	</div><!-- End first tabs collection -->
 	
 	#if($translate)

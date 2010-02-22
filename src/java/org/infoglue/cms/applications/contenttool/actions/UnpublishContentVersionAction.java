@@ -100,6 +100,18 @@ public class UnpublishContentVersionAction extends InfoGlueAbstractAction
 	    return "input";
 	}
 
+	public String doInputV3() throws Exception 
+	{
+		doInput();
+
+        userSessionKey = "" + System.currentTimeMillis();
+        
+        addActionLink(userSessionKey, new LinkBean("currentPageUrl", getLocalizedString(getLocale(), "tool.common.publishing.publishingInlineOperationBackToCurrentPageLinkText"), getLocalizedString(getLocale(), "tool.common.publishing.publishingInlineOperationBackToCurrentPageTitleText"), getLocalizedString(getLocale(), "tool.common.publishing.publishingInlineOperationBackToCurrentPageTitleText"), this.originalAddress, false, ""));
+        setActionExtraData(userSessionKey, "disableCloseLink", "true");
+
+	    return "inputV3";
+	}
+
 	public String doInputChooseContents() throws Exception 
 	{
 		if(this.contentId != null)
@@ -190,6 +202,48 @@ public class UnpublishContentVersionAction extends InfoGlueAbstractAction
     }
 
 
+	/**
+	 * This method gets called when calling this action. 
+	 * If the stateId is 2 which equals that the user tries to prepublish the page. If so we
+	 * ask the user for a comment as this is to be regarded as a new version. 
+	 */
+	   
+    public String doV3() throws Exception
+    {
+    	try
+    	{
+	    	doExecute();
+	    	
+			if(attemptDirectPublishing.equalsIgnoreCase("true"))
+			{
+	            setActionMessage(userSessionKey, getLocalizedString(getLocale(), "tool.common.unpublishing.unpublishingInlineOperationDoneHeader"));
+			}
+			else
+			{
+				setActionMessage(userSessionKey, getLocalizedString(getLocale(), "tool.common.unpublishing.submitToUnPublishingInlineOperationDoneHeader"));
+			}
+			
+			if(this.returnAddress != null && !this.returnAddress.equals(""))
+		    {
+		        String arguments 	= "userSessionKey=" + userSessionKey + "&attemptDirectPublishing=" + attemptDirectPublishing + "&isAutomaticRedirect=false";
+		        String messageUrl 	= returnAddress + (returnAddress.indexOf("?") > -1 ? "&" : "?") + arguments;
+		        
+		        this.getResponse().sendRedirect(messageUrl);
+		        return NONE;
+		    }
+		    else
+		    {
+		    	return SUCCESS;
+		    }
+    	}
+    	catch (Exception e) 
+    	{
+    		logger.error("Error unpublishing:" + e.getMessage(), e);
+    		return ERROR;
+		}
+    }
+    
+    
 	/**
 	 * This method will try to unpublish all liver versions of this content. 
 	 */

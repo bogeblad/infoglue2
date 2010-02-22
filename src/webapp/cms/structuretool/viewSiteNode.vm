@@ -222,7 +222,25 @@ function changeSiteNodeState(siteNodeVersionId)
 			<input type="radio" name="disableForceIdentityCheck" value="2" #if($!disableForceIdentityCheck == 2) checked="1" #end $readonly> $ui.getString("tool.common.inherit")
 		</td>
 		<td></td>
-	</tr>		
+	</tr>
+	#if($useAccessBasedProtocolRedirects)		
+	<tr>
+		<td>
+			$ui.getString("entity.SiteNode.forceProtocolChange.label")<br>
+			<select name="forceProtocolChange" style="width: 115px;">
+				<option value="0" #if($!forceProtocolChange == 0) selected="1" #end $readonly> $ui.getString("tool.common.inherit")</option>	
+				<option value="1" #if($!forceProtocolChange == 1) selected="1" #end $readonly> $ui.getString("entity.SiteNode.forceProtocolChangeNormallabel")</option>	
+				<option value="2" #if($!forceProtocolChange == 2) selected="1" #end $readonly> $ui.getString("entity.SiteNode.forceProtocolChangeAllowSecurelabel")</option>	
+				<option value="3" #if($!forceProtocolChange == 3) selected="1" #end $readonly> $ui.getString("entity.SiteNode.forceProtocolChangeForceSecurelabel")</option>	
+			</select>
+		</td>
+		<td><img src="images/trans.gif" width="20" height="1"></td>
+		<td>&nbsp;</td>
+		<td></td>
+	</tr>
+	#else
+		<input type="hidden" name="forceProtocolChange" value="$forceProtocolChange"/>
+	#end		
 	<tr>
 		<td colspan="4"><img src="images/trans.gif" height="10" width="1"></td>
 	</tr>

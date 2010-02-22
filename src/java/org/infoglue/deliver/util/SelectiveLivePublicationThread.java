@@ -24,11 +24,14 @@ package org.infoglue.deliver.util;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Random;
 
 import org.apache.log4j.Logger;
 import org.exolab.castor.jdo.Database;
+import org.infoglue.cms.applications.common.VisualFormatter;
 import org.infoglue.cms.controllers.kernel.impl.simple.CastorDatabaseService;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentVersionController;
@@ -70,6 +73,7 @@ import org.infoglue.cms.entities.structure.impl.simple.SmallSiteNodeImpl;
 import org.infoglue.cms.entities.structure.impl.simple.SmallSiteNodeVersionImpl;
 import org.infoglue.cms.exception.Bug;
 import org.infoglue.cms.exception.SystemException;
+import org.infoglue.cms.security.InfoGlueAuthenticationFilter;
 import org.infoglue.cms.util.CmsPropertyHandler;
 import org.infoglue.cms.util.NotificationMessage;
 import org.infoglue.deliver.applications.databeans.CacheEvictionBean;
@@ -87,17 +91,16 @@ import org.infoglue.deliver.controllers.kernel.impl.simple.NodeDeliveryControlle
 public class SelectiveLivePublicationThread extends PublicationThread
 {
     public final static Logger logger = Logger.getLogger(SelectiveLivePublicationThread.class.getName());
+	private static VisualFormatter formatter = new VisualFormatter();
 
     private List cacheEvictionBeans = new ArrayList();
-	
-	public SelectiveLivePublicationThread()
+    private List notifications = null;
+    
+    public SelectiveLivePublicationThread(List notifiations)
 	{
+    	this.notifications = notifiations;
 	}
 	
-	public List getCacheEvictionBeans()
-	{
-		return cacheEvictionBeans;
-	}
 
 	public synchronized void run()
 	{
@@ -108,6 +111,11 @@ public class SelectiveLivePublicationThread extends PublicationThread
 	    if(publicationThreadDelay != null && !publicationThreadDelay.equalsIgnoreCase("") && publicationThreadDelay.indexOf("publicationThreadDelay") == -1)
 	        publicationDelay = Integer.parseInt(publicationThreadDelay);
 	    
+	    Random r = new Random();
+	    int randint = (Math.abs(r.nextInt()) % 11) / 8 * 1000;
+	    publicationDelay = publicationDelay + randint;
+	    //System.out.println("publicationDelay:" + publicationDelay);
+	    
 	    logger.info("\n\n\nSleeping " + publicationDelay + "ms.\n\n\n");
 		try 
 		{
@@ -117,6 +125,34 @@ public class SelectiveLivePublicationThread extends PublicationThread
 		{
 			e1.printStackTrace();
 		}
+
+    	logger.info("before cacheEvictionBeans:" + cacheEvictionBeans.size());
+	    synchronized(notifications)
+        {
+	    	cacheEvictionBeans.addAll(notifications);
+	    	notifications.clear();
+	    	this.notifications = null;
+        }
+	    
+	    Iterator cacheEvictionBeansIterator = cacheEvictionBeans.iterator();
+	    boolean processedServerNodeProperties = false;
+	    while(cacheEvictionBeansIterator.hasNext())
+	    {
+	    	CacheEvictionBean cacheEvictionBean = (CacheEvictionBean)cacheEvictionBeansIterator.next();
+		    String className = cacheEvictionBean.getClassName();
+		    if(className.equalsIgnoreCase("ServerNodeProperties"))
+		    {
+		    	if(processedServerNodeProperties)
+		    	{
+		    		cacheEvictionBeansIterator.remove();
+		    		//System.out.println("Removed one ServerNodeProperties update as it will be processed anyway in this eviction cycle");
+		    	}
+		    	else
+		    	{
+		    		processedServerNodeProperties = true;
+		    	}
+		    }
+	    }
 
 		logger.info("cacheEvictionBeans.size:" + cacheEvictionBeans.size() + ":" + RequestAnalyser.getRequestAnalyser().getBlockRequests());
         if(cacheEvictionBeans.size() > 0)
@@ -135,7 +171,7 @@ public class SelectiveLivePublicationThread extends PublicationThread
 				    String objectName = cacheEvictionBean.getObjectName();
 					String typeId = cacheEvictionBean.getTypeId();
 					
-				    logger.warn("className:" + className + " objectId:" + objectId + " objectName: " + objectName + " typeId: " + typeId);
+				    logger.info("className:" + className + " objectId:" + objectId + " objectName: " + objectName + " typeId: " + typeId);
 	
 			        boolean isDependsClass = false;
 				    if(className != null && className.equalsIgnoreCase(PublicationDetailImpl.class.getName()))
@@ -352,7 +388,9 @@ public class SelectiveLivePublicationThread extends PublicationThread
 								
 							}
 						}
-						recacheEntities(cacheEvictionBean);
+						
+						if(CmsPropertyHandler.getServerNodeProperty("recacheEntities", true).equals("true"))
+							recacheEntities(cacheEvictionBean);
 					}	
 					else
 					{
@@ -365,7 +403,15 @@ public class SelectiveLivePublicationThread extends PublicationThread
 						*/
 						if(className.equals("ServerNodeProperties"))
 						{
-						    logger.warn("Updating all caches from SelectiveLivePublicationThread as this was a publishing-update\n\n\n");
+							logger.info("clearing InfoGlueAuthenticationFilter");
+							CacheController.clearServerNodeProperty(true);
+							logger.info("cleared InfoGlueAuthenticationFilter");
+							InfoGlueAuthenticationFilter.initializeProperties();
+							logger.info("initialized InfoGlueAuthenticationFilter");
+							logger.info("Shortening page stats");
+							RequestAnalyser.shortenPageStatistics();
+
+						    logger.info("Updating all caches from SelectiveLivePublicationThread as this was a publishing-update\n\n\n");
 						    //CacheController.clearCastorCaches();
 
 						    String[] excludedCaches = CacheController.getPublicationPersistentCacheNames();
@@ -392,6 +438,12 @@ public class SelectiveLivePublicationThread extends PublicationThread
 							CacheController.clearCache("pageCacheLatestSiteNodeVersions");
 							CacheController.clearCache("pageCacheSiteNodeTypeDefinition");
 						}
+						else if(className.equalsIgnoreCase("PortletRegistry"))
+					    {
+							logger.info("clearing portletRegistry");
+							CacheController.clearPortlets();
+							logger.info("cleared portletRegistry");
+					    }
 						else
 						{
 							Class type = Class.forName(className);
@@ -401,6 +453,8 @@ public class SelectiveLivePublicationThread extends PublicationThread
 					    	CacheController.clearCaches(className, objectId, null);
 						}
 					}
+
+					RequestAnalyser.getRequestAnalyser().addPublication("" + formatter.formatDate(new Date(), "yyyy-MM-dd HH:mm:ss") + " - " + cacheEvictionBean.getClassName() + " - " + cacheEvictionBean.getObjectId());
 				}
 			} 
 			catch (Exception e)
@@ -453,6 +507,7 @@ public class SelectiveLivePublicationThread extends PublicationThread
 				SiteNodeImpl siteNode = (SiteNodeImpl)getObjectWithId(SiteNodeImpl.class, new Integer(objectId), db);
 				getObjectWithId(SmallSiteNodeImpl.class, new Integer(objectId), db);
 				
+				/*
 				NodeDeliveryController ndc = NodeDeliveryController.getNodeDeliveryController(new Integer(objectId), new Integer(-1), new Integer(-1));
 				Repository repository = siteNode.getRepository();
 		    	if(repository != null)
@@ -466,7 +521,7 @@ public class SelectiveLivePublicationThread extends PublicationThread
 						LanguageDeliveryController.getLanguageDeliveryController().getLanguageIfSiteNodeSupportsIt(db, currentLanguage.getId(), siteNode.getId());
 					}
 				}
-				
+				*/
 			}
 			else if(Class.forName(className).getName().equals(SiteNodeVersionImpl.class.getName()))
 			{
@@ -504,7 +559,8 @@ public class SelectiveLivePublicationThread extends PublicationThread
 					{
 						SiteNodeImpl siteNode = (SiteNodeImpl)getObjectWithId(SiteNodeImpl.class, new Integer(objectId), db);
 						getObjectWithId(SmallSiteNodeImpl.class, new Integer(objectId), db);
-												
+						
+						/*
 						NodeDeliveryController ndc = NodeDeliveryController.getNodeDeliveryController(new Integer(objectId), new Integer(-1), new Integer(-1));
 						Repository repository = siteNode.getRepository();
 				    	if(repository != null)
@@ -518,6 +574,7 @@ public class SelectiveLivePublicationThread extends PublicationThread
 								LanguageDeliveryController.getLanguageDeliveryController().getLanguageIfSiteNodeSupportsIt(db, currentLanguage.getId(), siteNode.getId());
 							}
 						}
+						*/
 					}
 					else if(Class.forName(publicationDetailVO.getEntityClass()).getName().equals(SiteNodeVersion.class.getName()))
 					{
@@ -528,7 +585,8 @@ public class SelectiveLivePublicationThread extends PublicationThread
 
 						SiteNodeImpl siteNode = (SiteNodeImpl)getObjectWithId(SiteNodeImpl.class, new Integer(siteNodeId), db);
 						getObjectWithId(SmallSiteNodeImpl.class, new Integer(siteNodeId), db);
-
+						
+						/*
 						NodeDeliveryController ndc = NodeDeliveryController.getNodeDeliveryController(new Integer(objectId), new Integer(-1), new Integer(-1));
 						Repository repository = siteNode.getRepository();
 				    	if(repository != null)
@@ -542,7 +600,8 @@ public class SelectiveLivePublicationThread extends PublicationThread
 								LanguageDeliveryController.getLanguageDeliveryController().getLanguageIfSiteNodeSupportsIt(db, currentLanguage.getId(), siteNode.getId());
 							}
 						}
-
+						*/
+						
 						SiteNodeVO siteNodeVO = SiteNodeController.getController().getSiteNodeVOWithId(siteNodeId, db);
 						if(siteNodeVO.getMetaInfoContentId() != null)
 						{

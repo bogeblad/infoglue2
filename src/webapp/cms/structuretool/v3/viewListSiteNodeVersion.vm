@@ -229,7 +229,7 @@
 		#set( $row = ["<img src='images/v3/pageIcon.gif'> $snv.getSiteNodeName() ($snv.getId())", $ui.getString("tool.common.publishing.typePageLabel"), "$formatter.formatDate($snv.modifiedDateTime, 'yyyy-MM-dd')", "$displayName"] )
 		#set($cnt = $cnt + 1)
 		
-		#lvAddRowV3($row $cnt $snv.getId())
+		#lvAddRowV3($row $cnt $snv.id false)
 	
 	#end
 	
@@ -246,7 +246,7 @@
 		#set( $row = ["<img src='images/v3/contentIcon.gif'> $cv.getContentName() ($cv.getId())", $ui.getString("tool.common.publishing.typeContentLabel"), "$formatter.formatDate($cv.modifiedDateTime, 'yyyy-MM-dd')", "$displayName"] )
 		#set($cnt = $cnt + 1)
 		
-		#lvAddRowV3($row $cnt $cv.getId())
+		#lvAddRowV3($row $cnt $cv.id false)
 	
 	#end
 	

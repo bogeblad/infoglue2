@@ -153,7 +153,7 @@
 		
 	</style>
 
-	<script type="text/javascript" src="script/jquery/jquery-1.3.2.min.js"></script>
+	#includeLatestJQuery()
 
 	<script type="text/javascript">
 		var previousTabId = "$activeDivId";
@@ -182,6 +182,7 @@
 	</script>
 
 <form name="deleteForm" method="POST" action="ViewServerNodeProperties!deleteProperty.action">
+	<input type="hidden" name="igSecurityCode" value="$!securityCode">
 	<input type="hidden" name="serverNodeId" value="$!serverNodeId">
 	<input type="hidden" name="key" id="key" value="">
 </form
@@ -196,8 +197,9 @@
 <div class="fullymarginalized">
 
 <form name="editForm" method="POST" action="ViewServerNodeProperties!save.action">
-<input type="hidden" name="serverNodeId" value="$!serverNodeId">
-<input type="hidden" name="activeDivId" id="activeDivId" value="$!activeDivId">
+	<input type="hidden" name="igSecurityCode" value="$!securityCode">
+	<input type="hidden" name="serverNodeId" value="$!serverNodeId">
+	<input type="hidden" name="activeDivId" id="activeDivId" value="$!activeDivId">
 
 	<ul class="settingsTabs">
 		<li id="commonSettingsTab" class=""><a href="javascript:activateTab('commonSettings');">$ui.getString("entity.ServerNode.property.commonSettings.label")</a></li>

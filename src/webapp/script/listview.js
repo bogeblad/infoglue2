@@ -123,7 +123,7 @@ function listRowClear()
 
 function checkAll()
 {
- 	var field = document.objList.sel;
+ 	var field = document.listForm.sel;
 	for (i = 0; i < field.length; i++)
 		field[i].checked = true ;
 }

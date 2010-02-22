@@ -287,7 +287,7 @@ public class PageEditorHelper extends BaseDeliveryController
 										assignUrl = componentEditorUrl + "ViewContentVersion!viewAssetBrowserForMultipleComponentBindingV3.action?repositoryId=" + repositoryId + "&siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&componentId=" + componentId + "&propertyName=" + componentProperty.getName() + allowedContentTypeIdParameters + "&assetTypeFilter=" + componentProperty.getAssetMask() + "&showSimple=" + showSimple;
 								}
 								else
-									assignUrl = componentEditorUrl + "ViewSiteNodePageComponents!showContentTreeForMultipleBinding.action?repositoryId=" + repositoryId + "&siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&componentId=" + componentId + "&propertyName=" + componentProperty.getName() + allowedContentTypeIdParameters + "&showSimple=" + showSimple;
+									assignUrl = componentEditorUrl + "ViewSiteNodePageComponents!showContentTreeForMultipleBindingV3.action?repositoryId=" + repositoryId + "&siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&componentId=" + componentId + "&propertyName=" + componentProperty.getName() + allowedContentTypeIdParameters + "&showSimple=" + showSimple;
 							}
 							else
 							{
@@ -307,13 +307,13 @@ public class PageEditorHelper extends BaseDeliveryController
 										assignUrl = componentEditorUrl + "ViewContentVersion!viewAssetBrowserForComponentBindingV3.action?repositoryId=" + repositoryId + "&siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&componentId=" + componentId + "&propertyName=" + componentProperty.getName() + allowedContentTypeIdParameters + "&assetTypeFilter=" + componentProperty.getAssetMask() + "&showSimple=" + showSimple + assignedParameters;
 								}
 								else
-									assignUrl = componentEditorUrl + "ViewSiteNodePageComponents!showContentTree.action?repositoryId=" + repositoryId + "&siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&componentId=" + componentId + "&propertyName=" + componentProperty.getName() + allowedContentTypeIdParameters + "&showSimple=" + showSimple;
+									assignUrl = componentEditorUrl + "ViewSiteNodePageComponents!showContentTreeV3.action?repositoryId=" + repositoryId + "&siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&componentId=" + componentId + "&propertyName=" + componentProperty.getName() + allowedContentTypeIdParameters + "&showSimple=" + showSimple;
 							}
 						}
 						else if(componentProperty.getEntityClass().equalsIgnoreCase("SiteNode"))
 						{
 							if(componentProperty.getIsMultipleBinding())
-								assignUrl = componentEditorUrl + "ViewSiteNodePageComponents!showStructureTreeForMultipleBinding.action?repositoryId=" + repositoryId + "&siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&componentId=" + componentId + "&propertyName=" + componentProperty.getName() + "&showSimple=" + showSimple;
+								assignUrl = componentEditorUrl + "ViewSiteNodePageComponents!showStructureTreeForMultipleBindingV3.action?repositoryId=" + repositoryId + "&siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&componentId=" + componentId + "&propertyName=" + componentProperty.getName() + "&showSimple=" + showSimple;
 							else
 								assignUrl = componentEditorUrl + "ViewSiteNodePageComponents!showStructureTree.action?repositoryId=" + repositoryId + "&siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&componentId=" + componentId + "&propertyName=" + componentProperty.getName() + "&showSimple=" + showSimple;
 						}
@@ -883,7 +883,7 @@ public class PageEditorHelper extends BaseDeliveryController
 			 boolean treeItem) throws Exception
 		{	
 		
-		StringBuffer sb = new StringBuffer();
+		StringBuilder sb = new StringBuilder();
 
 		String componentEditorUrl = CmsPropertyHandler.getComponentEditorUrl();
 		String componentRendererUrl = CmsPropertyHandler.getComponentRendererUrl();
@@ -947,7 +947,7 @@ public class PageEditorHelper extends BaseDeliveryController
 		    
 		    if(component.getIsInherited())
 			{
-			    StringBuffer sb2 = new StringBuffer();
+		    	StringBuilder sb2 = new StringBuilder();
 				return sb2.toString();
 			}
 		    
@@ -1148,7 +1148,7 @@ public class PageEditorHelper extends BaseDeliveryController
 
 	public String getComponentStructureDiv(Database db, InfoGluePrincipal principal, HttpServletRequest request, Locale locale, Integer repositoryId, Integer siteNodeId, Integer languageId, Integer contentId, String showSimple, String originalFullURL, String showLegend, String targetDiv) throws Exception
 	{
-		StringBuffer sb = new StringBuffer();
+		StringBuilder sb = new StringBuilder();
 		
 		//String componentEditorUrl = CmsPropertyHandler.getComponentEditorUrl();
 		//String componentRendererUrl = CmsPropertyHandler.getComponentRendererUrl();
@@ -1197,7 +1197,7 @@ public class PageEditorHelper extends BaseDeliveryController
 	 * This method renders the component tree visually
 	 */
 	
-	private void renderComponentTree(Database db, StringBuffer sb, InfoGlueComponent component, int level, int position, int maxPosition, String contextPath, Integer repositoryId, Integer siteNodeId, Integer languageId, Integer contentId, String showSimple, String originalUrl) throws Exception
+	private void renderComponentTree(Database db, StringBuilder sb, InfoGlueComponent component, int level, int position, int maxPosition, String contextPath, Integer repositoryId, Integer siteNodeId, Integer languageId, Integer contentId, String showSimple, String originalUrl) throws Exception
 	{
 		String componentEditorUrl = CmsPropertyHandler.getComponentEditorUrl();
 
@@ -1578,7 +1578,7 @@ public class PageEditorHelper extends BaseDeliveryController
 	{ 
 		String cacheName 	= "componentEditorCache";
 		String cacheKey		= "pageComponentDocument_" + siteNodeId + "_" + languageId + "_" + contentId;
-		org.dom4j.Document cachedPageComponentsDocument = (org.dom4j.Document)CacheController.getCachedObject(cacheName, cacheKey);
+		org.dom4j.Document cachedPageComponentsDocument = (org.dom4j.Document)CacheController.getCachedObjectFromAdvancedCache(cacheName, cacheKey);
 		if(cachedPageComponentsDocument != null)
 			return cachedPageComponentsDocument;
 		
@@ -1589,7 +1589,7 @@ public class PageEditorHelper extends BaseDeliveryController
 			String xml = getPageComponentsString(db, siteNodeId, languageId, contentId, principal);
 			pageComponentsDocument = domBuilder.getDocument(xml);
 			
-			CacheController.cacheObject(cacheName, cacheKey, pageComponentsDocument);
+			CacheController.cacheObjectInAdvancedCache(cacheName, cacheKey, pageComponentsDocument);
 		}
 		catch(Exception e)
 		{
@@ -1638,12 +1638,12 @@ public class PageEditorHelper extends BaseDeliveryController
 
 	    String cacheName 	= "componentEditorCache";
 		String cacheKey		= "pageComponentString_" + siteNodeId + "_" + languageId + "_" + contentId;
-		String versionKey 	= cacheKey + "_contentVersionId";
+		//String versionKey 	= cacheKey + "_contentVersionId";
 
-		String attributeName = "ComponentStructure";
+		//String attributeName = "ComponentStructure";
 
-	    String cachedPageComponentsString = (String)CacheController.getCachedObject(cacheName, cacheKey);
-	    Set contentVersionId = (Set)CacheController.getCachedObjectFromAdvancedCache("contentVersionCache", versionKey);
+	    String cachedPageComponentsString = (String)CacheController.getCachedObjectFromAdvancedCache(cacheName, cacheKey);
+	    //Set contentVersionId = (Set)CacheController.getCachedObjectFromAdvancedCache("componentEditorVersionIdCache", versionKey);
 
 		if(cachedPageComponentsString != null)
 		{			
@@ -1666,7 +1666,7 @@ public class PageEditorHelper extends BaseDeliveryController
 	{ 
 		String cacheName 	= "componentEditorCache";
 		String cacheKey		= "componentPropertiesDocument_" + siteNodeId + "_" + languageId + "_" + contentId;
-		Document cachedComponentPropertiesDocument = (Document)CacheController.getCachedObject(cacheName, cacheKey);
+		Document cachedComponentPropertiesDocument = (Document)CacheController.getCachedObjectFromAdvancedCache(cacheName, cacheKey);
 		if(cachedComponentPropertiesDocument != null)
 			return cachedComponentPropertiesDocument;
 		
@@ -1680,7 +1680,7 @@ public class PageEditorHelper extends BaseDeliveryController
 			{
 				componentPropertiesDocument = domBuilder.getDocument(xml);
 				
-				CacheController.cacheObject(cacheName, cacheKey, componentPropertiesDocument);
+				CacheController.cacheObjectInAdvancedCache(cacheName, cacheKey, componentPropertiesDocument);
 			}
 		}
 		catch(Exception e)
@@ -1700,7 +1700,7 @@ public class PageEditorHelper extends BaseDeliveryController
 	{
 		String cacheName 	= "componentEditorCache";
 		String cacheKey		= "componentPropertiesString_" + siteNodeId + "_" + languageId + "_" + contentId;
-		String cachedComponentPropertiesString = (String)CacheController.getCachedObject(cacheName, cacheKey);
+		String cachedComponentPropertiesString = (String)CacheController.getCachedObjectFromAdvancedCache(cacheName, cacheKey);
 		if(cachedComponentPropertiesString != null)
 			return cachedComponentPropertiesString;
 			
@@ -1715,7 +1715,7 @@ public class PageEditorHelper extends BaseDeliveryController
 			if(componentPropertiesString == null)
 				throw new SystemException("There was no properties assigned to this content.");
 		
-			CacheController.cacheObject(cacheName, cacheKey, componentPropertiesString);
+			CacheController.cacheObjectInAdvancedCache(cacheName, cacheKey, componentPropertiesString);
 		}
 		catch(Exception e)
 		{
@@ -1734,7 +1734,7 @@ public class PageEditorHelper extends BaseDeliveryController
 	{
 		String cacheName 	= "componentEditorCache";
 		String cacheKey		= "componentTemplateString_" + componentContentId + "_" + languageId;
-		String cachedComponentPropertiesString = (String)CacheController.getCachedObject(cacheName, cacheKey);
+		String cachedComponentPropertiesString = (String)CacheController.getCachedObjectFromAdvancedCache(cacheName, cacheKey);
 		if(cachedComponentPropertiesString != null)
 			return cachedComponentPropertiesString;
 			
@@ -1749,7 +1749,7 @@ public class PageEditorHelper extends BaseDeliveryController
 			if(templateString == null)
 				throw new SystemException("There was no template on the content: " + componentContentId);
 		
-			CacheController.cacheObject(cacheName, cacheKey, templateString);
+			CacheController.cacheObjectInAdvancedCache(cacheName, cacheKey, templateString);
 		}
 		catch(Exception e)
 		{
@@ -1765,7 +1765,7 @@ public class PageEditorHelper extends BaseDeliveryController
 	
 	public String getAvailableComponentsDiv(Database db, InfoGluePrincipal principal, Locale locale, Integer repositoryId, Integer languageId, Integer componentContentId, String slotName, String showLegend, String showNames, String targetDiv)
 	{
-		StringBuffer sb = new StringBuffer();
+		StringBuilder sb = new StringBuilder();
 		
 	    try
 	    {
@@ -2457,7 +2457,7 @@ public class PageEditorHelper extends BaseDeliveryController
 	{ 	    
 		String cacheName 	= "componentEditorCache";
 		String cacheKey		= "componentTasksDocument_" + masterLanguageId + "_" + metaInfoContentId;
-		Document cachedComponentTasksDocument = (Document)CacheController.getCachedObject(cacheName, cacheKey);
+		Document cachedComponentTasksDocument = (Document)CacheController.getCachedObjectFromAdvancedCache(cacheName, cacheKey);
 		if(cachedComponentTasksDocument != null)
 			return cachedComponentTasksDocument;
 		
@@ -2470,7 +2470,7 @@ public class PageEditorHelper extends BaseDeliveryController
 			{
 			    componentTasksDocument = domBuilder.getDocument(xml);
 				
-				CacheController.cacheObject(cacheName, cacheKey, componentTasksDocument);
+				CacheController.cacheObjectInAdvancedCache(cacheName, cacheKey, componentTasksDocument);
 			}
 		}
 		catch(Exception e)
@@ -2490,7 +2490,7 @@ public class PageEditorHelper extends BaseDeliveryController
 	{
 		String cacheName 	= "componentEditorCache";
 		String cacheKey		= "componentTasksString_" + masterLanguageId + "_" + metaInfoContentId;
-		String cachedComponentTasksString = (String)CacheController.getCachedObject(cacheName, cacheKey);
+		String cachedComponentTasksString = (String)CacheController.getCachedObjectFromAdvancedCache(cacheName, cacheKey);
 		if(cachedComponentTasksString != null)
 			return cachedComponentTasksString;
 			
@@ -2503,7 +2503,7 @@ public class PageEditorHelper extends BaseDeliveryController
 			if(componentTasksString == null)
 				throw new SystemException("There was no tasks assigned to this content.");
 		
-			CacheController.cacheObject(cacheName, cacheKey, componentTasksString);
+			CacheController.cacheObjectInAdvancedCache(cacheName, cacheKey, componentTasksString);
 		}
 		catch(Exception e)
 		{

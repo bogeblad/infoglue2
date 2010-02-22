@@ -574,7 +574,7 @@ public class NodeDeliveryController extends BaseDeliveryController
 	        	StringBuilder groupKey2 = new StringBuilder("siteNode_").append(siteNodeId);
 
 	        	CacheController.cacheObjectInAdvancedCache("latestSiteNodeVersionCache", versionKey, siteNodeVersionVO, new String[]{groupKey1.toString(), groupKey2.toString()}, true);
-	        }	
+	        }
 		
 			results.close();
 			oql.close();
@@ -1002,6 +1002,48 @@ public class NodeDeliveryController extends BaseDeliveryController
 		}
 				
 		return protectedSiteNodeVersionId;
+	}
+
+
+	/**
+	 * This method returns the id of the siteNodeVersion that is protected if any.
+	 */
+	
+	public Integer getForceProtocolChangeSettingForPageCache(Database db, Integer siteNodeId)
+	{
+		if(siteNodeId != null && this.deliveryContext != null)
+			this.deliveryContext.addUsedSiteNode("siteNode_" + siteNodeId);
+
+		Integer forceProtocolChangeSetting = SiteNodeVersionVO.NORMAL_SECURE;
+		
+		if(getOperatingMode() == 3)
+		{
+			try
+			{
+				SiteNodeVersionVO siteNodeVersionVO = this.getLatestActiveSiteNodeVersionVOForPageCache(db, siteNodeId);
+				if(siteNodeVersionVO != null && siteNodeVersionVO.getForceProtocolChange() != null)
+				{	
+					//System.out.println("siteNodeVersionVO:" + siteNodeVersionVO.getId() + ":" + siteNodeVersionVO.getForceProtocolChange());
+					if(logger.isInfoEnabled())
+						logger.info("siteNodeVersionVO:" + siteNodeVersionVO.getId() + ":" + siteNodeVersionVO.getForceProtocolChange());
+					
+					if(siteNodeVersionVO.getForceProtocolChange().intValue() != SiteNodeVersionVO.INHERIT_SECURE.intValue())
+						forceProtocolChangeSetting = siteNodeVersionVO.getForceProtocolChange();
+					else
+					{
+						SiteNodeVO parentSiteNode = this.getParentSiteNodeForPageCache(db, siteNodeId);
+						if(parentSiteNode != null)
+							forceProtocolChangeSetting = getForceProtocolChangeSettingForPageCache(db, parentSiteNode.getSiteNodeId()); 
+					}
+				}
+			}
+			catch(Exception e)
+			{
+				logger.warn("An error occurred trying to get if the siteNodeVersion has forceProtocolChangeSetting:" + e.getMessage(), e);
+			}
+		}
+		
+		return forceProtocolChangeSetting;
 	}
 
 	
@@ -1636,7 +1678,7 @@ public class NodeDeliveryController extends BaseDeliveryController
 	}
 
 	
-    public Integer getSiteNodeId(Database db, InfoGluePrincipal infogluePrincipal, Integer repositoryId, String path, String attributeName, Integer parentSiteNodeId, DeliveryContext deliveryContext) throws SystemException, Exception
+    public Integer getSiteNodeId(Database db, InfoGluePrincipal infogluePrincipal, Integer repositoryId, String path, String attributeName, Integer parentSiteNodeId, Integer languageId, DeliveryContext deliveryContext) throws SystemException, Exception
     {
         /*
         logger.info("repositoryId:" + repositoryId);
@@ -1664,7 +1706,7 @@ public class NodeDeliveryController extends BaseDeliveryController
         }
         else
         {
-            siteNodes = getChildSiteNodes(db, parentSiteNodeId);
+            siteNodes = this.getChildSiteNodes(db, parentSiteNodeId);
         }
         
         Iterator siteNodeIterator = siteNodes.iterator();
@@ -1712,7 +1754,6 @@ public class NodeDeliveryController extends BaseDeliveryController
 	                        pathCandidate = ContentDeliveryController.getContentDeliveryController().getContentAttribute(db, content.getContentId(), language.getLanguageId(), NAV_TITLE_ATTRIBUTE_NAME, siteNodeVO.getSiteNodeId(), true, deliveryContext, infogluePrincipal, false, true);
 	                }
 	                
-	                System.out.println(attributeName + " ["+pathCandidate.trim()+"]==[" + path + "]");
 	                logger.info(attributeName + " ["+pathCandidate.trim()+"]==[" + path + "]");
 	                if (pathCandidate != null && pathCandidate.toLowerCase().trim().equals(path.toLowerCase())) 
 	                {
@@ -1731,12 +1772,12 @@ public class NodeDeliveryController extends BaseDeliveryController
 
     public String getPageNavigationPath(Database db, InfoGluePrincipal infogluePrincipal, Integer siteNodeId, Integer languageId, Integer contentId, DeliveryContext deliveryContext) throws SystemException, Exception
     {
-        StringBuffer path = null; //new StringBuffer("/");
+    	StringBuilder path = null; //new StringBuffer("/");
 
         SiteNodeVO parentSiteNode = this.getParentSiteNode(db, siteNodeId);
         if (parentSiteNode != null)
         {
-            path = new StringBuffer(getPageNavigationPath(db, infogluePrincipal, parentSiteNode.getId(), languageId, null, deliveryContext)).append("/");
+            path = new StringBuilder(getPageNavigationPath(db, infogluePrincipal, parentSiteNode.getId(), languageId, null, deliveryContext)).append("/");
         } 
         else 
         {
@@ -1856,11 +1897,11 @@ public class NodeDeliveryController extends BaseDeliveryController
         {
             if (i < 0) 
             {
-                siteNodeId = NodeDeliveryController.getNodeDeliveryController(null, null, null).getSiteNodeId(db, infogluePrincipal, repositoryVO.getId(), null, attributeName, null, deliveryContext);
+                siteNodeId = NodeDeliveryController.getNodeDeliveryController(null, null, null).getSiteNodeId(db, infogluePrincipal, repositoryVO.getId(), null, attributeName, null, languageId, deliveryContext);
             } 
             else 
             {
-                siteNodeId = NodeDeliveryController.getNodeDeliveryController(null, null, null).getSiteNodeId(db, infogluePrincipal, repositoryVO.getId(), path[i], attributeName, siteNodeId, deliveryContext);
+                siteNodeId = NodeDeliveryController.getNodeDeliveryController(null, null, null).getSiteNodeId(db, infogluePrincipal, repositoryVO.getId(), path[i], attributeName, siteNodeId, languageId, deliveryContext);
             }
             
             if (siteNodeId != null)
@@ -1957,8 +1998,6 @@ public class NodeDeliveryController extends BaseDeliveryController
 	    		}
 	    	}
 	    	
-    		System.out.println("repositoryPath:" + repositoryPath);
-    		System.out.println("path:" + path.length);
 	    	if(repositoryPath != null && path.length > 0)
 	    	{
 	    		String[] repositoryPaths = repositoryPath.split("/");
@@ -1991,7 +2030,6 @@ public class NodeDeliveryController extends BaseDeliveryController
 	    		}
 	    		path = newPath;
 	    	}
-    		System.out.println("path 2:" + path.length);
 	    	
 	    	if(logger.isInfoEnabled())
 	    	{
@@ -2000,17 +2038,17 @@ public class NodeDeliveryController extends BaseDeliveryController
 	    	}
 	    
             String enableNiceURIForLanguage = CmsPropertyHandler.getEnableNiceURIForLanguage();
-        	System.out.println("enableNiceURIForLanguage:" + enableNiceURIForLanguage);
-        	System.out.println("numberOfPaths:" + numberOfPaths);
+        	//System.out.println("enableNiceURIForLanguage:" + enableNiceURIForLanguage);
+            //System.out.println("numberOfPaths:" + numberOfPaths);
         	if(enableNiceURIForLanguage.equalsIgnoreCase("true") && path.length > 0)
         	{
             	//System.out.println("path[numberOfPaths]:" + path[numberOfPaths]);
-            	System.out.println("path[0]:" + path[0]);
+        		//System.out.println("path[0]:" + path[0]);
         		LanguageVO language = LanguageDeliveryController.getLanguageDeliveryController().getLanguageWithCode(db, path[0].toLowerCase());
-            	System.out.println("language:" + language);
+        		//System.out.println("language:" + language);
             	if(language != null)
             	{
-            		System.out.println("YES - we should consider the first node as a language:" + language);
+            		//System.out.println("YES - we should consider the first node as a language:" + language);
                     session.setAttribute(FilterConstants.LANGUAGE_ID, language.getId());
                     deliveryContext.setLanguageId(language.getId());
                     languageId = language.getId();
@@ -2021,12 +2059,12 @@ public class NodeDeliveryController extends BaseDeliveryController
             		path = tempNewPath;
             	}
         	}
-
+        	/*
         	System.out.println("*************************");
         	for(int i = 0; i < path.length; i++) 
         		System.out.println("path[" + i + "]=" + path[i]);
         	System.out.println("*************************");
-        	
+        	*/
 	        for (int i = numberOfPaths;i < path.length; i++) 
 	        {
 	            if (i < 0) 
@@ -2034,34 +2072,18 @@ public class NodeDeliveryController extends BaseDeliveryController
 		        	System.out.println("path[" + i + "]");
 	  	    		if(logger.isInfoEnabled())
 		    	        logger.info("Getting root node");
-	                siteNodeId = NodeDeliveryController.getNodeDeliveryController(null, null, null).getSiteNodeId(db, infogluePrincipal, repositoryVO.getId(), null, attributeName, null, deliveryContext);
+	                siteNodeId = NodeDeliveryController.getNodeDeliveryController(null, null, null).getSiteNodeId(db, infogluePrincipal, repositoryVO.getId(), null, attributeName, null, languageId, deliveryContext);
 	            } 
 	            else 
 	            {
 		        	System.out.println("path[" + i + "]:" + path[i]);
 	  	    		if(logger.isInfoEnabled())
 		    	        logger.info("Getting normal");
-	                siteNodeId = NodeDeliveryController.getNodeDeliveryController(null, null, null).getSiteNodeId(db, infogluePrincipal, repositoryVO.getId(), path[i], attributeName, siteNodeId, deliveryContext);
+	                siteNodeId = NodeDeliveryController.getNodeDeliveryController(null, null, null).getSiteNodeId(db, infogluePrincipal, repositoryVO.getId(), path[i], attributeName, siteNodeId, languageId, deliveryContext);
 	            }
 
-	            if(siteNodeId != null)
-	            {
-	            	uriCache.addCachedSiteNodeId(repositoryVO.getId(), path, i+1, siteNodeId);
-	            }
-	            /*
-	            else if(i == 0)
-	            {
-	            	System.out.println("i:" + i);
-	            	System.out.println("path[i]:" + path[i]);
-	            	System.out.println("Checking for languageVO as the node seems to have been an invalid node");
-	            	LanguageVO language = LanguageDeliveryController.getLanguageDeliveryController().getLanguageWithCode(db, path[i]);
-	            	System.out.println("language:" + language);
-	            	if(language != null)
-	            	{
-	            		
-	            	}
-	            }
-	            */
+	            if (siteNodeId != null)
+	                uriCache.addCachedSiteNodeId(repositoryVO.getId(), path, i+1, siteNodeId);
 	        }
 
 	        commitTransaction(db);
@@ -2157,7 +2179,8 @@ public class NodeDeliveryController extends BaseDeliveryController
 			}
 			
 	        logger.info("Fetching the root siteNode for the repository " + repositoryId);
-			OQLQuery oql = db.getOQLQuery( "SELECT c FROM org.infoglue.cms.entities.structure.impl.simple.SiteNodeImpl c WHERE is_undefined(c.parentSiteNode) AND c.repository = $1");
+			//OQLQuery oql = db.getOQLQuery( "SELECT c FROM org.infoglue.cms.entities.structure.impl.simple.SiteNodeImpl c WHERE is_undefined(c.parentSiteNode) AND c.repository = $1");
+			OQLQuery oql = db.getOQLQuery( "SELECT c FROM org.infoglue.cms.entities.structure.impl.simple.SmallSiteNodeImpl c WHERE is_undefined(c.parentSiteNode) AND c.repositoryId = $1");
 			oql.bind(repositoryId);
 			
 	    	QueryResults results = oql.execute(Database.ReadOnly);
@@ -2165,13 +2188,15 @@ public class NodeDeliveryController extends BaseDeliveryController
 	    	if (results.hasMore()) 
 	        {
 	        	siteNodeVO = ((SiteNode)results.next()).getValueObject();
-				logger.info("The root node was found:" + siteNodeVO.getName());
+				if(logger.isInfoEnabled())
+					logger.info("The root node was found:" + siteNodeVO.getName());
 	        }
 
 	    	results.close();
 			oql.close();
 
-			logger.info("siteNodeVO:" + siteNodeVO);
+			if(logger.isInfoEnabled())
+				logger.info("siteNodeVO:" + siteNodeVO);
 
 			CacheController.cacheObject("rootSiteNodeCache", key, siteNodeVO);
 		}
@@ -2189,7 +2214,7 @@ public class NodeDeliveryController extends BaseDeliveryController
 	public List getChildSiteNodes(Database db, Integer siteNodeId) throws SystemException, Exception
 	{
 		//logger.warn("getChildSiteNodes:" + siteNodeId);
-		System.out.println("getChildSiteNodes for " + siteNodeId);
+
     	if(siteNodeId == null)
 		{
 			return null;
@@ -2207,12 +2232,7 @@ public class NodeDeliveryController extends BaseDeliveryController
 		else
 		{
 	        siteNodeVOList = new ArrayList();
-	
-	        /*
-	        OQLQuery oql = db.getOQLQuery( "SELECT s FROM org.infoglue.cms.entities.structure.impl.simple.SmallSiteNodeImpl s WHERE s.parentSiteNode.siteNodeId = $1 ORDER BY s.siteNodeId");
-			oql.bind(siteNodeId);
-			*/
-	        
+		    
 	        StringBuffer SQL = new StringBuffer();
 	    	if(CmsPropertyHandler.getUseShortTableNames() != null && CmsPropertyHandler.getUseShortTableNames().equalsIgnoreCase("true"))
 	    	{
@@ -2245,14 +2265,14 @@ public class NodeDeliveryController extends BaseDeliveryController
 		   		SQL.append("order by snv.sortOrder ASC, sn.name ASC, sn.siteNodeId DESC AS org.infoglue.cms.entities.structure.impl.simple.SmallestSiteNodeImpl");    		
 	    	}
 
-	    	System.out.println("SQL:" + SQL);
-	    	System.out.println("siteNodeId:" + siteNodeId);
+	    	//System.out.println("SQL:" + SQL);
+	    	//System.out.println("siteNodeId:" + siteNodeId);
 	    	OQLQuery oql = db.getOQLQuery(SQL.toString());
 			oql.bind(siteNodeId);
 			oql.bind(false);
 			oql.bind(true);
 			oql.bind(getOperatingMode());
-			
+	    	
 	    	QueryResults results = oql.execute(Database.ReadOnly);
 			
 			while (results.hasMore()) 
@@ -2265,7 +2285,24 @@ public class NodeDeliveryController extends BaseDeliveryController
 
 			results.close();
 			oql.close();
-
+			
+	        /*
+	        OQLQuery oql = db.getOQLQuery( "SELECT s FROM org.infoglue.cms.entities.structure.impl.simple.SmallSiteNodeImpl s WHERE s.parentSiteNode.siteNodeId = $1 ORDER BY s.siteNodeId");
+			oql.bind(siteNodeId);
+	        */
+	        /*
+		    SiteNode siteNode = getSiteNode(db, siteNodeId);
+	        
+			Iterator childrenIterator = siteNode.getChildSiteNodes().iterator();
+			while (childrenIterator.hasNext()) 
+	        {
+	        	SiteNode childSiteNode = (SiteNode)childrenIterator.next();
+				
+	        	if(isValidSiteNode(childSiteNode, db))
+	        	    siteNodeVOList.add(childSiteNode.getValueObject());
+			}
+	        */
+	        
 			CacheController.cacheObject("childSiteNodesCache", key, siteNodeVOList);
 		}
 		

@@ -5,13 +5,14 @@
 <html>
 <head>
 	<title>$ui.getString("tool.contenttool.selectImageTitle")</title>
-	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
 	
 	<link rel="stylesheet" type="text/css" href="css/cms.css" /> 
 	<script type="text/javascript" src="script/listview.js"></script>
-	<script type="text/javascript" src="script/jquery/jquery-1.3.2.min.js"></script>
 	
-	<script language="JavaScript">
+	#includeLatestJQuery()
+	
+	<script type="text/javascript">
 	<!--		
 		#set($exp = $this.getExpansion($oldContentId))
 		var exp = "$exp";
@@ -98,8 +99,6 @@
 		
 		function init() 
 		{
-			//window.resizeTo(770,680);
-			
 			var txtUrl = "";
 			if(top.opener && top.opener.document.getElementById("txtLnkUrl"))
 			{
@@ -123,15 +122,15 @@
 			//alert("contentId:" + contentId);
 			document.getElementById("entityId").value = contentId;
 		  	
-			document.getElementById("itreeFrame").src = "ViewContentHtmlTree.action?repositoryId=$!repositoryId&exp=$exp&akey=/" + contentId + "/&select=" + contentId;
+			document.getElementById("itreeFrame").src = "ViewContentHtmlTree!V3.action?repositoryId=$!repositoryId&exp=$exp&akey=/" + contentId + "/&select=" + contentId;
 			document.getElementById("contentVersionAssetsFrame").src = "ViewContentVersion!viewAssetsForFCKEditorSmallV3.action?contentId=" + contentId + "&languageId=$languageId&assetKey=" + assetKey + "&treatAsLink=$treatAsLink&assetTypeFilter=$assetTypeFilter";
 		};
 		
 		$(document).ready(function(){
 			var dimensionsHeight = $(window).height();
-			//alert("Height:" + dimensionsHeight);
 			$("#itreeFrame").height(dimensionsHeight - 30);
-			$("#contentVersionAssetsFrame").height(dimensionsHeight - 30);			
+			$("#contentVersionAssetsFrame").height(dimensionsHeight - 30);	
+			init();
 		});
 		
 		function toggleDiv(id, id2)
@@ -155,7 +154,7 @@
 	<META HTTP-EQUIV="expires" CONTENT="-1" />	
 </head>
 
-<body class="generaltooledit" onload="init();" style="background-color: #f7f7f7; margin: 0px; padding: 0px;">
+<body class="generaltooledit" style="background-color: #f7f7f7; margin: 0px; padding: 0px;">
 
 <form name="inputForm" action="CreateServiceBinding.action">
 	<input type="hidden" id="entityId" name="entityId" value="">
@@ -188,7 +187,7 @@
 		<tr>
 			<td class="menu">  
 				<div id="treeDiv" style="display:block;">
-					<iframe frameborder="0" name="itreeFrame" id="itreeFrame" src="" width="280" height="340" align="baseline"></iframe>
+					<iframe frameborder="0" name="itreeFrame" id="itreeFrame" src="" width="280" height="340" ></iframe>
 				</div>
 			</td>
 		</tr>	
@@ -210,9 +209,9 @@
 		<tr>
 			<td>
 				#if($oldContentId > 0)
-					<IFRAME frameborder="0" name="contentVersionAssetsFrame" id="contentVersionAssetsFrame" src="" width="95%" height="365" align="baseline"></IFRAME>
+					<IFRAME frameborder="0" name="contentVersionAssetsFrame" id="contentVersionAssetsFrame" src="" width="95%" height="365" ></IFRAME>
 				#else
-					<IFRAME frameborder="0" name="contentVersionAssetsFrame" id="contentVersionAssetsFrame" src="" width="95%" height="365" align="baseline"></IFRAME>
+					<IFRAME frameborder="0" name="contentVersionAssetsFrame" id="contentVersionAssetsFrame" src="" width="95%" height="365" ></IFRAME>
 				#end
 			</td>
 		</tr>

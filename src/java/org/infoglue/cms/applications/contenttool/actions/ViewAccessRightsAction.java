@@ -63,6 +63,7 @@ public class ViewAccessRightsAction extends InfoGlueAbstractAction
 	private String extraParameters = "";
 	private String[] extraMultiParameters;
 	private String returnAddress;
+	private Boolean showInline = false;
 	private String colorScheme;
 	private String saved = "false";
 
@@ -88,6 +89,7 @@ public class ViewAccessRightsAction extends InfoGlueAbstractAction
 			    
 		    Integer contentId = new Integer(extraParameters);
 			ContentVO contentVO = ContentControllerProxy.getController().getContentVOWithId(contentId);
+
 			if(!contentVO.getCreatorName().equalsIgnoreCase(this.getInfoGluePrincipal().getName()))
 			{
 				if(ContentControllerProxy.getController().getIsContentProtected(contentId) && !AccessRightController.getController().getIsPrincipalAuthorized(this.getInfoGluePrincipal(), "Content.ChangeAccessRights", contentId.toString()))
@@ -279,5 +281,15 @@ public class ViewAccessRightsAction extends InfoGlueAbstractAction
 	public void setSaved(String saved)
 	{
 		this.saved = saved;
+	}
+
+	public Boolean getShowInline()
+	{
+		return showInline;
+	}
+
+	public void setShowInline(Boolean showInline)
+	{
+		this.showInline = showInline;
 	}
 }

@@ -45,12 +45,8 @@ public class ViewRepositoryAction extends InfoGlueAbstractAction
 
     private RepositoryVO repositoryVO;
 
-	private List repositoryLanguageVOList;
-	private List allRemainingLanguageVOList;
-
-    //private List availableLanguageVOList;
-    //private List languageVOList;
-
+	private List<LanguageVO> languageVOList;
+    
     public ViewRepositoryAction()
     {
         this(new RepositoryVO());
@@ -65,11 +61,7 @@ public class ViewRepositoryAction extends InfoGlueAbstractAction
     {
         repositoryVO = RepositoryController.getController().getRepositoryVOWithId(repositoryId);
         
-        this.repositoryLanguageVOList = RepositoryLanguageController.getController().getRepositoryLanguageVOListWithRepositoryId(repositoryId);
-		this.allRemainingLanguageVOList = RepositoryLanguageController.getController().getRemainingLanguages(repositoryId);
-		
-        //availableLanguageVOList = LanguageController.getController().getLanguageVOList(repositoryId);
-		//languageVOList = LanguageController.getController().getLanguageVOList();
+        this.languageVOList = RepositoryLanguageController.getController().getLanguageVOListForRepositoryId(repositoryId);
     } 
 
     /**
@@ -119,38 +111,11 @@ public class ViewRepositoryAction extends InfoGlueAbstractAction
         return this.repositoryVO.getDnsName();
     }
 	
-    /*
-    public List getAvailableLanguages()
+    public List<LanguageVO> getLanguageVOList()
     {
-    	return this.availableLanguageVOList;
-    }
-
-    public List getAllLanguages()
-    {    	
-    	return this.languageVOList;
-    }
-    */
-    
-    /*
-    public List getRoles()throws Exception{
-   		return (List) RepositoryController.getRepositoryRoleVOList(this.getRepositoryId()); 		
-    }
-   	*/
-    public List getAllRemainingLanguageVOList()
-    {
-        return allRemainingLanguageVOList;
+        return languageVOList;
     }
     
-    public List getRepositoryLanguageVOList()
-    {
-        return repositoryLanguageVOList;
-    }
-    
-	public LanguageVO getLanguage(Integer repositoryLanguageId) throws Exception
-	{
-		return LanguageController.getController().getLanguageVOWithRepositoryLanguageId(repositoryLanguageId);
-	}
-
 	public RepositoryVO getRepositoryVO()
 	{
 		return repositoryVO;

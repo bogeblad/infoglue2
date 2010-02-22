@@ -4,22 +4,24 @@
 
 #beginPublishingTool("tool.publishingtool.welcomeHeader" "Welcome to the publishing tool, select one repository to work with" "")
 
-<!--div class="fullymarginalized"-->
-<script type="text/javascript" language="Javascript">
+<script type="text/javascript">
+<!--
+	
+	if(parent.refreshTopToolBar)
+		parent.refreshTopToolBar('tool.publishingtool.welcomeHeader', 'tool.publishingtool.welcomeHeader', '', -1, -1, -1);
+	else
+		refreshManagementToolBar('tool.publishingtool.welcomeHeader', '');
 
-		function reloadMenu(id)
-		{
-			var menuFrame = parent.header;
-			var theDoc = menuFrame.document;
-			var theFrame = parent.menu;
-   			
-   			theDoc.selectbox.repositoryId.value = id;
-		    document.location.href = "ViewPublications.action?repositoryId=" + id;
-		}
+	function openUrlInWorkArea(url, title, targetTab, tabLabelPrefix)
+	{
+		if(parent.openUrlInWorkArea)
+			parent.openUrlInWorkArea(url, title, targetTab, tabLabelPrefix);
+	}
 
-	</script>
+-->
+</script>
 
-<table tableborder="0" border="0" bgcolor="666666" width="70%" cellpadding="1" cellspacing="0">
+<table border="0" border="0" bgcolor="666666" width="70%" cellpadding="1" cellspacing="0">
 <tr>
 	<td>
 
@@ -35,7 +37,10 @@
 	#else
 		#set($status = "No items")	
 	#end
-	#set($row = ["<a href='#' onclick='reloadMenu($repositoryVO.getId())'>$repositoryVO.getName() </a>", "$repositoryVO.getDescription()", "$status"])
+	#set($fnutt = '"')
+	#set($publishingTabLabelPrefix = $ui.getString("tool.common.publishingTabLabelPrefix"))
+	#set($row = ["<a href=${fnutt}javascript:void(0);${fnutt} onclick=${fnutt}openUrlInWorkArea('ViewPublications!V3.action?repositoryId=$repositoryVO.id', '$repositoryVO.getName()', 'publishing', '$publishingTabLabelPrefix');${fnutt}>$repositoryVO.name</a>", "$repositoryVO.getDescription()", "$status"])
+	##set($row = ["<a href='#' onclick='reloadMenu($repositoryVO.getId())'>$repositoryVO.getName() </a>", "$repositoryVO.getDescription()", "$status"])
 	#set($cnt = $cnt + 1)
 	#lvAddRow($row $cnt "$repositoryVO.getId()")
 #end

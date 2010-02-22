@@ -164,6 +164,7 @@ public class SiteNodeStateController extends BaseController
 				newSiteNodeVersionVO.setDisablePageCache(oldSiteNodeVersion.getDisablePageCache());
 				newSiteNodeVersionVO.setIsProtected(oldSiteNodeVersion.getIsProtected());
 				newSiteNodeVersionVO.setDisableForceIdentityCheck(oldSiteNodeVersion.getDisableForceIdentityCheck());
+				newSiteNodeVersionVO.setForceProtocolChange(oldSiteNodeVersion.getForceProtocolChange());
 			    
 				newSiteNodeVersion = SiteNodeVersionController.create(siteNodeId, infoGluePrincipal, newSiteNodeVersionVO, db);
 				copyServiceBindings(oldSiteNodeVersion, newSiteNodeVersion, db);
@@ -201,6 +202,7 @@ public class SiteNodeStateController extends BaseController
 				newSiteNodeVersionVO.setDisablePageCache(oldSiteNodeVersion.getDisablePageCache());
 				newSiteNodeVersionVO.setIsProtected(oldSiteNodeVersion.getIsProtected());
 				newSiteNodeVersionVO.setDisableForceIdentityCheck(oldSiteNodeVersion.getDisableForceIdentityCheck());
+				newSiteNodeVersionVO.setForceProtocolChange(oldSiteNodeVersion.getForceProtocolChange());
 
 		    	newSiteNodeVersion = SiteNodeVersionController.create(siteNodeId, infoGluePrincipal, newSiteNodeVersionVO, db);
 				copyServiceBindings(oldSiteNodeVersion, newSiteNodeVersion, db);

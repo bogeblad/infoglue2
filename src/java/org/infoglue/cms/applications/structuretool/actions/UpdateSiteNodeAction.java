@@ -23,6 +23,7 @@
 
 package org.infoglue.cms.applications.structuretool.actions;
 
+import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -61,9 +62,13 @@ public class UpdateSiteNodeAction extends ViewSiteNodeAction //WebworkAbstractAc
 	private Integer disableEditOnSight;
 	private Integer disableLanguages;
 	private Integer disableForceIdentityCheck;
+	private Integer forceProtocolChange;
 	private String contentType;
 	private String pageCacheKey;
 	private String pageCacheTimeout;
+
+    private String actionUrl;
+    private String targetTitle;
 
 	private ConstraintExceptionBuffer ceb;
 	
@@ -99,6 +104,7 @@ public class UpdateSiteNodeAction extends ViewSiteNodeAction //WebworkAbstractAc
 			siteNodeVersionVO.setDisableLanguages(this.disableLanguages);
 			siteNodeVersionVO.setDisablePageCache(this.getDisablePageCache());
 			siteNodeVersionVO.setDisableForceIdentityCheck(this.disableForceIdentityCheck);
+			siteNodeVersionVO.setForceProtocolChange(this.forceProtocolChange);
 			siteNodeVersionVO.setIsProtected(this.getIsProtected());
 			siteNodeVersionVO.setVersionModifier(this.getInfoGluePrincipal().getName());
 			
@@ -148,11 +154,38 @@ public class UpdateSiteNodeAction extends ViewSiteNodeAction //WebworkAbstractAc
 		return "success";
 	}
 
+	public String doV3() throws Exception
+    {
+		doExecute();
+						
+		return "successV3";
+	}
+
 	public String doSaveAndExit() throws Exception
     {
 		doExecute();
 						
 		return "saveAndExit";
+	}
+
+	public String doSaveAndExitV3() throws Exception
+    {
+		doExecute();
+						
+		return "saveAndExitV3";
+	}
+
+	public String doSaveAndExitV3Inline() throws Exception
+    {
+		doExecute();
+
+		String userSessionKey = "" + System.currentTimeMillis();
+        setActionExtraData(userSessionKey, "unrefreshedNodeId", "" + this.siteNodeVO.getSiteNodeId());
+
+		this.actionUrl = "ViewSiteNode.action?siteNodeId=" + this.siteNodeVO.getSiteNodeId(); // + "newSiteNodeId=" + this.siteNodeId;
+		this.targetTitle = "AAAAAAAAA";
+		
+		return "saveAndExitV3Inline";
 	}
 
 	public void setSiteNodeId(Integer siteNodeId)
@@ -245,6 +278,16 @@ public class UpdateSiteNodeAction extends ViewSiteNodeAction //WebworkAbstractAc
 		this.disableForceIdentityCheck = disableForceIdentityCheck;
 	}
 
+	public Integer getForceProtocolChange()
+	{
+		return this.forceProtocolChange;
+	}
+
+	public void setForceProtocolChange(Integer forceProtocolChange)
+	{
+		this.forceProtocolChange = forceProtocolChange;
+	}
+
 	public Integer getDisableLanguages()
 	{
 		return this.disableLanguages;
@@ -294,4 +337,15 @@ public class UpdateSiteNodeAction extends ViewSiteNodeAction //WebworkAbstractAc
     {
         this.pageCacheTimeout = pageCacheTimeout;
     }
+    
+	public String getActionUrl()
+	{
+		return actionUrl;
+	}
+
+	public String getTargetTitle()
+	{
+		return targetTitle;
+	}
+
 }

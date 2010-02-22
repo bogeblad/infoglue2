@@ -1316,7 +1316,8 @@ function saveAttribute(selectedContentId, selectedLanguageId, selectedAttributeN
 		   	data: data,
 		   	success: function(msg){
 		   		//alert( "Data Saved: " + msg );
-		     	$("#spanInput" + key).replaceWith(msg);
+				$("#spanInput" + key).parent().html(msg);
+		     	//$("#spanInput" + key).replaceWith(msg);
 			    completeEditInlineSave(selectedContentId, selectedAttributeName);
 		   	},
 		   error: function (XMLHttpRequest, textStatus, errorThrown) {
@@ -1661,6 +1662,20 @@ function showComponentPropertiesInDiv(targetDivId, parameterString, skipFloat, e
 			try
 			{
 				$(targetDiv).find(".wysiwygeditor").each(function(){
+			 		if(userPrefferredWYSIWYG  == "ckeditor3" || userPrefferredWYSIWYG  == "" || typeof(userPrefferredWYSIWYG )=="undefined")
+			 		{
+						var toolbarName = $(this).attr("toolbarName");
+						if(!toolbarName || toolbarName == "")
+							toolbarName = "Basic";
+			 			var editor = CKEDITOR.replace( $(this).attr("id"), {
+			 																'skin': 'office2003',
+			 																'toolbar': [
+			 																           ['Bold','Italic','-','NumberedList','BulletedList','-','Link','Unlink','-','Image','Format']
+			 																           ]
+			 															});
+			 		}
+			 		else
+			 		{
 						var fck = new FCKeditor("myFCKeditor");
 						var id = $(this).attr("id");
 						var toolbarName = $(this).attr("toolbarName");
@@ -1672,7 +1687,8 @@ function showComponentPropertiesInDiv(targetDivId, parameterString, skipFloat, e
 						oFCKeditor.Config["CustomConfigurationsPath"] = "" + componentEditorUrl + "WYSIWYGProperties.action?" + parameterString;
 						oFCKeditor.ToolbarSet = toolbarName;
 						oFCKeditor.ReplaceTextarea() ;
-					});
+			 		}
+				});
 				
 				var theRoot   = document.getElementById("componentProperties");
 				if(theRoot)
@@ -1704,6 +1720,20 @@ function showComponentPropertiesInDiv(targetDivId, parameterString, skipFloat, e
 			try
 			{
 				$(targetDiv).find(".wysiwygeditor").each(function(){
+			 		if(userPrefferredWYSIWYG  == "ckeditor3" || userPrefferredWYSIWYG  == "" || typeof(userPrefferredWYSIWYG )=="undefined")
+			 		{
+						var toolbarName = $(this).attr("toolbarName");
+						if(!toolbarName || toolbarName == "")
+							toolbarName = "Basic";
+			 			var editor = CKEDITOR.replace( $(this).attr("id"), {
+			 																'skin': 'office2003',
+			 																'toolbar': [
+			 																           ['Bold','Italic','-','NumberedList','BulletedList','-','Link','Unlink','-','Image','Format']
+			 																           ]
+			 															});
+			 		}
+			 		else
+			 		{
 						var fck = new FCKeditor("myFCKeditor");
 						var id = $(this).attr("id");
 						var toolbarName = $(this).attr("toolbarName");
@@ -1715,7 +1745,8 @@ function showComponentPropertiesInDiv(targetDivId, parameterString, skipFloat, e
 						oFCKeditor.Config["CustomConfigurationsPath"] = "" + componentEditorUrl + "WYSIWYGProperties.action?" + parameterString;
 						oFCKeditor.ToolbarSet = toolbarName;
 						oFCKeditor.ReplaceTextarea() ;
-					});
+			 		}
+				});
 
 				
 				var theHandle = document.getElementById("componentPropertiesHandle");

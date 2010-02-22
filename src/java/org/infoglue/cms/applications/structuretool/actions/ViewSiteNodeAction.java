@@ -476,6 +476,129 @@ public class ViewSiteNodeAction extends InfoGlueAbstractAction
 		return result;
     }
     
+    public String doV3() throws Exception
+    {
+    	String result = "successV3";
+    	
+        Database db = CastorDatabaseService.getDatabase();
+		
+		beginTransaction(db);
+
+		try
+		{
+			if(getSiteNodeId() != null)
+			{	
+	        	this.initialize(getSiteNodeId(), db);
+
+	            if((this.stay == null || !this.stay.equalsIgnoreCase("true")) && this.siteNodeVO.getSiteNodeTypeDefinitionId() != null && getShowComponentsFirst().equalsIgnoreCase("true"))
+		        {
+	                boolean isMetaInfoInWorkingState = false;
+	    			LanguageVO masterLanguageVO = LanguageController.getController().getMasterLanguage(this.repositoryId, db);
+	    			Integer languageId = masterLanguageVO.getLanguageId();
+
+	    			AvailableServiceBindingVO availableServiceBindingVO = AvailableServiceBindingController.getController().getAvailableServiceBindingVOWithName("Meta information");
+	    			Integer metaInfoAvailableServiceBindingId = null;
+	    			if(availableServiceBindingVO != null)
+	    			    metaInfoAvailableServiceBindingId = availableServiceBindingVO.getAvailableServiceBindingId();
+	    			
+	    			Integer metaInfoContentId = null;
+	    			ContentVersionVO metaInfoContentVersionVO = null;
+	    			
+	    			if(this.siteNodeVersionVO != null)
+	    			{
+	    				if(this.siteNodeVO != null && this.siteNodeVO.getMetaInfoContentId() != null)
+	    				{
+    	    				metaInfoContentId = this.siteNodeVO.getMetaInfoContentId();
+    	    				metaInfoContentVersionVO = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(metaInfoContentId, languageId, db);
+    	    				if(metaInfoContentVersionVO != null && metaInfoContentVersionVO.getStateId().equals(ContentVersionVO.WORKING_STATE))
+    	    					isMetaInfoInWorkingState = true;	    					
+	    				}
+	    				else
+	    				{
+			    			List serviceBindings = SiteNodeVersionController.getServiceBindningVOList(this.siteNodeVersionVO.getId(), db);
+			    			Iterator serviceBindingIterator = serviceBindings.iterator();
+			    			while(serviceBindingIterator.hasNext())
+			    			{
+			    				ServiceBindingVO serviceBindingVO = (ServiceBindingVO)serviceBindingIterator.next();
+			    				if(serviceBindingVO.getAvailableServiceBindingId().intValue() == metaInfoAvailableServiceBindingId.intValue())
+			    				{
+			    					List boundContents = ContentController.getInTransactionBoundContents(db, serviceBindingVO.getServiceBindingId()); 			
+			    					if(boundContents.size() > 0)
+			    	    			{
+			    	    				ContentVO contentVO = (ContentVO)boundContents.get(0);
+			    	    				metaInfoContentId = contentVO.getId();
+			    	    				metaInfoContentVersionVO = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(contentVO.getId(), languageId, db);
+			    	    				if(metaInfoContentVersionVO != null && metaInfoContentVersionVO.getStateId().equals(ContentVersionVO.WORKING_STATE))
+			    	    					isMetaInfoInWorkingState = true;
+			
+			    	    				break;
+			    	    			}                					
+			    				}
+			    			}	    					
+	    				}
+	    			}
+	    			
+	    			if(this.siteNodeVO.getMetaInfoContentId() == null || this.siteNodeVO.getMetaInfoContentId().intValue() == -1)
+	    			    SiteNodeController.getController().setMetaInfoContentId(this.siteNodeVO.getId(), metaInfoContentId, db);
+	    			    
+	    			if(this.siteNodeVersionVO != null && this.siteNodeVersionVO.getStateId().equals(SiteNodeVersionVO.WORKING_STATE) && !isMetaInfoInWorkingState)
+	    			{
+	    				if(metaInfoContentVersionVO != null)
+	    					metaInfoContentVersionVO = ContentStateController.changeState(metaInfoContentVersionVO.getId(), ContentVersionVO.WORKING_STATE, "Automatic", true, null, this.getInfoGluePrincipal(), null, db, new ArrayList()).getValueObject();
+	    				
+	    				isMetaInfoInWorkingState = true;
+	    			}
+	    				    			
+	    			//if(isMetaInfoInWorkingState)
+	    			if(true)
+	    		    {
+	    			    String url = getComponentRendererUrl() + getComponentRendererAction() + "?siteNodeId=" + getSiteNodeId() + "&languageId=" + masterLanguageVO.getId() + "&contentId=-1&cmsUserName=" + formatter.encodeURI(this.getInfoGluePrincipal().getName());
+	    			    url = this.getResponse().encodeURL(url);
+	    				this.getResponse().sendRedirect(url);
+	    				result = NONE;
+	    			}
+	    			else
+	    				result = "successV3";
+		            
+	    			//if(this.repositoryId == null)
+		            //    this.repositoryId = contentVO.getRepositoryId();
+		            
+		            //this.languageId = getMasterLanguageVO().getId();
+		            //return "viewVersion";
+		        }
+		        else
+		        {
+		            this.initializeSiteNodeCover(getSiteNodeId(), db);
+		            
+	            	result = "successV3";
+		        }
+			}
+			else
+			{
+				result = "blank";
+			}
+	        
+	        commitTransaction(db);
+	    }
+		catch(ConstraintException ce)
+		{
+			ce.printStackTrace();
+			logger.info("An error occurred so we should not complete the transaction:" + ce, ce);
+			rollbackTransaction(db);
+			throw ce;
+		}
+		catch(Exception e)
+		{
+			logger.error("An error occurred so we should not complete the transaction:" + e, e);
+			rollbackTransaction(db);
+			throw new SystemException(e.getMessage());
+		}
+
+    	System.out.println("result:" + result);
+
+		return result;
+    }
+    
     public String doRefreshAndRedirect() throws Exception
     {
     	String result = "successRefreshAndRedirect";
@@ -674,6 +797,16 @@ public class ViewSiteNodeAction extends InfoGlueAbstractAction
 	public void setDisableForceIdentityCheck(Integer disableForceIdentityCheck)
 	{
 		this.siteNodeVersionVO.setDisableForceIdentityCheck(disableForceIdentityCheck);
+	}
+
+	public Integer getForceProtocolChange()
+	{
+		return this.siteNodeVersionVO.getForceProtocolChange();
+	}
+
+	public void setForceProtocolChange(Integer forceProtocolChange)
+	{
+		this.siteNodeVersionVO.setForceProtocolChange(forceProtocolChange);
 	}
 
 
@@ -942,6 +1075,15 @@ public class ViewSiteNodeAction extends InfoGlueAbstractAction
 		}
 		
 		return eventVO;
+	}
+	
+	public Boolean getUseAccessBasedProtocolRedirects()
+	{
+		String useAccessBasedProtocolRedirects = CmsPropertyHandler.getUseAccessBasedProtocolRedirects();
+		if(useAccessBasedProtocolRedirects.equalsIgnoreCase("true"))
+			return true;
+		else
+			return false;
 	}
 	
 	public SiteNodeVersionVO getSiteNodeVersionVO()

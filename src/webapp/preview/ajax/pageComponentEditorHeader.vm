@@ -5,6 +5,7 @@
 	var currentContext = "${contextName}";
 	var currentUrl = "${currentUrl}";
 	var userPrefferredLanguageCode = "${userPrefferredLanguageCode}";
+	var userPrefferredWYSIWYG = "${userPrefferredWYSIWYG}";
 	var editOnSightAttributeNames = new Array();
 
 	var repositoryId = ${repositoryId};
@@ -44,20 +45,14 @@
 </script>
 <script type="text/javascript" src="${contextName}/script/ajaxComponentEditor.js"></script>
 
-<!--
-<script type="text/javascript" src="${contextName}/script/jquery/jquery-1.2.6.min.js"></script>
-<script type="text/javascript" src="${contextName}/script/jqueryplugins/ui/jquery.dimensions.js"></script>
-<script type="text/javascript" src="${contextName}/script/jqueryplugins/ui/jquery-ui-dragDropTabs-1.6rc2.min.js"></script>
--->
+<script type="text/javascript" src="${contextName}/script/jquery/jquery-1.4.min.js"></script>
 <link type="text/css" href="${contextName}/script/jqueryplugins/ui/jquery-ui-1.7.2.full.redmond/css/redmond/jquery-ui-1.7.2.custom.css" rel="stylesheet" />	
-<script type="text/javascript" src="${contextName}/script/jquery/jquery-1.3.2.min.js"></script>
 <script type="text/javascript" src="${contextName}/script/jqueryplugins/ui/jquery-ui-1.7.2.full.redmond/js/jquery-ui-1.7.2.custom.min.js"></script>
-
 
 <script type="text/javascript" src="${contextName}/script/jqueryplugins/thickbox/thickbox-compressed.js"></script>
 <style type="text/css" media="all">@import "${contextName}/script/jqueryplugins/thickbox/thickbox.css";</style>
 
-<script type="text/javascript" src="${contextName}/applications/FCKEditor/fckeditor.js"></script>
+<script type="text/javascript" src="${contextName}/applications/${WYSIWYGEditorJS}"></script>
 
 <script type="text/javascript" src="${contextName}/applications/jscalendar/calendar.js"></script>
 <script type="text/javascript" src="${contextName}/applications/jscalendar/lang/calendar-en.js"></script>

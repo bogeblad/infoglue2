@@ -58,6 +58,8 @@ public class DeleteRepositoryAction extends InfoGlueAbstractAction
 		if(!hasAccessToManagementTool)
 			throw new AccessConstraintException("Repository.delete", "1003");
 
+		validateSecurityCode();
+
 		this.repositoryVO.setRepositoryId(this.getRepositoryId());
 		try
 		{
@@ -82,10 +84,15 @@ public class DeleteRepositoryAction extends InfoGlueAbstractAction
 		if(!hasAccessToManagementTool)
 			throw new AccessConstraintException("Repository.delete", "1003");
 
+		validateSecurityCode();
+
 		this.repositoryVO.setRepositoryId(this.getRepositoryId());
 		try
 		{
 			RepositoryController.getController().delete(this.repositoryVO, this.getInfoGluePrincipal().getName(), this.getInfoGluePrincipal());
+
+		    ViewMessageCenterAction.addSystemMessage(this.getInfoGluePrincipal().getName(), ViewMessageCenterAction.SYSTEM_MESSAGE_TYPE, "refreshRepositoryList();");
+
 			return "success";
 		}
 		catch(ConstraintException ce)
@@ -106,10 +113,15 @@ public class DeleteRepositoryAction extends InfoGlueAbstractAction
 		if(!hasAccessToManagementTool)
 			throw new AccessConstraintException("Repository.delete", "1003");
 			
+		validateSecurityCode();
+
 	    this.repositoryVO.setRepositoryId(this.getRepositoryId());
 		try
 		{
 			RepositoryController.getController().delete(this.repositoryVO, this.getInfoGluePrincipal().getName(), true, this.getInfoGluePrincipal());
+
+			ViewMessageCenterAction.addSystemMessage(this.getInfoGluePrincipal().getName(), ViewMessageCenterAction.SYSTEM_MESSAGE_TYPE, "refreshRepositoryList();");
+			
 			return "success";
 		}
 		catch(ConstraintException ce)

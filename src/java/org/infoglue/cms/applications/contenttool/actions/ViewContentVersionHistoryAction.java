@@ -51,7 +51,14 @@ public class ViewContentVersionHistoryAction extends InfoGlueAbstractAction
 
 	    return "success";
 	}
-		
+
+	public String doV3() throws Exception 
+	{
+		doExecute();
+
+	    return "successV3";
+	}
+
 	/**
 	 * @return
 	 */

@@ -67,16 +67,26 @@
 	function init() 
 	{
 		#if($contentVO.id)
-			//alert(top.opener.document.title);
-			if(top.opener.document.title == "Image Properties")
+			var txtUrl = "";
+			
+			if(parent.getTextUrl)
 			{
-				var txtUrl = top.opener.document.getElementById("txtLnkUrl").value;
-				if(txtUrl == null || txtUrl == "")
-					txtUrl = top.opener.document.getElementById("txtUrl").value;
+				txtUrl = parent.getTextUrl();
 			}
-			else
-				var txtUrl = top.opener.document.getElementById("txtUrl").value;
-		
+			else	
+			{
+				if(top.opener.document.title == "Image Properties")
+				{
+					txtUrl = top.opener.document.getElementById("txtLnkUrl").value;
+					if(txtUrl == null || txtUrl == "")
+						txtUrl = top.opener.document.getElementById("txtUrl").value;
+				}
+				else
+				{
+					txtUrl = top.opener.document.getElementById("txtUrl").value;
+				}
+			}		
+			
 			//alert(txtUrl);
 			contentId 		= getRequestParameter(txtUrl, "contentId");
 			//alert("contentId:" + contentId);
@@ -117,20 +127,20 @@
 	
 		#if($contentVO.id)
 		<div id="currentContentAssetsTab" class="inlineTabDiv" style="border-bottom: 0px solid red;">
-			<IFRAME frameborder="0" name="contentVersionAssetsFrame" id="contentVersionAssetsFrame" src="" width="660" height="410" align="baseline"></IFRAME>
+			<IFRAME frameborder="0" name="contentVersionAssetsFrame" id="contentVersionAssetsFrame" src="" width="660" height="410" ></IFRAME>
 		</div>
 		#end
 		
 		<div id="latestUploadedTab" class="inlineTabDiv">
-			<IFRAME frameborder="0" name="latestAssetsFrame" id="latestAssetsFrame" src="" width="660" height="410" align="baseline"></IFRAME>
+			<IFRAME frameborder="0" name="latestAssetsFrame" id="latestAssetsFrame" src="" width="660" height="410" ></IFRAME>
 		</div>
 		
 		<div id="repositoryBrowserTab" class="inlineTabDiv">
-			<IFRAME frameborder="0" name="repositoryBrowserFrame" id="repositoryBrowserFrame" src="" width="660" height="410" align="baseline"></IFRAME>
+			<IFRAME frameborder="0" name="repositoryBrowserFrame" id="repositoryBrowserFrame" src="" width="660" height="410" ></IFRAME>
 		</div>
 					
 		<div id="searchTab" class="inlineTabDiv" style="border-bottom: 0px solid red;">
-			<IFRAME frameborder="0" name="contentVersionAssetSearchFrame" id="contentVersionAssetSearchFrame" src="" width="660" height="410" align="baseline"></IFRAME>
+			<IFRAME frameborder="0" name="contentVersionAssetSearchFrame" id="contentVersionAssetSearchFrame" src="" width="660" height="410" ></IFRAME>
 		</div>
 
 	</div>

@@ -33,6 +33,7 @@ import org.infoglue.cms.controllers.kernel.impl.simple.InconsistenciesController
 import org.infoglue.cms.controllers.kernel.impl.simple.RegistryController;
 import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeController;
 import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeControllerProxy;
+import org.infoglue.cms.controllers.kernel.impl.simple.StructureToolbarController;
 import org.infoglue.cms.entities.structure.SiteNode;
 import org.infoglue.cms.entities.structure.SiteNodeVO;
 import org.infoglue.cms.exception.ConstraintException;
@@ -130,16 +131,24 @@ public class DeleteSiteNodeAction extends InfoGlueAbstractAction
         }
         catch(ConstraintException ce)
         {
-        	logger.warn("An error occurred so we should not complete the transaction:" + ce);
+        	logger.warn("An error occurred so we should not complete the transaction:" + ce.getMessage());
 
         	parentSiteNodeVO = SiteNodeControllerProxy.getController().getSiteNodeVOWithId(parentSiteNodeId);
-
+        	
+        	if(ce.getErrorCode().equalsIgnoreCase("3400"))
+        	{
+        		String unpublishSiteNodesInlineOperationLinkText = getLocalizedString(getLocale(), "tool.structuretool.unpublishSiteNodesInlineOperationLinkText");
+        		String unpublishSiteNodesInlineOperationTitleText = getLocalizedString(getLocale(), "tool.structuretool.unpublishSiteNodesInlineOperationTitleText");
+        	
+        		ce.getLinkBeans().add(new LinkBean("unpublishPageUrl", unpublishSiteNodesInlineOperationLinkText, unpublishSiteNodesInlineOperationTitleText, unpublishSiteNodesInlineOperationTitleText, StructureToolbarController.getUnpublishButtonLink(this.siteNodeVO.getSiteNodeId(), true), false, "", "", "inline"));
+        	}
+        	
 			ce.setResult(INPUT + "V3");
 			throw ce;
         }
         catch(Exception e)
         {
-            logger.error("An error occurred so we should not complete the transaction:" + e, e);
+            logger.error("An error occurred so we should not complete the transaction:" + e.getMessage(), e);
             throw new SystemException(e.getMessage());
         }
     	        

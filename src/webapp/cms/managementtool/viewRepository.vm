@@ -137,25 +137,18 @@
 		<td>&nbsp;</td>
 	</tr>
 	<tr>
-		<td class="biglabel">Right now the repository contains the marked languages</td>
+		<td class="biglabel">The repository is currently configured to support the following languages</td>
 	</tr>
 	
-	##foreach ($languageVO in $allLanguages)
-	#foreach ($repositoryLanguageVO in $repositoryLanguageVOList)
-		#set($languageVO = $this.getLanguage($repositoryLanguageVO.repositoryLanguageId))
-		<tr>
-			<td>		
-				<input type="checkbox" name="languageId" value="$languageVO.getLanguageId()" checked>$languageVO.getName()				
-			</td>
-		</tr>
-	#end
-	#foreach ($languageVO in $allRemainingLanguageVOList)
-		<tr>
-			<td>		
-				<input type="checkbox" name="languageId" value="$languageVO.getLanguageId()">$languageVO.getName()				
-			</td>
-		</tr>
-	#end
+	<tr>
+		<td>
+			<ul style="list-style-type: none; margin: 0px; padding: 0px;">
+			#foreach ($languageVO in $languageVOList)
+				<li style="height: 16px; background-repeat: no-repeat; background-position: 0px 0px; padding-left: 18px; background-image: url(images/v3/check.png);">$languageVO.name #if($velocityCount == 1) (Master) #end</li>
+			#end
+			</ul>
+		</td>
+	</tr>
 	<tr>
 		<td>&nbsp;</th>
 	</tr>

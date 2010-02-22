@@ -110,6 +110,8 @@ public class ViewServerNodePropertiesAction extends InfoGluePropertiesAbstractAc
     
     public String doSave() throws Exception
     {
+		validateSecurityCode();
+
         Map args = new HashMap();
 	    args.put("globalKey", "infoglue");
 	    PropertySet ps = PropertySetManager.getInstance("jdbc", args);
@@ -363,6 +365,8 @@ public class ViewServerNodePropertiesAction extends InfoGluePropertiesAbstractAc
     
     public String doDeleteProperty() throws Exception
     {
+		validateSecurityCode();
+
         Map args = new HashMap();
 	    args.put("globalKey", "infoglue");
 	    PropertySet ps = PropertySetManager.getInstance("jdbc", args);

@@ -244,20 +244,24 @@ public class ChangeMultiSiteNodeVersionStatePublishAction extends InfoGlueAbstra
         this.overrideVersionModifyer = overrideVersionModifyer;
     }
 
-	public String getReturnAddress() {
-		return returnAddress;
-	}
-
-	public void setReturnAddress(String returnAddress) {
-		this.returnAddress = returnAddress;
-	}
-
-	public String getRecipientFilter() {
+	public String getRecipientFilter() 
+	{
 		return recipientFilter;
 	}
 
-	public void setRecipientFilter(String recipientFilter) {
+	public void setRecipientFilter(String recipientFilter) 
+	{
 		this.recipientFilter = recipientFilter;
+	}
+
+	public String getReturnAddress() 
+	{
+		return returnAddress;
+	}
+
+	public void setReturnAddress(String returnAddress) 
+	{
+		this.returnAddress = returnAddress;
 	}
 
 	public String getUserSessionKey()

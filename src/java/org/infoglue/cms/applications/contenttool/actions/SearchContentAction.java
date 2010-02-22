@@ -164,7 +164,7 @@ public class SearchContentAction extends InfoGlueAbstractAction
 					selectedRepositoryIdList.add(repositoryIdToSearch[i]);
 				}
 				
-				contentVersionVOList = searchController.getContentVersionVOList(repositoryIdAsIntegerToSearch, this.getSearchString(), maxRows, name, languageId, new Integer[]{contentTypeDefinitionId}, caseSensitive, stateId, includeAssets);
+				contentVersionVOList = searchController.getContentVersionVOList(repositoryIdAsIntegerToSearch, this.getSearchString(), maxRows, name, languageId, new Integer[]{contentTypeDefinitionId}, null, caseSensitive, stateId, includeAssets);
 			}
 			else
 			{

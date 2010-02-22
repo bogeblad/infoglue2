@@ -165,7 +165,7 @@ public class ExtendedSearchController extends BaseController
 			final SqlBuilder sqlBuilder = new SqlBuilder(criterias);
 		    if(logger.isDebugEnabled())
 		    	logger.debug("sql:" + sqlBuilder.getSQL());
-		    //System.out.println("sql:" + sqlBuilder.getSQL());
+		    System.out.println("sql:" + sqlBuilder.getSQL());
 		    
 			final OQLQuery oql = db.getOQLQuery(sqlBuilder.getSQL());
 			for(Iterator i=sqlBuilder.getBindings().iterator(); i.hasNext(); )
@@ -179,6 +179,7 @@ public class ExtendedSearchController extends BaseController
 			
 			QueryResults results = oql.execute(Database.ReadOnly);
 			Set matchingResults = createResults(results);
+			System.out.println("\n\nmatchingResults:" + matchingResults.size() + "\n\n");
 			
 			results.close();
 			oql.close();
@@ -378,6 +379,7 @@ class SqlBuilder
 		COMMA + CONTENT_ALIAS + ".expireDateTime" +
 		COMMA + CONTENT_ALIAS + ".isBranch" +
 		COMMA + CONTENT_ALIAS + ".isProtected" +
+		COMMA + CONTENT_ALIAS + ".isDeleted" + 
 		COMMA + CONTENT_ALIAS + ".creator" + 
 		COMMA + CONTENT_ALIAS + ".contentTypeDefId" +
 		COMMA + CONTENT_ALIAS + ".repositoryId" +
@@ -397,6 +399,7 @@ class SqlBuilder
 		COMMA + CONTENT_ALIAS + ".expireDateTime" +
 		COMMA + CONTENT_ALIAS + ".isBranch" +
 		COMMA + CONTENT_ALIAS + ".isProtected" +
+		COMMA + CONTENT_ALIAS + ".isDeleted" + 
 		COMMA + CONTENT_ALIAS + ".creator" + 
 		COMMA + CONTENT_ALIAS + ".contentTypeDefinitionId" +
 		COMMA + CONTENT_ALIAS + ".repositoryId" +
@@ -451,6 +454,8 @@ class SqlBuilder
 		final List clauses = new ArrayList();
 
 		String mode = CmsPropertyHandler.getOperatingMode();
+		if(!criterias.getStateId().toString().equals(mode))
+			mode = "" + criterias.getStateId();
 		if(criterias.getForcedOperatingMode() != null)
 			mode = "" + criterias.getStateId();
 		

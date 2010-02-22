@@ -129,7 +129,53 @@ public class StructureToolbarController
 		*/
 	}
 
-	
+	public static ToolbarButton getPageDetailButtons(Integer repositoryId, Integer siteNodeId, Locale locale, InfoGluePrincipal principal)
+	{
+		try
+		{
+		    boolean isMetaInfoInWorkingState = false;
+			LanguageVO masterLanguageVO = LanguageController.getController().getMasterLanguage(repositoryId);
+			Integer languageId = masterLanguageVO.getLanguageId();
+
+			SiteNodeVO siteNodeVO = SiteNodeController.getController().getSiteNodeVOWithId(siteNodeId);
+			if(siteNodeVO.getMetaInfoContentId() != null && siteNodeVO.getMetaInfoContentId().intValue() != -1)
+			{
+				ContentVersionVO contentVersionVO = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(siteNodeVO.getMetaInfoContentId(), languageId);
+				if(contentVersionVO.getStateId().equals(ContentVersionVO.WORKING_STATE))
+					isMetaInfoInWorkingState = true;
+			}
+
+			logger.info("isMetaInfoInWorkingState:" + isMetaInfoInWorkingState);
+			if(isMetaInfoInWorkingState)
+			{
+				return new ToolbarButton("",
+						getLocalizedString(locale, "tool.structuretool.toolbarV3.pageDetailLabel"), 
+						getLocalizedString(locale, "tool.structuretool.toolbarV3.pageDetailTitle"),
+						"ViewSiteNode!V3.action?siteNodeId=" + siteNodeId + "&stay=true",
+						"",
+						"pageDetails");
+			}
+			else
+			{
+				return new ToolbarButton("",
+						getLocalizedString(locale, "tool.structuretool.toolbarV3.pageDetailLabel"), 
+						getLocalizedString(locale, "tool.structuretool.toolbarV3.pageDetailTitle"),
+						"javascript:alert('Cannot edit this page. You must first set the meta info to working. Do this by entering node properties and changing the state to working.');",
+						"",
+						"pageDetails");
+			}
+		}
+		catch(Exception e)
+		{
+			return new ToolbarButton("",
+					getLocalizedString(locale, "tool.structuretool.toolbarV3.pageDetailLabel"), 
+					getLocalizedString(locale, "tool.structuretool.toolbarV3.pageDetailTitle"),
+					"javascript:alert('Cannot edit this page. You must first set the meta info to working. Do this by entering node properties and changing the state to working.');",
+					"",
+					"pageDetails");
+		}
+	}
+
 	public static ToolbarButton getCoverButtons(Integer repositoryId, Integer siteNodeId, Locale locale, InfoGluePrincipal principal)
 	{
 		try
@@ -152,10 +198,9 @@ public class StructureToolbarController
 				return new ToolbarButton("",
 						getLocalizedString(locale, "tool.structuretool.toolbarV3.pageCoverLabel"), 
 						getLocalizedString(locale, "tool.structuretool.toolbarV3.pageCoverTitle"),
-						"ViewSiteNode.action?siteNodeId=" + siteNodeId + "&stay=true",
+						"ViewSiteNode!V3.action?siteNodeId=" + siteNodeId + "&stay=true",
 						"",
-						"pageCover",
-						"structureWorkIframe");
+						"pageCover");
 			}
 			else
 			{
@@ -212,6 +257,25 @@ public class StructureToolbarController
 				"publishPage");
 	}
 
+	public static ToolbarButton getUnpublishButton(Integer repositoryId, Integer siteNodeId, Locale locale, boolean recursive)
+	{
+		String labelKey = "tool.common.unpublishing.unpublishPageButtonLabel";
+		if(recursive)
+			labelKey = "tool.common.unpublishing.unpublishPagesButtonLabel";
+		
+		return new ToolbarButton("",
+				getLocalizedString(locale, labelKey), 
+				getLocalizedString(locale, labelKey),
+				getUnpublishButtonLink(siteNodeId, recursive),
+				"",
+				"unpublishPage");
+	}
+
+	public static String getUnpublishButtonLink(Integer siteNodeId, boolean recursive)
+	{
+		return "UnpublishSiteNodeVersion!inputChooseSiteNodesV3.action?siteNodeId=" + siteNodeId + "&recurseSiteNodes=" + recursive + "&returnAddress=ViewInlineOperationMessages.action&originalAddress=refreshParent";
+	}
+	
 	/*
 	public static ToolbarButton getTasksButtons(Integer repositoryId, Integer siteNodeId, Locale locale)
 	{

@@ -73,7 +73,7 @@ import com.opensymphony.workflow.spi.WorkflowEntry;
  * the Workflow interface.  The idea is to encapsulate the interactions with OSWorkflow and eliminate the
  * need to pass a Workflow reference and the workflow ID all over the place when extracting data from OSWorkflow
  * @author <a href="mailto:jedprentice@gmail.com">Jed Prentice</a>
- * @version $Revision: 1.41 $ $Date: 2009/01/19 11:59:50 $
+ * @version $Revision: 1.42 $ $Date: 2010/02/22 08:14:28 $
  */
 public class WorkflowFacade
 {
@@ -567,10 +567,10 @@ public class WorkflowFacade
 	 * Returns a list of all declared workflows, i.e., workflows defined in workflows.xml
 	 * @return a list WorkflowVOs representing all declared workflows
 	 */
-	public List getDeclaredWorkflows()
+	public List<WorkflowVO> getDeclaredWorkflows()
 	{
 		String[] workflowNames = workflow.getWorkflowNames();
-		List availableWorkflows = new ArrayList();
+		List<WorkflowVO> availableWorkflows = new ArrayList<WorkflowVO>();
 
 		for (int i = 0; i < workflowNames.length; i++)
 		{
@@ -593,11 +593,11 @@ public class WorkflowFacade
 	 * @return a list of WorkflowVOs representing all active workflows
 	 * @throws SystemException if an error occurs finding the active workflows
 	 */
-	public List getActiveWorkflows() throws SystemException
+	public List<WorkflowVO> getActiveWorkflows() throws SystemException
 	{
-		List workflowVOs = new ArrayList();
+		List<WorkflowVO> workflowVOs = new ArrayList<WorkflowVO>();
 
-		List activeWorkflows = findActiveWorkflows();
+		List<WorkflowVO> activeWorkflows = findActiveWorkflows();
 		Iterator activeWorkflowsIterator = activeWorkflows.iterator();
 		while (activeWorkflowsIterator.hasNext())
 		{
@@ -714,11 +714,11 @@ public class WorkflowFacade
 	 * @return A list of workflowIds representing workflows that match the hard-wored query expression.
 	 * @throws SystemException if a workflow error occurs during the search
 	 */
-	private List findActiveWorkflows() throws SystemException
+	private List<WorkflowVO> findActiveWorkflows() throws SystemException
 	{
 		try
 		{
-			List workflows = workflow.query(new WorkflowExpressionQuery(new FieldExpression(FieldExpression.STATE, FieldExpression.ENTRY, FieldExpression.EQUALS, new Integer(WorkflowEntry.ACTIVATED))));
+			List<WorkflowVO> workflows = workflow.query(new WorkflowExpressionQuery(new FieldExpression(FieldExpression.STATE, FieldExpression.ENTRY, FieldExpression.EQUALS, new Integer(WorkflowEntry.ACTIVATED))));
 			return workflows;
 			//return workflow.query(new WorkflowExpressionQuery(new FieldExpression(FieldExpression.STATE, FieldExpression.ENTRY, FieldExpression.EQUALS, new Integer(WorkflowEntry.ACTIVATED))));
 		}

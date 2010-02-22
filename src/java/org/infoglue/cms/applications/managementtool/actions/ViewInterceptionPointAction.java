@@ -53,7 +53,7 @@ public class ViewInterceptionPointAction extends InfoGlueAbstractAction
     {
 		interceptionPointVO = InterceptionPointController.getController().getInterceptionPointVOWithId(interceptionPointId);
 		allInterceptors = InterceptorController.getController().getInterceptorVOList();
-		assignedInterceptors = InterceptionPointController.getController().getInterceptorsVOList(interceptionPointId);
+		assignedInterceptors = InterceptorController.getController().getInterceptorsVOList(interceptionPointId);
     }   
     
     public String doExecute() throws Exception

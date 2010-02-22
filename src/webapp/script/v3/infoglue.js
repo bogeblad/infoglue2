@@ -13,6 +13,17 @@ function getDirty()
 	return dirty;
 }
 
+function getRequestParameter(url, parameterName)
+{
+	valueIndex = url.indexOf(parameterName + "=");
+	endIndex = url.indexOf("&", valueIndex);
+	if(endIndex != -1)
+		value = url.substring(valueIndex + parameterName.length + 1, endIndex);
+	else
+		value = url.substring(valueIndex + parameterName.length + 1);
+	return value;
+}
+
 //returns the scroll left and top for the browser viewport.
 function getScrollX() {
    if (document.body.scrollTop != undefined) {	// IE model
@@ -145,14 +156,38 @@ function resizeResizableDiv(heightMinus, widthMinus)
 	}
 }
 
+function resizeInlineTabDivsOnOffset(elementId)
+{
+	var dimensionsWidth = $(window).width();
+	var dimensionsHeight = $(window).height();
+  	//alert("dimensionsWidth:" + dimensionsWidth);
+  	//alert("dimensionsHeight:" + dimensionsHeight);
+  	if(dimensionsWidth != 0)
+  	{
+  		var elemTop = $("#" + elementId).offset().top;
+  		//alert("elemTop on " + $(element).attr("id") + ":" + elemTop);
+  		
+  		$("#" + elementId).height(dimensionsHeight - elemTop).width(dimensionsWidth);
+  		$(".inlineTabDiv > iframe").height(dimensionsHeight - elemTop).width(dimensionsWidth);
+  		$(".inlineTabDiv > div > iframe").height(dimensionsHeight - elemTop).width(dimensionsWidth);
+	}
+	else
+	{
+		setTimeout("resizeInlineTabDivsOnOffset('" + elementId + "')", 500);
+	}
+}
+
 function resizeInlineTabDivsWithoutSubDivs(yMinus, xMinus)
 {
 	var dimensionsWidth = $(window).width();
 	var dimensionsHeight = $(window).height();
   	//alert("dimensionsWidth:" + dimensionsWidth);
+  	//alert("dimensionsHeight:" + dimensionsHeight);
   	if(dimensionsWidth != 0)
   	{
 		$(".inlineTabDiv").height(dimensionsHeight - yMinus).width(dimensionsWidth - xMinus);
+		//$(".inlineTabDiv > iframe").width($(".inlineTabDiv").width());
+		$(".inlineTabDiv > iframe").height(dimensionsHeight - yMinus).width(dimensionsWidth - xMinus);
 	}
 	else
 	{

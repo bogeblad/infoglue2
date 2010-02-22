@@ -8,7 +8,12 @@
 		init();
 	});
 
-		
+	var txtUrl = "";
+	function getTextUrl()
+	{
+		return txtUrl;
+	}
+	
 	function getRequestParameter(url, parameterName)
 	{
 		valueIndex = url.indexOf(parameterName + "=");
@@ -31,12 +36,22 @@
 		oldAssetContentId = "";
 		oldAssetKey = "";
 
-		if(top.opener.document.title == "Image Properties")
-			var txtUrl 		= top.opener.document.getElementById("txtLnkUrl").value;
-			if(txtUrl == "")
-				txtUrl 		= top.opener.document.getElementById("txtUrl").value;
+		var txtUrl = "";
+		if(typeof(window.top.opener.CKEDITOR) != 'undefined')
+		{
+			var instanceName = getRequestParameter(window.location.href, "CKEditor");
+			if(window.top.opener.CKEDITOR.instances[instanceName]._.filebrowserSe.getDialog()._.contents.info.url)
+				txtUrl = window.top.opener.CKEDITOR.instances[instanceName]._.filebrowserSe.getDialog()._.contents.info.url._.initValue;
+			else if(window.top.opener.CKEDITOR.instances[instanceName]._.filebrowserSe.getDialog()._.contents.info.txtUrl)
+				txtUrl = window.top.opener.CKEDITOR.instances[instanceName]._.filebrowserSe.getDialog()._.contents.info.txtUrl._.initValue;
+		}
 		else
-			var txtUrl 		= top.opener.document.getElementById("txtUrl").value;
+		{
+			txtUrl = top.opener.document.getElementById("txtLnkUrl").value;
+			if(txtUrl == "")
+				txtUrl = top.opener.document.getElementById("txtUrl").value;
+		}
+
 		//alert("txtUrl:" + txtUrl);
 		
 		if(txtUrl.indexOf("getPageUrl") > -1)
@@ -90,7 +105,12 @@
 	function onOk(contentId, assetKey)
 	{
 		url = getDownloadUrl(contentId, assetKey);
-		window.top.opener.SetUrl( url );
+		var CKEditorFuncNum = getRequestParameter(window.location.href, "CKEditorFuncNum");
+		if(window.opener.CKEDITOR.tools.callFunction)
+			window.opener.CKEDITOR.tools.callFunction(CKEditorFuncNum, url);
+		else
+			window.top.opener.SetUrl( url );
+		
 		window.top.close();
 		window.top.opener.focus();
 	}
@@ -98,7 +118,12 @@
 	function onOkForInlineLink(siteNodeId, contentId)
 	{
 		url = getInlineLinkUrl(siteNodeId, contentId);
-		window.top.opener.SetUrl( url );
+		var CKEditorFuncNum = getRequestParameter(window.location.href, "CKEditorFuncNum");
+		if(window.opener.CKEDITOR.tools.callFunction)
+			window.opener.CKEDITOR.tools.callFunction(CKEditorFuncNum, url);
+		else
+			window.top.opener.SetUrl( url );
+
 		window.top.close();
 		window.top.opener.focus();
 	}
@@ -141,11 +166,11 @@
 	    </ul>
 	
 		<div id="internalLinkTab" class="inlineTabDiv">
-			<iframe frameborder="0" marginwidth="0" marginheight="0" scrolling="no" name="internalLinkFrame" id="internalLinkFrame" src="" width="690" height="450" align="baseline"></iframe>
+			<iframe frameborder="0" marginwidth="0" marginheight="0" scrolling="no" name="internalLinkFrame" id="internalLinkFrame" src="" width="690" height="450" ></iframe>
 		</div>
 
 		<div id="internalAssetTab" class="inlineTabDiv">
-			<iframe frameborder="0" marginwidth="0" marginheight="0" scrolling="no" name="internalAssetFrame" id="internalAssetFrame" src="" width="690" height="450" align="baseline"></iframe>
+			<iframe frameborder="0" marginwidth="0" marginheight="0" scrolling="no" name="internalAssetFrame" id="internalAssetFrame" src="" width="690" height="450" ></iframe>
 		</div>
 
 	</div>

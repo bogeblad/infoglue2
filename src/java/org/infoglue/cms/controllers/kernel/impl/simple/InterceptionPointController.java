@@ -42,6 +42,7 @@ import org.infoglue.cms.entities.management.AccessRightUser;
 import org.infoglue.cms.entities.management.InterceptionPoint;
 import org.infoglue.cms.entities.management.InterceptionPointVO;
 import org.infoglue.cms.entities.management.Interceptor;
+import org.infoglue.cms.entities.management.InterceptorVO;
 import org.infoglue.cms.entities.management.impl.simple.InterceptionPointImpl;
 import org.infoglue.cms.exception.Bug;
 import org.infoglue.cms.exception.ConstraintException;
@@ -187,7 +188,12 @@ public class InterceptionPointController extends BaseController
 	{
 		return (InterceptionPoint) getObjectWithId(InterceptionPointImpl.class, interceptionPointId, db);
 	}
-    
+
+	public InterceptionPoint getReadOnlyInterceptionPointWithId(Integer interceptionPointId, Database db) throws SystemException, Bug
+	{
+		return (InterceptionPoint) getObjectWithIdAsReadOnly(InterceptionPointImpl.class, interceptionPointId, db);
+	}
+
 	public InterceptionPointVO getInterceptionPointVOWithId(Integer interceptionPointId) throws SystemException, Bug
 	{
 		return (InterceptionPointVO) getVOWithId(InterceptionPointImpl.class, interceptionPointId);
@@ -237,66 +243,7 @@ public class InterceptionPointController extends BaseController
 	public List getSortedInterceptionPointVOList() throws SystemException, Bug
 	{
 		return getAllVOObjects(InterceptionPointImpl.class, "category", "asc");
-	}
-	
-	public List getInterceptorsVOList(Integer interceptionPointId) throws SystemException, Bug
-	{
-		List interceptorVOList = null;
-		
-		Database db = CastorDatabaseService.getDatabase();
-
-		try 
-		{
-			beginTransaction(db);
-
-			interceptorVOList = getInterceptorsVOList(interceptionPointId, db);
-
-			commitTransaction(db);
-		} 
-		catch (Exception e) 
-		{
-			logger.info("An error occurred so we should not complete the transaction:" + e);
-			rollbackTransaction(db);
-			throw new SystemException(e.getMessage());
-		}
-		
-		return interceptorVOList;	
-	}
-	
-	/**
-	 * Gets the interceptors for this interceptionPoint withing a transaction
-	 * 
-	 * @param interceptionPointId
-	 * @param db
-	 * @return
-	 * @throws SystemException
-	 * @throws Bug
-	 */
-	
-	public List getInterceptorsVOList(Integer interceptionPointId, Database db)  throws SystemException, Bug
-	{
-		String key = "" + interceptionPointId;
-		logger.info("key:" + key);
-		List cachedInterceptorVOList = (List)CacheController.getCachedObject("interceptorsCache", key);
-		if(cachedInterceptorVOList != null)
-		{
-			logger.info("There was an cached InterceptorVOList:" + cachedInterceptorVOList.size());
-			return cachedInterceptorVOList;
-		}
-		
-		List interceptorsVOList = null;
-		
-		InterceptionPoint interceptionPoint = this.getInterceptionPointWithId(interceptionPointId, db);
-		
-		Collection interceptors = interceptionPoint.getInterceptors();
-		
-		interceptorsVOList = toVOList(interceptors);
-		
-		CacheController.cacheObject("interceptorsCache", key, interceptorsVOList);
-
-		return interceptorsVOList;		
-	}
-
+	}	
 
 	public InterceptionPointVO getInterceptionPointVOWithName(String interceptorPointName)  throws SystemException, Bug
 	{
@@ -308,10 +255,8 @@ public class InterceptionPointController extends BaseController
 		{
 			beginTransaction(db);
 
-			InterceptionPoint interceptionPoint = getInterceptionPointWithName(interceptorPointName, db);
-			if(interceptionPoint != null)
-				interceptionPointVO = interceptionPoint.getValueObject();
-
+			interceptionPointVO = getInterceptionPointVOWithName(interceptorPointName, db);
+			
 			commitTransaction(db);
 		} 
 		catch (Exception e) 
@@ -396,6 +341,7 @@ public class InterceptionPointController extends BaseController
 			oql.bind(interceptorPointName);
 			
 			QueryResults results = oql.execute();
+			System.out.println("Fetching entity in read/write mode:" + interceptorPointName);
 			this.logger.info("Fetching entity in read/write mode:" + interceptorPointName);
 			if(results.hasMore()) 
 			{

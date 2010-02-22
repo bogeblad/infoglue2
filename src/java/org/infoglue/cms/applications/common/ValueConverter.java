@@ -26,6 +26,7 @@ package org.infoglue.cms.applications.common;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -151,6 +152,9 @@ public class ValueConverter
 
   public List getListFromArray(String[] strings)
   {
+	  if(strings == null)
+		  return Collections.EMPTY_LIST;
+	  
 	  return Arrays.asList(strings);
   }
 

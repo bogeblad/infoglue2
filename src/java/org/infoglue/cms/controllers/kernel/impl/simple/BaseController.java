@@ -117,7 +117,7 @@ public abstract class BaseController
 		if(interceptionPointVO == null)
 			throw new SystemException("The InterceptionPoint " + InterceptionPointName + " was not found. The system will not work unless you restore it.");
 
-		List interceptors = InterceptionPointController.getController().getInterceptorsVOList(interceptionPointVO.getInterceptionPointId());
+		List interceptors = InterceptorController.getController().getInterceptorsVOList(interceptionPointVO.getInterceptionPointId());
 		Iterator interceptorsIterator = interceptors.iterator();
 		while(interceptorsIterator.hasNext())
 		{
@@ -133,7 +133,6 @@ public abstract class BaseController
 				logger.warn("The interceptor " + interceptorVO.getClassName() + "was not found: " + e.getMessage(), e);
 			}
 		}
-
 	}
 
     
@@ -156,7 +155,7 @@ public abstract class BaseController
 		if(interceptionPointVO == null)
 			throw new SystemException("The InterceptionPoint " + InterceptionPointName + " was not found. The system will not work unless you restore it.");
 
-		List interceptors = InterceptionPointController.getController().getInterceptorsVOList(interceptionPointVO.getInterceptionPointId(), db);
+		List interceptors = InterceptorController.getController().getInterceptorsVOList(interceptionPointVO.getInterceptionPointId(), db);
 		Iterator interceptorsIterator = interceptors.iterator();
 		while(interceptorsIterator.hasNext())
 		{
@@ -182,7 +181,7 @@ public abstract class BaseController
 		if(interceptionPointVO == null)
 			throw new SystemException("The InterceptionPoint " + InterceptionPointName + " was not found. The system will not work unless you restore it.");
 
-		List interceptors = InterceptionPointController.getController().getInterceptorsVOList(interceptionPointVO.getInterceptionPointId(), db);
+		List interceptors = InterceptorController.getController().getInterceptorsVOList(interceptionPointVO.getInterceptionPointId(), db);
 		Iterator interceptorsIterator = interceptors.iterator();
 		while(interceptorsIterator.hasNext())
 		{

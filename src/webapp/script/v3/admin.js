@@ -24,6 +24,11 @@ function getDragHTML()
 	return dragHTML;
 }
 
+function emptyDragHTML()
+{
+	dragHTML = "";
+}
+
 function disableDrag()
 {
 	isDragActive = false;
@@ -79,10 +84,10 @@ function closeInlineDiv()
 	tb_remove();
 }
 
-function search(repositoryId)
+function search(repositoryId, tabLabelPrefix)
 {
 	var url = "Search.action?repositoryId=" + repositoryId + "&searchString=" + $("#searchField").val();
-	openUrlInWorkArea(url, 'Search', 'search');
+	openUrlInWorkArea(url, 'Search', 'search', tabLabelPrefix);
 	return false;
 }
 
@@ -92,25 +97,29 @@ function htmlTreeItemClick(itemId, repoId, path)
 	$("#workIframe").attr("src", "ViewContent!V3.action?contentId=" + itemId + "&repositoryId=" + repoId);
 }
 
-function openUrlInWorkArea(url, tabLabel, targetTab)
+function openUrlInWorkArea(url, tabLabel, targetTab, tabLabelPrefix)
 {
 	//alert("url:" + url + " - " + tabLabel + " - " + targetTab);
 	//$("#workIframe").attr("src", url);
 	//if(tabLabel != null && tabLabel != '')
 	//	$("#singleTabLabel span").text(tabLabel);
 
-	var tabLabelPrefix = "";
-	if(targetTab == "structure")
-		tabLabelPrefix = "Page - ";
-	else if(targetTab == "content")
-		tabLabelPrefix = "Content - ";
-	else if(targetTab == "management")
-		tabLabelPrefix = "Management - ";
-	else if(targetTab == "publishing")
-		tabLabelPrefix = "Publishing - ";
-	else if(targetTab == "search")
-		tabLabelPrefix = "Search - ";
-
+	if(tabLabelPrefix == "")
+	{
+		if(targetTab == "structure")
+			tabLabelPrefix = "Page - ";
+		else if(targetTab == "content")
+			tabLabelPrefix = "Content - ";
+		else if(targetTab == "management")
+			tabLabelPrefix = "Management - ";
+		else if(targetTab == "publishing")
+			tabLabelPrefix = "Publishing - ";
+		else if(targetTab == "search")
+			tabLabelPrefix = "Search - ";
+	}
+	
+	tabLabelPrefix = tabLabelPrefix + " - ";
+	
 	//alert("targetTab:" + targetTab + ":" + $("#" + targetTab + "TabLabel").size() + " - " + tabLabel);
 	if(targetTab && $("#" + targetTab + "TabLabel").size() == 0)
 	{
@@ -152,9 +161,46 @@ function openUrlInWorkArea(url, tabLabel, targetTab)
 		//$("#newTabDiv").attr("name", targetTab + "TabDiv").attr("id", targetTab + "TabDiv");
 		//$("#newWorkIframe").attr("name", targetTab + "WorkIframe").attr("id", targetTab + "WorkIframe");
 		//$("#" + targetTab + "TabDiv").attr("id", targetTab + "TabLabel");
+		
+		if(targetTab == "structure")
+			var justCreated = true;
 	}
 
 	$("#" + targetTab + "WorkIframe").attr("src", url);
+			
+	if(targetTab == "structure" && justCreated)
+	{
+		$("#structureWorkIframe").load(function() {
+
+			//alert("Doc:" + $("#structureWorkIframe").get(0).contentDocument.location.href);
+			$($("#structureWorkIframe").get(0).contentDocument).mouseup(function(){
+				//alert("Dropped component maybe");
+				//emptyDragHTML();
+				$("#menuOverlayDiv").hide();
+			});
+
+			//alert("Just loaded:" + $("#structureWorkIframe").get(0).contentDocument.location.href);
+			try
+			{
+				if(parent.refreshTopToolBar)
+				{
+					var url = $("#structureWorkIframe").get(0).contentDocument.location.href;
+					//alert("url:" + url);
+					if(url.indexOf("siteNodeId=") > -1)
+					{
+						var loadedSiteNodeId = getRequestParameter(url, "siteNodeId");
+						//alert("loadedSiteNodeId:" + loadedSiteNodeId);
+						parent.refreshTopToolBar('tool.structuretool.siteNodeComponentsHeader', 'tool.structuretool.siteNodeComponentsHeader', 'siteNodeId=' + loadedSiteNodeId, -1, -1, -1);
+					}
+				}
+			}
+			catch(e)
+			{
+				alert("Error:" + e);
+			}
+		});
+	}
+
 	var tabSize = $("#tabsContainer li").size();
 	//alert("tabSize:" + tabSize)
 	var i=0;
@@ -252,7 +298,7 @@ function resize()
 	if(paletteDivHeight == 0)
 		paletteDivHeight = 150;
 	
-	//alert("paletteDivHeight:" + paletteDivHeight + "-" + );
+	//alert("paletteDivHeight:" + paletteDivHeight);
 	
 	$("#tools").height(windowHeight - 88);
 	var toolsWidth = $("#tools").width();
@@ -323,8 +369,12 @@ function resize()
 var activeToolId = "none";
 function getActiveToolId() { return activeToolId; }
 
-function activateTool(toolMarkupDivId, toolName, suffix, checkWorkArea)
+function activateTool(toolMarkupDivId, toolName, suffix, checkWorkArea, tabLabelPrefix)
 {
+	//alert("" + toolMarkupDivId + "=" + activeToolId);
+	if(activeToolId == toolMarkupDivId)
+		return false;
+	
 	$("#" + activeToolId).hide();
 	$("#" + toolMarkupDivId).show();
 	$("#" + toolMarkupDivId + "Link").addClass("active");
@@ -333,7 +383,7 @@ function activateTool(toolMarkupDivId, toolName, suffix, checkWorkArea)
 	activeToolId = toolMarkupDivId;
 	
 	resize();
-	
+
 	document.title = "" + toolName + " - " + suffix;
 	$("#activeToolHeader h3").html(toolName);
 	
@@ -358,17 +408,30 @@ function activateTool(toolMarkupDivId, toolName, suffix, checkWorkArea)
 		if(!exists)
 		{
 			if(toolName == "content")
-				openUrlInWorkArea("ViewContentToolStartPage!V3.action", toolName, "content");
+				openUrlInWorkArea("ViewContentToolStartPage!V3.action", toolName, "content", tabLabelPrefix);
 			if(toolName == "structure")
-				openUrlInWorkArea("ViewStructureToolStartPage!V3.action", toolName, "structure");
+				openUrlInWorkArea("ViewStructureToolStartPage!V3.action", toolName, "structure", tabLabelPrefix);
 			if(toolName == "management")
-				openUrlInWorkArea("ViewManagementToolStartPage!V3.action", toolName, "management");
+				openUrlInWorkArea("ViewManagementToolStartPage!V3.action", toolName, "management", tabLabelPrefix);
 			if(toolName == "publishing")
-				openUrlInWorkArea("ViewPublishingToolStartPage!V3.action", toolName, "publishing");
+				openUrlInWorkArea("ViewPublishingToolStartPage!V3.action", toolName, "publishing", tabLabelPrefix);
 			if(toolName == "mydesktop")
-				openUrlInWorkArea("ViewMyDesktop.action", toolName, "mydesktop");	
+				openUrlInWorkArea("ViewMyDesktop.action", toolName, "mydesktop", tabLabelPrefix);	
 			if(toolName == "formeditor")
-				openUrlInWorkArea("ViewFormEditorStartPage!V3.action", toolName, "formeditor");	
+				openUrlInWorkArea("/infoglueDeliverWorking/formeditor", toolName, "formeditor", tabLabelPrefix);	
+		}
+		else //This activates the tab also
+		{
+			for (i=0;i<=tabSize;i++)
+			{
+				var id = $("#tabsContainer li:eq(" + i + ") a").attr("id");
+				if(id)
+				{
+					//alert("id:" + id)
+					if(id.indexOf(toolName) > -1)
+						$("#tabsContainer").tabs( 'select' , i );
+				}
+			}
 		}
 	}
 	
@@ -431,4 +494,147 @@ function changeRepository(repositoryId, repositoryName, treeDiv, baseAddress, cl
 	$("#" + closeDivId).hide();
 	
 	return false;
+}
+
+function refreshRepositoryList()
+{
+	$.getJSON("ViewCommonAjaxServices!repositories.action", function(jsonData) {
+
+		if(jsonData.repository)
+		{
+			$(".repositoryList > ul").empty();
+			$.each(jsonData.repository, function(i,item){
+
+				//alert("jsonData:" + item.id + ":" + item.name);
+				if(item.name != "empty")
+				{
+					$("#structureRepositoriesDiv > ul").append("<li><a href=\"#\" onclick=\"return changeRepository(" + item.id + ", '" + item.name + "', 'structureTreeIframe', 'ViewStructureToolMenu!V3.action?tree=html&exp=&repositoryId=', 'structureRepositoriesDiv');\">" + item.name + "</a></li>");
+					$("#contentRepositoriesDiv > ul").append("<li><a href=\"#\" onclick=\"return changeRepository(" + item.id + ", '" + item.name + "', 'contentTreeIframe', 'ViewContentToolMenu!V3.action?tree=html&exp=&repositoryId=', 'contentRepositoriesDiv');\">" + item.name + "</a></li>");
+				}	
+			});
+		}
+	});
+	
+	$(".repositoryListFrame").each(function() { this.contentWindow.location.reload(true); });
+	
+	return false;
+}
+
+function toggleFavourites()
+{
+	if($("#paletteDiv").height() == 20)
+	{
+		$("#paletteDiv").height(150);
+		$("#paletteIframe").height(150);
+		$("#componentPaletteHeader img").attr("src", "images/v3/downArrows.png");
+	}
+	else
+	{
+		$("#paletteDiv").height(20);
+		$("#paletteIframe").height(0);
+		$("#componentPaletteHeader img").attr("src", "images/v3/upArrows.png");
+	}
+	resize();
+}
+
+function toggleAvailableToolsSize()
+{
+	if($("#availableTools li").width() == 26)
+	{
+		$("#availableTools li").css("width", "100%").removeClass("minimized");
+		$("#availableTools").removeClass("minimized");
+		$("#availableToolsSizeControlBar").removeClass("minimized");
+		$("#availableToolsSizeControlBar img").attr("src","images/v3/smallBarDownArrow.png");
+	}
+	else
+	{
+		$("#availableTools li").css("width", "26px").css("overflow", "hidden").addClass("minimized");
+		$("#availableTools").addClass("minimized");
+		$("#availableToolsSizeControlBar").addClass("minimized");
+		$("#availableToolsSizeControlBar img").attr("src","images/v3/smallBarUpArrow.png");
+	}
+}
+
+
+var getUrl = "ViewMessageCenter!getSystemMessages.action";
+var lastId = -1; //initial value will be replaced by the latest known id
+
+function initMessageSystem() 
+{
+	receiveSystemMessagesText(true); //initiates the first data query
+}
+
+var messageUserName = "";
+
+//initiates the first data query
+function receiveSystemMessagesText(loopAfter) 
+{
+	$.getJSON("ViewMessageCenter!getSystemMessagesV3.action?lastId=" + lastId + "&rand=" + Math.floor(Math.random() * 1000000), function(jsonData) {
+
+			//alert("jsonData:" + jsonData.title + ":" + jsonData.messages);
+			if(jsonData.messages)
+			{
+				$.each(jsonData.messages, function(i,item){
+	
+					//alert("jsonData:" + item.id + ":" + item.type + ":" + item.text);
+					
+					if(item.text != "empty")
+					{
+						i = 0;
+						lastId = item.id;
+				    	extradata = item.text;
+				    	type = item.type;
+				    	messageUserName = item.userName;
+				    	
+				    	//alert("lastId:" + lastId);
+				    	//alert("extradata:" + extradata);
+				    	//alert("type:" + type);
+				    	if(type != "-1")
+				    		setTimeout(extradata, "200");
+					}	
+				});
+			}
+			
+			if(loopAfter)
+				setTimeout('receiveSystemMessagesText(true);',15000); //executes the next data query in 30 seconds
+		});
+}
+
+function openChat(message)
+{
+	var d = new Date();
+	var curr_date = d.getDate();
+	var curr_month = d.getMonth();
+	curr_month++;
+	var curr_year = d.getFullYear();
+	var curr_hour = d.getHours();
+	if(curr_hour < 10)
+		curr_hour = "0" + curr_hour;
+	
+	var curr_min = d.getMinutes();
+	if(curr_min < 10)
+		curr_min = "0" + curr_min;
+
+	var curr_sec = d.getSeconds();
+	if(curr_sec < 10)
+		curr_sec = "0" + curr_sec;
+
+	//var nowDateTime = "" + curr_year + "-" + curr_month + "-" + curr_date + " " + curr_hour + ":" + curr_min;
+	var nowDateTime = "" + curr_hour + ":" + curr_min + ":" + curr_sec;
+	$("#messages").prepend("<p><span style='font-weight: bold'>" + messageUserName + "(" + nowDateTime + ")" + "" + ":</span> " + message + "</p>")
+	$("#messagesDiv").dialog({ title: 'System messages', modal: true, maxHeight: 500, maxWeight: 600, width: 700, minHeight: 200 }).dialog( 'open' );
+}
+
+function sendMessage()
+{
+	var chatMessage = $("#chatMessage").val();
+	$.post("ViewMessageCenter!sendMessage.action", { isSystemMessage: "true", message: chatMessage }, function(data){ 
+			receiveSystemMessagesText(false);
+			$("#chatMessage").val("");
+	});
+}
+
+function syncWithTree(path, repositoryId, targetFrame)
+{
+	frames[targetFrame].syncWithTree(path, repositoryId);
 }

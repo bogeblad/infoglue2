@@ -15,7 +15,7 @@
 			  			#if($contentVO.id > -1)
 					  		$("#latestAssetsFrame").attr("src", "SearchContent!latestInlineAssetsV3.action?repositoryId=${contentVO.repositoryId}&assetTypeFilter=$assetTypeFilter"); 
 						#else
-				  			$("#latestAssetsFrame").attr("src", "SearchContent!latestInlineAssetsV3.action?assetTypeFilter=$assetTypeFilter"); 
+				  			$("#latestAssetsFrame").attr("src", "SearchContent!latestInlineAssetsV3.action?repositoryId=$repositoryId&assetTypeFilter=$assetTypeFilter"); 
 						#end
 					}	
 		  		}
@@ -26,13 +26,13 @@
 			  			#if($contentVO.id > -1)
 				  			$("#contentVersionAssetSearchFrame").attr("src", "SearchContent!inputInlineAssetV3.action?repositoryId=${contentVO.repositoryId}&assetTypeFilter=$assetTypeFilter"); 
 						#else
-				  			$("#contentVersionAssetSearchFrame").attr("src", "SearchContent!inputInlineAssetV3.action?assetTypeFilter=$assetTypeFilter"); 
+				  			$("#contentVersionAssetSearchFrame").attr("src", "SearchContent!inputInlineAssetV3.action?repositoryId=$repositoryId&assetTypeFilter=$assetTypeFilter"); 
 						#end
 					}	
 			  	}
 			  } 
 		});
-		setTimeout("init();", 50);
+		setTimeout("init();", 200);
 		setTimeout("resizeInlineTabDivs()", 100);
 	});
 
@@ -57,7 +57,7 @@
 		#if($contentVO.id > -1)
 			document.getElementById("repositoryBrowserFrame").src = "ViewContentVersion!viewAssetsDialogForFCKEditorV3.action?repositoryId=$contentVO.repositoryId&contentId=$contentId&languageId=$languageId&assetTypeFilter=$assetTypeFilter";
 		#else
-			document.getElementById("repositoryBrowserFrame").src = "ViewContentVersion!viewAssetsDialogForFCKEditorV3.action?languageId=$languageId&assetTypeFilter=$assetTypeFilter";
+			document.getElementById("repositoryBrowserFrame").src = "ViewContentVersion!viewAssetsDialogForFCKEditorV3.action?repositoryId=$repositoryId&languageId=$languageId&assetTypeFilter=$assetTypeFilter";
 		#end
 	}
 	
@@ -91,15 +91,15 @@
 	    </ul>
 
 		<div id="repositoryBrowserTab" class="inlineTabDiv">
-			<iframe frameborder="0" name="repositoryBrowserFrame" id="repositoryBrowserFrame" src="" width="670" height="410" align="baseline"></iframe>
+			<iframe frameborder="0" name="repositoryBrowserFrame" id="repositoryBrowserFrame" src="" width="670" height="410"></iframe>
 		</div>
 				
 		<div id="latestUploadedTab" class="inlineTabDiv">
-			<iframe frameborder="0" name="latestAssetsFrame" id="latestAssetsFrame" src="" width="670" height="410" align="baseline"></iframe>
+			<iframe frameborder="0" name="latestAssetsFrame" id="latestAssetsFrame" src="" width="670" height="410" ></iframe>
 		</div>
 		
 		<div id="searchTab" class="inlineTabDiv">
-			<iframe frameborder="0" name="contentVersionAssetSearchFrame" id="contentVersionAssetSearchFrame" src="" width="670" height="410" align="baseline"></iframe>
+			<iframe frameborder="0" name="contentVersionAssetSearchFrame" id="contentVersionAssetSearchFrame" src="" width="670" height="410" ></iframe>
 		</div>
 
 	</div>

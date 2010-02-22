@@ -83,7 +83,14 @@ public class ContentNodeSupplier extends BaseNodeSupplier
 			Timer t = new Timer();
 			if(repositoryId != null && repositoryId.intValue() > 0)
 			{
-				vo = ContentControllerProxy.getController().getRootContentVO(repositoryId, infogluePrincipal.getName());
+				try
+				{
+					vo = ContentControllerProxy.getController().getRootContentVO(repositoryId, infogluePrincipal.getName());
+				}
+				catch (Exception e) 
+				{
+					logger.warn("Not a valid repository");
+				}
 				BaseNode rootNode =  new ContentNodeImpl();
 				rootNode.setChildren(true);
 				rootNode.setId(vo.getId());

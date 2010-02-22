@@ -386,6 +386,9 @@
     <field name="disableForceIdentityCheck" type="java.lang.Integer">
       <sql name="disableForceIDCheck" type="integer" dirty="check" />
     </field>
+    <field name="forceProtocolChange" type="java.lang.Integer">
+      <sql name="forceProtocolChange" type="integer" dirty="check" />
+    </field>
     <field name="owningSiteNode" type="org.infoglue.cms.entities.structure.impl.simple.SiteNodeImpl">
       <sql name="siteNodeId"/>
     </field>
@@ -452,6 +455,9 @@
     </field>
     <field name="disableForceIdentityCheck" type="java.lang.Integer">
       <sql name="disableForceIDCheck" type="integer" dirty="check" />
+    </field>
+    <field name="forceProtocolChange" type="java.lang.Integer">
+      <sql name="forceProtocolChange" type="integer" dirty="check" />
     </field>
     <field name="sortOrder" type="java.lang.Integer">
       <sql name="sortOrder" type="integer" dirty="check" />
@@ -871,7 +877,7 @@
     <field name="usesExtraDataForAccessControl" type="java.lang.Boolean">
       <sql name="usesExtraDataForAccessControl" type="integer" dirty="check" />
     </field>
-    <field name="interceptors" type="org.infoglue.cms.entities.management.impl.simple.InterceptorImpl" lazy="false" collection="collection">
+    <field name="interceptors" type="org.infoglue.cms.entities.management.impl.simple.InterceptorImpl" lazy="true" collection="collection">
       <sql many-key="interceptionPointId" many-table="cmInterceptionPointInterceptor"/>
     </field>
   </class>
@@ -893,7 +899,7 @@
     <field name="className" type="java.lang.String">
       <sql name="className" type="varchar" dirty="check" />
     </field>
-    <field name="interceptionPoints" type="org.infoglue.cms.entities.management.impl.simple.InterceptionPointImpl" lazy="false" collection="collection">
+    <field name="interceptionPoints" type="org.infoglue.cms.entities.management.impl.simple.InterceptionPointImpl" lazy="true" collection="collection">
       <sql many-key="interceptorId" many-table="cmInterceptionPointInterceptor"/>
     </field>
   </class>

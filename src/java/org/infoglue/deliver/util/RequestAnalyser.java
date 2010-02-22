@@ -98,9 +98,9 @@ public class RequestAnalyser
         return Counter.getLatestPublications();
     }
 
-    public void addPublication(Date publicationDate)
+    public void addPublication(String description)
     {
-        Counter.addPublication(publicationDate);
+        Counter.addPublication(description);
     }
 
     public void incNumberOfCurrentRequests(ThreadMonitor tk)
@@ -162,12 +162,12 @@ public class RequestAnalyser
         return threads;
     }
 
-    public /*synchronized*/ void registerComponentStatistics(String componentName, long elapsedTime)
+    public void registerComponentStatistics(String componentName, long elapsedTime)
     {
         Counter.registerComponentStatistics(componentName, elapsedTime);
     }
 
-    public /*synchronized*/ void registerPageStatistics(String pageUrl, long elapsedTime)
+    public void registerPageStatistics(String pageUrl, long elapsedTime)
     {
         Counter.registerPageStatistics(pageUrl, elapsedTime);
     }

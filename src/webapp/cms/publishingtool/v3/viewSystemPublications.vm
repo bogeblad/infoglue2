@@ -1,0 +1,55 @@
+#define( $headerMarkup )
+	<link rel="stylesheet" type="text/css" media="all" href="css/cms.css" title="cms" />
+	
+	<script type="text/javascript">
+	<!--
+		$(document).ready(function(){
+			setTimeout("resizeInlineTabDivs()", 100);
+		});
+	-->
+	</script>
+#end
+
+################################
+##BEGIN REAL CODE
+################################
+#beginLightCommonToolV3Impl("tool.publishingtool.globalSettings.header" "" "" false true $!disableCloseButton $headerMarkup)
+
+	<div style="clear: both;"></div>
+		
+	<div id="igEditArea" class="igScrollArea" onfocus="this.blur();">
+	
+		<h3>$ui.getString("tool.publishingtool.globalSettings.header")</h3>
+		
+		<div class="inlineTabDiv">
+		
+			<table border="0" width="95%" cellpadding="1" cellspacing="0">
+			<tr>
+				<td>
+			
+				#set($systemMessages = $systemNotificationMessages)
+				
+				#set($lvConstraint = 0) 
+				#lvHeadV3(["$ui.getString('tool.publishingtool.globalSettings.typeLabel')"] "" "" "" "", false)
+				#set($cnt = 0)
+				
+				#foreach ($notificationMessage in $systemNotificationMessages)
+					#set($row = ["$notificationMessage.className - $notificationMessage.getTransactionTypeName($notificationMessage.type)"])
+					#set($cnt = $cnt + 1)
+					#lvAddRowV3($row $cnt "$cnt" true)
+				#end
+			
+				#if($systemNotificationMessages.size() == 0)
+					#set($row = ["$ui.getString('tool.publishingtool.globalSettings.noChangesToPublishLabel')"])
+					#set($cnt = $cnt + 1)
+					#lvAddRowV3($row $cnt "$cnt" true)
+				#end
+				
+				#lvEnd()
+				
+				</td>
+			</tr>
+			</table>
+		</div>
+		
+#endLightCommonToolV3()

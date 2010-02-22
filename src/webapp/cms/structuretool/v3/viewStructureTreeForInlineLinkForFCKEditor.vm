@@ -164,7 +164,7 @@
 			<tr>
 				<td class="menu" colspan="2" style="border: 1px solid silver;">   
 					#set($exp = $this.getExpansion($oldSiteNodeId))
-					<iframe frameborder="0" name="itreeFrame" id="itreeFrame" src="ViewStructureToolMenuHtml!bindingViewV3.action?repositoryId=${repositoryId}&exp=$exp&akey=/$!oldSiteNodeId/&select=$!oldSiteNodeId" width="310" height="385" align="baseline"></iframe>
+					<iframe frameborder="0" name="itreeFrame" id="itreeFrame" src="ViewStructureToolMenuHtml!bindingViewV3.action?repositoryId=${repositoryId}&exp=$exp&akey=/$!oldSiteNodeId/&select=$!oldSiteNodeId" width="310" height="385" ></iframe>
 				</td>
 			</tr>	
 			</table>
@@ -198,7 +198,7 @@
 						#set($oldContentId = "")
 						#set($exp = "")
 					#end
-					<iframe frameborder="0" name="itreeFrameContent" id="itreeFrameContent" src="ViewContentHtmlTree.action?repositoryId=$!repositoryId&exp=$exp&akey=/$!oldContentId/&select=$!oldContentId&bodyClass=generaltooledit" width="310" height="385" align="baseline"></iframe>
+					<iframe frameborder="0" name="itreeFrameContent" id="itreeFrameContent" src="ViewContentHtmlTree.action?repositoryId=$!repositoryId&exp=$exp&akey=/$!oldContentId/&select=$!oldContentId&bodyClass=generaltooledit" width="310" height="385" ></iframe>
 				</td>
 			</tr>	
 			</table>	

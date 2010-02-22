@@ -35,7 +35,6 @@ import org.infoglue.cms.util.ConstraintExceptionBuffer;
   */
 public class UpdateRepositoryAction extends ViewRepositoryAction //WebworkAbstractAction
 {
-	
 	private RepositoryVO repositoryVO;
 	private Integer repositoryId;
 	private String userAction = "";
@@ -60,22 +59,11 @@ public class UpdateRepositoryAction extends ViewRepositoryAction //WebworkAbstra
     	ceb.add(this.repositoryVO.validate());
     	ceb.throwIfNotEmpty();		
     	
-    	String[] values = getRequest().getParameterValues("languageId");
-		
-		RepositoryController.getController().update(this.repositoryVO, values);
-				
-		return "success";
-	}
-
-	public String doLocal() throws Exception
-    {
-		super.initialize(getRepositoryId());
-
-		ceb.throwIfNotEmpty();
-    	
 		RepositoryController.getController().update(this.repositoryVO);
 		
-		return "successLocal";
+	    ViewMessageCenterAction.addSystemMessage(this.getInfoGluePrincipal().getName(), ViewMessageCenterAction.SYSTEM_MESSAGE_TYPE, "refreshRepositoryList();");
+
+		return "success";
 	}
 
 	public String doSaveAndExit() throws Exception
@@ -83,13 +71,6 @@ public class UpdateRepositoryAction extends ViewRepositoryAction //WebworkAbstra
 		doExecute();
 						
 		return "saveAndExit";
-	}
-
-	public String doSaveAndExitLocal() throws Exception
-    {
-		doLocal();
-						
-		return "saveAndExitLocal";
 	}
 
 	public void setRepositoryId(Integer repositoryId) throws Exception

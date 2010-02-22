@@ -48,11 +48,30 @@ public class ReplaceContentAction extends SearchContentAction
 	{
 	    String contentVersionIds[] = contentVersionId.split(",");
 	    
+	    //System.out.println("contentVersionIds:" + contentVersionIds + ":" + contentVersionIds.length);
+	    //System.out.println("getSearchString():" + getSearchString());
+	    //System.out.println("replaceString:" + this.replaceString);
+	    //System.out.println("contentVersionId:" + contentVersionIds[0]);
+	    
 	    SearchController.replaceString(getSearchString(), this.replaceString, contentVersionIds, this.getInfoGluePrincipal());
 	    
         return "success";
 	}
-	
+
+	public String doV3() throws Exception 
+	{
+	    String contentVersionIds[] = contentVersionId.split(",");
+	    
+	    //System.out.println("contentVersionIds:" + contentVersionIds + ":" + contentVersionIds.length);
+	    //System.out.println("getSearchString():" + getSearchString());
+	    //System.out.println("replaceString:" + this.replaceString);
+	    //System.out.println("contentVersionId:" + contentVersionIds[0]);
+	    
+	    SearchController.replaceString(getSearchString(), this.replaceString, contentVersionIds, this.getInfoGluePrincipal());
+	    
+        return "successV3";
+	}
+
     public String getContentVersionId()
     {
         return contentVersionId;
@@ -60,8 +79,10 @@ public class ReplaceContentAction extends SearchContentAction
     
     public void setContentVersionId(String contentVersionId)
     {
-        if(contentVersionId != null && !contentVersionId.equalsIgnoreCase(""))
+        if(contentVersionId != null && !contentVersionId.equalsIgnoreCase("") && contentVersionId.startsWith(","))
             this.contentVersionId = contentVersionId.substring(1);
+        else if(contentVersionId != null)
+        	this.contentVersionId = contentVersionId;
     }
 
     public String getReplaceString()

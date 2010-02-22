@@ -77,7 +77,12 @@ public class SublistTag extends AbstractTag
     {
 		checkAttributes();
 	    setResultAttribute(getSublist());
-        return EVAL_PAGE;
+	    
+	    list = null;
+	    startIndex = 0;
+	    count = 0;
+
+	    return EVAL_PAGE;
     }
 
 	/**

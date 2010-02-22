@@ -7,7 +7,7 @@
 	<META HTTP-EQUIV="CACHE-CONTROL" CONTENT="NO-CACHE">
 	<META HTTP-EQUIV="pragma" CONTENT="no-cache" />
 	<META HTTP-EQUIV="expires" CONTENT="-1" />
-	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
 	<title>$ui.getString("tool.contenttool.contentVersionHeader")</title>
 	<link rel="stylesheet" type="text/css" href="css/cms.css" /> 
 </head>

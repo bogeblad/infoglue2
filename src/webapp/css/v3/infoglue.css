@@ -8,7 +8,7 @@ body.generaltooledit {
 	width			 : 100%; 
 	float			 : left;
 	font-family      : verdana, arial, sans-serif;
-	font-size        : 8pt;
+	font-size        : 11px;
 }
 #menutoolbar {
 	padding-top: 2px;
@@ -64,25 +64,25 @@ body.generaltooledit {
 /* Here comes text classes */
 h1 {
 	font-family		 : Arial, San serif;
-	font-size		 : 18pt;
+	font-size		 : 24px;
 	font-weight		 : bold;
 	color			 : black;
 }
 h2 {
 	font-family		 : Arial, San serif;
-	font-size        : 16pt;
+	font-size        : 20px;
 	font-weight		 : bold;
 	color			 : black;
 }
 h3 {
 	font-family		 : Arial, San serif;
-	font-size        : 12pt;
+	font-size        : 16px;
 	font-weight		 : bold;
 	color			 : black;
 }
 h4 {
 	font-family		 : Arial, San serif;
-	font-size        : 10pt;
+	font-size        : 12px;
 	font-weight		 : bold;
 	color			 : black;
 	margin-bottom	 : 6px;
@@ -147,7 +147,7 @@ h4 {
 	background: white;
 	border: 1px solid #cccccc;
 	font-family: Verdana, Arial, San serif;
-	font-size: 8pt;
+	font-size: 11px;
 	width: 200px;
 	padding: 0px;
 	margin-left: 0px;
@@ -159,14 +159,14 @@ h4 {
 	background: white;
 	border: 1px solid #cccccc;
 	font-family: Verdana, Arial, San serif;
-	font-size: 8pt;
+	font-size: 11px;
 	width: 200px;
 }
 .ig-righttextarea {
 	background: white;
 	border: 1px solid #cccccc;
 	font-family: Verdana, Arial, San serif;
-	font-size: 8pt;
+	font-size: 11px;
 	width: 500px;
 }
 .ig-row {
@@ -183,12 +183,12 @@ h4 {
 
 .darkgreen {
 	background-color : #C7D1B3;
-	height 			 : 12pt;
+	height 			 : 14px;
 }
 select.sitedropbox {
 	width            : 150px;
 	font-family      : verdana, arial, sans-serif;
-	font-size        : 8pt;
+	font-size        : 11px;
 }
 img.scaledbordered {
 	border-style	 : solid;
@@ -206,7 +206,7 @@ img.scaledbordered {
 	background-color:white;
 	background: url(../../images/v3/toolbarBackground.gif) repeat-x 0 0;
 	font-family:Tahoma, verdana, sans-serif;
-	font-size:10pt;
+	font-size:12px;
 	}
 .dialogDivLeftHandle {
 	padding: 8px 0px 0px 10px;
@@ -226,7 +226,7 @@ img.scaledbordered {
 .dialogDivRightHandle a {
 	color:#555;
 	font-family: Tahoma, verdana, sans-serif;
-	font-size: 10pt;
+	font-size: 12px;
 	display: block;
 	text-indent: 20px;
 	line-height: 18px;	
@@ -240,7 +240,7 @@ img.scaledbordered {
 	/*height:450px;*/
 	background-color: white;
 	font-family:verdana, sans-serif;
-	font-size:10pt;
+	font-size:12px;
 	overflow: auto;
 	}
 
@@ -296,7 +296,7 @@ img.scaledbordered {
 	background-position: 0px 0px;
 	background-repeat: no-repeat;
 	font-family: Tahoma;
-	font-size: 10pt;
+	font-size: 14px;
 	padding-left: 20px;
 	line-height: 26px;
 	text-decoration: none;
@@ -351,7 +351,7 @@ img.scaledbordered {
 	background-repeat: no-repeat;
 	/*background-color: blue;*/
 	font-family: Tahoma;
-	font-size: 10pt;
+	font-size: 14px;
 	padding-left: 6px;
 	line-height: 26px;
 	text-decoration: none;
@@ -419,31 +419,43 @@ img.scaledbordered {
 .submitToPublish {background:url(../../images/v3/publishPageIcon.gif) no-repeat left center; background-position: 0px 2px;}
 .create {background:url(../../images/v3/createBackgroundPenPaper.gif) no-repeat left center; background-position: 0px 2px;}
 .next {background:url(../../images/v3/nextBackground.gif) no-repeat left center; background-position: 0px 2px;}
+.add {background:url(../../images/v3/addIcon.png) no-repeat left center; background-position: 0px 2px;}
 .mySettings {background:url(../../images/v3/mySettingsIcon.gif) no-repeat left center; background-position: 0px 2px;}
 .properties { background:url(../../images/v3/metadataIcon.gif) no-repeat left center; background-position: 4px 2px;}
+.showHide { background:url(../../images/v3/showHideIcon.png) no-repeat left center; background-position: 4px 2px;}
+.move { background:url(../../images/v3/moveIcon.png) no-repeat left center; background-position: 6px 2px;}
+.moveUp { background:url(../../images/v3/moveUpIcon.png) no-repeat left center; background-position: 6px 2px;}
+.moveDown { background:url(../../images/v3/moveDownIcon.png) no-repeat left center; background-position: 6px 2px;}
 .movePage { background:url(../../images/v3/movePageIcon.gif) no-repeat left center; background-position: 6px 2px;}
-.moveContent { background:url(../../images/v3/movePageIcon.gif) no-repeat left center; background-position: 6px 2px;}
+.moveContent { background:url(../../images/v3/moveContentIcon.png) no-repeat left center; background-position: 6px 2px;}
 .delete { background:url(../../images/v3/deleteIcon.gif) no-repeat left center; background-position: 4px 2px;}
 .preview { background:url(../../images/v3/previewIcon.png) no-repeat left center; background-position: 4px 2px;}
 .publishPage {background:url(../../images/v3/publishPageIcon.gif) no-repeat left center; background-position: 0px 2px;}
 .publishPages {background:url(../../images/v3/publishPageIcon.gif) no-repeat left center; background-position: 0px 2px;}
+.denyPublication {background:url(../../images/v3/denyPublicationIcon.png) no-repeat left center; background-position: 0px 2px;}
 .pageCover {background:url(../../images/v3/pageCoverIcon.png) no-repeat left center; background-position: 0px 2px;}
+.pageDetails {background:url(../../images/v3/metadataIcon.gif) no-repeat left center; background-position: 0px 2px;}
 .logout {background:url(../../images/v3/exit.png) no-repeat left center; background-position: 0px 2px;}
 .trashcan {background:url(../../images/v3/trashcan.png) no-repeat left center; background-position: 0px 2px;}
-.accessRights {background:url(../../images/v3/accessRightIcon.gif) no-repeat left center; background-position: 0px 2px;}
+.accessRights {background:url(../../images/v3/file_locked.png) no-repeat left center; background-position: 0px 4px;}
+.deployContent {background:url(../../images/v3/up.png) no-repeat left center; background-position: 0px 4px;}
+.componentAccessRights {background:url(../../images/v3/locked.png) no-repeat left center; background-position: 0px 4px;}
 
-.unpublish {background:url(../../images/v3/publishPageIcon.gif) no-repeat left center; background-position: 0px 2px;}
-.syncTree {background:url(../../images/v3/accessRightIcon.gif) no-repeat left center; background-position: 0px 2px;}
-.runTask {background:url(../../images/v3/accessRightIcon.gif) no-repeat left center; background-position: 0px 2px;}
-.changeContentType {background:url(../../images/v3/accessRightIcon.gif) no-repeat left center; background-position: 0px 2px;}
-.exportContent {background:url(../../images/v3/accessRightIcon.gif) no-repeat left center; background-position: 0px 2px;}
-.importContent {background:url(../../images/v3/accessRightIcon.gif) no-repeat left center; background-position: 0px 2px;}
-.changeLanguage {background:url(../../images/v3/accessRightIcon.gif) no-repeat left center; background-position: 0px 2px;}
-.showDataAsXML {background:url(../../images/v3/accessRightIcon.gif) no-repeat left center; background-position: 0px 2px;}
+.unpublish {background:url(../../images/v3/unpublishIcon.png) no-repeat left center; background-position: 0px 2px;}
+.unpublishPage {background:url(../../images/v3/unpublishPageIcon.png) no-repeat left center; background-position: 0px 2px;}
+.unpublishPages {background:url(../../images/v3/unpublishPagesIcon.png) no-repeat left center; background-position: 0px 2px;}
+.syncTree {background:url(../../images/v3/syncTreeIcon.png) no-repeat left center; background-position: 0px 4px;}
+.runTask {background:url(../../images/v3/runTaskIcon.png) no-repeat left center; background-position: 0px 4px;}
+.changeContentType {background:url(../../images/v3/changeTypeIcon.png) no-repeat left center; background-position: 0px 4px;}
+.exportContent {background:url(../../images/v3/exportIcon.png) no-repeat left center; background-position: 0px 4px;}
+.importContent {background:url(../../images/v3/importIcon.png) no-repeat left center; background-position: 0px 4px;}
+.changeLanguage {background:url(../../images/v3/locale.png) no-repeat left center; background-position: 0px 2px;}
+.locale {background:url(../../images/v3/locale.png) no-repeat left center; background-position: 0px 2px;}
+.showDataAsXML {background:url(../../images/v3/xmlIcon.png) no-repeat left center; background-position: 0px 2px;}
+.compare {background:url(../../images/v3/compareIcon.png) no-repeat left center; background-position: 0px 2px;}
 
 li.content {background:url(../../images/v3/contentIcon.gif) no-repeat left center; background-position: 0px 0px; height: 20px; text-indent: 18px; }
 li.page {background:url(../../images/v3/pageIcon.gif) no-repeat left center; background-position: 0px 0px; height: 20px; text-indent: 18px; }
-
 
 .save, .saveAndExit, .cancelIcon, .close, .help {
 	padding-left:28px;
@@ -454,7 +466,7 @@ li.page {background:url(../../images/v3/pageIcon.gif) no-repeat left center; bac
 ******************/ 
 #contentVersionDiv select, #contentVersionDiv input {
 	font-family      : arial, sans-serif;
-	font-size        : 8pt;
+	font-size        : 11px;
 	border			 : 1px solid #C2D0E2;
 }
 

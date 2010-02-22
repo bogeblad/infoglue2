@@ -131,7 +131,7 @@ public class WorkflowController extends BaseController
 				{
 					WorkflowFacade wf = new WorkflowFacade(principal, name, actionId, inputs, hibernateSessionFactory, session);
 					workflowVO = wf.createWorkflowVO();
-					
+
 					session.flush();
 
 					tx.commit();
@@ -174,14 +174,66 @@ public class WorkflowController extends BaseController
 		return workflowVO;
 	}
 
+	public WorkflowVO getWorkflow(String workflowName, InfoGluePrincipal principal) throws SystemException, Exception
+	{
+		WorkflowVO workflow = null;
+		
+		List<WorkflowVO> workflows = getAvailableWorkflowVOList(principal);
+		Iterator<WorkflowVO> workflowsIterator = workflows.iterator();
+		while(workflowsIterator.hasNext())
+		{
+			WorkflowVO workflowVO = workflowsIterator.next();
+			
+			String fromEncoding = CmsPropertyHandler.getAssetKeyFromEncoding();
+			if(fromEncoding == null)
+				fromEncoding = "iso-8859-1";
+			
+			String toEncoding = CmsPropertyHandler.getAssetKeyToEncoding();
+			if(toEncoding == null)
+				toEncoding = "utf-8";
+				
+			String encodedName = new String(workflowName.getBytes(fromEncoding), toEncoding);
+			System.out.println("" + workflowVO.getName() + "=" + workflowName + "/" + encodedName);
+			
+			if(workflowVO.getName().equals(workflowName) || workflowVO.getName().equals(encodedName))
+			{
+				workflow = workflowVO;
+				break;
+			}
+		}
+		return workflow;
+	}
+	
+	public WorkflowVO getCurrentWorkflow(Long workflowId, InfoGluePrincipal principal) throws SystemException
+	{
+		WorkflowVO workflow = null;
+		
+		List<WorkflowVO> workflows = getCurrentWorkflowVOList(principal);
+		System.out.println("workflows:" + workflows);
+		if(workflows != null)
+		{
+			Iterator<WorkflowVO> workflowsIterator = workflows.iterator();
+			while(workflowsIterator.hasNext())
+			{
+				WorkflowVO workflowVO = workflowsIterator.next();
+				if(workflowVO.getWorkflowId().longValue() == workflowId.longValue())
+				{
+					workflow = workflowVO;
+					break;
+				}
+			}
+		}
+		return workflow;
+	}
+
 	/**
 	 * Returns a list of all available workflows, i.e., workflows defined in workflows.xml
 	 * @param userPrincipal a user principal
 	 * @return a list WorkflowVOs representing available workflows
 	 */
-	public List getAvailableWorkflowVOList(InfoGluePrincipal userPrincipal) throws SystemException
+	public List<WorkflowVO> getAvailableWorkflowVOList(InfoGluePrincipal userPrincipal) throws SystemException
 	{
-		final List accessibleWorkflows = new ArrayList();
+		final List<WorkflowVO> accessibleWorkflows = new ArrayList<WorkflowVO>();
 
 		Session session = null;
 		net.sf.hibernate.Transaction tx = null;
@@ -193,11 +245,11 @@ public class WorkflowController extends BaseController
 			tx = session.beginTransaction();
 			
 			WorkflowFacade wf = new WorkflowFacade(userPrincipal, hibernateSessionFactory, session);
-			final List allWorkflows = wf.getDeclaredWorkflows();
+			final List<WorkflowVO> allWorkflows = wf.getDeclaredWorkflows();
 			
-			for(final Iterator i = allWorkflows.iterator(); i.hasNext(); )
+			for(final Iterator<WorkflowVO> i = allWorkflows.iterator(); i.hasNext(); )
 			{
-				final WorkflowVO workflowVO = (WorkflowVO) i.next();
+				final WorkflowVO workflowVO = i.next();
 				if(getIsAccessApproved(workflowVO.getName(), userPrincipal))
 				{
 					accessibleWorkflows.add(workflowVO);
@@ -275,9 +327,9 @@ public class WorkflowController extends BaseController
 	 * @return a list of WorkflowVOs representing all active workflows
 	 * @throws SystemException if an error occurs while finding the current workflows
 	 */
-	public List getCurrentWorkflowVOList(InfoGluePrincipal userPrincipal) throws SystemException
+	public List<WorkflowVO> getCurrentWorkflowVOList(InfoGluePrincipal userPrincipal) throws SystemException
 	{
-		List list = new ArrayList();
+		List<WorkflowVO> list = new ArrayList<WorkflowVO>();
 		
 		Session session = null;
 		net.sf.hibernate.Transaction tx = null;
@@ -919,7 +971,7 @@ public class WorkflowController extends BaseController
 	        {
 				try
 				{
-					MailServiceFactory.getService().sendEmail("text/html", warningEmailReceiver, warningEmailReceiver, null, null, null, subject, message, "utf-8");
+					MailServiceFactory.getService().sendEmail("text/html", warningEmailReceiver, warningEmailReceiver, null, null, null, null, subject, message, "utf-8");
 				} 
 				catch (Exception e)
 				{

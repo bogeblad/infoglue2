@@ -265,6 +265,36 @@ public class SmallSiteNodeVersionImpl extends SiteNodeVersionImpl
 		this.valueObject.setDisableForceIdentityCheck(disableForceIdentityCheck);
 	}
 
+	public Integer getForceProtocolChange()
+	{
+		return this.valueObject.getForceProtocolChange();
+	}
+
+	public void setForceProtocolChange(Integer forceProtocolChange)
+	{
+		this.valueObject.setForceProtocolChange(forceProtocolChange);
+	}
+
+    public Integer getSortOrder()
+    {
+        return this.valueObject.getSortOrder();
+    }
+    
+    public void setSortOrder(Integer sortOrder)
+    {
+        this.valueObject.setSortOrder(sortOrder);
+    }
+
+    public Boolean getIsHidden()
+    {
+        return this.valueObject.getIsHidden();
+    }
+    
+    public void setIsHidden(Boolean isHidden)
+    {
+        this.valueObject.setIsHidden(isHidden);
+    }
+
 	public void setSiteNodeId(Integer siteNodeId)
 	{
 		this.valueObject.setSiteNodeId(siteNodeId);

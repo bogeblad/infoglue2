@@ -48,6 +48,21 @@
 	margin: 4px;
 	margin-left: 6px;
 }
+#availableToolsSizeControlBar
+{
+	border-top: 1px solid #567db1; 
+	height: 7px; 
+	background-image: url(../../images/v3/tinyBarBackground.png); 
+	background-repeat: repeat-x;
+}
+#availableToolsSizeControlBar img
+{
+	 margin-top: 0px; 
+	 display: block; 
+	 margin-left: auto; 
+	 margin-right: auto;"
+}
+
 #availableTools ul
 {
 	margin: 0px;
@@ -177,7 +192,7 @@
 }
 .ui-tabs .ui-tabs-nav li a  
 {
-   	font-size:8pt;
+   	font-size:11px;
 	padding: 4px 10px 4px 10px;
   	text-decoration:none;
 }
@@ -293,7 +308,7 @@ img.divider
 	display: block; 
 	border: 1px solid #ccc; 
 	font-family: Tahoma; 
-	font-size: 10pt; 
+	font-size: 14px; 
 	color: #ccc;
 }
 #searchButton

@@ -50,7 +50,7 @@ public class ViewPublishingToolStartPageAction extends InfoGlueAbstractAction
     {
     	doExecute();
     	
-        return "success";
+        return "successV3";
     }
 
     public String doExecute() throws Exception

@@ -95,7 +95,7 @@ public class ViewAssetListAction extends InfoGlueAbstractAction
     {
         contentMap.put(parent.getContentId(), parent.getName());
         
-        List children = ContentControllerProxy.getController().getContentChildrenVOList(parent.getContentId());
+        List children = ContentControllerProxy.getController().getContentChildrenVOList(parent.getContentId(), null, false);
         for(Iterator i=children.iterator();i.hasNext();)
         {
             ContentVO cvo = (ContentVO) i.next();

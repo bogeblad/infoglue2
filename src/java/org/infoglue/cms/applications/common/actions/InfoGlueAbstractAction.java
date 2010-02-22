@@ -24,9 +24,12 @@
 package org.infoglue.cms.applications.common.actions;
 
 import java.awt.Color;
+import java.math.BigInteger;
 import java.security.Principal;
+import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -53,6 +56,8 @@ import org.infoglue.cms.entities.content.DigitalAssetVO;
 import org.infoglue.cms.entities.management.LanguageVO;
 import org.infoglue.cms.entities.management.RepositoryVO;
 import org.infoglue.cms.entities.structure.SiteNodeVO;
+import org.infoglue.cms.entities.structure.SiteNodeVersionVO;
+import org.infoglue.cms.exception.AccessConstraintException;
 import org.infoglue.cms.exception.Bug;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.security.AuthenticationModule;
@@ -60,6 +65,7 @@ import org.infoglue.cms.security.InfoGluePrincipal;
 import org.infoglue.cms.util.CmsPropertyHandler;
 import org.infoglue.deliver.controllers.kernel.impl.simple.ExtranetController;
 import org.infoglue.deliver.util.CacheController;
+import org.infoglue.deliver.util.HttpHelper;
 import org.infoglue.deliver.util.graphics.ColorHelper;
 
 import webwork.action.ActionContext;
@@ -144,6 +150,34 @@ public abstract class InfoGlueAbstractAction extends WebworkAbstractAction
 	    return this.getHttpSession().getMaxInactiveInterval();
 	}
 
+	private SecureRandom random = new SecureRandom();
+
+	/**
+	 * This method returns the session timeout value.
+	 */
+	
+	public String getSecurityCode()
+	{
+		String securityCode = (String)this.getHttpSession().getAttribute("securityCode");
+		if(securityCode == null)
+		{
+			securityCode = new BigInteger(130, random).toString(32);
+			this.getHttpSession().setAttribute("securityCode", securityCode);
+		}
+		
+	    return securityCode;
+	}
+
+	public void validateSecurityCode() throws Exception
+	{
+		String sessionSecurityCode = getSecurityCode();
+		String securityCode = this.getRequest().getParameter("igSecurityCode");
+		if(!sessionSecurityCode.equals(securityCode))
+		{
+			throw new SystemException("Your request did not contain the correct checksum value - it was classified as a hack-attempt");
+		}
+	}
+	
 	public List getAuthorizedRepositoryVOList() throws Exception
 	{
 		return RepositoryController.getController().getAuthorizedRepositoryVOList(this.getInfoGluePrincipal(), false);
@@ -152,6 +186,17 @@ public abstract class InfoGlueAbstractAction extends WebworkAbstractAction
 	public Integer getRepositoryId()
 	{
 		Integer repositoryId = (Integer)this.getHttpSession().getAttribute("repositoryId");
+		try
+		{
+			RepositoryVO repositoryVO = RepositoryController.getController().getRepositoryVOWithId(repositoryId);
+			repositoryId = repositoryVO.getId();
+		}
+		catch (Exception e) 
+		{
+			logger.warn("Not a valid repository");
+			repositoryId = null;
+		}
+		
 		logger.info("repositoryId:" + repositoryId);
 		if(repositoryId == null)
 		{
@@ -165,7 +210,6 @@ public abstract class InfoGlueAbstractAction extends WebworkAbstractAction
     		}
     		else
     		{
-    			
     			try
 				{
 					List authorizedRepositoryVOList = getAuthorizedRepositoryVOList();
@@ -208,6 +252,24 @@ public abstract class InfoGlueAbstractAction extends WebworkAbstractAction
 
 	public List getToolbarButtons(String toolbarKey, String primaryKey, String extraParameters)
 	{
+		//System.out.println("extraParameters:" + extraParameters);
+		try
+		{
+			HttpHelper helper = new HttpHelper();
+			Map extraParametersMap = helper.toMap(extraParameters, "iso-8859-1", "&");
+			Iterator extraParametersMapIterator = extraParametersMap.keySet().iterator();
+			while(extraParametersMapIterator.hasNext())
+			{
+				String key = (String)extraParametersMapIterator.next();
+				String value = (String)extraParametersMap.get(key);
+				getRequest().setAttribute(key, value);
+			}
+		}
+		catch (Exception e) 
+		{
+			logger.error("Problem parsing extra parameters at url:" + getOriginalFullURL());
+		}
+		
 		return toolbarController.getToolbarButtons(toolbarKey, getInfoGluePrincipal(), getLocale(), getRequest(), false);
 	}
 
@@ -444,7 +506,6 @@ public abstract class InfoGlueAbstractAction extends WebworkAbstractAction
 	public boolean hasAccessTo(String interceptionPointName, String extraParameter)
 	{
 		logger.info("Checking if " + getUserName() + " has access to " + interceptionPointName + " with extraParameter " + extraParameter);
-
 		try
 		{
 		    return AccessRightController.getController().getIsPrincipalAuthorized(this.getInfoGluePrincipal(), interceptionPointName, extraParameter);
@@ -500,7 +561,7 @@ public abstract class InfoGlueAbstractAction extends WebworkAbstractAction
 	/**
 	 * Get a single parameter from the ActionContext (hides Servlet implementation)
 	 */
-	protected final String getSingleParameter(String parameterName)
+	public final String getSingleParameter(String parameterName)
 	{
 		return (String) ActionContext.getSingleValueParameters().get(parameterName);
 	}
@@ -508,7 +569,7 @@ public abstract class InfoGlueAbstractAction extends WebworkAbstractAction
 	/**
 	 * Get a parameter (could possibly be an array) from the ActionContext (hides Servlet implementation)
 	 */
-	protected final String getParameter(String parameterName)
+	public final String getParameter(String parameterName)
 	{
 		return (String) ActionContext.getParameters().get(parameterName);
 	}
@@ -1014,6 +1075,11 @@ public abstract class InfoGlueAbstractAction extends WebworkAbstractAction
 		return sb.toString();
 	}
 
+	public SiteNodeVersionVO getSiteNodeVersionVO(Integer siteNodeVersionId) throws Exception
+	{
+		return SiteNodeVersionControllerProxy.getSiteNodeVersionControllerProxy().getSiteNodeVersionVOWithId(siteNodeVersionId);
+	}
+
 	public String getSiteNodePath(Integer siteNodeId) throws Exception
 	{
 		StringBuffer sb = new StringBuffer();
@@ -1039,6 +1105,11 @@ public abstract class InfoGlueAbstractAction extends WebworkAbstractAction
 	public String getRepositoryName() throws Exception
 	{
 		return RepositoryController.getController().getRepositoryVOWithId(getRepositoryId()).getName();
+	}
+	
+	public void logMessage(String message)
+	{
+		System.out.println("" + message);
 	}
 
 }

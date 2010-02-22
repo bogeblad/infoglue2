@@ -1,52 +1,51 @@
-<?xml version="1.0" encoding="UTF-8"?> 
- 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+#define( $headerMarkup )
 
-<html>
-<head>
-	<title>$ui.getString("tool.contenttool.importContent.header")</title>
-	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<link rel="stylesheet" type="text/css" href="css/cms.css"/>
+	<style type="text/css">
+		p
+		{
+			line-heigh: 12px;
+			margin: 0px;
+			padding-bottom: 4px;
+		}
+		
+	</style>
 	
-	<link rel="stylesheet" type="text/css" href="css/cms.css" /> 
-	<link rel="stylesheet" type="text/css" href="css/infogluecommons.css" /> 
-	
-	<script language="JavaScript" src="script/listview.js"></script>
-	<script type="text/javascript" src="script/infogluecommons.js"></script>
-
 	<script type="text/javascript">
-	<!--
-		parent.frames["menu"].refreshContent($!parentContentId, 2, $!parentContentId);
-	-->
+		
+		function close()
+		{
+			if(!parent)
+			{
+				document.location.href = "ViewContent.action?contentId=$!parentContentId&repositoryId=$!repositoryId";
+			}
+			else
+			{
+				top.frames['contentTreeIframe'].location.reload(true);
+				if(parent && parent.closeInlineDiv) parent.closeInlineDiv(); else if(parent && parent.closeDialog) parent.closeDialog(); else window.close();
+			}
+		}	
 	</script>
-	<META HTTP-EQUIV="pragma" CONTENT="no-cache" />
-	<META HTTP-EQUIV="expires" CONTENT="-1" />	
+#end
 
-</head>
+################################
+##BEGIN REAL CODE
+################################
+#beginLightCommonToolV3Impl("tool.contenttool.importContent.header" "" "" false true $!disableCloseButton $headerMarkup)
 
-<body class="contenttooledit">
+	#lightMenuToolbar("" $buttons $rightButtons) 
 
-<div class="fullymarginalized">
+	<div style="clear: both;"></div>
 
-<table width="300">
-	<tr>
-		<td class="biglabel">
-			$ui.getString("tool.contenttool.importContent.headerFinished")
-		</td>
-	</tr>		
-	<tr>
-		<td>
-			$ui.getString("tool.contenttool.importContent.finishedText")<br/><br/>
-		</td>
-	</tr>
-	<tr>
-		<td>
-			<a href="ViewContent.action?contentId=$!parentContentId&repositoryId=$!repositoryId"><img border="0" src="$ui.getString("images.contenttool.buttons.close")" width="50" height="25"></a>
-		</td>
-	</tr>
+	<div style="margin-left: 16px;">
 
-	</form>	
-</table>
-</div>
+		<h1>$ui.getString("tool.contenttool.importContent.headerFinished")</h1>
+		<p>
+			$ui.getString("tool.contenttool.importContent.finishedText")
+		</p>
+		<p>
+			<a href="javascript:close();"><img border="0" src="$ui.getString("images.contenttool.buttons.close")" width="50" height="25"></a>
+		</p>
+	</div>
 
-</body>
-</html>
+#endLightCommonToolV3()

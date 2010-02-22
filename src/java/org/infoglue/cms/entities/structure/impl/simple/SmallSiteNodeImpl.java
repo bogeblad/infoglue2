@@ -239,7 +239,7 @@ public class SmallSiteNodeImpl extends SiteNodeImpl
 		this.valueObject.setChildCount(childCount);
 	}
 
-	public void setParentContentId(Integer parentSiteNodeId)
+	public void setParentSiteNodeId(Integer parentSiteNodeId)
 	{
 		this.valueObject.setParentSiteNodeId(parentSiteNodeId);
 	}

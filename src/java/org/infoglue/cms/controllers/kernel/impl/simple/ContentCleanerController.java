@@ -147,7 +147,7 @@ public class ContentCleanerController  extends BaseController
         // Recursive clean for branches
         if (contentVO.getIsBranch())
         {
-            final List<ContentVO> childs = contentController.getContentChildrenVOList(contentVO.getContentId());
+            final List<ContentVO> childs = contentController.getContentChildrenVOList(contentVO.getContentId(), null, false);
             for (final ContentVO child : childs)
             {
                 clean(child, hitSize2Retain, languageVOList, principal);

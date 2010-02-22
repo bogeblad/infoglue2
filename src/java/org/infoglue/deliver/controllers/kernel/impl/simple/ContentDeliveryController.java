@@ -114,12 +114,15 @@ public class ContentDeliveryController extends BaseDeliveryController
 	 * The mode is important to be able to show working, preview and published data separate.
 	 */
 	
-	private Integer getOperatingMode()
+	private Integer getOperatingMode(DeliveryContext deliveryContext)
 	{
 		Integer operatingMode = new Integer(0); //Default is working
 		try
 		{
 			operatingMode = new Integer(CmsPropertyHandler.getOperatingMode());
+			if(!deliveryContext.getOperatingMode().equals(CmsPropertyHandler.getOperatingMode()))
+				operatingMode = new Integer(deliveryContext.getOperatingMode());
+
 			//logger.info("Operating mode is:" + operatingMode);
 		}
 		catch(Exception e)
@@ -335,13 +338,13 @@ public class ContentDeliveryController extends BaseDeliveryController
 		boolean isValidContent = isValidContent(infoGluePrincipal, content, languageId, useLanguageFallback, false, db, deliveryContext);
 		if(isValidContent)
 		{
-			contentVersion = getContentVersion(content, languageId, getOperatingMode(), deliveryContext, db);
+			contentVersion = getContentVersion(content, languageId, getOperatingMode(deliveryContext), deliveryContext, db);
 			if(contentVersion == null && useLanguageFallback)
 			{
 				Integer masterLanguageId = LanguageDeliveryController.getLanguageDeliveryController().getMasterLanguageForSiteNode(db, siteNodeId).getLanguageId();
 				if(languageId != null && !languageId.equals(masterLanguageId))
 				{
-					contentVersion = getContentVersion(content, masterLanguageId, getOperatingMode(), deliveryContext, db);
+					contentVersion = getContentVersion(content, masterLanguageId, getOperatingMode(deliveryContext), deliveryContext, db);
 				}
 				
 				//Added fallback to the content repository master language... useful for mixing components between sites
@@ -350,7 +353,7 @@ public class ContentDeliveryController extends BaseDeliveryController
 					Integer contentMasterLanguageId = LanguageDeliveryController.getLanguageDeliveryController().getMasterLanguageForRepository(db, content.getRepositoryId()).getLanguageId();
 					if(languageId != null && !languageId.equals(contentMasterLanguageId) && !masterLanguageId.equals(contentMasterLanguageId))
 					{
-						contentVersion = getContentVersion(content, contentMasterLanguageId, getOperatingMode(), deliveryContext, db);
+						contentVersion = getContentVersion(content, contentMasterLanguageId, getOperatingMode(deliveryContext), deliveryContext, db);
 					}
 				}
 			}
@@ -377,7 +380,7 @@ public class ContentDeliveryController extends BaseDeliveryController
 		boolean isValidContent = isValidContent(infoGluePrincipal, content, languageId, useLanguageFallback, false, db, deliveryContext);
 		if(isValidContent)
 		{
-			contentVersion = getSmallestContentVersionVO(contentId, languageId, getOperatingMode(), deliveryContext, db);
+			contentVersion = getSmallestContentVersionVO(contentId, languageId, getOperatingMode(deliveryContext), deliveryContext, db);
 			if(contentVersion == null && useLanguageFallback)
 			{
 				Integer masterLanguageId = null;
@@ -388,7 +391,7 @@ public class ContentDeliveryController extends BaseDeliveryController
 				
 				if(languageId == null || (languageId != null && !languageId.equals(masterLanguageId)))
 				{
-					contentVersion = getSmallestContentVersionVO(contentId, masterLanguageId, getOperatingMode(), deliveryContext, db);
+					contentVersion = getSmallestContentVersionVO(contentId, masterLanguageId, getOperatingMode(deliveryContext), deliveryContext, db);
 				}
 				
 				//Added fallback to the content repository master language... useful for mixing components between sites
@@ -397,7 +400,7 @@ public class ContentDeliveryController extends BaseDeliveryController
 					Integer contentMasterLanguageId = LanguageDeliveryController.getLanguageDeliveryController().getMasterLanguageForRepository(db, content.getRepositoryId()).getLanguageId();
 					if(languageId != null && !languageId.equals(contentMasterLanguageId) && !masterLanguageId.equals(contentMasterLanguageId))
 					{
-						contentVersion = getSmallestContentVersionVO(contentId, contentMasterLanguageId, getOperatingMode(), deliveryContext, db);
+						contentVersion = getSmallestContentVersionVO(contentId, contentMasterLanguageId, getOperatingMode(deliveryContext), deliveryContext, db);
 					}
 				}
 			}
@@ -423,13 +426,13 @@ public class ContentDeliveryController extends BaseDeliveryController
 		boolean isValidContent = isValidContent(infoGluePrincipal, content, languageId, useLanguageFallback, false, db, deliveryContext);
 		if(isValidContent)
 		{
-			contentVersion = getContentVersionVO(contentId, languageId, getOperatingMode(), deliveryContext, db);
+			contentVersion = getContentVersionVO(contentId, languageId, getOperatingMode(deliveryContext), deliveryContext, db);
 			if(contentVersion == null && useLanguageFallback)
 			{
 				Integer masterLanguageId = LanguageDeliveryController.getLanguageDeliveryController().getMasterLanguageForSiteNode(db, siteNodeId).getLanguageId();
 				if(languageId != null && !languageId.equals(masterLanguageId))
 				{
-					contentVersion = getContentVersionVO(contentId, masterLanguageId, getOperatingMode(), deliveryContext, db);
+					contentVersion = getContentVersionVO(contentId, masterLanguageId, getOperatingMode(deliveryContext), deliveryContext, db);
 				}
 				
 				//Added fallback to the content repository master language... useful for mixing components between sites
@@ -438,7 +441,7 @@ public class ContentDeliveryController extends BaseDeliveryController
 					Integer contentMasterLanguageId = LanguageDeliveryController.getLanguageDeliveryController().getMasterLanguageForRepository(db, content.getRepositoryId()).getLanguageId();
 					if(languageId != null && !languageId.equals(contentMasterLanguageId) && !masterLanguageId.equals(contentMasterLanguageId))
 					{
-						contentVersion = getContentVersionVO(contentId, contentMasterLanguageId, getOperatingMode(), deliveryContext, db);
+						contentVersion = getContentVersionVO(contentId, contentMasterLanguageId, getOperatingMode(deliveryContext), deliveryContext, db);
 					}
 				}
 			}
@@ -490,7 +493,7 @@ public class ContentDeliveryController extends BaseDeliveryController
 		boolean isValidContent = isValidContent(infoGluePrincipal, content, languageId, useLanguageFallback, false, db, deliveryContext);
 		if(isValidContent)
 		{
-			contentVersionVOList = getContentVersionVOList(content, languageId, getOperatingMode(), deliveryContext, db);
+			contentVersionVOList = getContentVersionVOList(content, languageId, getOperatingMode(deliveryContext), deliveryContext, db);
 		}
 		
 		return contentVersionVOList;
@@ -2663,6 +2666,9 @@ public class ContentDeliveryController extends BaseDeliveryController
 
 		boolean validateOnDates = true;
 		String operatingMode = CmsPropertyHandler.getOperatingMode();
+		if(!deliveryContext.getOperatingMode().equals(operatingMode))
+			operatingMode = deliveryContext.getOperatingMode();
+
 		if(operatingMode.equals("0"))
 		{
 			validateOnDates = deliveryContext.getValidateOnDates();
@@ -2691,7 +2697,7 @@ public class ContentDeliveryController extends BaseDeliveryController
 			//ContentVersion contentVersion = getContentVersion(content, languageId, getOperatingMode(), deliveryContext, db);
 			//TODO
 		    //ContentVersionVO contentVersion = getContentVersionVO(content.getId(), languageId, getOperatingMode(), deliveryContext, db);
-		    SmallestContentVersionVO contentVersion = getSmallestContentVersionVO(content.getId(), languageId, getOperatingMode(), deliveryContext, db);
+		    SmallestContentVersionVO contentVersion = getSmallestContentVersionVO(content.getId(), languageId, getOperatingMode(deliveryContext), deliveryContext, db);
 		    
 		    //RequestAnalyser.getRequestAnalyser().registerComponentStatistics("isValidContentPart4.1", t.getElapsedTimeNanos() / 1000);
 
@@ -2716,7 +2722,7 @@ public class ContentDeliveryController extends BaseDeliveryController
 				LanguageVO masterLanguage = LanguageDeliveryController.getLanguageDeliveryController().getMasterLanguageForRepository(repositoryId, db);
 				//TODO
 				if(masterLanguage != null && !masterLanguage.getId().equals(languageId))
-					contentVersion = getSmallestContentVersionVO(content.getId(), masterLanguage.getId(), getOperatingMode(), deliveryContext, db);
+					contentVersion = getSmallestContentVersionVO(content.getId(), masterLanguage.getId(), getOperatingMode(deliveryContext), deliveryContext, db);
 					//contentVersion = getContentVersionVO(content.getId(), masterLanguage.getId(), getOperatingMode(), deliveryContext, db);
 					//contentVersion = getContentVersion(content, masterLanguage.getId(), getOperatingMode(), deliveryContext, db);
 			}
@@ -2771,6 +2777,9 @@ public class ContentDeliveryController extends BaseDeliveryController
 
 		boolean validateOnDates = true;
 		String operatingMode = CmsPropertyHandler.getOperatingMode();
+		if(!deliveryContext.getOperatingMode().equals(operatingMode))
+			operatingMode = deliveryContext.getOperatingMode();
+		
 		if(operatingMode.equals("0"))
 		{
 			validateOnDates = deliveryContext.getValidateOnDates();
@@ -2796,7 +2805,7 @@ public class ContentDeliveryController extends BaseDeliveryController
 				//ContentVersion contentVersion = getContentVersion(content, languageId, getOperatingMode(), deliveryContext, db);
 				//TODO
 			    //ContentVersionVO contentVersion = getContentVersionVO(content.getId(), languageId, getOperatingMode(), deliveryContext, db);
-			    SmallestContentVersionVO contentVersion = getSmallestContentVersionVO(content.getId(), languageId, getOperatingMode(), deliveryContext, db);
+			    SmallestContentVersionVO contentVersion = getSmallestContentVersionVO(content.getId(), languageId, getOperatingMode(deliveryContext), deliveryContext, db);
 			    
 			    //RequestAnalyser.getRequestAnalyser().registerComponentStatistics("isValidContentPart4.2", t.getElapsedTimeNanos() / 1000);
 	
@@ -2821,7 +2830,7 @@ public class ContentDeliveryController extends BaseDeliveryController
 					LanguageVO masterLanguage = LanguageDeliveryController.getLanguageDeliveryController().getMasterLanguageForRepository(repositoryId, db);
 					//TODO
 					if(masterLanguage != null && !masterLanguage.getId().equals(languageId))
-						contentVersion = getSmallestContentVersionVO(content.getId(), masterLanguage.getId(), getOperatingMode(), deliveryContext, db);
+						contentVersion = getSmallestContentVersionVO(content.getId(), masterLanguage.getId(), getOperatingMode(deliveryContext), deliveryContext, db);
 						//contentVersion = getContentVersionVO(content.getId(), masterLanguage.getId(), getOperatingMode(), deliveryContext, db);
 						//contentVersion = getContentVersion(content, masterLanguage.getId(), getOperatingMode(), deliveryContext, db);
 				}

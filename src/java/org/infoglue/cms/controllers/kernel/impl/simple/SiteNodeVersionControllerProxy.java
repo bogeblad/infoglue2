@@ -62,8 +62,7 @@ public class SiteNodeVersionControllerProxy extends SiteNodeVersionController
 	
 	private List getInterceptors(Integer interceptorPointId) throws SystemException, Bug
 	{
-		//if(interceptors == null)
-			interceptors = InterceptionPointController.getController().getInterceptorsVOList(interceptorPointId);
+		interceptors = InterceptorController.getController().getInterceptorsVOList(interceptorPointId);
 		
 		return interceptors;
 	}
@@ -259,11 +258,16 @@ public class SiteNodeVersionControllerProxy extends SiteNodeVersionController
 						protectedSiteNodeVersionId = siteNodeVersionVO.getId();
 					else if(siteNodeVersionVO.getIsProtected().intValue() == INHERITED.intValue())
 					{
-						SiteNodeVO parentSiteNodeVO = SiteNodeController.getParentSiteNode(siteNodeVersionVO.getSiteNodeId());
-						if(parentSiteNodeVO != null)
+						SiteNodeVO currentSiteNodeVO = SiteNodeController.getController().getSiteNodeVOWithId(siteNodeVersionVO.getSiteNodeId());
+						if(currentSiteNodeVO.getParentSiteNodeId() != null)
 						{
-							siteNodeVersionVO = getLatestSiteNodeVersionVO(parentSiteNodeVO.getSiteNodeId());
-							protectedSiteNodeVersionId = getProtectedSiteNodeVersionId(siteNodeVersionVO.getSiteNodeVersionId());
+							SiteNodeVO parentSiteNodeVO = SiteNodeController.getController().getSiteNodeVOWithId(currentSiteNodeVO.getParentSiteNodeId());
+							//SiteNodeVO parentSiteNodeVO = SiteNodeController.getParentSiteNode(siteNodeVersionVO.getSiteNodeId());
+							if(parentSiteNodeVO != null)
+							{
+								siteNodeVersionVO = getLatestSiteNodeVersionVO(parentSiteNodeVO.getSiteNodeId());
+								protectedSiteNodeVersionId = getProtectedSiteNodeVersionId(siteNodeVersionVO.getSiteNodeVersionId());
+							}
 						}
 					}
 				}

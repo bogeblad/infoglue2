@@ -33,7 +33,10 @@ import org.infoglue.cms.entities.management.RepositoryVO;
 import org.infoglue.cms.entities.publishing.EditionBrowser;
 import org.infoglue.cms.entities.structure.SiteNodeVO;
 import org.infoglue.cms.exception.SystemException;
+import org.infoglue.cms.util.ChangeNotificationController;
 import org.infoglue.cms.util.CmsPropertyHandler;
+import org.infoglue.cms.util.NotificationMessage;
+import org.infoglue.cms.util.RemoteCacheUpdater;
 
 /**
  * This returns a list of all events to be published or denied,
@@ -111,9 +114,40 @@ public class ViewPublicationsAction extends InfoGlueAbstractAction
 	
 	public String doShowPublicationDetails() throws Exception
 	{
-		publicationDetailVOList = PublicationController.getPublicationDetailVOList(publicationId);
+		this.publicationDetailVOList = PublicationController.getPublicationDetailVOList(publicationId);
+		
 		return "showPublicationDetails";
 	}
+
+    public String doSystem() throws Exception
+    {
+        return "successSystem";
+    }
+
+    public String doPushSystemNotificationMessages() throws Exception
+    {
+        NotificationMessage notificationMessage = null;
+        List messages = RemoteCacheUpdater.getSystemNotificationMessages();
+        synchronized(messages)
+        {
+            if(messages.size() > 0)
+                notificationMessage = (NotificationMessage)messages.get(0);
+        }
+        
+        if(notificationMessage != null)
+        {
+    		notificationMessage = new NotificationMessage("ViewPublishingToolStartPageAction.doPushSystemNotificationMessages():", "" + notificationMessage.getClassName(), this.getInfoGluePrincipal().getName(), NotificationMessage.SYSTEM, notificationMessage.getObjectId(), notificationMessage.getObjectName());
+            ChangeNotificationController.getInstance().addNotificationMessage(notificationMessage);
+            RemoteCacheUpdater.clearSystemNotificationMessages();
+        }
+        
+        return doSystem();
+    }
+    
+    public List getSystemNotificationMessages()
+    {
+        return RemoteCacheUpdater.getSystemNotificationMessages();
+    }
 
 	public static List getPublicationDetails(Integer publicationId) throws SystemException
 	{

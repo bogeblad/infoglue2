@@ -32,6 +32,7 @@ import org.apache.log4j.Logger;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.DocumentHelper;
+import org.dom4j.io.SAXReader;
 import org.dom4j.io.XMLWriter;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentStateController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentVersionController;
@@ -172,6 +173,13 @@ public class UpdateContentVersionAction extends ViewContentVersionAction
 		return "success";
 	}
 
+	public String doUpdateVersionXMLV3() throws Exception
+	{
+		doUpdateVersionValue();
+		
+		return "successXMLV3";
+	}
+
 	public String doStandalone() throws Exception
 	{
 		super.initialize(this.contentVersionId, this.contentId, this.languageId);
@@ -214,6 +222,22 @@ public class UpdateContentVersionAction extends ViewContentVersionAction
 		}
 						 
 		return "saveAndExitStandalone";
+	}
+
+	public String doSaveAndExitInline() throws Exception
+	{
+		try
+		{
+			doExecute();
+		}
+		catch(ConstraintException ce)
+		{
+		    super.contentVersionVO = this.contentVersionVO;
+		    ce.setResult("inputStandalone");
+		    throw ce;
+		}
+						 
+		return "saveAndExitInline";
 	}
 
 	public String doBackground() throws Exception
@@ -345,8 +369,21 @@ public class UpdateContentVersionAction extends ViewContentVersionAction
         return this.contentVersionVO.getVersionValue();
     }
         
-    public void setVersionValue(java.lang.String versionValue)
+    public void setVersionValue(java.lang.String versionValue) throws Exception
     {
+    	try
+    	{
+    		SAXReader reader = new SAXReader();
+            Document document = reader.read(new java.io.ByteArrayInputStream(versionValue.getBytes("UTF-8")));
+            if(document == null)
+            	throw new Exception("Faulty dom... must be corrupt");
+    	}
+    	catch (Exception e) 
+    	{
+    		logger.error("Faulty XML from Eclipse plugin.. not accepting", e);
+    		throw new Exception("Faulty XML from Eclipse plugin.. not accepting");
+		}
+
     	this.contentVersionVO.setVersionValue(versionValue);
     }
     

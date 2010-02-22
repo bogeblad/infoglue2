@@ -2619,7 +2619,7 @@ public class BasicTemplateController implements TemplateController
 		}
 		catch(Exception e)
 		{
-			logger.error("An error occurred trying to get assetUrl on content with id: " + contentId + ":" + e.getMessage());
+			logger.warn("An error occurred trying to get assetUrl on content with id: " + contentId + ":" + e.getMessage());
 		}
 				
 		return assetUrl;
@@ -2666,7 +2666,7 @@ public class BasicTemplateController implements TemplateController
 		}
 		catch(Exception e)
 		{
-			logger.error("An error occurred trying to get assetUrl on content with id: " + contentId + " and assetKey:" + assetKey + " : " + e.getMessage());
+			logger.warn("An error occurred trying to get assetUrl on content with id: " + contentId + " and assetKey:" + assetKey + " : " + e.getMessage());
 		}
 				
 		return assetUrl;
@@ -2686,7 +2686,7 @@ public class BasicTemplateController implements TemplateController
 		}
 		catch(Exception e)
 		{
-			logger.error("An error occurred trying to get assetUrl on content with id: " + contentId + " and assetKey:" + assetKey + " : " + e.getMessage());
+			logger.warn("An error occurred trying to get assetUrl on content with id: " + contentId + " and assetKey:" + assetKey + " : " + e.getMessage());
 		}
 				
 		return assetUrl;
@@ -2849,7 +2849,7 @@ public class BasicTemplateController implements TemplateController
 		}
 		catch(Exception e)
 		{
-			logger.error("An error occurred trying to get assetUrl on content with id: " + this.contentId + ":" + e.getMessage());
+			logger.warn("An error occurred trying to get assetUrl on content with id: " + this.contentId + ":" + e.getMessage());
 		}
 				
 		return assetUrl;
@@ -2873,7 +2873,7 @@ public class BasicTemplateController implements TemplateController
 		}
 		catch(Exception e)
 		{
-			logger.error("\nError on url: " + this.getOriginalFullURL() + "\nAn error occurred trying to get InlineAssetUrl for contentId: " + contentId + " with assetKey: " + assetKey + "\nReason:" + e.getMessage());
+			logger.warn("\nError on url: " + this.getOriginalFullURL() + "\nAn error occurred trying to get InlineAssetUrl for contentId: " + contentId + " with assetKey: " + assetKey + "\nReason:" + e.getMessage());
 		}
 				
 		return assetUrl;
@@ -4540,7 +4540,7 @@ public class BasicTemplateController implements TemplateController
 
 		try
 		{
-			siteNodeVO = this.nodeDeliveryController.getSiteNode(getDatabase(), this.siteNodeId).getValueObject();
+			siteNodeVO = this.nodeDeliveryController.getSiteNodeVO(getDatabase(), this.siteNodeId);
 		}
 		catch(Exception e)
 		{
@@ -4561,7 +4561,7 @@ public class BasicTemplateController implements TemplateController
 
 		try
 		{
-			siteNodeVO = this.nodeDeliveryController.getSiteNode(getDatabase(), siteNodeId).getValueObject();
+			siteNodeVO = this.nodeDeliveryController.getSiteNodeVO(getDatabase(), siteNodeId);
 		}
 		catch(Exception e)
 		{
@@ -4829,7 +4829,7 @@ public class BasicTemplateController implements TemplateController
 
 		deliveryContext.addUsedContent("selectiveCacheUpdateNonApplicable");
 		
-		if((freeText != null && !freeText.equals("")) || (freeTextAttributeNames != null && freeTextAttributeNames.size() > 0) || fromDate != null || toDate != null || expireFromDate != null || expireToDate != null || (versionModifier != null && !versionModifier.equals("")))
+		if((freeText != null && !freeText.equals("")) || (freeTextAttributeNames != null && freeTextAttributeNames.size() > 0) || fromDate != null || toDate != null || expireFromDate != null || expireToDate != null || (versionModifier != null && !versionModifier.equals("")) || !deliveryContext.getOperatingMode().equals(CmsPropertyHandler.getOperatingMode()))
 			cacheResult = false;
 
 		//TODO - add cache here
@@ -4890,6 +4890,7 @@ public class BasicTemplateController implements TemplateController
 					criterias.setRepositoryIdList(repositoryIdList);
 				
 				final Set set = ExtendedSearchController.getController().search(criterias, getDatabase());
+				System.out.println("set:" + set.size());
 				
 				final List result = new ArrayList();
 				for(Iterator i = set.iterator(); i.hasNext(); ) 
@@ -4933,7 +4934,19 @@ public class BasicTemplateController implements TemplateController
 		Integer operatingMode = new Integer(0); //Default is working
 		try
 		{
-			operatingMode = new Integer(CmsPropertyHandler.getOperatingMode());
+			if(this.getDeliveryContext().getOperatingMode() != null)
+			{
+				try
+				{
+					operatingMode = new Integer(this.getDeliveryContext().getOperatingMode());
+				}
+				catch (Exception e) 
+				{
+					operatingMode = new Integer(CmsPropertyHandler.getOperatingMode());
+				}
+			}
+			else
+				operatingMode = new Integer(CmsPropertyHandler.getOperatingMode());
 			//logger.info("Operating mode is:" + operatingMode);
 		}
 		catch(Exception e)
@@ -5841,7 +5854,7 @@ public class BasicTemplateController implements TemplateController
 			
 			if((!hideUnauthorizedPages || getHasUserPageAccess(siteNodeVO.getId())) && (showHidden || !siteNodeVO.getIsHidden()))
 			{
-				System.out.println("Adding " + siteNodeVO.getName());
+				//System.out.println("Adding " + siteNodeVO.getName());
 				try
 				{
 					WebPage webPage = new WebPage();
@@ -5850,6 +5863,11 @@ public class BasicTemplateController implements TemplateController
 					webPage.setContentId(null);
 					webPage.setNavigationTitle(this.nodeDeliveryController.getPageNavigationTitle(getDatabase(), this.getPrincipal(), siteNodeVO.getSiteNodeId(), this.languageId, null, META_INFO_BINDING_NAME, NAV_TITLE_ATTRIBUTE_NAME, USE_LANGUAGE_FALLBACK, this.deliveryContext, escapeHTML));
 					webPage.setMetaInfoContentId(this.nodeDeliveryController.getMetaInfoContentId(getDatabase(), this.getPrincipal(), siteNodeVO.getSiteNodeId(), META_INFO_BINDING_NAME, USE_INHERITANCE, this.deliveryContext));
+					
+					SiteNodeVersionVO siteNodeVersionVO = this.nodeDeliveryController.getLatestActiveSiteNodeVersionVO(getDatabase(), siteNodeVO.getSiteNodeId());
+					webPage.setSortOrder(siteNodeVersionVO.getSortOrder());
+					webPage.setIsHidden(siteNodeVersionVO.getIsHidden());
+					
 					webPage.setUrl(this.nodeDeliveryController.getPageUrl(getDatabase(), this.getPrincipal(), siteNodeVO.getSiteNodeId(), this.languageId, null, this.deliveryContext));
 					childPages.add(webPage);
 				}
@@ -7534,7 +7552,7 @@ public class BasicTemplateController implements TemplateController
 	    else
 	    {
 	    	String editOnSiteUrl = CmsPropertyHandler.getEditOnSiteUrl();
-			String decoratedAttributeValue = "<a href=\"#\" onclick=\"window.open('" + editOnSiteUrl + "?contentId=" + contentId + "&amp;languageId=" + languageId + "&amp;attributeName=" + attributeName + "&amp;forceWorkingChange=true#" + attributeName + "Anchor', 'Edit', 'width=750,height=700,left=' + (document.body.clientWidth / 4) + ',top=50,toolbar=no,status=no,scrollbars=yes,location=no,menubar=no,directories=no,resizable=no');\">" + html + "</a>";
+			String decoratedAttributeValue = "<a href=\"#\" onclick=\"window.open('" + editOnSiteUrl + "?contentId=" + contentId + "&amp;languageId=" + languageId + "&amp;attributeName=" + attributeName + "&amp;forceWorkingChange=true#" + attributeName + "Anchor', 'Edit', 'width=850,height=700,left=' + (document.body.clientWidth / 4) + ',top=50,toolbar=no,status=no,scrollbars=yes,location=no,menubar=no,directories=no,resizable=no');\">" + html + "</a>";
 			return decoratedAttributeValue;
 	    }
 	} 
@@ -7649,7 +7667,7 @@ public class BasicTemplateController implements TemplateController
 								assignUrl = componentEditorUrl + "ViewContentVersion!viewAssetBrowserForMultipleComponentBindingV3.action?repositoryId=" + repositoryId + "&amp;siteNodeId=" + siteNodeId + "&amp;languageId=" + languageId + "&amp;contentId=" + contentId + "&amp;componentId=" + componentId + "&amp;propertyName=" + property.getName() + allowedContentTypeIdParameters + "&amp;assetTypeFilter=" + property.getAssetMask() + "&amp;showSimple=" + getDeliveryContext().getShowSimple() + "&amp;showDecorated=" + showDecorated + "&amp;hideComponentPropertiesOnLoad=" +hideComponentPropertiesOnLoad;
 						}
 						else
-							assignUrl = componentEditorUrl + "ViewSiteNodePageComponents!showContentTreeForMultipleBinding.action?repositoryId=" + repositoryId + "&amp;siteNodeId=" + siteNodeId + "&amp;languageId=" + languageId + "&amp;contentId=" + contentId + "&amp;componentId=" + componentId + "&amp;propertyName=" + property.getName() + allowedContentTypeIdParameters + "&amp;showSimple=" + getDeliveryContext().getShowSimple() + "&amp;showDecorated=" + showDecorated + "&amp;hideComponentPropertiesOnLoad=" +hideComponentPropertiesOnLoad;
+							assignUrl = componentEditorUrl + "ViewSiteNodePageComponents!showContentTreeForMultipleBindingV3.action?repositoryId=" + repositoryId + "&amp;siteNodeId=" + siteNodeId + "&amp;languageId=" + languageId + "&amp;contentId=" + contentId + "&amp;componentId=" + componentId + "&amp;propertyName=" + property.getName() + allowedContentTypeIdParameters + "&amp;showSimple=" + getDeliveryContext().getShowSimple() + "&amp;showDecorated=" + showDecorated + "&amp;hideComponentPropertiesOnLoad=" +hideComponentPropertiesOnLoad;
 					}
 					else
 					{
@@ -7669,15 +7687,15 @@ public class BasicTemplateController implements TemplateController
 								assignUrl = componentEditorUrl + "ViewContentVersion!viewAssetBrowserForComponentBindingV3.action?repositoryId=" + repositoryId + "&amp;siteNodeId=" + siteNodeId + "&amp;languageId=" + languageId + "&amp;contentId=" + contentId + "&amp;componentId=" + componentId + "&amp;propertyName=" + property.getName() + allowedContentTypeIdParameters + "&amp;assetTypeFilter=" + property.getAssetMask() + "&amp;showSimple=" + getDeliveryContext().getShowSimple() + "&amp;showDecorated=" + showDecorated + assignedParameters + "&amp;hideComponentPropertiesOnLoad=" +hideComponentPropertiesOnLoad;
 						}
 						else
-							assignUrl = componentEditorUrl + "ViewSiteNodePageComponents!showContentTree.action?repositoryId=" + repositoryId + "&amp;siteNodeId=" + siteNodeId + "&amp;languageId=" + languageId + "&amp;contentId=" + contentId + "&amp;componentId=" + componentId + "&amp;propertyName=" + property.getName() + allowedContentTypeIdParameters + "&amp;showSimple=" + getDeliveryContext().getShowSimple() + "&amp;showDecorated=" + showDecorated + "&amp;hideComponentPropertiesOnLoad=" +hideComponentPropertiesOnLoad;
+							assignUrl = componentEditorUrl + "ViewSiteNodePageComponents!showContentTreeV3.action?repositoryId=" + repositoryId + "&amp;siteNodeId=" + siteNodeId + "&amp;languageId=" + languageId + "&amp;contentId=" + contentId + "&amp;componentId=" + componentId + "&amp;propertyName=" + property.getName() + allowedContentTypeIdParameters + "&amp;showSimple=" + getDeliveryContext().getShowSimple() + "&amp;showDecorated=" + showDecorated + "&amp;hideComponentPropertiesOnLoad=" +hideComponentPropertiesOnLoad;
 					}
 				}
 				else if(property.getEntityClass().equalsIgnoreCase("SiteNode"))
 				{
 					if(property.getIsMultipleBinding())
-						assignUrl = componentEditorUrl + "ViewSiteNodePageComponents!showStructureTreeForMultipleBinding.action?repositoryId=" + repositoryId + "&amp;siteNodeId=" + siteNodeId + "&amp;languageId=" + languageId + "&amp;contentId=" + contentId + "&amp;componentId=" + componentId + "&amp;propertyName=" + property.getName() + "&amp;showSimple=" + getDeliveryContext().getShowSimple() + "&amp;showDecorated=" + showDecorated + "&amp;hideComponentPropertiesOnLoad=" +hideComponentPropertiesOnLoad;
+						assignUrl = componentEditorUrl + "ViewSiteNodePageComponents!showStructureTreeForMultipleBindingV3.action?repositoryId=" + repositoryId + "&amp;siteNodeId=" + siteNodeId + "&amp;languageId=" + languageId + "&amp;contentId=" + contentId + "&amp;componentId=" + componentId + "&amp;propertyName=" + property.getName() + "&amp;showSimple=" + getDeliveryContext().getShowSimple() + "&amp;showDecorated=" + showDecorated + "&amp;hideComponentPropertiesOnLoad=" +hideComponentPropertiesOnLoad;
 					else
-						assignUrl = componentEditorUrl + "ViewSiteNodePageComponents!showStructureTree.action?repositoryId=" + repositoryId + "&amp;siteNodeId=" + siteNodeId + "&amp;languageId=" + languageId + "&amp;contentId=" + contentId + "&amp;componentId=" + componentId + "&amp;propertyName=" + property.getName() + "&amp;showSimple=" + getDeliveryContext().getShowSimple() + "&amp;showDecorated=" + showDecorated + "&amp;hideComponentPropertiesOnLoad=" +hideComponentPropertiesOnLoad;
+						assignUrl = componentEditorUrl + "ViewSiteNodePageComponents!showStructureTreeV3.action?repositoryId=" + repositoryId + "&amp;siteNodeId=" + siteNodeId + "&amp;languageId=" + languageId + "&amp;contentId=" + contentId + "&amp;componentId=" + componentId + "&amp;propertyName=" + property.getName() + "&amp;showSimple=" + getDeliveryContext().getShowSimple() + "&amp;showDecorated=" + showDecorated + "&amp;hideComponentPropertiesOnLoad=" +hideComponentPropertiesOnLoad;
 				}
 				else if(property.getEntityClass().equalsIgnoreCase("Category"))
 				{

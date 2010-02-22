@@ -88,10 +88,10 @@ public class ViewMyDesktopAction extends InfoGlueAbstractAction
 			this.availableWorkflowVOList = controller.getAvailableWorkflowVOList(getInfoGluePrincipal());
 			this.availableShortcutVOList = shortcutController.getAvailableShortcutVOList(getInfoGluePrincipal());
 			this.siteNodeVOListLastModifiedByPincipal = SiteNodeController.getController().getSiteNodeVOListLastModifiedByPincipal(getInfoGluePrincipal());
-			this.contentVOListLastModifiedByPincipal = ContentController.getContentController().getContentVOListLastModifiedByPincipal(getInfoGluePrincipal());
+			this.contentVOListLastModifiedByPincipal = ContentController.getContentController().getContentVOListLastModifiedByPincipal(getInfoGluePrincipal(), new String[] {"Meta info"});
 
 			this.expiringPagesForPrincipal = SiteNodeController.getController().getUpcomingExpiringSiteNodes(30, getInfoGluePrincipal());
-			this.expiringContentsForPrincipal = ContentController.getContentController().getUpcomingExpiringContents(30, getInfoGluePrincipal());
+			this.expiringContentsForPrincipal = ContentController.getContentController().getUpcomingExpiringContents(30, getInfoGluePrincipal(), new String[] {"Meta info"});
 		}
 		catch (Exception e) 
 		{
@@ -161,7 +161,7 @@ public class ViewMyDesktopAction extends InfoGlueAbstractAction
 	{
 		try
 		{
-			this.contentVOListLastModifiedByPincipal = ContentController.getContentController().getContentVOListLastModifiedByPincipal(getInfoGluePrincipal());
+			this.contentVOListLastModifiedByPincipal = ContentController.getContentController().getContentVOListLastModifiedByPincipal(getInfoGluePrincipal(), new String[] {"Meta info"});
 		}
 		catch (Exception e) 
 		{
@@ -227,6 +227,24 @@ public class ViewMyDesktopAction extends InfoGlueAbstractAction
 		return expiringContentsForPrincipal;
 	}
 
+	public List getWorkflowActionVOList()
+	{
+		return getAvailableActions(null);
+	}
+
+	public List getWorkflowActionVOList(StepFilter filter)
+	{
+		return getAvailableActions(filter);
+	}
+
+	private List getAvailableActions(StepFilter filter)
+	{
+		List actions = new ArrayList();
+		for (Iterator workflows = workflowVOList.iterator(); workflows.hasNext();)
+			actions.addAll(((WorkflowVO)workflows.next()).getAvailableActions(filter));
+
+		return actions;
+	}
 
 	/*
 	
@@ -250,16 +268,6 @@ public class ViewMyDesktopAction extends InfoGlueAbstractAction
     {
         return availableShortcutVOList;
     }
-
-	public List getWorkflowActionVOList()
-	{
-		return getAvailableActions(null);
-	}
-
-	public List getWorkflowActionVOList(StepFilter filter)
-	{
-		return getAvailableActions(filter);
-	}
 
 	WorkflowVO getWorkflow()
 	{
@@ -380,14 +388,6 @@ public class ViewMyDesktopAction extends InfoGlueAbstractAction
 		availableShortcutVOList = shortcutController.getAvailableShortcutVOList(getInfoGluePrincipal());
 	}
 
-	private List getAvailableActions(StepFilter filter)
-	{
-		List actions = new ArrayList();
-		for (Iterator workflows = workflowVOList.iterator(); workflows.hasNext();)
-			actions.addAll(((WorkflowVO)workflows.next()).getAvailableActions(filter));
-
-		return actions;
-	}
 
 	private String getViewUrl(WorkflowActionVO action) throws SystemException
 	{

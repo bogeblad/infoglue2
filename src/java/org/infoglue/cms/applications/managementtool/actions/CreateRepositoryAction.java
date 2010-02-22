@@ -119,6 +119,8 @@ public class CreateRepositoryAction extends InfoGlueAbstractAction
     	
 		this.repositoryVO = RepositoryController.getController().create(repositoryVO);
 		
+	    ViewMessageCenterAction.addSystemMessage(this.getInfoGluePrincipal().getName(), ViewMessageCenterAction.SYSTEM_MESSAGE_TYPE, "refreshRepositoryList();");
+
         return "success";
     }
 
@@ -133,6 +135,8 @@ public class CreateRepositoryAction extends InfoGlueAbstractAction
     	ceb.throwIfNotEmpty();				
     	
 		this.repositoryVO = RepositoryController.getController().create(repositoryVO);
+
+	    ViewMessageCenterAction.addSystemMessage(this.getInfoGluePrincipal().getName(), ViewMessageCenterAction.SYSTEM_MESSAGE_TYPE, "refreshRepositoryList();");
 
 		//String createSiteNodeInlineOperationViewCreatedPageLinkText = getLocalizedString(getLocale(), "tool.structuretool.createSiteNodeInlineOperationViewCreatedPageLinkText");
 		//String createSiteNodeInlineOperationViewCreatedPageTitleText = getLocalizedString(getLocale(), "tool.structuretool.createSiteNodeInlineOperationViewCreatedPageTitleText");

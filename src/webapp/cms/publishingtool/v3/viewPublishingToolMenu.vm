@@ -11,7 +11,7 @@
 		</div>
 		#end
 
-		<div class="tree-item" ${n.parameters.get('extraMarkup')}>
+		<div class="tree-item">
 		#if ($n.isOpen())
 			#set($preOCImg = "open")
 			#set($addremove = "&rkey=")
@@ -24,7 +24,7 @@
 			## Fix treelines
 			#foreach ($s in $n.getRowList())
 				#if ($velocityCount != $n.getRowList().size())		
-					<img src='images/tree/xp/$preImg$s$postImg'/>
+					<img src='images/tree/xp/$preImg$s$postImg' alt=''/>
 				#else
 					#set($last = $s)
 				#end
@@ -32,9 +32,9 @@
 			
 			## Fix openclose image
 			#if ($n.hasChildren())
-				<a class="branch" target="_self" href="?exp=$exp$addremove$n.getThisKey()$myTreeArgs"><img src="images/tree/xp/f$preOCImg$last$postImg" border=0 /></a>
+				<a class="branch" target="_self" href="?exp=$exp$addremove$n.getThisKey()$myTreeArgs"><img src="images/tree/xp/f$preOCImg$last$postImg" border='0'  alt=''/></a>
 			#else
-				<img src='images/tree/xp/$preImg$last$postImg'/>
+				<img src='images/tree/xp/$preImg$last$postImg' alt=''/>
 			#end
 		#end
 
@@ -46,13 +46,11 @@
 #end
 
 <?xml version="1.0" encoding="UTF-8"?> 
-
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
 <head>
-	<META HTTP-EQUIV="expires" CONTENT="-1" />		
-	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<meta http-equiv="expires" content="-1" />		
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
 	<title>Menus</title>
 
 	<link rel="stylesheet" type="text/css" href="css/cms.css" /> 
@@ -66,11 +64,11 @@
 			openUrlInWorkArea("ViewPublishingToolStartPage!V3.action");
 		}
 		
-		function openUrlInWorkArea(url, title, targetTab)
+		function openUrlInWorkArea(url, title, targetTab, tabLabelPrefix)
 		{
 			//alert("htmlTreeItemClick:" + url);
 			if(parent.openUrlInWorkArea)
-				parent.openUrlInWorkArea(url, title, targetTab);
+				parent.openUrlInWorkArea(url, title, targetTab, tabLabelPrefix);
 		}
 	-->
 	</script>
@@ -84,8 +82,8 @@
     	## drawItem procedure (called from tree renderer for every item in the list, [se #parse below] )
     	## this is a local macro
     	#set($canDrag = ' ondragstart="startDrag();" ondragend="endDrag();"')
-    	#set($imgPath="images/tree/xp/")	
-   		#set($rootTitle="All repositories")
+    	#set($imgPath = "images/tree/xp/")	
+   		#set($rootTitle = $ui.getString("tool.publishingtool.allRepositories.label"))
     	
     	#macro(drawItem $n)
     			## Draw the item icon Container or not? 
@@ -94,17 +92,18 @@
     			#if ($n.isContainer())
     				#if ($n.isRoot())
     					#set($nodeTitle="$rootTitle")
-    					<img class="tree-icon" src="images/tree/publishingRoot.gif">
+    					<img class="tree-icon" src="images/tree/publishingRoot.gif" alt=""/>
     				#else
     					#set($nodeTitle="${n.getTitle()}")				
-    					<img class="tree-icon" src="${imgPath}emptyfolder$preOCImg$postImg" />
+    					<img class="tree-icon" src="${imgPath}emptyfolder$preOCImg$postImg" alt=""/>
     				#end
     			#else
-    				<img class="tree-icon" src="${imgPath}item$postImg"/>
+    				<img class="tree-icon" src="${imgPath}item$postImg" alt=""/>
     			#end
     			
     			## Draw item link			
-    			<a href="javascript:void(0);" onclick="openUrlInWorkArea('${n.action}', '${nodeTitle}', 'publishing');">${nodeTitle}</a>
+    			#set($windowTitle = "$nodeTitle.replaceAll('\(.*\)', '')")
+    			<a href="javascript:void(0);" onclick="openUrlInWorkArea('${n.action}', '$windowTitle', 'publishing', '$ui.getString("tool.common.publishingTabLabelPrefix")');">${nodeTitle}</a>
     			
     	#end
     	

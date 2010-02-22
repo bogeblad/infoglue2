@@ -159,34 +159,6 @@
 </table>
 #end
 
-#macro(listviewheadmultiselect $headers)
-	#set( $span = $headers.size() * 2 - 1 )
-	<div class="fullymarginalized">
-	<table cellpadding="0" cellspacing="0" border="0" width="100%">
-	
-	<tr class="darkblue">
-
-		#foreach( $header in $headers )
-			<td class="smalllabel"><div class="minormarginalized">$header</div></td>
-			#if ($velocityCount != $headers.size())
-				<td class="lightblue"><img src="images/trans.gif" width="1" height="1"></td>
-			#end
-		#end
-
-	</tr>
-	
-	<tr class="lightblue">
-		<td colspan="$span" height="1"><img src="images/trans.gif" width="1" height="1"></td>
-	</tr>
-	<tr class="darkblue">
-		<td colspan="$span" height="1"><img src="images/trans.gif" width="1" height="1"></td>
-	</tr>
-
-	## Start the form
-	<form name=objList>	
-
-#end 
-
 #macro(listviewhead $headers $header $yesDestination $noDestination $message)
 	#set( $span = $headers.size() * 2 - 1 )
 	<div class="fullymarginalized">

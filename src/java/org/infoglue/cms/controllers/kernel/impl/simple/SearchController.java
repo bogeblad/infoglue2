@@ -67,6 +67,10 @@ import org.infoglue.cms.entities.content.DigitalAssetVO;
 import org.infoglue.cms.entities.content.impl.simple.MediumDigitalAssetImpl;
 import org.infoglue.cms.entities.content.impl.simple.SmallDigitalAssetImpl;
 import org.infoglue.cms.entities.kernel.BaseEntityVO;
+import org.infoglue.cms.entities.management.ContentTypeDefinitionVO;
+import org.infoglue.cms.entities.structure.SiteNodeVO;
+import org.infoglue.cms.entities.structure.SiteNodeVersion;
+import org.infoglue.cms.entities.structure.SiteNodeVersionVO;
 import org.infoglue.cms.exception.Bug;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.security.InfoGluePrincipal;
@@ -160,7 +164,7 @@ public class SearchController extends BaseController
    	public Set getContents(Integer[] repositoryId, String searchString, int maxRows, String name, Integer languageId, Integer[] contentTypeDefinitionId, Integer caseSensitive, Integer stateId, boolean searchAssets) throws SystemException, Bug
    	{
    		Set contents = new HashSet();
-   		List contentVersions = getContentVersionVOList(repositoryId, searchString, maxRows, name, languageId, contentTypeDefinitionId, caseSensitive, stateId, searchAssets);
+   		List contentVersions = getContentVersionVOList(repositoryId, searchString, maxRows, name, languageId, contentTypeDefinitionId, null, caseSensitive, stateId, searchAssets);
    		Iterator contentVersionsIterator = contentVersions.iterator();
    		while(contentVersionsIterator.hasNext())
    		{
@@ -181,26 +185,26 @@ public class SearchController extends BaseController
 
    	public List<ContentVersionVO> getContentVersionVOList(Integer repositoryId, String searchString, int maxRows, String name, Integer languageId, Integer[] contentTypeDefinitionId, Integer caseSensitive, Integer stateId, boolean searchAssets) throws SystemException, Bug
    	{
-		List<ContentVersionVO> matchingContents = getContentVersionVOList(new Integer[]{repositoryId}, searchString, maxRows, name, languageId, contentTypeDefinitionId, caseSensitive, stateId, searchAssets);
+		List<ContentVersionVO> matchingContents = getContentVersionVOList(new Integer[]{repositoryId}, searchString, maxRows, name, languageId, contentTypeDefinitionId, null, caseSensitive, stateId, searchAssets);
 			
 		return matchingContents;		
    	}
 
    	public List<ContentVersionVO> getContentVersionVOList(Integer[] repositoryId, String searchString, int maxRows, String name, Integer languageId, Integer[] contentTypeDefinitionId, Integer caseSensitive, Integer stateId) throws SystemException, Bug
    	{
-   		return getContentVersionVOList(repositoryId, searchString, maxRows, name, languageId, contentTypeDefinitionId, caseSensitive, stateId, false);
+   		return getContentVersionVOList(repositoryId, searchString, maxRows, name, languageId, contentTypeDefinitionId, null, caseSensitive, stateId, false);
    	}
 
-   	public List<ContentVersionVO> getContentVersionVOList(Integer[] repositoryId, String searchString, int maxRows, String userName, Integer languageId, Integer[] contentTypeDefinitionId, Integer caseSensitive, Integer stateId, boolean searchAssets) throws SystemException, Bug
+   	public List<ContentVersionVO> getContentVersionVOList(Integer[] repositoryId, String searchString, int maxRows, String userName, Integer languageId, Integer[] contentTypeDefinitionId, Integer[] excludedContentTypeDefinitionIds, Integer caseSensitive, Integer stateId, boolean searchAssets) throws SystemException, Bug
    	{
    		String internalSearchEngine = CmsPropertyHandler.getInternalSearchEngine();
    		if(internalSearchEngine.equalsIgnoreCase("sqlSearch"))
-   			return getContentVersionVOListFromCastor(repositoryId, searchString, maxRows, userName, languageId, contentTypeDefinitionId, caseSensitive, stateId, searchAssets);
+   			return getContentVersionVOListFromCastor(repositoryId, searchString, maxRows, userName, languageId, contentTypeDefinitionId, excludedContentTypeDefinitionIds, caseSensitive, stateId, searchAssets);
    		else
-   			return getContentVersionVOListFromLucene(repositoryId, searchString, maxRows, userName, languageId, contentTypeDefinitionId, caseSensitive, stateId, searchAssets);
+   			return getContentVersionVOListFromLucene(repositoryId, searchString, maxRows, userName, languageId, contentTypeDefinitionId, excludedContentTypeDefinitionIds, caseSensitive, stateId, searchAssets);
    	}
    	
-   	private List<ContentVersionVO> getContentVersionVOListFromCastor(Integer[] repositoryId, String searchString, int maxRows, String userName, Integer languageId, Integer[] contentTypeDefinitionId, Integer caseSensitive, Integer stateId, boolean searchAssets) throws SystemException, Bug
+   	private List<ContentVersionVO> getContentVersionVOListFromCastor(Integer[] repositoryId, String searchString, int maxRows, String userName, Integer languageId, Integer[] contentTypeDefinitionId, Integer[] excludedContentTypeDefinitionIds, Integer caseSensitive, Integer stateId, boolean searchAssets) throws SystemException, Bug
    	{
 		List<ContentVersionVO> matchingContents = new ArrayList<ContentVersionVO>();
 
@@ -258,6 +262,16 @@ public class SearchController extends BaseController
 				}
 				extraArguments += ")";
 			}
+			if(excludedContentTypeDefinitionIds != null && excludedContentTypeDefinitionIds.length > 0)
+			{
+				for(int i=0; i<excludedContentTypeDefinitionIds.length; i++)
+				{
+					extraArguments += " AND cv.owningContent.contentTypeDefinition != $" + index + "";
+						
+					arguments.add(excludedContentTypeDefinitionIds[i]);
+					index++;
+				}
+			}
 			if(stateId != null)
 			{
 			    extraArguments += " AND cv.stateId = $" + index;
@@ -280,7 +294,8 @@ public class SearchController extends BaseController
 			Iterator iterator = arguments.iterator();
 			while(iterator.hasNext())
 			{
-			    oql.bind(iterator.next());
+				Object value = iterator.next();
+			    oql.bind(value);
 			}
 			
 			QueryResults results = oql.execute(Database.ReadOnly);
@@ -589,7 +604,7 @@ public class SearchController extends BaseController
 			{
 				SmallDigitalAssetImpl smallAsset = (SmallDigitalAssetImpl)assetResults.next();
 				//if(smallAsset.getAssetContentType().matches(assetTypeFilter))
-				if(assetTypeFilter.equals("*") || assetTypeFilter.indexOf(smallAsset.getAssetContentType()) > -1)
+				if(assetTypeFilter == null || assetTypeFilter.equals("*") || assetTypeFilter.indexOf(smallAsset.getAssetContentType()) > -1)
 				{
 					DigitalAsset asset = DigitalAssetController.getMediumDigitalAssetWithId(smallAsset.getId(), db);
 					logger.info("Found a asset matching " + searchString + ":" + asset.getId());
@@ -598,14 +613,14 @@ public class SearchController extends BaseController
 					while(versionsIterator.hasNext())
 					{
 						ContentVersion contentVersion = (ContentVersion)versionsIterator.next();
-						if(contentVersion.getOwningContent().getId().intValue() != previousContentId.intValue() || contentVersion.getLanguage().getId().intValue() != previousLanguageId.intValue())
+						if(contentVersion.getValueObject().getContentId().intValue() != previousContentId.intValue() || contentVersion.getValueObject().getLanguageId().intValue() != previousLanguageId.intValue())
 						{
-						    ContentVersion latestContentVersion = ContentVersionController.getContentVersionController().getLatestActiveContentVersion(contentVersion.getOwningContent().getId(), contentVersion.getLanguage().getId(), db);
+						    ContentVersion latestContentVersion = ContentVersionController.getContentVersionController().getLatestActiveContentVersion(contentVersion.getValueObject().getContentId(), contentVersion.getValueObject().getLanguageId(), db);
 							if(latestContentVersion != null && latestContentVersion.getId().intValue() == contentVersion.getId().intValue())
 							{
 								matchingAssets.add(asset.getValueObject());
-							    previousContentId = contentVersion.getOwningContent().getId();
-							    previousLanguageId = contentVersion.getLanguage().getId();
+							    previousContentId = contentVersion.getValueObject().getContentId();
+							    previousLanguageId = contentVersion.getValueObject().getLanguageId();
 							    currentCount++;
 							}
 						}						
@@ -722,6 +737,7 @@ public class SearchController extends BaseController
 			{
 			    String contentVersionId = contentVersionIds[i];
 			    logger.info("contentVersionId:" + contentVersionId);
+			    //System.out.println("contentVersionId:" + contentVersionId);
 			    ContentVersion contentVersion = ContentVersionController.getContentVersionController().getContentVersionWithId(new Integer(contentVersionIds[i]), db);
 			    if(contentVersion.getStateId().intValue() != ContentVersionVO.WORKING_STATE.intValue())
 			    {
@@ -753,7 +769,7 @@ public class SearchController extends BaseController
    	/**
    	 * This method searches with lucene
    	 */
-   	private List<ContentVersionVO> getContentVersionVOListFromLucene(Integer[] repositoryIdAsIntegerToSearch, String searchString, int maxRows, String userName, Integer languageId, Integer[] contentTypeDefinitionIds, Integer caseSensitive, Integer stateId, boolean includeAssets) throws SystemException, Bug
+   	private List<ContentVersionVO> getContentVersionVOListFromLucene(Integer[] repositoryIdAsIntegerToSearch, String searchString, int maxRows, String userName, Integer languageId, Integer[] contentTypeDefinitionIds, Integer[] excludedContentTypeDefinitionIds, Integer caseSensitive, Integer stateId, boolean includeAssets) throws SystemException, Bug
    	{
    		List<ContentVersionVO> contentVersionVOList = new ArrayList<ContentVersionVO>();
    		
@@ -831,6 +847,27 @@ public class SearchController extends BaseController
 					fieldNames.add("contentTypeDefinitionId");
 					queryStrings.add("" + sb.toString());
 					booleanList.add(BooleanClause.Occur.MUST);
+				}
+			}
+			if(excludedContentTypeDefinitionIds != null && excludedContentTypeDefinitionIds.length > 0)
+			{
+				StringBuffer sb = new StringBuffer();
+				for(int i=0; i < excludedContentTypeDefinitionIds.length; i++)
+				{
+					Integer contentTypeDefinitionId = excludedContentTypeDefinitionIds[i];
+					if(contentTypeDefinitionId != null)
+					{
+						if(i > 0)
+							sb.append(" OR ");
+						sb.append("" +contentTypeDefinitionId);
+					}
+				}
+				
+				if(sb.length() > 0)
+				{
+					fieldNames.add("contentTypeDefinitionId");
+					queryStrings.add("" + sb.toString());
+					booleanList.add(BooleanClause.Occur.MUST_NOT);
 				}
 			}
 			if(userName != null && !userName.equals(""))
@@ -967,6 +1004,128 @@ public class SearchController extends BaseController
 	    return contentVersionVOList;
 	}
 
+   	public List<SiteNodeVersionVO> getSiteNodeVersionVOList(Integer[] repositoryId, String searchString, int maxRows, String userName, Integer languageId, Integer caseSensitive, Integer stateId) throws SystemException, Bug
+   	{
+   		//String internalSearchEngine = CmsPropertyHandler.getInternalSearchEngine();
+   		//if(internalSearchEngine.equalsIgnoreCase("sqlSearch"))
+   			return getSiteNodeVersionVOListFromCastor(repositoryId, searchString, maxRows, userName, languageId, caseSensitive, stateId);
+   			//else
+   			//	return getSiteNodeVersionVOListFromLucene(repositoryId, searchString, maxRows, userName, caseSensitive, stateId);
+   	}
+
+   	private List<SiteNodeVersionVO> getSiteNodeVersionVOListFromCastor(Integer[] repositoryId, String searchString, int maxRows, String userName, Integer languageId, Integer caseSensitive, Integer stateId) throws SystemException, Bug
+   	{
+		List<SiteNodeVersionVO> matching = new ArrayList<SiteNodeVersionVO>();
+
+   		ContentTypeDefinitionVO ctd = ContentTypeDefinitionController.getController().getContentTypeDefinitionVOWithName("Meta info");
+
+		List<ContentVersionVO> matchingMetaInfoContentVersionVOList = getContentVersionVOList(repositoryId, searchString, maxRows, userName, languageId, new Integer[]{ctd.getId()}, null, caseSensitive, stateId, false);
+		Iterator<ContentVersionVO> matchingMetaInfoContentVersionVOListIterator = matchingMetaInfoContentVersionVOList.iterator();
+		while(matchingMetaInfoContentVersionVOListIterator.hasNext())
+		{
+			ContentVersionVO contentVersionVO = matchingMetaInfoContentVersionVOListIterator.next();
+			try
+			{
+				SiteNodeVO siteNodeVO = SiteNodeController.getController().getSiteNodeVOWithMetaInfoContentId(contentVersionVO.getContentId());				
+				SiteNodeVersionVO siteNodeVersionVO = SiteNodeVersionController.getController().getLatestActiveSiteNodeVersionVO(siteNodeVO.getId());
+				matching.add(siteNodeVersionVO);
+			}
+			catch (Exception e) 
+			{
+				logger.warn("An error - why:" + e.getMessage(), e);
+			}
+		}
+		
+		ConstraintExceptionBuffer ceb = new ConstraintExceptionBuffer();
+		Database db = CastorDatabaseService.getDatabase();
+		try
+		{
+			beginTransaction(db);
+
+			String repositoryArgument = " AND (";
+			
+			int index = 3;
+			List repArguments = new ArrayList();
+			
+			for(int i=0; i<repositoryId.length; i++)
+			{
+				if(i > 0)
+					repositoryArgument += " OR ";
+				
+				repositoryArgument += "snv.owningSiteNode.repository.repositoryId = $" + index;
+			    repArguments.add(repositoryId[i]);
+				index++;
+			}
+			repositoryArgument += ")";
+				
+			//int index = 4;
+			String extraArguments = "";
+			String inverse = "";
+			List arguments = new ArrayList();
+						
+			if(userName != null && !userName.equalsIgnoreCase(""))
+			{
+			    extraArguments += " AND snv.versionModifier = $" + index;
+			    arguments.add(userName);
+				index++;
+			}
+			if(stateId != null)
+			{
+			    extraArguments += " AND cv.stateId = $" + index;
+			    arguments.add(stateId);
+				index++;
+			}
+			    
+			String sql = "SELECT snv FROM org.infoglue.cms.entities.structure.impl.simple.SiteNodeVersionImpl snv WHERE snv.isActive = $1 AND snv.owningSiteNode.name = $2 " + repositoryArgument + extraArguments + " ORDER BY snv.owningSiteNode asc, snv.siteNodeVersionId desc";
+			logger.info("sql:" + sql);
+			OQLQuery oql = db.getOQLQuery(sql);
+			oql.bind(new Boolean(true));
+			oql.bind(searchString);
+			Iterator repIterator = repArguments.iterator();
+			while(repIterator.hasNext())
+			{
+				Integer repositoryIdAsInteger = (Integer)repIterator.next();
+				oql.bind(repositoryIdAsInteger);
+			}
+	        
+			Iterator iterator = arguments.iterator();
+			while(iterator.hasNext())
+			{
+			    oql.bind(iterator.next());
+			}
+			
+			QueryResults results = oql.execute(Database.ReadOnly);
+			
+			Integer previousSiteNodeId  = new Integer(-1);
+			int currentCount = 0;
+			while(results.hasMore() && currentCount < maxRows) 
+			{
+				SiteNodeVersion siteNodeVersionVersion = (SiteNodeVersion)results.next();
+				logger.info("Found a version matching " + searchString + ":" + siteNodeVersionVersion.getId() + "=" + siteNodeVersionVersion.getOwningSiteNode().getName());
+				if(siteNodeVersionVersion.getOwningSiteNode().getId().intValue() != previousSiteNodeId.intValue())
+				{
+				    matching.add(siteNodeVersionVersion.getValueObject());
+				    previousSiteNodeId = siteNodeVersionVersion.getOwningSiteNode().getId();
+				    currentCount++;
+				}
+			}
+
+			results.close();
+			oql.close();
+			
+			commitTransaction(db);
+		}
+		catch ( Exception e )
+		{
+			rollbackTransaction(db);
+			throw new SystemException("An error occurred when we tried to search. Reason:" + e.getMessage(), e);			
+		}
+		
+		return matching;
+		
+   	}
+   	
+   	
 	private void deleteVersionFromIndex(String contentVersionId)
 	{
 		IndexWriter writer = null;

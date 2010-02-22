@@ -148,7 +148,8 @@ public class ViewContentVersionAction extends InfoGlueAbstractAction
 	private Integer toLanguageId;
 	
 	private String returnAddress = "";
-
+	private Boolean inline = false;
+	
 	public String getQualifyerPath(String entity, String entityId)
 	{	
 		StringBuffer sb = new StringBuffer("");
@@ -263,9 +264,9 @@ public class ViewContentVersionAction extends InfoGlueAbstractAction
     		languageId = contentVersionVO.getLanguageId();
     		this.languageId = contentVersionVO.getLanguageId();
     	}   
-    	
+
         this.contentVO = ContentControllerProxy.getController().getACContentVOWithId(this.getInfoGluePrincipal(), contentId);
-		    
+
         if(this.contentVO.getRepositoryId() != null && checkPermission && !hasAccessTo("Repository.Read", "" + this.contentVO.getRepositoryId()))
         {
     		AccessConstraintExceptionBuffer ceb = new AccessConstraintExceptionBuffer();
@@ -275,14 +276,25 @@ public class ViewContentVersionAction extends InfoGlueAbstractAction
 
         //this.contentVO = ContentController.getContentVOWithId(contentId);
         this.contentTypeDefinitionVO = ContentController.getContentController().getContentTypeDefinition(contentId);
-        this.availableLanguages = ContentController.getContentController().getRepositoryLanguages(contentId);
+        this.availableLanguages = ContentController.getContentController().getRepositoryLanguages(this.contentVO.getRepositoryId());
         
         if(contentVersionId == null)
 		{	
 			//this.contentVersionVO = ContentVersionControllerProxy.getController().getACLatestActiveContentVersionVO(this.getInfoGluePrincipal(), contentId, languageId);
 			//this.contentVersionVO = ContentVersionController.getLatestActiveContentVersionVO(contentId, languageId);
-			this.contentVersionVO = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(contentId, languageId);
-			if(this.contentVersionVO == null && fallBackToMasterLanguage)
+        	if(languageId == null)
+        	{
+        		LanguageVO languageVO = LanguageController.getController().getMasterLanguage(this.contentVO.getRepositoryId());
+        		if(languageVO != null)
+        		{
+	        		languageId = languageVO.getId();
+	        		this.languageId = languageId;
+        		}
+        	}
+        	
+        	this.contentVersionVO = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(contentId, languageId);
+		    
+        	if(this.contentVersionVO == null && fallBackToMasterLanguage)
 			{
 			    //logger.info("repositoryId:" + repositoryId);
 			    Integer usedRepositoryId = this.repositoryId;
@@ -475,6 +487,22 @@ public class ViewContentVersionAction extends InfoGlueAbstractAction
 		
 		this.repositories = RepositoryController.getController().getAuthorizedRepositoryVOList(this.getInfoGluePrincipal(), true);
 
+		if(this.assetKey != null)
+		{
+			logger.info("this.assetKey before:" + this.assetKey);
+
+			String fromEncoding = CmsPropertyHandler.getAssetKeyFromEncoding();
+			if(fromEncoding == null)
+				fromEncoding = "iso-8859-1";
+			
+			String toEncoding = CmsPropertyHandler.getAssetKeyToEncoding();
+			if(toEncoding == null)
+				toEncoding = "utf-8";
+			
+			this.assetKey = new String(assetKey.getBytes(fromEncoding), toEncoding);
+			logger.info("this.assetKey after conversion:" + this.assetKey);
+		}
+
 		return "viewAssetBrowserForComponentBindingV3";
 	}
 
@@ -596,6 +624,12 @@ public class ViewContentVersionAction extends InfoGlueAbstractAction
         return "asXML";
     }
 
+    public String doAsXMLV3() throws Exception
+    {
+        this.initialize(getContentVersionId(), getContentId(), this.languageId);
+        return "asXMLV3";
+    }
+
     public String doDeleteDigitalAsset() throws Exception
     {
     	Integer oldContentVersionId = this.getContentVersionId();
@@ -661,7 +695,7 @@ public class ViewContentVersionAction extends InfoGlueAbstractAction
 		{
 			if(contentVersionId != null)
 			{
-				ContentVersion contentVersion = ContentVersionController.getContentVersionController().getContentVersionWithId(contentVersionId);
+				ContentVersionVO contentVersion = ContentVersionController.getContentVersionController().getContentVersionVOWithId(contentVersionId);
 				List events = EventController.getEventVOListForEntity(ContentVersion.class.getName(), contentVersion.getId());
 				if(events != null && events.size() > 0)
 					eventVO = (EventVO)events.get(0);
@@ -893,8 +927,8 @@ public class ViewContentVersionAction extends InfoGlueAbstractAction
        			while(digitalAssetsIterator.hasNext())
        			{
        				DigitalAssetVO assetVO = (DigitalAssetVO)digitalAssetsIterator.next();
-       				//if(!assetVO.getAssetContentType().matches(this.assetTypeFilter))
-	     			if(!this.assetTypeFilter.equals("*") && this.assetTypeFilter.indexOf(assetVO.getAssetContentType()) == -1)
+       				logger.info("assetVO:" + assetVO.getAssetKey() + " - " + assetVO.getAssetContentType() + " VS " + this.assetTypeFilter);
+       				if(!this.assetTypeFilter.equals("*") && this.assetTypeFilter.indexOf(assetVO.getAssetContentType()) == -1)
        				{
        					digitalAssetsIterator.remove();
        				}
@@ -905,7 +939,7 @@ public class ViewContentVersionAction extends InfoGlueAbstractAction
 			
 			if(filteredDigitalAssets.size() < maxNumberOfAssets)
 			{
-				List children = ContentControllerProxy.getContentController().getContentChildrenVOList(contentId);
+				List children = ContentControllerProxy.getContentController().getContentChildrenVOList(contentId, null, false);
 				Iterator childrenIterator = children.iterator();
 				while(childrenIterator.hasNext())
 				{
@@ -1906,7 +1940,8 @@ public class ViewContentVersionAction extends InfoGlueAbstractAction
 
 	public void setAssetTypeFilter(String assetTypeFilter)
 	{
-		this.assetTypeFilter = assetTypeFilter;
+		if(assetTypeFilter != null && !assetTypeFilter.equals(""))
+			this.assetTypeFilter = assetTypeFilter;
 	}
 
 
@@ -1925,4 +1960,15 @@ public class ViewContentVersionAction extends InfoGlueAbstractAction
 	{
 		return getRequest().getParameter("CKEditorFuncNum");
 	}
+	
+    public void setInline(Boolean inline)
+    {
+        this.inline = inline;
+    }
+
+    public Boolean getInline()
+    {
+        return inline;
+    }
+
 }

@@ -16,8 +16,10 @@ import org.infoglue.cms.applications.common.ToolbarButton;
 import org.infoglue.cms.applications.common.ToolbarButton;
 import org.infoglue.cms.entities.content.ContentVO;
 import org.infoglue.cms.entities.content.ContentVersionVO;
+import org.infoglue.cms.entities.management.ContentTypeDefinitionVO;
 import org.infoglue.cms.entities.management.InterceptionPointVO;
 import org.infoglue.cms.entities.management.LanguageVO;
+import org.infoglue.cms.entities.management.RepositoryVO;
 import org.infoglue.cms.entities.structure.SiteNodeVO;
 import org.infoglue.cms.entities.structure.SiteNodeVersionVO;
 import org.infoglue.cms.entities.workflow.WorkflowDefinitionVO;
@@ -26,6 +28,7 @@ import org.infoglue.cms.security.InfoGlueGroup;
 import org.infoglue.cms.security.InfoGluePrincipal;
 import org.infoglue.cms.security.InfoGlueRole;
 import org.infoglue.cms.util.CmsPropertyHandler;
+import org.infoglue.cms.util.RemoteCacheUpdater;
 import org.infoglue.cms.util.StringManager;
 import org.infoglue.cms.util.StringManagerFactory;
 import org.infoglue.deliver.util.HttpHelper;
@@ -66,7 +69,7 @@ public class ToolbarController
 	{
 		Timer t = new Timer();
 		
-		System.out.println("toolbarKey:" + toolbarKey);
+		//System.out.println("toolbarKey:" + toolbarKey);
 		logger.info("toolbarKey:" + toolbarKey);
 		
 		try
@@ -181,6 +184,11 @@ public class ToolbarController
 				return getThemesButtons(toolbarKey, principal, locale, request, disableCloseButton);
 			if(toolbarKey.equalsIgnoreCase("tool.managementtool.labels.header"))
 				return getLabelsButtons(toolbarKey, principal, locale, request, disableCloseButton);
+
+			if(toolbarKey.equalsIgnoreCase("tool.publishingtool.repositoryPublications"))
+				return getPublicationsButtons(locale, request);
+			if(toolbarKey.equalsIgnoreCase("tool.publishingtool.globalSettings.header"))
+				return getSystemPublicationsButtons(locale, request);
 		}
 		catch(Exception e) {e.printStackTrace();}			
 					
@@ -196,6 +204,9 @@ public class ToolbarController
 				
 		try
 		{
+			if(toolbarKey.equalsIgnoreCase("tool.common.constraintException.title"))
+				return asButtons(getDialogCloseButton(toolbarKey, principal, locale, request, false));
+			
 			if(toolbarKey.equalsIgnoreCase("tool.contenttool.accessRights.header"))
 				return getCommonFooterSaveOrSaveAndExitOrCloseButton(toolbarKey, principal, locale, request, disableCloseButton, "UpdateAccessRights!saveAndExitV3.action");
 
@@ -208,6 +219,9 @@ public class ToolbarController
 			if(toolbarKey.equalsIgnoreCase("tool.contenttool.contentVersionHeader"))
 				return getContentVersionFooterButtons(toolbarKey, principal, locale, request, disableCloseButton);
 
+			if(toolbarKey.equalsIgnoreCase("tool.contenttool.contentVersionHistory.label"))
+				return getContentHistoryFooterButtons(toolbarKey, principal, locale, request, disableCloseButton);
+			
 			if(toolbarKey.equalsIgnoreCase("tool.contenttool.contentVersionStandaloneHeader"))
 				return getContentVersionFooterButtons(toolbarKey, principal, locale, request, disableCloseButton);
 
@@ -217,6 +231,12 @@ public class ToolbarController
 			if(toolbarKey.equalsIgnoreCase("tool.contenttool.contentPropertiesHeader"))
 				return getCommonFooterSaveOrSaveAndExitOrCloseButton(toolbarKey, principal, locale, request, disableCloseButton, "ViewContentProperties!saveAndExitV3.action");
 
+			if(toolbarKey.equalsIgnoreCase("tool.structuretool.siteNodeDetailsHeader"))
+				return getSiteNodeFooterButtons(toolbarKey, principal, locale, request, disableCloseButton);
+
+			if(toolbarKey.equalsIgnoreCase("tool.structuretool.siteNodeHistory.header"))
+				return getSiteNodeHistoryFooterButtons(toolbarKey, principal, locale, request, disableCloseButton);
+			
 			if(toolbarKey.equalsIgnoreCase("tool.structuretool.createSiteNodeHeader"))
 				return getCreateSiteNodeFooterButtons(toolbarKey, principal, locale, request, disableCloseButton);
 			
@@ -228,6 +248,12 @@ public class ToolbarController
 
 			if(toolbarKey.equalsIgnoreCase("tool.structuretool.publishSiteNode.header"))
 				return getPublishPageFooterButtons(toolbarKey, principal, locale, request, disableCloseButton);
+
+			if(toolbarKey.equalsIgnoreCase("tool.structuretool.unpublishSiteNode.header"))
+				return getUnpublishPageFooterButtons(toolbarKey, principal, locale, request, disableCloseButton);
+
+			if(toolbarKey.equalsIgnoreCase("tool.contenttool.publishContent.header"))
+				return getPublishContentsFooterButtons(toolbarKey, principal, locale, request, disableCloseButton);
 
 			if(toolbarKey.equalsIgnoreCase("tool.common.unpublishing.unpublishContentsHeader"))
 				return getUnPublishContentsFooterButtons(toolbarKey, principal, locale, request, disableCloseButton);
@@ -326,7 +352,9 @@ public class ToolbarController
 			
 			if(toolbarKey.equalsIgnoreCase("tool.contenttool.moveContent.header"))
 				return getCommonFooterSaveOrCloseButton(toolbarKey, principal, locale, request, disableCloseButton);
-
+			if(toolbarKey.equalsIgnoreCase("tool.contenttool.moveMultipleContent.header"))
+				return getCommonAddNextCancelButton(toolbarKey, principal, locale, request, disableCloseButton);
+			
 			if(toolbarKey.equalsIgnoreCase("tool.managementtool.uploadTheme.header"))
 				return getCommonFooterSaveOrCloseButton(toolbarKey, principal, locale, request, disableCloseButton);
 			if(toolbarKey.equalsIgnoreCase("tool.managementtool.uploadTranslation.header"))
@@ -605,7 +633,7 @@ public class ToolbarController
 		ToolbarButton unpublishAllButton = new ToolbarButton("",
 				  getLocalizedString(locale, "tool.contenttool.toolbarV3.unpublishContentsAllLabel"), 
 				  getLocalizedString(locale, "tool.contenttool.toolbarV3.unpublishContentsAllTitle"),
-				  "UnpublishContentVersion!inputChooseContents.action?contentId=" + contentId + "&recurseContents=false&returnAddress=ViewInlineOperationMessages.action&originalAddress=refreshParent",
+				  "UnpublishContentVersion!inputChooseContentsV3.action?contentId=" + contentId + "&recurseContents=false&returnAddress=ViewInlineOperationMessages.action&originalAddress=refreshParent",
 				  "",
 				  "unpublish");
 
@@ -622,10 +650,12 @@ public class ToolbarController
 				  "accessRights"));
 		}
 		
+		String contentPath = getContentIDPath(contentVO);
+
 		ToolbarButton syncTreeButton = new ToolbarButton("",
 				  getLocalizedString(locale, "tool.contenttool.toolbarV3.showContentInTreeLabel"), 
 				  getLocalizedString(locale, "tool.contenttool.toolbarV3.showContentInTreeTitle"),
-				  "syncWithTree();",
+				  "javascript:syncWithTree('" + contentPath + "', " + contentVO.getRepositoryId() + ", 'contentTreeIframe');",
 				  "",
 				  "syncTree");
 
@@ -666,6 +696,30 @@ public class ToolbarController
 		return buttons;
 	}
 
+	private String getContentIDPath(ContentVO contentVO)
+	{
+		StringBuffer sb = new StringBuffer();
+		sb.append(contentVO.getId());
+		try
+		{
+			if(contentVO.getParentContentId() != null)
+			{
+				ContentVO parentContentVO = ContentController.getContentController().getContentVOWithId(contentVO.getParentContentId());
+				while(parentContentVO != null)
+				{
+					sb.insert(0, parentContentVO.getId() + ",");
+					parentContentVO = ContentController.getContentController().getContentVOWithId(parentContentVO.getParentContentId());
+				}
+			}
+		}
+		catch (Exception e) 
+		{
+			logger.warn("Problem getting ContentIDPath: " + e.getMessage());
+		}
+		
+		return sb.toString();
+	}
+
 	private List<ToolbarButton> getContentVersionStandaloneButtons(String toolbarKey, InfoGluePrincipal principal, Locale locale, HttpServletRequest request, boolean disableCloseButton) throws Exception
 	{
 		Timer t = new Timer();
@@ -682,6 +736,15 @@ public class ToolbarController
 		catch (Exception e) 
 		{
 		}
+		try
+		{
+			if(request.getAttribute("contentVersionId") != null)
+				primaryKeyAsInteger = new Integer("" + request.getAttribute("contentVersionId"));
+		}
+		catch (Exception e) 
+		{
+		}
+
 		
 		if(primaryKeyAsInteger != null)
 		{
@@ -691,17 +754,29 @@ public class ToolbarController
 		}
 		else
 		{
-			contentVO = ContentController.getContentController().getContentVOWithId(new Integer((String)request.getParameter("contentId")));
-			currentLanguageVO = LanguageController.getController().getLanguageVOWithId(new Integer((String)request.getParameter("languageId")));
+			Integer contentId = null;
+			if(request.getAttribute("contentId") != null)
+				contentId = new Integer((String)request.getAttribute("contentId"));
+			else
+				contentId = new Integer((String)request.getParameter("contentId"));
+
+			Integer languageId = null;
+			if(request.getAttribute("languageId") != null)
+				languageId = new Integer((String)request.getAttribute("languageId"));
+			else
+				languageId = new Integer((String)request.getParameter("languageId"));
+
+			contentVO = ContentController.getContentController().getContentVOWithId(contentId);
+			currentLanguageVO = LanguageController.getController().getLanguageVOWithId(languageId);
 		}
 		
 		ToolbarButton languageDropButton = new ToolbarButton("",
 															 StringUtils.capitalize(currentLanguageVO.getDisplayLanguage()), 
 															 StringUtils.capitalize(currentLanguageVO.getDisplayLanguage()),
 				  											 "",
-					  										 "images/v3/menu-button-arrow.png",
+					  										 "",
 					  										 "right",
-					  										 "dropArrow",
+					  										 "locale",
 					  										 false);
 		
 		Iterator repositoryLanguagesIterator = LanguageController.getController().getLanguageVOList(contentVO.getRepositoryId()).iterator();
@@ -728,7 +803,18 @@ public class ToolbarController
 	{
 		List<ToolbarButton> buttons = new ArrayList<ToolbarButton>();
 		
-		Integer contentId = new Integer(request.getParameter("contentId"));
+		//System.out.println("Query:" + request.getQueryString());
+		String contentIdString = request.getParameter("contentId");
+		if(contentIdString == null || contentIdString.equals(""))
+			contentIdString = (String)request.getAttribute("contentId");
+		
+		if(contentIdString == null || contentIdString.equals(""))
+		{
+			logger.error("No contentId was sent in to getContentVersionButtons so we cannot continue. Check why. Original url: " + request.getRequestURI() + "?" + request.getQueryString());
+			return buttons;
+		}
+		
+		Integer contentId = new Integer(contentIdString);
 		ContentVO contentVO = ContentController.getContentController().getContentVOWithId(contentId);
 		
 		String contentVersionIdString = request.getParameter("contentVersionId");
@@ -745,13 +831,32 @@ public class ToolbarController
 			contentVersionId = new Integer(contentVersionIdString);
 		}
 		
+		ToolbarButton moveButton = new ToolbarButton("",
+				  getLocalizedString(locale, "tool.contenttool.toolbarV3.moveContentLabel"), 
+				  getLocalizedString(locale, "tool.contenttool.toolbarV3.moveContentTitle"),
+				  "MoveContent!inputV3.action?contentId=" + contentId + "&repositoryId=" + contentVO.getRepositoryId() + "&hideLeafs=true&returnAddress=ViewInlineOperationMessages.action&originalAddress=refreshParent",
+				  "",
+				  "moveContent");
+
+		ToolbarButton moveMultipleButton = new ToolbarButton("",
+				  getLocalizedString(locale, "tool.contenttool.toolbarV3.moveMultipleContentLabel"), 
+				  getLocalizedString(locale, "tool.contenttool.toolbarV3.moveMultipleContentTitle"),
+				  "MoveMultipleContent!inputV3.action?contentId=" + contentId + "&repositoryId=" + contentVO.getRepositoryId() + "&returnAddress=ViewInlineOperationMessages.action&originalAddress=refreshParent",
+				  "",
+				  "moveContent");
+		
+		moveButton.getSubButtons().add(moveMultipleButton);
+		buttons.add(moveButton);
+		
+		/*
 		buttons.add(new ToolbarButton("",
 				  getLocalizedString(locale, "tool.contenttool.toolbarV3.moveContentLabel"), 
 				  getLocalizedString(locale, "tool.contenttool.toolbarV3.moveContentTitle"),
 				  "MoveContent!inputV3.action?contentId=" + contentId + "&repositoryId=" + contentVO.getRepositoryId() + "&hideLeafs=true&returnAddress=ViewInlineOperationMessages.action&originalAddress=refreshParent",
 				  "",
 				  "moveContent"));
-
+		*/
+		
 		buttons.add(new ToolbarButton("",
 				  getLocalizedString(locale, "tool.contenttool.toolbarV3.deleteContentLabel"), 
 				  getLocalizedString(locale, "tool.contenttool.toolbarV3.deleteContentTitle"),
@@ -792,12 +897,32 @@ public class ToolbarController
 		ToolbarButton unpublishAllButton = new ToolbarButton("",
 				  getLocalizedString(locale, "tool.contenttool.toolbarV3.unpublishContentsAllLabel"), 
 				  getLocalizedString(locale, "tool.contenttool.toolbarV3.unpublishContentsAllTitle"),
-				  "UnpublishContentVersion!inputChooseContents.action?contentId=" + contentId + "&recurseContents=false&returnAddress=ViewInlineOperationMessages.action&originalAddress=refreshParent",
+				  "UnpublishContentVersion!inputChooseContentsV3.action?contentId=" + contentId + "&recurseContents=false&returnAddress=ViewInlineOperationMessages.action&originalAddress=refreshParent",
 				  "",
 				  "unpublish");
 
 		unpublishButton.getSubButtons().add(unpublishAllButton);
 		buttons.add(unpublishButton);
+
+		if(contentVO.getContentTypeDefinitionId() != null)
+		{
+			ContentTypeDefinitionVO contentTypeDefinitionVO = ContentTypeDefinitionController.getController().getContentTypeDefinitionVOWithId(contentVO.getContentTypeDefinitionId());
+			if(contentTypeDefinitionVO != null && (contentTypeDefinitionVO.getName().equalsIgnoreCase("HTMLTemplate") || contentTypeDefinitionVO.getName().equalsIgnoreCase("PageTemplate") || contentTypeDefinitionVO.getName().equalsIgnoreCase("PagePartTemplate")))
+			{
+				buttons.add(new ToolbarButton("",
+						  getLocalizedString(locale, "tool.contenttool.toolbarV3.componentAccessRightsLabel"), 
+						  getLocalizedString(locale, "tool.contenttool.toolbarV3.componentAccessRightsTitle"),
+						  "ViewAccessRights!V3.action?interceptionPointCategory=Component&extraParameters=" + contentId + "&returnAddress=ViewInlineOperationMessages.action&originalAddress=refreshParent",
+						  "",
+						  "componentAccessRights"));
+				buttons.add(new ToolbarButton("",
+						  getLocalizedString(locale, "tool.contenttool.toolbarV3.deployComponentLabel"), 
+						  getLocalizedString(locale, "tool.contenttool.toolbarV3.deployComponentTitle"),
+						  "ViewDeploymentChooseServer!inputQuickV3.action?contentId=" + contentId + "&returnAddress=ViewInlineOperationMessages.action&originalAddress=refreshParent",
+						  "",
+						  "deployContent"));
+			}
+		}
 
 		if(contentVO.getIsProtected().intValue() == ContentVO.YES.intValue())
 		{
@@ -809,10 +934,12 @@ public class ToolbarController
 				  "accessRights"));
 		}
 
+		String contentPath = getContentIDPath(contentVO);
+
 		buttons.add(new ToolbarButton("",
 				  getLocalizedString(locale, "tool.contenttool.toolbarV3.showContentInTreeLabel"), 
 				  getLocalizedString(locale, "tool.contenttool.toolbarV3.showContentInTreeTitle"),
-				  "syncWithTree();",
+				  "javascript:syncWithTree('" + contentPath + "', " + contentVO.getRepositoryId() + ", 'contentTreeIframe');",
 				  "",
 				  "syncTree"));
 
@@ -821,14 +948,14 @@ public class ToolbarController
 			buttons.add(new ToolbarButton("",
 					  getLocalizedString(locale, "tool.contenttool.toolbarV3.changeLanguageLabel"), 
 					  getLocalizedString(locale, "tool.contenttool.toolbarV3.changeLanguageTitle"),
-					  "ChangeVersionLanguage!input.action?contentId=" + contentId + "&repositoryId=" + contentVO.getRepositoryId() + "&contentVersionId=" + contentVersionId,
+					  "ChangeVersionLanguage!inputV3.action?contentId=" + contentId + "&repositoryId=" + contentVO.getRepositoryId() + "&contentVersionId=" + contentVersionId + "&returnAddress=ViewInlineOperationMessages.action&originalAddress=refreshParent",
 					  "",
 					  "changeLanguage"));
 	
 			buttons.add(new ToolbarButton("",
 					  getLocalizedString(locale, "tool.contenttool.toolbarV3.showDataAsXMLLabel"), 
 					  getLocalizedString(locale, "tool.contenttool.toolbarV3.showDataAsXMLTitle"),
-					  "ViewContentVersion!asXML.action?contentId=" + contentId + "&repositoryId=" + contentVO.getRepositoryId() + "&contentVersionId=" + contentVersionId,
+					  "ViewContentVersion!asXMLV3.action?contentId=" + contentId + "&repositoryId=" + contentVO.getRepositoryId() + "&contentVersionId=" + contentVersionId,
 					  "",
 					  "showDataAsXML"));
 		}
@@ -903,21 +1030,22 @@ public class ToolbarController
 		List<ToolbarButton> buttons = new ArrayList<ToolbarButton>();
 
 		String siteNodeId = request.getParameter("siteNodeId");
-		String repositoryId = request.getParameter("repositoryId");
+		//String repositoryId = request.getParameter("repositoryId");
 		SiteNodeVO siteNodeVO = SiteNodeController.getController().getSiteNodeVOWithId(new Integer(siteNodeId));
+		
 		SiteNodeVersionVO siteNodeVersionVO = SiteNodeVersionController.getController().getLatestActiveSiteNodeVersionVO(new Integer(siteNodeId));
 
 		buttons.add(new ToolbarButton("",
 				  getLocalizedString(locale, "tool.structuretool.toolbarV3.createPageLabel"), 
 				  getLocalizedString(locale, "tool.structuretool.toolbarV3.createPageTitle"),
-				  "CreateSiteNode!inputV3.action?isBranch=true&repositoryId=" + repositoryId + "&parentSiteNodeId=" + siteNodeId + "&returnAddress=ViewInlineOperationMessages.action&originalAddress=refreshParent",
+				  "CreateSiteNode!inputV3.action?isBranch=true&repositoryId=" + siteNodeVO.getRepositoryId() + "&parentSiteNodeId=" + siteNodeId + "&returnAddress=ViewInlineOperationMessages.action&originalAddress=refreshParent",
 				  "",
 				  "create"));
 
 		buttons.add(new ToolbarButton("",
 				  getLocalizedString(locale, "tool.structuretool.toolbarV3.movePageLabel"), 
 				  getLocalizedString(locale, "tool.structuretool.toolbarV3.movePageTitle"),
-				  "MoveSiteNode!inputV3.action?repositoryId=" + repositoryId + "&siteNodeId=" + siteNodeId + "&hideLeafs=true&returnAddress=ViewInlineOperationMessages.action&originalAddress=refreshParent",
+				  "MoveSiteNode!inputV3.action?repositoryId=" + siteNodeVO.getRepositoryId() + "&siteNodeId=" + siteNodeId + "&hideLeafs=true&returnAddress=ViewInlineOperationMessages.action&originalAddress=refreshParent",
 				  "",
 				  "movePage"));
 
@@ -926,7 +1054,7 @@ public class ToolbarController
 			buttons.add(new ToolbarButton("",
 					  getLocalizedString(locale, "tool.structuretool.toolbarV3.deletePageLabel"), 
 					  getLocalizedString(locale, "tool.structuretool.toolbarV3.deletePageTitle"),
-					  "DeleteSiteNode!V3.action?siteNodeId=" + siteNodeId + "&repositoryId=" + repositoryId + "&changeTypeId=4&returnAddress=ViewInlineOperationMessages.action&originalAddress=refreshParent",
+					  "DeleteSiteNode!V3.action?siteNodeId=" + siteNodeId + "&repositoryId=" + siteNodeVO.getRepositoryId() + "&changeTypeId=4&returnAddress=ViewInlineOperationMessages.action&originalAddress=refreshParent",
 					  "",
 					  "",
 					  "delete",
@@ -938,24 +1066,30 @@ public class ToolbarController
 			
 		    //buttons.add(new ImageButton(this.getCMSBaseUrl() + "/Confirm.action?header=tool.structuretool.deleteSiteNode.header&yesDestination=" + URLEncoder.encode(URLEncoder.encode("DeleteSiteNode.action?siteNodeId=" + this.siteNodeId + "&repositoryId=" + this.repositoryId + "&changeTypeId=4", "UTF-8"), "UTF-8") + "&noDestination=" + URLEncoder.encode(URLEncoder.encode("ViewSiteNode.action?title=SiteNode&siteNodeId=" + this.siteNodeId + "&repositoryId=" + this.repositoryId, "UTF-8"), "UTF-8") + "&message=tool.structuretool.deleteSiteNode.message", getLocalizedString(getSession().getLocale(), "images.structuretool.buttons.deleteSiteNode"), "Delete SiteNode"));
 		//}
+			
+		buttons.add(StructureToolbarController.getPageDetailButtons(siteNodeVO.getRepositoryId(), new Integer(siteNodeId), locale, principal));
+			
+		//buttons.add(StructureToolbarController.getCoverButtons(siteNodeVO.getRepositoryId(), new Integer(siteNodeId), locale, principal));
+		/*
 		buttons.add(new ToolbarButton("",
 				getLocalizedString(locale, "tool.structuretool.toolbarV3.editPageMetaInfoLabel"), 
 				getLocalizedString(locale, "tool.structuretool.toolbarV3.editPageMetaInfoTitle"),
-				"ViewAndCreateContentForServiceBinding.action?siteNodeId=" + siteNodeId + "&repositoryId=" + repositoryId + "&siteNodeVersionId=" + siteNodeVersionVO.getId() + "&hideLeafs=true&returnAddress=ViewInlineOperationMessages.action&originalAddress=refreshParent",
+				"ViewAndCreateContentForServiceBinding.action?siteNodeId=" + siteNodeId + "&repositoryId=" + siteNodeVO.getRepositoryId() + "&siteNodeVersionId=" + siteNodeVersionVO.getId() + "&hideLeafs=true&returnAddress=ViewInlineOperationMessages.action&originalAddress=refreshParent",
 				"",
 				"properties"));
-
-		buttons.add(StructureToolbarController.getPreviewButtons(new Integer(repositoryId), new Integer(siteNodeId), locale));
-
-		buttons.add(StructureToolbarController.getCoverButtons(new Integer(repositoryId), new Integer(siteNodeId), locale, principal));
-
-		ToolbarButton publishButton = StructureToolbarController.getPublishCurrentNodeButton(new Integer(repositoryId), new Integer(siteNodeId), locale);
+		*/
 		
-		ToolbarButton publishStructureButton = StructureToolbarController.getPublishButtons(new Integer(repositoryId), new Integer(siteNodeId), locale);
-		
+		buttons.add(StructureToolbarController.getPreviewButtons(siteNodeVO.getRepositoryId(), new Integer(siteNodeId), locale));
+
+		ToolbarButton publishButton = StructureToolbarController.getPublishCurrentNodeButton(siteNodeVO.getRepositoryId(), new Integer(siteNodeId), locale);
+		ToolbarButton publishStructureButton = StructureToolbarController.getPublishButtons(siteNodeVO.getRepositoryId(), new Integer(siteNodeId), locale);
 		publishButton.getSubButtons().add(publishStructureButton);
-		
 		buttons.add(publishButton);
+
+		ToolbarButton unpublishButton = StructureToolbarController.getUnpublishButton(siteNodeVO.getRepositoryId(), new Integer(siteNodeId), locale, true);
+		//ToolbarButton unpublishStructureButton = StructureToolbarController.getUnpublishButton(new Integer(repositoryId), new Integer(siteNodeId), locale, false);
+		//unpublishButton.getSubButtons().add(unpublishStructureButton);
+		buttons.add(unpublishButton);
 
 		if(siteNodeVersionVO.getIsProtected().intValue() == SiteNodeVersionVO.YES.intValue())
 		{
@@ -1031,6 +1165,39 @@ public class ToolbarController
 		return buttons;
 	}
 	
+	private List<ToolbarButton> getSiteNodeFooterButtons(String toolbarKey, InfoGluePrincipal principal, Locale locale, HttpServletRequest request, boolean disableCloseButton) throws Exception
+	{
+		return getCommonFooterSaveOrSaveAndExitOrCloseButton(toolbarKey, principal, locale, request, disableCloseButton, "UpdateSiteNode!saveAndExitV3Inline.action");
+	}
+
+	private List<ToolbarButton> getSiteNodeHistoryFooterButtons(String toolbarKey, InfoGluePrincipal principal, Locale locale, HttpServletRequest request, boolean disableCloseButton) throws Exception
+	{
+		List<ToolbarButton> buttons = new ArrayList<ToolbarButton>();
+
+		buttons.add(getCompareButton(toolbarKey, principal, locale, request, disableCloseButton));
+				
+		return buttons;
+	}
+
+	private List<ToolbarButton> getContentHistoryFooterButtons(String toolbarKey, InfoGluePrincipal principal, Locale locale, HttpServletRequest request, boolean disableCloseButton) throws Exception
+	{
+		List<ToolbarButton> buttons = new ArrayList<ToolbarButton>();
+
+		buttons.add(getCompareButton(toolbarKey, principal, locale, request, disableCloseButton));
+				
+		return buttons;
+	}
+
+	private ToolbarButton getCompareButton(String toolbarKey, InfoGluePrincipal principal, Locale locale, HttpServletRequest request, boolean disableCloseButton) throws Exception
+	{
+		return new ToolbarButton("",
+									  getLocalizedString(locale, "tool.common.compare.label"), 
+									  getLocalizedString(locale, "tool.common.compare.label"),
+									  "javascript:compare();",
+									  "images/v3/compareIcon.gif",
+									  "compare");
+	}
+
 	private List<ToolbarButton> getCreateSiteNodeFooterButtons(String toolbarKey, InfoGluePrincipal principal, Locale locale, HttpServletRequest request, boolean disableCloseButton) throws Exception
 	{
 		List<ToolbarButton> buttons = new ArrayList<ToolbarButton>();
@@ -1164,6 +1331,114 @@ public class ToolbarController
 					  getLocalizedString(locale, "tool.common.publishing.submitToPublishButtonLabel"),
 					  "submitToPublish('false');",
 					  "images/v3/publishPageIcon.gif",
+					  "left",
+					  "submitToPublish",
+					  true));
+		}
+		
+		buttons.add(new ToolbarButton("",
+				  getLocalizedString(locale, "tool.common.cancelButton.label"), 
+				  getLocalizedString(locale, "tool.common.cancelButton.label"),
+				  "if(parent && parent.closeInlineDiv) parent.closeInlineDiv(); else if(parent && parent.closeDialog) parent.closeDialog(); else window.close();",
+				  "images/v3/cancelIcon.gif",
+				  "left",
+				  "cancel",
+				  true));
+		
+		return buttons;
+	}
+	
+	private List<ToolbarButton> getUnpublishPageFooterButtons(String toolbarKey, InfoGluePrincipal principal, Locale locale, HttpServletRequest request, boolean disableCloseButton) throws Exception
+	{
+		List<ToolbarButton> buttons = new ArrayList<ToolbarButton>();
+
+		SiteNodeVO siteNodeVO = null;
+		
+		Integer primaryKeyAsInteger = null;
+		try
+		{
+			primaryKeyAsInteger = new Integer(request.getParameter("siteNodeId"));
+		}
+		catch (Exception e) 
+		{
+		}
+
+		if(primaryKeyAsInteger != null)
+			siteNodeVO = SiteNodeController.getController().getSiteNodeVOWithId(primaryKeyAsInteger);
+			
+		if(siteNodeVO != null && hasAccessTo(principal, "PublishingTool.Read", true) && hasAccessTo(principal, "Repository.Read", "" + siteNodeVO.getRepositoryId()))
+		{
+			buttons.add(new ToolbarButton("",
+					  getLocalizedString(locale, "tool.common.unpublishing.unpublishButtonLabel"), 
+					  getLocalizedString(locale, "tool.common.unpublishing.unpublishButtonLabel"),
+					  "submitToPublish('true');",
+					  "images/v3/unpublishPageIcon.gif",
+					  "left",
+					  "publish",
+					  true));
+		}
+		
+		if(siteNodeVO != null && hasAccessTo(principal, "Common.SubmitToPublishButton", true))
+		{
+			buttons.add(new ToolbarButton("",
+					  getLocalizedString(locale, "tool.common.unpublishing.submitToUnpublishButtonLabel"), 
+					  getLocalizedString(locale, "tool.common.unpublishing.submitToUnpublishButtonLabel"),
+					  "submitToPublish('false');",
+					  "images/v3/unpublishPageIcon.gif",
+					  "left",
+					  "submitToPublish",
+					  true));
+		}
+		
+		buttons.add(new ToolbarButton("",
+				  getLocalizedString(locale, "tool.common.cancelButton.label"), 
+				  getLocalizedString(locale, "tool.common.cancelButton.label"),
+				  "if(parent && parent.closeInlineDiv) parent.closeInlineDiv(); else if(parent && parent.closeDialog) parent.closeDialog(); else window.close();",
+				  "images/v3/cancelIcon.gif",
+				  "left",
+				  "cancel",
+				  true));
+		
+		return buttons;
+	}
+
+	private List<ToolbarButton> getPublishContentsFooterButtons(String toolbarKey, InfoGluePrincipal principal, Locale locale, HttpServletRequest request, boolean disableCloseButton) throws Exception
+	{
+		List<ToolbarButton> buttons = new ArrayList<ToolbarButton>();
+
+		ContentVO contentVO = null;
+		
+		Integer primaryKeyAsInteger = null;
+		try
+		{
+			primaryKeyAsInteger = new Integer(request.getParameter("contentId"));
+		}
+		catch (Exception e) 
+		{
+		}
+
+		if(primaryKeyAsInteger != null)
+			contentVO = ContentController.getContentController().getContentVOWithId(primaryKeyAsInteger);
+			
+		if(contentVO != null && hasAccessTo(principal, "PublishingTool.Read", true) && hasAccessTo(principal, "Repository.Read", "" + contentVO.getRepositoryId()))
+		{
+			buttons.add(new ToolbarButton("",
+					  getLocalizedString(locale, "tool.common.publishing.publishButtonLabel"), 
+					  getLocalizedString(locale, "tool.common.publishing.publishButtonLabel"),
+					  "submitToPublish('true');",
+					  "images/v3/publishContentIcon.gif",
+					  "left",
+					  "publish",
+					  true));
+		}
+		
+		if(contentVO != null && hasAccessTo(principal, "Common.SubmitToPublishButton", true))
+		{
+			buttons.add(new ToolbarButton("",
+					  getLocalizedString(locale, "tool.common.publishing.submitToPublishButtonLabel"), 
+					  getLocalizedString(locale, "tool.common.publishing.submitToPublishButtonLabel"),
+					  "submitToPublish('false');",
+					  "images/v3/publishContentIcon.gif",
 					  "left",
 					  "submitToPublish",
 					  true));
@@ -1332,7 +1607,7 @@ public class ToolbarController
 		buttons.add(new ToolbarButton("",
 				  getLocalizedString(locale, "tool.managementtool.deleteRepository.header"), 
 				  getLocalizedString(locale, "tool.managementtool.deleteRepository.header"),
-				  "DeleteRepository!markForDelete.action?repositoryId=" + request.getParameter("repositoryId"),
+				  "DeleteRepository!markForDelete.action?repositoryId=" + request.getParameter("repositoryId") + "&igSecurityCode=" + request.getSession().getAttribute("securityCode"),
 				  "images/v3/createBackgroundPenPaper.gif",
 				  "left",
 				  "create",
@@ -1343,24 +1618,55 @@ public class ToolbarController
 				  "inlineDiv"));
 
 		buttons.add(new ToolbarButton("",
+				  getLocalizedString(locale, "tool.managementtool.exportRepository.header"), 
+				  getLocalizedString(locale, "tool.managementtool.exportRepository.header"),
+				  "javascript:openPopup('ExportRepository!input.action?repositoryId=" + request.getParameter("repositoryId") + "', 'Export', 'width=600,height=500,resizable=no');",
+				  "",
+				  "left",
+				  "export",
+				  true));
+
+		buttons.add(new ToolbarButton("",
+				  getLocalizedString(locale, "tool.managementtool.importRepositoryCopy.header"), 
+				  getLocalizedString(locale, "tool.managementtool.importRepositoryCopy.header"),
+				  "javascript:openPopup('ImportRepository!inputCopy.action?repositoryId=" + request.getParameter("repositoryId") + "', 'Copy', 'width=600,height=500,resizable=no');",
+				  "",
+				  "left",
+				  "copy",
+				  true));
+
+		buttons.add(new ToolbarButton("",
+				  getLocalizedString(locale, "tool.managementtool.repositoryProperties.header"), 
+				  getLocalizedString(locale, "tool.managementtool.repositoryProperties.header"),
+				  "ViewRepositoryProperties.action?repositoryId=" + request.getParameter("repositoryId"),
+				  "",
+				  "properties",
+				  "managementWorkIframe"));
+
+		buttons.add(new ToolbarButton("",
 				  getLocalizedString(locale, "tool.contenttool.accessRights.header"), 
 				  getLocalizedString(locale, "tool.contenttool.accessRights.header"),
-				  "ViewAccessRights.action?interceptionPointCategory=Repository&extraParameters=" + request.getParameter("repositoryId") + "&returnAddress=ViewRepository.action?repositoryId=" + request.getParameter("repositoryId"),
+				  "ViewAccessRights!V3.action?interceptionPointCategory=Repository&extraParameters=" + request.getParameter("repositoryId") + "&returnAddress=ViewRepository.action?repositoryId=" + request.getParameter("repositoryId"),
 				  "images/v3/accessRightIcon.gif",
 				  "accessRights",
 				  "managementWorkIframe"));
-		/*
-		buttons.add(new ImageButton("Confirm.action?header=tool.managementtool.deleteRepository.header&yesDestination=" + URLEncoder.encode("DeleteRepository.action?repositoryId=" + this.repositoryId, "UTF-8") + "&noDestination=" + URLEncoder.encode("ViewListRepository.action?title=Repositories", "UTF-8") + "&message=tool.managementtool.deleteRepository.text&extraParameters=" + this.name, getLocalizedString(getSession().getLocale(), "images.managementtool.buttons.deleteRepository"), "tool.managementtool.deleteRepository.header"));
-		buttons.add(new ImageButton(true, "javascript:openPopup('ExportRepository!input.action?repositoryId=" + this.repositoryId + "', 'Export', 'width=600,height=500,resizable=no,scrollbars=yes');", getLocalizedString(getSession().getLocale(), "images.managementtool.buttons.exportRepository"), getLocalizedString(getSession().getLocale(), "tool.managementtool.exportRepository.header")));	
-		buttons.add(new ImageButton(true, "javascript:openPopup('ImportRepository!inputCopy.action?repositoryId=" + this.repositoryId + "', 'Export', 'width=600,height=500,resizable=no,scrollbars=yes');", getLocalizedString(getSession().getLocale(), "images.managementtool.buttons.copyRepository"), getLocalizedString(getSession().getLocale(), "tool.managementtool.importRepositoryCopy.header")));	
-		buttons.add(new ImageButton("ViewRepositoryProperties.action?repositoryId=" + this.repositoryId, getLocalizedString(getSession().getLocale(), "images.global.buttons.editProperties"), "Edit Properties", new Integer(22), new Integer(80)));
-		
-		String returnAddress = URLEncoder.encode(URLEncoder.encode("ViewRepository.action?repositoryId=" + this.repositoryId, "UTF-8"), "UTF-8");
-		buttons.add(new ImageButton("ViewAccessRights.action?interceptionPointCategory=Repository&extraParameters=" + this.repositoryId +"&colorScheme=ManagementTool&returnAddress=" + returnAddress, getLocalizedString(getSession().getLocale(), "images.managementtool.buttons.accessRights"), "tool.managementtool.accessRights.header"));
-		buttons.add(new ImageButton("ViewListRepositoryLanguage.action?repositoryId=" + this.repositoryId +"&returnAddress=" + returnAddress, getLocalizedString(getSession().getLocale(), "images.managementtool.buttons.repositoryLanguages"), "tool.managementtool.repositoryLanguages.header"));
-		
-		buttons.add(new ImageButton(true, "javascript:openPopup('RebuildRegistry!input.action?repositoryId=" + this.repositoryId + "', 'Registry', 'width=400,height=200,resizable=no');", getLocalizedString(getSession().getLocale(), "images.managementtool.buttons.rebuildRegistry"), getLocalizedString(getSession().getLocale(), "tool.managementtool.rebuildRegistry.header")));	
-		*/
+
+		buttons.add(new ToolbarButton("",
+				  getLocalizedString(locale, "tool.managementtool.repositoryLanguages.header"), 
+				  getLocalizedString(locale, "tool.managementtool.repositoryLanguages.header"),
+				  "ViewListRepositoryLanguage.action?repositoryId=" + request.getParameter("repositoryId") + "&returnAddress=ViewRepository.action?repositoryId=" + request.getParameter("repositoryId"),
+				  "",
+				  "languages",
+				  "managementWorkIframe"));
+
+		buttons.add(new ToolbarButton("",
+				  getLocalizedString(locale, "tool.managementtool.rebuildRegistry.header"), 
+				  getLocalizedString(locale, "tool.managementtool.rebuildRegistry.header"),
+				  "javascript:openPopup('RebuildRegistry!input.action?repositoryId=" + request.getParameter("repositoryId") + "', 'Registry', 'width=400,height=200,resizable=no');",
+				  "",
+				  "left",
+				  "rebuild",
+				  true));
 		
 		return buttons;
 	}
@@ -2444,6 +2750,7 @@ public class ToolbarController
 		return buttons;
 	}
 
+	
 	private List<ToolbarButton> getQuickDeployFooterButtons(String toolbarKey, InfoGluePrincipal principal, Locale locale, HttpServletRequest request, boolean disableCloseButton) throws Exception
 	{
 		List<ToolbarButton> buttons = new ArrayList<ToolbarButton>();
@@ -2492,6 +2799,124 @@ public class ToolbarController
 				  true));
 		
 		return buttons;
+	}
+
+	private List<ToolbarButton> getPublicationsButtons(Locale locale, HttpServletRequest request)
+	{
+		Integer repositoryId = new Integer(request.getParameter("repositoryId"));
+
+	    List<ToolbarButton> buttons = new ArrayList<ToolbarButton>();
+
+	    buttons.add(new ToolbarButton("previewButton",
+				  getLocalizedString(locale, "tool.publishtool.preview.header"), 
+				  getLocalizedString(locale, "tool.publishtool.preview.header"),
+				  "javascript:window.frames['publishingWorkIframe'].submitToPreview();",
+				  "images/v3/previewIcon.png",
+				  "left",
+				  "preview",
+				  true));
+
+	    buttons.add(new ToolbarButton("createEdition",
+				  getLocalizedString(locale, "tool.publishtool.createEdition.header"), 
+				  getLocalizedString(locale, "tool.publishtool.createEdition.header"),
+				  "javascript:window.frames['publishingWorkIframe'].submitToCreate();",
+				  "images/v3/previewIcon.png",
+				  "left",
+				  "create",
+				  true));
+
+	    buttons.add(new ToolbarButton("unpublishEdition",
+				  getLocalizedString(locale, "tool.publishtool.unpublishEdition.header"), 
+				  getLocalizedString(locale, "tool.publishtool.unpublishEdition.header"),
+				  "javascript:window.frames['publishingWorkIframe'].submitToUnpublish('publication');",
+				  "images/v3/trashcan.png",
+				  "left",
+				  "trashcan",
+				  true));
+
+	    buttons.add(new ToolbarButton("denyPublishing",
+				  getLocalizedString(locale, "tool.publishtool.denyPublication.header"), 
+				  getLocalizedString(locale, "tool.publishtool.denyPublication.header"),
+				  "javascript:window.frames['publishingWorkIframe'].submitToDeny();",
+				  "images/v3/denyPublicationIcon.png",
+				  "left",
+				  "denyPublication",
+				  true));
+
+	    /*
+	    buttons.add(new ImageButton(true, "javascript:submitToPreview();", getLocalizedString(locale, "images.publishingtool.buttons.previewContent"), "tool.publishtool.preview.header", "Preview marked versions"));
+		buttons.add(new ImageButton(true, "javascript:submitToCreate();", getLocalizedString(locale, "images.publishingtool.buttons.createEdition"), "tool.publishtool.createEdition.header", "Create a new edition of the marked versions"));
+		buttons.add(new ImageButton(true, "javascript:submitToUnpublish('publication');", getLocalizedString(locale, "images.publishingtool.buttons.unpublishEdition"), "tool.publishtool.unpublishEdition.header", "Unpublish the marked edition and send the versions back to publishable state"));
+		buttons.add(new ImageButton(true, "javascript:submitToDeny();", getLocalizedString(locale, "images.publishingtool.buttons.denyPublishing"), "tool.publishtool.denyPublication.header", "Deny the checked items from publication"));
+		*/
+		try
+		{
+		    RepositoryVO repositoryVO = RepositoryController.getController().getRepositoryVOWithId(repositoryId);
+
+		    String repositoryName = repositoryVO.getName();
+			String dnsName = repositoryVO.getDnsName();
+
+		    String previewUrl = null;
+		    
+		    String keyword = "preview=";
+		    int startIndex = (dnsName == null) ? -1 : dnsName.indexOf(keyword);
+		    if(startIndex != -1)
+		    {
+		        int endIndex = dnsName.indexOf(",", startIndex);
+			    if(endIndex > -1)
+		            dnsName = dnsName.substring(startIndex, endIndex);
+		        else
+		            dnsName = dnsName.substring(startIndex);
+
+			    String[] dnsSplit = dnsName.split("=");
+			    if (dnsSplit != null && dnsSplit.length > 1) 
+			    {
+			    	previewUrl = dnsSplit[1] + CmsPropertyHandler.getComponentRendererUrl().replaceAll("Working", "Preview") + "ViewPage.action";
+			    } 
+			    else 
+			    {
+			    	previewUrl = CmsPropertyHandler.getStagingDeliveryUrl();
+			    }
+		    }
+		    else
+		    {
+		        previewUrl = CmsPropertyHandler.getStagingDeliveryUrl();
+		    }
+
+		    buttons.add(new ToolbarButton("previewSite",
+					  getLocalizedString(locale, "tool.publishtool.previewEnvironment.header"), 
+					  getLocalizedString(locale, "tool.publishtool.previewEnvironment.header"),
+					  "javascript:openPopup('" + previewUrl + "?repositoryName=" + repositoryName + "', 'StagingPreview', 'width=800,height=600,resizable=yes,toolbar=yes,scrollbars=yes,status=yes,location=yes,menubar=yes');",
+					  "images/v3/previewIcon.png",
+					  "left",
+					  "preview",
+					  true));
+			//buttons.add(new ImageButton(true, "javascript:openPopup('" + previewUrl + "?repositoryName=" + repositoryName + "', 'StagingPreview', 'width=800,height=600,resizable=yes,toolbar=yes,scrollbars=yes,status=yes,location=yes,menubar=yes');", getLocalizedString(locale, "images.publishingtool.buttons.previewEnvironment"), "tool.publishtool.previewEnvironment.header"));
+		}
+		catch(Exception e)
+		{
+		    logger.error("Problem getting all publication tool buttons: " + e.getMessage(), e);
+		}
+		
+		return buttons;				
+	}
+
+	private List<ToolbarButton> getSystemPublicationsButtons(Locale locale, HttpServletRequest request)
+	{
+	    List<ToolbarButton> buttons = new ArrayList<ToolbarButton>();
+
+	    if(RemoteCacheUpdater.getSystemNotificationMessages().size() > 0)
+	    {
+		    buttons.add(new ToolbarButton("pushButton",
+					  getLocalizedString(locale, "tool.publishingtool.pushChanges.header"), 
+					  getLocalizedString(locale, "tool.publishingtool.pushChanges.header"),
+					  "ViewPublications!pushSystemNotificationMessages.action",
+					  "images/v3/publishIcon.png",
+					  "publish",
+					  "publishingWorkIframe"));
+	    }
+	    
+		return buttons;				
 	}
 
 	private List<ToolbarButton> getMySettingsButton(String toolbarKey, InfoGluePrincipal principal, Locale locale, HttpServletRequest request, boolean disableCloseButton) throws Exception
@@ -2588,6 +3013,40 @@ public class ToolbarController
 		buttons.add(getCommonFooterSaveButton(toolbarKey, principal, locale, request, disableCloseButton));
 		buttons.add(getCommonFooterSaveAndExitButton(toolbarKey, principal, locale, request, disableCloseButton, exitUrl));
 		buttons.add(getDialogCloseButton(toolbarKey, principal, locale, request, disableCloseButton));
+				
+		return buttons;		
+	}
+
+	private List<ToolbarButton> getCommonAddNextCancelButton(String toolbarKey, InfoGluePrincipal principal, Locale locale, HttpServletRequest request, boolean disableCloseButton)
+	{
+		List<ToolbarButton> buttons = new ArrayList<ToolbarButton>();
+
+		buttons.add(new ToolbarButton("",
+				  getLocalizedString(locale, "tool.common.addButton.label"), 
+				  getLocalizedString(locale, "tool.common.addButton.label"),
+				  "add();",
+				  "images/v3/addIcon.png",
+				  "left",
+				  "add",
+				  true));
+
+		buttons.add(new ToolbarButton("",
+				  getLocalizedString(locale, "tool.common.nextButton.label"), 
+				  getLocalizedString(locale, "tool.common.nextButton.label"),
+				  "next();",
+				  "images/v3/nextBackground.gif",
+				  "left",
+				  "next",
+				  true));
+
+		buttons.add(new ToolbarButton("",
+				  getLocalizedString(locale, "tool.common.cancelButton.label"), 
+				  getLocalizedString(locale, "tool.common.cancelButton.label"),
+				  "if(parent && parent.closeInlineDiv) parent.closeInlineDiv(); else if(parent && parent.closeDialog) parent.closeDialog(); else window.close();",
+				  "images/v3/cancelIcon.gif",
+				  "left",
+				  "cancel",
+				  true));
 				
 		return buttons;		
 	}

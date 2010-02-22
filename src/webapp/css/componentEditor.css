@@ -92,7 +92,7 @@ Component palette classes
 
 .thistab {
 	font-family: verdana, arial, helvetica;
-	font-size: 8pt;
+	font-size: 11px;
 	font-weight: bold;
 	text-align: center;
 	color: #000000;
@@ -111,7 +111,7 @@ Component palette classes
 
 .igtab {
 	font-family: verdana, arial, helvetica;
-	font-size: 8pt;
+	font-size: 11px;
 	font-weight: normal;
 	text-align: center;
 	background: #999999;
@@ -217,7 +217,7 @@ when explorer get better support for hover.
 
 .componentsStatus {
 	font-family: verdana, arial, helvetica;
-	font-size: 8pt;
+	font-size: 11px;
 	font-weight: normal;
 	border-bottom: solid 1px black;
 	border-top: solid thin gray;
@@ -233,7 +233,7 @@ when explorer get better support for hover.
 
 .componentsStatusText {
 	font-family: verdana, arial, helvetica;
-	font-size: 7pt;
+	font-size: 10px;
 	font-weight: normal;
 }
 
@@ -319,7 +319,7 @@ Edit on sight classes
 	z-index: 1000004;
 	text-align: left;
 	font-family: Tahoma, Arial, Helvetica, sans-serif;
-	font-size: 10pt;
+	font-size: 14px;
 	width: 200px;
 	overflow: hidden;
 	background-image: url('../images/v3/tileGradient.gif');
@@ -334,7 +334,7 @@ Edit on sight classes
 .igAddComponent {
 	background-color:#F9F8F7;
 	font-family: Verdana, Arial, Helvetica, sans-serif;
-	font-size: 8pt;
+	font-size: 11px;
 }
 */ /*
 Properties classes
@@ -355,7 +355,7 @@ Properties classes
 	width: 440px;
 	color: white;
 	font-family: Tahoma, Arial, Helvetica, sans-serif;
-	font-size: 8pt;
+	font-size: 11px;
 	background-image: url('../images/handleBackground.gif');
 }
 
@@ -422,19 +422,19 @@ Properties classes
 
 .componentEditorLink {
 	font-family: Tahoma, verdana, arial, sans-serif;
-	font-size: 8pt;
+	font-size: 11px;
 	color: #333333;
 	text-decoration: underline;
 }
 .componentEditorLink:visited {
 	font-family: Tahoma, verdana, arial, sans-serif;
-	font-size: 8pt;
+	font-size: 11px;
 	color: #333333;
 	text-decoration: underline;
 }
 .componentEditorLink:hover {
 	font-family: Tahoma, verdana, arial, sans-serif;
-	font-size: 8pt;
+	font-size: 11px;
 	color: #333333;
 	text-decoration: underline;
 }
@@ -442,7 +442,7 @@ Properties classes
 .igpropertylabel {
 	text-align: left;
 	font-family: Tahoma, verdana, arial, sans-serif;
-	font-size: 8pt;
+	font-size: 11px;
 	color: #333333;
 	font-weight: normal;
 	border: 0px solid #FFFFFF;
@@ -453,7 +453,7 @@ Properties classes
 .igpropertyvalue {
 	text-align: left;
 	font-family: Tahoma, verdana, arial, sans-serif;
-	font-size: 8pt;
+	font-size: 11px;
 	color: #333333;
 	/*
 	background: #FFFFFF;
@@ -471,7 +471,7 @@ Properties classes
 
 td.propertiesheader {
 	font-family: Verdana;
-	font-size: 12pt;
+	font-size: 16px;
 	font-weight: bold;
 	height: 16px;
 	background-color: #E3ECF8;
@@ -482,14 +482,14 @@ td.propertiesheader {
 
 td.label {
 	font-family: verdana, arial, sans-serif;
-	font-size: 8pt;
+	font-size: 11px;
 	font-weight: bold;
 	color: #333333;
 }
 
 td.value {
 	font-family: verdana, arial, sans-serif;
-	font-size: 8pt;
+	font-size: 11px;
 	color: #333333;
 }
 
@@ -498,13 +498,13 @@ Slot classes
 */
 .emptyslot {
 	font-family: verdana, arial, sans-serif;
-	font-size: 10pt;
+	font-size: 14px;
 	color: #333333;
 }
 
 .filledslot {
 	font-family: verdana, arial, sans-serif;
-	font-size: 10pt;
+	font-size: 14px;
 	color: #333333;
 }
 
@@ -530,7 +530,7 @@ Slot classes
 
 input.normaltextfield {
 	font-family: Tahoma, verdana, arial, sans-serif;
-	font-size: 8pt;
+	font-size: 11px;
 	border-style: solid;
 	border-width: 1px;
 	border-color: #C2D0E2;
@@ -540,7 +540,7 @@ input.normaltextfield {
 
 input.propertytextfield {
 	font-family: Tahoma, verdana, arial, sans-serif;
-	font-size: 8pt;
+	font-size: 11px;
 	border-style: solid;
 	border-width: 1px;
 	border-color: #C2D0E2;
@@ -550,7 +550,7 @@ input.propertytextfield {
 
 input.propertydatefield {
 	font-family: Tahoma, verdana, arial, sans-serif;
-	font-size: 8pt;
+	font-size: 11px;
 	border-style: solid;
 	border-width: 1px;
 	border-color: #C2D0E2;
@@ -560,7 +560,7 @@ input.propertydatefield {
 
 .propertytextarea {
 	font-family: Tahoma, verdana, arial, sans-serif;
-	font-size: 8pt;
+	font-size: 11px;
 	border-style: solid;
 	border-width: 1px;
 	border-color: #C2D0E2;
@@ -571,7 +571,7 @@ input.propertydatefield {
 
 select.propertyselect {
 	font-family: Tahoma, verdana, sans-serif;
-	font-size: 8pt;
+	font-size: 11px;
 	font-weight: normal;
 	color: black;
 	min-width: 100px;
@@ -583,7 +583,7 @@ select.propertyselect {
 
 .inheritedOverlay {
 	font-family: verdana, arial, sans-serif;
-	font-size: 8pt;
+	font-size: 11px;
 	color: #333333;
 	position: relative;
 	visibility: visible;
@@ -606,12 +606,12 @@ select.propertyselect {
 
 tr.lightyellow {
 	background-color: #FEF8D0;
-	height: 14pt;
+	height: 20px;
 }
 
 tr.white {
 	background-color: #FFFFFF;
-	height: 14pt;
+	height: 20px;
 }
 
 .smalllabel {
@@ -710,7 +710,7 @@ select.mediumdrop {
 	visibility: hidden;
 	z-index: 99;
 	position: absolute;
-	font-size: 8pt;
+	font-size: 11px;
 	font-family: Verdana;
 	font-weight: normal;
 	color: black;
@@ -724,7 +724,7 @@ select.mediumdrop {
 	background-repeat: repeat-y;
 	text-align: left;
 	font-family: Tahoma, Arial, Helvetica, sans-serif;
-	font-size: 10pt;
+	font-size: 14px;
 	display: block;
 	position: absolute;
 	top: 0px;
@@ -778,7 +778,7 @@ select.mediumdrop {
 	text-decoration:none;
 	display: block;	
 	font-family: Tahoma, Arial, Helvetica, sans-serif; 
-	font-size: 10pt; 
+	font-size: 14px; 
 	color: black;
 	}
 a.editOnSightHref:hover{
@@ -846,7 +846,7 @@ padding-left:28px;
 	background-position: 0px 0px;
 	background-repeat: no-repeat;
 	font-family: Tahoma;
-	font-size: 10pt;
+	font-size: 14px;
 	padding-left: 20px;
 	line-height: 26px;
 	text-decoration: none;

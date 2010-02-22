@@ -173,7 +173,7 @@
 
 	$(document).ready(function(){
 		window.resizeTo(968, 700);
-		$("#tabsContainer > ul").tabs( { 
+		$("#tabsContainer").tabs( { 
 			show:function() { resizeInlineTabDivsWithMinus(150, 0); },
 			select:function(e, ui) { 
 				//alert("ui: " + ui.index);
@@ -234,13 +234,17 @@
 	function onOk(contentId, assetKey, assetUrl)
 	{
 		//alert("Adding contentId:" + contentId + " and assetKey:" + assetKey + " and assetUrl:" + assetUrl);
+		assetKey = assetKey.replace(/\+/g, " ");
+		//alert("assetKey:" + assetKey);
+		var decodedAssetKey = decodeURIComponent(assetKey);
+		//alert("decodedAssetKey:" + decodedAssetKey);
 		if(contentId == '' || contentId == '${select}' || assetKey == '')
 		{
 			alert("You must choose a content and a asset before you can save");
 		}
 		else
 		{
-			var binding = new AssetBinding(contentId, assetKey, assetUrl);
+			var binding = new AssetBinding(contentId, decodedAssetKey, assetUrl);
 			siteNodesVector.addElement(binding);
 			drawList();
 		}
@@ -274,15 +278,15 @@
 	    </ul>
 
 		<div id="repositoryBrowserTab" class="inlineTabDiv">
-			<iframe frameborder="0" name="repositoryBrowserFrame" id="repositoryBrowserFrame" src="" width="670" height="410" align="baseline"></iframe>
+			<iframe frameborder="0" name="repositoryBrowserFrame" id="repositoryBrowserFrame" src="" width="670" height="410" ></iframe>
 		</div>
 				
 		<div id="latestUploadedTab" class="inlineTabDiv">
-			<iframe frameborder="0" name="latestAssetsFrame" id="latestAssetsFrame" src="" width="670" height="400" align="baseline"></iframe>
+			<iframe frameborder="0" name="latestAssetsFrame" id="latestAssetsFrame" src="" width="670" height="400" ></iframe>
 		</div>
 		
 		<div id="searchTab" class="inlineTabDiv">
-			<iframe frameborder="0" name="contentVersionAssetSearchFrame" id="contentVersionAssetSearchFrame" src="" width="670" height="400" align="baseline"></iframe>
+			<iframe frameborder="0" name="contentVersionAssetSearchFrame" id="contentVersionAssetSearchFrame" src="" width="670" height="400" ></iframe>
 		</div>
 
 	</div>

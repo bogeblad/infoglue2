@@ -29,13 +29,17 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import org.infoglue.cms.controllers.kernel.impl.simple.AccessRightController;
+import org.infoglue.cms.controllers.kernel.impl.simple.LabelController;
+import org.infoglue.cms.controllers.kernel.impl.simple.PublicationController;
 import org.infoglue.cms.controllers.kernel.impl.simple.RepositoryController;
 import org.infoglue.cms.entities.management.RepositoryVO;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.security.InfoGluePrincipal;
+import org.infoglue.deliver.util.Timer;
 
 import com.frovi.ss.Tree.BaseNodeSupplier;
 
@@ -50,10 +54,12 @@ public class PublishingToolNodeSupplier extends BaseNodeSupplier
 
 	private boolean showLeafs = true;
 	private InfoGluePrincipal infogluePrincipal = null;
+	private Locale locale = null;
 
-	public PublishingToolNodeSupplier(InfoGluePrincipal infogluePrincipal) throws SystemException
+	public PublishingToolNodeSupplier(InfoGluePrincipal infogluePrincipal, Locale locale) throws SystemException
 	{
 		this.infogluePrincipal = infogluePrincipal;
+		this.locale = locale;
 		
 		setRootNode(new PublishingNodeImpl(0, "root", "ViewPublishingToolStartPage!V3.action", Collections.EMPTY_MAP));
 	}
@@ -68,7 +74,6 @@ public class PublishingToolNodeSupplier extends BaseNodeSupplier
 		else
 			return true;
 	}
-
 	
 	/**
 	 * @see com.frovi.ss.Tree.INodeSupplier#getChildContainerNodes(Integer)
@@ -85,9 +90,20 @@ public class PublishingToolNodeSupplier extends BaseNodeSupplier
 		while(repositoryVOListIterator.hasNext())
 		{
 			RepositoryVO repositoryVO = (RepositoryVO)repositoryVOListIterator.next();
-			r.add(new PublishingNodeImpl(repositoryVO.getId(), "" + repositoryVO.getName(), "ViewPublications!V3.action?repositoryId=" + repositoryVO.getId(), parameters));
+			
+			Timer t = new Timer();
+			List events = PublicationController.getPublicationEvents(repositoryVO.getId(), infogluePrincipal, "all");
+			List groupEvents = PublicationController.getPublicationEvents(repositoryVO.getId(), infogluePrincipal, "groupBased");
+			//t.printElapsedTime("Events took...");
+			
+			r.add(new PublishingNodeImpl(repositoryVO.getId(), "" + repositoryVO.getName() + " (" + (events.size() > 0 ? "<strong>" : "") + events.size() + (events.size() > 0 ? "</strong>" : "") + "/" + (groupEvents.size() > 0 ? "<strong>" : "") + groupEvents.size() + (groupEvents.size() > 0 ? "</strong>" : "") + ")", "ViewPublications!V3.action?repositoryId=" + repositoryVO.getId(), parameters));
 		}
+
+		Map parameterMap = new HashMap();
+		parameterMap.put("extraMarkup", "System wide");
 		
+		r.add(new PublishingNodeImpl(-1, LabelController.getController(locale).getLocalizedString(locale, "tool.publishingtool.globalSettings.label"), "ViewPublications!system.action", parameterMap));
+
 		return r;
 	}
 

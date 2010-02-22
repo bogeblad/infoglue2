@@ -87,7 +87,7 @@ public class EditOnSightMenuTag extends ComponentLogicTag
 		    	String notifyUrl 			= componentEditorUrl + "CreateEmail!inputChooseRecipientsV3.action?originalUrl=" + originalUrl + "&amp;returnAddress=" + URLEncoder.encode(returnAddress, "utf-8") + "&amp;extraTextProperty=tool.managementtool.createEmailNotificationPageExtraText.text"; 
 		    	String subscriptionUrl 		= componentEditorUrl + "Subscriptions!input.action?interceptionPointCategory=Content&amp;entityName=" + Content.class.getName() + "&amp;entityId=" + this.contentId + "&amp;extraParameters=" + this.contentId + "&amp;returnAddress=" + URLEncoder.encode(returnAddress, "utf-8");
 		    	String pageSubscriptionUrl 	= componentEditorUrl + "Subscriptions!input.action?interceptionPointCategory=SiteNodeVersion&amp;entityName=" + SiteNode.class.getName() + "&amp;entityId=" + this.getController().getSiteNodeId() + "&amp;returnAddress=" + URLEncoder.encode(returnAddress, "utf-8");
-		    	String newsFlowUrl 			= componentEditorUrl + "ViewMyDesktopToolStartPage!startWorkflow.action?workflowName=Skapa+nyhet&finalReturnAddress=" + URLEncoder.encode(returnAddress, "utf-8") + ""; 
+		    	//String newsFlowUrl 			= componentEditorUrl + "Workflow!startWorkflow.action?workflowName=Skapa+nyhet&finalReturnAddress=" + URLEncoder.encode(returnAddress, "utf-8") + ""; 
 		    	String mySettingsUrl 		= componentEditorUrl + "ViewMySettings.action"; 
 		    			    	
 				InfoGluePrincipal principal = getController().getPrincipal();
@@ -168,8 +168,8 @@ public class EditOnSightMenuTag extends ComponentLogicTag
 			    	}
 		    	}
 		    	
-		    	if(showCreateNewsFromContent)
-		    		sb.append("        <li style='margin: 0px; margin-left: 4px; padding: 2px 0px 2px 2px; list-style-type:none;'><a href=\"javascript:openInlineDiv('" + newsFlowUrl + "', 700, 750, true);\" class=\"editOnSightHref linkCreateNews\">" + createNewsOnArticleLabel + "</a></li>");
+		    	//if(showCreateNewsFromContent)
+		    	//	sb.append("        <li style='margin: 0px; margin-left: 4px; padding: 2px 0px 2px 2px; list-style-type:none;'><a href=\"javascript:openInlineDiv('" + newsFlowUrl + "', 700, 750, true);\" class=\"editOnSightHref linkCreateNews\">" + createNewsOnArticleLabel + "</a></li>");
 		    	if(showMySettings)
 		    		sb.append("        <li style='margin: 0px; margin-left: 4px; padding: 2px 0px 2px 2px; list-style-type:none;'><a href=\"javascript:openInlineDiv('" + mySettingsUrl + "', 700, 750, true);\" class=\"editOnSightHref linkMySettings\">" + mySettingsLabel + "</a></li>");
 		    	sb.append("    </ul>");

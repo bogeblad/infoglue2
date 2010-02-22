@@ -2,53 +2,250 @@
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <script type="text/javascript" src="script/overlib.js"></script>
-<script Language=JavaScript>
-function showHide(a)
-{
-	/*
-	var theDiv=document.getElementById("e" + a);
-	var theImg=document.getElementById("i" + a);
-
-	if(theDiv.style.display == '')
-	{
-		theImg.src = "images/tree/smallplus.gif";
-		theDiv.style.display ='none';
-	}
+<script type="text/javascript">
+<!--
+	if(parent.refreshTopToolBar)
+		parent.refreshTopToolBar('tool.publishingtool.repositoryPublications', 'tool.publishingtool.repositoryPublications', 'repositoryId=$repositoryId', -1, -1, -1);
 	else
-	{
-		theImg.src = "images/tree/smallminus.gif";
-		theDiv.style.display ='';
-	}
-	*/
-	
-	//var theFrame = document.getElementById(a + "IFrame");
-	//theFrame.src = "ViewPublications!showPublicationDetails.action?publicationId=" + a;
-	openPopup("ViewPublications!showPublicationDetails.action?publicationId=" + a, "PublicationDetails", "width=600,height=500,toolbar=no,status=no,scrollbars=yes,location=no,menubar=no,directories=no,resizable=yes");
-	
-}
+		refreshManagementToolBar('tool.publishingtool.repositoryPublications', '');
 
-function ruSure(txt, url)
-{
-	question = confirm(txt);
-	if (question !="0")
+	function showHide(a)
 	{
-		document.location = url;
+		parent.openInlineDiv("ViewPublications!showPublicationDetails.action?publicationId=" + a, 500, 600, true, true, "PublicationDetails");
 	}
-}
+	
+	function ruSure(txt, url)
+	{
+		question = confirm(txt);
+		if (question !="0")
+		{
+			document.location = url;
+		}
+	}
+	
+	function filter(select)
+	{
+		var filterValue = select.options[select.selectedIndex].value
+		var url = "ViewPublications.action?repositoryId=$repositoryId&filter=" + filterValue;
+		document.location.href = url;
+	}
+	
+	function submitToCreate()
+	{
+		var listForm = document.listForm;
+		if (checkMarkedVersions(listForm) == 0)
+		{
+			alert('Select one or more versions to publish');
+		  	return;
+		}
+		else
+		{
+			listForm.action = "CreateEdition!inputV3.action";
+			listForm.submit();
+		}
+	}
+	
+	function submitToUnpublish(entityName)
+	{
+		var listForm = document.listFormPublication;
+		if (listForm.sel == null)
+		{
+			alert("There is no editions available to unpublish");
+			return;
+		}
+	
+		var selectedObjects = getSelectedObjects(listForm, entityName);
+		var selectedTexts = getSelectedTexts(listForm);
+		
+		// alert("selectedObjects:" + selectedObjects);
+		
+		if (selectedObjects == "")
+		{
+			alert('Select one edition to unpublish');
+		  	return;
+		}
+		else
+		{
+			listForm.header.value = "tool.publishtool.unpublishEdition.header";
+			listForm.message.value = "tool.publishtool.unpublishEdition.text"; 
+			listForm.extraParameters.value = selectedTexts;
+			listForm.yesDestination.value = listForm.yesDestination.value + selectedObjects;
+			listForm.submit();
+		}
+	
+	}
+	
+	function submitToDeny()
+	{
+		var listForm = document.listForm;
+		if (checkMarkedVersions(listForm) == 0)
+		{
+			alert('Select one or more items to deny');
+		  	return;
+		}
+		else
+		{
+			listForm.action = "DenyPublicationRequest!commentV3.action";
+			listForm.submit();
+		}
+	}
+	
+	function submitToPreview()
+	{
+		var listForm = document.listForm;
+		if (checkMarkedVersions(listForm) == 0)
+		{
+			alert('Select one or more versions to preview');
+		  	return;
+		}
+		else
+		{
+			arguments = getSelectedChkObjects(listForm.sel, "event");
+			previewWindow=window.open("PreviewEdition.action?" + arguments, "Preview", "toolbar=no, width=800, height=650, directories=no,  status=no, scrollbars=yes, resize=no, menubar=no");
+			previewWindow.focus();
+			
+			previewWindow.document.write("<html><head><title>Preview edition</title></head>");
+			previewWindow.document.write("<frameset FRAMESPACING='0' FRAMEBORDER='NO' BORDER='0' rows='50,600'>");
+			previewWindow.document.write("<frame noresize frameborder=0 scrolling=no name='previewTop' src='PreviewEdition.action?" + getSelectedChkObjects(listForm.sel, "event") +"'>");
+			previewWindow.document.write("<frame name='previewMain' src=''>");
+			previewWindow.document.write("</frameset></html>");
+		}
+	}
+	
+	function checkMarkedVersions(listForm)
+	{
+		var lengthsel = null;
+		var lengthsit = null;
+		var ret = 0;
+		if (listForm.sel != null)
+			lengthsel = listForm.sel.length;
+		if (listForm.sit != null)
+			lengthsit = listForm.sit.length;
+	
+		if (lengthsel == null && listForm.sel != null)
+	  	{
+	  		if (listForm.sel.checked)
+		    	ret++;
+	  	}
+		else
+		{
+		  	for (i=0; i<lengthsel; i++)
+		   		if (listForm.sel[i].checked)
+		    		ret++;
+		}
+		    		
+		if (lengthsit == null && listForm.sit != null)
+	  	{
+	  		if (listForm.sit.checked)
+		    	ret++;
+	  	}
+	  	else
+	  	{
+		  	for (i=0; i<lengthsit; i++)
+		   		if (listForm.sit[i].checked)
+		    		ret++;
+		}
+	    		
+		return ret;
+	}
+	
+	//-----------------------------------------------
+	// This function iterates through the list of select-boxes 
+	// and add the selected ones id's to the id-List 
+	//-----------------------------------------------
+	
+	function getSelectedObjects(listForm, entityName)
+	{
+		var str = '';
+		var length = listForm.sel.length;
+	  	if(length == null)
+	  	{
+	  		if (listForm.sel.checked)
+		    	str += '&' + entityName + 'Id=' + escape(listForm.sel.value);
+	  	}
+	  	else
+	  	{	
+		  	for (i=0; i<length; i++)
+		  	{
+		   		if (listForm.sel[i].checked)
+		    		str += '&' + entityName + 'Id=' + escape(listForm.sel[i].value);
+		 	}
+		}
+				 	
+	 	return str;
+	}
+	
+	function getSelectedChkObjects(chkBox, entityName)
+	{
+		if (chkBox == null)
+			return "";
+			
+		var str = '';
+		var length = chkBox.length;
+	  	if(length == null)
+	  	{
+	  		if (chkBox.checked)
+		    	str += '&' + entityName + 'Id=' + escape(chkBox.value);
+	  	}
+	  	else
+	  	{	
+		  	for (i=0; i<length; i++)
+		  	{
+		   		if (chkBox[i].checked)
+		    		str += '&' + entityName + 'Id=' + escape(chkBox[i].value);
+		 	}
+		}
+				 	
+	 	return str;
+	}
+	
+	//-----------------------------------------------
+	// This function iterates through the list of select-boxes 
+	// and add the selected ones names to the messagesList 
+	//-----------------------------------------------
+	
+	function getSelectedTexts(listForm)
+	{
+		var str = '';
+	
+		var length = listForm.sel.length;
+	  	if(length == null)
+	  	{
+	  		if (listForm.sel.checked)
+		    	str += listForm.rowtitle.value + "<br/>";
+	  	}
+	  	else
+	  	{	
+			for (i=0; i<length; i++)
+			{
+				if (listForm.sel[i].checked)
+			    	str += listForm.rowtitle[i].value + "<br/>";
+			}
+		}
+				
+		return str;
+	}
+	
+	function checkUncheckAll(checkbox)
+	{
+		if(checkbox.checked)
+			checkAll();
+		else
+			uncheckAll();				
+	}
 
-function filter(select)
-{
-	var filterValue = select.options[select.selectedIndex].value
-	var url = "ViewPublications.action?repositoryId=$repositoryId&filter=" + filterValue;
-	document.location.href = url;
-}
+	function checkAll()
+	{
+		checkAllBoxes(document.listForm.sel);					
+	}
+
+	function uncheckAll()
+	{
+		uncheckAllBoxes(document.listForm.sel);		
+	}
+		
+-->	
 </script>
-
-#macro(PreparePublication $p)
-
-#end
-
-
 
 #beginPublishingTool("tool.publishingtool.welcomeHeader" "Publications" "repositoryId=$repositoryId")
 
@@ -58,8 +255,6 @@ function filter(select)
 <tr>
 <td width=50%><img src="images/trans.gif" width="350" height="1"></td><td></td><td width=50%><img src="images/trans.gif" width="350" height="1"></td>
 </tr>
-
-<!--tr><td><img src="images/greydot.gif" height="1" width="100%" border=0></td><td></td><td><img src="images/greydot.gif" height="1" width="100%" border=0></td></tr-->
 
 <tr>
 <td valign="top">
@@ -98,8 +293,7 @@ Filter:
 
 #set($lvBorder = 0)
 #set($lvConstraint = -1)
-##lvHead(["Name (comment)","Modified", "&nbsp;"] "Publish items" "" "" "")
-#lvHead(["Name (comment)","Modified", "User"] "Publish items" "" "" "")
+#lvHeadV3(["Name (comment)","Modified", "User"] "Publish items" "" "" "" true)
 
 #hiddenField("repositoryId" $repositoryId)
 
@@ -150,7 +344,7 @@ Filter:
 	#set( $row = ["$icon $publicationEvent.name $span", "$modifiedDate", "$creatorDisplayName"] )
 	#set($cnt = $cnt + 1)
 
-	#lvAddRow($row $cnt $cId)
+	#lvAddRowV3($row $cnt $cId false)
 #end
 
 
@@ -159,17 +353,6 @@ Filter:
 #end
 
 #lvEnd()
-
-#if($cnt > 1)
-<br>
-<a href="javascript:checkAllBoxes(document.listForm.sel);">
-<img src="$ui.getString("images.contenttool.buttons.checkAll")" width="50" height="25" border="0">
-</a>
-
-<a href="javascript:uncheckAllBoxes(document.listForm.sel);">
-<img src="$ui.getString("images.contenttool.buttons.uncheckAll")" width="50" height="25" border="0">
-</a>
-#end
 
 </td>
 
@@ -188,8 +371,8 @@ Filter:
 
 		<form name="listFormPublication" action="Confirm.action" method="POST">
 			<input type="hidden" name="header" value=""/>
-			<input type="hidden" name="yesDestination" value="DeleteEdition!checkForModifiedVersions.action?repositoryId=$repositoryId"/>
-			<input type="hidden" name="noDestination" value="ViewPublications.action?repositoryId=$repositoryId"/>
+			<input type="hidden" name="yesDestination" value="DeleteEdition!V3.action?repositoryId=$repositoryId"/>
+			<input type="hidden" name="noDestination" value="ViewPublications!V3.action?repositoryId=$repositoryId"/>
 			<input type="hidden" name="message" value=""/>
 			<input type="hidden" name="extraParameters" value=""/>
 

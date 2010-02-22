@@ -64,7 +64,7 @@ public class ViewToolbarButtonsAction extends InfoGlueAbstractAction
 	{
 		try
 		{
-			//System.out.println("In execute with toolbarKey:" + toolbarKey);
+			//System.out.println("In execute with toolbarKey:" + toolbarKey + " and " + getRequest().getQueryString());
 			this.buttons = this.getToolbarButtons(toolbarKey, getRequest());			
 		}
 		catch (Exception e) 

@@ -1,17 +1,4 @@
-#if ($isAutomaticRedirect)		
-	<script type="text/javascript">
-		top.location.href = "$firstActionLink.actionURL";
-	</script>	
-#else
-
-	#beginLightCommonToolV3("tool.common.inlineOperationDoneHeader" "" "" false true true)
-	
-	#set($repositoryId = $this.getActionExtraData("repositoryId"))
-	#set($newSiteNodeId = $this.getActionExtraData("siteNodeId"))
-	#set($unrefreshedNodeId = $this.getActionExtraData("unrefreshedNodeId"))
-	#set($newContentId = $this.getActionExtraData("contentId"))
-	#set($changeTypeId = $this.getActionExtraData("changeTypeId"))
-
+#define($scripts)
 	<script type="text/javascript">
 	<!--
 		function closeDialog()
@@ -22,6 +9,11 @@
 				top.closeDialog();
 			else if(parent.closeDialog)
 				parent.closeDialog();
+		}
+
+		function reloadAllGUI()
+		{
+			top.location.reload();
 		}
 		
 		function refreshParent(actionUrl, target, targetTitle)
@@ -34,7 +26,9 @@
 			{
 				if(top.getActiveToolId() == "contentMarkup")
 				{
-					top.frames["contentTreeIframe"].refreshContent($unrefreshedNodeId, $changeTypeId, $newContentId);
+					#if($unrefreshedNodeId && $changeTypeId && $newContentId)
+						top.frames["contentTreeIframe"].refreshContent($unrefreshedNodeId, $changeTypeId, $newContentId);
+					#end
 					
 					//if($changeTypeId == "4")
 						
@@ -48,14 +42,18 @@
 						if(window.name.indexOf("TB_iframe") == -1)
 						{
 	    					top.refreshTopToolBar('tool.structuretool.siteNodeComponentsHeader', 'tool.structuretool.siteNodeComponentsHeader', 'siteNodeId=$newSiteNodeId&repositoryId=$repositoryId&isBranch=true', $unrefreshedNodeId, $changeTypeId, -1);
-	    					top.openUrlInWorkArea("ViewSiteNode.action?siteNodeId=$newSiteNodeId&repositoryId=$repositoryId", "sssssssssssss");
+	    					top.openUrlInWorkArea("ViewSiteNode.action?siteNodeId=$newSiteNodeId&repositoryId=$repositoryId", "");
 						}
 					}
 					*/
 				}
 				else
 				{
-					top.frames["structureTreeIframe"].refreshNode($this.getActionExtraData("unrefreshedNodeId"), $changeTypeId, $newSiteNodeId);
+					#if($siteNodeId)
+						top.frames["structureTreeIframe"].refreshNode($siteNodeId, 2, $siteNodeId);
+					#else
+						top.frames["structureTreeIframe"].refreshNode($this.getActionExtraData("unrefreshedNodeId"), $changeTypeId, $newSiteNodeId);
+					#end
 					
 					var currentMenutoolbarLeftUrl = top.getCurrentMenutoolbarLeftUrl();
 					//alert("currentMenutoolbarLeftUrl:" + currentMenutoolbarLeftUrl);
@@ -63,15 +61,25 @@
 	   	   	  		//alert("position:" + position + ": changeType: $changeTypeId");
 					if("$changeTypeId" == "3")
 					{
-						top.openUrlInWorkArea("ViewSiteNode.action?siteNodeId=$newSiteNodeId&repositoryId=$repositoryId", "$!this.getActionExtraData('siteNodeName')", "structure");
+						#if($siteNodeId)
+							top.openUrlInWorkArea(actionUrl, "AAAAAAA", "structure", "$ui.getString("tool.common.pageTabLabelPrefix")");
+						#else
+							top.openUrlInWorkArea("ViewSiteNode.action?siteNodeId=$newSiteNodeId&repositoryId=$repositoryId", "$!this.getActionExtraData('siteNodeName')", "structure", "$ui.getString("tool.common.pageTabLabelPrefix")");
+						#end
 					}
 					else if(position == -1) 
 					{
 						if(window.name.indexOf("TB_iframe") == -1)
 						{
 	    					top.refreshTopToolBar('tool.structuretool.siteNodeComponentsHeader', 'tool.structuretool.siteNodeComponentsHeader', 'siteNodeId=$newSiteNodeId&repositoryId=$repositoryId&isBranch=true', $unrefreshedNodeId, $changeTypeId, -1);
-	    					top.openUrlInWorkArea("ViewSiteNode.action?siteNodeId=$newSiteNodeId&repositoryId=$repositoryId", "$!this.getActionExtraData('siteNodeName')", "structure");
+							#if($siteNodeId)
+		    					top.openUrlInWorkArea(actionUrl, "AAAAAAAA", "structure", "$ui.getString("tool.common.pageTabLabelPrefix")");
+							#else
+		    					top.openUrlInWorkArea("ViewSiteNode.action?siteNodeId=$newSiteNodeId&repositoryId=$repositoryId", "$!this.getActionExtraData('siteNodeName')", "structure", "$ui.getString("tool.common.pageTabLabelPrefix")");
+							#end
 						}
+					  	else
+					  		top.refreshWorkArea("structure");
 					}
 				}
 				
@@ -83,7 +91,30 @@
 		}
     -->
 	</script>
+	
+#end
 
+#if($automaticClose)
+	$scripts
+	<script type="text/javascript">
+		alert("actionUrl: $actionUrl");
+		refreshParent('$actionUrl', '$target', '$targetTitle');
+	</script>	
+#elseif($isAutomaticRedirect)		
+	<script type="text/javascript">
+		top.location.href = "$firstActionLink.actionURL";
+	</script>	
+#else
+
+	#beginLightCommonToolV3("tool.common.inlineOperationDoneHeader" "" "" false true true)
+	
+	#set($repositoryId = $this.getActionExtraData("repositoryId"))
+	#set($newSiteNodeId = $this.getActionExtraData("siteNodeId"))
+	#set($unrefreshedNodeId = $this.getActionExtraData("unrefreshedNodeId"))
+	#set($newContentId = $this.getActionExtraData("contentId"))
+	#set($changeTypeId = $this.getActionExtraData("changeTypeId"))
+
+	$scripts
 	<link rel="stylesheet" type="text/css" href="css/cms.css"/>
 		
 	<div onfocus="this.blur();">

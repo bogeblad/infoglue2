@@ -110,6 +110,53 @@ public class SiteNodeVersionController extends BaseController
     	deleteEntity(SiteNodeVersionImpl.class, siteNodeVersionVO.getSiteNodeVersionId());
     }        
 
+	/**
+	 * This method creates a new siteNodeVersion for the siteNode sent in.
+	 */
+	
+	public List<SiteNodeVersionVO> getSiteNodeVersionVOList(Integer siteNodeId) throws SystemException, Bug
+	{
+		List<SiteNodeVersionVO> siteNodeVersionVOList = new ArrayList<SiteNodeVersionVO>();
+		
+		Database db = CastorDatabaseService.getDatabase();
+        
+        beginTransaction(db);
+        try
+        {
+        	siteNodeVersionVOList = getSiteNodeVersionVOList(db, siteNodeId);
+            
+        	commitTransaction(db);
+        }
+        catch(Exception e)
+        {
+            logger.error("An error occurred so we should not completes the transaction:" + e, e);
+            throw new SystemException(e.getMessage());
+        }
+    	
+		return siteNodeVersionVOList;		
+	}
+
+	public List<SiteNodeVersionVO> getSiteNodeVersionVOList(Database db, Integer siteNodeId) throws SystemException, Bug, Exception
+    {
+		List<SiteNodeVersionVO> siteNodeVersionVOList = new ArrayList<SiteNodeVersionVO>();
+		
+	    OQLQuery oql = db.getOQLQuery( "SELECT snv FROM org.infoglue.cms.entities.structure.impl.simple.SmallSiteNodeVersionImpl snv WHERE snv.siteNodeId = $1 ORDER BY snv.siteNodeVersionId desc");
+		oql.bind(siteNodeId);
+		
+		QueryResults results = oql.execute(Database.READONLY);
+		
+		while(results.hasMore()) 
+	    {
+	    	SiteNodeVersion siteNodeVersion = (SiteNodeVersion)results.next();
+	    	siteNodeVersionVOList.add(siteNodeVersion.getValueObject());
+	    }
+
+		results.close();
+		oql.close();
+
+		return siteNodeVersionVOList;
+    }
+
     /**
      * This method removes the siteNodeVersion and also all associated bindings.
      * @param siteNodeVersion
@@ -584,6 +631,8 @@ public class SiteNodeVersionController extends BaseController
     		siteNodeVersionVO.setContentType(siteNodeVersion.getContentType());
     		siteNodeVersionVO.setDisableEditOnSight(siteNodeVersion.getDisableEditOnSight());
     		siteNodeVersionVO.setDisableForceIdentityCheck(siteNodeVersion.getDisableForceIdentityCheck());
+    		siteNodeVersionVO.setForceProtocolChange(siteNodeVersion.getForceProtocolChange());
+    		System.out.println("OLD getForceProtocolChange:" + siteNodeVersion.getForceProtocolChange());
     		siteNodeVersionVO.setDisableLanguages(siteNodeVersion.getDisableLanguages());
     		siteNodeVersionVO.setDisablePageCache(siteNodeVersion.getDisablePageCache());
     		siteNodeVersionVO.setIsActive(siteNodeVersion.getIsActive());
@@ -1292,8 +1341,11 @@ public class SiteNodeVersionController extends BaseController
 
         try
         {
-            SiteNodeVersion siteNodeVersion = SiteNodeVersionController.getController().getSiteNodeVersionWithId(siteNodeVersionId, db);
-            List contentVersions = getMetaInfoContentVersions(db, siteNodeVersion, infoGluePrincipal);
+        	SiteNodeVersionVO siteNodeVersionVO = SiteNodeVersionController.getController().getSiteNodeVersionVOWithId(siteNodeVersionId, db);
+        	SiteNodeVO siteNodeVO = SiteNodeController.getController().getSiteNodeVOWithId(siteNodeVersionVO.getSiteNodeId());
+        	
+        	//SiteNodeVersion siteNodeVersion = SiteNodeVersionController.getController().getSiteNodeVersionWithId(siteNodeVersionId, db);
+            List contentVersions = getMetaInfoContentVersions(db, siteNodeVO, infoGluePrincipal);
             contentVersionVOList = toVOList(contentVersions);
             
             commitTransaction(db);
@@ -1315,47 +1367,25 @@ public class SiteNodeVersionController extends BaseController
      * @throws SystemException
      * @throws Exception
      */
-    private List getMetaInfoContentVersions(Database db, SiteNodeVersion siteNodeVersion, InfoGluePrincipal infoGluePrincipal) throws ConstraintException, SystemException, Exception
+    private List getMetaInfoContentVersions(Database db, SiteNodeVO siteNodeVO, InfoGluePrincipal infoGluePrincipal) throws ConstraintException, SystemException, Exception
     {
         List contentVersions = new ArrayList();
         
-        List languages = LanguageController.getController().getLanguageList(siteNodeVersion.getOwningSiteNode().getRepository().getId(), db);
-		Language masterLanguage = LanguageController.getController().getMasterLanguage(db, siteNodeVersion.getOwningSiteNode().getRepository().getId());
-		
-		Integer metaInfoAvailableServiceBindingId = null;
-		Integer serviceBindingId = null;
-		AvailableServiceBindingVO availableServiceBindingVO = AvailableServiceBindingController.getController().getAvailableServiceBindingVOWithName("Meta information", db);
-		if(availableServiceBindingVO != null)
-			metaInfoAvailableServiceBindingId = availableServiceBindingVO.getAvailableServiceBindingId();
-		
-		Collection serviceBindings = siteNodeVersion.getServiceBindings();
-		Iterator serviceBindingIterator = serviceBindings.iterator();
-		while(serviceBindingIterator.hasNext())
-		{
-			ServiceBinding serviceBinding = (ServiceBinding)serviceBindingIterator.next();
-			if(serviceBinding.getAvailableServiceBinding().getId().intValue() == metaInfoAvailableServiceBindingId.intValue())
-			{
-				serviceBindingId = serviceBinding.getId();
-				break;
-			}
-		}
+        List languages = LanguageController.getController().getLanguageList(siteNodeVO.getRepositoryId(), db);
+		Language masterLanguage = LanguageController.getController().getMasterLanguage(db, siteNodeVO.getRepositoryId());
 
-		if(serviceBindingId != null)
+		if(siteNodeVO.getMetaInfoContentId() != null)
 		{
-			List boundContents = ContentController.getBoundContents(serviceBindingId); 
-			if(boundContents.size() > 0)
+			ContentVO contentVO = ContentController.getContentController().getContentVOWithId(siteNodeVO.getMetaInfoContentId(), db);
+			
+			Iterator languageIterator = languages.iterator();
+			while(languageIterator.hasNext())
 			{
-				ContentVO contentVO = (ContentVO)boundContents.get(0);
+				Language language = (Language)languageIterator.next();
+				ContentVersion contentVersion = ContentVersionController.getContentVersionController().getLatestActiveContentVersion(contentVO.getId(), language.getId(), db);
 				
-				Iterator languageIterator = languages.iterator();
-				while(languageIterator.hasNext())
-				{
-					Language language = (Language)languageIterator.next();
-					ContentVersion contentVersion = ContentVersionController.getContentVersionController().getLatestActiveContentVersion(contentVO.getId(), language.getId(), db);
-					
-					if(contentVersion != null)
-					    contentVersions.add(contentVersion);
-				}
+				if(contentVersion != null)
+				    contentVersions.add(contentVersion);
 			}
 		}
 		

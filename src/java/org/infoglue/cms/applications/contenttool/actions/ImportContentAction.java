@@ -124,12 +124,15 @@ public class ImportContentAction extends InfoGlueAbstractAction
 			this.repositoryId = parentContent.getRepositoryId();
 			
 			//String encoding = "ISO-8859-1";
+			System.out.println("file:" + file.exists() + ":" + file.getPath());
 	        FileInputStream fis = new FileInputStream(file);
             InputStreamReader reader = new InputStreamReader(fis, encoding);
 			//Reader reader = new FileReader(file);
 
 			Unmarshaller unmarshaller = new Unmarshaller(map);
 			unmarshaller.setWhitespacePreserve(true);
+			unmarshaller.setValidation(false);
+
 			InfoGlueExportImpl infoGlueExportImplRead = (InfoGlueExportImpl)unmarshaller.unmarshal(reader);
 			Collection contentTypeDefinitions = infoGlueExportImplRead.getContentTypeDefinitions();
 			logger.info("Found " + contentTypeDefinitions.size() + " content type definitions");

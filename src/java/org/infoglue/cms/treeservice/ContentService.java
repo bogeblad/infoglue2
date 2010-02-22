@@ -172,7 +172,7 @@ public class ContentService extends JServiceBuilder
         	Integer contentId = ((Node)arguments.get(0)).getId();
 			logger.info("contentId:" + contentId);
             
-            List childContents = ContentController.getContentController().getContentChildrenVOList(contentId);
+            List childContents = ContentController.getContentController().getContentChildrenVOList(contentId, null, false);
 			
 			List nodes = new ArrayList();
 			Iterator childIterator = childContents.iterator();

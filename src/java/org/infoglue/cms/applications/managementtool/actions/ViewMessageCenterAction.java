@@ -24,6 +24,7 @@
 package org.infoglue.cms.applications.managementtool.actions;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
@@ -49,9 +50,9 @@ public class ViewMessageCenterAction extends InfoGlueAbstractAction
 	private boolean isSystemMessage = false;
 	private List messages;
 	
-	private Integer INDEX_MESSAGE_TYPE = new Integer(-1);
-	private Integer SYSTEM_MESSAGE_TYPE = new Integer(0);
-	private Integer CHAT_MESSAGE_TYPE = new Integer(10);
+	public static Integer INDEX_MESSAGE_TYPE = new Integer(-1);
+	public static Integer SYSTEM_MESSAGE_TYPE = new Integer(0);
+	public static Integer CHAT_MESSAGE_TYPE = new Integer(10);
 	
 	
     public String doExecute() throws Exception
@@ -100,6 +101,25 @@ public class ViewMessageCenterAction extends InfoGlueAbstractAction
     	return "successGetSystemMessages";
     }
 
+    public String doGetSystemMessagesV3() throws Exception
+    {
+    	if(getInfoGluePrincipal() == null)
+    		return ERROR;
+    	
+    	if(lastId == null || lastId.intValue() == -1)
+    	{
+    	    Message message = new Message(systemMessagesChat.getMessageId(), "administrator", INDEX_MESSAGE_TYPE, "Undefined");
+    		messages = new ArrayList();
+    		messages.add(message);
+    	}
+    	else
+    		messages = systemMessagesChat.getMessages(lastId.intValue());
+
+    	Collections.reverse(messages);
+    	
+    	return "successGetSystemMessagesV3";
+    }
+
     public String doSendMessage() throws Exception
     {
     	if(getInfoGluePrincipal() == null)
@@ -113,6 +133,11 @@ public class ViewMessageCenterAction extends InfoGlueAbstractAction
         return "successMessageSent";
     }
 
+    public static void addSystemMessage(String userName, Integer messageType, String command) throws Exception
+    {
+    	systemMessagesChat.addMessage(userName, messageType, command);
+    }
+    
     public List getSessionInfoBeanList() throws Exception
     {
     	return CmsSessionContextListener.getSessionInfoBeanList();

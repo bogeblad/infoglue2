@@ -5,7 +5,7 @@
 <html>
 <head>
 	<title>$ui.getString("tool.contenttool.fileUpload.fileUploadFailedHeader")</title>
-	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
 	
 	<link rel="stylesheet" type="text/css" href="css/cms.css" /> 
 	<link rel="stylesheet" type="text/css" href="css/infogluecommons.css" /> 
@@ -14,7 +14,29 @@
 	<META HTTP-EQUIV="expires" CONTENT="-1" />	
 	
 	#if($useFckUploadMessages)
-	<script type='text/javascript'>window.parent.OnUploadCompleted(101, '', '', '$ui.getString("$reasonKey")');</script>
+	<script type='text/javascript'>	
+	<!--
+		function getRequestParameter(url, parameterName)
+		{
+			valueIndex = url.indexOf(parameterName + "=");
+			endIndex = url.indexOf("&", valueIndex);
+			if(endIndex != -1)
+				value = url.substring(valueIndex + parameterName.length + 1, endIndex);
+			else
+				value = url.substring(valueIndex + parameterName.length + 1);
+			return value;
+		}
+
+		#if($prefferedWYSIWYG == "ckeditor3")	
+			var instanceName = getRequestParameter(window.location.href, "CKEditor");
+			var CKEditorFuncNum = getRequestParameter(window.location.href, "CKEditorFuncNum");
+			var message = "$ui.getString($reasonKey)";
+			window.parent.CKEDITOR.tools.callFunction(CKEditorFuncNum, '', message);
+		#else
+			window.parent.OnUploadCompleted(101, '', '', '$ui.getString("$reasonKey")');
+		#end
+	-->
+	</script>	
 	#end
 	
 </head>

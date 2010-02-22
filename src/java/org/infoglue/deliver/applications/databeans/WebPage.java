@@ -41,6 +41,8 @@ public class WebPage
 	//private String extraParameters;
 	private String url;
 	private String navigationTitle;
+	private Integer sortOrder;
+	private Boolean isHidden;
 	
 	public WebPage()
 	{
@@ -105,5 +107,25 @@ public class WebPage
 	{
 		this.metaInfoContentId = metaInfoContentId;
 	}
-	
+
+	public Integer getSortOrder()
+	{
+		return this.sortOrder;
+	}
+
+	public Boolean getIsHidden()
+	{
+		return this.isHidden;
+	}
+
+	public void setSortOrder(Integer sortOrder)
+	{
+		this.sortOrder = sortOrder;
+	}
+
+	public void setIsHidden(Boolean isHidden)
+	{
+		this.isHidden = isHidden;
+	}
+
 }

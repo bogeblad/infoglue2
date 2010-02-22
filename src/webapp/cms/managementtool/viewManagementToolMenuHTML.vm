@@ -11,7 +11,7 @@
 		</div>
 		#end
 
-		<div class="tree-item" ${n.parameters.get('extraMarkup')}>
+		<div class="tree-item" $!{n.parameters.get('extraMarkup')}>
 		#if ($n.isOpen())
 			#set($preOCImg = "open")
 			#set($addremove = "&rkey=")
@@ -52,7 +52,7 @@
 <html>
 <head>
 	<META HTTP-EQUIV="expires" CONTENT="-1" />		
-	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
 	<title>Menus</title>
 
 	<link rel="stylesheet" type="text/css" href="css/cms.css" /> 
@@ -92,13 +92,13 @@
 			#if ($n.isContainer())
 				#if ($n.isRoot())
 					#set($nodeTitle="$rootTitle")
-					<img  class="tree-icon" src="images/tree/managementRoot.gif">
+					<img  class="tree-icon" src="images/tree/managementRoot.gif alt=""">
 				#else
 					#set($nodeTitle="${n.getTitle()}")				
-					<img class="tree-icon" src="${imgPath}emptyfolder$preOCImg$postImg" />
+					<img class="tree-icon" src="${imgPath}emptyfolder$preOCImg$postImg" alt=""/>
 				#end
 			#else
-				<img class="tree-icon" src="${imgPath}item$postImg"/>
+				<img class="tree-icon" src="${imgPath}item$postImg" alt=""/>
 			#end
 			
 			## Draw item link			

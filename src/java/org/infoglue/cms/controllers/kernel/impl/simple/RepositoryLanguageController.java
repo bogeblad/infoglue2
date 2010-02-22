@@ -208,7 +208,71 @@ public class RepositoryLanguageController extends BaseController
 
         return repositoryLanguageList;
     }
-	
+
+    public List<LanguageVO> getLanguageVOListForRepositoryId(Integer repositoryId) throws SystemException, Bug, Exception
+    {
+        List<LanguageVO> languageVOList = new ArrayList<LanguageVO>();
+        
+		/*
+		String repositoryLanguageListKey = "" + repositoryId;
+		logger.info("repositoryLanguageListKey:" + repositoryLanguageListKey);
+		repositoryLanguageList = (List)CacheController.getCachedObject("repositoryLanguageListCache", repositoryLanguageListKey);
+		if(repositoryLanguageList != null)
+		{
+			logger.info("There was an cached list:" + repositoryLanguageList);
+		}
+		else
+		{
+	    */
+	    	Database db = CastorDatabaseService.getDatabase();
+	        ConstraintExceptionBuffer ceb = new ConstraintExceptionBuffer();
+			
+		    beginTransaction(db);
+		    
+	        try
+	        { 
+	        	languageVOList = getLanguageVOListForRepositoryId(repositoryId, db);
+	            
+	            //if(repositoryLanguageList != null)
+	            //{
+	            //    CacheController.cacheObject("repositoryLanguageListCache", repositoryLanguageListKey, repositoryLanguageList);
+	            //}
+	            
+	            ceb.throwIfNotEmpty();
+	            commitTransaction(db);
+	        }
+	        catch(Exception e)
+	        {
+	            logger.error("An error occurred so we should not completes the transaction:" + e, e);
+	            rollbackTransaction(db);
+	            throw new SystemException(e.getMessage());
+	        }
+	        //}
+		
+        return languageVOList;
+    }
+
+    public List<LanguageVO> getLanguageVOListForRepositoryId(Integer repositoryId, Database db) throws SystemException, Bug, Exception
+    {
+     	List<LanguageVO> languageVOList = new ArrayList<LanguageVO>();
+        
+       	OQLQuery oql = db.getOQLQuery("SELECT l FROM org.infoglue.cms.entities.management.impl.simple.LanguageImpl l WHERE l.repositoryLanguages.repository = $1 ORDER BY l.repositoryLanguages.sortOrder, l.languageId");
+		oql.bind(repositoryId);
+			
+       	QueryResults results = oql.execute(Database.ReadOnly);
+       		
+		while (results.hasMore()) 
+        {
+			Language language = (Language)results.next();
+		    languageVOList.add(language.getValueObject());
+        }
+   
+		results.close();
+		oql.close();
+
+        return languageVOList;
+    }
+
     
 	public List getAvailableLanguageVOListForRepositoryId(Integer repositoryId) throws ConstraintException, SystemException, Exception
 	{
@@ -418,7 +482,21 @@ public class RepositoryLanguageController extends BaseController
 
 		return repositoryLanguage;
 	}
-	
+
+	public RepositoryLanguage create(Repository repository, Language language, Integer sortOrder, Database db) throws Exception
+	{
+		RepositoryLanguage repositoryLanguage = new RepositoryLanguageImpl();
+
+		repositoryLanguage.setIsPublished(new Boolean(false));
+		repositoryLanguage.setLanguage(language);
+		repositoryLanguage.setRepository(repository);
+		repositoryLanguage.setSortOrder(sortOrder);
+		
+		db.create(repositoryLanguage);
+
+		return repositoryLanguage;
+	}
+
 	public void publishRepositoryLanguage(RepositoryLanguageVO repositoryLanguageVO) throws ConstraintException, SystemException
 	 {
 		 Database db = CastorDatabaseService.getDatabase();

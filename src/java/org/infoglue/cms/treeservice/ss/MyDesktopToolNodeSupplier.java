@@ -89,16 +89,16 @@ public class MyDesktopToolNodeSupplier extends BaseNodeSupplier
 
 		//parameters.put("extraMarkup", "Basic");
 
-		r.add(new MyDesktopNodeImpl(cnt++, getLocalizedString(locale, "tool.mydesktoptool.ongoingWorkflows"), "ViewMyDesktop!ongoing.action", parameters));
-
-		r.add(new MyDesktopNodeImpl(cnt++, getLocalizedString(locale, "tool.mydesktoptool.availableWorkflows"), "ViewMyDesktop!available.action"));
-
-		r.add(new MyDesktopNodeImpl(cnt++, getLocalizedString(locale, "tool.mydesktoptool.availableShortcuts"), "ViewMyDesktop!shortcuts.action"));
-	
 		r.add(new MyDesktopNodeImpl(cnt++, getLocalizedString(locale, "tool.mydesktoptool.myPages"), "ViewMyDesktop!latestPages.action"));
 		
 		r.add(new MyDesktopNodeImpl(cnt++, getLocalizedString(locale, "tool.mydesktoptool.myContents"), "ViewMyDesktop!latestContents.action"));
 
+		r.add(new MyDesktopNodeImpl(cnt++, getLocalizedString(locale, "tool.mydesktoptool.ongoingWorkflows"), "ViewMyDesktop!ongoing.action", parameters));
+
+		r.add(new MyDesktopNodeImpl(cnt++, getLocalizedString(locale, "tool.mydesktoptool.availableWorkflows"), "ViewMyDesktop!available.action"));
+
+		//r.add(new MyDesktopNodeImpl(cnt++, getLocalizedString(locale, "tool.mydesktoptool.availableShortcuts"), "ViewMyDesktop!shortcuts.action"));
+	
 		return r;
 	}
 

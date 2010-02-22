@@ -20,7 +20,7 @@
  *
  * ===============================================================================
  *
- * $Id: RegistryController.java,v 1.37 2008/07/09 15:34:34 mattias Exp $
+ * $Id: RegistryController.java,v 1.38 2010/02/22 08:14:26 mattias Exp $
  */
 
 package org.infoglue.cms.controllers.kernel.impl.simple;
@@ -41,6 +41,7 @@ import org.exolab.castor.jdo.QueryResults;
 import org.infoglue.cms.applications.databeans.ReferenceBean;
 import org.infoglue.cms.applications.databeans.ReferenceVersionBean;
 import org.infoglue.cms.entities.content.Content;
+import org.infoglue.cms.entities.content.ContentVO;
 import org.infoglue.cms.entities.content.ContentVersion;
 import org.infoglue.cms.entities.content.ContentVersionVO;
 import org.infoglue.cms.entities.content.impl.simple.ContentImpl;
@@ -55,6 +56,7 @@ import org.infoglue.cms.entities.management.impl.simple.RegistryImpl;
 import org.infoglue.cms.entities.structure.Qualifyer;
 import org.infoglue.cms.entities.structure.ServiceBinding;
 import org.infoglue.cms.entities.structure.SiteNode;
+import org.infoglue.cms.entities.structure.SiteNodeVO;
 import org.infoglue.cms.entities.structure.SiteNodeVersion;
 import org.infoglue.cms.entities.structure.SiteNodeVersionVO;
 import org.infoglue.cms.exception.Bug;
@@ -1033,9 +1035,9 @@ public class RegistryController extends BaseController
     	return getReferencingObjectsForSiteNode(siteNodeId, -1);
     }
     
-    public List getReferencingObjectsForSiteNode(Integer siteNodeId, int maxRows) throws SystemException, Exception
+    public List<ReferenceBean> getReferencingObjectsForSiteNode(Integer siteNodeId, int maxRows) throws SystemException, Exception
     {
-        List referenceBeanList = new ArrayList();
+        List<ReferenceBean> referenceBeanList = new ArrayList<ReferenceBean>();
         
         Database db = CastorDatabaseService.getDatabase();
 		
@@ -1049,7 +1051,6 @@ public class RegistryController extends BaseController
 		}
 		catch (Exception e)		
 		{
-		    e.printStackTrace();
 		    logger.warn("One of the references was not found which is bad but not critical:" + e.getMessage(), e);
 		    rollbackTransaction(db);
 		}
@@ -1058,9 +1059,9 @@ public class RegistryController extends BaseController
     }
 
 		    
-    public List getReferencingObjectsForSiteNode(Integer siteNodeId, int maxRows, Database db) throws SystemException, Exception
+    public List<ReferenceBean> getReferencingObjectsForSiteNode(Integer siteNodeId, int maxRows, Database db) throws SystemException, Exception
     {
-        List referenceBeanList = new ArrayList();
+        List<ReferenceBean> referenceBeanList = new ArrayList<ReferenceBean>();
         
 		Map entries = new HashMap();
 		
@@ -1089,12 +1090,13 @@ public class RegistryController extends BaseController
             {
                 try
                 {
-                    ContentVersion contentVersion = ContentVersionController.getContentVersionController().getContentVersionWithId(new Integer(registryVO.getReferencingEntityId()), db);
-		    		logger.info("contentVersion:" + contentVersion.getContentVersionId());
-		    		existingReferenceBean.setName(contentVersion.getOwningContent().getName());
-		    		existingReferenceBean.setReferencingCompletingObject(contentVersion.getOwningContent().getValueObject());
+                    ContentVersionVO contentVersionVO = ContentVersionController.getContentVersionController().getContentVersionVOWithId(new Integer(registryVO.getReferencingEntityId()), db);
+                    ContentVO contentVO = ContentController.getContentController().getContentVOWithId(contentVersionVO.getContentId(), db);
+                    existingReferenceBean.setName(contentVO.getName());
+                    existingReferenceBean.setReferencingCompletingObject(contentVO);
+                    
 		    		
-		    		referenceVersionBean.setReferencingObject(contentVersion.getValueObject());
+		    		referenceVersionBean.setReferencingObject(contentVersionVO);
 		    		referenceVersionBean.getRegistryVOList().add(registryVO);
                 }
                 catch(Exception e)
@@ -1107,13 +1109,12 @@ public class RegistryController extends BaseController
             {
                 try
                 {
-	                SiteNodeVersion siteNodeVersion = SiteNodeVersionController.getController().getSiteNodeVersionWithId(new Integer(registryVO.getReferencingEntityId()), db);
-		    		logger.info("siteNodeVersion:" + siteNodeVersion.getSiteNodeVersionId());
-		    		logger.info("siteNode:" + siteNodeVersion.getOwningSiteNode().getId());
-		    		existingReferenceBean.setName(siteNodeVersion.getOwningSiteNode().getName());
-		    		existingReferenceBean.setReferencingCompletingObject(siteNodeVersion.getOwningSiteNode().getValueObject());
+	                SiteNodeVersionVO siteNodeVersionVO = SiteNodeVersionController.getController().getSiteNodeVersionVOWithId(new Integer(registryVO.getReferencingEntityId()), db);
+	                SiteNodeVO siteNodeVO = SiteNodeController.getController().getSiteNodeVOWithId(siteNodeVersionVO.getSiteNodeId(), db);
+		    		existingReferenceBean.setName(siteNodeVO.getName());
+		    		existingReferenceBean.setReferencingCompletingObject(siteNodeVO);
 
-		    		referenceVersionBean.setReferencingObject(siteNodeVersion.getValueObject());
+		    		referenceVersionBean.setReferencingObject(siteNodeVersionVO);
 		    		referenceVersionBean.getRegistryVOList().add(registryVO);
                 }
                 catch(Exception e)
@@ -1257,9 +1258,9 @@ public class RegistryController extends BaseController
             {
                 try
                 {
-                    Content content = ContentController.getContentController().getContentWithId(new Integer(registryVO.getEntityId()), db);
-		    		logger.info("contentVersion:" + content.getContentId());
-		    		result.add(content.getValueObject());
+                    ContentVO contentVO = ContentController.getContentController().getContentVOWithId(new Integer(registryVO.getEntityId()), db);
+		    		logger.info("contentVO:" + contentVO.getId());
+		    		result.add(contentVO);
                 }
                 catch(Exception e)
                 {
@@ -1270,9 +1271,9 @@ public class RegistryController extends BaseController
             {
                 try
                 {
-	                SiteNode siteNode = SiteNodeController.getController().getSiteNodeWithId(new Integer(registryVO.getEntityId()), db);
-		    		logger.info("siteNode:" + siteNode.getId());
-		    		result.add(siteNode.getValueObject());
+	                SiteNodeVO siteNodeVO = SiteNodeController.getController().getSiteNodeVOWithId(new Integer(registryVO.getEntityId()), db);
+		    		logger.info("siteNodeVO:" + siteNodeVO.getId());
+		    		result.add(siteNodeVO);
 		    	}
                 catch(Exception e)
                 {

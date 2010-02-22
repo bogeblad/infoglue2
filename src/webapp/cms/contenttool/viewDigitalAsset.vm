@@ -5,20 +5,41 @@
 <html>
 <head>
 	<title>$ui.getString("tool.contenttool.uploadDigitalAsset.header")</title>
-	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
 	
 	<link rel="stylesheet" type="text/css" href="css/cms.css" /> 
 	 
 	#if($useFckUploadMessages)
-	<script type='text/javascript'>window.parent.OnUploadCompleted(0, 'DownloadAsset.action?contentId=$!contentVersionVO.contentId&languageId=$!contentVersionVO.languageId&assetKey=$!digitalAssetKey', 'DownloadAsset.action?contentId=$!contentVersionVO.contentId&languageId=$!contentVersionVO.languageId&assetKey=$!digitalAssetKey', 'Upload was successful');</script>
+	<script type='text/javascript'>
+	<!--
+		function getRequestParameter(url, parameterName)
+		{
+			valueIndex = url.indexOf(parameterName + "=");
+			endIndex = url.indexOf("&", valueIndex);
+			if(endIndex != -1)
+				value = url.substring(valueIndex + parameterName.length + 1, endIndex);
+			else
+				value = url.substring(valueIndex + parameterName.length + 1);
+			return value;
+		}
+		
+		#if($prefferedWYSIWYG == "ckeditor3")	
+			var instanceName = getRequestParameter(window.location.href, "CKEditor");
+			var CKEditorFuncNum = getRequestParameter(window.location.href, "CKEditorFuncNum");
+			var fileUrl = 'DownloadAsset.action?contentId=$!contentVersionVO.contentId&languageId=$!contentVersionVO.languageId&assetKey=$!digitalAssetKey';
+			var message = "$ui.getString("tool.contenttool.fileUpload.fileUploadSuccessHeader")";
+			window.parent.CKEDITOR.tools.callFunction(CKEditorFuncNum, fileUrl, message);
+		#else
+			window.parent.OnUploadCompleted(0, 'DownloadAsset.action?contentId=$!contentVersionVO.contentId&languageId=$!contentVersionVO.languageId&assetKey=$!digitalAssetKey', 'DownloadAsset.action?contentId=$!contentVersionVO.contentId&languageId=$!contentVersionVO.languageId&assetKey=$!digitalAssetKey', 'Upload was successful');
+		#end
+	-->
+	</script>
 	#end
 
 	<script type="text/javascript" src="script/listview.js"></script>
 	<script type="text/javascript" src="script/infogluecommons.js"></script>
 
-	<link type="text/css" href="script/jqueryplugins/ui/jquery-ui-1.7.2.full.redmond/css/redmond/jquery-ui-1.7.2.custom.css" rel="stylesheet" />	
-	<script type="text/javascript" src="script/jquery/jquery-1.3.2.min.js"></script>
-	<script type="text/javascript" src="script/jqueryplugins/ui/jquery-ui-1.7.2.full.redmond/js/jquery-ui-1.7.2.custom.min.js"></script>
+	#includeLatestJQuery()
 
 	<script type="text/javascript" src="script/v3/infoglue.js"></script>
 

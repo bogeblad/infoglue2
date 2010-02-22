@@ -293,19 +293,16 @@ public class UpdateContentVersionAttributeAction extends ViewContentVersionActio
 	{
 		try
 		{
-			/*
-			logger.info("Getting content version attribute through ajax....");
-			logger.info("contentId:" + contentId);
-			logger.info("languageId:" + languageId);
-			logger.info("attributeName:" + attributeName);
-			*/
-			
+			System.out.println("Initialize...");
 			super.initialize(this.contentVersionId, this.contentId, this.languageId);
+			System.out.println("Initialize done...");
 			this.contentVersionVO = this.getContentVersionVO();
 			if(this.contentVersionVO == null)
 			{
 				ContentVO contentVO = ContentController.getContentController().getContentVOWithId(contentId);
+				System.out.println("CCC1");
 				ContentTypeDefinitionVO contentTypeDefinitionVO = ContentTypeDefinitionController.getController().getContentTypeDefinitionVOWithId(contentVO.getContentTypeDefinitionId());
+				System.out.println("contentTypeDefinitionVO loaded");
 
 				StringBuffer sb = new StringBuffer();
 				sb.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?><article xmlns=\"x-schema:ArticleSchema.xml\"><attributes>");
@@ -330,10 +327,13 @@ public class UpdateContentVersionAttributeAction extends ViewContentVersionActio
 
 			AccessConstraintExceptionBuffer ceb = new AccessConstraintExceptionBuffer();
 			
+			System.out.println("CCC2");
 			Integer protectedContentId = ContentControllerProxy.getController().getProtectedContentId(this.contentVersionVO.getContentId());
+			System.out.println("CCC3");
 			logger.info("protectedContentId:" + protectedContentId);
 			if(protectedContentId != null && !AccessRightController.getController().getIsPrincipalAuthorized(this.getInfoGluePrincipal(), "Content.Write", protectedContentId.toString()))
 				ceb.add(new AccessConstraintException("Content.contentId", "1001"));
+			System.out.println("CCC4");
 
 			ceb.throwIfNotEmpty();
 			
@@ -346,6 +346,7 @@ public class UpdateContentVersionAttributeAction extends ViewContentVersionActio
 			logger.info("attributeValue before parse:" + attributeValue);
 			
 			attributeValue = parseAttributeForInlineEditing(attributeValue, false);		
+			System.out.println("parseAttributeForInlineEditing done");
 			
 			logger.info("attributeValue:" +attributeValue);
 			/*

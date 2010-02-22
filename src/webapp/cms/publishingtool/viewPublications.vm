@@ -2,46 +2,30 @@
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <script type="text/javascript" src="script/overlib.js"></script>
-<script Language=JavaScript>
-function showHide(a)
-{
-	/*
-	var theDiv=document.getElementById("e" + a);
-	var theImg=document.getElementById("i" + a);
 
-	if(theDiv.style.display == '')
+<script type="text/javascript">
+<!--	
+	function showHide(a)
 	{
-		theImg.src = "images/tree/smallplus.gif";
-		theDiv.style.display ='none';
+		openPopup("ViewPublications!showPublicationDetails.action?publicationId=" + a, "PublicationDetails", "width=600,height=500,toolbar=no,status=no,scrollbars=yes,location=no,menubar=no,directories=no,resizable=yes");
 	}
-	else
-	{
-		theImg.src = "images/tree/smallminus.gif";
-		theDiv.style.display ='';
-	}
-	*/
 	
-	//var theFrame = document.getElementById(a + "IFrame");
-	//theFrame.src = "ViewPublications!showPublicationDetails.action?publicationId=" + a;
-	openPopup("ViewPublications!showPublicationDetails.action?publicationId=" + a, "PublicationDetails", "width=600,height=500,toolbar=no,status=no,scrollbars=yes,location=no,menubar=no,directories=no,resizable=yes");
-	
-}
-
-function ruSure(txt, url)
-{
-	question = confirm(txt);
-	if (question !="0")
+	function ruSure(txt, url)
 	{
-		document.location = url;
+		question = confirm(txt);
+		if (question !="0")
+		{
+			document.location = url;
+		}
 	}
-}
-
-function filter(select)
-{
-	var filterValue = select.options[select.selectedIndex].value
-	var url = "ViewPublications.action?repositoryId=$repositoryId&filter=" + filterValue;
-	document.location.href = url;
-}
+	
+	function filter(select)
+	{
+		var filterValue = select.options[select.selectedIndex].value
+		var url = "ViewPublications.action?repositoryId=$repositoryId&filter=" + filterValue;
+		document.location.href = url;
+	}
+-->
 </script>
 
 #macro(PreparePublication $p)

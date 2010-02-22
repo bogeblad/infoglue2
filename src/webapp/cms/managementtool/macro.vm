@@ -12,6 +12,15 @@
 </div>
 #end
 
+##*****************************************************
+## This is the header for all V3 managementtool pages *
+##*****************************************************
+
+#macro(includeLatestJQuery)
+	<link type="text/css" href="script/jqueryplugins/ui/jquery-ui-1.7.2.full.redmond/css/redmond/jquery-ui-1.7.2.custom.css" rel="stylesheet" />	
+	<script type="text/javascript" src="script/jquery/jquery-1.4.min.js"></script>
+	<script type="text/javascript" src="script/jqueryplugins/ui/jquery-ui-1.7.2.full.redmond/js/jquery-ui-1.7.2.custom.min.js"></script>
+#end
 
 ##*****************************************************
 ## This is the header for all V3 managementtool pages *
@@ -39,11 +48,9 @@
 	<script type="text/javascript" src="script/yui/build/container/container_core-min.js"></script>
 	<script type="text/javascript" src="script/yui/build/menu/menu-min.js"></script>
 	
-	<script type="text/javascript" src="script/jquery/jquery-1.2.6.min.js"></script>
-	<script type="text/javascript" src="script/jqueryplugins/ui/jquery-ui-dragDropTabs-1.6rc2.min.js"></script>
-	<!-- 
-	<script type="text/javascript" src="script/jqueryplugins/ui/jquery-ui-igcommon15.min.js"></script>
-	-->
+	<link type="text/css" href="script/jqueryplugins/ui/jquery-ui-1.7.2.full.redmond/css/redmond/jquery-ui-1.7.2.custom.css" rel="stylesheet" />	
+	<script type="text/javascript" src="script/jquery/jquery-1.4.min.js"></script>
+	<script type="text/javascript" src="script/jqueryplugins/ui/jquery-ui-1.7.2.full.redmond/js/jquery-ui-1.7.2.custom.min.js"></script>
 	
 	#if($hasDataTable)
 		<link rel="stylesheet" type="text/css" href="script/yui/build/fonts/fonts-min.css" />
@@ -376,7 +383,7 @@
 	<title>$ui.getString($titleKey)</title>
 	
 	<link type="text/css" href="script/jqueryplugins/ui/jquery-ui-1.7.2.full.redmond/css/redmond/jquery-ui-1.7.2.custom.css" rel="stylesheet" />	
-	<script type="text/javascript" src="script/jquery/jquery-1.3.2.min.js"></script>
+	<script type="text/javascript" src="script/jquery/jquery-1.4.min.js"></script>
 	<script type="text/javascript" src="script/jqueryplugins/ui/jquery-ui-1.7.2.full.redmond/js/jquery-ui-1.7.2.custom.min.js"></script>
 	
 	#if($hasDataTable)
@@ -472,7 +479,10 @@
 			//title, toolbarKey, arguments, unrefreshedContentId, changeTypeId, newContentId
 			
 			if(window.name.indexOf("TB_iframe") == -1 && parent.refreshTopToolBar)
+			{
+				//alert("Calling parent.refreshTopToolBar: $titleKey");
 				parent.refreshTopToolBar('$titleKey', '$titleKey', '$extraData', -1, -1, -1);
+	 		}
 	 	});
 
 		function openWindow(url, windowTitle, options) 
@@ -1323,7 +1333,7 @@
 ## management tool                                 *
 ##**************************************************
 
-#macro(lvAddRowV3 $row $cnt $objectId)
+#macro(lvAddRowV3 $row $cnt $objectId $skipCheckBox)
 	## set $lvConstraint to -1, 0 or 1
 	##		-1: unlimited number of items can be selected
 	##		0: no items can be selected (no checkboxes visible)
@@ -1339,7 +1349,8 @@
 
 
 	<tr id="r$cnt" $class>
-
+		
+		#if(!$skipCheckBox)
 		<td valign='middle'>
 			<div class="minormarginalized">
 				#if($loccnt==0)
@@ -1353,6 +1364,8 @@
 				#end
 			</div>
 		</td>
+		#end
+		
 		#foreach( $item in $row )
 			<td valign='middle'>
 				<div class="minormarginalized" style="white-space:nowrap" >
@@ -1404,6 +1417,17 @@
 	#end
 #end
 
+#macro(stateInText $stateId)
+#if($stateId == 0)
+$ui.getString("tool.contenttool.state.working")
+#elseif($stateId == 1)
+$ui.getString("tool.contenttool.state.final")
+#elseif($stateId == 2)
+$ui.getString("tool.contenttool.state.publish")
+#elseif($stateId == 3)
+$ui.getString("tool.contenttool.state.published")
+#end
+#end
 
 ##**************************************************
 ## INPUT FIELD MACROS   						   *
@@ -1756,6 +1780,21 @@ $ui.getString("entity.${fieldNameKey}.label")<br/>
 			#end
 		</select>
 	</div>
+#end
+
+#macro(selectFieldCSS3 $fieldNameKey $fieldName $value $valueList $defaultChoiceNameKey)
+	<label for="$fieldName">$ui.getString("${fieldNameKey}")</label><br/>
+	<select name="$fieldName" class="dropbox">
+		<option value="">$ui.getString($defaultChoiceNameKey)</option>
+		#foreach($item in $valueList)
+			#if(!$item.id)
+				#set($itemValue = $item.name)
+			#else
+				#set($itemValue = $item.id)
+			#end
+			<option value="$itemValue" #if("$itemValue" == "$value") selected #end>$item.name</option>
+		#end
+	</select>
 #end
 
 #macro(selectBox $fieldNameKey $fieldName $value $valueList $defaultChoiceNameKey)

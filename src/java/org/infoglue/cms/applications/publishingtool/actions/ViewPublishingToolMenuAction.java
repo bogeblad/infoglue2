@@ -44,7 +44,7 @@ public class ViewPublishingToolMenuAction extends TreeViewAbstractAction
 	 */
 	protected INodeSupplier getNodeSupplier() throws Exception
 	{
-		return new PublishingToolNodeSupplier(this.getInfoGluePrincipal());
+		return new PublishingToolNodeSupplier(this.getInfoGluePrincipal(), this.getLocale());
 	}
 	               
 }

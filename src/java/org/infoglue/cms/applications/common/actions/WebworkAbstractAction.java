@@ -25,6 +25,8 @@ package org.infoglue.cms.applications.common.actions;
 
 import java.lang.reflect.Method;
 import java.net.URLEncoder;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 
 import javax.servlet.http.HttpServletRequest;
@@ -33,6 +35,7 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.log4j.Logger;
 import org.infoglue.cms.applications.common.Session;
+import org.infoglue.cms.applications.databeans.LinkBean;
 import org.infoglue.cms.controllers.kernel.impl.simple.LabelController;
 import org.infoglue.cms.exception.AccessConstraintException;
 import org.infoglue.cms.exception.Bug;
@@ -64,6 +67,7 @@ public abstract class WebworkAbstractAction implements Action, ServletRequestAwa
 	
 	private Error error;
   	private Errors errors = new Errors();
+  	private List<LinkBean> linkBeans = new ArrayList<LinkBean>();
 
   	private HttpServletRequest request;
   	private HttpServletResponse response;
@@ -91,7 +95,15 @@ public abstract class WebworkAbstractAction implements Action, ServletRequestAwa
 
   		return errors;
   	}
-  
+
+    /**
+    *
+    */
+ 	public List<LinkBean> getLinkBeans() 
+ 	{
+ 		return linkBeans;
+ 	}
+
     /**
      *
      */
@@ -147,7 +159,15 @@ public abstract class WebworkAbstractAction implements Action, ServletRequestAwa
         } 
         catch(SystemException e) 
         {
-            logger.error("SystemException " + e, e);
+			if(e.getMessage().indexOf("correct checksum") > -1)
+			{
+				if(getUnencodedCurrentUrl().indexOf("Confirm.action") > -1)
+					logger.warn("SystemException on url: " + getUnencodedCurrentUrl() + " with " + this.getRequest().getParameter("yesDestination") + "\n" + e.getMessage(), e);				
+				else
+					logger.warn("SystemException on url: " + getUnencodedCurrentUrl() + "\n" + e.getMessage(), e);				
+			}
+			else
+				logger.error("SystemException: " + e.getMessage(), e);
             setError(e, e.getCause());
             result = ERROR;
         } 
@@ -248,7 +268,9 @@ public abstract class WebworkAbstractAction implements Action, ServletRequestAwa
 			final String errorCode = ce.getErrorCode();
 			final String extraInformation = ce.getExtraInformation();
 			final String localizedErrorMessage = getLocalizedErrorMessage(locale, errorCode);
-			getErrors().addError(fieldName, localizedErrorMessage + (extraInformation.length() > 0 ? " (" + extraInformation + ")" : ""));
+			getErrors().addError(fieldName, localizedErrorMessage + (extraInformation.length() > 0 ? " " + extraInformation + " " : ""));
+
+			getLinkBeans().addAll(ce.getLinkBeans());
 		}
 		logger.debug(getErrors().toString());
 	}
@@ -315,15 +337,15 @@ public abstract class WebworkAbstractAction implements Action, ServletRequestAwa
 			if(ie.getMessage() != null)
 				logger.error("Exception in top action:" + ie.getMessage(), ie);
     	    
-			try 
+			try
 			{
 				throw ie.getCause();
-			} 
-			catch(ResultException e) 
+			}
+			catch(ResultException e)
 			{
 				logger.error("ResultException " + e, e);
 				result = e.getResult();
-			} 
+			}
 			catch(AccessConstraintException e) 
 			{
 				logger.info("AccessConstraintException " + e, e);
@@ -353,7 +375,15 @@ public abstract class WebworkAbstractAction implements Action, ServletRequestAwa
 			} 
 			catch(SystemException e) 
 			{
-				logger.error("SystemException " + e, e);
+				if(e.getMessage().indexOf("correct checksum") > -1)
+				{
+					if(getUnencodedCurrentUrl().indexOf("Confirm.action") > -1)
+						logger.warn("SystemException on url: " + getUnencodedCurrentUrl() + " with " + this.getRequest().getParameter("yesDestination") + "\n" + e.getMessage(), e);				
+					else
+						logger.warn("SystemException on url: " + getUnencodedCurrentUrl() + "\n" + e.getMessage(), e);				
+				}
+				else
+					logger.error("SystemException: " + e.getMessage(), e);
 				setError(e, e.getCause());
 				result = ERROR;
 			} 

@@ -233,6 +233,20 @@ public class ViewSiteNodePageComponentsAction extends InfoGlueAbstractAction
 	}
 
 	/**
+	 * This method shows the user a list of Contents. 
+	 */
+    
+	public String doShowContentTreeV3() throws Exception
+	{
+		initialize();
+		initializeTreeView("ViewSiteNodePageComponents!showContentTreeV3.action");
+
+		getHttpSession().setAttribute("" + siteNodeId + "_hideComponentPropertiesOnLoad", new Boolean(hideComponentPropertiesOnLoad));
+		
+		return "showContentTreeV3";
+	}
+
+	/**
 	 * This method shows the user a interface to choose multiple contents. 
 	 */
     
@@ -244,6 +258,20 @@ public class ViewSiteNodePageComponentsAction extends InfoGlueAbstractAction
 		getHttpSession().setAttribute("" + siteNodeId + "_hideComponentPropertiesOnLoad", new Boolean(hideComponentPropertiesOnLoad));
 
 		return "showContentTreeForMultipleBinding";
+	}
+
+	/**
+	 * This method shows the user a interface to choose multiple contents. 
+	 */
+    
+	public String doShowContentTreeForMultipleBindingV3() throws Exception
+	{
+		initialize();
+		initializeTreeView("ViewSiteNodePageComponents!showContentTreeForMultipleBindingV3.action");
+		
+		getHttpSession().setAttribute("" + siteNodeId + "_hideComponentPropertiesOnLoad", new Boolean(hideComponentPropertiesOnLoad));
+
+		return "showContentTreeForMultipleBindingV3";
 	}
 
 	/**
@@ -275,6 +303,20 @@ public class ViewSiteNodePageComponentsAction extends InfoGlueAbstractAction
 	}
 	
 	/**
+	 * This method shows the user a list of Contents. 
+	 */
+    
+	public String doShowStructureTreeV3() throws Exception
+	{
+		initialize();
+		initializeTreeView("ViewSiteNodePageComponents!showStructureTreeV3.action");
+
+		getHttpSession().setAttribute("" + siteNodeId + "_hideComponentPropertiesOnLoad", new Boolean(hideComponentPropertiesOnLoad));
+		
+		return "showStructureTreeV3";
+	}
+
+	/**
 	 * This method shows the user a interface to choose multiple sitenodes. 
 	 */
     
@@ -287,7 +329,21 @@ public class ViewSiteNodePageComponentsAction extends InfoGlueAbstractAction
 		
 		return "showStructureTreeForMultipleBinding";
 	}
+
+	/**
+	 * This method shows the user a interface to choose multiple sitenodes. 
+	 */
+    
+	public String doShowStructureTreeForMultipleBindingV3() throws Exception
+	{
+		initialize();
+		initializeTreeView("ViewSiteNodePageComponents!showStructureTreeForMultipleBindingV3.action");
 	
+		getHttpSession().setAttribute("" + siteNodeId + "_hideComponentPropertiesOnLoad", new Boolean(hideComponentPropertiesOnLoad));
+		
+		return "showStructureTreeForMultipleBindingV3";
+	}
+
 	/**
 	 * This method shows the user a list of Categories.
 	 */
@@ -434,7 +490,7 @@ public class ViewSiteNodePageComponentsAction extends InfoGlueAbstractAction
 
 		Integer newComponentId = new Integer(0);
 
-		NodeDeliveryController nodeDeliveryController			    = NodeDeliveryController.getNodeDeliveryController(siteNodeId, languageId, contentId);
+		NodeDeliveryController nodeDeliveryController = NodeDeliveryController.getNodeDeliveryController(siteNodeId, languageId, contentId);
 		
 		if(this.specifyBaseTemplate.equalsIgnoreCase("true"))
 		{
@@ -514,6 +570,7 @@ public class ViewSiteNodePageComponentsAction extends InfoGlueAbstractAction
 				ContentVO contentVO = NodeDeliveryController.getNodeDeliveryController(siteNodeId, this.masterLanguageVO.getId(), contentId).getBoundContent(this.getInfoGluePrincipal(), siteNodeId, this.masterLanguageVO.getId(), true, "Meta information", DeliveryContext.getDeliveryContext());
 				ContentVersionVO contentVersionVO = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(contentVO.getId(), this.masterLanguageVO.getId());
 				
+				System.out.println("Updating ComponentStructure on " + contentVersionVO.getContentVersionId());
 				ContentVersionController.getContentVersionController().updateAttributeValue(contentVersionVO.getContentVersionId(), "ComponentStructure", modifiedXML, this.getInfoGluePrincipal());
 			}
 		}
@@ -1994,6 +2051,7 @@ public class ViewSiteNodePageComponentsAction extends InfoGlueAbstractAction
 	    {
 	        String direction = "asc";
 	        componentVOList = ComponentController.getController().getComponentVOList(sortProperty, direction, allowedComponentNames, disallowedComponentNames, allowedComponentGroupNames, this.getInfoGluePrincipal());
+	        System.out.println("componentVOList:" + componentVOList);
 	    }
 	    catch(Exception e)
 	    {

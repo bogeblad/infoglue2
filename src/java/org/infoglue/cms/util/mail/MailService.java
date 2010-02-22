@@ -182,12 +182,12 @@ public class MailService
 	 * @param content the body of the email.
 	 * @throws SystemException if the email couldn't be sent due to some mail server exception.
 	 */
-	public void sendEmail(String contentType, String from, String to, String cc, String bcc, String replyTo, String subject, String content, String encoding) throws SystemException 
+	public void sendEmail(String contentType, String from, String to, String cc, String bcc, String bounceAddress, String replyTo, String subject, String content, String encoding) throws SystemException 
 	{
    	    if(contentType.equalsIgnoreCase("text/html"))
-	    	sendHTML(from, to, cc, bcc, replyTo, subject, content, encoding);
+	    	sendHTML(from, to, cc, bcc, bounceAddress, replyTo, subject, content, encoding);
 	    else
-	        sendPlain(from, to, cc, bcc, replyTo, subject, content, encoding);
+	        sendPlain(from, to, cc, bcc, bounceAddress, replyTo, subject, content, encoding);
 	}
 
 	/**
@@ -198,7 +198,7 @@ public class MailService
 	 * @param content the body of the email.
 	 * @throws SystemException if the email couldn't be sent due to some mail server exception.
 	 */
-	public void sendHTML(String from, String to, String cc, String bcc, String replyTo, String subject, String content, String encoding) throws SystemException 
+	public void sendHTML(String from, String to, String cc, String bcc, String bounceAddress, String replyTo, String subject, String content, String encoding) throws SystemException 
 	{
 		try 
 		{
@@ -308,7 +308,7 @@ public class MailService
 	 * @param content the body of the email.
 	 * @throws SystemException if the email couldn't be sent due to some mail server exception.
 	 */
-	public void sendPlain(String from, String to, String cc, String bcc, String replyTo, String subject, String content, String encoding) throws SystemException 
+	public void sendPlain(String from, String to, String cc, String bcc, String bounceAddress, String replyTo, String subject, String content, String encoding) throws SystemException 
 	{
 		try 
 		{

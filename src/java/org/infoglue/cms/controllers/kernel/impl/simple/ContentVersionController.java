@@ -59,6 +59,7 @@ import org.infoglue.cms.entities.content.impl.simple.SmallDigitalAssetImpl;
 import org.infoglue.cms.entities.content.impl.simple.SmallestContentVersionImpl;
 import org.infoglue.cms.entities.kernel.BaseEntityVO;
 import org.infoglue.cms.entities.management.ContentTypeDefinition;
+import org.infoglue.cms.entities.management.ContentTypeDefinitionVO;
 import org.infoglue.cms.entities.management.Language;
 import org.infoglue.cms.entities.management.LanguageVO;
 import org.infoglue.cms.entities.management.RegistryVO;
@@ -188,7 +189,7 @@ public class ContentVersionController extends BaseController
 		// Get the versions of this content.
 		resultList.addAll(getLatestContentVersionVOWithParent(contentId, stateId, mustBeFirst));
 		// Get the children of this content and do the recursion
-		List childContentList = ContentController.getContentController().getContentChildrenVOList(contentId);
+		List childContentList = ContentController.getContentController().getContentChildrenVOList(contentId, null, false);
 		Iterator cit = childContentList.iterator();
 		while (cit.hasNext())
 		{
@@ -259,7 +260,7 @@ public class ContentVersionController extends BaseController
 	    
 		
 		// Get the children of this content and do the recursion
-		List childContentList = ContentController.getContentController().getContentChildrenVOList(contentId);
+		List childContentList = ContentController.getContentController().getContentChildrenVOList(contentId, null, false);
 		Iterator cit = childContentList.iterator();
 		while (cit.hasNext())
 		{
@@ -483,30 +484,9 @@ public class ContentVersionController extends BaseController
 
         try
         {
-        	ContentVersion contentVersion = null;
-        	
-			contentVersion = getLatestActiveContentVersion(contentId, languageId, db);
-            /*
-            Collection contentVersions = content.getContentVersions();
+        	contentVersionVO = getLatestActiveContentVersionVO(contentId, languageId, db);
             
-            Iterator i = contentVersions.iterator();
-            
-            while(i.hasNext())
-            {
-            	ContentVersion currentContentVersion = (ContentVersion)i.next();
-            	logger.info("found one candidate:" + currentContentVersion.getValueObject());
-				if(contentVersion == null || (currentContentVersion.getId().intValue() > contentVersion.getId().intValue()))
-				{
-					if(currentContentVersion.getIsActive().booleanValue() &&  currentContentVersion.getLanguage().getId().intValue() == languageId.intValue())
-						contentVersion = currentContentVersion;
-				}
-            }
-            */
-            
-            if(contentVersion != null)
-	            contentVersionVO = contentVersion.getValueObject();
-            
-            commitTransaction(db);
+            rollbackTransaction(db);
         }
         catch(Exception e)
         {
@@ -518,21 +498,32 @@ public class ContentVersionController extends BaseController
 		return contentVersionVO;
     }
 
-    /**
-     * This method returns the latest active content version.
-     */
+   	/**
+	 * This method returns the latest active content version.
+	 */
     
-   	public ContentVersionVO getLatestActiveContentVersionVO(Integer contentId, Integer languageId, Database db) throws SystemException, Bug
-    {
-    	ContentVersionVO contentVersionVO = null;
+	public ContentVersionVO getLatestActiveContentVersionVO(Integer contentId, Integer languageId, Database db) throws SystemException, Bug, Exception
+	{
+		ContentVersionVO contentVersionVO = null;
 
-       	ContentVersion contentVersion = getLatestActiveContentVersionReadOnly(contentId, languageId, db);
-            
-        if(contentVersion != null)
-            contentVersionVO = contentVersion.getValueObject();
+        OQLQuery oql = db.getOQLQuery( "SELECT cv FROM org.infoglue.cms.entities.content.impl.simple.SmallContentVersionImpl cv WHERE cv.contentId = $1 AND cv.languageId = $2 AND cv.isActive = $3 ORDER BY cv.contentVersionId desc");
+    	oql.bind(contentId);
+    	oql.bind(languageId);
+		oql.bind(true);
     	
+    	QueryResults results = oql.execute(Database.ReadOnly);
+		
+		if (results.hasMore()) 
+        {
+			ContentVersion contentVersion = (ContentVersion)results.next();
+			contentVersionVO = contentVersion.getValueObject();
+        }
+		
+		results.close();
+		oql.close();
+
 		return contentVersionVO;
-    }
+	}
 
    	/**
 	 * This method returns the latest active content version.
@@ -557,9 +548,9 @@ public class ContentVersionController extends BaseController
 	    }
 	    */
 		
-		Content content = ContentController.getContentController().getContentWithId(contentId, db);
-    	Collection contentVersions = content.getContentVersions();
-    	if(logger.isInfoEnabled())
+		Content content = ContentController.getContentController().getReadOnlyContentWithId(contentId, db);
+		Collection contentVersions = content.getContentVersions();
+		if(logger.isInfoEnabled())
     	{
 	    	logger.info("contentId:" + contentId);
 	    	logger.info("languageId:" + languageId);
@@ -640,24 +631,6 @@ public class ContentVersionController extends BaseController
         try
         {
         	contentVersionVO = getLatestContentVersionVO(contentId, languageId, db);
-        	/*
-        	OQLQuery oql = db.getOQLQuery( "SELECT cv FROM org.infoglue.cms.entities.content.impl.simple.SmallContentVersionImpl cv WHERE cv.contentId = $1 AND cv.languageId = $2 ORDER BY cv.contentVersionId desc");
-        	oql.bind(contentId);
-        	oql.bind(languageId);
-        	
-        	QueryResults results = oql.execute(Database.ReadOnly);
-			
-			if (results.hasMore()) 
-            {
-            	ContentVersion contentVersion = (ContentVersion)results.next();
-            	if(logger.isInfoEnabled())
-            		logger.info("found one:" + contentVersion.getValueObject());
-            	contentVersionVO = contentVersion.getValueObject();
-            }
-            
-			results.close();
-			oql.close();
-			*/
         	
 			commitTransaction(db);
         }
@@ -1021,7 +994,6 @@ public class ContentVersionController extends BaseController
 	
     public ContentVersionVO update(Integer contentId, Integer languageId, ContentVersionVO contentVersionVO, InfoGluePrincipal principal) throws ConstraintException, SystemException
     {
-		//System.out.println("update:" + contentId + " - " + languageId);
         ContentVersionVO updatedContentVersionVO;
 		
         Database db = CastorDatabaseService.getDatabase();
@@ -1030,9 +1002,9 @@ public class ContentVersionController extends BaseController
         
         try
         {     
-            Content content = ContentController.getContentController().getContentWithId(contentId, db);
-            ContentTypeDefinition contentTypeDefinition = content.getContentTypeDefinition();
-            ConstraintExceptionBuffer ceb = contentVersionVO.validateAdvanced(contentTypeDefinition.getValueObject());
+        	ContentVO contentVO = ContentController.getContentController().getContentVOWithId(contentId, db);
+        	ContentTypeDefinitionVO contentTypeDefinitionVO = ContentTypeDefinitionController.getController().getContentTypeDefinitionVOWithId(contentVO.getContentTypeDefinitionId(), db);
+        	ConstraintExceptionBuffer ceb = contentVersionVO.validateAdvanced(contentTypeDefinitionVO);
             ceb.throwIfNotEmpty();
             
             ContentVersion contentVersion = null;
@@ -1059,15 +1031,16 @@ public class ContentVersionController extends BaseController
 				}
 	    	}
 
-		    if(principal != null && contentTypeDefinition.getName().equalsIgnoreCase("Meta info"))
+		    if(principal != null && contentTypeDefinitionVO.getName().equalsIgnoreCase("Meta info"))
 		    {
-		    	SiteNode siteNode = SiteNodeController.getController().getSiteNodeWithMetaInfoContentId(db, contentId);
-				if(siteNode.getMetaInfoContentId() != null && siteNode.getMetaInfoContentId().equals(contentId))
+		    	SiteNodeVO siteNodeVO = SiteNodeController.getController().getSiteNodeVOWithMetaInfoContentId(db, contentId);
+		    	//SiteNode siteNode = SiteNodeController.getController().getSiteNodeWithMetaInfoContentId(db, contentId);
+				if(siteNodeVO.getMetaInfoContentId() != null && siteNodeVO.getMetaInfoContentId().equals(contentId))
 				{
-			    	SiteNodeVersion latestSiteNodeVersion = SiteNodeVersionController.getController().getLatestSiteNodeVersion(db, siteNode.getId(), false);
-			    	latestSiteNodeVersion.setVersionModifier(contentVersionVO.getVersionModifier());
-			    	latestSiteNodeVersion.setModifiedDateTime(DateHelper.getSecondPreciseDate());
-					SiteNodeVersionControllerProxy.getSiteNodeVersionControllerProxy().acUpdate(principal, latestSiteNodeVersion.getValueObject(), db);
+			    	SiteNodeVersionVO latestSiteNodeVersionVO = SiteNodeVersionController.getController().getLatestSiteNodeVersionVO(db, siteNodeVO.getId());
+			    	latestSiteNodeVersionVO.setVersionModifier(contentVersionVO.getVersionModifier());
+			    	latestSiteNodeVersionVO.setModifiedDateTime(DateHelper.getSecondPreciseDate());
+					SiteNodeVersionControllerProxy.getSiteNodeVersionControllerProxy().acUpdate(principal, latestSiteNodeVersionVO, db);
 				}
 			}
 
@@ -1627,33 +1600,55 @@ public class ContentVersionController extends BaseController
 		{
 			try
 			{
-				logger.info("attributeName:"  + attributeName);
-				logger.info("versionValue:"   + contentVersionVO.getVersionValue());
-				logger.info("attributeValue:" + attributeValue);
+				//System.out.println("attributeName:"  + attributeName);
+				//System.out.println("versionValue:"   + contentVersionVO.getVersionValue());
+				//System.out.println("attributeValue:" + attributeValue);
 				InputSource inputSource = new InputSource(new StringReader(contentVersionVO.getVersionValue()));
 				
 				DOMParser parser = new DOMParser();
 				parser.parse(inputSource);
 				Document document = parser.getDocument();
 				
+				/*
+				System.out.println("document.getDocumentElement():" + document.getDocumentElement().getNodeName());
+				System.out.println("document.getDocumentElement().getChildNodes().getLength():" + document.getDocumentElement().getChildNodes().getLength());
+				System.out.println("document.getElementsByTagName(attributes):" + document.getElementsByTagName("attributes").item(0).getChildNodes().getLength());
+				System.out.println("document.getDocumentElement().getElementsByTagName(attributes):" + document.getElementsByTagName("attributes").item(0).getChildNodes().getLength());
+				*/
+				
+				/*
 				NodeList nl = document.getDocumentElement().getChildNodes();
 				Node attributesNode = nl.item(0);
+				*/
 				
+				NodeList attributesNodeList = document.getElementsByTagName("attributes");
+				if(attributesNodeList.getLength() == 0)
+					throw new SystemException("Faulty XML - fix it by hand and retry");
+				
+				Node attributesNode = attributesNodeList.item(0);
+				//Node attributesNode = nl.item(0);
+				StringBuffer test = new StringBuffer();
+				org.infoglue.cms.util.XMLHelper.serializeDom(attributesNode, test);
+				//System.out.println("\n\ntest:\n" + test);
+
 				boolean existed = false;
-				nl = attributesNode.getChildNodes();
+				NodeList nl = attributesNode.getChildNodes();
 				for(int i=0; i<nl.getLength(); i++)
 				{
 					Node n = nl.item(i);
 					if(n.getNodeName().equalsIgnoreCase(attributeName))
 					{
+						System.out.println("Found node with name:" + attributeName);
 						if(n.getFirstChild() != null && n.getFirstChild().getNodeValue() != null)
 						{
+							System.out.println("Yep");
 							n.getFirstChild().setNodeValue(attributeValue);
 							existed = true;
 							break;
 						}
 						else
 						{
+							System.out.println("Yep2");
 							CDATASection cdata = document.createCDATASection(attributeValue);
 							n.appendChild(cdata);
 							existed = true;
@@ -1664,6 +1659,7 @@ public class ContentVersionController extends BaseController
 				
 				if(existed == false)
 				{
+					System.out.println("attributeName:" + attributeName);
 					org.w3c.dom.Element attributeElement = document.createElement(attributeName);
 					attributesNode.appendChild(attributeElement);
 					CDATASection cdata = document.createCDATASection(attributeValue);

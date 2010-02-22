@@ -9,9 +9,7 @@
 	
 	<title>Menus</title>
 
-	<link type="text/css" href="script/jqueryplugins/ui/jquery-ui-1.7.2.full.redmond/css/redmond/jquery-ui-1.7.2.custom.css" rel="stylesheet" />	
-	<script type="text/javascript" src="script/jquery/jquery-1.3.2.min.js"></script>
-	<script type="text/javascript" src="script/jqueryplugins/ui/jquery-ui-1.7.2.full.redmond/js/jquery-ui-1.7.2.custom.min.js"></script>
+	#includeLatestJQuery()
 
 	<script type="text/javascript">
 	<!-- 
@@ -136,41 +134,29 @@
 			}
 		}
 		
-		var oldSelected;
+		//var oldSelected;
 		function htmlTreeItemClick(itemId, repoId, path)
 		{
 			// Call parent
 			if(parent.htmlTreeItemClick)
 				parent.htmlTreeItemClick(itemId, repoId, path);
-			//openUrlInWorkArea("ViewContent!V3.action?contentId=" + itemId + "&repositoryId=" + repoId, path);
-			setSelected(itemId);
+			//openUrlInWorkArea("ViewContent!V3.action?contentId=" + itemId + "&repositoryId=" + repoId, path, "$ui.getString("tool.common.contentTabLabelPrefix")");
+			//setSelected(itemId);
 		}
 
-		function openUrlInWorkArea(url, titel)
+		function openUrlInWorkArea(url, titel, tabLabelPrefix)
 		{
 			//alert("openUrlInWorkArea:" + url + " - " + titel);
 			if(parent.openUrlInWorkArea)
-				parent.openUrlInWorkArea(url, titel);
+				parent.openUrlInWorkArea(url, titel, tabLabelPrefix);
 		}
 		
 		function selectVersion(contentId, languageId, contentVersionId)
 		{
 			parent.parent.frames['main'].location.href="ViewContentVersion.action?contentId=" + contentId + "&languageId=" + languageId + "&contentVersionId=" + contentVersionId;
-			setSelected(contentVersionId);
+			//setSelected(contentVersionId);
 		}
-		
-		function setSelected(itemId)
-		{
-			// Graphical stuff
-			if (oldSelected != null)
-				oldSelected.className = "";
-			
-			var srcIdLink =	document.getElementById("link" + itemId);
-			oldSelected = srcIdLink;
-			if (srcIdLink != null)
-				srcIdLink.className = "selected";
-		}
-		
+
 		function markSelected(itemId)
 		{
 			var node = tree.getNodeWithMyId(itemId);
@@ -182,7 +168,7 @@
 		
 		function loaded()
 		{
-			setSelected("${select}");
+			//setSelected("${select}");
 			
 			path = webFXTreeHandler.cookies.getCookie(ig_expanded_nodes_cookie);
 			//alert("path:" + path);
@@ -307,20 +293,19 @@
 	<link rel="stylesheet" type="text/css" href="css/v3/infoglue.css" />
 	<link rel="stylesheet" type="text/css" href="css/skins/${theme}/menu.css" />
 
+	<link type="text/css" rel="stylesheet" href="script/xloadtree/xtree.css" />
 </head>
-<body class="generaltooledit" onload="parent.notifyIsLoaded();parent.notifyExp('${exp}');loaded();">
+<body class="generaltooledit" onload="if(parent.notifyIsLoaded)parent.notifyIsLoaded();if(parent.notifyExp)parent.notifyExp('${exp}');loaded();">
 
 	<!-- NEW DYNAMIC VERSION -->
-	<link type="text/css" rel="stylesheet" href="script/xloadtree/xtree.css" />
 	<script type="text/javascript">
-	
+	<!--	
 	#if($disableCustomIcons != "true")
 		#foreach($customContentTypeIcon in $customContentTypeIcons.entrySet())
 			webFXTreeConfig.contentTypeIcons["$customContentTypeIcon.key"] = "$customContentTypeIcon.value";
 		#end
 	#end
-	
-	
+		
 	//webFXTreeConfig.rootIcon		= "images/tree/contentRoot.gif"; // "script/xloadtree/images/xp/folder.png";
 	//webFXTreeConfig.openRootIcon	= "images/tree/contentRoot.gif"; // "script/xloadtree/images/xp/openfolder.png";
 	webFXTreeConfig.rootIcon		= "script/xloadtree/images/xp/folder.png"; // "script/xloadtree/images/xp/folder.png";
@@ -341,13 +326,13 @@
 	webFXTreeConfig.showRoot		= true;
 	webFXTreeConfig.loadingText		= "Loading content ...";
 	
-	#set($par = "$!parent")
-	#if( $par != "")
+	#set($par = "")
+	#if($parent && $parent != "")
 		#set($par = "&parent=${parent}")
 	#else
 		#set($par = "&parent=$rootNode.Id")
 	#end 
-	
+		
 	var tree = new WebFXLoadTree("$rootNode.Title", "SimpleContentXml.action?showLeafs=${showLeafs}&action=SimpleContentXml.action&createAction=true&repositoryId=$!{repositoryId}$par", "javascript:htmlTreeItemClick('$rootNode.Id','${repositoryId}','$formatter.escapeExtendedHTML($rootNode.Title)');");
 	tree.myId = "$rootNode.Id";
 	document.write(tree);
@@ -390,6 +375,7 @@
 	
 	function onTreeItemSelect(elem)
 	{
+		/*
 		var aid = elem + "-anchor";
 		if (oldSelected != null)
 			oldSelected.className = "";
@@ -401,7 +387,7 @@
 			srcIdLink.className = "selected";
 
 		// alert(srcIdLink.className);
-		
+		*/
 	}
 		
     $(document).click(function () { 
@@ -410,9 +396,8 @@
     	else if(top.closeContextMenu)
 			top.closeContextMenu();
    	});
-	
+	-->	
 	</script>	
-	<!-- END -->	
 
 </body>
 </html>

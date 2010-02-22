@@ -42,6 +42,11 @@ public class SetCharacterEncodingFilter implements Filter
 {
     public final static Logger logger = Logger.getLogger(SetCharacterEncodingFilter.class.getName());
 
+    /**
+     * The default character encoding to set for requests that pass through
+     * this filter.
+     */
+    public static String defaultEncoding = null;
 
     /**
      * The default character encoding to set for requests that pass through
@@ -154,7 +159,9 @@ public class SetCharacterEncodingFilter implements Filter
         	
             System.out.println("Defaulting to standard.");
         }
-        		
+        
+        defaultEncoding = this.encoding;
+        
         String value = filterConfig.getInitParameter("ignore");
         if (value == null)
             this.ignore = true;
@@ -191,6 +198,5 @@ public class SetCharacterEncodingFilter implements Filter
     	else
     		return (this.encoding);
     }
-
 
 }

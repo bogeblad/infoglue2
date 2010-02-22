@@ -23,13 +23,17 @@
 
 package org.infoglue.cms.controllers.kernel.impl.simple;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.exolab.castor.jdo.Database;
+import org.exolab.castor.jdo.OQLQuery;
+import org.exolab.castor.jdo.QueryResults;
 import org.infoglue.cms.entities.kernel.BaseEntityVO;
+import org.infoglue.cms.entities.management.AccessRightUser;
 import org.infoglue.cms.entities.management.InterceptionPoint;
 import org.infoglue.cms.entities.management.Interceptor;
 import org.infoglue.cms.entities.management.InterceptorVO;
@@ -38,6 +42,7 @@ import org.infoglue.cms.exception.Bug;
 import org.infoglue.cms.exception.ConstraintException;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.util.ConstraintExceptionBuffer;
+import org.infoglue.deliver.util.CacheController;
 
 /**
  * This class is a helper class for the use case handle Interceptor
@@ -73,6 +78,86 @@ public class InterceptorController extends BaseController
 		return getAllVOObjects(InterceptorImpl.class, "interceptorId");
 	}
 
+	public List getInterceptorsVOList(Integer interceptionPointId) throws SystemException, Bug
+	{
+		List interceptorVOList = null;
+		
+		Database db = CastorDatabaseService.getDatabase();
+
+		try 
+		{
+			beginTransaction(db);
+
+			interceptorVOList = getInterceptorsVOList(interceptionPointId, db);
+
+			commitTransaction(db);
+		} 
+		catch (Exception e) 
+		{
+			e.printStackTrace();
+			logger.info("An error occurred so we should not complete the transaction:" + e);
+			rollbackTransaction(db);
+			throw new SystemException(e.getMessage());
+		}
+		
+		return interceptorVOList;	
+	}
+
+	/**
+	 * Gets the interceptors for this interceptionPoint withing a transaction
+	 * 
+	 * @param interceptionPointId
+	 * @param db
+	 * @return
+	 * @throws SystemException
+	 * @throws Bug
+	 */
+	
+	public List getInterceptorsVOList(Integer interceptionPointId, Database db)  throws SystemException, Bug, Exception
+	{
+		String key = "" + interceptionPointId;
+		logger.info("key:" + key);
+		List cachedInterceptorVOList = (List)CacheController.getCachedObject("interceptorsCache", key);
+		if(cachedInterceptorVOList != null)
+		{
+			logger.info("There was an cached InterceptorVOList:" + cachedInterceptorVOList.size());
+			return cachedInterceptorVOList;
+		}
+		
+		//List<InterceptorVO> interceptorsVOList = getInterceptorVOList(interceptionPointId, db);
+		
+		InterceptionPoint interceptionPoint = InterceptionPointController.getController().getReadOnlyInterceptionPointWithId(interceptionPointId, db);
+		
+		Collection interceptors = interceptionPoint.getInterceptors();
+		
+		List interceptorsVOList = toVOList(interceptors);
+		
+		CacheController.cacheObject("interceptorsCache", key, interceptorsVOList);
+
+		return interceptorsVOList;		
+	}
+
+	
+	public List<InterceptorVO> getInterceptorVOList(Integer interceptionPointId, Database db) throws SystemException, Bug, Exception
+	{
+		System.out.println("interceptionPointId:" + interceptionPointId);
+		OQLQuery oql = db.getOQLQuery("SELECT i FROM org.infoglue.cms.entities.management.impl.simple.InterceptorImpl i WHERE i.interceptionPoints.interceptionPointId = $1 ORDER BY i.interceptorId");
+		oql.bind(interceptionPointId);
+		
+		List<InterceptorVO> result = new ArrayList<InterceptorVO>();
+		QueryResults results = oql.execute();
+		while (results.hasMore()) 
+		{
+			Interceptor interceptor = (Interceptor)results.next();
+			result.add(interceptor.getValueObject());
+		}
+
+		results.close();
+		oql.close();
+		
+		return result;
+	}
+	
 	public List getInterceptionPointVOList(Integer interceptorId) throws SystemException, Bug
 	{
 		List interceptionPointVOList = null;

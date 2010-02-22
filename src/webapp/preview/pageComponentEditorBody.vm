@@ -1,7 +1,7 @@
 <div id="emptySlotMenu" class="skin0">
 <div class="igmenuitems linkPublish" onclick="submitToPublish($siteNodeId, $contentId, $languageId, $repositoryId, '$originalFullURL');"><a href='#'>$submitToPublishHTML</a></div>
-<div class="igmenuitems linkNotify" onclick="openInlineDiv('$notifyUrl', 700, 750, true);"><a href='#'>$notifyHTML</a></div>
-<div class="igmenuitems linkTakePage" onclick="openInlineDiv('$pageSubscriptionUrl', 700, 750, true);"><a name='subscribePage'>$subscribeToPageHTML</a></div>
+<div class="igmenuitems linkNotify" onclick="openInlineDivImpl('$notifyUrl', 700, 750, true, true);"><a href='#'>$notifyHTML</a></div>
+<div class="igmenuitems linkTakePage" onclick="openInlineDivImpl('$pageSubscriptionUrl', 700, 750, true, true);"><a name='subscribePage'>$subscribeToPageHTML</a></div>
 <div class="igmenuitems linkAddComponent" onclick="insertComponent();"><a href='#'>$addComponentHTML</a></div>
 <div class="igmenuitems linkCreatePageTemplate" onclick="$saveTemplateUrl"><a href='#'>$savePageTemplateHTML</a></div>
 <hr id="emptySlotMenuTopSeparator" style="border:0px; border-top:1px solid #bbb; margin-top:4px;"/>

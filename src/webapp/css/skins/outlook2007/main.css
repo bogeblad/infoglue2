@@ -29,7 +29,7 @@
 #activeToolHeader h3
 {
 	font-family: Lucida Grande, Lucida Sans, Arial, sans-serif;
-	font-size: 12pt;
+	font-size: 14px;
 	font-weight: bold;
 	color: #15428b;
 }
@@ -41,18 +41,43 @@
 	margin: 0px;
 	padding: 0px;
 }
+#availableTools.minimized
+{
+	background-image:url(images/barBackground.gif);
+	background-repeat:repeat-x;
+	background-position: 0px 8px;
+}
 #availableTools h3
 {
 	font-family: Lucida Grande, Lucida Sans, Arial, sans-serif;
-	font-size: 10pt;
+	font-size: 12px;
 	font-weight: normal;
 	color: black;
+}
+#availableToolsSizeControlBar
+{
+	border-top: 1px solid #567db1; 
+	height: 7px; 
+	background-image: url(../../../images/v3/tinyBarBackground.png); 
+	background-repeat: repeat-x;
+}
+#availableToolsSizeControlBar.minimized
+{
+	border-top: 1px solid #567db1; 
+	border-bottom: 1px solid #567db1;
+	background-image: url(../../../images/v3/tinyBarBackground.png); 
+	background-repeat: repeat-x;
 }
 #availableTools ul li
 {
 	background-image:url(images/barBackground.gif);
 	background-repeat:repeat-x;
 	border-top: 1px solid #6593cf;
+}
+#availableTools ul li.minimized
+{
+	background-image: none;
+	border-top: 0px;
 }
 #availableTools .active
 {
@@ -61,7 +86,7 @@
 #availableTools ul li a
 {
 	font-family: Lucida Grande, Lucida Sans, Arial, sans-serif;
-	font-size: 8pt;
+	font-size: 11px;
 	font-weight: bold;
 	color: #204d89;
 }
@@ -85,7 +110,7 @@
 #structureRepositoriesDiv ul li a, #contentRepositoriesDiv ul li a
 {
 	font-family: Lucida Grande, Lucida Sans, Arial, sans-serif;
-	font-size: 8pt;
+	font-size: 11px;
 	font-weight: bold;
 	color: black;
 }
@@ -191,7 +216,7 @@
 {
 	background-image:url(images/gradBackground.gif);
 	background-repeat:repeat-x;
-	border-top: 1px solid white;
+	border-top: 1px solid transparent;
 	border-bottom: 1px solid #808280;
 }
 .ui-tabs .ui-tabs-nav 
@@ -200,7 +225,7 @@
 }
 .ui-tabs .ui-tabs-nav li a  
 {
-   	font-size:8pt;
+   	font-size:11px;
 }
 body.generaltooledit 
 {
@@ -229,7 +254,7 @@ body.generaltooledit
     background-repeat: repeat-y;
     border: 1px solid #6593cf;
     font-family: Tahoma,Arial,Helvetica,sans-serif;
-    font-size: 10pt;
+    font-size: 14px;
 }
 #contextMenuDiv ul li a
 {
@@ -277,7 +302,7 @@ body.generaltooledit
 #componentPaletteHeader h3
 {
 	font-family: Lucida Grande, Lucida Sans, Arial, sans-serif;
-	font-size: 8pt;
+	font-size: 11px;
 	font-weight: bold;
 	color: #15428b;
 }

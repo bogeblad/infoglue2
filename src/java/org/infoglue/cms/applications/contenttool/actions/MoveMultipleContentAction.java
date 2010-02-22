@@ -32,6 +32,7 @@ import java.util.Map;
 import org.dom4j.Document;
 import org.dom4j.Element;
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
+import org.infoglue.cms.applications.databeans.LinkBean;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentControllerProxy;
 import org.infoglue.cms.controllers.kernel.impl.simple.RepositoryController;
@@ -56,6 +57,10 @@ public class MoveMultipleContentAction extends InfoGlueAbstractAction
     private boolean errorsOccurred = false;
 	protected List repositories = null;
     
+   	private String userSessionKey;
+    private String originalAddress;
+    private String returnAddress;
+
     //Move params
     protected String qualifyerXML = null;
     private Integer newParentContentId;
@@ -147,10 +152,28 @@ public class MoveMultipleContentAction extends InfoGlueAbstractAction
 			ContentVO contentVO = ContentController.getContentController().getContentVOWithId(getContentId());
 	        this.qualifyers.add(contentVO);
         }
-        
+    	this.returnAddress = "ViewContent.action?contentId=" + this.contentVO.getId() + "&repositoryId=" + this.repositoryId;
+
         return "input";
     }
-    
+
+    public String doInputV3() throws Exception
+    {    	
+		this.repositories = RepositoryController.getController().getAuthorizedRepositoryVOList(this.getInfoGluePrincipal(), false);
+
+		if(this.qualifyerXML != null && !this.qualifyerXML.equals(""))
+        {
+            this.qualifyers = parseContentsFromXML(this.qualifyerXML);
+        }
+        else
+        {
+			ContentVO contentVO = ContentController.getContentController().getContentVOWithId(getContentId());
+	        this.qualifyers.add(contentVO);
+        }
+        
+        return "inputV3";
+    }
+
     public String doExecute() throws Exception
     {
         if(this.newParentContentId == null)
@@ -189,7 +212,81 @@ public class MoveMultipleContentAction extends InfoGlueAbstractAction
 		
 		this.topContentId = ContentController.getContentController().getRootContentVO(this.repositoryId, this.getInfoGluePrincipal().getName()).getContentId();
 		    
+    	this.returnAddress = "ViewContent.action?contentId=" + this.contentVO.getId() + "&repositoryId=" + this.repositoryId;
+
         return "success";
+    }
+
+    public String doV3() throws Exception
+    {
+        userSessionKey = "" + System.currentTimeMillis();
+
+        String moveContentInlineOperationDoneHeader = getLocalizedString(getLocale(), "tool.contenttool.moveContentsInlineOperationDoneHeader", contentVO.getName());
+		String moveContentInlineOperationBackToCurrentPageLinkText = getLocalizedString(getLocale(), "tool.contenttool.moveContentsInlineOperationBackToCurrentContentLinkText");
+		String moveContentInlineOperationBackToCurrentPageTitleText = getLocalizedString(getLocale(), "tool.contenttool.moveContentsInlineOperationBackToCurrentContentTitleText");
+
+	    setActionMessage(userSessionKey, moveContentInlineOperationDoneHeader);
+	    addActionLink(userSessionKey, new LinkBean("currentPageUrl", moveContentInlineOperationBackToCurrentPageLinkText, moveContentInlineOperationBackToCurrentPageTitleText, moveContentInlineOperationBackToCurrentPageTitleText, this.originalAddress, false, ""));
+        setActionExtraData(userSessionKey, "refreshToolbarAndMenu", "" + true);
+        setActionExtraData(userSessionKey, "repositoryId", "" + this.repositoryId);
+        setActionExtraData(userSessionKey, "contentId", "" + newParentContentId);
+        setActionExtraData(userSessionKey, "unrefreshedContentId", "" + parentContentId);
+        setActionExtraData(userSessionKey, "unrefreshedNodeId", "" + parentContentId);
+        setActionExtraData(userSessionKey, "changeTypeId", "" + this.changeTypeId);
+        System.out.println("newParentContentId:" + newParentContentId);
+        System.out.println("parentContentId(contentId):" + parentContentId);
+        System.out.println("changeTypeId:" + changeTypeId);
+        
+    	System.out.println("newParentContentId:" + newParentContentId);
+        if(this.newParentContentId == null)
+        {
+    		this.repositories = RepositoryController.getController().getAuthorizedRepositoryVOList(this.getInfoGluePrincipal(), false);
+            return "chooseDestinationV3";
+        }
+        
+        ceb.throwIfNotEmpty();
+    	
+        try
+		{
+        	System.out.println("this.qualifyerXML:" + this.qualifyerXML);
+            if(this.qualifyerXML != null && this.qualifyerXML.length() != 0)
+		    {
+		        Document document = new DOMBuilder().getDocument(this.qualifyerXML);
+				List contents = parseContentsFromXML(this.qualifyerXML);
+				Iterator i = contents.iterator();
+				while(i.hasNext())
+				{
+				    ContentVO contentVO = (ContentVO)i.next();
+				    try
+					{
+				        ContentControllerProxy.getController().acMoveContent(this.getInfoGluePrincipal(), contentVO, this.newParentContentId);
+					}
+					catch(Exception e)
+					{
+					    this.errorsOccurred = true;
+					}
+		    	}
+		    }
+		}
+		catch(Exception e)
+		{
+		    e.printStackTrace();
+		}
+		
+		this.topContentId = ContentController.getContentController().getRootContentVO(this.repositoryId, this.getInfoGluePrincipal().getName()).getContentId();
+		    
+        if(this.returnAddress != null && !this.returnAddress.equals(""))
+        {
+	        String arguments 	= "userSessionKey=" + userSessionKey + "&isAutomaticRedirect=false";
+	        String messageUrl 	= returnAddress + (returnAddress.indexOf("?") > -1 ? "&" : "?") + arguments;
+	        
+	        this.getResponse().sendRedirect(messageUrl);
+	        return NONE;
+        }
+        else
+        {
+        	return "successV3";
+        }
     }
 
     
@@ -236,7 +333,7 @@ public class MoveMultipleContentAction extends InfoGlueAbstractAction
 	
 	public String getReturnAddress()
 	{
-		return "ViewContent.action?contentId=" + this.contentVO.getId() + "&repositoryId=" + this.repositoryId;
+		return this.returnAddress;
 	}    
 	
     public String getQualifyerXML()
@@ -278,4 +375,30 @@ public class MoveMultipleContentAction extends InfoGlueAbstractAction
     {
         return repositories;
     }
+    
+	public String getUserSessionKey()
+	{
+		return userSessionKey;
+	}
+
+	public void setUserSessionKey(String userSessionKey)
+	{
+		this.userSessionKey = userSessionKey;
+	}
+	
+    public String getOriginalAddress()
+	{
+		return originalAddress;
+	}
+
+	public void setOriginalAddress(String originalAddress)
+	{
+		this.originalAddress = originalAddress;
+	}
+
+	public void setReturnAddress(String returnAddress)
+	{
+		this.returnAddress = returnAddress;
+	}
+
 }

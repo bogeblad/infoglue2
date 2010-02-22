@@ -750,7 +750,7 @@ public class ViewDeploymentSynchronizeServersAction extends InfoGlueAbstractActi
 		    		while(remoteContentVOListIterator.hasNext())
 		    		{
 		    			ContentVO remoteContentVO = (ContentVO)remoteContentVOListIterator.next();
-		    			if(remoteContentVO.getId().equals(new Integer(missingRemoteContentId)))
+		    			if(remoteContentVO.getId().toString().equals(missingRemoteContentId))
 		    			{
 		    				logger.info("Creating local copy of " + remoteContentVO.getName() + " - " + remoteContentVO.getFullPath());
 		    				
@@ -853,7 +853,7 @@ public class ViewDeploymentSynchronizeServersAction extends InfoGlueAbstractActi
 		        	{
 		        		ContentVO remoteContentVO = (ContentVO)remoteContentVOListIterator.next();
 		        		//logger.info("remoteContentVO:" + remoteContentVO.getName());
-		        		if(remoteContentVO.getId().equals(deviatingRemoteContentId))
+		        		if(remoteContentVO.getId().toString().equals(deviatingRemoteContentId))
 		        		{
 		        			String[] versionValues = remoteContentVO.getVersions();
 		        			if(versionValues != null && versionValues.length > 0)
