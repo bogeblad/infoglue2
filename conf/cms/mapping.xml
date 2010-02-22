@@ -955,14 +955,6 @@
     <field name="parentContentId" type="java.lang.Integer">
       <sql name="parentContentId" type="integer"/>
     </field>
-    <field name="contentTypeDefinition" type="org.infoglue.cms.entities.management.impl.simple.ContentTypeDefinitionImpl">
-      <sql name="contentTypeDefinitionId"/>
-    </field>
-    <!--
-    <field name="repository" type="org.infoglue.cms.entities.management.impl.simple.RepositoryImpl">
-      <sql name="repositoryId"/>
-    </field>
-    -->
   </class>
 
 <!--  Mapping for SmallishContent  -->
@@ -1039,7 +1031,7 @@
     <field name="creator" type="java.lang.String">
       <sql name="creator" type="varchar" dirty="check" />
     </field>
-    <field name="contentTypeDefinition" type="org.infoglue.cms.entities.management.impl.simple.ContentTypeDefinitionImpl">
+    <field name="contentTypeDefinition" type="org.infoglue.cms.entities.management.impl.simple.ContentTypeDefinitionImpl" lazy="true">
       <sql name="contentTypeDefinitionId"/>
     </field>
     <field name="contentTypeDefinitionId" type="java.lang.Integer">
