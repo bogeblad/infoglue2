@@ -23,16 +23,18 @@
 
 package org.infoglue.deliver.util.ioqueue;
 
+import org.apache.log4j.Logger;
 import org.infoglue.deliver.util.CacheController;
 
 public class CachingIOResultHandler implements IOResultHandler
 {
+    public final static Logger logger = Logger.getLogger(CachingIOResultHandler.class.getName());
+
 	private String cacheName;
 	private String cacheKey;
 	private String fileCacheCharEncoding;
 	private Boolean useMemoryCache;
 	private Boolean useFileCacheFallback;
-	private Object value;
 
 	public String getCacheName()
 	{
@@ -77,7 +79,13 @@ public class CachingIOResultHandler implements IOResultHandler
 
 	public void handleResult(String resultData)
 	{	
-		CacheController.cacheObjectInAdvancedCache(cacheName, cacheKey, resultData, null, false, useFileCacheFallback, useMemoryCache, fileCacheCharEncoding);
+		if(resultData.length() < 500000)
+			CacheController.cacheObjectInAdvancedCache(cacheName, cacheKey, resultData, null, false, useFileCacheFallback, useMemoryCache, fileCacheCharEncoding);
+		else
+		{
+			logger.warn("Result data was so large it is not a good idea to store it in memory cache.. using file cache instead. Size was:" + resultData.length() + " for " + cacheKey);
+			CacheController.cacheObjectInAdvancedCache(cacheName, cacheKey, resultData, null, false, true, false, fileCacheCharEncoding);
+		}
 	}
 
 }
