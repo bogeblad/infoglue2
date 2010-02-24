@@ -1,4 +1,4 @@
-<!-- $Id: actions.xml,v 1.93 2010/02/22 08:15:00 mattias Exp $ -->
+<!-- $Id: actions.xml,v 1.94 2010/02/24 07:47:48 mattias Exp $ -->
 <actions>
 
 	<!-- MySettings -->
@@ -1064,10 +1064,12 @@
 	</action>
 	<action name="org.infoglue.cms.applications.contenttool.actions.ViewContentRelationEditorAction" alias="ViewContentRelationEditor">
 		<view name="success">/cms/contenttool/viewContentRelationEditor.vm</view>
+		<view name="successV3">/cms/contenttool/v3/viewContentRelationEditor.vm</view>
 		<view name="error">/cms/contenttool/error.vm</view>
 	</action>
 	<action name="org.infoglue.cms.applications.contenttool.actions.ViewStructureRelationEditorAction" alias="ViewStructureRelationEditor">
 		<view name="success">/cms/contenttool/viewStructureRelationEditor.vm</view>
+		<view name="successV3">/cms/contenttool/v3/viewStructureRelationEditor.vm</view>
 		<view name="error">/cms/contenttool/error.vm</view>
 	</action>
 	<action name="org.infoglue.cms.applications.contenttool.actions.ViewComponentPropertiesEditorAction" alias="ViewComponentPropertiesEditor">
@@ -1222,6 +1224,8 @@
 	<action name="org.infoglue.cms.applications.structuretool.actions.ViewSiteNodeAction" alias="ViewSiteNode">
 		<view name="success">/cms/structuretool/viewSiteNode.vm</view>
 		<view name="successV3">/cms/structuretool/v3/viewSiteNode.vm</view>
+		<view name="inputSiteNodeTypeDefinition">ViewSiteNode!chooseSiteNodeTypeDefinition.action</view>
+		<view name="chooseSiteNodeTypeDefinition">/cms/structuretool/v3/chooseSiteNodeTypeDefinition.vm</view>
 		<view name="successRefreshAndRedirect">/cms/structuretool/refreshTreeAndRedirect.vm</view>
 		<!--<view name="viewVersion">${dest}</view>-->
 		<view name="blank">/cms/structuretool/blank.vm</view>
@@ -1234,8 +1238,9 @@
 		<view name="success">ViewSiteNode.action?stay=true</view>
 		<view name="successV3">ViewSiteNode!V3.action?stay=true</view>
 		<view name="saveAndExit">ViewListSiteNode.action</view>
-		<view name="saveAndExitV3">ViewSiteNode.action</view>
+		<view name="saveAndExitV3">ViewSiteNode!V3.action</view>
 		<view name="saveAndExitV3Inline">ViewInlineOperationMessages.action?automaticClose=true&amp;actionUrl=${actionUrl}&amp;target=structure&amp;targetTitle=${targetTitle}</view>
+		<view name="successChooseSiteNodeTypeDefinition">ViewSiteNode!V3.action?siteNodeId=${siteNodeId}</view>
 		<view name="error">/cms/structuretool/error.vm</view>
 		<view name="accessDenied">/cms/structuretool/viewConstraintException.vm</view>
 	</action>

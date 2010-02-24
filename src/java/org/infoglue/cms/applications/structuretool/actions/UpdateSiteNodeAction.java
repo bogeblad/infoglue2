@@ -188,6 +188,13 @@ public class UpdateSiteNodeAction extends ViewSiteNodeAction //WebworkAbstractAc
 		return "saveAndExitV3Inline";
 	}
 
+    public String doUpdateSiteNodeTypeDefinition() throws Exception
+    {
+    	SiteNodeController.getController().updateSiteNodeTypeDefinition(getSiteNodeId(), this.siteNodeTypeDefinitionId);
+    	
+    	return "successChooseSiteNodeTypeDefinition";
+    }
+
 	public void setSiteNodeId(Integer siteNodeId)
 	{
 		this.siteNodeVO.setSiteNodeId(siteNodeId);	

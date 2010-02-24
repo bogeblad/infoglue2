@@ -23,7 +23,12 @@
 
 package org.infoglue.cms.applications.contenttool.actions;
 
+import net.sf.hibernate.util.GetGeneratedKeysHelper;
+
+import org.apache.log4j.Logger;
+import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentController;
+import org.infoglue.cms.util.CmsPropertyHandler;
 
 
 /**
@@ -35,16 +40,40 @@ public class ViewContentRelationEditorAction extends ViewRelationEditorAction
 {
 	private static final long serialVersionUID = 1L;
 	
+    private final static Logger logger = Logger.getLogger(ViewContentRelationEditorAction.class.getName());
+
 	/**
 	 * The default constructor. It sets the parameters needed for the interaction.
 	 */
 
     public ViewContentRelationEditorAction()
     {
-    	this.currentAction 				= "ViewContentRelationEditor.action";
-    	this.changeRepositoryAction 	= "ViewContentRelationEditor!changeRepository.action";
-    	this.currentEntity 				= "Content";
-    	this.currentEntityIdentifyer 	= "contentId";
+    	String preferredGUI = "standard";
+    	try
+    	{
+	    	System.out.println("userName:" + getUserName());
+			preferredGUI = CmsPropertyHandler.getDefaultGUI(getUserName());
+			System.out.println("preferredGUI:" + preferredGUI);
+    	}
+    	catch (Exception e) 
+    	{
+    		logger.error("How:" + e.getMessage(), e);
+		}
+    	
+		if(preferredGUI.equalsIgnoreCase("classic"))
+		{
+			this.currentAction 				= "ViewContentRelationEditor.action";
+	    	this.changeRepositoryAction 	= "ViewContentRelationEditor!changeRepository.action";
+	    	this.currentEntity 				= "Content";
+	    	this.currentEntityIdentifyer 	= "contentId";
+		}
+		else
+		{
+			this.currentAction 				= "ViewContentRelationEditor!V3.action";
+	    	this.changeRepositoryAction 	= "ViewContentRelationEditor!changeRepositoryV3.action";
+	    	this.currentEntity 				= "Content";
+	    	this.currentEntityIdentifyer 	= "contentId";
+		}
     }
     
 	/**

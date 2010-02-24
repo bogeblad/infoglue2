@@ -1967,5 +1967,34 @@ public class SiteNodeController extends BaseController
 
 		db.remove(siteNodeVersion);
 	}
+
+	public void updateSiteNodeTypeDefinition(Integer siteNodeId, Integer siteNodeTypeDefinitionId) throws ConstraintException, SystemException, Exception
+	{
+		Database db = CastorDatabaseService.getDatabase();
+    	
+        beginTransaction(db);
+
+        try
+        {
+        	SiteNode siteNode = getSiteNodeWithId(siteNodeId, db);
+        	SiteNodeTypeDefinition sntd = SiteNodeTypeDefinitionController.getController().getSiteNodeTypeDefinitionWithId(siteNodeTypeDefinitionId, db);
+        	if(siteNode != null && sntd != null)
+        		siteNode.setSiteNodeTypeDefinition((SiteNodeTypeDefinitionImpl)sntd);
+        	
+        	commitTransaction(db);
+
+			Thread.sleep(1000);
+        }
+        catch(Exception e)
+        {
+            logger.error("An error occurred so we should not completes the transaction:" + e, e);
+            rollbackTransaction(db);
+            throw new SystemException(e.getMessage());
+        }
+        finally
+        {
+        	closeDatabase(db);
+        }
+	}
 }
  

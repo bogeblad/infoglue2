@@ -68,28 +68,6 @@ public abstract class ViewRelationEditorAction extends InfoGlueAbstractAction
 	protected String currentEntity 				= null;
 	protected String currentEntityIdentifyer	= null;
    
-    /*
-	public void setContentVersionId(Integer contentVersionId)
-	{
-		this.contentVersionId = contentVersionId;
-	}
-
-	public Integer getContentVersionId()
-	{
-		return this.contentVersionId;
-	}
-
-	public String getContentVersionAttributeName()
-	{
-		return contentVersionAttributeName;
-	}
-
-	public void setContentVersionAttributeName(String contentVersionAttributeName)
-	{
-		this.contentVersionAttributeName = contentVersionAttributeName;
-	}
-	*/
-
 	public void setEntityId(Integer entityId)
 	{
 		this.entityId = entityId;
@@ -261,7 +239,25 @@ public abstract class ViewRelationEditorAction extends InfoGlueAbstractAction
 
 		return "success";
 	}
+
+	/**
+	 * This is the default method which just initializes the view.
+	 */     
+
+	public String doV3() throws Exception
+	{
+		initialize();
+
+		return "successV3";
+	}
     
+	public String doChangeRepositoryV3() throws Exception
+	{
+		initialize();
+
+		return "successV3";
+	}
+
 	/**
 	 * Updates the qualifyer in the normal content version stucture.
 	 */

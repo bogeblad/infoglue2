@@ -237,6 +237,9 @@ public class ToolbarController
 			if(toolbarKey.equalsIgnoreCase("tool.structuretool.siteNodeHistory.header"))
 				return getSiteNodeHistoryFooterButtons(toolbarKey, principal, locale, request, disableCloseButton);
 			
+			if(toolbarKey.equalsIgnoreCase("tool.structuretool.siteNodeTypeDefinitionMissingHeader"))
+				return getCommonFooterSaveOrCloseButton(toolbarKey, principal, locale, request, disableCloseButton);
+			
 			if(toolbarKey.equalsIgnoreCase("tool.structuretool.createSiteNodeHeader"))
 				return getCreateSiteNodeFooterButtons(toolbarKey, principal, locale, request, disableCloseButton);
 			

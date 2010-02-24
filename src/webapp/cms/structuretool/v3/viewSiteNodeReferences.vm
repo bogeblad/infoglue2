@@ -233,9 +233,9 @@
 								#end
 								<tr>
 									<td>
-										<a href="ViewSiteNode.action?siteNodeId=$referencingEntity.id" target="_blank">$this.getSiteNodePath($referencingEntity.id)</a>
+										<a href="ViewSiteNode!V3.action?siteNodeId=$referencingEntity.id" target="_blank">$this.getSiteNodePath($referencingEntity.id)</a>
 					 				</td>
-									<td><a href="ViewSiteNode.action?siteNodeId=$referencingEntity.id" target="_blank">$ui.getString("tool.common.edit.label")</a></td>
+									<td><a href="ViewSiteNode!V3.action?siteNodeId=$referencingEntity.id" target="_blank">$ui.getString("tool.common.edit.label")</a></td>
 								</tr>	
 					
 							#end

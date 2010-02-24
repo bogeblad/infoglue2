@@ -56,12 +56,7 @@
 
 		function htmlTreeItemClick(itemId, repoId, path)
 		{
-			//alert("htmlTreeItemClick:" + itemId + repoId);
-
-			openUrlInWorkArea("ViewSiteNode.action?siteNodeId=" + itemId + "&repositoryId=" + repoId, path);
-			//setTimeout(function() { openUrlInWorkArea("ViewSiteNode.action?siteNodeId=" + itemId + "&repositoryId=" + repoId, path); }, 10);
-			//alert("after openUrlInWorkArea:" + itemId + repoId);
-			
+			openUrlInWorkArea("ViewSiteNode!V3.action?siteNodeId=" + itemId + "&repositoryId=" + repoId, path);
 		}
 		
 		function openUrlInWorkArea(url, titel)
@@ -74,7 +69,7 @@
 		function loadMainArea(siteNodeId, repositoryId, path)
 		{
 		    //alert("siteNodeId:" + siteNodeId);
-		    parent.frames[3].location.href = "$this.getCMSBaseUrl()/ViewSiteNode.action?siteNodeId=" + siteNodeId + "&repositoryId=" + repositoryId;
+		    parent.frames[3].location.href = "$this.getCMSBaseUrl()/ViewSiteNode!V3.action?siteNodeId=" + siteNodeId + "&repositoryId=" + repositoryId;
 		}
 	    
 	    function refreshNode(nodeId, changeTypeId, addedNodeId)

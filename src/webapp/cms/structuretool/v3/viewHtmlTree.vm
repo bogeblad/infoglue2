@@ -18,12 +18,8 @@
 		var oldSelected;
 		function htmlTreeItemClick(itemId, repoId, path)
 		{
-			//alert("htmlTreeItemClick:" + itemId + " - " + repoId + " - " + path);
-			// Call parent
 			if(parent.htmlTreeItemClick)
 				parent.htmlTreeItemClick(itemId, repoId, path);
-			//openUrlInWorkArea("ViewSiteNode.action?siteNodeId=" + itemId + "&repositoryId=" + repoId, path, "$ui.getString("tool.common.pageTabLabelPrefix")");
-			//setSelected(itemId);
 		}
 
 		function openUrlInWorkArea(url, titel)

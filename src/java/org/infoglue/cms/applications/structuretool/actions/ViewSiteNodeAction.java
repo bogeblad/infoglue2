@@ -71,6 +71,8 @@ import org.infoglue.cms.exception.ConstraintException;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.util.CmsPropertyHandler;
 
+import webwork.action.Action;
+
 import com.opensymphony.module.propertyset.PropertySet;
 import com.opensymphony.module.propertyset.PropertySetManager;
 
@@ -97,7 +99,7 @@ public class ViewSiteNodeAction extends InfoGlueAbstractAction
 	private List disabledLanguages 			= new ArrayList();
 	private List enabledLanguages 			= new ArrayList();
 	private List referencingBeanList 		= new ArrayList();
-
+	
 	private SiteNodeVO siteNodeVO;
 	private SiteNodeVersionVO siteNodeVersionVO;
 	
@@ -290,7 +292,7 @@ public class ViewSiteNodeAction extends InfoGlueAbstractAction
 		}
 		catch(Exception e)
 		{
-		    e.printStackTrace();
+		    logger.error("Error initializing page cover:" + e.getMessage(), e);
 		}
 		
 		this.availableLanguages = LanguageController.getController().getLanguageVOList(this.repositoryId, db);
@@ -568,9 +570,14 @@ public class ViewSiteNodeAction extends InfoGlueAbstractAction
 		        }
 		        else
 		        {
+		        	System.out.println("Showing cover....");
 		            this.initializeSiteNodeCover(getSiteNodeId(), db);
+		        	System.out.println("After init in cover....");
 		            
-	            	result = "successV3";
+		        	if(this.siteNodeVO.getSiteNodeTypeDefinitionId() == null)
+		        		result = "inputSiteNodeTypeDefinition";
+		        	else
+		        		result = "successV3";
 		        }
 			}
 			else
@@ -582,6 +589,7 @@ public class ViewSiteNodeAction extends InfoGlueAbstractAction
 	    }
 		catch(ConstraintException ce)
 		{
+	    	System.out.println("ConstraintException:" + ce);
 			ce.printStackTrace();
 			logger.info("An error occurred so we should not complete the transaction:" + ce, ce);
 			rollbackTransaction(db);
@@ -593,8 +601,12 @@ public class ViewSiteNodeAction extends InfoGlueAbstractAction
 			rollbackTransaction(db);
 			throw new SystemException(e.getMessage());
 		}
-
-    	System.out.println("result:" + result);
+		catch (Throwable e) 
+		{
+	    	System.out.println("Throwable:" + e);
+		}
+    	
+		System.out.println("result:" + result);
 
 		return result;
     }
@@ -667,10 +679,16 @@ public class ViewSiteNodeAction extends InfoGlueAbstractAction
         
     public String doCommentVersion() throws Exception
     { 
-    	logger.info("Gonna show the comment-view");
         return "commentVersion";
     }
-        	
+
+    public String doChooseSiteNodeTypeDefinition() throws Exception
+    { 
+		this.siteNodeVO = SiteNodeController.getController().getSiteNodeVOWithId(getSiteNodeId());
+		
+        return "chooseSiteNodeTypeDefinition";
+    }
+    
     public java.lang.Integer getSiteNodeId()
     {
         return this.siteNodeVO.getSiteNodeId();
@@ -864,6 +882,7 @@ public class ViewSiteNodeAction extends InfoGlueAbstractAction
 	{
 		this.siteNodeVersionVO.setSiteNodeVersionId(siteNodeVersionId);
 	}	
+
 
 	public void setVersionComment(String versionComment)
 	{
