@@ -344,12 +344,10 @@ public class CacheController extends Thread
 		    		cacheCapacity = "3000";
 				if(cacheName != null && cacheName.equalsIgnoreCase("componentEditorVersionIdCache"))
 		    		cacheCapacity = "3000";
-				//if(cacheName != null && cacheName.equalsIgnoreCase("componentPropertyVersionIdCache"))
-		    	//	cacheCapacity = "40000";
 				if(cacheName != null && cacheName.equalsIgnoreCase("contentVersionIdCache"))
 		    		cacheCapacity = "40000";
 				if(cacheName != null && cacheName.equalsIgnoreCase("contentVersionCache"))
-		    		cacheCapacity = "20000";
+		    		cacheCapacity = "30000";
 				if(cacheName != null && cacheName.equalsIgnoreCase("pageComponentsCache"))
 		    		cacheCapacity = "10000";
 				if(cacheName != null && cacheName.equalsIgnoreCase("boundContentCache"))
@@ -403,11 +401,19 @@ public class CacheController extends Thread
 			//if(cacheName.startsWith("contentAttribute")/* || cacheName.startsWith("contentVersionIdCache")*/)
 			//	useGroups = false;
 			
+			//Kanske tillbaka om minnet sticker
 			if(cacheName.startsWith("componentPropertyCache") || cacheName.startsWith("componentPropertyVersionIdCache"))
+			{				
+				//logger.error("Skipping useGroups on " + cacheName + ". Groups was:" + groups.length + " for " + key);
 				useGroups = false;
-
+			}
+			
 			if(cacheName.startsWith("pageCache"))
-				useGroups = false;
+			{
+				//logger.error("Skipping useGroups on pageCache. Groups was:" + groups.length + " for " + key);
+				useGroups = false;				
+			}
+			
 
 			//if(useGroups)
 			//	System.out.println("useGroups:" + useGroups + " for " + cacheName);
@@ -960,7 +966,7 @@ public class CacheController extends Thread
 					if(cacheName.startsWith("contentVersionIdCache") && (entity.indexOf("Content") > -1 || entity.indexOf("AccessRight") > 0 || entity.indexOf("SystemUser") > 0 || entity.indexOf("Role") > 0  || entity.indexOf("Group") > 0))
 					{	
 						clear = true;
-						//selectiveCacheUpdate = true;
+						selectiveCacheUpdate = true;
 						//clearOnContentType = true;
 					}
 					if(cacheName.equalsIgnoreCase("referencingPagesCache") && (entity.indexOf("ContentVersion") > -1 || entity.indexOf("Qualifyer") > 0))
@@ -978,12 +984,12 @@ public class CacheController extends Thread
 					if(cacheName.startsWith("pageCache") && entity.indexOf("Registry") == -1)
 					{	
 						clear = true;
-						selectiveCacheUpdate = true;
+						//selectiveCacheUpdate = true;
 					}
 					if(cacheName.startsWith("pageCacheExtra") && entity.indexOf("Registry") == -1)
 					{	
 						clear = true;
-						selectiveCacheUpdate = true;
+						//selectiveCacheUpdate = true;
 					}
 					if(cacheName.equalsIgnoreCase("componentCache") && entity.indexOf("Registry") == -1)
 					{	
