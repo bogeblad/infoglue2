@@ -89,6 +89,9 @@ public class MailServiceFactory
 		if(CmsPropertyHandler.getMailSmtpPassword() != null)
 			properties.setProperty("mail.smtp.password", CmsPropertyHandler.getMailSmtpPassword());
 
+		properties.put("mail.smtp.connectiontimeout","10000");
+		properties.put("mail.smtp.timeout","10000");
+
 		Properties props = new Properties();
 
 	  	boolean needsAuthentication = false;
