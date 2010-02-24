@@ -1083,7 +1083,7 @@ public class CmsPropertyHandler
 			{
 				logger.warn("Error parsing useHashCodeInCaches:" + e.getMessage());
 			}
-			System.out.println("Slow query for newUseHashCodeInCaches:" + newUseHashCodeInCaches);
+			logger.warn("Slow query for newUseHashCodeInCaches:" + newUseHashCodeInCaches);
 			useHashCodeInCaches = newUseHashCodeInCaches;
 		}
 		
@@ -1102,13 +1102,13 @@ public class CmsPropertyHandler
 			boolean newUseSynchronizationOnCaches = false;
 			try
 			{
-				newUseSynchronizationOnCaches = Boolean.parseBoolean(getServerNodeProperty("useSynchronizationOnCaches", true, "true", true));
+				newUseSynchronizationOnCaches = Boolean.parseBoolean(getServerNodeProperty("useSynchronizationOnCaches", true, "false", true));
 			}
 			catch(Exception e)
 			{
 				logger.warn("Error parsing useSynchronizationOnCaches:" + e.getMessage());
 			}
-			System.out.println("Slow query for newUseSynchronizationOnCaches:" + newUseSynchronizationOnCaches);
+			logger.warn("Slow query for newUseSynchronizationOnCaches:" + newUseSynchronizationOnCaches);
 			useSynchronizationOnCaches = newUseSynchronizationOnCaches;
 		}
 
