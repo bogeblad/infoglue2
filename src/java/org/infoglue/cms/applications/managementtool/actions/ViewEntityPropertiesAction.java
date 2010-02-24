@@ -239,6 +239,7 @@ public abstract class ViewEntityPropertiesAction extends InfoGlueAbstractAction
 					sb.insert(0, siteNodeVO.getName() + "/");
 				}
 			}
+			sb.deleteCharAt(sb.length() -1);
 		}
 		catch(Exception e)
 		{

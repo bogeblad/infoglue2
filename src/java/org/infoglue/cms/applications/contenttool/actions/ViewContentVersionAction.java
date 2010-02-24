@@ -175,11 +175,13 @@ public class ViewContentVersionAction extends InfoGlueAbstractAction
 					sb.insert(0, siteNodeVO.getName() + "/");
 				}
 			}
+			sb.deleteCharAt(sb.length() -1);
 		}
 		catch(Exception e)
 		{
-			e.printStackTrace();
+			logger.error("Problem getting qualifyers:" + e.getMessage(), e);
 		}
+		
 		return sb.toString();
 	}
 

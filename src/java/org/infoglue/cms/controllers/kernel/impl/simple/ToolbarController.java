@@ -222,6 +222,10 @@ public class ToolbarController
 			if(toolbarKey.equalsIgnoreCase("tool.contenttool.contentVersionHistory.label"))
 				return getContentHistoryFooterButtons(toolbarKey, principal, locale, request, disableCloseButton);
 			
+			if(toolbarKey.equalsIgnoreCase("tool.structuretool.chooseRelatedContentsLabel"))
+				return getContentRelationFooterButtons(toolbarKey, principal, locale, request, disableCloseButton);
+			
+			
 			if(toolbarKey.equalsIgnoreCase("tool.contenttool.contentVersionStandaloneHeader"))
 				return getContentVersionFooterButtons(toolbarKey, principal, locale, request, disableCloseButton);
 
@@ -1070,8 +1074,11 @@ public class ToolbarController
 		    //buttons.add(new ImageButton(this.getCMSBaseUrl() + "/Confirm.action?header=tool.structuretool.deleteSiteNode.header&yesDestination=" + URLEncoder.encode(URLEncoder.encode("DeleteSiteNode.action?siteNodeId=" + this.siteNodeId + "&repositoryId=" + this.repositoryId + "&changeTypeId=4", "UTF-8"), "UTF-8") + "&noDestination=" + URLEncoder.encode(URLEncoder.encode("ViewSiteNode.action?title=SiteNode&siteNodeId=" + this.siteNodeId + "&repositoryId=" + this.repositoryId, "UTF-8"), "UTF-8") + "&message=tool.structuretool.deleteSiteNode.message", getLocalizedString(getSession().getLocale(), "images.structuretool.buttons.deleteSiteNode"), "Delete SiteNode"));
 		//}
 			
-		buttons.add(StructureToolbarController.getPageDetailButtons(siteNodeVO.getRepositoryId(), new Integer(siteNodeId), locale, principal));
-			
+		ToolbarButton pageDetailButton = StructureToolbarController.getPageDetailButtons(siteNodeVO.getRepositoryId(), new Integer(siteNodeId), locale, principal);
+		ToolbarButton pageDetailSimpleButton = StructureToolbarController.getPageDetailSimpleButtons(siteNodeVO.getRepositoryId(), new Integer(siteNodeId), locale, principal);
+		pageDetailButton.getSubButtons().add(pageDetailSimpleButton);
+		buttons.add(pageDetailButton);
+		
 		//buttons.add(StructureToolbarController.getCoverButtons(siteNodeVO.getRepositoryId(), new Integer(siteNodeId), locale, principal));
 		/*
 		buttons.add(new ToolbarButton("",
@@ -1189,6 +1196,40 @@ public class ToolbarController
 		buttons.add(getCompareButton(toolbarKey, principal, locale, request, disableCloseButton));
 				
 		return buttons;
+	}
+
+	private List<ToolbarButton> getContentRelationFooterButtons(String toolbarKey, InfoGluePrincipal principal, Locale locale, HttpServletRequest request, boolean disableCloseButton) throws Exception
+	{
+		List<ToolbarButton> buttons = new ArrayList<ToolbarButton>();
+
+		buttons.add(new ToolbarButton("",
+				  getLocalizedString(locale, "tool.common.addButton.label"), 
+				  getLocalizedString(locale, "tool.common.addButton.label"),
+				  "add();",
+				  "images/v3/addIcon.png",
+				  "left",
+				  "add",
+				  true));
+
+		buttons.add(new ToolbarButton("",
+				  getLocalizedString(locale, "tool.common.saveButton.label"), 
+				  getLocalizedString(locale, "tool.common.saveButton.label"),
+				  "save();",
+				  "images/v3/saveBackground.gif",
+				  "left",
+				  "save",
+				  true));
+
+		buttons.add(new ToolbarButton("",
+				  getLocalizedString(locale, "tool.common.closeWindowButton.label"), 
+				  getLocalizedString(locale, "tool.common.closeWindowButton.label"),
+				  "if(parent && parent.closeInlineDiv) parent.closeInlineDiv(); else if(parent && parent.closeDialog) parent.closeDialog(); else window.close();",
+				  "images/v3/closeIcon.gif",
+				  "left",
+				  "close",
+				  true));
+				
+		return buttons;		
 	}
 
 	private ToolbarButton getCompareButton(String toolbarKey, InfoGluePrincipal principal, Locale locale, HttpServletRequest request, boolean disableCloseButton) throws Exception

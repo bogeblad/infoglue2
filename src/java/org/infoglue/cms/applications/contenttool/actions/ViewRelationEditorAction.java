@@ -272,6 +272,19 @@ public abstract class ViewRelationEditorAction extends InfoGlueAbstractAction
 	}
 	
 	/**
+	 * Updates the qualifyer in the normal content version stucture.
+	 */
+
+	public String doUpdateQualifyerV3() throws Exception
+	{
+		updateAttributeValue();
+		
+		initialize();
+		
+		return "successV3";
+	}
+
+	/**
 	 * Updates the qualifyer in the EntityProperties stucture.
 	 */
 	public String doUpdateQualifyerInEntityProperties() throws Exception
@@ -287,7 +300,24 @@ public abstract class ViewRelationEditorAction extends InfoGlueAbstractAction
 	
 		return "success";
 	}
-		
+	
+	/**
+	 * Updates the qualifyer in the EntityProperties stucture.
+	 */
+	public String doUpdateQualifyerInEntityPropertiesV3() throws Exception
+	{	    
+	    if(this.entityName.equalsIgnoreCase(UserProperties.class.getName()))
+	        UserPropertiesController.getController().updateAttributeValue(getEntityId(), getAttributeName(), this.qualifyerXML);		
+	    else if(this.entityName.equalsIgnoreCase(RoleProperties.class.getName()))
+	        RolePropertiesController.getController().updateAttributeValue(getEntityId(), getAttributeName(), this.qualifyerXML);		
+	    else if(this.entityName.equalsIgnoreCase(GroupProperties.class.getName()))
+	        GroupPropertiesController.getController().updateAttributeValue(getEntityId(), getAttributeName(), this.qualifyerXML);		
+	
+		initialize();
+	
+		return "successV3";
+	}
+
 	
 	private List parseQualifyersFromXML(String qualifyerXML)
 	{

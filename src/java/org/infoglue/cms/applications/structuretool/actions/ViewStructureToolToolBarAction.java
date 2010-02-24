@@ -444,20 +444,6 @@ public class ViewStructureToolToolBarAction extends InfoGlueAbstractAction
 			LanguageVO masterLanguageVO = LanguageController.getController().getMasterLanguage(this.repositoryId);
 			Integer languageId = masterLanguageVO.getLanguageId();
 
-			/*
-			if(serviceBindingId != null)
-			{
-				List boundContents = ContentController.getBoundContents(serviceBindingId); 			
-				if(boundContents.size() > 0)
-				{
-					ContentVO contentVO = (ContentVO)boundContents.get(0);
-					ContentVersionVO contentVersionVO = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(contentVO.getId(), languageId);
-					if(contentVersionVO.getStateId().equals(ContentVersionVO.WORKING_STATE))
-						isMetaInfoInWorkingState = true;
-				}
-			}	
-			*/
-			
 			SiteNodeVO siteNodeVO = SiteNodeController.getController().getSiteNodeVOWithId(siteNodeId);
 			if(siteNodeVO.getMetaInfoContentId() != null && siteNodeVO.getMetaInfoContentId().intValue() != -1)
 			{

@@ -931,7 +931,7 @@
 	    									    	<td colspan="2" bgcolor="white" valign="top">
 	    									    		<p style="margin-top:5px; margin-left:5px;">
 	    												#if($contentVersionId > -1)
-	    												Related Contents (<a href="javascript:openRelationEditor('ViewContentRelationEditor!V3.action?updateAction=ViewContentRelationEditor!updateQualifyer.action&entityName=ContentVersion&entityId=$!contentVersionId&attributeName=$!attribute.name');"><strong>Edit relations</strong></a>)
+	    												Related Contents (<a href="javascript:if(top.openInlineDiv) top.openInlineDiv('ViewContentRelationEditor!V3.action?updateAction=ViewContentRelationEditor!updateQualifyerV3.action&entityName=ContentVersion&entityId=$!contentVersionId&attributeName=$!attribute.name', 600, 800, true, true, 'Relation editor'); else openRelationEditor();"><strong>Edit relations</strong></a>)
 	    												<hr noshade size="1">
 	    												#set($qualifyers = $this.getContentRelationQualifyers($this.getUnescapedAttributeValue($attribute.name)))
 	    												<table border="0">
@@ -941,11 +941,11 @@
 	    														<img src="images/tree/xp/item.png"> 
 	    														</td>
 	    														<td valign="middle">
-	    														$qualifyer.getPath() 
+	    														$qualifyer.path 
 	    														</td>
 	    														<td></td>
 	    														<td valign="middle">
-	    														(<a href="javascript:openPopup('ViewContent!standalone.action?contentId=${qualifyer.getValue()}', 'editcontent', 'width=600,height=500,resizable=yes,scrollbars=yes');">Edit</a>)
+	    														(<a href="#" onclick="top.openUrlInWorkArea('ViewContent!V3.action?contentId=${qualifyer.getValue()}', '$qualifyer.shortPath', 'content', 'Innehåll'); return false;">Edit</a>)
 	    														</td>
 	    													</tr>
 	    												#end
@@ -977,7 +977,7 @@
 	    									    	<td colspan="2" bgcolor="white" valign="top">
 	    												<p style="margin-top:5px; margin-left:5px;">
 	    												#if($contentVersionId > -1)
-	    												Related SiteNodes (<a href="javascript:openRelationEditor('ViewStructureRelationEditor.action?updateAction=ViewStructureRelationEditor!updateQualifyer.action&entityName=ContentVersion&entityId=$!contentVersionId&attributeName=$!attribute.name');"><strong>Edit relations</strong></a>)
+	    												Related SiteNodes (<a href="javascript:openRelationEditor('ViewStructureRelationEditor.action?updateAction=ViewStructureRelationEditor!updateQualifyerV3.action&entityName=ContentVersion&entityId=$!contentVersionId&attributeName=$!attribute.name');"><strong>Edit relations</strong></a>)
 	    												<hr noshade size="1">
 	    												#set($qualifyers = $this.getSiteNodeRelationQualifyers($this.getUnescapedAttributeValue($attribute.name)))
 	    												<table border="0">

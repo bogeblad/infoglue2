@@ -176,6 +176,28 @@ public class StructureToolbarController
 		}
 	}
 
+	public static ToolbarButton getPageDetailSimpleButtons(Integer repositoryId, Integer siteNodeId, Locale locale, InfoGluePrincipal principal)
+	{
+		try
+		{
+			LanguageVO masterLanguageVO = LanguageController.getController().getMasterLanguage(repositoryId);
+			Integer languageId = masterLanguageVO.getLanguageId();
+	
+			return new ToolbarButton("",
+						getLocalizedString(locale, "tool.structuretool.toolbarV3.pageStructureSimpleLabel"), 
+						getLocalizedString(locale, "tool.structuretool.toolbarV3.pageStructureSimpleLabel"),
+						"" + CmsPropertyHandler.getComponentRendererUrl() + "ViewPage!renderDecoratedPage.action?siteNodeId=" + siteNodeId + "&languageId=" + masterLanguageVO.getId() + "&contentId=-1&showSimple=true" + "&cmsUserName=" + formatter.encodeURI(principal.getName()),
+						"",
+						"pageStructureSimple");
+		}
+		catch (Exception e) 
+		{
+			logger.error("Problem generating button:" + e.getMessage(), e);
+		}
+		
+		return null;
+	}
+
 	public static ToolbarButton getCoverButtons(Integer repositoryId, Integer siteNodeId, Locale locale, InfoGluePrincipal principal)
 	{
 		try

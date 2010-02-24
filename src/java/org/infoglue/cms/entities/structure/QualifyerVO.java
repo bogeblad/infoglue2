@@ -79,6 +79,11 @@ public class QualifyerVO implements BaseEntityVO
 		return this.path;
 	}
 
+	public String getShortPath()
+	{
+		return this.path.substring(this.path.lastIndexOf("/") + 1);
+	}
+			
 	public void setPath(String path)
 	{
 		this.path = path;
