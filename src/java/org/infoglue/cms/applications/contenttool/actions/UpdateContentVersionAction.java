@@ -377,10 +377,21 @@ public class UpdateContentVersionAction extends ViewContentVersionAction
             Document document = reader.read(new java.io.ByteArrayInputStream(versionValue.getBytes("UTF-8")));
             if(document == null)
             	throw new Exception("Faulty dom... must be corrupt");
+            
+            int preTemplateElements = 0;
+            int preTemplateStart = versionValue.indexOf("<PreTemplate>");
+            while(preTemplateStart > -1)
+            {
+            	preTemplateElements++;
+            	preTemplateStart = versionValue.indexOf("<PreTemplate>", preTemplateStart + 10);
+            }
+            if(preTemplateElements > 1)
+            	throw new Exception("Faulty version - duplicate fields");
     	}
     	catch (Exception e) 
     	{
     		logger.error("Faulty XML from Eclipse plugin.. not accepting", e);
+    		logger.warn(versionValue);
     		throw new Exception("Faulty XML from Eclipse plugin.. not accepting");
 		}
 
