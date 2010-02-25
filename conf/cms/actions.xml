@@ -1,4 +1,4 @@
-<!-- $Id: actions.xml,v 1.94 2010/02/24 07:47:48 mattias Exp $ -->
+<!-- $Id: actions.xml,v 1.95 2010/02/25 12:23:35 mattias Exp $ -->
 <actions>
 
 	<!-- MySettings -->
@@ -1087,26 +1087,25 @@
 
 	<!-- Content Wizards -->
 		<action name="org.infoglue.cms.applications.contenttool.wizards.actions.CreateContentWizardChooseParentAction" alias="CreateContentWizardChooseParent">
-		<view name="success">/cms/contenttool/wizards/createContentWizardChooseParent.vm</view>
-		<view name="error">/cms/contenttool/wizards/error.vm</view>
+		<view name="success">/cms/contenttool/v3/createContentWizard/createContentWizardChooseParent.vm</view>
+		<view name="error">/cms/common/error.vm</view>
 		<view name="accessDenied">/cms/contenttool/viewConstraintException.vm</view>
 	</action>
 	<action name="org.infoglue.cms.applications.contenttool.wizards.actions.CreateContentWizardInputContentAction" alias="CreateContentWizardInputContent">
-		<view name="input">/cms/contenttool/wizards/createContentWizardInputContent.vm</view>
-		<!--<view name="success">CreateContentWizardFinish.action</view>-->
+		<view name="input">/cms/contenttool/v3/createContentWizard/createContentWizardInputContent.vm</view>
 		<view name="success">CreateContentWizardFinish.action</view>
-		<view name="error">/cms/contenttool/wizards/error.vm</view>
+		<view name="error">/cms/common/error.vm</view>
 		<view name="accessDenied">/cms/contenttool/viewConstraintException.vm</view>
 	</action>
 	<action name="org.infoglue.cms.applications.contenttool.wizards.actions.CreateContentWizardInputAssetsAction" alias="CreateContentWizardInputAssets">
-		<view name="input">/cms/contenttool/wizards/createContentWizardInputAssets.vm</view>
+		<view name="input">/cms/contenttool/v3/createContentWizard/createContentWizardInputAssets.vm</view>
 		<view name="success">CreateContentWizardFinish.action</view>
-		<view name="error">/cms/contenttool/wizards/error.vm</view>
+		<view name="error">/cms/common/error.vm</view>
 		<view name="accessDenied">/cms/contenttool/viewConstraintException.vm</view>
 	</action>
 	<action name="org.infoglue.cms.applications.contenttool.wizards.actions.CreateContentWizardInputContentVersionsAction" alias="CreateContentWizardInputContentVersions">
 		<view name="inputAssets">CreateContentWizardInputAssets!input.action</view>
-		<view name="inputContentVersions">/cms/contenttool/wizards/createContentWizardInputContentVersions.vm</view>
+		<view name="inputContentVersions">/cms/contenttool/v3/createContentWizard/createContentWizardInputContentVersions.vm</view>
 		<view name="inputContentVersionsForFCKEditor">/cms/contenttool/wizards/createContentWizardInputContentVersionsForFCKEditor.vm</view>
 		<view name="success">CreateContentWizardFinish.action?versionDone=true</view>
 		<view name="error">/cms/contenttool/wizards/error.vm</view>
@@ -1119,47 +1118,10 @@
 		<view name="inputContentVersions">CreateContentWizardInputContentVersions!input.action?contentVersionId=${contentVersionId}</view>
 		<view name="inputContentVersionsForFCKEditor">CreateContentWizardInputContentVersions!input.action?contentVersionId=${contentVersionId}</view>
 		<view name="success">ViewContent.action</view>
-		<view name="error">/cms/contenttool/wizards/error.vm</view>
+		<view name="error">/cms/common/error.vm</view>
 		<view name="accessDenied">/cms/contenttool/viewConstraintException.vm</view>
 	</action>
 	
-	<!--
-	<action name="org.infoglue.cms.applications.contenttool.wizards.actions.CreateContentWizardChooseParentAction" alias="CreateContentWizardChooseParent">
-		<view name="success">/cms/contenttool/v3/wizards/createContentWizardChooseParent.vm</view>
-		<view name="error">/cms/contenttool/v3/wizards/error.vm</view>
-		<view name="accessDenied">/cms/contenttool/viewConstraintException.vm</view>
-	</action>
-	<action name="org.infoglue.cms.applications.contenttool.wizards.actions.CreateContentWizardInputContentAction" alias="CreateContentWizardInputContent">
-		<view name="input">/cms/contenttool/v3/wizards/createContentWizardInputContent.vm</view>
-		<view name="success">CreateContentWizardFinish.action</view>
-		<view name="error">/cms/contenttool/v3/wizards/error.vm</view>
-		<view name="accessDenied">/cms/contenttool/viewConstraintException.vm</view>
-	</action>
-	<action name="org.infoglue.cms.applications.contenttool.wizards.actions.CreateContentWizardInputAssetsAction" alias="CreateContentWizardInputAssets">
-		<view name="input">/cms/contenttool/v3/wizards/createContentWizardInputAssets.vm</view>
-		<view name="success">CreateContentWizardFinish.action</view>
-		<view name="error">/cms/contenttool/v3/wizards/error.vm</view>
-		<view name="accessDenied">/cms/contenttool/viewConstraintException.vm</view>
-	</action>
-	<action name="org.infoglue.cms.applications.contenttool.wizards.actions.CreateContentWizardInputContentVersionsAction" alias="CreateContentWizardInputContentVersions">
-		<view name="inputAssets">CreateContentWizardInputAssets!input.action</view>
-		<view name="inputContentVersions">/cms/contenttool/v3/wizards/createContentWizardInputContentVersions.vm</view>
-		<view name="inputContentVersionsForFCKEditor">/cms/contenttool/v3/wizards/createContentWizardInputContentVersionsForFCKEditor.vm</view>
-		<view name="success">CreateContentWizardFinish.action?versionDone=true</view>
-		<view name="error">/cms/contenttool/v3/wizards/error.vm</view>
-		<view name="accessDenied">/cms/contenttool/viewConstraintException.vm</view>
-	</action>
-	<action name="org.infoglue.cms.applications.contenttool.wizards.actions.CreateContentWizardFinishAction" alias="CreateContentWizardFinish">
-		<view name="stateLocation">CreateContentWizardChooseParent.action</view>
-		<view name="inputContent">CreateContentWizardInputContent!input.action</view>
-		<view name="inputAssets">CreateContentWizardInputAssets!input.action?contentVersionId=${contentVersionId}&amp;inputMoreAssets=${inputMoreAssets}</view>
-		<view name="inputContentVersions">CreateContentWizardInputContentVersions!input.action?contentVersionId=${contentVersionId}</view>
-		<view name="inputContentVersionsForFCKEditor">CreateContentWizardInputContentVersions!input.action?contentVersionId=${contentVersionId}</view>
-		<view name="success">ViewContent.action</view>
-		<view name="error">/cms/contenttool/v3/wizards/error.vm</view>
-		<view name="accessDenied">/cms/contenttool/viewConstraintException.vm</view>
-	</action>
-	-->
 	<action name="org.infoglue.cms.applications.contenttool.actions.ExportContentAction" alias="ExportContent">
 		<view name="input">/cms/contenttool/viewExportContentInput.vm</view>
 		<view name="success">/cms/contenttool/viewExportContentFinished.vm</view>

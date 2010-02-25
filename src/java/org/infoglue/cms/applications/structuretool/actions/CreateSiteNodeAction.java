@@ -400,7 +400,7 @@ public class CreateSiteNodeAction extends InfoGlueAbstractAction
 	        workingUrl = CmsPropertyHandler.getPreviewDeliveryUrl().replaceFirst("ViewPage.action", "ViewPage!renderDecoratedPage.action");
 	    }
 	    
-		return "" + workingUrl + "?siteNodeId=" + siteNodeId;
+		return "" + workingUrl + "?siteNodeId=" + siteNodeId + "&contentId=-1";
 	}
 
     public Integer getPageTemplateContentId()

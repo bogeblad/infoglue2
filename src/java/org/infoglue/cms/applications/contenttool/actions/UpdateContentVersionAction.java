@@ -386,8 +386,18 @@ public class UpdateContentVersionAction extends ViewContentVersionAction
             	preTemplateStart = versionValue.indexOf("<PreTemplate>", preTemplateStart + 10);
             }
             if(preTemplateElements > 1)
-            	throw new Exception("Faulty version - duplicate fields");
-    	}
+            {
+            	logger.warn("Duplicate fields from eclipse editor");
+            	versionValue = versionValue.replaceAll("<PreTemplate></PreTemplate>", "");
+            	versionValue = versionValue.replaceAll("<PreTemplate><!\\[CDATA\\[]]></PreTemplate>", "");
+            	versionValue = versionValue.replaceAll("<ComponentTasks></ComponentTasks>", "");
+            	versionValue = versionValue.replaceAll("<ComponentTasks><!\\[CDATA\\[]]></ComponentTasks>", "");
+            	versionValue = versionValue.replaceAll("<Description></Description>", "");
+            	versionValue = versionValue.replaceAll("<Description><!\\[CDATA\\[]]></Description>", "");
+            	versionValue = versionValue.replaceAll("<RelatedComponents></RelatedComponents>", "");
+            	versionValue = versionValue.replaceAll("<RelatedComponents><!\\[CDATA\\[]]></RelatedComponents>", "");
+            }
+        }
     	catch (Exception e) 
     	{
     		logger.error("Faulty XML from Eclipse plugin.. not accepting", e);
