@@ -1918,11 +1918,18 @@ public class ComponentLogic
 			{
 				contentVersionIdList.addAll(propertyCandidateVersions);
 				
-				Iterator propertyCandidateVersionsIterator = propertyCandidateVersions.iterator();
-				while(propertyCandidateVersionsIterator.hasNext())
+				try
 				{
-					Integer currentContentVersionId = (Integer)propertyCandidateVersionsIterator.next();
-					templateController.getDeliveryContext().addUsedContentVersion("contentVersion_" + currentContentVersionId);
+					Iterator propertyCandidateVersionsIterator = propertyCandidateVersions.iterator();
+					while(propertyCandidateVersionsIterator.hasNext())
+					{
+						Integer currentContentVersionId = (Integer)propertyCandidateVersionsIterator.next();
+						templateController.getDeliveryContext().addUsedContentVersion("contentVersion_" + currentContentVersionId);
+					}
+				}
+				catch(Exception e)
+				{
+					templateController.getDeliveryContext().addUsedContentVersion("selectiveCacheUpdateNonApplicable");
 				}
 			}
 		}
