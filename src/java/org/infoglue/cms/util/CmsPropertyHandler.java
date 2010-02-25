@@ -1055,7 +1055,7 @@ public class CmsPropertyHandler
 		boolean killLiveRequestWhichTimedout = false;
 		try
 		{
-			killLiveRequestWhichTimedout = Boolean.parseBoolean(getServerNodeProperty("killLiveRequestWhichTimedout", true, "false"));
+			killLiveRequestWhichTimedout = Boolean.parseBoolean(getServerNodeProperty("killLiveRequestWhichTimedout", true, "true"));
 		}
 		catch(Exception e)
 		{
