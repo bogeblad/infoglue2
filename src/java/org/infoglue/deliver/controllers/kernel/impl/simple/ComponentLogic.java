@@ -1929,6 +1929,7 @@ public class ComponentLogic
 				}
 				catch(Exception e)
 				{
+					logger.warn("Got synchronize error getting inherited component property.");
 					templateController.getDeliveryContext().addUsedContentVersion("selectiveCacheUpdateNonApplicable");
 				}
 			}
