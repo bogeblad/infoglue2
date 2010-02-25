@@ -1102,7 +1102,7 @@ public class CmsPropertyHandler
 			boolean newUseSynchronizationOnCaches = false;
 			try
 			{
-				newUseSynchronizationOnCaches = Boolean.parseBoolean(getServerNodeProperty("useSynchronizationOnCaches", true, "false", true));
+				newUseSynchronizationOnCaches = Boolean.parseBoolean(getServerNodeProperty("useSynchronizationOnCaches", true, "true", true));
 			}
 			catch(Exception e)
 			{
