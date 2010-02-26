@@ -66,6 +66,7 @@ public class UpdateContentVersionAction extends ViewContentVersionAction
 	private String attributeName;
 	private long oldModifiedDateTime = -1;
 	private boolean concurrentModification = false;
+	private String saveAndExitURL = null;
 	
 	private ConstraintExceptionBuffer ceb;
 	
@@ -190,6 +191,8 @@ public class UpdateContentVersionAction extends ViewContentVersionAction
 			this.contentVersionVO.setVersionModifier(this.getInfoGluePrincipal().getName());
 			this.contentVersionVO = ContentVersionControllerProxy.getController().acUpdate(this.getInfoGluePrincipal(), this.contentId, this.languageId, this.contentVersionVO);
 		    this.contentVersionVO = ContentVersionController.getContentVersionController().getContentVersionVOWithId(this.contentVersionVO.getId());
+
+			this.getHttpSession().removeAttribute("CreateContentWizardInfoBean");
 		}
 		catch(ConstraintException ce)
 		{
@@ -446,6 +449,16 @@ public class UpdateContentVersionAction extends ViewContentVersionAction
 	public boolean getConcurrentModification() 
 	{
 		return concurrentModification;
+	}
+
+	public String getSaveAndExitURL()
+	{
+		return saveAndExitURL;
+	}
+
+	public void setSaveAndExitURL(String saveAndExitURL)
+	{
+		this.saveAndExitURL = saveAndExitURL;
 	}
 
 }

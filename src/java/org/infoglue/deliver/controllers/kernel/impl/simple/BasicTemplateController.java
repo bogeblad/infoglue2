@@ -7629,6 +7629,7 @@ public class BasicTemplateController implements TemplateController
 			while(propertiesIterator.hasNext())
 			{
 				ComponentProperty propertyCandidate = (ComponentProperty)propertiesIterator.next();
+				System.out.println("propertyCandidate:" + propertyCandidate.getName());
 				if(propertyCandidate.getName().equals(propertyName))	
 					property = propertyCandidate;
 			}
@@ -7641,13 +7642,13 @@ public class BasicTemplateController implements TemplateController
 			Integer componentId = this.getComponentLogic().getInfoGlueComponent().getId();
 			Integer repositoryId = this.getSiteNode().getRepositoryId();
 			
-			if(property.getVisualizingAction() != null && !property.getVisualizingAction().equals(""))
+			if(property != null && property.getVisualizingAction() != null && !property.getVisualizingAction().equals(""))
 			{
 				assignUrl = componentEditorUrl + property.getVisualizingAction() + "?repositoryId=" + repositoryId + "&amp;siteNodeId=" + siteNodeId + "&amp;languageId=" + languageId + "&amp;contentId=" + contentId + "&amp;componentId=" + componentId + "&amp;propertyName=" + property.getName() + "&amp;showSimple=" + getDeliveryContext().getShowSimple() + "&amp;showDecorated=" + showDecorated + "&amp;hideComponentPropertiesOnLoad=" +hideComponentPropertiesOnLoad;
 			}
 			else
 			{	
-				if(property.getEntityClass().equalsIgnoreCase("Content"))
+				if(property != null && property.getEntityClass().equalsIgnoreCase("Content"))
 				{
 				    String allowedContentTypeIdParameters = "";
 
@@ -7747,9 +7748,9 @@ public class BasicTemplateController implements TemplateController
 				    //String returnAddress = URLEncoder.encode(key, "UTF-8");
 					
 					if(property.getIsMultipleBinding())
-						createUrl = componentEditorUrl + "CreateContentWizardFinish.action?repositoryId=" + this.getSiteNode().getRepositoryId() + "&amp;siteNodeId=" + siteNodeId + "&amp;languageId=" + languageId + "&amp;contentId=" + contentId + "&amp;componentId=" + componentId + "&amp;propertyName=" + property.getName() + allowedContentTypeIdParameters + "&amp;refreshAddress=" + returnAddress + "&amp;cancelAddress=" + cancelAddress + "&amp;showSimple=" + getDeliveryContext().getShowSimple() + "&amp;showDecorated=" + showDecorated + "&amp;hideComponentPropertiesOnLoad=" +hideComponentPropertiesOnLoad + (extraParameters != null ? "&amp;" + extraParameters : "");
+						createUrl = componentEditorUrl + "CreateContentWizardFinish!V3.action?repositoryId=" + this.getSiteNode().getRepositoryId() + "&amp;siteNodeId=" + siteNodeId + "&amp;languageId=" + languageId + "&amp;contentId=" + contentId + "&amp;componentId=" + componentId + "&amp;propertyName=" + property.getName() + allowedContentTypeIdParameters + "&amp;refreshAddress=" + returnAddress + "&amp;cancelAddress=" + cancelAddress + "&amp;showSimple=" + getDeliveryContext().getShowSimple() + "&amp;showDecorated=" + showDecorated + "&amp;hideComponentPropertiesOnLoad=" +hideComponentPropertiesOnLoad + (extraParameters != null ? "&amp;" + extraParameters : "");
 					else
-						createUrl = componentEditorUrl + "CreateContentWizardFinish.action?repositoryId=" + this.getSiteNode().getRepositoryId() + "&amp;siteNodeId=" + siteNodeId + "&amp;languageId=" + languageId + "&amp;contentId=" + contentId + "&amp;componentId=" + componentId + "&amp;propertyName=" + property.getName() + allowedContentTypeIdParameters + "&amp;refreshAddress=" + returnAddress + "&amp;cancelAddress=" + cancelAddress + "&amp;showSimple=" + getDeliveryContext().getShowSimple() + "&amp;showDecorated=" + showDecorated + "&amp;hideComponentPropertiesOnLoad=" +hideComponentPropertiesOnLoad + (extraParameters != null ? "&amp;" + extraParameters : "");
+						createUrl = componentEditorUrl + "CreateContentWizardFinish!V3.action?repositoryId=" + this.getSiteNode().getRepositoryId() + "&amp;siteNodeId=" + siteNodeId + "&amp;languageId=" + languageId + "&amp;contentId=" + contentId + "&amp;componentId=" + componentId + "&amp;propertyName=" + property.getName() + allowedContentTypeIdParameters + "&amp;refreshAddress=" + returnAddress + "&amp;cancelAddress=" + cancelAddress + "&amp;showSimple=" + getDeliveryContext().getShowSimple() + "&amp;showDecorated=" + showDecorated + "&amp;hideComponentPropertiesOnLoad=" +hideComponentPropertiesOnLoad + (extraParameters != null ? "&amp;" + extraParameters : "");
 				}
 				else if(property.getEntityClass().equalsIgnoreCase("SiteNode"))
 				{
@@ -7785,9 +7786,9 @@ public class BasicTemplateController implements TemplateController
 
 			    String url = assignUrl;
 			    if(!createNew)
-			    	result = "<a href=\"#\" onclick=\"window.open('" + assignUrl + "', 'Edit', 'width=500,height=600,left=' + (document.body.clientWidth / 4) + ',top=50,toolbar=no,status=no,scrollbars=yes,location=no,menubar=no,directories=no,resizable=no');\">" + html + "</a>";
+			    	result = "<a href=\"#\" onclick=\"openInlineDivImpl('" + assignUrl + "', 900, 850, true, true); return false;\">" + html + "</a>";
 			    else
-			    	result = "<a href=\"" + createUrl + "\">" + html + "</a>";
+			    	result = "<a href=\"#\" onclick=\"openInlineDivImpl('" + createUrl + "', 900, 850, true, true); return false;\">" + html + "</a>";
 		    }
 		}
 		catch(Exception e)

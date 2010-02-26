@@ -280,6 +280,25 @@ public abstract class InfoGlueAbstractAction extends WebworkAbstractAction
 	
 	public List getFooterToolbarButtons(String toolbarKey, String primaryKey, String extraParameters, boolean disableCloseButton)
 	{
+		System.out.println("extraParameters:" + extraParameters);
+		try
+		{
+			HttpHelper helper = new HttpHelper();
+			Map extraParametersMap = helper.toMap(extraParameters, "iso-8859-1", "&");
+			Iterator extraParametersMapIterator = extraParametersMap.keySet().iterator();
+			while(extraParametersMapIterator.hasNext())
+			{
+				String key = (String)extraParametersMapIterator.next();
+				String value = (String)extraParametersMap.get(key);
+				System.out.println("" + key + "=" + value);
+				getRequest().setAttribute(key, value);
+			}
+		}
+		catch (Exception e) 
+		{
+			logger.error("Problem parsing extra parameters at url:" + getOriginalFullURL());
+		}
+
 		return toolbarController.getFooterToolbarButtons(toolbarKey, getInfoGluePrincipal(), getLocale(), getRequest(), disableCloseButton);
 	}
 

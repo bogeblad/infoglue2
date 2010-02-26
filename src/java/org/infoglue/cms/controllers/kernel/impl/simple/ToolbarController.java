@@ -88,7 +88,7 @@ public class ToolbarController
 
 			if(toolbarKey.equalsIgnoreCase("tool.contenttool.contentVersionWizardHeader"))
 				return getContentVersionButtons(toolbarKey, principal, locale, request, disableCloseButton);
-
+			
 			if(toolbarKey.equalsIgnoreCase("tool.common.globalSubscriptions.header"))
 				return getGlobalSubscriptionsButtons(toolbarKey, principal, locale, request, disableCloseButton);
 			
@@ -221,16 +221,27 @@ public class ToolbarController
 
 			if(toolbarKey.equalsIgnoreCase("tool.contenttool.contentVersionHistory.label"))
 				return getContentHistoryFooterButtons(toolbarKey, principal, locale, request, disableCloseButton);
+
+			if(toolbarKey.equalsIgnoreCase("tool.structuretool.chooseContentLabel"))
+				return getCommonFooterSaveOrCloseButton(toolbarKey, principal, locale, request, disableCloseButton);
 			
 			if(toolbarKey.equalsIgnoreCase("tool.structuretool.chooseRelatedContentsLabel"))
 				return getContentRelationFooterButtons(toolbarKey, principal, locale, request, disableCloseButton);
-			
 			
 			if(toolbarKey.equalsIgnoreCase("tool.contenttool.contentVersionStandaloneHeader"))
 				return getContentVersionFooterButtons(toolbarKey, principal, locale, request, disableCloseButton);
 
 			if(toolbarKey.equalsIgnoreCase("tool.contenttool.contentVersionWizardHeader"))
 				return getContentVersionWizardFooterButtons(toolbarKey, principal, locale, request, disableCloseButton);
+			
+			if(toolbarKey.equalsIgnoreCase("tool.contenttool.createContentWizardChooseLocation.title"))
+				return getCommonNextCancelButton(toolbarKey, principal, locale, request, disableCloseButton);
+			
+			if(toolbarKey.equalsIgnoreCase("tool.contenttool.createContentWizardInputContent.title"))
+				return getCommonNextCancelButton(toolbarKey, principal, locale, request, disableCloseButton);
+			
+			if(toolbarKey.equalsIgnoreCase("tool.contenttool.createContentWizardUploadDigitalAsset.title"))
+				return getCommonNextCancelButton(toolbarKey, principal, locale, request, disableCloseButton);
 			
 			if(toolbarKey.equalsIgnoreCase("tool.contenttool.contentPropertiesHeader"))
 				return getCommonFooterSaveOrSaveAndExitOrCloseButton(toolbarKey, principal, locale, request, disableCloseButton, "ViewContentProperties!saveAndExitV3.action");
@@ -973,7 +984,13 @@ public class ToolbarController
 
 	private List<ToolbarButton> getContentVersionFooterButtons(String toolbarKey, InfoGluePrincipal principal, Locale locale, HttpServletRequest request, boolean disableCloseButton) throws Exception
 	{
+		System.out.println("request:" + request.getQueryString());
+		String saveAndExitURL = (String)request.getAttribute("saveAndExitURL");
+		System.out.println("saveAndExitURL:" + saveAndExitURL);
+		
 		List<ToolbarButton> buttons = new ArrayList<ToolbarButton>();
+
+		/*
 
 		buttons.add(new ToolbarButton("",
 									  getLocalizedString(locale, "tool.contenttool.save.label"), 
@@ -981,13 +998,20 @@ public class ToolbarController
 									  "javascript:validateAndSubmitContentForm();",
 									  "images/v3/saveInlineIcon.gif",
 									  "save"));
-
-		buttons.add(new ToolbarButton("",
+		 */
+		
+		buttons.add(getCommonFooterSaveButton(toolbarKey, principal, locale, request, disableCloseButton));
+		if(saveAndExitURL != null && !saveAndExitURL.equals(""))
+			buttons.add(getCommonFooterSaveAndExitButton(toolbarKey, principal, locale, request, disableCloseButton, saveAndExitURL));
+		else
+		{	
+			buttons.add(new ToolbarButton("",
 									  getLocalizedString(locale, "tool.contenttool.saveAndExit.label"), 
 									  getLocalizedString(locale, "tool.contenttool.saveAndExit.label"),
 									  "javascript:validateAndSubmitContentFormThenClose();",
 									  "images/v3/saveAndExitInlineIcon.gif",
 									  "saveAndExit"));
+		}
 		
 		/*
 		buttons.add(new ToolbarButton("",
@@ -3057,6 +3081,31 @@ public class ToolbarController
 		buttons.add(getCommonFooterSaveButton(toolbarKey, principal, locale, request, disableCloseButton));
 		buttons.add(getCommonFooterSaveAndExitButton(toolbarKey, principal, locale, request, disableCloseButton, exitUrl));
 		buttons.add(getDialogCloseButton(toolbarKey, principal, locale, request, disableCloseButton));
+				
+		return buttons;		
+	}
+
+	private List<ToolbarButton> getCommonNextCancelButton(String toolbarKey, InfoGluePrincipal principal, Locale locale, HttpServletRequest request, boolean disableCloseButton)
+	{
+		List<ToolbarButton> buttons = new ArrayList<ToolbarButton>();
+
+		buttons.add(new ToolbarButton("",
+				  getLocalizedString(locale, "tool.common.nextButton.label"), 
+				  getLocalizedString(locale, "tool.common.nextButton.label"),
+				  "next();",
+				  "images/v3/nextBackground.gif",
+				  "left",
+				  "next",
+				  true));
+
+		buttons.add(new ToolbarButton("",
+				  getLocalizedString(locale, "tool.common.cancelButton.label"), 
+				  getLocalizedString(locale, "tool.common.cancelButton.label"),
+				  "if(parent && parent.closeInlineDiv) parent.closeInlineDiv(); else if(parent && parent.closeDialog) parent.closeDialog(); else window.close();",
+				  "images/v3/cancelIcon.gif",
+				  "left",
+				  "cancel",
+				  true));
 				
 		return buttons;		
 	}

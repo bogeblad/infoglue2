@@ -150,6 +150,10 @@ public class ViewContentVersionAction extends InfoGlueAbstractAction
 	private String returnAddress = "";
 	private Boolean inline = false;
 	
+	//Used by create content wizard
+	private String saveAndExitURL = null;
+
+
 	public String getQualifyerPath(String entity, String entityId)
 	{	
 		StringBuffer sb = new StringBuffer("");
@@ -1972,5 +1976,15 @@ public class ViewContentVersionAction extends InfoGlueAbstractAction
     {
         return inline;
     }
+
+	public String getSaveAndExitURL()
+	{
+		return saveAndExitURL;
+	}
+
+	public void setSaveAndExitURL(String saveAndExitURL)
+	{
+		this.saveAndExitURL = saveAndExitURL;
+	}
 
 }

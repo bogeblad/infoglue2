@@ -23,6 +23,7 @@
 
 package org.infoglue.cms.applications.contenttool.wizards.actions;
 
+import java.net.URLEncoder;
 import java.util.Iterator;
 import java.util.List;
 
@@ -50,7 +51,7 @@ import org.infoglue.cms.util.ConstraintExceptionBuffer;
 public class CreateContentWizardFinishAction extends CreateContentWizardAbstractAction
 {
 	private ConstraintExceptionBuffer ceb 		= null;
-	private String returnAddress 				= "CreateContentWizardFinish.action";
+	private String returnAddress 				= "CreateContentWizardFinish!V3.action";
 	private String refreshAddress 				= null;
 	private Integer contentId					= null;
 	private Integer contentVersionId 			= null;
@@ -186,6 +187,100 @@ public class CreateContentWizardFinishAction extends CreateContentWizardAbstract
 		return NONE;
 	}
 
+	
+	public String doV3() throws Exception
+	{
+		try
+		{
+			CreateContentWizardInfoBean createContentWizardInfoBean = getCreateContentWizardInfoBean();
+			if(createContentWizardInfoBean.getParentContentId() == null)
+			{
+				return "stateLocation";
+			}
+	
+			createContentWizardInfoBean.getContent().setCreator(this.getInfoGluePrincipal().getName());
+			this.ceb = createContentWizardInfoBean.getContent().getValueObject().validate();
+			
+			if(!this.ceb.isEmpty())
+			{
+				return "inputContent";
+			}
+
+			Integer repositoryId = createContentWizardInfoBean.getRepositoryId();
+			Integer languageId = createContentWizardInfoBean.getLanguageId();
+			if(languageId == null)
+				languageId = LanguageController.getController().getMasterLanguage(repositoryId).getId();
+			
+			if(createContentWizardInfoBean.getContentVersions().size() == 0)
+			{
+				String versionValue = "<?xml version='1.0' encoding='UTF-8'?><article xmlns=\"x-schema:ArticleSchema.xml\"><attributes></attributes></article>";
+	
+				ContentVersionVO initialContentVersionVO = new ContentVersionVO();
+				initialContentVersionVO.setVersionComment("Preversion");
+				initialContentVersionVO.setVersionModifier(this.getInfoGluePrincipal().getName());
+				initialContentVersionVO.setVersionValue(versionValue);
+				
+				createContentWizardInfoBean.getContentVersions().put(languageId, initialContentVersionVO);
+	
+		    	ContentVO contentVO = ContentControllerProxy.getController().acCreate(this.getInfoGluePrincipal(), createContentWizardInfoBean);
+				this.contentId = contentVO.getContentId();
+				createContentWizardInfoBean.setContentVO(contentVO);
+			
+				ContentVersionVO newContentVersion = (ContentVersionVO)createContentWizardInfoBean.getContentVersions().get(languageId);
+				this.contentVersionId = newContentVersion.getId();
+			}
+			
+			String returnAddress = createContentWizardInfoBean.getReturnAddress();
+			returnAddress = returnAddress.replaceAll("#entityId", createContentWizardInfoBean.getContentVO().getId().toString());
+			returnAddress = returnAddress.replaceAll("#path", createContentWizardInfoBean.getContentVO().getName());
+			createContentWizardInfoBean.setReturnAddress(returnAddress);
+			System.out.println("returnAddress:" + returnAddress);
+
+			if(versionDone == null || versionDone.equals("false"))
+			{
+			    return "inputContentVersionsForFCKEditor";
+			}
+								
+			//String returnAddress = createContentWizardInfoBean.getReturnAddress();
+			//returnAddress = returnAddress.replaceAll("#entityId", createContentWizardInfoBean.getContentVO().getId().toString());
+			//returnAddress = returnAddress.replaceAll("#path", createContentWizardInfoBean.getContentVO().getName());
+			
+			this.invalidateCreateContentWizardInfoBean();
+			
+			this.getResponse().sendRedirect(returnAddress);
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+		}
+		
+		return NONE;
+	}
+
+	public String doCancelV3() throws Exception
+	{
+		try
+		{
+			CreateContentWizardInfoBean createContentWizardInfoBean = getCreateContentWizardInfoBean();
+			
+			String cancelAddress = createContentWizardInfoBean.getCancelAddress();
+			if(createContentWizardInfoBean.getContentVO() != null)
+			{
+				ContentControllerProxy.getController().acDelete(this.getInfoGluePrincipal(), createContentWizardInfoBean.getContentVO());
+			}
+			
+			this.invalidateCreateContentWizardInfoBean();
+		
+			this.getResponse().sendRedirect(cancelAddress);
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+		}
+		
+		return NONE;
+	}
+	
 	public void setParentContentId(Integer parentContentId)
 	{
 		getCreateContentWizardInfoBean().setParentContentId(parentContentId);
@@ -294,6 +389,11 @@ public class CreateContentWizardFinishAction extends CreateContentWizardAbstract
 	public String getRefreshAddress()
 	{
 		return getCreateContentWizardInfoBean().getReturnAddress();
+	}
+
+	public String getEncodedRefreshAddress() throws Exception
+	{
+		return URLEncoder.encode(getCreateContentWizardInfoBean().getReturnAddress(), "utf-8");
 	}
 
 	public Integer getContentId()
