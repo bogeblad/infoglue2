@@ -24,6 +24,8 @@
 package org.infoglue.deliver.applications.actions;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.net.SocketException;
 import java.net.URLEncoder;
 import java.security.Principal;
 import java.util.Date;
@@ -407,6 +409,24 @@ public class ViewPageAction extends InfoGlueAbstractAction
 			getRequest().setAttribute("error", e);
 			getRequest().setAttribute("errorUrl", getErrorUrl());
 			getRequest().getRequestDispatcher("/ErrorPage.action").forward(getRequest(), getResponse());
+		}
+		catch(IOException e)
+		{
+			String extraInformation = "Original URL: " + getOriginalFullURL() + "\n";
+			extraInformation += "Referer: " + getRequest().getHeader("Referer") + "\n";
+			extraInformation += "UserAgent: " + getRequest().getHeader("User-Agent") + "\n";
+			extraInformation += "User IP: " + getRequest().getRemoteAddr();
+			
+			if(e.getCause() != null)
+			{
+				if(e.getCause() instanceof SocketException)
+					logger.warn("A io exception was thrown returning data to client:" + e.getCause().getMessage() + "\n" + extraInformation);
+				else
+					logger.error("A io exception was thrown returning data to client:" + e.getCause().getMessage() + "\n" + extraInformation);					
+			}
+			else
+				logger.error("A io exception was thrown returning data to client:" + e.getMessage() + "\n" + extraInformation);		
+			rollbackTransaction(dbWrapper.getDatabase());
 		}
 		catch(Exception e)
 		{
