@@ -208,6 +208,7 @@ public class UpdateCacheAction extends InfoGlueAbstractAction
 			        CacheController.clearServerNodeProperty(true);
 			        CacheController.clearCastorCaches();
 			        CacheController.clearCaches(null, null, null);
+			        CacheController.clearFileCaches("pageCache");
 				}
 				if(className.indexOf("AccessRight") > 0 || className.indexOf("SystemUser") > 0 || className.indexOf("Role") > 0  || className.indexOf("Group") > 0 || className.indexOf("Intercept") > 0)
 				{

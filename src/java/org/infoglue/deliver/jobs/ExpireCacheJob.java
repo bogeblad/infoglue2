@@ -167,6 +167,7 @@ public class ExpireCacheJob implements Job
 		    			CacheController.cacheCentralCastorCaches();
 		    			
 		    			logger.info("Finally clearing page cache as this was a publishing-update");
+		    		    CacheController.clearFileCaches("pageCache");
 		    		    CacheController.clearCache("pageCache");
 		    		    CacheController.clearCache("pageCacheExtra");
 	        	    }
@@ -177,6 +178,8 @@ public class ExpireCacheJob implements Job
 		
 		    			logger.info("clearing all except page cache as we are in publish mode..");
 		    		    CacheController.clearCaches(null, null, null);
+
+		    		    CacheController.clearFileCaches("pageCache");
 	        	    }
                 }
                 catch(Exception e)
@@ -220,6 +223,7 @@ public class ExpireCacheJob implements Job
 		    			CacheController.cacheCentralCastorCaches();
 		    			
 		    			logger.info("Finally clearing page cache as this was a publishing-update");
+		    		    CacheController.clearFileCaches("pageCache");
 		    		    CacheController.clearCache("pageCache");
 		    		    CacheController.clearCache("pageCacheExtra");
 	        	    }
@@ -256,6 +260,11 @@ public class ExpireCacheJob implements Job
 		                {
 		                	File subCacheDir = subCaches[i];
 		                	logger.info("subCacheDir:" + subCacheDir.getName());
+	                		int targetDiff = 48;
+	                		if(subCacheDir.getName().equals("pageCache"))
+	                			targetDiff = 6 + (int)(Math.random() * ((12 - 6) + 1));
+	                		System.out.println("targetDiff:" + targetDiff);
+	                		
 		                	if(subCacheDir.isDirectory())
 		                	{
 		                    	File[] subSubCacheFiles = subCacheDir.listFiles();
@@ -272,7 +281,7 @@ public class ExpireCacheJob implements Job
 						                	long lastModified = cacheFile.lastModified();
 					                		long differensInHours = (System.currentTimeMillis() - lastModified) / (60 * 60 * 1000);
 					                		//System.out.println("differensInHours:" + differensInHours);
-					                		if(differensInHours > (24 * 2))
+					                		if(differensInHours > targetDiff)
 					                		{
 					                			logger.info("Deleting cached file as it was to old:" + differensInHours);
 					                			cacheFile.delete();

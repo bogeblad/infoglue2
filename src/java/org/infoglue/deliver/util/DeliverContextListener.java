@@ -101,7 +101,10 @@ public final class DeliverContextListener implements ServletContextListener
 			String intervalString = CmsPropertyHandler.getCacheExpireInterval();
 			if(intervalString != null)
 				cacheController.setCacheExpireInterval(Integer.parseInt(intervalString));
-		
+			
+			//System.out.println("Clearing previous filebased page cache");
+        	CacheController.clearFileCaches("pageCache");
+
 			//Starting the cache-expire-thread
 			if(cacheController.getExpireCacheAutomatically())
 				cacheController.start();

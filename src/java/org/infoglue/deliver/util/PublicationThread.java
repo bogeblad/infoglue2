@@ -71,6 +71,7 @@ public class PublicationThread extends Thread
 			logger.info("\n\n\nFinally clearing page cache and other caches as this was a publishing-update\n\n\n");
 			CacheController.clearCache("ServerNodeProperties");
 			CacheController.clearCache("serverNodePropertiesCache");
+		    CacheController.clearFileCaches("pageCache");
 			CacheController.clearCache("pageCache");
 			CacheController.clearCache("pageCacheExtra");
 		    CacheController.clearCache("componentCache");
