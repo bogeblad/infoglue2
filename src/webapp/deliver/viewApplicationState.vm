@@ -207,7 +207,7 @@
   #end
 *#
   <tr>
-    <td colspan="4" class="text"><a href="ViewApplicationState!clearCastorCaches.action">Clear castor caches</a> | <a href="ViewApplicationState!clearCaches.action">Clear All</a> | <a href="ViewApplicationState!clearCaches.action?clearFileCache=true">Clear All (also fileCache)</a> | <a href="ViewApplicationState!reCache.action">Recache sitenodes</a></td>
+    <td colspan="4" class="text"><a href="ViewApplicationState!clearCastorCaches.action">Clear castor caches</a> | <a href="ViewApplicationState!clearCaches.action">Clear All</a> | <a href="ViewApplicationState!clearPageCache.action">Clear page cache</a> | <a href="ViewApplicationState!clearCaches.action?clearFileCache=true">Clear All (also fileCache)</a> | <a href="ViewApplicationState!reCache.action">Recache sitenodes</a></td>
   </tr>
 
   <tr><td colspan="4">&nbsp;</td></tr>
