@@ -39,6 +39,7 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -157,7 +158,10 @@ public class CacheController extends Thread
     public static Date expireDateTime = null;
     public static Date publishDateTime = null;
      
+	private static CompressionHelper compressionHelper = new CompressionHelper();
    
+	private static AtomicInteger numberOfPageCacheFiles = new AtomicInteger(0);
+	
 	public CacheController()
 	{
 		super();
@@ -400,6 +404,19 @@ public class CacheController extends Thread
 			
 			//if(cacheName.startsWith("contentAttribute")/* || cacheName.startsWith("contentVersionIdCache")*/)
 			//	useGroups = false;
+
+			boolean containsSelectiveCacheUpdateNonApplicable = false;
+			if(groups != null)
+			{
+				for(int i=0; i<groups.length; i++)
+				{
+					if(groups[i].equalsIgnoreCase("selectiveCacheUpdateNonApplicable"))
+					{
+						groups = new String[]{"selectiveCacheUpdateNonApplicable"};
+						break;
+					}
+				}
+			}
 			
 			//Kanske tillbaka om minnet sticker
 			if(cacheName.startsWith("componentPropertyCache") || cacheName.startsWith("componentPropertyVersionIdCache"))
@@ -407,13 +424,14 @@ public class CacheController extends Thread
 				//logger.error("Skipping useGroups on " + cacheName + ". Groups was:" + groups.length + " for " + key);
 				useGroups = false;
 			}
-			
+						
+			/*
 			if(cacheName.startsWith("pageCache"))
 			{
 				//logger.error("Skipping useGroups on pageCache. Groups was:" + groups.length + " for " + key);
 				useGroups = false;				
 			}
-			
+			*/
 
 			//if(useGroups)
 			//	System.out.println("useGroups:" + useGroups + " for " + cacheName);
@@ -475,11 +493,28 @@ public class CacheController extends Thread
 			}
 		}
 				
+		//if(cacheName.equals("pageCache"))
+		//	System.out.println("numberOfPageCacheFiles:" + numberOfPageCacheFiles.get());
+		if(cacheName.equals("pageCache") && numberOfPageCacheFiles.get() > 30000)
+		{
+			if(logger.isInfoEnabled())
+				System.out.println("Skipping file cache as to many files were allready there");
+			useFileCacheFallback = false;
+		}
+
+		//if(cacheName.equals("pageCache"))
+		//	System.out.println("useFileCacheFallback:" + useFileCacheFallback + " - useGroups:" + useGroups);
 	    if(useFileCacheFallback && !useGroups)
 	    {
 	    	if(logger.isInfoEnabled())
     			logger.info("Caching value to disk also");
-	    	putCachedContentInFile(cacheName, key.toString(), value.toString(), fileCacheCharEncoding);				    	
+	    	
+	    	String compressPageCache = CmsPropertyHandler.getCompressPageCache();
+	    	
+	    	if(cacheName.equals("pageCache") && compressPageCache != null && compressPageCache.equals("true"))
+	    		putCachedCompressedContentInFile(cacheName, key.toString(), (byte[])value);				    	
+	    	else
+	    		putCachedContentInFile(cacheName, key.toString(), value.toString(), fileCacheCharEncoding);				    	
 	    }
 
 		
@@ -791,7 +826,38 @@ public class CacheController extends Thread
 			}
 		}
 	}
-    		
+
+	/**
+	 * This method clears part of a cache.
+	 * @param cacheName
+	 * @param groups
+	 */
+	public static void clearFileCacheForGroup(GeneralCacheAdministrator cacheInstance, String groupName) throws Exception
+	{
+		//System.out.println("Cache entry set:" + cacheInstance.getCache().cacheMap.entrySet());
+		
+        Set groupEntries = cacheInstance.getCache().cacheMap.getGroup(groupName);
+        /*
+        if(groupEntries != null)
+        	System.out.println("groupEntries for " + groupName + ":" + groupEntries.size());
+        else
+        	System.out.println("no groupEntries for " + groupName);
+        */
+        
+		if (groupEntries != null) 
+        {
+            Iterator groupEntriesIterator = groupEntries.iterator();
+            while (groupEntriesIterator.hasNext()) 
+            {
+            	String key = (String) groupEntriesIterator.next();
+            	CacheEntry entry = (CacheEntry) cacheInstance.getCache().cacheMap.get(key);
+            	//System.out.println("Removing file with key:" + key);
+            	removeCachedContentInFile("pageCache", key);
+            	numberOfPageCacheFiles.decrementAndGet();
+            }
+        }
+	}
+
 	public static void clearCaches(String entity, String entityId, String[] cachesToSkip) throws Exception
 	{	
 		clearCaches(entity, entityId, cachesToSkip, false);
@@ -799,6 +865,8 @@ public class CacheController extends Thread
 	
 	public static void clearCaches(String entity, String entityId, String[] cachesToSkip, boolean forceClear) throws Exception
 	{	
+		Timer t = new Timer();
+		
 		long wait = 0;
 		//while(RequestAnalyser.getRequestAnalyser().getNumberOfCurrentRequests() > 0)
 		while(!forceClear && RequestAnalyser.getRequestAnalyser().getNumberOfActiveRequests() > 0)
@@ -881,6 +949,13 @@ public class CacheController extends Thread
 		{
 			logger.info("Clearing some caches");
 			logger.info("entity:" + entity);
+
+		    String useSelectivePageCacheUpdateString = CmsPropertyHandler.getUseSelectivePageCacheUpdate();
+		    boolean useSelectivePageCacheUpdate = false;
+		    if(useSelectivePageCacheUpdateString != null && useSelectivePageCacheUpdateString.equalsIgnoreCase("true"))
+		        useSelectivePageCacheUpdate = true;
+		        
+		    String operatingMode = CmsPropertyHandler.getOperatingMode();
 
 			synchronized(caches)
 			{
@@ -984,12 +1059,12 @@ public class CacheController extends Thread
 					if(cacheName.startsWith("pageCache") && entity.indexOf("Registry") == -1)
 					{	
 						clear = true;
-						//selectiveCacheUpdate = true;
+						selectiveCacheUpdate = true;
 					}
 					if(cacheName.startsWith("pageCacheExtra") && entity.indexOf("Registry") == -1)
 					{	
 						clear = true;
-						//selectiveCacheUpdate = true;
+						selectiveCacheUpdate = true;
 					}
 					if(cacheName.equalsIgnoreCase("componentCache") && entity.indexOf("Registry") == -1)
 					{	
@@ -1151,17 +1226,10 @@ public class CacheController extends Thread
 						}
 						else
 						{
-						    String useSelectivePageCacheUpdateString = CmsPropertyHandler.getUseSelectivePageCacheUpdate();
-						    boolean useSelectivePageCacheUpdate = false;
-						    if(useSelectivePageCacheUpdateString != null && useSelectivePageCacheUpdateString.equalsIgnoreCase("true"))
-						        useSelectivePageCacheUpdate = true;
-						        
-						    String operatingMode = CmsPropertyHandler.getOperatingMode();
-						    
 						    GeneralCacheAdministrator cacheInstance = (GeneralCacheAdministrator)e.getValue();
 						    synchronized(cacheInstance)
 						    {
-						    	//logger.error("clearing os cache:" + e.getKey() + " (" + cacheInstance.getCache().getSize() + ")");
+						    	//logger.error("clearing os cache:" + cacheName + ":" + e.getKey() + " (" + cacheInstance.getCache().getSize() + ")");
 
 						    	//ADD logic to flush correct on sitenode and sitenodeversion
 						    	/*
@@ -1214,20 +1282,34 @@ public class CacheController extends Thread
 						    	}
 						    	else if(selectiveCacheUpdate && entity.indexOf("Repository") > 0 && useSelectivePageCacheUpdate)
 							    {
-							    	cacheInstance.flushGroup("repository_" + entityId);
-							    	cacheInstance.flushGroup("selectiveCacheUpdateNonApplicable");
 							    	logger.info("clearing " + e.getKey() + " with group " + "repository_" + entityId);
-								}
+							    	if(cacheName.equals("pageCacheExtra"))
+							    	{
+							    		clearFileCacheForGroup(cacheInstance, "repository_" + entityId);
+							    		clearFileCacheForGroup(cacheInstance, "selectiveCacheUpdateNonApplicable");
+							    	}
+							    	else
+							    	{
+								    	cacheInstance.flushGroup("repository_" + entityId);
+								    	cacheInstance.flushGroup("selectiveCacheUpdateNonApplicable");							    		
+							    	}
+							    }
 							    else if(selectiveCacheUpdate && entity.indexOf("SiteNodeVersion") > 0)
 							    {
 							    	logger.info("Getting eventListeners...");
 							        Object cacheEntryEventListener = eventListeners.get(e.getKey() + "_cacheEntryEventListener");
 						    		Object cacheMapAccessEventListener = eventListeners.get(e.getKey() + "_cacheMapAccessEventListener");
 
-							    	logger.info("Before flushGroup...");
-
-						    		cacheInstance.flushGroup("siteNodeVersion_" + entityId);
-						    		cacheInstance.flushGroup("selectiveCacheUpdateNonApplicable");
+							    	if(cacheName.equals("pageCacheExtra"))
+							    	{
+							    		clearFileCacheForGroup(cacheInstance, "siteNodeVersion_" + entityId);
+							    		clearFileCacheForGroup(cacheInstance, "selectiveCacheUpdateNonApplicable");
+							    	}
+							    	else
+							    	{
+							    		cacheInstance.flushGroup("siteNodeVersion_" + entityId);
+							    		cacheInstance.flushGroup("selectiveCacheUpdateNonApplicable");
+							    	}
 							    	logger.info("clearing " + e.getKey() + " with group " + "siteNodeVersion_" + entityId);
 							    	
 							    	try
@@ -1237,7 +1319,10 @@ public class CacheController extends Thread
 								    	if(siteNodeId != null)
 							    		{
 									    	logger.info("Before flushGroup2...");
-							    			cacheInstance.flushGroup("siteNode_" + siteNodeId);
+							    			if(cacheName.equals("pageCacheExtra"))
+									    		clearFileCacheForGroup(cacheInstance, "siteNode_" + siteNodeId);
+							    			else
+							    				cacheInstance.flushGroup("siteNode_" + siteNodeId);
 									    	logger.info("After flushGroup2...");
 							    		}
 							    	}
@@ -1248,8 +1333,16 @@ public class CacheController extends Thread
 							    }
 							    else if(selectiveCacheUpdate && (entity.indexOf("SiteNode") > 0 && entity.indexOf("SiteNodeTypeDefinition") == -1) && useSelectivePageCacheUpdate)
 							    {
-							    	cacheInstance.flushGroup("siteNode_" + entityId);
-							    	cacheInstance.flushGroup("selectiveCacheUpdateNonApplicable");
+							    	if(cacheName.equals("pageCacheExtra"))
+							    	{
+							    		clearFileCacheForGroup(cacheInstance, "siteNode_" + entityId);
+							    		clearFileCacheForGroup(cacheInstance, "selectiveCacheUpdateNonApplicable");
+							    	}
+							    	else
+							    	{
+								    	cacheInstance.flushGroup("siteNode_" + entityId);
+								    	cacheInstance.flushGroup("selectiveCacheUpdateNonApplicable");
+							    	}
 							    	logger.info("clearing " + e.getKey() + " with group " + "siteNode_" + entityId);
 								}
 							    else if(selectiveCacheUpdate && entity.indexOf("ContentVersion") > 0 && useSelectivePageCacheUpdate)
@@ -1260,8 +1353,16 @@ public class CacheController extends Thread
 
 							    	logger.info("Before flushGroup...");
 
-						    		cacheInstance.flushGroup("contentVersion_" + entityId);
-						    		cacheInstance.flushGroup("selectiveCacheUpdateNonApplicable");
+							    	if(cacheName.equals("pageCacheExtra"))
+							    	{
+							    		clearFileCacheForGroup(cacheInstance, "contentVersion_" + entityId);
+							    		clearFileCacheForGroup(cacheInstance, "selectiveCacheUpdateNonApplicable");
+							    	}
+							    	else
+							    	{
+							    		cacheInstance.flushGroup("contentVersion_" + entityId);
+							    		cacheInstance.flushGroup("selectiveCacheUpdateNonApplicable");
+							    	}
 							    	logger.info("clearing " + e.getKey() + " with group " + "contentVersion_" + entityId);
 							    	
 							    	try
@@ -1271,7 +1372,11 @@ public class CacheController extends Thread
 								    	if(contentId != null)
 							    		{
 									    	logger.info("Before flushGroup2...");
-							    			cacheInstance.flushGroup("content_" + contentId);
+									    	if(cacheName.equals("pageCacheExtra"))
+									    		clearFileCacheForGroup(cacheInstance, "content_" + contentId);
+									    	else
+									    		cacheInstance.flushGroup("content_" + contentId);
+
 									    	logger.info("After flushGroup2...");
 							    		}
 							    	}
@@ -1283,8 +1388,16 @@ public class CacheController extends Thread
 							    }
 							    else if(selectiveCacheUpdate && (entity.indexOf("Content") > 0 && entity.indexOf("ContentTypeDefinition") == -1) && useSelectivePageCacheUpdate)
 							    {
-							    	cacheInstance.flushGroup("content_" + entityId);
-							    	cacheInstance.flushGroup("selectiveCacheUpdateNonApplicable");
+							    	if(cacheName.equals("pageCacheExtra"))
+							    	{
+							    		clearFileCacheForGroup(cacheInstance, "content_" + entityId);
+							    		clearFileCacheForGroup(cacheInstance, "selectiveCacheUpdateNonApplicable");
+							    	}
+							    	else
+							    	{
+								    	cacheInstance.flushGroup("content_" + entityId);
+								    	cacheInstance.flushGroup("selectiveCacheUpdateNonApplicable");
+							    	}
 							    	logger.info("clearing " + e.getKey() + " with group " + "content_" + entityId);
 							    	//System.out.println("clearing " + e.getKey() + " with group " + "content_" + entityId);
 								}
@@ -1321,6 +1434,7 @@ public class CacheController extends Thread
 								}
 							    else
 							    {
+							    	//System.out.println("Flushing all:" + cacheName);
 							    	cacheInstance.flushAll();
 							    	eventListeners.remove(cacheName + "_cacheEntryEventListener");
 								    eventListeners.remove(cacheName + "_cacheMapAccessEventListener");
@@ -1341,9 +1455,19 @@ public class CacheController extends Thread
 					}
 				}
 			}
+			
+    		if(!useSelectivePageCacheUpdate)
+    		{
+    			System.out.println("Clearing all pageCaches");
+    			CacheController.clearFileCaches("pageCache");
+    		}
+
 		}
 				
 		logger.info("clearCaches stop");
+		long time = t.getElapsedTime();
+		if(time > 3000)
+			logger.warn("clearCaches took long time:" + time);
 	}
 	
 	private static void printThreads()
@@ -1559,7 +1683,6 @@ public class CacheController extends Thread
 			db.close();			
 		}
 	}	
-
 	
 	public static void clearCache(Class type, Object[] ids, Database db) throws Exception
 	{
@@ -2144,7 +2267,9 @@ public class CacheController extends Thread
     	Timer t = new Timer();
     	if(!logger.isInfoEnabled())
     		t.setActive(false);
-    	
+
+		String compressPageCache = CmsPropertyHandler.getCompressPageCache();
+
     	String contents = null;
     	try
     	{
@@ -2163,8 +2288,19 @@ public class CacheController extends Thread
 		            //System.out.println("diff:" + (now - updateDateTime) / 1000);
 		            if((now - updateDateTime) / 1000 < updateInterval)
 		            {
-		            	//System.out.println("getting file anyway:" + updateInterval);
-		            	contents = FileHelper.getFileAsString(file, charEncoding);
+		            	if(cacheName.equals("pageCache") && compressPageCache != null && compressPageCache.equals("true"))
+		            	{
+		            		byte[] cachedCompressedData = FileHelper.getFileBytes(file);
+	 		            	if(cachedCompressedData != null)
+	 		            		contents = compressionHelper.decompress(cachedCompressedData);		
+		            	}
+		            	else
+		            	{
+			            	//System.out.println("getting file anyway:" + updateInterval);
+			            	contents = FileHelper.getFileAsStringOpt(file);
+		            	}
+
+		            	//contents = FileHelper.getFileAsString(file, charEncoding);
 		            	t.printElapsedTime("getFileAsString took");
 		            }
 		            else
@@ -2177,7 +2313,18 @@ public class CacheController extends Thread
 	            else
 	            {
 	            	//System.out.println("getting file:" + file);
-	            	contents = FileHelper.getFileAsString(file, charEncoding);
+	            	if(cacheName.equals("pageCache") && compressPageCache != null && compressPageCache.equals("true"))
+	            	{
+	            		byte[] cachedCompressedData = FileHelper.getFileBytes(file);
+ 		            	if(cachedCompressedData != null)
+ 		            		contents = compressionHelper.decompress(cachedCompressedData);		
+	            	}
+	            	else
+	            	{
+		            	//System.out.println("getting file anyway:" + updateInterval);
+		            	contents = FileHelper.getFileAsStringOpt(file);
+	            	}
+	            	//contents = FileHelper.getFileAsString(file, charEncoding);
 	            	t.printElapsedTime("getFileAsString took");
 	            }
             }
@@ -2229,8 +2376,72 @@ public class CacheController extends Thread
 					boolean renamed = tmpOutputFile.renameTo(file);
 					if(logger.isInfoEnabled())
 		    			logger.info("renamed:" + renamed);
+					if(cacheName.equals("pageCache"))
+						numberOfPageCacheFiles.incrementAndGet();
 				}	
 			}
+    	}
+    	catch (Exception e) 
+    	{
+    		logger.warn("Problem storing data to file:" + e.getMessage());
+		}
+    }
+
+    private static void putCachedCompressedContentInFile(String cacheName, String key, byte[] value)
+    {
+    	try
+    	{
+    		String firstPart = ("" + key.hashCode()).substring(0, 3);
+            String dir = CmsPropertyHandler.getDigitalAssetPath() + File.separator + "caches" + File.separator + cacheName + File.separator + firstPart;
+            File dirFile = new File(dir);
+            dirFile.mkdirs();
+            File file = new File(dir + File.separator + key.hashCode());
+            File tmpOutputFile = new File(dir + File.separator + Thread.currentThread().getId() + "_tmp_" + key.hashCode());
+
+    		FileHelper.writeToFile(tmpOutputFile, value);
+			
+    		if(logger.isInfoEnabled())
+    			logger.info("Wrote file..");
+    		
+            if(tmpOutputFile.exists())
+			{
+				if(tmpOutputFile.length() == 0)
+				{
+					tmpOutputFile.delete();
+				}
+				else
+				{
+					if(logger.isInfoEnabled())
+		    			logger.info("Renaming file " + tmpOutputFile.getAbsolutePath() + " to " + file.getAbsolutePath());
+					if(logger.isInfoEnabled())
+		    			logger.info("file:" + file.exists() + ":" + file.length());
+					if(file.exists())
+						file.delete();
+					boolean renamed = tmpOutputFile.renameTo(file);
+					if(logger.isInfoEnabled())
+		    			logger.info("renamed:" + renamed);
+					if(cacheName.equals("pageCache"))
+						numberOfPageCacheFiles.incrementAndGet();
+				}	
+			}
+    	}
+    	catch (Exception e) 
+    	{
+    		logger.warn("Problem storing data to file:" + e.getMessage());
+		}
+    }
+
+    private static void removeCachedContentInFile(String cacheName, String key)
+    {
+    	try
+    	{
+    		String firstPart = ("" + key).substring(0, 3);
+            String dir = CmsPropertyHandler.getDigitalAssetPath() + File.separator + "caches" + File.separator + cacheName + File.separator + firstPart;
+            File dirFile = new File(dir);
+            dirFile.mkdirs();
+            File file = new File(dir + File.separator + key);
+            //System.out.println("Deleting " + file.getPath());
+            file.delete();
     	}
     	catch (Exception e) 
     	{
@@ -2281,6 +2492,7 @@ public class CacheController extends Thread
 
 	public static void clearFileCaches(String cacheName)
 	{
+		//System.out.println("clearFileCaches...");
         String dir = CmsPropertyHandler.getDigitalAssetPath() + File.separator + "caches";
         File dirFile = new File(dir);
         //System.out.println("dirFile:" + dirFile.exists());
@@ -2315,7 +2527,9 @@ public class CacheController extends Thread
                 	}
 
             		subCacheDir.delete();
-               }			                
+            	}
+            	if(cacheName.equals("pageCache") && numberOfPageCacheFiles.get() > 0)
+            		numberOfPageCacheFiles.decrementAndGet();
             }
         }
 	}
