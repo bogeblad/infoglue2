@@ -166,7 +166,7 @@ public class ViewApplicationStateAction extends InfoGlueAbstractAction
         }
         
         CacheController.clearCache(cacheName);
-        if(clearFileCache)
+        if(clearFileCache || cacheName.equals("pageCache"))
         	CacheController.clearFileCaches(cacheName);
         
         //this.getHttpSession().invalidate();
