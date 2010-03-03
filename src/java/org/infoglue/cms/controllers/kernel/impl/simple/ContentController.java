@@ -1610,14 +1610,14 @@ public class ContentController extends BaseController
         	String contentTypeINClause = "";
         	if(allowedContentTypeIds != null && allowedContentTypeIds.length > 0)
         	{
-	        	contentTypeINClause = " AND content.contentTypeDefinitionId IN LIST (";
+	        	contentTypeINClause = " AND (content.isBranch = true OR content.contentTypeDefinitionId IN LIST (";
 	        	for(int i=0; i < allowedContentTypeIds.length; i++)
 	        	{
 	        		if(i > 0)
 	        			contentTypeINClause += ",";
 	        		contentTypeINClause += "$" + (i+3);
 	        	}
-	        	contentTypeINClause += ")";
+	        	contentTypeINClause += "))";
         	}
         	
         	String showDeletedItemsClause = " AND content.isDeleted = $2";
