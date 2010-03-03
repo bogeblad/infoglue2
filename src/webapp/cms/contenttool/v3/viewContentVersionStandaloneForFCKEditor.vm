@@ -44,8 +44,11 @@
 </head>
 <body>
 	Saving and reloading...
+	
 	<script type="text/javascript">
-		#if($closeOnLoad)
+		#if($saveAndExitURL && $saveAndExitURL != "")
+			if(parent)parent.document.location.href = "$saveAndExitURL";
+		#elseif($closeOnLoad)
 			refreshCaller();
 		#elseif($publishOnLoad)
 			submitToPublish();
@@ -56,7 +59,7 @@
 
 #else
 
-#beginLightCommonToolV3("tool.contenttool.contentVersionStandaloneHeader" "$!contentVersionId" "contentId=$!contentId&languageId=$languageId" false false $!disableCloseButton)
+#beginLightCommonToolV3("tool.contenttool.contentVersionStandaloneHeader" "$!contentVersionId" "contentId=$!contentId&languageId=$languageId&saveAndExitURL=$saveAndExitURL" false false $!disableCloseButton)
 
  	#if($prefferedWYSIWYG == "ckeditor3")
 
@@ -1001,6 +1004,12 @@
 							}
 						}
 					}
+
+					function saveAndExit(url)
+					{
+						document.editForm.closeOnLoad.value = "true";
+						validateAndSubmitContentFormThenClose();		
+					}
 				
 					function validateAndSubmitContentFormThenExit()
 					{
@@ -1115,6 +1124,7 @@
 					<input type="hidden" id="versionValue" name="versionValue" value=""/>
 					<input type="hidden" id="currentEditorId" name="currentEditorId" value=""/>
 					<input type="hidden" id="attributeName" name="attributeName" value="$attributeName"/>
+					<input type="hidden" name="saveAndExitURL" value="$!saveAndExitURL">
 					<input type="hidden" name="closeOnLoad" value="false">
 					<input type="hidden" name="publishOnLoad" value="false">
 					</td>

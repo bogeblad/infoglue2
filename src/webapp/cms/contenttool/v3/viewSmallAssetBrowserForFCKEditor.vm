@@ -105,9 +105,16 @@
 	function onOk(contentId, assetKey)
 	{
 		var url = "DownloadAsset.action?contentId=" + contentId + "&languageId=$languageId&assetKey=" + assetKey;
-		window.top.opener.SetUrl( url );
-		window.top.close();
-		window.top.opener.focus();
+		if(window.top.opener)
+	    {
+			window.top.opener.SetUrl( url );
+			window.top.close();
+			window.top.opener.focus();
+		}
+		else if(parent)
+		{
+			parent.SetUrl( url );
+		}
 	}
 -->
 </script>		

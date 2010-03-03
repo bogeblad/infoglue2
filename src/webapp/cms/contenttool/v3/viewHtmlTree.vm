@@ -333,7 +333,7 @@
 		#set($par = "&parent=$rootNode.Id")
 	#end 
 		
-	var tree = new WebFXLoadTree("$rootNode.Title", "SimpleContentXml.action?showLeafs=${showLeafs}&action=SimpleContentXml.action&createAction=true&repositoryId=$!{repositoryId}$par", "javascript:htmlTreeItemClick('$rootNode.Id','${repositoryId}','$formatter.escapeExtendedHTML($rootNode.Title)');");
+	var tree = new WebFXLoadTree("$rootNode.Title", "SimpleContentXml.action?showLeafs=${showLeafs}&action=SimpleContentXml.action&createAction=true&repositoryId=$!{repositoryId}$par&$allowedContentTypeIdsAsUrlEncodedString", "javascript:htmlTreeItemClick('$rootNode.Id','${repositoryId}','$formatter.escapeExtendedHTML($rootNode.Title)');");
 	tree.myId = "$rootNode.Id";
 	document.write(tree);
 	
@@ -371,6 +371,12 @@
 				}			
 			//webFXTreeHandler.toggle(node);
 			}, 100);
+	}
+	
+	function onTreeItemDblClick(id, label)
+	{
+		if(parent.treeItemDblClick)
+			parent.treeItemDblClick(id, label);
 	}
 	
 	function onTreeItemSelect(elem)

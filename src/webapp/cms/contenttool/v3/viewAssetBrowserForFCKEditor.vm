@@ -99,13 +99,25 @@
 	function onOk(contentId, assetKey)
 	{
 		var url = "DownloadAsset.action?contentId=" + contentId + "&languageId=$languageId&assetKey=" + assetKey;
-		#if($prefferedWYSIWYG == "ckeditor3")
-			window.top.opener.CKEDITOR.tools.callFunction( '$CKEditorFuncNum', url, '');
-		#else
-			window.top.opener.SetUrl( url );
-		#end
-		window.top.close();
-		window.top.opener.focus();
+
+		if(window.top.opener)
+	    {
+			#if($prefferedWYSIWYG == "ckeditor3")
+				window.top.opener.CKEDITOR.tools.callFunction( '$CKEditorFuncNum', url, '');
+			#else
+				window.top.opener.SetUrl( url );
+			#end
+			window.top.close();
+			window.top.opener.focus();
+		}
+		else if(parent)
+		{
+			#if($prefferedWYSIWYG == "ckeditor3")
+				parent.CKEDITOR.tools.callFunction( '$CKEditorFuncNum', url, '');
+			#else
+				parent.SetUrl( url );
+			#end
+		}
 	}
 -->
 </script>		

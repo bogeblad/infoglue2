@@ -48,23 +48,46 @@
 		
 		function onOk(contentId, assetKey, assetUrl)
 		{
-			if(window.top.opener.SetUrl)
+			if(window.top.opener)
 			{
-				var url = "DownloadAsset.action?contentId=" + contentId + "&languageId=$languageId&assetKey=" + assetKey;
-				window.top.opener.SetUrl( url );
-				window.top.close();
-				window.top.opener.focus();
-			}
-			else if(window.top.onOk)
-			{
-				//alert("Setting contentId:" + contentId + " and assetKey:" + assetKey);
-				if(contentId == '' || contentId == '${select}' || assetKey == '')
+				if(window.top.opener.SetUrl)
 				{
-					alert("You must choose a content and a asset before you can save");
+					var url = "DownloadAsset.action?contentId=" + contentId + "&languageId=$languageId&assetKey=" + assetKey;
+					window.top.opener.SetUrl( url );
+					window.top.close();
+					window.top.opener.focus();
 				}
-				else
+				else if(window.top.onOk)
 				{
-				    window.top.onOk(contentId, assetKey, assetUrl);
+					//alert("Setting contentId:" + contentId + " and assetKey:" + assetKey);
+					if(contentId == '' || contentId == '${select}' || assetKey == '')
+					{
+						alert("You must choose a content and a asset before you can save");
+					}
+					else
+					{
+					    window.top.onOk(contentId, assetKey, assetUrl);
+					}
+				}
+			}
+			else
+			{
+				if(parent.SetUrl)
+				{
+					var url = "DownloadAsset.action?contentId=" + contentId + "&languageId=$languageId&assetKey=" + assetKey;
+					parent.SetUrl( url );
+				}
+				else if(parent.onOk)
+				{
+					//alert("Setting contentId:" + contentId + " and assetKey:" + assetKey);
+					if(contentId == '' || contentId == '${select}' || assetKey == '')
+					{
+						alert("You must choose a content and a asset before you can save");
+					}
+					else
+					{
+					    parent.onOk(contentId, assetKey, assetUrl);
+					}
 				}
 			}
 		}

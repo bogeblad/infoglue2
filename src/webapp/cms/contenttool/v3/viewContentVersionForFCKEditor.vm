@@ -378,10 +378,6 @@
 	-->
 	</script>
 	
-	#*
-	<link rel="stylesheet" href="${root}/css/v3/tabs.css" type="text/css" media="screen" title="IG (Default)">
-	<link rel="stylesheet" href="${root}/css/cms.css" type="text/css" media="screen" title="IG (Default)">
-	*# 
 	<style type="text/css">
 		#contentVersionDiv > div, #contentVersionCategoriesDiv > div 
 		{
@@ -1163,6 +1159,15 @@
 	    				#end
 	    				
 	    				<script type="text/javascript">
+
+	    					/*
+	    					 * This method is a hook
+	    					 */	
+	    					 	
+	    					function save()
+	    					{
+	    						validateAndSubmitContentForm();
+	    					}
 	    								
 	    					/*
 	    					 * This method is a hook
