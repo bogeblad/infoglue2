@@ -1,4 +1,4 @@
-<!-- $Id: actions.xml,v 1.95 2010/02/25 12:23:35 mattias Exp $ -->
+<!-- $Id: actions.xml,v 1.96 2010/03/03 22:21:25 mattias Exp $ -->
 <actions>
 
 	<!-- MySettings -->
@@ -1008,7 +1008,7 @@
 		<view name="successXMLV3">ExtendedRedirect.action?url=ViewContentVersion!asXMLV3.action?#contentVersionId#contentId#repositoryId</view>
 		<!--<view name="success">ViewContentVersion.action</view>-->
 		<view name="background">ViewContentVersion!background.action</view>
-		<view name="standalone">ExtendedRedirect.action?url=ViewContentVersion!standalone.action#contentVersionId#contentId#languageId#attributeName#currentEditorId#concurrentModification#oldModifiedDateTime#closeOnLoad#publishOnLoad</view>
+		<view name="standalone">ExtendedRedirect.action?url=ViewContentVersion!standalone.action#contentVersionId#contentId#languageId#attributeName#currentEditorId#concurrentModification#oldModifiedDateTime#closeOnLoad#publishOnLoad#saveAndExitURL</view>
 		<!--<view name="standalone">ViewContentVersion!standalone.action</view>-->
 		<view name="saveAndExit">ViewContent.action?stay=true</view>
 		<view name="saveAndExitStandalone">ViewContent!standalone.action</view>
@@ -1093,13 +1093,13 @@
 	</action>
 	<action name="org.infoglue.cms.applications.contenttool.wizards.actions.CreateContentWizardInputContentAction" alias="CreateContentWizardInputContent">
 		<view name="input">/cms/contenttool/v3/createContentWizard/createContentWizardInputContent.vm</view>
-		<view name="success">CreateContentWizardFinish.action</view>
+		<view name="success">CreateContentWizardFinish!V3.action</view>
 		<view name="error">/cms/common/error.vm</view>
 		<view name="accessDenied">/cms/contenttool/viewConstraintException.vm</view>
 	</action>
 	<action name="org.infoglue.cms.applications.contenttool.wizards.actions.CreateContentWizardInputAssetsAction" alias="CreateContentWizardInputAssets">
 		<view name="input">/cms/contenttool/v3/createContentWizard/createContentWizardInputAssets.vm</view>
-		<view name="success">CreateContentWizardFinish.action</view>
+		<view name="success">CreateContentWizardFinish!V3.action</view>
 		<view name="error">/cms/common/error.vm</view>
 		<view name="accessDenied">/cms/contenttool/viewConstraintException.vm</view>
 	</action>
@@ -1107,7 +1107,7 @@
 		<view name="inputAssets">CreateContentWizardInputAssets!input.action</view>
 		<view name="inputContentVersions">/cms/contenttool/v3/createContentWizard/createContentWizardInputContentVersions.vm</view>
 		<view name="inputContentVersionsForFCKEditor">/cms/contenttool/wizards/createContentWizardInputContentVersionsForFCKEditor.vm</view>
-		<view name="success">CreateContentWizardFinish.action?versionDone=true</view>
+		<view name="success">CreateContentWizardFinish!V3.action?versionDone=true</view>
 		<view name="error">/cms/contenttool/wizards/error.vm</view>
 		<view name="accessDenied">/cms/contenttool/viewConstraintException.vm</view>
 	</action>
@@ -1115,8 +1115,8 @@
 		<view name="stateLocation">CreateContentWizardChooseParent.action</view>
 		<view name="inputContent">CreateContentWizardInputContent!input.action</view>
 		<view name="inputAssets">CreateContentWizardInputAssets!input.action?contentVersionId=${contentVersionId}&amp;inputMoreAssets=${inputMoreAssets}</view>
-		<view name="inputContentVersions">CreateContentWizardInputContentVersions!input.action?contentVersionId=${contentVersionId}</view>
-		<view name="inputContentVersionsForFCKEditor">CreateContentWizardInputContentVersions!input.action?contentVersionId=${contentVersionId}</view>
+		<view name="inputContentVersionsForFCKEditor">ViewContentVersion!standalone.action?contentVersionId=${contentVersionId}&amp;saveAndExitURL=${encodedRefreshAddress}</view>
+		<!--  <view name="inputContentVersionsForFCKEditor">CreateContentWizardInputContentVersions!input.action?contentVersionId=${contentVersionId}</view>-->
 		<view name="success">ViewContent.action</view>
 		<view name="error">/cms/common/error.vm</view>
 		<view name="accessDenied">/cms/contenttool/viewConstraintException.vm</view>
