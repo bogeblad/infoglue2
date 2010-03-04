@@ -947,6 +947,15 @@
 				
 				<script type="text/javascript">
 										
+					/*
+					 * This method is a hook
+					 */	
+					 	
+					function save()
+					{
+						validateAndSubmitContentForm();
+					}
+								
 					function validateAndSubmitContentForm()
 					{
 						if(allowSave == false)

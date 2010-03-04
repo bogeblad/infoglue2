@@ -123,9 +123,10 @@
 	<link rel="stylesheet" type="text/css" href="css/v3/infoglue.css" />
 	<link rel="stylesheet" type="text/css" href="css/skins/${theme}/menu.css" />
 	<link type="text/css" rel="stylesheet" href="script/xloadtree/xtree.css" />
-	
+
 </head>
 <body class="generaltooledit" onload="if(parent.notifyIsLoaded)parent.notifyIsLoaded();parent.notifyExp('${exp}');loaded();" style="margin:0px">
+
 
 	<!-- NEW DYNAMIC VERSION -->
 	<script type="text/javascript">
@@ -196,7 +197,7 @@
 	
 	function onTreeItemSelect(elem)
 	{
-		//alert("elem:" + elem);
+		/*
 		var aid = elem + "-anchor";
 		if (oldSelected != null)
 			oldSelected.className = "";
@@ -208,7 +209,7 @@
 			srcIdLink.className = "selected";
 
 		// alert(srcIdLink.className);
-		
+		*/		
 	}
 	-->
 	</script>	

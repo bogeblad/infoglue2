@@ -246,6 +246,9 @@ public class ToolbarController
 			if(toolbarKey.equalsIgnoreCase("tool.contenttool.contentPropertiesHeader"))
 				return getCommonFooterSaveOrSaveAndExitOrCloseButton(toolbarKey, principal, locale, request, disableCloseButton, "ViewContentProperties!saveAndExitV3.action");
 
+			if(toolbarKey.equalsIgnoreCase("tool.structuretool.choosePageLabel"))
+				return getCommonFooterSaveOrCloseButton(toolbarKey, principal, locale, request, disableCloseButton);
+			
 			if(toolbarKey.equalsIgnoreCase("tool.structuretool.siteNodeDetailsHeader"))
 				return getSiteNodeFooterButtons(toolbarKey, principal, locale, request, disableCloseButton);
 

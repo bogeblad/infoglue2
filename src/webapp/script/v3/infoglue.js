@@ -120,6 +120,26 @@ function getWindowWidth()
 	return x;
 }
 
+function resizeInlineTabDivsImproved()
+{
+	var dimensionsWidth = $(window).width();
+	var dimensionsHeight = $(window).height();
+  	//alert("dimensionsWidth:" + dimensionsWidth);
+  	if(dimensionsWidth != 0)
+  	{
+		$(".inlineTabDiv").height(dimensionsHeight - 160);
+  		$(".inlineTabDiv").width(dimensionsWidth - 16);
+		$(".inlineSubTabDiv").height(dimensionsHeight - 220);
+		$(".inlineSubTabDiv").width(dimensionsHeight - 40);
+		$(".inlineTabDiv > iframe").height(dimensionsHeight - 170).width(dimensionsWidth - 16);
+		$(".inlineSubTabDiv > iframe").width(dimensionsWidth - 60);
+	}
+	else
+	{
+		setTimeout("resizeInlineTabDivs()", 300);
+	}
+}
+
 function resizeInlineTabDivs()
 {
 	var dimensionsWidth = $(window).width();
@@ -177,6 +197,51 @@ function resizeInlineTabDivsOnOffset(elementId)
 	}
 }
 
+function resizeInlineTabDivsFullOnPosition(elementId)
+{
+	var dimensionsWidth = $(window).width();
+	var dimensionsHeight = $(window).height();
+  	//alert("dimensionsWidth:" + dimensionsWidth);
+  	//alert("dimensionsHeight:" + dimensionsHeight);
+  	if(dimensionsWidth != 0)
+  	{
+  		var elemTop = $("#" + elementId).offset().top;
+  		//alert("elemTop on " + $(element).attr("id") + ":" + elemTop);
+		
+		var elemHeightFooter = $("#footertoolbar").height();
+  		
+  		var positionIframeTop = 0;
+  		var positionIframeLeft = 0;
+  		var iframes = $(".inlineTabDiv > div > iframe");
+  		var iframesAlt = $(".inlineTabDiv > iframe");
+  		if(iframes.size() > 0)
+  		{
+  			var marginsHeight = parseInt(iframes.parent().css("margin-top")) + parseInt(iframes.parent().css("margin-bottom"));
+  			var marginsWidth = parseInt(iframes.parent().css("margin-left")) + parseInt(iframes.parent().css("margin-right"));
+  	  		positionIframeTop = iframes.position().top + marginsHeight;
+  	  		positionIframeLeft = iframes.offset().left + marginsWidth;
+ 		}
+  		else if(iframesAlt.size() > 0)
+  		{
+  			var marginsHeight = parseInt(iframesAlt.parent().css("margin-top")) + parseInt(iframesAlt.parent().css("margin-bottom"));
+ 			var marginsWidth = parseInt(iframesAlt.parent().css("margin-left")) + parseInt(iframesAlt.parent().css("margin-right"));
+  	  		positionIframeTop = iframesAlt.position().top + marginsHeight;
+  	  		positionIframeLeft = iframesAlt.offset().left + marginsWidth;
+  		}
+
+  		var iframeHeight = dimensionsHeight - elemTop - elemHeightFooter - positionIframeTop;
+  		
+  		$("#" + elementId).height(dimensionsHeight - elemTop - elemHeightFooter); //.width(dimensionsWidth - positionIframeLeft);
+  		$(".inlineTabDiv > iframe").height(iframeHeight).width(dimensionsWidth - positionIframeLeft);
+  		$(".inlineTabDiv > div > iframe").height(iframeHeight).width(dimensionsWidth - positionIframeLeft);
+  		
+  		$(".inlineTabDiv iframe iframe").height(iframeHeight);
+	}
+	else
+	{
+		setTimeout("resizeInlineTabDivsFullOnPosition('" + elementId + "')", 500);
+	}
+}
 function resizeInlineTabDivsWithoutSubDivs(yMinus, xMinus)
 {
 	var dimensionsWidth = $(window).width();
@@ -244,9 +309,24 @@ function resizeScrollArea()
   	//alert("dimensionsHeight:" + (dimensionsHeight - 78));
   	if(dimensionsWidth != 0)
   	{
-  		var toolbarHeight = 0 + $("#footertoolbar").height() + $("#menutoolbar").height();
-  		$(".igScrollArea").css("height", dimensionsHeight - toolbarHeight);
-		//$(".igScrollArea").css("width", dimensionsWidth);
+  		var footertoolbarHeight = $("#footertoolbar").height();
+  		var menutoolbarHeight = $("#menutoolbar").height();
+  		var toolbarHeight = 0 + footertoolbarHeight + menutoolbarHeight;
+  		$(".igScrollArea").height(dimensionsHeight - toolbarHeight);
+  		
+  		var positionIframeTop = 0;
+  		var positionIframeLeft = 0;
+  		var iframes = $(".igScrollArea > p > iframe");
+  		if(iframes.size() > 0)
+  		{
+  			var marginsHeight = parseInt(iframes.parent().css("margin-top")) + parseInt(iframes.parent().css("margin-bottom"));
+  			var marginsWidth = parseInt(iframes.parent().css("margin-left")) + parseInt(iframes.parent().css("margin-right"));
+  	  		positionIframeTop = iframes.position().top + marginsHeight;
+  	  		positionIframeLeft = iframes.offset().left + marginsWidth;
+  	  		
+  	  		var iframeHeight = dimensionsHeight - $("#footertoolbar").height() - positionIframeTop;
+  	  		$(".igScrollArea > p > iframe").height(iframeHeight); //.width(dimensionsWidth - positionIframeLeft);
+ 		}
 	}
 	else
 	{

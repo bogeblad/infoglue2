@@ -1,35 +1,51 @@
-<?xml version="1.0" encoding="UTF-8"?> 
+#define( $headerMarkup )
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<style type="text/css">
 
-<html>
-<head>
-	<title>$ui.getString("tool.structuretool.choosePageLabel")</title>
-	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-
-	<script language="JavaScript"> 
-		window.resizeTo(400,600);
-	</script> 
+	#tabsContainer {
+		position: relative; 
+	}
 	
-	<script type="text/javascript" language="JavaScript">
+	#basicTab > div, #search > div {
+		margin: 8px 0px 0px 8px;
+		position: relative; 
+	}
+
+	label {
+		margin-top: 6px;
+		margin-bottom: 2px;
+		display: block;
+		float: left;
+		width: 100%;
+	}
+
+	input, select {
+		margin-bottom: 4px;
+	}
+			
+	.ui-tabs .ui-tabs-panel {
+		padding: 0px;
+		background-color: #F6F6F6;
+	}
+</style>
+
+	<script type="text/javascript">
 	<!-- 
-		var exp;
-	
-	    function notifyExp(v)
+	    function notifyIsLoaded()
 	    {
-	    	// The html tree notifies this page about the
-	    	// current expansion key, so that we can reload
-	    	// the tree with the same expansion.
-	    	exp=v;
 	    }
 	    
-		function changeRepository(selectBox)
+	    function notifyExp(v)
+	    {
+	    }
+      	
+		function htmlTreeItemClick(itemId, repoId, path)
 		{
-			var repositoryId = selectBox.value;
-			var url = "${currentAction}?repositoryId=" + repositoryId + "&siteNodeId=$siteNodeId&languageId=$languageId&contentId=$contentId&componentId=$componentId&propertyName=$propertyName&tree=$tree&showSimple=$showSimple&showDecorated=$!showDecorated";
-			document.location.href = url;
+			document.inputForm.entityId.value = itemId;
+		 	document.inputForm.repositoryId.value = repoId;
+		 	document.inputForm.path.value = path;	
 		}
-		
+	
 		function loadMainArea(entityId, repositoryId, path)
 		{
 			document.inputForm.entityId.value = entityId;
@@ -37,13 +53,31 @@
 		 	document.inputForm.path.value = path;	
 		}
 	    
+	    function changeRepository(selectBox)
+		{
+			var repositoryId = selectBox.value;
+			var url = "${currentAction}?repositoryId=" + repositoryId + "&siteNodeId=$siteNodeId&languageId=$languageId&contentId=$contentId&componentId=$componentId&propertyName=$propertyName&tree=$tree&showSimple=$showSimple&showDecorated=$!showDecorated";
+			document.location.href = url;
+		}
+	    
+		function treeItemDblClick(id, label)
+      	{
+      		submitBindning();
+      	}
+	    
+	    function save()
+		{
+			submitBindning();
+		}
+
 	    function submitBindning()
 		{
-		    //alert("Here we commit the binding and close the window...");
+			//alert("Here we commit the binding and close the window...");
 			entityId = document.inputForm.entityId.value;
+			
 			if(entityId == '' || entityId == '${select}')
 			{
-				alert("You must choose a page to add");
+				alert("You must choose a content before you can save");
 			}
 			else
 			{
@@ -57,77 +91,53 @@
 				qualifyerXML += "</qualifyer>";
 				 		    
 			    var url = "ViewSiteNodePageComponents!addComponentPropertyBinding.action?siteNodeId=$siteNodeId&languageId=$languageId&contentId=-1&entity=SiteNode&entityId=" + entityId + "&componentId=$componentId&propertyName=$propertyName&showSimple=$showSimple&showDecorated=$!showDecorated&path=" + escape(path);
-			    //alert('Calling:' + url);
-			    self.opener.location.href = url;
-			    window.close();
-			    //document.inputForm.submit();
+			    if(self.opener)
+			    {
+				    self.opener.location.href = url;
+				    window.close();
+				}
+				else if(parent)
+				{
+					parent.location.href = url;
+				}
 			}
 		}
+		
 	-->
 	</script>
+#end
+
+#beginLightCommonToolV3Impl("tool.structuretool.choosePageLabel" "" "" false true $!disableCloseButton $headerMarkup)
 	
-	<link rel="stylesheet" type="text/css" href="css/cms.css" /> 
-</head>
+	#lightMenuToolbar("" $buttons $rightButtons) 
 
-<body class="generaltooledit">
-
-<table cellpadding="0" cellspacing="0" border="0" width="100%">
-<tr>
-	<td valign="top" width="100%" style="padding: 4px;">
+	<div style="clear: both;"></div>
+	
+	<div id="igEditArea" class="igScrollArea">
 		
-		<table cellpadding="0" cellspacing="0" border="0" width="100%">
-		<tr class="darkapricot">
-			<td class="smalllabel">$ui.getString("tool.structuretool.choosePageForBindingLabel")</td>
-		</tr>
-		<tr>
-			<td height="1"><img src="images/trans.gif" width="1" height="5"></td>
-		</tr>		
-		<!-- 
-		HERE IS THE REPOSITORY-LIST FOR LATER 
-		-->
-		<tr>
-			<td>
-		  		<select size="1" name="repositoryId" class="sitedropbox" onChange="javascript:changeRepository(this);" class="contenttool">
-				    <option value="">$ui.getString("tool.contenttool.chooseRepositoryLabel")</option>
-				    #foreach ($repositoryVO in $repositories)
-				    <option value="$repositoryVO.getRepositoryId()">$repositoryVO.getName()</option>
-				    #end
-				</select>
-			</td>
-		</tr>
-		<tr>
-			<td height="1"><img src="images/trans.gif" width="1" height="5"></td>
-		</tr>	
-		<tr>
-			<td class="menu">   
-				<IFRAME frameborder="0" name="itreeFrame" id="itreeFrame" src="ViewStructureToolMenuHtml!bindingViewV3.action?repositoryId=${repositoryId}" width="100%" height="426" ></IFRAME>
-			</td>
-		</tr>	
-		<tr>
-			<td colspan="3"><img src="images/trans.gif" width="1" height="5"></td>
-		</tr>
-		<tr>
-			<td colspan="3">
-				<a href="javascript:submitBindning();"><img src="$ui.getString("images.structuretool.buttons.save")" border="0"></a>
-				<a href="javascript:window.close();"><img src="$ui.getString("images.structuretool.buttons.cancel")" border="0"></a>
-			</td>
-		</tr>
-		<tr>
-			<td>
-			</td>
-		</tr>		
-		</table>
+		<h3>$ui.getString("tool.structuretool.choosePageForBindingLabel")</h3>
+		
+		<p>
+			<select size="1" name="repositoryId" class="sitedropbox" onchange="changeRepository(this);">
+			    <option value="">$ui.getString("tool.contenttool.chooseRepositoryLabel")</option>
+			    #foreach ($repositoryVO in $repositories)
+			    <option value="$repositoryVO.getRepositoryId()">$repositoryVO.getName()</option>
+			    #end
+			</select>
+		<p>
+		
+		<p>
+			<iframe frameborder="0" name="itreeFrame" id="itreeFrame" src="ViewStructureToolMenuHtml!bindingViewV3.action?repositoryId=${repositoryId}" width="100%" height="426" ></iframe>
+		</p>
+	</div>
 	
-	</td>	
-</tr>
-</table>
+	#lightFooterToolbar($footerButtons)
+	
+	<form name="inputForm" action="CreateServiceBinding.action">
+		<input type="hidden" name="entityId" value="">
+		<input type="hidden" name="repositoryId" value="">
+		<input type="hidden" name="path" value="">
+		<input type="hidden" name="qualifyerXML" value="">
+	</form>
 
-<form name="inputForm" action="CreateServiceBinding.action">
-	<input type="hidden" name="entityId" value="">
-	<input type="hidden" name="repositoryId" value="">
-	<input type="hidden" name="path" value="">
-	<input type="hidden" name="qualifyerXML" value="">
-</form>
-
-</body>
-</html>
+#endLightCommonToolV3()

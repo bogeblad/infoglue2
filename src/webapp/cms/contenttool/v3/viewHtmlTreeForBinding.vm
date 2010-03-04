@@ -58,9 +58,9 @@
 				var pathArr = path.split(',');
 				
 				expandTreeRec(pathArr, 0);
-			}	
+			}		
 			
-			setTimeout("markSelected('${select}')", 500);
+			setTimeout("markSelected('${select}')", 500);	
 		}
 		
 		function expandTreeRec(pathArr, level)
@@ -127,9 +127,8 @@
 	<link rel="stylesheet" type="text/css" href="css/skins/${theme}/menu.css" />
 
 	<link type="text/css" rel="stylesheet" href="script/xloadtree/xtree.css" />
-	
 </head>
-<body class="generaltooledit" onload="if(parent.notifyIsLoaded)parent.notifyIsLoaded();if(parent.notifyExp)parent.notifyExp('${exp}');loaded();" style="margin:0px">
+<body class="generaltooledit" onload="if(parent.notifyIsLoaded)parent.notifyIsLoaded();if(parent.notifyExp)parent.notifyExp('${exp}');loaded();">
 
 	<!-- NEW DYNAMIC VERSION -->
 	<script type="text/javascript">
@@ -139,8 +138,7 @@
 			webFXTreeConfig.contentTypeIcons["$customContentTypeIcon.key"] = "$customContentTypeIcon.value";
 		#end
 	#end
-	
-	
+		
 	//webFXTreeConfig.rootIcon		= "images/tree/contentRoot.gif"; // "script/xloadtree/images/xp/folder.png";
 	//webFXTreeConfig.openRootIcon	= "images/tree/contentRoot.gif"; // "script/xloadtree/images/xp/openfolder.png";
 	webFXTreeConfig.rootIcon		= "script/xloadtree/images/xp/folder.png"; // "script/xloadtree/images/xp/folder.png";
@@ -199,6 +197,7 @@
 
 	function onTreeItemSelect(elem)
 	{
+		/*
 		var aid = elem + "-anchor";
 		if (oldSelected != null)
 			oldSelected.className = "";
@@ -210,7 +209,7 @@
 			srcIdLink.className = "selected";
 
 		// alert(srcIdLink.className);
-		
+		*/	
 	}
 	-->
 	</script>	

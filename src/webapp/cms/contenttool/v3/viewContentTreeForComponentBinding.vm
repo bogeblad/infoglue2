@@ -126,14 +126,7 @@
 		}
 
 		$(document).ready(function(){
-			$("#tabsContainer").tabs({ show:function(event, ui) { resizeInlineTabDivsOnOffset(ui.panel.id); /*resizeInlineTabDivs();*/} });
-			//setTimeout("resizeInlineTabDivsWithoutSubDivs(138, 16);", 100);
-			//setTimeout("resizeInlineTabDivs()", 100);
-			//alert("OffsetSelect:" + $(".inlineTabDiv").offset().top + ":" + $(".inlineTabDiv").position().top);
-			//alert("OffsetSelect:" + $("#tabsContainer").offset().top + ":" + $("#tabsContainer").position().top);
-			//alert("OffsetSelect:" + $("h3").offset().top + ":" + $("h3").position().top);
-			//alert("OffsetSelect:" + $("h4").offset().top + ":" + $("h4").position().top);
-			//alert("OffsetSelect:" + $("h5").offset().top + ":" + $("h5").position().top);
+			$("#tabsContainer").tabs({ show:function(event, ui) { resizeInlineTabDivsFullOnPosition(ui.panel.id);} });
 		});
 
 	-->
