@@ -176,9 +176,9 @@ public class ThreadMonitor implements Runnable
 			printThread();
 			if(kill)
 			{
-				logger.warn("Trying to kill thread with id:" + targetThread.getId());
+				logger.warn("Trying to kill thread with id:" + targetThread.getId() + " but did not as it can cause deadlocks etc.");
 				//targetThread.interrupt();
-				targetThread.stop();
+				//targetThread.stop(); //Never kill thread - it can cause other problems
 			}
 			done();
 			isDoneRunning.set(false);
