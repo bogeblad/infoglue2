@@ -263,7 +263,7 @@ public class ExpireCacheJob implements Job
 	                		int targetDiff = 48;
 	                		if(subCacheDir.getName().equals("pageCache"))
 	                			targetDiff = 6 + (int)(Math.random() * ((12 - 6) + 1));
-	                		System.out.println("targetDiff:" + targetDiff);
+	                		logger.info("targetDiff:" + targetDiff);
 	                		
 		                	if(subCacheDir.isDirectory())
 		                	{
