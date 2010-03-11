@@ -557,7 +557,7 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 			{
 			    templateController.getDeliveryContext().setContentType("text/html");
 			    templateController.getDeliveryContext().setDisablePageCache(true);
-			    componentString = "<html><head></head><body onload=\"toggleDiv('pageComponents');\">" + componentString + "</body></html>";
+			    componentString = "<html><head></head><body onload=\"toggleDiv('pageComponents');\">" + componentString + " <a href='#' onclick='if(parent && parent.closeInlineDiv) parent.closeInlineDiv(); else if(parent && parent.closeDialog) parent.closeDialog(); else window.close();'>Close</a></body></html>";
 			}
 			
 			templateController.setComponentLogic(new DecoratedComponentLogic(templateController, component));
