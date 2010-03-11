@@ -606,8 +606,6 @@ public class ViewSiteNodeAction extends InfoGlueAbstractAction
 	    	System.out.println("Throwable:" + e);
 		}
     	
-		System.out.println("result:" + result);
-
 		return result;
     }
     

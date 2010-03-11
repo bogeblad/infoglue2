@@ -307,7 +307,6 @@ public class UpdateAccessRightsAction extends InfoGlueAbstractAction
 	public String doSaveAndExitV3() throws Exception
     {
 		String result = doExecute();
-		System.out.println("result:" + result);
 		if(result.equals("none"))
 			return result;
 		else

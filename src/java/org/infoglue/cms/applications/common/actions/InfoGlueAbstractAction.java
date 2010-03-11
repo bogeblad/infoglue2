@@ -252,7 +252,6 @@ public abstract class InfoGlueAbstractAction extends WebworkAbstractAction
 
 	public List getToolbarButtons(String toolbarKey, String primaryKey, String extraParameters)
 	{
-		//System.out.println("extraParameters:" + extraParameters);
 		try
 		{
 			HttpHelper helper = new HttpHelper();
@@ -280,7 +279,6 @@ public abstract class InfoGlueAbstractAction extends WebworkAbstractAction
 	
 	public List getFooterToolbarButtons(String toolbarKey, String primaryKey, String extraParameters, boolean disableCloseButton)
 	{
-		System.out.println("extraParameters:" + extraParameters);
 		try
 		{
 			HttpHelper helper = new HttpHelper();
@@ -290,7 +288,6 @@ public abstract class InfoGlueAbstractAction extends WebworkAbstractAction
 			{
 				String key = (String)extraParametersMapIterator.next();
 				String value = (String)extraParametersMap.get(key);
-				System.out.println("" + key + "=" + value);
 				getRequest().setAttribute(key, value);
 			}
 		}

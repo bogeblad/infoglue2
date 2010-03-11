@@ -241,7 +241,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
 	    	boolean isUserRedirected = false;
 			Integer protectedSiteNodeVersionId = this.nodeDeliveryController.getProtectedSiteNodeVersionIdForPageCache(dbWrapper.getDatabase(), siteNodeId);
 			Integer forceProtocolChangeSetting = this.nodeDeliveryController.getForceProtocolChangeSettingForPageCache(dbWrapper.getDatabase(), siteNodeId);
-			System.out.println("forceProtocolChangeSetting:" + forceProtocolChangeSetting);
+			//System.out.println("forceProtocolChangeSetting:" + forceProtocolChangeSetting);
 			
 			if(logger.isInfoEnabled())
 				logger.info("protectedSiteNodeVersionId:" + protectedSiteNodeVersionId);
