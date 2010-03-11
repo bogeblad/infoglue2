@@ -124,9 +124,9 @@
 
 	<link rel="stylesheet" type="text/css" href="css/cms.css" /> 
 	<link rel="stylesheet" type="text/css" href="css/v3/infoglue.css" />
-	<link rel="stylesheet" type="text/css" href="css/skins/${theme}/menu.css" />
 
 	<link type="text/css" rel="stylesheet" href="script/xloadtree/xtree.css" />
+	<link rel="stylesheet" type="text/css" href="css/skins/${theme}/menu.css" />
 </head>
 <body class="generaltooledit" onload="if(parent.notifyIsLoaded)parent.notifyIsLoaded();if(parent.notifyExp)parent.notifyExp('${exp}');loaded();">
 
