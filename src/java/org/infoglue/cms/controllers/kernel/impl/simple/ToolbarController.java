@@ -515,34 +515,6 @@ public class ToolbarController
 	{
 		List<ToolbarButton> buttons = new ArrayList<ToolbarButton>();
 
-		/*
-		ToolbarButton languageDropButton = new ToolbarButton("",
-															 StringUtils.capitalize(currentLanguageVO.getDisplayLanguage()), 
-															 StringUtils.capitalize(currentLanguageVO.getDisplayLanguage()),
-				  											 "",
-					  										 "images/v3/menu-button-arrow.png",
-					  										 "right",
-					  										 "dropArrow",
-					  										 false);
-		
-		Iterator repositoryLanguagesIterator = LanguageController.getController().getLanguageVOList(contentVO.getRepositoryId()).iterator();
-		while(repositoryLanguagesIterator.hasNext())
-		{
-			LanguageVO languageVO = (LanguageVO)repositoryLanguagesIterator.next();
-			if(!currentLanguageVO.getId().equals(languageVO.getId()))
-			{
-				languageDropButton.getSubButtons().add(new ToolbarButton("" + languageVO.getId(),
-						 StringUtils.capitalize(languageVO.getDisplayLanguage()), 
-						 StringUtils.capitalize(languageVO.getDisplayLanguage()),
-						 "changeLanguage(" + contentVO.getId() + ", " + languageVO.getId() + ");",
-						 "",
-						 ""));
-			}
-		}
-		
-		buttons.add(languageDropButton);
-		*/
-		
 		return buttons;
 	}
 	
@@ -644,23 +616,26 @@ public class ToolbarController
 		publishButton.getSubButtons().add(submitToPublishButton);
 		buttons.add(publishButton);
 
-		ToolbarButton unpublishButton = new ToolbarButton("",
-				  getLocalizedString(locale, "tool.contenttool.toolbarV3.unpublishContentsLabel"), 
-				  getLocalizedString(locale, "tool.contenttool.toolbarV3.unpublishContentsTitle"),
-				  "UnpublishContentVersion!inputV3.action?contentId=" + contentId + "&recurseContents=false&returnAddress=ViewInlineOperationMessages.action&originalAddress=refreshParent",
-				  "",
-				  "unpublish");
-
-		ToolbarButton unpublishAllButton = new ToolbarButton("",
-				  getLocalizedString(locale, "tool.contenttool.toolbarV3.unpublishContentsAllLabel"), 
-				  getLocalizedString(locale, "tool.contenttool.toolbarV3.unpublishContentsAllTitle"),
-				  "UnpublishContentVersion!inputChooseContentsV3.action?contentId=" + contentId + "&recurseContents=false&returnAddress=ViewInlineOperationMessages.action&originalAddress=refreshParent",
-				  "",
-				  "unpublish");
-
-		unpublishButton.getSubButtons().add(unpublishAllButton);
-		buttons.add(unpublishButton);
-
+		if(ContentController.getContentController().hasPublishedVersion(contentId))
+		{
+			ToolbarButton unpublishButton = new ToolbarButton("",
+					  getLocalizedString(locale, "tool.contenttool.toolbarV3.unpublishContentsLabel"), 
+					  getLocalizedString(locale, "tool.contenttool.toolbarV3.unpublishContentsTitle"),
+					  "UnpublishContentVersion!inputV3.action?contentId=" + contentId + "&recurseContents=false&returnAddress=ViewInlineOperationMessages.action&originalAddress=refreshParent",
+					  "",
+					  "unpublish");
+	
+			ToolbarButton unpublishAllButton = new ToolbarButton("",
+					  getLocalizedString(locale, "tool.contenttool.toolbarV3.unpublishContentsAllLabel"), 
+					  getLocalizedString(locale, "tool.contenttool.toolbarV3.unpublishContentsAllTitle"),
+					  "UnpublishContentVersion!inputChooseContentsV3.action?contentId=" + contentId + "&recurseContents=false&returnAddress=ViewInlineOperationMessages.action&originalAddress=refreshParent",
+					  "",
+					  "unpublish");
+	
+			unpublishButton.getSubButtons().add(unpublishAllButton);
+			buttons.add(unpublishButton);
+		}
+		
 		if(contentVO.getIsProtected().intValue() == ContentVO.YES.intValue())
 		{
 			buttons.add(new ToolbarButton("",
@@ -908,23 +883,26 @@ public class ToolbarController
 		publishButton.getSubButtons().add(submitToPublishButton);
 		buttons.add(publishButton);
 		
-		ToolbarButton unpublishButton = new ToolbarButton("",
-				  getLocalizedString(locale, "tool.contenttool.toolbarV3.unpublishContentsLabel"), 
-				  getLocalizedString(locale, "tool.contenttool.toolbarV3.unpublishContentsTitle"),
-				  "UnpublishContentVersion!inputV3.action?contentId=" + contentId + "&recurseContents=false&returnAddress=ViewInlineOperationMessages.action&originalAddress=refreshParent",
-				  "",
-				  "unpublish");
-
-		ToolbarButton unpublishAllButton = new ToolbarButton("",
-				  getLocalizedString(locale, "tool.contenttool.toolbarV3.unpublishContentsAllLabel"), 
-				  getLocalizedString(locale, "tool.contenttool.toolbarV3.unpublishContentsAllTitle"),
-				  "UnpublishContentVersion!inputChooseContentsV3.action?contentId=" + contentId + "&recurseContents=false&returnAddress=ViewInlineOperationMessages.action&originalAddress=refreshParent",
-				  "",
-				  "unpublish");
-
-		unpublishButton.getSubButtons().add(unpublishAllButton);
-		buttons.add(unpublishButton);
-
+		if(ContentController.getContentController().hasPublishedVersion(contentId))
+		{
+			ToolbarButton unpublishButton = new ToolbarButton("",
+					  getLocalizedString(locale, "tool.contenttool.toolbarV3.unpublishContentsLabel"), 
+					  getLocalizedString(locale, "tool.contenttool.toolbarV3.unpublishContentsTitle"),
+					  "UnpublishContentVersion!inputV3.action?contentId=" + contentId + "&recurseContents=false&returnAddress=ViewInlineOperationMessages.action&originalAddress=refreshParent",
+					  "",
+					  "unpublish");
+	
+			ToolbarButton unpublishAllButton = new ToolbarButton("",
+					  getLocalizedString(locale, "tool.contenttool.toolbarV3.unpublishContentsAllLabel"), 
+					  getLocalizedString(locale, "tool.contenttool.toolbarV3.unpublishContentsAllTitle"),
+					  "UnpublishContentVersion!inputChooseContentsV3.action?contentId=" + contentId + "&recurseContents=false&returnAddress=ViewInlineOperationMessages.action&originalAddress=refreshParent",
+					  "",
+					  "unpublish");
+	
+			unpublishButton.getSubButtons().add(unpublishAllButton);
+			buttons.add(unpublishButton);
+		}
+		
 		if(contentVO.getContentTypeDefinitionId() != null)
 		{
 			ContentTypeDefinitionVO contentTypeDefinitionVO = ContentTypeDefinitionController.getController().getContentTypeDefinitionVOWithId(contentVO.getContentTypeDefinitionId());
@@ -936,6 +914,7 @@ public class ToolbarController
 						  "ViewAccessRights!V3.action?interceptionPointCategory=Component&extraParameters=" + contentId + "&returnAddress=ViewInlineOperationMessages.action&originalAddress=refreshParent",
 						  "",
 						  "componentAccessRights"));
+				
 				buttons.add(new ToolbarButton("",
 						  getLocalizedString(locale, "tool.contenttool.toolbarV3.deployComponentLabel"), 
 						  getLocalizedString(locale, "tool.contenttool.toolbarV3.deployComponentTitle"),
@@ -987,9 +966,9 @@ public class ToolbarController
 
 	private List<ToolbarButton> getContentVersionFooterButtons(String toolbarKey, InfoGluePrincipal principal, Locale locale, HttpServletRequest request, boolean disableCloseButton) throws Exception
 	{
-		System.out.println("request:" + request.getQueryString());
+		//System.out.println("request:" + request.getQueryString());
 		String saveAndExitURL = (String)request.getAttribute("saveAndExitURL");
-		System.out.println("saveAndExitURL:" + saveAndExitURL);
+		//System.out.println("saveAndExitURL:" + saveAndExitURL);
 		
 		List<ToolbarButton> buttons = new ArrayList<ToolbarButton>();
 
@@ -1122,12 +1101,15 @@ public class ToolbarController
 		ToolbarButton publishStructureButton = StructureToolbarController.getPublishButtons(siteNodeVO.getRepositoryId(), new Integer(siteNodeId), locale);
 		publishButton.getSubButtons().add(publishStructureButton);
 		buttons.add(publishButton);
-
-		ToolbarButton unpublishButton = StructureToolbarController.getUnpublishButton(siteNodeVO.getRepositoryId(), new Integer(siteNodeId), locale, true);
-		//ToolbarButton unpublishStructureButton = StructureToolbarController.getUnpublishButton(new Integer(repositoryId), new Integer(siteNodeId), locale, false);
-		//unpublishButton.getSubButtons().add(unpublishStructureButton);
-		buttons.add(unpublishButton);
-
+		
+		if(SiteNodeController.getController().hasPublishedVersion(siteNodeVO.getId()))
+		{
+			ToolbarButton unpublishButton = StructureToolbarController.getUnpublishButton(siteNodeVO.getRepositoryId(), new Integer(siteNodeId), locale, true);
+			//ToolbarButton unpublishStructureButton = StructureToolbarController.getUnpublishButton(new Integer(repositoryId), new Integer(siteNodeId), locale, false);
+			//unpublishButton.getSubButtons().add(unpublishStructureButton);
+			buttons.add(unpublishButton);
+		}
+		
 		if(siteNodeVersionVO.getIsProtected().intValue() == SiteNodeVersionVO.YES.intValue())
 		{
 			buttons.add(new ToolbarButton("",
