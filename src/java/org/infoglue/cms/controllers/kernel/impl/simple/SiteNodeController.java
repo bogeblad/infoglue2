@@ -1742,7 +1742,6 @@ public class SiteNodeController extends BaseController
             throw new SystemException(e.getMessage());
         }
         
-        System.out.println("siteNodeVOList:" + siteNodeVOList.size());
         return siteNodeVOList;
 	}
 
@@ -1995,6 +1994,30 @@ public class SiteNodeController extends BaseController
         {
         	closeDatabase(db);
         }
+	}
+	
+	/**
+	 * This method checks if there are published versions available for the siteNodeVersion.
+	 */
+	
+	public boolean hasPublishedVersion(Integer siteNodeId)
+	{
+		boolean hasPublishedVersion = false;
+		
+		try
+		{
+			SiteNodeVersionVO siteNodeVersion = SiteNodeVersionController.getLatestPublishedSiteNodeVersionVO(siteNodeId);
+			if(siteNodeVersion != null)
+			{
+				hasPublishedVersion = true;
+			}
+		}
+		catch(Exception e)
+		{
+			logger.warn("Exception when generating buttons:" + e.getMessage(), e);
+		}
+				
+		return hasPublishedVersion;
 	}
 }
  

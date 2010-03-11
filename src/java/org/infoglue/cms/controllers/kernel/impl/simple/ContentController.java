@@ -2382,8 +2382,28 @@ public class ContentController extends BaseController
             rollbackTransaction(db);
             throw new SystemException(e.getMessage());
         }
-        System.out.println("contentVOList:" + contentVOList.size());
+
         return contentVOList;
 	}
 
+	/**
+	 * This method checks if there are published versions available for the contentVersion.
+	 */
+	
+	public boolean hasPublishedVersion(Integer contentId)
+	{
+		boolean hasPublishedVersion = false;
+		
+		try
+		{
+			ContentVersion contentVersion = ContentVersionController.getContentVersionController().getLatestPublishedContentVersion(contentId);
+			if(contentVersion != null)
+			{
+				hasPublishedVersion = true;
+			}
+		}
+		catch(Exception e){}
+				
+		return hasPublishedVersion;
+	}
 }
