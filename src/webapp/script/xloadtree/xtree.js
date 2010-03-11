@@ -685,43 +685,36 @@ WebFXTreeItem.prototype.toString = function (nItem, nItemCount) {
 	}
 	var styleInfo = "";
 	var stateInfo = "";
+	var classInfo = "";
 	
 	if(this.stateId == "0") {
-		if(defaultWorkingStyleInformation && defaultWorkingStyleInformation != "")
-			styleInfo = defaultWorkingStyleInformation;
-		else
-			styleInfo = "color: green";
-	
+		classInfo = "working";
 		stateInfo = " (working)";
 		if(languageCode == "sv")
 			stateInfo = " (arbetskopia)";
 	}
-	if(this.stateId == "1"){ 
-		if(defaultFinalStyleInformation && defaultFinalStyleInformation != "")
-			styleInfo = defaultFinalStyleInformation;
-		else
-			styleInfo = "color: yellow";
-		
+	else if(this.stateId == "1"){ 
+		classInfo = "finished";
 		stateInfo = " (finished)";
 		if(languageCode == "sv")
 			stateInfo = " (slutförd)";
 	}
-	if(this.stateId == "2"){ 
-		if(defaultPublishStyleInformation && defaultPublishStyleInformation != "")
-			styleInfo = defaultPublishStyleInformation;
-		else
-			styleInfo = "color: red";
-		
+	else if(this.stateId == "2"){ 
+		classInfo = "publish";
 		stateInfo = " (publish)";
 		if(languageCode == "sv")
 			stateInfo = " (publicerbar)";
+	}
+	else
+	{
+		classInfo = "published";		
 	}
 		
 	var label = this.text.replace(/</g, '&lt;').replace(/>/g, '&gt;');
 	var str = "<div id=\"" + this.id + "\" ondblclick=\"webFXTreeHandler.toggle(this);\" class=\"webfx-tree-item\" onkeydown=\"return webFXTreeHandler.keydown(this, event)\">";
 	str += indent;
 	str += "<img id=\"" + this.id + "-plus\" src=\"" + ((this.folder)?((this.open)?((this.parentNode._last)?webFXTreeConfig.lMinusIcon:webFXTreeConfig.tMinusIcon):((this.parentNode._last)?webFXTreeConfig.lPlusIcon:webFXTreeConfig.tPlusIcon)):((this.parentNode._last)?webFXTreeConfig.lIcon:webFXTreeConfig.tIcon)) + "\" onclick=\"webFXTreeHandler.toggle(this);\">"
-	str += "<img id=\"" + this.id + "-icon\" class=\"webfx-tree-icon\" src=\"" + ((webFXTreeHandler.behavior == 'classic' && this.open)?this.openIcon:this.icon) + "\" onclick=\"onTreeItemSelect('" + this.id + "');" + this.action + "\"><a isContainer=\"" + isContainer + "\" entityId=\"" + this.myId + "\" parentEntityId=\"" + this.parentNode.myId + "\" href=\"javascript:void(" + this.myId + ");\" id=\"" + this.id + "-anchor\" oncontextmenu=\"return showContextMenu(" + this.myId + ", event)\" onclick=\"/*alert('clicked on" + this.id + "');*/ webFXTreeHandler.focus(this); onTreeItemSelect('" + this.id + "');" + this.action + "\" ondblclick=\"if(window.onTreeItemDblClick)onTreeItemDblClick('" + this.myId + "', '" + label + "');\" onfocus=\"/*alert('onfocus" + this.id + "');*/ webFXTreeHandler.focus(this);\" style=\"" + styleInfo + "\">" + label + stateInfo + "</a></div>";
+	str += "<img id=\"" + this.id + "-icon\" class=\"webfx-tree-icon\" src=\"" + ((webFXTreeHandler.behavior == 'classic' && this.open)?this.openIcon:this.icon) + "\" onclick=\"onTreeItemSelect('" + this.id + "');" + this.action + "\"><a isContainer=\"" + isContainer + "\" entityId=\"" + this.myId + "\" parentEntityId=\"" + this.parentNode.myId + "\" href=\"javascript:void(" + this.myId + ");\" id=\"" + this.id + "-anchor\" oncontextmenu=\"return showContextMenu(" + this.myId + ", event)\" onclick=\"webFXTreeHandler.focus(this); onTreeItemSelect('" + this.id + "');" + this.action + "\" ondblclick=\"if(window.onTreeItemDblClick)onTreeItemDblClick('" + this.myId + "', '" + label + "');\" onfocus=\"webFXTreeHandler.focus(this);\" class=\"" + classInfo + "\" style=\"" + styleInfo + "\">" + label + stateInfo + "</a></div>";
 	str += "<div id=\"" + this.id + "-cont\" class=\"webfx-tree-container\" style=\"display: " + ((this.open)?'block':'none') + ";\">";
 	for (var i = 0; i < this.childNodes.length; i++) {
 		str += this.childNodes[i].toString(i,this.childNodes.length);
