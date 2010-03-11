@@ -7552,7 +7552,7 @@ public class BasicTemplateController implements TemplateController
 	    else
 	    {
 	    	String editOnSiteUrl = CmsPropertyHandler.getEditOnSiteUrl();
-			String decoratedAttributeValue = "<a href=\"#\" onclick=\"window.open('" + editOnSiteUrl + "?contentId=" + contentId + "&amp;languageId=" + languageId + "&amp;attributeName=" + attributeName + "&amp;forceWorkingChange=true#" + attributeName + "Anchor', 'Edit', 'width=850,height=700,left=' + (document.body.clientWidth / 4) + ',top=50,toolbar=no,status=no,scrollbars=yes,location=no,menubar=no,directories=no,resizable=no');\">" + html + "</a>";
+			String decoratedAttributeValue = "<a href=\"#\" onclick=\"openInlineDivImpl('" + editOnSiteUrl + "?contentId=" + contentId + "&amp;languageId=" + languageId + "&amp;attributeName=" + attributeName + "&amp;forceWorkingChange=true#" + attributeName + "Anchor" + "', 900, 850, true, true); return false;\">" + html + "</a>";
 			return decoratedAttributeValue;
 	    }
 	} 
@@ -7629,7 +7629,8 @@ public class BasicTemplateController implements TemplateController
 			while(propertiesIterator.hasNext())
 			{
 				ComponentProperty propertyCandidate = (ComponentProperty)propertiesIterator.next();
-				System.out.println("propertyCandidate:" + propertyCandidate.getName());
+				if(logger.isInfoEnabled())
+					logger.info("propertyCandidate:" + propertyCandidate.getName());
 				if(propertyCandidate.getName().equals(propertyName))	
 					property = propertyCandidate;
 			}
