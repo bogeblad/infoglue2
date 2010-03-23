@@ -109,10 +109,23 @@ public class HttpUniqueRequestQueueBean
     public boolean equals(Object o)
     {
     	HttpUniqueRequestQueueBean other = (HttpUniqueRequestQueueBean)o;
-    	if(other.getUrlAddress().equals(urlAddress) && other.getSerializedParameters().equals(serializedParameters) && other.getEncoding().equals(encoding))
-    		return true;
-    	else
-    		return false;
+
+    	if(other.getEncoding() != null && encoding != null)
+       	{
+    		if(other.getUrlAddress().equals(urlAddress) && other.getSerializedParameters().equals(serializedParameters) && other.getEncoding().equals(encoding))
+    			return true;
+    		else
+    			return false;
+    	}
+    	else if(other.getEncoding() == null && encoding == null)
+    	{
+    		if(other.getUrlAddress().equals(urlAddress) && other.getSerializedParameters().equals(serializedParameters))
+    			return true;
+    		else
+    			return false;
+    	}
+    	
+    	return false;
     }
     
     public int hashCode()
