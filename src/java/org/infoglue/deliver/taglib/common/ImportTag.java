@@ -110,7 +110,10 @@ public class ImportTag extends TemplateControllerTag
 
 			if(fileCacheCharEncoding == null)
 				fileCacheCharEncoding = charEncoding;
-
+			
+			if(fileCacheCharEncoding == null)
+				fileCacheCharEncoding = "iso-8859-1";
+			
 			if(!useCache && !useFileCacheFallback)
 			{
 				if(logger.isInfoEnabled())
