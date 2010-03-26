@@ -321,14 +321,7 @@ public class CacheController extends Thread
 		    	if(cacheCapacity == null || !cacheCapacity.equals(""))
 		    		cacheCapacity = "15000";
 		    	
-		    	if(cacheName != null && cacheName.startsWith("contentAttributeCache")/* && (cacheName.indexOf("Title") > -1 || 
-		    																			  cacheName.indexOf("NiceURIName") > -1 || 
-		    																			  cacheName.indexOf("SortOrder") > -1 || 
-		    																			  cacheName.indexOf("CrumbtrailName") > -1 || 
-		    																			  cacheName.indexOf("internalPage") > -1 || 
-		    																			  cacheName.indexOf("popup") > -1 || 
-		    																			  cacheName.indexOf("hideInNavigation") > -1 ||
-		    																			  cacheName.indexOf("externalUrl") > -1)*/)
+		    	if(cacheName != null && cacheName.startsWith("contentAttributeCache"))
 		    		cacheCapacity = "100000";
 		    	//else if(cacheName != null && cacheName.startsWith("contentAttributeCache"))
 		    	//	cacheCapacity = "1000";
@@ -872,7 +865,7 @@ public class CacheController extends Thread
 		while(!forceClear && RequestAnalyser.getRequestAnalyser().getNumberOfActiveRequests() > 0)
 	    {
 	        //logger.warn("Number of requests: " + RequestAnalyser.getRequestAnalyser().getNumberOfCurrentRequests() + " was more than 0 - lets wait a bit.");
-	        if(wait > 6000 && RequestAnalyser.getRequestAnalyser().getNumberOfActiveRequests() < 6)
+	        if(wait > 3000 /*&& RequestAnalyser.getRequestAnalyser().getNumberOfActiveRequests() < 6*/)
 			{
 				logger.warn("The clearCache method waited over " + ((wait * 10) / 1000) + " seconds but there seems to be " + RequestAnalyser.getRequestAnalyser().getNumberOfCurrentRequests() + " requests blocking all the time. Continuing anyway.");
 				//printThreads();
@@ -965,8 +958,6 @@ public class CacheController extends Thread
 					logger.info("e:" + e.getKey());
 					boolean clear = false;
 					boolean selectiveCacheUpdate = false;
-					boolean clearOnContentType = false;
-					boolean clearOnRepository = false;
 					String cacheName = e.getKey().toString();
 					
 					if(cacheName.equalsIgnoreCase("serviceDefinitionCache") && entity.indexOf("ServiceBinding") > 0)
@@ -1030,8 +1021,6 @@ public class CacheController extends Thread
 					{	
 						clear = true;
 						selectiveCacheUpdate = true;
-						//clearOnContentType = true;
-						//clearOnRepository = true;
 					}
 					if(cacheName.equalsIgnoreCase("contentVersionCache") && (entity.indexOf("Content") > -1 || entity.indexOf("AccessRight") > 0 || entity.indexOf("SystemUser") > 0 || entity.indexOf("Role") > 0  || entity.indexOf("Group") > 0))
 					{	
@@ -1042,7 +1031,6 @@ public class CacheController extends Thread
 					{	
 						clear = true;
 						selectiveCacheUpdate = true;
-						//clearOnContentType = true;
 					}
 					if(cacheName.equalsIgnoreCase("referencingPagesCache") && (entity.indexOf("ContentVersion") > -1 || entity.indexOf("Qualifyer") > 0))
 					{	
@@ -1229,8 +1217,6 @@ public class CacheController extends Thread
 						    GeneralCacheAdministrator cacheInstance = (GeneralCacheAdministrator)e.getValue();
 						    synchronized(cacheInstance)
 						    {
-						    	//logger.error("clearing os cache:" + cacheName + ":" + e.getKey() + " (" + cacheInstance.getCache().getSize() + ")");
-
 						    	//ADD logic to flush correct on sitenode and sitenodeversion
 						    	/*
 						    	if(selectiveCacheUpdate && entity.indexOf("SiteNode") > 0)
@@ -1241,46 +1227,7 @@ public class CacheController extends Thread
 							    	logger.info("clearing:" + e.getKey());
 							    }
 							    */
-						    	//System.out.println("entity:" + entity);
-						    	if(clearOnRepository && entity.indexOf("ContentVersion") > 0)
-						    	{
-						    		//System.out.println("Clearing " + cacheName + " for " + entity + ":" + entityId);
-						    		Integer contentId = ContentVersionController.getContentVersionController().getContentIdForContentVersion(new Integer(entityId));
-						    		ContentVO contentVO = ContentController.getContentController().getContentVOWithId(contentId);
-						    		String matcher = "_" + contentVO.getRepositoryId();
-						    		//System.out.println("Cache should contain:" + matcher);
-						    		if(cacheName.indexOf(matcher) > -1)
-						    		{
-						    			//System.out.println("Flushing " + cacheName + " as it contained " + matcher);
-						    			cacheInstance.flushAll();
-						    		}
-						    	}
-						    	else if(clearOnContentType && entity.indexOf("ContentVersion") > 0)
-						    	{
-						    		//System.out.println("Clearing " + cacheName + " for " + entity + ":" + entityId);
-						    		Integer contentId = ContentVersionController.getContentVersionController().getContentIdForContentVersion(new Integer(entityId));
-						    		ContentVO contentVO = ContentController.getContentController().getContentVOWithId(contentId);
-						    		String matcher = "_" + contentVO.getContentTypeDefinitionId() + "_" + contentVO.getRepositoryId();
-						    		//System.out.println("Cache should contain:" + matcher);
-						    		if(cacheName.indexOf(matcher) > -1)
-						    		{
-						    			//System.out.println("Flushing " + cacheName + " as it contained " + matcher);
-						    			cacheInstance.flushAll();
-						    		}
-						    	}
-						    	else if(clearOnContentType && (entity.indexOf("Content") > 0 && entity.indexOf("ContentTypeDefinition") == -1))
-						    	{
-						    		//System.out.println("Clearing " + cacheName + " for " + entity + ":" + entityId);
-						    		ContentVO contentVO = ContentController.getContentController().getContentVOWithId(new Integer(entityId));
-						    		String matcher = "_" + contentVO.getContentTypeDefinitionId() + "_" + contentVO.getRepositoryId();
-						    		//System.out.println("Cache should contain:" + matcher);
-						    		if(cacheName.indexOf(matcher) > -1)
-						    		{
-						    			//System.out.println("Flushing " + cacheName + " as it contained " + matcher);
-						    			cacheInstance.flushAll();
-						    		}
-						    	}
-						    	else if(selectiveCacheUpdate && entity.indexOf("Repository") > 0 && useSelectivePageCacheUpdate)
+								if(selectiveCacheUpdate && entity.indexOf("Repository") > 0 && useSelectivePageCacheUpdate)
 							    {
 							    	logger.info("clearing " + e.getKey() + " with group " + "repository_" + entityId);
 							    	if(cacheName.equals("pageCacheExtra"))
@@ -1618,7 +1565,7 @@ public class CacheController extends Thread
 		while(!forceClear && RequestAnalyser.getRequestAnalyser().getNumberOfActiveRequests() > 0)
 	    {
 	        //logger.warn("Number of requests: " + RequestAnalyser.getRequestAnalyser().getNumberOfCurrentRequests() + " was more than 0 - lets wait a bit.");
-	        if(wait > 6000 && RequestAnalyser.getRequestAnalyser().getNumberOfActiveRequests() < 6)
+	        if(wait > 3000/* && RequestAnalyser.getRequestAnalyser().getNumberOfActiveRequests() < 6*/)
 			{
 				logger.warn("The clearCache method waited over " + ((wait * 10) / 1000) + " seconds but there seems to be " + RequestAnalyser.getRequestAnalyser().getNumberOfCurrentRequests() + " requests blocking all the time. Continuing anyway.");
 				//printThreads();
@@ -1695,7 +1642,7 @@ public class CacheController extends Thread
 	    //while(RequestAnalyser.getRequestAnalyser().getNumberOfCurrentRequests() > 0)
 	    while(!forceClear && RequestAnalyser.getRequestAnalyser().getNumberOfActiveRequests() > 0)
 	    {
-	        if(wait > 6000 && RequestAnalyser.getRequestAnalyser().getNumberOfActiveRequests() < 6)
+	        if(wait > 3000/* && RequestAnalyser.getRequestAnalyser().getNumberOfActiveRequests() < 6*/)
 			{
 				logger.warn("The clearCache method waited over " + ((wait * 10) / 1000) + " seconds but there seems to be " + RequestAnalyser.getRequestAnalyser().getNumberOfCurrentRequests() + " requests blocking all the time. Continuing anyway.");
 				//printThreads();
@@ -2492,7 +2439,6 @@ public class CacheController extends Thread
 
 	public static void clearFileCaches(String cacheName)
 	{
-		//System.out.println("clearFileCaches...");
         String dir = CmsPropertyHandler.getDigitalAssetPath() + File.separator + "caches";
         File dirFile = new File(dir);
         //System.out.println("dirFile:" + dirFile.exists());
