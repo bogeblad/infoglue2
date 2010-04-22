@@ -860,25 +860,24 @@ public class CacheController extends Thread
 	{	
 		Timer t = new Timer();
 		
+		/*
 		long wait = 0;
 		//while(RequestAnalyser.getRequestAnalyser().getNumberOfCurrentRequests() > 0)
 		while(!forceClear && RequestAnalyser.getRequestAnalyser().getNumberOfActiveRequests() > 0)
 	    {
+			//System.out.println("Number of requests 1: " + RequestAnalyser.getRequestAnalyser().getNumberOfCurrentRequests() + " was more than 0 - lets wait a bit.");
 	        //logger.warn("Number of requests: " + RequestAnalyser.getRequestAnalyser().getNumberOfCurrentRequests() + " was more than 0 - lets wait a bit.");
-	        if(wait > 3000 /*&& RequestAnalyser.getRequestAnalyser().getNumberOfActiveRequests() < 6*/)
+	        if(wait > 3000)
 			{
 				logger.warn("The clearCache method waited over " + ((wait * 10) / 1000) + " seconds but there seems to be " + RequestAnalyser.getRequestAnalyser().getNumberOfCurrentRequests() + " requests blocking all the time. Continuing anyway.");
 				//printThreads();
 				break;
 			}
-	        /*
-			if(wait == 0)
-				System.out.println("threadMonitors:" + RequestAnalyser.getThreadMonitors().size());
-	        */
-			Thread.sleep(10);
+	        Thread.sleep(10);
 			wait++;
 	    }
-
+		*/
+		
 	    logger.info("clearCaches start in " + CmsPropertyHandler.getContextRootPath());
 		if(entity == null)
 		{	
@@ -1560,12 +1559,14 @@ public class CacheController extends Thread
 	
 	public static synchronized void clearCache(Class type, Object[] ids, boolean forceClear) throws Exception
 	{
-		long wait = 0;
+        /*
+        long wait = 0;
 		//while(RequestAnalyser.getRequestAnalyser().getNumberOfCurrentRequests() > 0)
 		while(!forceClear && RequestAnalyser.getRequestAnalyser().getNumberOfActiveRequests() > 0)
 	    {
-	        //logger.warn("Number of requests: " + RequestAnalyser.getRequestAnalyser().getNumberOfCurrentRequests() + " was more than 0 - lets wait a bit.");
-	        if(wait > 3000/* && RequestAnalyser.getRequestAnalyser().getNumberOfActiveRequests() < 6*/)
+	        System.out.println("Number of requests: " + RequestAnalyser.getRequestAnalyser().getNumberOfCurrentRequests() + " was more than 0 - lets wait a bit.");
+			//logger.warn("Number of requests: " + RequestAnalyser.getRequestAnalyser().getNumberOfCurrentRequests() + " was more than 0 - lets wait a bit.");
+	        if(wait > 3000)
 			{
 				logger.warn("The clearCache method waited over " + ((wait * 10) / 1000) + " seconds but there seems to be " + RequestAnalyser.getRequestAnalyser().getNumberOfCurrentRequests() + " requests blocking all the time. Continuing anyway.");
 				//printThreads();
@@ -1575,7 +1576,8 @@ public class CacheController extends Thread
 			Thread.sleep(10);
 			wait++;
 	    }
-	    
+	    */
+        
 	    Database db = CastorDatabaseService.getDatabase();
 
 		try
