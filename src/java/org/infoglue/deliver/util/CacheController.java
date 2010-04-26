@@ -860,12 +860,10 @@ public class CacheController extends Thread
 	{	
 		Timer t = new Timer();
 		
-		/*
 		long wait = 0;
 		//while(RequestAnalyser.getRequestAnalyser().getNumberOfCurrentRequests() > 0)
 		while(!forceClear && RequestAnalyser.getRequestAnalyser().getNumberOfActiveRequests() > 0)
 	    {
-			//System.out.println("Number of requests 1: " + RequestAnalyser.getRequestAnalyser().getNumberOfCurrentRequests() + " was more than 0 - lets wait a bit.");
 	        //logger.warn("Number of requests: " + RequestAnalyser.getRequestAnalyser().getNumberOfCurrentRequests() + " was more than 0 - lets wait a bit.");
 	        if(wait > 3000)
 			{
@@ -876,7 +874,6 @@ public class CacheController extends Thread
 	        Thread.sleep(10);
 			wait++;
 	    }
-		*/
 		
 	    logger.info("clearCaches start in " + CmsPropertyHandler.getContextRootPath());
 		if(entity == null)
@@ -1559,12 +1556,10 @@ public class CacheController extends Thread
 	
 	public static synchronized void clearCache(Class type, Object[] ids, boolean forceClear) throws Exception
 	{
-        /*
         long wait = 0;
 		//while(RequestAnalyser.getRequestAnalyser().getNumberOfCurrentRequests() > 0)
 		while(!forceClear && RequestAnalyser.getRequestAnalyser().getNumberOfActiveRequests() > 0)
 	    {
-	        System.out.println("Number of requests: " + RequestAnalyser.getRequestAnalyser().getNumberOfCurrentRequests() + " was more than 0 - lets wait a bit.");
 			//logger.warn("Number of requests: " + RequestAnalyser.getRequestAnalyser().getNumberOfCurrentRequests() + " was more than 0 - lets wait a bit.");
 	        if(wait > 3000)
 			{
@@ -1576,7 +1571,6 @@ public class CacheController extends Thread
 			Thread.sleep(10);
 			wait++;
 	    }
-	    */
         
 	    Database db = CastorDatabaseService.getDatabase();
 
