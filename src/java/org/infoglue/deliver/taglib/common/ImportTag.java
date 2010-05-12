@@ -116,6 +116,7 @@ public class ImportTag extends TemplateControllerTag
 			
 			if(!useCache && !useFileCacheFallback)
 			{
+				System.out.println("Calling url directly - no cache...");
 				if(logger.isInfoEnabled())
 					logger.info("Calling url directly - no cache...");
 				String result = helper.getUrlContent(url, requestProperties, requestParameters, charEncoding, timeout.intValue());
@@ -146,8 +147,9 @@ public class ImportTag extends TemplateControllerTag
 					logger.info("Using some cache (useCache:" + useCache + ", useFileCacheFallback:" + useFileCacheFallback + ", cacheTimeout:" + cacheTimeout.intValue() + ")");
 
 				cachedResult = (String)CacheController.getCachedObjectFromAdvancedCache(cacheName, localCacheKey, cacheTimeout.intValue(), useFileCacheFallback, fileCacheCharEncoding, useCache);
+
 				if(logger.isInfoEnabled())
-					t.printElapsedTime("Getting timed cache result:" + cachedResult);
+					logger.info("Getting timed cache result:" + cachedResult);
 				
 				if(((cachedResult == null || cachedResult.equals(""))) && !skipExpiredContentFallback)
 				{
@@ -165,12 +167,7 @@ public class ImportTag extends TemplateControllerTag
 					
 					cachedResult = helper.getUrlContent(url, requestProperties, requestParameters, charEncoding, timeout.intValue());
 					
-					if(logger.isInfoEnabled())
-						t.printElapsedTime("5 took..");
 					resultHandler.handleResult(cachedResult);
-					
-					if(logger.isInfoEnabled())
-						t.printElapsedTime("6 took..");
 				}
 				else if(callInBackground)
 				{
