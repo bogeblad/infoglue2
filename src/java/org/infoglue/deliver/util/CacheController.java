@@ -860,6 +860,7 @@ public class CacheController extends Thread
 	{	
 		Timer t = new Timer();
 		
+		/**/
 		long wait = 0;
 		//while(RequestAnalyser.getRequestAnalyser().getNumberOfCurrentRequests() > 0)
 		while(!forceClear && RequestAnalyser.getRequestAnalyser().getNumberOfActiveRequests() > 0)
@@ -874,6 +875,7 @@ public class CacheController extends Thread
 	        Thread.sleep(10);
 			wait++;
 	    }
+		/**/
 		
 	    logger.info("clearCaches start in " + CmsPropertyHandler.getContextRootPath());
 		if(entity == null)
@@ -1452,6 +1454,7 @@ public class CacheController extends Thread
 	{
 	    logger.info("Emptying the Castor Caches");
 	    
+	    /**/
 	    //while(RequestAnalyser.getRequestAnalyser().getNumberOfCurrentRequests() > 0)
 	    while(RequestAnalyser.getRequestAnalyser().getNumberOfActiveRequests() > 0)
 	    {
@@ -1459,6 +1462,7 @@ public class CacheController extends Thread
 			//System.out.println("The clearCastorCaches method waited");
 	    	Thread.sleep(10);
 	    }
+	    /**/
 	    
 		Database db = CastorDatabaseService.getDatabase();
 		//CastorDatabaseService.setBlock(true);
@@ -1556,6 +1560,7 @@ public class CacheController extends Thread
 	
 	public static synchronized void clearCache(Class type, Object[] ids, boolean forceClear) throws Exception
 	{
+		/**/
         long wait = 0;
 		//while(RequestAnalyser.getRequestAnalyser().getNumberOfCurrentRequests() > 0)
 		while(!forceClear && RequestAnalyser.getRequestAnalyser().getNumberOfActiveRequests() > 0)
@@ -1571,7 +1576,8 @@ public class CacheController extends Thread
 			Thread.sleep(10);
 			wait++;
 	    }
-        
+        /**/
+		
 	    Database db = CastorDatabaseService.getDatabase();
 
 		try
@@ -1634,11 +1640,12 @@ public class CacheController extends Thread
 	
 	public static void clearCache(Class type, Object[] ids, boolean forceClear, Database db) throws Exception
 	{
+		/**/
 		long wait = 0;
 	    //while(RequestAnalyser.getRequestAnalyser().getNumberOfCurrentRequests() > 0)
 	    while(!forceClear && RequestAnalyser.getRequestAnalyser().getNumberOfActiveRequests() > 0)
 	    {
-	        if(wait > 3000/* && RequestAnalyser.getRequestAnalyser().getNumberOfActiveRequests() < 6*/)
+	        if(wait > 3000)
 			{
 				logger.warn("The clearCache method waited over " + ((wait * 10) / 1000) + " seconds but there seems to be " + RequestAnalyser.getRequestAnalyser().getNumberOfCurrentRequests() + " requests blocking all the time. Continuing anyway.");
 				//printThreads();
@@ -1648,7 +1655,8 @@ public class CacheController extends Thread
 	        Thread.sleep(10);
 	        wait++;
 	    }
-
+		/**/
+		
 	    CacheManager manager = db.getCacheManager();
 	    manager.expireCache(type, ids);
 	    //Class[] types = {type};
@@ -2240,7 +2248,7 @@ public class CacheController extends Thread
 		            	else
 		            	{
 			            	//System.out.println("getting file anyway:" + updateInterval);
-			            	contents = FileHelper.getFileAsStringOpt(file);
+			            	contents = FileHelper.getFileAsStringOpt(file, charEncoding);
 		            	}
 
 		            	//contents = FileHelper.getFileAsString(file, charEncoding);
@@ -2265,7 +2273,7 @@ public class CacheController extends Thread
 	            	else
 	            	{
 		            	//System.out.println("getting file anyway:" + updateInterval);
-		            	contents = FileHelper.getFileAsStringOpt(file);
+		            	contents = FileHelper.getFileAsStringOpt(file, charEncoding);
 	            	}
 	            	//contents = FileHelper.getFileAsString(file, charEncoding);
 	            	t.printElapsedTime("getFileAsString took");
