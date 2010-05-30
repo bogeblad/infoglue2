@@ -116,7 +116,6 @@ public class ImportTag extends TemplateControllerTag
 			
 			if(!useCache && !useFileCacheFallback)
 			{
-				System.out.println("Calling url directly - no cache...");
 				if(logger.isInfoEnabled())
 					logger.info("Calling url directly - no cache...");
 				String result = helper.getUrlContent(url, requestProperties, requestParameters, charEncoding, timeout.intValue());
