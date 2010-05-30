@@ -1285,9 +1285,7 @@ public class ContentController extends BaseController
 	        	contentTypeINClause += ")";
         	}
         	
-        	String showDeletedItemsClause = " AND content.isDeleted = $2";
-        	
-        	String SQL = "SELECT content FROM org.infoglue.cms.entities.content.impl.simple.SmallishContentImpl content WHERE content.parentContentId = $1 " + showDeletedItemsClause + contentTypeINClause + " ORDER BY content.contentId";
+        	String SQL = "SELECT content FROM org.infoglue.cms.entities.content.impl.simple.SmallishContentImpl content WHERE content.parentContentId = $1 " + contentTypeINClause + " ORDER BY content.contentId";
         	//System.out.println("SQL:" + SQL);
         	OQLQuery oql = db.getOQLQuery(SQL);
     		//OQLQuery oql = db.getOQLQuery( "SELECT content FROM org.infoglue.cms.entities.content.impl.simple.SmallishContentImpl content WHERE content.parentContentId = $1 ORDER BY content.contentId");
