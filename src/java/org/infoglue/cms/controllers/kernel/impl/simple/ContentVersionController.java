@@ -501,29 +501,25 @@ public class ContentVersionController extends BaseController
 	 * This method returns the latest active content version.
 	 */
     
+	public ContentVersionVO getLatestActiveContentVersionVO(Integer contentId, Integer languageId, Integer stateId, Database db) throws SystemException, Bug, Exception
+	{
+    	ContentVersionVO contentVersionVO = null;
+
+       	ContentVersion contentVersion = getLatestActiveContentVersionReadOnly(contentId, languageId, stateId, db);
+            
+        if(contentVersion != null)
+            contentVersionVO = contentVersion.getValueObject();
+    	
+		return contentVersionVO;
+    }
+
+	
+   	/**
+	 * This method returns the latest active content version.
+	 */
+    
 	public ContentVersionVO getLatestActiveContentVersionVO(Integer contentId, Integer languageId, Database db) throws SystemException, Bug, Exception
 	{
-/*
-		ContentVersionVO contentVersionVO = null;
-
-        OQLQuery oql = db.getOQLQuery( "SELECT cv FROM org.infoglue.cms.entities.content.impl.simple.SmallContentVersionImpl cv WHERE cv.contentId = $1 AND cv.languageId = $2 AND cv.isActive = $3 ORDER BY cv.contentVersionId desc");
-    	oql.bind(contentId);
-    	oql.bind(languageId);
-		oql.bind(true);
-    	
-    	QueryResults results = oql.execute(Database.ReadOnly);
-		
-		if (results.hasMore()) 
-        {
-			ContentVersion contentVersion = (ContentVersion)results.next();
-			contentVersionVO = contentVersion.getValueObject();
-        }
-		
-		results.close();
-		oql.close();
-
-		return contentVersionVO;
-*/
     	ContentVersionVO contentVersionVO = null;
 
        	ContentVersion contentVersion = getLatestActiveContentVersionReadOnly(contentId, languageId, db);
@@ -541,21 +537,6 @@ public class ContentVersionController extends BaseController
 	public ContentVersion getLatestActiveContentVersion(Integer contentId, Integer languageId, Database db) throws SystemException, Bug, Exception
 	{
 		ContentVersion contentVersion = null;
-    	
-		/*
-	    OQLQuery oql = db.getOQLQuery( "SELECT cv FROM org.infoglue.cms.entities.content.impl.simple.ContentVersionImpl cv WHERE cv.owningContent.contentId = $1 AND cv.language.languageId = $2 AND cv.isActive = $3 ORDER BY cv.contentVersionId desc");
-		oql.bind(contentId);
-		oql.bind(languageId);
-		oql.bind(true);
-
-		QueryResults results = oql.execute(Database.ReadOnly);
-		
-		if (results.hasMore()) 
-	    {
-	    	contentVersion = (ContentVersion)results.next();
-	    	logger.info("found one:" + contentVersion.getId());
-	    }
-	    */
 		
 		Content content = ContentController.getContentController().getReadOnlyContentWithId(contentId, db);
 		Collection contentVersions = content.getContentVersions();
@@ -629,6 +610,45 @@ public class ContentVersionController extends BaseController
 		return contentVersion;
 	}
 
+   	/**
+	 * This method returns the latest active content version in a certain version.
+	 */
+    
+	public ContentVersion getLatestActiveContentVersionReadOnly(Integer contentId, Integer languageId, Integer stateId, Database db) throws SystemException, Bug
+	{
+		ContentVersion contentVersion = null;
+    	
+		Content content = ContentController.getContentController().getReadOnlyMediumContentWithId(contentId, db);
+		Collection contentVersions = content.getContentVersions();
+		if(logger.isInfoEnabled())
+		{
+			logger.info("contentId:" + contentId);
+	    	logger.info("languageId:" + languageId);
+	    	logger.info("content:" + content.getName());
+			logger.info("contentVersions:" + contentVersions.size());
+		}
+        
+		Iterator i = contentVersions.iterator();
+        while(i.hasNext())
+		{
+			ContentVersion currentContentVersion = (ContentVersion)i.next();
+			if(logger.isInfoEnabled())
+				logger.info("found one candidate:" + currentContentVersion.getValueObject());
+			
+			if(contentVersion == null || (currentContentVersion.getId().intValue() > contentVersion.getId().intValue()))
+			{
+				if(logger.isInfoEnabled())
+				{
+					logger.info("currentContentVersion:" + currentContentVersion.getIsActive());
+					logger.info("currentContentVersion:" + currentContentVersion.getLanguage().getId());
+				}
+				if(currentContentVersion.getIsActive().booleanValue() &&  currentContentVersion.getLanguage().getId().intValue() == languageId.intValue() && currentContentVersion.getStateId().equals(stateId))
+					contentVersion = currentContentVersion;
+			}
+		}
+        
+		return contentVersion;
+	}
 
 	public ContentVersionVO getLatestContentVersionVO(Integer contentId, Integer languageId) throws SystemException, Bug
     {
@@ -640,24 +660,6 @@ public class ContentVersionController extends BaseController
         try
         {
         	contentVersionVO = getLatestContentVersionVO(contentId, languageId, db);
-        	/*
-        	OQLQuery oql = db.getOQLQuery( "SELECT cv FROM org.infoglue.cms.entities.content.impl.simple.SmallContentVersionImpl cv WHERE cv.contentId = $1 AND cv.languageId = $2 ORDER BY cv.contentVersionId desc");
-        	oql.bind(contentId);
-        	oql.bind(languageId);
-        	
-        	QueryResults results = oql.execute(Database.ReadOnly);
-			
-			if (results.hasMore()) 
-            {
-            	ContentVersion contentVersion = (ContentVersion)results.next();
-            	if(logger.isInfoEnabled())
-            		logger.info("found one:" + contentVersion.getValueObject());
-            	contentVersionVO = contentVersion.getValueObject();
-            }
-            
-			results.close();
-			oql.close();
-			*/
         	
 			commitTransaction(db);
         }

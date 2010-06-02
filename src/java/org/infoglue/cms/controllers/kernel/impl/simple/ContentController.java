@@ -1885,6 +1885,25 @@ public class ContentController extends BaseController
 		return attribute;
 	}	
 
+	public String getContentAttribute(Database db, Integer contentId, Integer languageId, Integer stateId, String attributeName, boolean useLanguageFallBack) throws Exception
+	{
+	    String attribute = "Undefined";
+	    
+	    ContentVO contentVO = ContentController.getContentController().getContentVOWithId(contentId, db);
+		
+		ContentVersionVO contentVersionVO = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(contentVO.getId(), languageId, stateId, db);
+		if(contentVersionVO == null && useLanguageFallBack)
+		{
+			LanguageVO masterLanguageVO = LanguageController.getController().getMasterLanguage(contentVO.getRepositoryId(), db);
+			contentVersionVO = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(contentVO.getId(), masterLanguageVO.getId(), stateId, db);
+		}
+		
+		if(contentVersionVO != null)
+			attribute = ContentVersionController.getContentVersionController().getAttributeValue(contentVersionVO, attributeName, false);
+		
+		return attribute;
+	}	
+
 	/**
 	 * This is a method that gives the user back an newly initialized ValueObject for this entity that the controller
 	 * is handling.

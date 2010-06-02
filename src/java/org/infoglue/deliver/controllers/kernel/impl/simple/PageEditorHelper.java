@@ -1704,7 +1704,22 @@ public class PageEditorHelper extends BaseDeliveryController
 		try
 		{
 		    Integer masterLanguageId = LanguageDeliveryController.getLanguageDeliveryController().getMasterLanguageForSiteNode(db, siteNodeId).getId();
-			componentPropertiesString = ContentController.getContentController().getContentAttribute(db, contentId, masterLanguageId, "ComponentProperties", true);
+		    
+		    Integer operatingMode = 0;
+		    String operatingModeString = CmsPropertyHandler.getOperatingMode();
+		    if(operatingModeString != null && !operatingModeString.equals(""))
+		    {
+		    	try
+		    	{
+		    		operatingMode = new Integer(operatingModeString);
+		    	}
+		    	catch (Exception e) 
+		    	{
+		    		logger.error("Error getting operating mode:" + e.getMessage(), e);
+				}
+		    }
+		    	
+			componentPropertiesString = ContentController.getContentController().getContentAttribute(db, contentId, masterLanguageId, operatingMode, "ComponentProperties", true);
 			//componentPropertiesString = ContentDeliveryController.getContentDeliveryController().getContentAttribute(db, contentId, masterLanguageId, "ComponentProperties", siteNodeId, true, null, principal, false, true);
 
 			if(componentPropertiesString == null)
