@@ -642,7 +642,7 @@ public class ContentVersionController extends BaseController
 					logger.info("currentContentVersion:" + currentContentVersion.getIsActive());
 					logger.info("currentContentVersion:" + currentContentVersion.getLanguage().getId());
 				}
-				if(currentContentVersion.getIsActive().booleanValue() &&  currentContentVersion.getLanguage().getId().intValue() == languageId.intValue() && currentContentVersion.getStateId().equals(stateId))
+				if(currentContentVersion.getIsActive().booleanValue() &&  currentContentVersion.getLanguage().getId().intValue() == languageId.intValue() && currentContentVersion.getStateId() >= stateId)
 					contentVersion = currentContentVersion;
 			}
 		}
