@@ -22,7 +22,7 @@ function reloadMenu()
 		<td colspan="2" class="biglabel">
 			<select name="newGroupName" id="newGroupName"> 	
 			#foreach ($group in $groups)
-				<option id="$group.name">$group.displayName ($group.name)</option>
+				<option value="$group.name">$group.displayName ($group.name)</option>
 			#end
 			</select>
 		</td>
