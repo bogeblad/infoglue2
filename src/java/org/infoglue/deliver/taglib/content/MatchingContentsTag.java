@@ -33,7 +33,6 @@ import javax.servlet.jsp.JspException;
 import org.apache.log4j.Logger;
 import org.infoglue.cms.util.CmsPropertyHandler;
 import org.infoglue.deliver.taglib.TemplateControllerTag;
-import org.infoglue.deliver.util.SelectiveLivePublicationThread;
 import org.infoglue.deliver.util.Timer;
 
 public class MatchingContentsTag extends TemplateControllerTag 
@@ -61,6 +60,8 @@ public class MatchingContentsTag extends TemplateControllerTag
 	private String repositoryIds = null;
 	private Integer languageId = null;
 	private Boolean skipLanguageCheck = false;
+	
+	private Integer startNodeId;
 	
     public MatchingContentsTag()
     {
@@ -107,7 +108,7 @@ public class MatchingContentsTag extends TemplateControllerTag
 			logger.warn("Problem setting maximumNumberOfItemsInMatchingContentsSearch:" + e.getMessage());
 		}
 		
-	    setResultAttribute(getController().getMatchingContents(contentTypeDefinitionNames, categoryCondition, freeText, freeTextAttributeNamesList, fromDate, toDate, expireFromDate, expireToDate, versionModifier, maximumNumberOfItems, true, cacheResult, cacheInterval, cacheName, cacheKey, repositoryIdList, this.languageId, skipLanguageCheck));
+	    setResultAttribute(getController().getMatchingContents(contentTypeDefinitionNames, categoryCondition, freeText, freeTextAttributeNamesList, fromDate, toDate, expireFromDate, expireToDate, versionModifier, maximumNumberOfItems, true, cacheResult, cacheInterval, cacheName, cacheKey, repositoryIdList, this.languageId, skipLanguageCheck, startNodeId));
 	    
 	    this.contentTypeDefinitionNames = null;
 	    this.categoryCondition = null;
@@ -127,6 +128,8 @@ public class MatchingContentsTag extends TemplateControllerTag
 		this.repositoryIds = null;
 		this.languageId = null;
 		this.skipLanguageCheck = false;
+		
+		this.startNodeId = null;
 		
 	    long runningTime = t.getElapsedTime();
 	    if(runningTime > 500)
@@ -218,6 +221,11 @@ public class MatchingContentsTag extends TemplateControllerTag
 	public void setCacheResult(boolean cacheResult)
 	{
 		this.cacheResult = cacheResult;
+	}
+	
+	public void setStartNodeId(Integer startNodeId)
+	{
+		this.startNodeId = startNodeId;
 	}
 
 }

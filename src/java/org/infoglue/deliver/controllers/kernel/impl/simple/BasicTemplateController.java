@@ -4818,12 +4818,21 @@ public class BasicTemplateController implements TemplateController
 	{
 		return getMatchingContents(contentTypeDefinitionNamesString, categoryConditionString, freeText, freeTextAttributeNames, fromDate, toDate, expireFromDate, expireToDate, versionModifier, maximumNumberOfItems, useLanguageFallback, cacheResult, cacheInterval, cacheName, cacheKey, repositoryIdList, languageId, null);
 	}
-
+	
 	/**
 	 * This method searches for all contents matching
 	 */
 	
 	public List getMatchingContents(String contentTypeDefinitionNamesString, String categoryConditionString, String freeText, List freeTextAttributeNames, Date fromDate, Date toDate, Date expireFromDate, Date expireToDate, String versionModifier, Integer maximumNumberOfItems, boolean useLanguageFallback, boolean cacheResult, int cacheInterval, String cacheName, String cacheKey, List<Integer> repositoryIdList, Integer languageId, Boolean skipLanguageCheck)
+	{
+		return getMatchingContents(contentTypeDefinitionNamesString, categoryConditionString, freeText, freeTextAttributeNames, fromDate, toDate, expireFromDate, expireToDate, versionModifier, maximumNumberOfItems, useLanguageFallback, cacheResult, cacheInterval, cacheName, cacheKey, repositoryIdList, languageId, skipLanguageCheck, null);
+	}
+
+	/**
+	 * This method searches for all contents matching
+	 */
+	
+	public List getMatchingContents(String contentTypeDefinitionNamesString, String categoryConditionString, String freeText, List freeTextAttributeNames, Date fromDate, Date toDate, Date expireFromDate, Date expireToDate, String versionModifier, Integer maximumNumberOfItems, boolean useLanguageFallback, boolean cacheResult, int cacheInterval, String cacheName, String cacheKey, List<Integer> repositoryIdList, Integer languageId, Boolean skipLanguageCheck, Integer startNodeId)
 	{
 		Timer t = new Timer();
 
@@ -4898,13 +4907,22 @@ public class BasicTemplateController implements TemplateController
 					//if(ContentDeliveryController.getContentDeliveryController().isValidContent(this.getDatabase(), content.getId(), localLanguageId, USE_LANGUAGE_FALLBACK, true, getPrincipal(), this.deliveryContext))
 					if(ContentDeliveryController.getContentDeliveryController().isValidContent(this.getDatabase(), content, localLanguageId, USE_LANGUAGE_FALLBACK, true, getPrincipal(), this.deliveryContext, false, false))
 					{
-						result.add(content.getValueObject());
+						if(startNodeId != null)
+						{
+							if(hasNodeIdAsParent(content.getContentId(), startNodeId))
+							{
+								result.add(content.getValueObject());
+							}
+						}
+						else
+						{
+							result.add(content.getValueObject());
+						}
 					}
 				}
 
 				if(cacheResult)
 					CacheController.cacheObjectInAdvancedCache(cacheName, key, result, null, false);
-				
 				return result;
 			}
 			catch(Exception e)
@@ -4921,6 +4939,46 @@ public class BasicTemplateController implements TemplateController
 		RequestAnalyser.getRequestAnalyser().registerComponentStatistics("getMatchingContents", t.getElapsedTime());
 
 		return Collections.EMPTY_LIST;
+	}
+	
+	private boolean hasNodeIdAsParent(Integer currentNodeId, Integer parentId)
+	{
+		boolean hasParentWithId = false;
+		
+		try
+		{
+			if(currentNodeId != null && parentId != null && currentNodeId.intValue() == parentId.intValue())
+			{
+				hasParentWithId = true; 
+			}
+			else
+			{
+				ContentVO currentNodeVO = ContentDeliveryController.getContentDeliveryController().getContentVO(currentNodeId, getDatabase());
+				if(currentNodeVO != null)
+				{
+					Integer parentNodeId = currentNodeVO.getParentContentId();
+					
+					if(parentNodeId == null)
+					{
+						hasParentWithId = false;
+					}
+					else if(parentNodeId == parentId.intValue())
+					{
+						hasParentWithId = true;
+					}
+					else
+					{
+						hasParentWithId = hasNodeIdAsParent(parentNodeId, parentId);
+					}
+				}
+			}
+		}
+		catch(Exception e)
+		{
+			logger.error("An error occurred:" + e.getMessage(), e);
+		}
+		
+		return hasParentWithId;
 	}
 
 	/**
