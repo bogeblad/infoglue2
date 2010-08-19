@@ -223,9 +223,9 @@ public class MatchingContentsTag extends TemplateControllerTag
 		this.cacheResult = cacheResult;
 	}
 	
-	public void setStartNodeId(Integer startNodeId)
+	public void setStartNodeId(String startNodeId) throws JspException
 	{
-		this.startNodeId = startNodeId;
+		this.startNodeId = evaluateInteger("matchingContentsTag", "startNodeId", startNodeId);
 	}
 
 }
