@@ -476,7 +476,8 @@ public class AuthorizationSwitchManagementAction extends InfoGlueAbstractAction
         {
 	        try
 	        {
-	            List accessRightUserList = AccessRightController.getController().getAccessRightUserList(userName, db);
+	            List accessRightUserList 	= AccessRightController.getController().getAccessRightUserList(userName, db);
+	            List accessRightNewUserList = AccessRightController.getController().getAccessRightUserList(newUserName, db);
 	            
 	            Iterator i = accessRightUserList.iterator();
 	            
@@ -486,12 +487,16 @@ public class AuthorizationSwitchManagementAction extends InfoGlueAbstractAction
 	                AccessRight accessRight = accessRightUser.getAccessRight();
 
 	                boolean exists = false;
-	                Iterator usersIterator = accessRight.getUsers().iterator();
-	                while(usersIterator.hasNext())
+	                
+	                if (accessRightNewUserList.size() > 0)
 	                {
-	                	AccessRightUser currentAccessRightUser = (AccessRightUser)usersIterator.next();
-	                	if(currentAccessRightUser.getUserName().equals(newUserName))
-	                		exists = true;
+		                Iterator usersIterator = accessRight.getUsers().iterator();
+		                while(usersIterator.hasNext())
+		                {
+		                	AccessRightUser currentAccessRightUser = (AccessRightUser)usersIterator.next();
+		                	if(currentAccessRightUser.getUserName().equals(newUserName))
+		                		exists = true;
+		                }
 	                }
 
 	                if(!exists)
@@ -533,7 +538,8 @@ public class AuthorizationSwitchManagementAction extends InfoGlueAbstractAction
         {
 	        try
 	        {
-	            List accessRightRoleList = AccessRightController.getController().getAccessRightRoleList(roleName, db, false);
+	            List accessRightRoleList 	= AccessRightController.getController().getAccessRightRoleList(roleName, db, false);
+	            List accessRightNewRoleList = AccessRightController.getController().getAccessRightRoleList(newRoleName, db, false);
 	            
 	            Iterator i = accessRightRoleList.iterator();
 	            
@@ -546,12 +552,15 @@ public class AuthorizationSwitchManagementAction extends InfoGlueAbstractAction
 	                {
 		                boolean exists = false;
 
-		                Iterator rolesIterator = accessRight.getRoles().iterator();
-		                while(rolesIterator.hasNext())
+		                if (accessRightNewRoleList.size() > 0)
 		                {
-		                	AccessRightRole currentAccessRightRole = (AccessRightRole)rolesIterator.next();
-		                	if(currentAccessRightRole.getRoleName().equals(newRoleName))
-		                		exists = true;
+			                Iterator rolesIterator = accessRight.getRoles().iterator();
+			                while(rolesIterator.hasNext())
+			                {
+			                	AccessRightRole currentAccessRightRole = (AccessRightRole)rolesIterator.next();
+			                	if(currentAccessRightRole.getRoleName().equals(newRoleName))
+			                		exists = true;
+			                }
 		                }
 	                
 		                if(!exists)
@@ -594,7 +603,8 @@ public class AuthorizationSwitchManagementAction extends InfoGlueAbstractAction
         {
 	        try
 	        {
-	            List accessRightGroupList = AccessRightController.getController().getAccessRightGroupList(groupName, db);
+	            List accessRightGroupList 	= AccessRightController.getController().getAccessRightGroupList(groupName, db);
+	            List accessRightNewGroupList = AccessRightController.getController().getAccessRightGroupList(newGroupName, db);
 	            
 	            Iterator i = accessRightGroupList.iterator();
 	            
@@ -604,12 +614,16 @@ public class AuthorizationSwitchManagementAction extends InfoGlueAbstractAction
 	                AccessRight accessRight = accessRightGroup.getAccessRight();
 
 	                boolean exists = false;
-	                Iterator groupsIterator = accessRight.getGroups().iterator();
-	                while(groupsIterator.hasNext())
+	                
+	                if (accessRightNewGroupList.size() > 0)
 	                {
-	                	AccessRightGroup currentAccessRightGroup = (AccessRightGroup)groupsIterator.next();
-	                	if(currentAccessRightGroup.getGroupName().equals(newGroupName))
-	                		exists = true;
+		                Iterator groupsIterator = accessRight.getGroups().iterator();
+		                while(groupsIterator.hasNext())
+		                {
+		                	AccessRightGroup currentAccessRightGroup = (AccessRightGroup)groupsIterator.next();
+		                	if(currentAccessRightGroup.getGroupName().equals(newGroupName))
+		                		exists = true;
+		                }
 	                }
 	                
 	                if(!exists)
