@@ -113,6 +113,16 @@ public class Session
 	 *
 	 * @param locale the locale to use for the session.
 	 */
+	public final void resetLocale()
+	{
+		sessionDelegate.remove(LOCALE);
+	}
+
+	/**
+	 * Sets the locale used for the session.
+	 *
+	 * @param locale the locale to use for the session.
+	 */
 	public final void setToolId(Integer toolId)
 	{
 		sessionDelegate.put(TOOL_ID, toolId);

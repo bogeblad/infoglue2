@@ -56,6 +56,8 @@ public class ViewMySettingsAction extends InfoGlueAbstractAction
 	private List repositories = null;
 	private List themes = null;
 	
+	private Boolean settingsSaved = false;
+	
 	/**
      * The main method that fetches the Value-objects for this use-case
      */
@@ -111,6 +113,16 @@ public class ViewMySettingsAction extends InfoGlueAbstractAction
     public List getThemes()
 	{
 		return themes;
+	}
+
+	public Boolean getSettingsSaved()
+	{
+		return settingsSaved;
+	}
+
+	public void setSettingsSaved(Boolean settingsSaved)
+	{
+		this.settingsSaved = settingsSaved;
 	}
 
 	

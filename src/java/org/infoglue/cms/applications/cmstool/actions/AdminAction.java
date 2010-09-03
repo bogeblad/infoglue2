@@ -46,4 +46,11 @@ public class AdminAction extends InfoGlueAbstractAction
 			return "success";
     }
 
+	public String doResetGUI() throws Exception
+    {
+		this.getHttpSession().removeAttribute("repositoryId");
+		setLanguageCode(CmsPropertyHandler.getPreferredLanguageCode(getUserName()));
+		
+		return "successReset";
+    }
 }

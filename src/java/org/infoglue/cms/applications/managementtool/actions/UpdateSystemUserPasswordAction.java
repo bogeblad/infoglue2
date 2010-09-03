@@ -49,7 +49,9 @@ public class UpdateSystemUserPasswordAction extends InfoGlueAbstractAction
     private String verifiedNewPassword;
     private String returnAddress;
     
-    public String doInput() throws Exception
+    private boolean showInline = false;
+
+	public String doInput() throws Exception
     {
     	return Action.INPUT;
     }
@@ -66,6 +68,8 @@ public class UpdateSystemUserPasswordAction extends InfoGlueAbstractAction
 
     public String doInputStandaloneV3() throws Exception
     {
+    	showInline = true;
+    	
     	return "inputStandaloneV3";
     }
 
@@ -164,4 +168,15 @@ public class UpdateSystemUserPasswordAction extends InfoGlueAbstractAction
     {
         this.returnAddress = returnAddress;
     }
+        
+    public boolean getShowInline()
+	{
+		return showInline;
+	}
+
+	public void setShowInline(boolean showInline)
+	{
+		this.showInline = showInline;
+	}
+
 }

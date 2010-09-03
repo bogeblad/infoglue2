@@ -1,4 +1,4 @@
-<!-- $Id: actions.xml,v 1.96 2010/03/03 22:21:25 mattias Exp $ -->
+<!-- $Id: actions.xml,v 1.97 2010/09/03 09:31:59 mattias Exp $ -->
 <actions>
 
 	<!-- MySettings -->
@@ -7,7 +7,7 @@
 		<view name="error">/cms/managementtool/error.vm</view>
 	</action>
 	<action name="org.infoglue.cms.applications.managementtool.actions.UpdateMySettingsAction" alias="UpdateMySettings">
-		<view name="success">ViewMySettings.action</view>
+		<view name="success">ViewMySettings.action?settingsSaved=true</view>
 		<view name="error">/cms/managementtool/error.vm</view>
 	</action>
 
@@ -131,6 +131,7 @@
 	<action name="org.infoglue.cms.applications.cmstool.actions.AdminAction" alias="Admin">
 		<view name="success">/cms/cmstool/admin.vm</view>
 		<view name="successClassic">org.infoglue.cms.applications.common.actions.ExtendedRedirect.action?url=ViewCMS.action</view>
+		<view name="successReset">org.infoglue.cms.applications.common.actions.ExtendedRedirect.action?url=Admin.action</view>
 	</action>
 	<action name="org.infoglue.cms.applications.common.actions.ViewToolbarButtonsAction" alias="ViewToolbarButtons">
 		<view name="success">/cms/common/viewToolbarButtons.vm</view>
