@@ -154,7 +154,7 @@
 
 <h3>
 	$ui.getString("tool.common.globalSubscriptions.title") #if($standalone == "false") - <a href="Subscriptions!inputGlobalSubscriptions.action" target="_blank">$ui.getString("tool.managementtool.openSubscriptionsInNewWindow.label")</a>#end
-	#if($errorMessage != "")<span style="color:red">$errorMessage</span>#end
+	#if($errorMessage && $errorMessage != "")<span style="color:red">$errorMessage</span>#end
 </h3>
  
 <div onfocus="this.blur();">

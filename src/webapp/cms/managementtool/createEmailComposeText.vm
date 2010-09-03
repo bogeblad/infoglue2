@@ -12,7 +12,7 @@
 	<p>
 		<form name="mailForm" method="POST" action="CreateEmail.action"> 
 			<input type="hidden" name="recipients" value="$usersAddresses"/>
-			#if($errorMessage != "")
+			#if($errorMessage && $errorMessage != "")
 			<span style="color:red">$errorMessage</span><br/>
 			#end
 		  	$ui.getString("tool.managementtool.from.label"):<br/>

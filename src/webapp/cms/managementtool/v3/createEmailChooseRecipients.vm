@@ -177,7 +177,7 @@
 	<div style="clear: both;"></div>
 	
 	<h3 style="text-indent: 16px;">$ui.getString("tool.managementtool.createEmailChooseRecipients.title") 
-		#if($errorMessage != "")
+		#if($errorMessage && $errorMessage != "")
 			<span style="color:red">$errorMessage</span><br/>
 		#end
 	</h3>

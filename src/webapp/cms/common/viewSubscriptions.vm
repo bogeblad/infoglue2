@@ -17,7 +17,7 @@
 
 <h3 style="text-indent: 16px;">
 	$ui.getString("tool.common.subscriptions.title")
-	#if($errorMessage != "")<span style="color:red">$errorMessage</span>#end
+	#if($errorMessage && $errorMessage != "")<span style="color:red">$errorMessage</span>#end
 </h3>
 
 <div onfocus="this.blur();">
