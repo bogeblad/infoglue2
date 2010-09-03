@@ -77,6 +77,18 @@
 <script type="text/javascript">
 	<!--
 
+	function closeDialog()
+	{
+		if(parent && parent.closeInlineDiv) 
+			parent.closeInlineDiv(); 
+		else if(parent && parent.closeDialog) 
+			parent.closeDialog(); 
+		else if (window.opener)
+			window.close();
+		else
+			history.back();
+	}
+
 	function save()
 	{
 		document.editForm.submit();
@@ -89,9 +101,17 @@
 		else
 			window.close();
 	}
+
+	function reloadFull()
+	{
+		if(!window.opener && parent)
+			parent.location.href = "Admin!resetGUI.action";
+		else
+			window.close();
+	}
 	
 	$(document).ready(function(){
-		$("#tabsContainer").tabs( { 
+		$("#tabsContainer").tabs( {
 			show:function() { resizeInlineTabDivs(); },
 			select:function(e, ui) { 
 				//alert("ui: " + ui.index);
@@ -109,6 +129,29 @@
 			  	}
 			  } 
 		});
+
+		#if($settingsSaved)
+			$("#reloadDialog").dialog({
+				bgiframe: true,
+				resizable: false,
+				height:200,
+				width: 400,
+				modal: true,
+				overlay: {
+					backgroundColor: '#000',
+					opacity: 0.5
+				},
+				buttons: {
+					'$ui.getString("tool.managementtool.mysettings.fullReloadYesLabel")': function() {
+						$(this).dialog('close');
+						reloadFull(); 
+					},
+					Cancel: function() {
+						$(this).dialog('close');
+					}
+				}
+			});
+		#end
 	});
 	-->
 </script>
@@ -200,11 +243,11 @@
 			</form>
 		</div>
 		
-		<div id="subscriptionsTab" class="recipientTab inlineTabDiv" style="display: none;">
+		<div id="subscriptionsTab" class="recipientTab inlineTabDiv">
 			<iframe frameborder="0" marginwidth="0" marginheight="0" scrolling="no" name="subscriptionsFrame" id="subscriptionsFrame" src="Subscriptions!inputGlobalSubscriptions.action?standalone=false" width="690" height="450" ></iframe>
 		</div>
 
-		<div id="passwordTab" class="recipientTab inlineTabDiv" style="display: none;">
+		<div id="passwordTab" class="recipientTab inlineTabDiv">
 			<iframe frameborder="0" marginwidth="0" marginheight="0" scrolling="no" name="passwordFrame" id="passwordFrame" src="UpdateSystemUserPassword!inputStandaloneV3.action?userName=$infoGluePrincipal.name&returnAddress=ViewMySettings.action" width="690" height="450" ></iframe>
 		</div>
 
@@ -214,6 +257,10 @@
 	
 	</form>
 
+</div>
+
+<div id="reloadDialog" title="$ui.getString("tool.managementtool.mysettings.fullReloadQuestionTitle")" style="display: none">
+	<p><span class="ui-icon ui-icon-alert" style="float:left; margin:0 7px 20px 0;"></span>$ui.getString("tool.managementtool.mysettings.fullReloadQuestionLabel")</p>
 </div>
 
 #endCommonToolV3()
