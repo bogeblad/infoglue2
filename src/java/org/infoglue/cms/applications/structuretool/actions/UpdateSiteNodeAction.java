@@ -58,6 +58,7 @@ public class UpdateSiteNodeAction extends ViewSiteNodeAction //WebworkAbstractAc
     private Boolean isBranch;
     
 	private Integer isProtected;
+	private Boolean isHidden;
 	private Integer disablePageCache;
 	private Integer disableEditOnSight;
 	private Integer disableLanguages;
@@ -106,6 +107,7 @@ public class UpdateSiteNodeAction extends ViewSiteNodeAction //WebworkAbstractAc
 			siteNodeVersionVO.setDisableForceIdentityCheck(this.disableForceIdentityCheck);
 			siteNodeVersionVO.setForceProtocolChange(this.forceProtocolChange);
 			siteNodeVersionVO.setIsProtected(this.getIsProtected());
+			siteNodeVersionVO.setIsHidden(this.getIsHidden());
 			siteNodeVersionVO.setVersionModifier(this.getInfoGluePrincipal().getName());
 			
 			UpdateSiteNodeUCC updateSiteNodeUCC = UpdateSiteNodeUCCFactory.newUpdateSiteNodeUCC();
@@ -323,6 +325,16 @@ public class UpdateSiteNodeAction extends ViewSiteNodeAction //WebworkAbstractAc
 	public void setIsProtected(Integer isProtected)
 	{
 		this.isProtected = isProtected;
+	}
+
+	public Boolean getIsHidden()
+	{
+		return this.isHidden;
+	}
+
+	public void setIsHidden(Boolean isHidden)
+	{
+		this.isHidden = isHidden;
 	}
 
     public String getPageCacheKey()

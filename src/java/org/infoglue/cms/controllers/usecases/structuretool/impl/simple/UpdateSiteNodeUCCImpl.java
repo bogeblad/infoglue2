@@ -78,6 +78,7 @@ public class UpdateSiteNodeUCCImpl extends BaseUCCController implements UpdateSi
 				latestSiteNodeVersionVO.setVersionModifier(updatedSiteNodeVersionVO.getVersionModifier());
 			}
 
+			latestSiteNodeVersionVO.setIsHidden(updatedSiteNodeVersionVO.getIsHidden());
 			latestSiteNodeVersionVO.setDisableForceIdentityCheck(updatedSiteNodeVersionVO.getDisableForceIdentityCheck());
 			latestSiteNodeVersionVO.setForceProtocolChange(updatedSiteNodeVersionVO.getForceProtocolChange());
 			latestSiteNodeVersionVO.setModifiedDateTime(DateHelper.getSecondPreciseDate());
@@ -141,6 +142,7 @@ public class UpdateSiteNodeUCCImpl extends BaseUCCController implements UpdateSi
 				latestSiteNodeVersionVO.setVersionModifier(infoGluePrincipal.getName());
 			}
 			
+			latestSiteNodeVersionVO.setIsHidden(updatedSiteNodeVersionVO.getIsHidden());
 			latestSiteNodeVersionVO.setDisableForceIdentityCheck(updatedSiteNodeVersionVO.getDisableForceIdentityCheck());
 			latestSiteNodeVersionVO.setForceProtocolChange(updatedSiteNodeVersionVO.getForceProtocolChange());
 			latestSiteNodeVersionVO.setModifiedDateTime(DateHelper.getSecondPreciseDate());

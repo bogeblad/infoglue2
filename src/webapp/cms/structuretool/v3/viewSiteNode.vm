@@ -217,8 +217,8 @@
 					
 					<label for="isHidden">$ui.getString("entity.SiteNode.isHidden.label")</label><br/>
 					<select name="isHidden" style="width: 115px;">
-						<option value="0" #if($!isHidden == 0) selected="1" #end> $ui.getString("tool.common.no")</option>	
-						<option value="1" #if($!isHidden == 1) selected="1" #end> $ui.getString("tool.common.yes")</option>	
+						<option value="false" #if($!isHidden == false) selected="1" #end> $ui.getString("tool.common.no")</option>	
+						<option value="true" #if($!isHidden == true) selected="1" #end> $ui.getString("tool.common.yes")</option>	
 					</select><br/>
 	
 					#if(!$isSiteNodeTypeDefinitionAssigned)
