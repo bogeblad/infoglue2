@@ -31,4 +31,4 @@ create index propCategoryCategoryIdIndex on cmPropertiesCategory(categoryId);
 create index categoryParentIdIndex on cmCategory(parentId);
 create index categoryNameIndex on cmCategory(name(100));
 
-
+ALTER TABLE cmContentVersion CHANGE versionValue versionValue longtext;
