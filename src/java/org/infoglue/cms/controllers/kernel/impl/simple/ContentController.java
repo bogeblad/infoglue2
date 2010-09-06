@@ -2009,4 +2009,154 @@ public class ContentController extends BaseController
         return contentVOList;
 	}
 
+	public List<ContentVO> getRelatedContents(Database db, Integer contentId, Integer languageId, String attributeName, boolean useLanguageFallback) throws Exception
+	{
+		String qualifyerXML = getContentAttribute(db, contentId, languageId, attributeName, useLanguageFallback);
+
+		return getRelatedContentsFromXML(qualifyerXML);
+	}
+
+	public List<SiteNodeVO> getRelatedSiteNodes(Database db, Integer contentId, Integer languageId, String attributeName, boolean useLanguageFallback) throws Exception
+	{
+		String qualifyerXML = getContentAttribute(db, contentId, languageId, attributeName, useLanguageFallback);
+
+		return getRelatedSiteNodesFromXML(qualifyerXML);
+	}
+
+	/**
+	 * This method gets the related contents from an XML.
+	 */
+
+	private String idElementStart = "<id>";
+	private String idElementEnd = "</id>";
+	private String idAttribute1Start = "id=\"";
+	private String idAttribute1End = "\"";
+	private String idAttribute2Start = "id='";
+	private String idAttribute2End = "'";
+	
+	private List<ContentVO> getRelatedContentsFromXML(String qualifyerXML)
+	{
+		if(logger.isInfoEnabled())
+			logger.info("qualifyerXML:" + qualifyerXML);
+		
+		Timer t = new Timer();
+		
+		List<ContentVO> relatedContentVOList = new ArrayList<ContentVO>();
+
+		try
+		{
+			if(qualifyerXML != null && !qualifyerXML.equals(""))
+			{
+				String startExpression = idElementStart;
+				String endExpression = idElementEnd;
+
+				int idIndex = qualifyerXML.indexOf(startExpression);
+				if(idIndex == -1)
+				{
+					startExpression = idAttribute1Start;
+					idIndex = qualifyerXML.indexOf(startExpression);
+					if(idIndex == -1)
+					{
+						startExpression = idAttribute2Start;
+						endExpression = idAttribute2End;
+						idIndex = qualifyerXML.indexOf(startExpression);						
+					}
+					else
+					{
+						endExpression = idAttribute1End;
+					}
+				}
+				
+				while(idIndex > -1)
+				{
+					int endIndex = qualifyerXML.indexOf(endExpression, idIndex + 4);
+						
+					String id = qualifyerXML.substring(idIndex + 4, endIndex);
+					
+					try
+					{
+						Integer contentId = new Integer(id);
+						relatedContentVOList.add(getContentVOWithId(contentId));
+					}
+					catch(Exception e)
+					{
+					    logger.info("An error occurred when looking up one of the related contents FromXML:" + e.getMessage(), e);
+					}
+
+					idIndex = qualifyerXML.indexOf(startExpression, idIndex + 5);
+				}
+			}
+		}
+		catch(Exception e)
+		{
+			logger.error("An error occurred trying to get related contents from qualifyerXML " + qualifyerXML + ":" + e.getMessage(), e);
+		}
+		
+		return relatedContentVOList;
+	}
+
+	/**
+	 * This method gets the related pages from an XML.
+	 */
+	
+	private List<SiteNodeVO> getRelatedSiteNodesFromXML(String qualifyerXML)
+	{
+		if(logger.isInfoEnabled())
+			logger.info("qualifyerXML:" + qualifyerXML);
+
+		Timer t = new Timer();
+
+		List<SiteNodeVO> relatedPages = new ArrayList<SiteNodeVO>();
+		
+		try
+		{
+			if(qualifyerXML != null && !qualifyerXML.equals(""))
+			{
+				String startExpression = idElementStart;
+				String endExpression = idElementEnd;
+
+				int idIndex = qualifyerXML.indexOf(startExpression);
+				if(idIndex == -1)
+				{
+					startExpression = idAttribute1Start;
+					idIndex = qualifyerXML.indexOf(startExpression);
+					if(idIndex == -1)
+					{
+						startExpression = idAttribute2Start;
+						endExpression = idAttribute2End;
+						idIndex = qualifyerXML.indexOf(startExpression);						
+					}
+					else
+					{
+						endExpression = idAttribute1End;
+					}
+				}
+				
+				while(idIndex > -1)
+				{
+					int endIndex = qualifyerXML.indexOf(endExpression, idIndex + 4);
+						
+					String id = qualifyerXML.substring(idIndex + 4, endIndex);
+					
+					try
+					{
+						SiteNodeVO siteNodeVO = SiteNodeController.getController().getSiteNodeVOWithId(new Integer(id));
+						relatedPages.add(siteNodeVO);
+					}
+					catch(Exception e)
+					{
+					    logger.info("An error occurred when looking up one of the related Pages FromXML:" + e.getMessage(), e);
+					}
+
+					idIndex = qualifyerXML.indexOf(startExpression, idIndex + 5);
+				}
+			}
+		}
+		catch(Exception e)
+		{
+			logger.error("An error occurred trying to get related contents from qualifyerXML " + qualifyerXML + ":" + e.getMessage(), e);
+		}
+
+		return relatedPages;
+	}
 }
