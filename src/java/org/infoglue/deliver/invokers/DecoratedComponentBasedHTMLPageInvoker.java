@@ -25,6 +25,7 @@ package org.infoglue.deliver.invokers;
 
 import java.io.File;
 import java.io.PrintWriter;
+import java.io.StringReader;
 import java.io.StringWriter;
 import java.net.URLEncoder;
 import java.util.ArrayList;
@@ -80,6 +81,8 @@ import org.infoglue.deliver.util.CacheController;
 import org.infoglue.deliver.util.HttpHelper;
 import org.infoglue.deliver.util.Timer;
 import org.infoglue.deliver.util.VelocityTemplateProcessor;
+import org.xmlpull.v1.builder.XmlDocument;
+import org.xmlpull.v1.builder.XmlInfosetBuilder;
 
 /**
 * @author Mattias Bogeblad
@@ -133,29 +136,32 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 		}
 		else
 		{
-		    Document document = null;
-		    try
+   			List unsortedPageComponents = new ArrayList();
+
+   			try
 		    {
-		        document = domBuilder.getDocument(componentXML);
+		    	//DOM4J
+   				/*
+   				Document document = domBuilder.getDocument(componentXML);
+		    	List pageComponents = getPageComponentsWithDOM4j(getDatabase(), componentXML, document.getRootElement(), "base", this.getTemplateController(), null, unsortedPageComponents);
+				*/
+   				
+	   			//XPP3
+		        XmlInfosetBuilder builder = XmlInfosetBuilder.newInstance();
+		        XmlDocument doc = builder.parseReader(new StringReader( componentXML ) );
+				List pageComponents = getPageComponentsWithXPP3(getDatabase(), componentXML, doc.getDocumentElement(), "base", this.getTemplateController(), null, unsortedPageComponents);
+	
+				preProcessComponents(nodeDeliveryController, repositoryId, unsortedPageComponents, pageComponents);
+				
+				if(pageComponents.size() > 0)
+				{
+					baseComponent = (InfoGlueComponent)pageComponents.get(0);
+				}
 		    }
 		    catch(Exception e)
 		    {
 		        throw new SystemException("There was a problem parsing the component structure on the page. Could be invalid XML in the ComponentStructure attribute. Message:" + e.getMessage(), e);
 		    }
-		    
-			decoratorTimer.printElapsedTime("After reading document");
-			
-   			List unsortedPageComponents = new ArrayList();
-			List pageComponents = getPageComponents(getDatabase(), componentXML, document.getRootElement(), "base", this.getTemplateController(), null, unsortedPageComponents);
-
-			preProcessComponents(nodeDeliveryController, repositoryId, unsortedPageComponents, pageComponents);
-			
-			if(pageComponents.size() > 0)
-			{
-				baseComponent = (InfoGlueComponent)pageComponents.get(0);
-			}
-
-			decoratorTimer.printElapsedTime("After getting basecomponent");
 			
 			if(baseComponent == null)
 			{
