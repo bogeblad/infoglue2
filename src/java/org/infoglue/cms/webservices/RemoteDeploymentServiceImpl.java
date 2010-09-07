@@ -666,7 +666,7 @@ public class RemoteDeploymentServiceImpl extends RemoteInfoGlueService
 		        logger.info("principalName:" + principalName);
 	        }
 	        
-			repositoryVOList = repositoryController.getRepositoryVOList();
+			repositoryVOList = repositoryController.getRepositoryVOListNotMarkedForDeletion();
         }
         catch(Throwable t)
         {

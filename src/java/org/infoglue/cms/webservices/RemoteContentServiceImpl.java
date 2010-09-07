@@ -824,8 +824,16 @@ public class RemoteContentServiceImpl extends RemoteInfoGlueService
                     if(keepExistingAttributes)
 	                {
                     	Element attribute = attributesRoot.element(attributeName);
-                    	attribute.clearContent();
-                    	domBuilder.addCDATAElement(attribute, attributeValue);
+                    	if(attribute != null)
+                    	{
+                    		attribute.clearContent();
+                        	domBuilder.addCDATAElement(attribute, attributeValue);
+                    	}
+    	                else
+    	                {
+                        	attribute = domBuilder.addElement(attributesRoot, attributeName);
+        	                domBuilder.addCDATAElement(attribute, attributeValue);
+    	                }
 	                }
 	                else
 	                {
