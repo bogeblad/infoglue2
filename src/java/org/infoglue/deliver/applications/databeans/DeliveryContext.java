@@ -37,12 +37,7 @@ import java.util.Set;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.infoglue.cms.applications.common.Session;
-import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
-import org.infoglue.cms.controllers.kernel.impl.simple.ContentVersionController;
-import org.infoglue.cms.entities.content.ContentVersionVO;
 import org.infoglue.cms.util.CmsPropertyHandler;
-import org.infoglue.deliver.controllers.kernel.impl.simple.InfoGlueHashSet;
 
 /**
  * @author Mattias Bogeblad
@@ -102,7 +97,8 @@ public class DeliveryContext implements UsageListener
 	private Set usedSiteNodes = new HashSet();
 	private Set usedSiteNodeVersions = new HashSet();
 	
-	private Set usedPageMetaInfoContentVersionIdSet = new InfoGlueHashSet();
+	private Set usedPageMetaInfoContentVersionIdSet = new HashSet();
+	private Set usedPageComponentsMetaInfoContentVersionIdSet = new HashSet();
 	
 	private Date lastModifiedDateTime = null;
 	private boolean registerLastModifiedDate = false;
@@ -132,7 +128,7 @@ public class DeliveryContext implements UsageListener
 	//This variable controls if tags and logic should consider the logged in editor principal even if the ordinary principal is anonymous when checking for access rights etc.
 	private boolean considerEditorInDecoratedMode = true;
 	
-	private String operatingMode = CmsPropertyHandler.getOperatingMode();
+	private String operatingMode = null;
 	
 	private Map pageAttributes = new HashMap();
 	private List htmlHeadItems = new ArrayList();
@@ -482,6 +478,11 @@ public class DeliveryContext implements UsageListener
 		return usedPageMetaInfoContentVersionIdSet;
 	}
 
+	public Set getUsedPageComponentsMetaInfoContentVersionIdSet() 
+	{
+		return usedPageComponentsMetaInfoContentVersionIdSet;
+	}
+
 	public Map getPageAttributes() 
 	{
 		return pageAttributes;
@@ -561,6 +562,13 @@ public class DeliveryContext implements UsageListener
 
 	public String getOperatingMode()
 	{
+		if(this.operatingMode == null)
+		{
+			//System.out.println("No local operating mode. Using global:" + CmsPropertyHandler.getOperatingMode());
+			this.operatingMode = CmsPropertyHandler.getOperatingMode();
+		}
+		
+		//System.out.println("Returning " + this.operatingMode);
 		return this.operatingMode;
 	}
 
