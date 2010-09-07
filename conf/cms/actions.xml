@@ -1,4 +1,4 @@
-<!-- $Id: actions.xml,v 1.97 2010/09/03 09:31:59 mattias Exp $ -->
+<!-- $Id: actions.xml,v 1.98 2010/09/07 07:55:54 mattias Exp $ -->
 <actions>
 
 	<!-- MySettings -->
@@ -575,7 +575,7 @@
 
 	<!-- SystemUser -->
 	<action name="org.infoglue.cms.applications.managementtool.actions.ViewListSystemUserAction" alias="ViewListSystemUser">
-		<view name="success">/cms/managementtool/viewListSystemUser.vm</view>
+		<view name="success">/cms/managementtool/v3/viewListSystemUser.vm</view>
 		<view name="successV3">/cms/managementtool/v3/viewListSystemUser.vm</view>
 		<view name="successPopup">/cms/managementtool/viewListSystemUserForPopup.vm</view>
 		<view name="successPopupV3">/cms/managementtool/v3/viewListSystemUserForPopup.vm</view>
@@ -592,7 +592,7 @@
 		<view name="input">/cms/managementtool/viewSystemUser.vm</view>
 		<view name="inputV3">/cms/managementtool/v3/viewSystemUser.vm</view>
 		<view name="success">ViewSystemUser.action</view>
-		<view name="saveAndExit">ViewListSystemUser.action</view>
+		<view name="saveAndExit">ViewListSystemUser!v3.action</view>
 		<view name="successV3">ViewSystemUser!v3.action</view>
 		<view name="saveAndExitV3">ViewListSystemUser!v3.action</view>
 		<view name="passwordSentSuccess">ViewSystemUser.action</view>
@@ -655,7 +655,7 @@
 
 	<!-- Role -->
 	<action name="org.infoglue.cms.applications.managementtool.actions.ViewListRoleAction" alias="ViewListRole">
-		<view name="success">/cms/managementtool/viewListRole.vm</view>
+		<view name="success">/cms/managementtool/v3/viewListRole.vm</view>
 		<view name="successV3">/cms/managementtool/v3/viewListRole.vm</view>
 		<view name="error">/cms/managementtool/error.vm</view>
 	</action>
@@ -668,13 +668,13 @@
 		<view name="input">/cms/managementtool/createRole.vm</view>
 		<view name="success">ViewRole.action</view>
 		<view name="inputV3">/cms/managementtool/v3/createRole.vm</view>
-		<view name="successV3">ViewRole!v3.action?roleName=${roleName}</view>
-		<view name="successSaveAndExitV3">ViewListRole!listManagableRoles.action</view>
+		<view name="successV3">ViewRole.action?roleName=${roleName}</view>
+		<view name="successSaveAndExitV3">ViewListRole.action</view>
 		<view name="error">/cms/managementtool/error.vm</view>
 	</action>
 	<action name="org.infoglue.cms.applications.managementtool.actions.DeleteRoleAction" alias="DeleteRole">
 		<view name="success">ViewListRole.action</view>
-		<view name="successV3">ViewListRole!listManagableRoles.action</view>
+		<view name="successV3">ViewListRole.action</view>
 		<view name="error">/cms/managementtool/error.vm</view>
 	</action>
 	<action name="org.infoglue.cms.applications.managementtool.actions.UpdateRoleAction" alias="UpdateRole">
@@ -682,8 +682,8 @@
 		<view name="success">ViewRole.action</view>
 		<view name="saveAndExit">ViewListRole.action</view>
 		<view name="inputV3">/cms/managementtool/v3/viewRole.vm</view>
-		<view name="successV3">ViewRole!v3.action</view>
-		<view name="saveAndExitV3">ViewListRole!listManagableRoles.action</view>
+		<view name="successV3">ViewRole.action</view>
+		<view name="saveAndExitV3">ViewListRole.action</view>
 		<view name="error">/cms/managementtool/error.vm</view>
 	</action>
 	<action name="org.infoglue.cms.applications.managementtool.actions.ViewRoleUsersAction" alias="ViewRoleUsers">
@@ -718,7 +718,7 @@
 
 	<!-- Group -->
 	<action name="org.infoglue.cms.applications.managementtool.actions.ViewListGroupAction" alias="ViewListGroup">
-		<view name="success">/cms/managementtool/viewListGroup.vm</view>
+		<view name="success">/cms/managementtool/v3/viewListGroup.vm</view>
 		<view name="successV3">/cms/managementtool/v3/viewListGroup.vm</view>
 		<view name="error">/cms/managementtool/error.vm</view>
 	</action>
@@ -731,8 +731,8 @@
 		<view name="input">/cms/managementtool/createGroup.vm</view>
 		<view name="success">ViewGroup.action</view>
 		<view name="inputV3">/cms/managementtool/v3/createGroup.vm</view>
-		<view name="successV3">ViewGroup!v3.action?groupName=${groupName}</view>
-		<view name="successSaveAndExitV3">ViewListGroup!listManagableGroups.action</view>
+		<view name="successV3">ViewGroup.action?groupName=${groupName}</view>
+		<view name="successSaveAndExitV3">ViewListGroup.action</view>
 		<view name="error">/cms/managementtool/error.vm</view>
 	</action>
 	<action name="org.infoglue.cms.applications.managementtool.actions.DeleteGroupAction" alias="DeleteGroup">
