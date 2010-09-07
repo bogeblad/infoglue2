@@ -23,7 +23,6 @@
 	{
 		if(selectedAssetElement)
 		{
-			selectedAssetElement.style.margin 	= "3px";
 			selectedAssetElement.style.border 	= "1px solid black";
 		}
 
@@ -33,7 +32,6 @@
 
 		if(selectedAssetElement)
 		{
-			selectedAssetElement.style.margin 	= "0px";
 			selectedAssetElement.style.border 	= "4px solid rgb(255, 137, 30)";
 		}
 
@@ -76,64 +74,36 @@
 		    </ul>
 	
 			<div id="basicTab" class="inlineTabDiv">
-				<table>
-					<tr>
-						<td colspan="3">#editTextField("SiteNode.name" "name" $!name "30" "normaltextfield" "")</td>
-					</tr>
-					<tr>
-						<td colspan="4">#editDateField("SiteNode.publishDateTime" "publishDateTime" $!publishDateTime "30" "date"  "ViewCalendar.action?date=$!publishDateTimeAsLong&formPath=document.editForm.publishDateTime" "$dateReadonly")
-					</tr>		
-					<tr>
-						<td colspan="4">#editDateField("SiteNode.expireDateTime" "expireDateTime" $!expireDateTime "30" "date"  "ViewCalendar.action?date=$!expireDateTimeAsLong&formPath=document.editForm.expireDateTime" "$dateReadonly")</td>
-					</tr>						
-					<tr>
-						<td colspan="3">&nbsp;</td>
-					</tr>	
-					<tr>
-						<td colspan="4" width=>
-							<table border="0" cellspacing="0" cellpadding="3px">
-								<tr>
-									$ui.getString("tool.structuretool.pageTemplates.header") #if(!$pageTemplateIsOptional) ($ui.getString("tool.common.mandatory.label"))#end<br/>
-									<br/>
-									#set($counter = 0)
-									#foreach ($content in $sortedPageTemplates)
-										##if($filterRepositoryId == -1 || $content.repositoryId == $filterRepositoryId)
-											#if($isOdd)
-												#set($class = "class='lightapricot'")
-												#set($isOdd = false)
-											#else
-												#set($class = "class='white'")
-												#set($isOdd = true)
-											#end
-											
-											##set($imageUrl = "images/componentIcon.gif")
-											#set($imageUrl = $this.getDigitalAssetUrl($content.id, "thumbnail"))
-											#if(!$imageUrl || $imageUrl == "")
-												#set($imageUrl = "images/undefinedPageTemplate.jpg")
-											#end
-											<td valign="top" align="center" width="100" style="padding: 3px;">
-												<img id="digitalAsset$content.id" src="$imageUrl" onclick="markPageTemplate(this, $content.id);" border="0" style="width: 100px; border: 1px solid black; margin: 3px;" alt="$content.getName()" title="$content.getName()">
-											</td>
-											<td valign="top">
-												<span style="font-weight: bold;"><a href="javascript:markPageTemplate(this, $content.id);">$content.getName()</a></span><br/>
-												#if($content.extraProperties.get("Description") && $content.extraProperties.get("Description") != "Unknown" && $content.extraProperties.get("Description") != "")
-													$content.extraProperties.get("Description")
-												#end
-											</td>
-											#set($counter = $counter + 1)
-											#if ($counter == 2)
-											</tr>
-											<tr>
-												#set($counter = 0)	
-											#end
-										##end
-										#set($imageUrl = "")
+				<p>#editTextField("SiteNode.name" "name" $!name "30" "normaltextfield" "")</p>
+				<p>#editDateField("SiteNode.publishDateTime" "publishDateTime" $!publishDateTime "30" "date"  "ViewCalendar.action?date=$!publishDateTimeAsLong&formPath=document.editForm.publishDateTime" "$dateReadonly")</p>
+				<p>#editDateField("SiteNode.expireDateTime" "expireDateTime" $!expireDateTime "30" "date"  "ViewCalendar.action?date=$!expireDateTimeAsLong&formPath=document.editForm.expireDateTime" "$dateReadonly")</p>
+				<p>
+					<h3>$ui.getString("tool.structuretool.pageTemplates.header") #if(!$pageTemplateIsOptional) ($ui.getString("tool.common.mandatory.label"))#end</h3>
+					#set($counter = 0)
+					#foreach ($content in $sortedPageTemplates)
+						##if($filterRepositoryId == -1 || $content.repositoryId == $filterRepositoryId)
+							
+							##set($imageUrl = "images/componentIcon.gif")
+							#set($imageUrl = $this.getDigitalAssetUrl($content.id, "thumbnail"))
+							#if(!$imageUrl || $imageUrl == "")
+								#set($imageUrl = "images/undefinedPageTemplate.jpg")
+							#end
+							<div style="float: left; margin-left: 16px; margin-bottom: 16px; width: 200px; min-height: 140px; background:url(images/v3/imgbox_bg.gif) repeat; border:solid 1px #d8d8d8;">
+								<div style="float: left; width: 100%; margin-top: 6px;">
+									<img id="digitalAsset$content.id" src="$imageUrl" onclick="markPageTemplate(this, $content.id);" border="0" style="width: 100px; border: 1px solid black; margin: 4px 50px 4px 50px;" alt="$content.getName()" title="$content.getName()">
+								</div><br/>
+								
+								<div style="float: left; text-align: center; width: 100%;">
+									<span style="font-weight: bold;"><a href="javascript:markPageTemplate(this, $content.id);">$content.getName()</a></span><br/>
+									#if($content.extraProperties.get("Description") && $content.extraProperties.get("Description") != "Unknown" && $content.extraProperties.get("Description") != "")
+										$content.extraProperties.get("Description")
 									#end
-								</tr>
-							</table>		
-						</td>
-					</tr>						
-				</table>
+								</div>
+							</div>
+						##end
+						#set($imageUrl = "")
+					#end
+				<p>
 			</div>
 			
 			<div id="advancedTab" class="inlineTabDiv">
