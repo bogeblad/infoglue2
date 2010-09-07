@@ -402,7 +402,6 @@ public class NodeDeliveryController extends BaseDeliveryController
 	{
 		String key = "" + siteNodeId;
 		logger.info("key:" + key);
-		//SiteNodeVersionVO siteNodeVersionVO = (SiteNodeVersionVO)CacheController.getCachedObject("latestSiteNodeVersionCache", key);
 		SiteNodeVersionVO siteNodeVersionVO = (SiteNodeVersionVO)CacheController.getCachedObjectFromAdvancedCache("latestSiteNodeVersionCache", key);
 		if(siteNodeVersionVO != null)
 		{
@@ -418,9 +417,7 @@ public class NodeDeliveryController extends BaseDeliveryController
 				siteNodeVersionVO = siteNodeVersion.getValueObject();
 			*/
 			
-			//CacheController.cacheObject("latestSiteNodeVersionCache", key, siteNodeVersionVO);
         	StringBuilder groupKey1 = new StringBuilder("siteNodeVersion_").append(siteNodeVersionVO.getId());
-        	//StringBuilder groupKey1 = new StringBuilder("siteNodeVersion_").append(siteNodeVersion.getId());
         	StringBuilder groupKey2 = new StringBuilder("siteNode_").append(siteNodeId);
 
         	CacheController.cacheObjectInAdvancedCache("latestSiteNodeVersionCache", key, siteNodeVersionVO, new String[]{groupKey1.toString(), groupKey2.toString()}, true);
@@ -1225,55 +1222,52 @@ public class NodeDeliveryController extends BaseDeliveryController
 	}
 
 
-	/**
-	 * This method returns a list of contents bound to the named availableServiceBinding.
-	 */
-	
 	public List getBoundContents(Database db, InfoGluePrincipal infoGluePrincipal, Integer siteNodeId, Integer languageId, boolean useLanguageFallback, String availableServiceBindingName, boolean inheritParentBindings, boolean includeFolders, DeliveryContext deliveryContext) throws SystemException, Exception
 	{
 		if(siteNodeId != null && this.deliveryContext != null)
 			this.deliveryContext.addUsedSiteNode("siteNode_" + siteNodeId);
 
-		StringBuilder boundContentsKey = new StringBuilder();
-		boundContentsKey.append("")
-		.append("").append(infoGluePrincipal.getName())
-		.append("_").append(siteNodeId)
-		.append("_").append(languageId)
-		.append("_").append(useLanguageFallback)
-		.append("_").append(includeFolders)
-		.append("_").append(availableServiceBindingName)
-		.append("_").append(USE_INHERITANCE);
+		List boundContentVOList = new ArrayList();
 		
-		//String boundContentsKey = "" + infoGluePrincipal.getName() + "_" + siteNodeId + "_" + languageId + "_" + useLanguageFallback + "_" + includeFolders + "_" + availableServiceBindingName + "_" + USE_INHERITANCE;
-		
-		List boundContentVOList = (List)CacheController.getCachedObject("boundContentCache", boundContentsKey.toString());
-		if(boundContentVOList != null)
+		Integer metaInfoContentId = null;
+		if(availableServiceBindingName.equalsIgnoreCase("Meta information"))
 		{
-			if(logger.isInfoEnabled())
-				logger.info("There was an cached content boundContentVOList:" + boundContentVOList.size());
+			SiteNodeVO siteNodeVO = getSiteNodeVO(db, siteNodeId);
+			if(siteNodeVO != null)
+				metaInfoContentId = siteNodeVO.getMetaInfoContentId();
+
+			if(logger.isDebugEnabled())
+			{
+				logger.debug("siteNode for id: " + siteNodeId + "=" + siteNodeVO);
+				logger.debug("metaInfoContentId: " + metaInfoContentId);
+			}
+		}
+		
+		if(metaInfoContentId != null && metaInfoContentId.intValue() > -1)
+		{
+			ContentVO contentVO = ContentDeliveryController.getContentDeliveryController().getContentVO(db, metaInfoContentId, deliveryContext);
+			boundContentVOList.add(contentVO);
 		}
 		else
 		{
-		    boundContentVOList = new ArrayList();
+			StringBuilder boundContentsKey = new StringBuilder();
+			boundContentsKey.append("")
+			.append("").append(infoGluePrincipal.getName())
+			.append("_").append(siteNodeId)
+			.append("_").append(languageId)
+			.append("_").append(useLanguageFallback)
+			.append("_").append(includeFolders)
+			.append("_").append(availableServiceBindingName)
+			.append("_").append(USE_INHERITANCE);
 			
-			Integer metaInfoContentId = null;
-			if(availableServiceBindingName.equalsIgnoreCase("Meta information"))
-			{
-				SiteNodeVO siteNodeVO = getSiteNodeVO(db, siteNodeId);
-				if(siteNodeVO != null)
-					metaInfoContentId = siteNodeVO.getMetaInfoContentId();
-
-				if(logger.isDebugEnabled())
-				{
-					logger.debug("siteNode for id: " + siteNodeId + "=" + siteNodeVO);
-					logger.debug("metaInfoContentId: " + metaInfoContentId);
-				}
-			}
+			//String boundContentsKey = "" + infoGluePrincipal.getName() + "_" + siteNodeId + "_" + languageId + "_" + useLanguageFallback + "_" + includeFolders + "_" + availableServiceBindingName + "_" + USE_INHERITANCE;
+			logger.warn("Strange... why:" + boundContentsKey);
 			
-			if(metaInfoContentId != null && metaInfoContentId.intValue() > -1)
+			boundContentVOList = (List)CacheController.getCachedObjectFromAdvancedCache("boundContentCache", boundContentsKey.toString());
+			if(boundContentVOList != null)
 			{
-				ContentVO contentVO = ContentDeliveryController.getContentDeliveryController().getContentVO(db, metaInfoContentId, deliveryContext);
-				boundContentVOList.add(contentVO);    
+				if(logger.isInfoEnabled())
+					logger.info("There was an cached content boundContentVOList:" + boundContentVOList.size());
 			}
 			else
 			{
@@ -1322,16 +1316,16 @@ public class NodeDeliveryController extends BaseDeliveryController
 							    boundContentVOList.add(candidate);    
 							}
 						}
+						CacheController.cacheObjectInAdvancedCache("boundContentCache", boundContentsKey.toString(), boundContentVOList);
 					}
 				}
 			}
-			
-			CacheController.cacheObject("boundContentCache", boundContentsKey.toString(), boundContentVOList);
 		}
 
 		return boundContentVOList;
 
 	}
+
 
 	
 
@@ -2069,14 +2063,12 @@ public class NodeDeliveryController extends BaseDeliveryController
 	        {
 	            if (i < 0) 
 	            {
-		        	System.out.println("path[" + i + "]");
 	  	    		if(logger.isInfoEnabled())
 		    	        logger.info("Getting root node");
 	                siteNodeId = NodeDeliveryController.getNodeDeliveryController(null, null, null).getSiteNodeId(db, infogluePrincipal, repositoryVO.getId(), null, attributeName, null, languageId, deliveryContext);
 	            } 
 	            else 
 	            {
-		        	System.out.println("path[" + i + "]:" + path[i]);
 	  	    		if(logger.isInfoEnabled())
 		    	        logger.info("Getting normal");
 	                siteNodeId = NodeDeliveryController.getNodeDeliveryController(null, null, null).getSiteNodeId(db, infogluePrincipal, repositoryVO.getId(), path[i], attributeName, siteNodeId, languageId, deliveryContext);
@@ -2206,7 +2198,6 @@ public class NodeDeliveryController extends BaseDeliveryController
 
 
 	
-
 	/**
 	 * This method returns the list of siteNodeVO which is children to this one.
 	 */

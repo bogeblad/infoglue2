@@ -23,8 +23,6 @@
 
 package org.infoglue.deliver.controllers.kernel.impl.simple;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -59,7 +57,6 @@ import org.infoglue.cms.controllers.kernel.impl.simple.RepositoryController;
 import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeController;
 import org.infoglue.cms.controllers.kernel.impl.simple.UserControllerProxy;
 import org.infoglue.cms.entities.content.ContentVO;
-import org.infoglue.cms.entities.content.ContentVersion;
 import org.infoglue.cms.entities.content.ContentVersionVO;
 import org.infoglue.cms.entities.content.DigitalAssetVO;
 import org.infoglue.cms.entities.management.ContentTypeDefinitionVO;
@@ -84,13 +81,11 @@ import org.infoglue.deliver.applications.databeans.ComponentTask;
 import org.infoglue.deliver.applications.databeans.DeliveryContext;
 import org.infoglue.deliver.applications.databeans.Slot;
 import org.infoglue.deliver.integration.dataproviders.PropertyOptionsDataProvider;
-import org.infoglue.deliver.portal.PortalController;
 import org.infoglue.deliver.util.CacheController;
 import org.infoglue.deliver.util.HttpHelper;
 import org.infoglue.deliver.util.HttpUtilities;
 import org.infoglue.deliver.util.NullObject;
 import org.infoglue.deliver.util.Timer;
-import org.infoglue.deliver.util.VelocityTemplateProcessor;
 
 /**
  * This class is the new Helper class for generating all kind of PageEditor-divs etc.
@@ -129,7 +124,7 @@ public class PageEditorHelper extends BaseDeliveryController
 	    if(request.getParameter("skipPropertiesDiv") != null && request.getParameter("skipPropertiesDiv").equalsIgnoreCase("true"))
 	        return "";
 
-	    StringBuffer sb = new StringBuffer();
+	    StringBuilder sb = new StringBuilder();
 	    
 		String componentEditorUrl = CmsPropertyHandler.getComponentEditorUrl();
 
@@ -1709,7 +1704,22 @@ public class PageEditorHelper extends BaseDeliveryController
 		try
 		{
 		    Integer masterLanguageId = LanguageDeliveryController.getLanguageDeliveryController().getMasterLanguageForSiteNode(db, siteNodeId).getId();
-			componentPropertiesString = ContentController.getContentController().getContentAttribute(db, contentId, masterLanguageId, "ComponentProperties", true);
+		    
+		    Integer operatingMode = 0;
+		    String operatingModeString = CmsPropertyHandler.getOperatingMode();
+		    if(operatingModeString != null && !operatingModeString.equals(""))
+		    {
+		    	try
+		    	{
+		    		operatingMode = new Integer(operatingModeString);
+		    	}
+		    	catch (Exception e) 
+		    	{
+		    		logger.error("Error getting operating mode:" + e.getMessage(), e);
+				}
+		    }
+		    	
+			componentPropertiesString = ContentController.getContentController().getContentAttribute(db, contentId, masterLanguageId, operatingMode, "ComponentProperties", true);
 			//componentPropertiesString = ContentDeliveryController.getContentDeliveryController().getContentAttribute(db, contentId, masterLanguageId, "ComponentProperties", siteNodeId, true, null, principal, false, true);
 
 			if(componentPropertiesString == null)
@@ -2296,7 +2306,6 @@ public class PageEditorHelper extends BaseDeliveryController
 					}
 					catch(Exception e)
 					{		
-						e.printStackTrace();
 						logger.warn("An component with either an empty template or with no template in the sitelanguages was found:" + e.getMessage(), e);	
 					}
 					
@@ -2304,7 +2313,6 @@ public class PageEditorHelper extends BaseDeliveryController
 				}
 				catch(Exception e)
 				{
-					e.printStackTrace();
 					logger.warn("There was deleted referenced component or some other problem when rendering siteNode: " + siteNodeId + ") in language " + languageId + ":" + e.getMessage(), e);
 				}
 				slotPosition++;
