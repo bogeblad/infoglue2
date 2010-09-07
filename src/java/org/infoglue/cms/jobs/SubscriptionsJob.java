@@ -161,7 +161,7 @@ public class SubscriptionsJob implements Job
 		    }
 		}
 		
-		List upcomingContents = ContentController.getContentController().getUpcomingExpiringContents(30);
+		List upcomingContents = ContentController.getContentController().getUpcomingExpiringContents(numberOfDays);
 		Iterator<ContentVO> upcomingContentIterator = upcomingContents.iterator();
 		while(upcomingContentIterator.hasNext())
 		{
