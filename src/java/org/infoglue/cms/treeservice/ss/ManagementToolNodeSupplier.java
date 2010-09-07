@@ -111,13 +111,13 @@ public class ManagementToolNodeSupplier extends BaseNodeSupplier
 			parameters.put("extraMarkup", "Authorization");
 
 			if(hasAccessTo("ManagementToolMenu.SystemUsers", infogluePrincipal, true))
-				r.add(new ManagementNodeImpl(cnt++, "SystemUsers", "ViewListSystemUser.action?title=SystemUsers", parameters));
+				r.add(new ManagementNodeImpl(cnt++, "SystemUsers", "ViewListSystemUser!V3.action?title=SystemUsers", parameters));
 			
 			if(hasAccessTo("ManagementToolMenu.Roles", infogluePrincipal, true))
-				r.add(new ManagementNodeImpl(cnt++, "Roles", "ViewListRole.action?title=Roles"));
+				r.add(new ManagementNodeImpl(cnt++, "Roles", "ViewListRole!listManagableRoles.action?title=Roles"));
 			
 			if(hasAccessTo("ManagementToolMenu.Groups", infogluePrincipal, true))
-				r.add(new ManagementNodeImpl(cnt++, "Groups", "ViewListGroup.action?title=Groups"));
+				r.add(new ManagementNodeImpl(cnt++, "Groups", "ViewListGroup!listManagableGroups.action?title=Groups"));
 						
 			parameters.put("extraMarkup", "Settings and tools");
 
