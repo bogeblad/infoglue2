@@ -362,21 +362,43 @@
 		var contentCoverSrcUrl 					= "ViewContent!V3.action?contentId=$!contentId&stay=true";
 		var contentHistorySrcUrl 				= "ViewContentVersionHistory!V3.action?contentId=$!contentId";
 		var contentReferencesSrcUrl 			= "ViewContentReferences.action?contentId=$!contentId";
-		var contentAccessRightsSrcUrl 			= "ViewAccessRights!V3.action?interceptionPointCategory=Content&extraParameters=$!contentId";
-		var contentVersionAccessRightsSrcUrl 	= "ViewAccessRights!V3.action?interceptionPointCategory=ContentVersion&extraParameters=$!contentVersionId";
+		var contentAccessRightsSrcUrl 			= "ViewAccessRights!V3.action?interceptionPointCategory=Content&extraParameters=$!contentId&showInline=true";
+		var contentVersionAccessRightsSrcUrl 	= "ViewAccessRights!V3.action?interceptionPointCategory=ContentVersion&extraParameters=$!contentVersionId&showInline=true";
 		//alert("index:" + index);
-		if(index == 2) 
+		if(index == 2)
+		{
 			$("#contentVersionAssetsFrame").attr("src", assetSrcUrl);
+			$("#footertoolbar").hide();
+		}
 		else if(index == 3) 
+		{
 			$("#contentCoverFrame").attr("src", contentCoverSrcUrl);
+			$("#footertoolbar").hide();
+		}
 		else if(index == 4) 
+		{
 			$("#contentHistoryFrame").attr("src", contentHistorySrcUrl);
+			$("#footertoolbar").hide();
+		}
 		else if(index == 5)
+		{
 			$("#contentReferencesFrame").attr("src", contentReferencesSrcUrl);
+			$("#footertoolbar").hide();
+		}
 		else if(index == 6)
+		{
 			$("#contentAccessRightsFrame").attr("src", contentAccessRightsSrcUrl);
+			$("#footertoolbar").hide();
+		}
 		else if(index == 7)
+		{
 			$("#contentVersionAccessRightsFrame").attr("src", contentVersionAccessRightsSrcUrl);
+			$("#footertoolbar").hide();
+		}
+		else
+		{
+			$("#footertoolbar").show();
+		}			
 	}
 
 	$(document).ready(function(){
@@ -384,14 +406,14 @@
 		
 		#if($anchor)
 	    	#if($!anchor == "contentVersionBlock")
-		    	$("#tabsContainer").tabs({ selected: 0, cache: false, show:function() { alert("aaaa"); resizeInlineTabDivs();}, select: function(e, ui) { if (ui.index == 2) { $("#contentVersionAssetsFrame").attr("src", assetSrcUrl); }}  });
+		    	$("#tabsContainer").tabs({ selected: 0, cache: false, show:function() { resizeInlineTabDivsWithoutSubDivs(138, 16);}, select: function(e, ui) { loadFrame(ui.index); } });
 		    #elseif($!anchor == "categoriesBlock")
-		    	$("#tabsContainer").tabs({ selected: 1, cache: false, show:function() { resizeInlineTabDivs();}, select: function(e, ui) { if (ui.index == 2) { $("#contentVersionAssetsFrame").attr("src", assetSrcUrl); }}  });
+		    	$("#tabsContainer").tabs({ selected: 1, cache: false, show:function() { resizeInlineTabDivsWithoutSubDivs(138, 16);}, select: function(e, ui) { loadFrame(ui.index); } });
 		    #elseif($!anchor == "digitalAssetsBlock")
-		    	$("#tabsContainer").tabs({ selected: 2, cache: false, show:function() { resizeInlineTabDivs();}, select: function(e, ui) { if (ui.index == 2) { $("#contentVersionAssetsFrame").attr("src", assetSrcUrl); }}  });
+		    	$("#tabsContainer").tabs({ selected: 2, cache: false, show:function() { resizeInlineTabDivsWithoutSubDivs(138, 16);}, select: function(e, ui) { loadFrame(ui.index); } });
 		    	$("#contentVersionAssetsFrame").attr("src", assetSrcUrl);
 		    #else 
-	  			$("#tabsContainer").tabs({ cache: false, show:function() { resizeInlineTabDivs();}, select: function(e, ui) { if (ui.index == 2) { $("#contentVersionAssetsFrame").attr("src", assetSrcUrl); }}  });
+	  			$("#tabsContainer").tabs({ cache: false, show:function() { resizeInlineTabDivsWithoutSubDivs(138, 16);}, select: function(e, ui) { loadFrame(ui.index); } });
 		    	alert("Anchor: $anchor");
 	  		#end
 	  	#else
