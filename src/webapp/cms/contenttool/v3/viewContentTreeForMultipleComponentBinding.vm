@@ -60,6 +60,11 @@
 			}
 		}
 				
+		function save(form)
+		{
+			submitBinding();
+		}	
+		
 		function submitBinding()
 		{
 		    qualifyerXML = "<?xml version='1.0' encoding='UTF-8'?>";
@@ -431,13 +436,6 @@
 				</tr>
 				<tr>
 					<td>
-						<a href="javascript:addQualifyer();"><img src="images/addButtonBlue.gif" border="0"></a>
-						<a href="javascript:submitBinding();"><img src="$ui.getString("images.structuretool.buttons.save")" border="0"></a>
-						<a href="javascript:window.close();"><img src="$ui.getString("images.structuretool.buttons.cancel")" border="0"></a>
-					</td>
-				</tr>		
-				<tr>
-					<td>
 						<form name="inputForm" action="CreateServiceBinding.action">
 							<input type="hidden" name="draggedComponentId" value="">
 							<input type="hidden" name="entityId" value="">
@@ -450,10 +448,10 @@
 				</table>
 			</td>	
 			
-			<td>&nbsp;</td>
+			<td><a href="javascript:addQualifyer();"><img src="images/arrowRightBig.gif" border="0"></a></td>
 			
 			<td valign="top">
-				<table cellpadding="0" cellspacing="0" border="0">
+				<table cellpadding="0" cellspacing="0" border="0" width="100%">
 				<tr>
 					<td class="smalllabel">$ui.getString("tool.structuretool.choosenContentsForBindingLabel")</td>
 				</tr>
@@ -467,10 +465,12 @@
 					</td>
 				</tr>
 				<tr>
-					<td style="border: 1px solid #C7D1B3; background-color: white;">				
+					<td style="border: 1px solid #C7D1B3; background-color: white; height: 430px; float: left;">
+						<div style="height: 430px; float: left; overflow: auto; width: 100%;">
 						<table id="bindings" border="1">
 					  	
 					  	</table>
+					  	</div>
 					</td>
 				</tr>
 						

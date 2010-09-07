@@ -239,9 +239,15 @@ public class ToolbarController
 			if(toolbarKey.equalsIgnoreCase("tool.contenttool.contentVersionHistory.label"))
 				return getContentHistoryFooterButtons(toolbarKey, principal, locale, request, disableCloseButton);
 
-			if(toolbarKey.equalsIgnoreCase("tool.structuretool.chooseContentLabel"))
+			if(toolbarKey.equalsIgnoreCase("tool.structuretool.choosePagesLabel"))
 				return getCommonFooterSaveOrCloseButton(toolbarKey, principal, locale, request, disableCloseButton);
 			
+			if(toolbarKey.equalsIgnoreCase("tool.structuretool.chooseContentLabel"))
+				return getCommonFooterSaveOrCloseButton(toolbarKey, principal, locale, request, disableCloseButton);
+
+			if(toolbarKey.equalsIgnoreCase("tool.structuretool.chooseContentsLabel"))
+				return getCommonFooterSaveOrCloseButton(toolbarKey, principal, locale, request, disableCloseButton);
+
 			if(toolbarKey.equalsIgnoreCase("tool.structuretool.chooseRelatedContentsLabel"))
 				return getContentRelationFooterButtons(toolbarKey, principal, locale, request, disableCloseButton);
 			
