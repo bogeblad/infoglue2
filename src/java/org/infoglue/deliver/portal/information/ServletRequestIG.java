@@ -114,11 +114,6 @@ public class ServletRequestIG extends HttpServletRequestWrapper {
      */
     public void setAttribute(String key, Object value) 
     {
-    	if(key.indexOf("HIBERNATE") > -1 || key.indexOf("webwork") > -1)
-    	{
-	    	System.out.println("key:" + key);
-	    	System.out.println("value:" + value.getClass().getName());
-    	}
     	this.attributeMap.put(key, value);
     }
 
@@ -127,12 +122,6 @@ public class ServletRequestIG extends HttpServletRequestWrapper {
      */
     public void removeAttribute(String key) 
     {
-    	System.out.println("Removing key:" + key);
-    	if(key.indexOf("HIBERNATE") > -1 || key.indexOf("webwork") > -1)
-    	{
-	    	System.out.println("Removing key:" + key);
-    	}
-
     	this.attributeMap.remove(key);
     }
 
