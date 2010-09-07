@@ -61,7 +61,6 @@ public class MatchingContentsTag extends TemplateControllerTag
 	private String repositoryIds = null;
 	private Integer languageId = null;
 	private Boolean skipLanguageCheck = false;
-	private Boolean forcedOperatingMode = null;
 	
     public MatchingContentsTag()
     {
