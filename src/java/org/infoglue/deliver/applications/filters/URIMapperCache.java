@@ -75,7 +75,7 @@ public class URIMapperCache
 
     private String createCacheKey(Integer repositoryId, String[] path, int upToIndex)
     {
-        StringBuffer sb = new StringBuffer(128);
+    	StringBuilder sb = new StringBuilder(128);
         sb.append(String.valueOf(repositoryId)).append(":/");
         for (int i=0;i < path.length && i < upToIndex ;i++) {
             sb.append(path[i].toLowerCase()).append("/");

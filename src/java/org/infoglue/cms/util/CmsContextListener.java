@@ -50,8 +50,6 @@ public final class CmsContextListener implements ServletContextListener
 {
     private final static Logger logger = Logger.getLogger(CmsContextListener.class.getName());
 
-	//private static CacheController cacheController = new CacheController();
-	
 	/**
 	 * This method is called when the servlet context is 
 	 * initialized(when the Web Application is deployed). 
@@ -110,7 +108,7 @@ public final class CmsContextListener implements ServletContextListener
 				if(cacheController.getExpireCacheAutomatically())
 					cacheController.start();
 			}
-			
+
 			OSCacheUtility.setServletCacheParams(event.getServletContext());
 			
 			CmsPropertyHandler.setStartupTime(new Date()); 

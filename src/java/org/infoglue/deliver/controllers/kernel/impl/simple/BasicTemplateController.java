@@ -4890,7 +4890,6 @@ public class BasicTemplateController implements TemplateController
 					criterias.setRepositoryIdList(repositoryIdList);
 				
 				final Set set = ExtendedSearchController.getController().search(criterias, getDatabase());
-				System.out.println("set:" + set.size());
 				
 				final List result = new ArrayList();
 				for(Iterator i = set.iterator(); i.hasNext(); ) 

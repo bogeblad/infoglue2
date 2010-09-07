@@ -25,8 +25,10 @@ package org.infoglue.deliver.taglib.content;
 
 import javax.servlet.jsp.JspException;
 
+import org.apache.log4j.Logger;
 import org.infoglue.cms.entities.content.ContentVO;
 import org.infoglue.cms.entities.content.ContentVersionVO;
+import org.infoglue.deliver.controllers.kernel.impl.simple.ComponentLogic;
 import org.infoglue.deliver.taglib.TemplateControllerTag;
 
 /**
@@ -34,7 +36,9 @@ import org.infoglue.deliver.taglib.TemplateControllerTag;
  */
 public class ContentVersionTag extends TemplateControllerTag
 {
-	private static final long serialVersionUID = 3258135773294113587L;
+    private final static Logger logger = Logger.getLogger(ContentVersionTag.class.getName());
+
+    private static final long serialVersionUID = 3258135773294113587L;
 
 	private ContentVO content;
     private Integer languageId;
@@ -82,7 +86,14 @@ public class ContentVersionTag extends TemplateControllerTag
 
     public void setContent(String contentExp) throws JspException
     {
-        this.content = (ContentVO)evaluate("contentVersion", "content", contentExp, ContentVO.class);
+    	try
+    	{
+    		this.content = (ContentVO)evaluate("contentVersion", "content", contentExp, ContentVO.class);
+    	}
+    	catch (Throwable t) 
+    	{
+    		logger.warn("Content evaluated wrong:" + t.getMessage());
+		}
     }
     
     public void setLanguageId(String languageId) throws JspException

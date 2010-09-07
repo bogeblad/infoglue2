@@ -181,7 +181,8 @@ public class ViewPageFilter implements Filter
 	        	
 	            while(!CmsPropertyHandler.getOperatingMode().equals("3") && RequestAnalyser.getRequestAnalyser().getBlockRequests())
 	            {
-	            	logger.warn("Queing up requests as cache eviction are taking place..");
+	            	if(logger.isInfoEnabled())
+	            		logger.info("Queing up requests as cache eviction are taking place..");
 	            	try { Thread.sleep(10); } catch (Exception e) {}
 	            }
 
@@ -201,9 +202,6 @@ public class ViewPageFilter implements Filter
 	                repositoryVOList = getRepositoryId(httpRequest, db);
 	                logger.info("repositoryVOList:" + repositoryVOList.size());
 	                
-	                System.out.println("repositoryVOList:" + repositoryVOList);
-	                System.out.println("requestURI:" + requestURI);
-
 	            	languageId = getLanguageId(httpRequest, httpSession, repositoryVOList, requestURI, db);
 	            
 	                Integer siteNodeId = null;
@@ -414,8 +412,6 @@ public class ViewPageFilter implements Filter
         if(logger.isInfoEnabled())
         	logger.info("repositories:" + repositories);
         
-        System.out.println("repositories:" + repositories);
-        
         if (repositories.size() == 0)
         {
             String redirectUrl = RedirectController.getController().getRedirectUrl(request);
@@ -467,12 +463,10 @@ public class ViewPageFilter implements Filter
         	{
         		RepositoryVO repositoryVO = (RepositoryVO)repositoryVOListIterator.next();
         		String dnsName = repositoryVO.getDnsName();
-        		System.out.println("dnsName:" + dnsName);
         		String serverName = request.getServerName();
         		int startIndex = dnsName.indexOf(serverName);
         		if(startIndex > -1)
         		{
-        			System.out.println("repositoryVO " + repositoryVO.getName() + " contains the dnsname");
         			while(startIndex > -1)
         			{
         				String domain = null;
@@ -482,18 +476,15 @@ public class ViewPageFilter implements Filter
         				else
         					domain = dnsName.substring(startIndex);
         					
-        				System.out.println("domain:" + domain);
         				if(domain.indexOf("[") > -1)
         				{
         					String languageCode = domain.substring(domain.indexOf("[") + 1, domain.length() - 1);
-        					System.out.println("languageCode:" + languageCode);
         					LanguageVO languageVO = LanguageDeliveryController.getLanguageDeliveryController().getLanguageWithCode(db, languageCode);
         					if(languageVO != null)
         					{
         						session.setAttribute(FilterConstants.LANGUAGE_ID, languageVO.getId());
         						languageId = languageVO.getId();
-            					System.out.println("YES - we found that language should be used:" + languageVO.getName());
-        						break outer;
+            					break outer;
         					}
         				}
         				
@@ -503,7 +494,6 @@ public class ViewPageFilter implements Filter
         	}
         }
 
-        System.out.println("Found that we should use languageId:" + languageId);
         if (languageId != null)
             return languageId;
 

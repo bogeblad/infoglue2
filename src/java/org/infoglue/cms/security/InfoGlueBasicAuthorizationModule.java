@@ -993,8 +993,6 @@ public class InfoGlueBasicAuthorizationModule extends BaseController implements 
 	    
 		boolean userExists = false;
 		
-		Timer t = new Timer();
-		
 		String administratorUserName = CmsPropertyHandler.getAdministratorUserName();
 		String administratorEmail 	 = CmsPropertyHandler.getAdministratorEmail();
 		
@@ -1014,7 +1012,6 @@ public class InfoGlueBasicAuthorizationModule extends BaseController implements 
 					beginTransaction(db);
 					
 					userExists = SystemUserController.getController().systemUserExists(userName, db);
-					t.printElapsedTime("Getting if user exists took:");
 					
 					commitTransaction(db);
 				} 
@@ -1028,12 +1025,8 @@ public class InfoGlueBasicAuthorizationModule extends BaseController implements 
 			else
 			{
 		    	userExists = SystemUserController.getController().systemUserExists(userName, transactionObject);
-		    	t.printElapsedTime("systemUser BBB took:");
 			}
 		}
-		
-		if(logger.isInfoEnabled())
-			t.printElapsedTime("Finding out if a user exists took:");
 		
 		return userExists;
     }

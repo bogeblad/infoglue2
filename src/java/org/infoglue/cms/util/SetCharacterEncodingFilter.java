@@ -48,6 +48,7 @@ public class SetCharacterEncodingFilter implements Filter
      */
     public static String defaultEncoding = null;
 
+
     /**
      * The default character encoding to set for requests that pass through
      * this filter.

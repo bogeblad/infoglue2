@@ -25,6 +25,7 @@ package org.infoglue.deliver.applications.actions;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.net.SocketException;
 import java.net.URLEncoder;
 import java.security.Principal;
 import java.util.Date;
@@ -211,7 +212,6 @@ public class ViewPageAction extends InfoGlueAbstractAction
         }
         
         HttpServletRequest request = getRequest();
-        
     	if(!CmsPropertyHandler.getOperatingMode().equals("3"))
     		tk = new ThreadMonitor(new Long(CmsPropertyHandler.getDeliverRequestTimeout()).longValue(), request, "Page view took to long!", true);
     	else
@@ -234,7 +234,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
    		try
 		{
 			validateAndModifyInputParameters(dbWrapper.getDatabase());
-	    	
+
 	    	this.nodeDeliveryController			= NodeDeliveryController.getNodeDeliveryController(this.siteNodeId, this.languageId, this.contentId);
 			this.integrationDeliveryController	= IntegrationDeliveryController.getIntegrationDeliveryController(this.siteNodeId, this.languageId, this.contentId);
 				    	
@@ -256,7 +256,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
 				protectDeliver = true;
 
 			isUserRedirected = handleAccessBasedProtocolRedirect(protectedSiteNodeVersionId, this.repositoryId, forceProtocolChangeSetting, dbWrapper.getDatabase());
-			
+
 			if(!isUserRedirected)
 			{
 				if(logger.isInfoEnabled())
@@ -302,7 +302,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
 	    		logger.info("pageKey:" + pageKey);
 
 	    	templateController = getTemplateController(dbWrapper, getSiteNodeId(), getLanguageId(), getContentId(), getRequest(), (InfoGluePrincipal)this.principal, false);
-			
+
 			if(logger.isInfoEnabled())
 				logger.info("handled extranet users: " + isUserRedirected);
 	
@@ -410,6 +410,24 @@ public class ViewPageAction extends InfoGlueAbstractAction
 			getRequest().setAttribute("errorUrl", getErrorUrl());
 			getRequest().getRequestDispatcher("/ErrorPage.action").forward(getRequest(), getResponse());
 		}
+		catch(IOException e)
+		{
+			String extraInformation = "Original URL: " + getOriginalFullURL() + "\n";
+			extraInformation += "Referer: " + getRequest().getHeader("Referer") + "\n";
+			extraInformation += "UserAgent: " + getRequest().getHeader("User-Agent") + "\n";
+			extraInformation += "User IP: " + getRequest().getRemoteAddr();
+			
+			if(e.getCause() != null)
+			{
+				if(e.getCause() instanceof SocketException)
+					logger.warn("A io exception was thrown returning data to client:" + e.getCause().getMessage() + "\n" + extraInformation);
+				else
+					logger.error("A io exception was thrown returning data to client:" + e.getCause().getMessage() + "\n" + extraInformation);					
+			}
+			else
+				logger.error("A io exception was thrown returning data to client:" + e.getMessage() + "\n" + extraInformation);		
+			rollbackTransaction(dbWrapper.getDatabase());
+		}
 		catch(Exception e)
 		{
 			String extraInformation = "Original URL: " + getOriginalFullURL() + "\n";
@@ -489,9 +507,10 @@ public class ViewPageAction extends InfoGlueAbstractAction
 			}
 
 			String originalFullUrl = getOriginalFullURL();
-		    RequestAnalyser.getRequestAnalyser().registerPageStatistics("" + originalFullUrl, elapsedTime);
-		    
-		    System.out.println("The page delivery took " + elapsedTime + "ms");
+			if(elapsedTime > 1000)
+				RequestAnalyser.getRequestAnalyser().registerPageStatistics("" + originalFullUrl, elapsedTime);
+		    		    
+		    //System.out.println("The page delivery took " + elapsedTime + "ms");
 		    if(elapsedTime > 10000)
 			{
 			    logger.warn("The page delivery took " + elapsedTime + "ms for request " + originalFullUrl);
@@ -506,8 +525,10 @@ public class ViewPageAction extends InfoGlueAbstractAction
 				}
 			}
 
-	    	if(tk != null)
+	    	if(tk != null && !tk.getIsDoneRunning())
 	    		tk.done();
+	    	else
+	    		logger.warn("Done had allready been run... skipping");
 		}
 		
         return NONE;
@@ -807,8 +828,12 @@ public class ViewPageAction extends InfoGlueAbstractAction
 			extraInformation += "Referer: " + getRequest().getHeader("Referer") + "\n";
 			extraInformation += "UserAgent: " + getRequest().getHeader("User-Agent") + "\n";
 			extraInformation += "User IP: " + getRequest().getRemoteAddr();
-
-			logger.error("An error occurred so we should not complete the transaction:" + e.getMessage() + "\n" + extraInformation, e);
+			
+			if(e instanceof java.net.SocketException)
+				logger.warn("An error occurred so we should not complete the transaction:" + e.getMessage() + "\n" + extraInformation);
+			else
+				logger.error("An error occurred so we should not complete the transaction:" + e.getMessage() + "\n" + extraInformation, e);
+				
 			rollbackTransaction(dbWrapper.getDatabase());
 			
 			throw new SystemException(e.getMessage());
@@ -876,8 +901,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
 				}
 			}
 
-		    //System.out.println("The page delivery took " + elapsedTime + "ms");
-		    String originalFullUrl = getOriginalFullURL();
+			String originalFullUrl = getOriginalFullURL();
 			if(elapsedTime > 20000)
 			{
 			    logger.warn("The page delivery took " + elapsedTime + "ms for request " + originalFullUrl);
@@ -889,8 +913,10 @@ public class ViewPageAction extends InfoGlueAbstractAction
 			    logger.info("The memory consumption was " + (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) + "(" + Runtime.getRuntime().totalMemory() + "/" + Runtime.getRuntime().maxMemory() + ") bytes");
 			}
 
-			if(tk != null)
+	    	if(tk != null && !tk.getIsDoneRunning())
 	    		tk.done();
+	    	else
+	    		logger.warn("Done had allready been run... skipping");
 		}
 		
 		return NONE;
