@@ -73,7 +73,7 @@ public class ExpireCacheJob implements Job
 	        }
 	        catch(Exception e)
 	        {
-	            logger.error("An error occurred when we tried to clear caches:" + e.getMessage(), e);
+	            logger.error("An error occurred when we tried to validate caches:" + e.getMessage(), e);
 	        }
 		    
 		    logger.info("releasing block");
@@ -84,6 +84,7 @@ public class ExpireCacheJob implements Job
     	if(diff > 3600)
     	{
     		logger.info("Cleaning heavy caches so memory footprint is kept low:" + diff);
+            /*
             synchronized(RequestAnalyser.getRequestAnalyser()) 
     	    {
     	       	if(RequestAnalyser.getRequestAnalyser().getBlockRequests())
@@ -94,23 +95,30 @@ public class ExpireCacheJob implements Job
 
     	       	RequestAnalyser.getRequestAnalyser().setBlockRequests(true);
     		}
-
+            
 			try
             {
     			logger.info("Finally clearing page cache as this was a publishing-update");
-    			CacheController.clearCache("componentEditorCache");
-    			CacheController.clearCache("componentEditorVersionIdCache");
-    		    CacheController.clearCache("pageCache");
-    		    CacheController.clearCache("pageCacheExtra");
+    			//logger.error("Flushing heavy caches..");
+    			//CacheController.clearCache("contentVersionCache");
+    			//CacheController.clearCache("componentPropertyCache");
+    			//CacheController.clearCache("componentPropertyVersionIdCache");
+    			//CacheController.clearCachesStartingWith("contentAttributeCache");
+    			//CacheController.clearCachesStartingWith("contentVersionIdCache");
+    			//CacheController.clearCache("componentEditorCache");
+    			//CacheController.clearCache("componentEditorVersionIdCache");
+    			//CacheController.clearCache("pageCache");
+    			//CacheController.clearCache("pageCacheExtra");
+    		    logger.error("Done flushing heavy caches..");
     		    lastCacheCleanup = System.currentTimeMillis();
             }
             catch(Exception e)
             {
                 logger.error("An error occurred when we tried to clear caches:" + e.getMessage(), e);
             }
-		    
 		    logger.info("releasing block");
 		    RequestAnalyser.getRequestAnalyser().setBlockRequests(false);
+		    */
     	}
 
         try
@@ -159,6 +167,7 @@ public class ExpireCacheJob implements Job
 		    			CacheController.cacheCentralCastorCaches();
 		    			
 		    			logger.info("Finally clearing page cache as this was a publishing-update");
+		    		    CacheController.clearFileCaches("pageCache");
 		    		    CacheController.clearCache("pageCache");
 		    		    CacheController.clearCache("pageCacheExtra");
 	        	    }
@@ -169,6 +178,8 @@ public class ExpireCacheJob implements Job
 		
 		    			logger.info("clearing all except page cache as we are in publish mode..");
 		    		    CacheController.clearCaches(null, null, null);
+
+		    		    CacheController.clearFileCaches("pageCache");
 	        	    }
                 }
                 catch(Exception e)
@@ -212,6 +223,7 @@ public class ExpireCacheJob implements Job
 		    			CacheController.cacheCentralCastorCaches();
 		    			
 		    			logger.info("Finally clearing page cache as this was a publishing-update");
+		    		    CacheController.clearFileCaches("pageCache");
 		    		    CacheController.clearCache("pageCache");
 		    		    CacheController.clearCache("pageCacheExtra");
 	        	    }
@@ -248,6 +260,11 @@ public class ExpireCacheJob implements Job
 		                {
 		                	File subCacheDir = subCaches[i];
 		                	logger.info("subCacheDir:" + subCacheDir.getName());
+	                		int targetDiff = 48;
+	                		if(subCacheDir.getName().equals("pageCache"))
+	                			targetDiff = 6 + (int)(Math.random() * ((12 - 6) + 1));
+	                		logger.info("targetDiff:" + targetDiff);
+	                		
 		                	if(subCacheDir.isDirectory())
 		                	{
 		                    	File[] subSubCacheFiles = subCacheDir.listFiles();
@@ -264,7 +281,7 @@ public class ExpireCacheJob implements Job
 						                	long lastModified = cacheFile.lastModified();
 					                		long differensInHours = (System.currentTimeMillis() - lastModified) / (60 * 60 * 1000);
 					                		//System.out.println("differensInHours:" + differensInHours);
-					                		if(differensInHours > (24 * 2))
+					                		if(differensInHours > targetDiff)
 					                		{
 					                			logger.info("Deleting cached file as it was to old:" + differensInHours);
 					                			cacheFile.delete();
