@@ -30,6 +30,7 @@
 	<tr>
 		<td>
 		<form method="POST" action="AddUserRole.action">
+		<input type="hidden" name="igSecurityCode" value="$!securityCode"/>
 		#set( $allRoleList = $this.getRoles() )
 		<select name="roleId">
 				#foreach ( $roleVO in $allRoleList )

@@ -20,7 +20,7 @@
  *
  * ===============================================================================
  *
- * $Id: ContentCategoryController.java,v 1.22 2009/06/17 13:55:47 mattias Exp $
+ * $Id: ContentCategoryController.java,v 1.23 2010/09/07 08:05:43 mattias Exp $
  */
 package org.infoglue.cms.controllers.kernel.impl.simple;
 
@@ -385,6 +385,7 @@ public class ContentCategoryController extends BaseController
 	
 	public List create(List categoryList, ContentVersion contentVersion, String attributeName, Database db) throws SystemException, Exception
 	{
+		logger.info("Creating categories on " + contentVersion.getId() + " for attributeName:" + attributeName);
 		List contentCategoryList = new ArrayList();
 
 		Iterator categoryListIterator = categoryList.iterator();

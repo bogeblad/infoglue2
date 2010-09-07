@@ -95,7 +95,12 @@ public class ViewGroupPropertiesAction extends ViewEntityPropertiesAction
         this.setCancelAction("ViewGroup.action");
         this.setToolbarKey("tool.managementtool.viewGroupProperties.header");
         this.setTitleKey("tool.managementtool.viewGroupProperties.header");
-        this.setArguments("");
+        
+        if(this.groupPropertiesVO != null)
+        	this.setArguments("entityId=" + this.groupPropertiesVO.getId());
+        else
+        	this.setArguments("");
+        
         this.setEntityName(GroupProperties.class.getName());
 
 		return "success";
@@ -111,7 +116,12 @@ public class ViewGroupPropertiesAction extends ViewEntityPropertiesAction
         this.setCancelAction("ViewGroup!v3.action");
         this.setToolbarKey("tool.managementtool.viewGroupProperties.header");
         this.setTitleKey("tool.managementtool.viewGroupProperties.header");
-        this.setArguments("");
+
+        if(this.groupPropertiesVO != null)
+        	this.setArguments("entityId=" + this.groupPropertiesVO.getId());
+        else
+        	this.setArguments("");
+        
         this.setEntityName(GroupProperties.class.getName());
 
 		return "successV3";

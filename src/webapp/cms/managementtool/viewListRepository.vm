@@ -5,7 +5,7 @@
 #beginManagementTool("tool.managementtool.repositoryList.header" "tool.managementtool.repositoryList.header" "")
 
 #set($lvConstraint = 1) 
-#lvHead(["Name","Description", "Dns Name"] "tool.managementtool.deleteRepositories.header" "DeleteRepository.action" "ViewListRepository.action?title=Repositories" "tool.managementtool.deleteRepositories.text")
+#lvHead(["Name","Description", "Dns Name"] "tool.managementtool.deleteRepositories.header" "DeleteRepository!markForDelete.action" "ViewListRepository.action?title=Repositories" "tool.managementtool.deleteRepositories.text")
 
 #set($cnt = 0)
 #foreach ($repositoryVO in $repositories)

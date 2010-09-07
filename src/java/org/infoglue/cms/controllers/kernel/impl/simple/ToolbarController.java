@@ -16,10 +16,16 @@ import org.infoglue.cms.applications.common.ToolbarButton;
 import org.infoglue.cms.applications.common.ToolbarButton;
 import org.infoglue.cms.entities.content.ContentVO;
 import org.infoglue.cms.entities.content.ContentVersionVO;
+import org.infoglue.cms.entities.management.AvailableServiceBindingVO;
+import org.infoglue.cms.entities.management.CategoryVO;
 import org.infoglue.cms.entities.management.ContentTypeDefinitionVO;
 import org.infoglue.cms.entities.management.InterceptionPointVO;
+import org.infoglue.cms.entities.management.InterceptorVO;
 import org.infoglue.cms.entities.management.LanguageVO;
+import org.infoglue.cms.entities.management.RedirectVO;
 import org.infoglue.cms.entities.management.RepositoryVO;
+import org.infoglue.cms.entities.management.ServiceDefinitionVO;
+import org.infoglue.cms.entities.management.SiteNodeTypeDefinitionVO;
 import org.infoglue.cms.entities.structure.SiteNodeVO;
 import org.infoglue.cms.entities.structure.SiteNodeVersionVO;
 import org.infoglue.cms.entities.workflow.WorkflowDefinitionVO;
@@ -106,6 +112,35 @@ public class ToolbarController
 			if(toolbarKey.equalsIgnoreCase("tool.managementtool.viewRepository.header"))
 				return getRepositoryDetailsButtons(toolbarKey, principal, locale, request, disableCloseButton);
 
+			if(toolbarKey.equalsIgnoreCase("tool.managementtool.viewLanguageList.header"))
+				return getLanguagesButtons(toolbarKey, principal, locale, request, disableCloseButton);
+			if(toolbarKey.equalsIgnoreCase("tool.managementtool.viewLanguage.header"))
+				return getLanguageDetailsButtons(toolbarKey, principal, locale, request, disableCloseButton);
+
+			if(toolbarKey.equalsIgnoreCase("tool.managementtool.viewCategoryList.header") || toolbarKey.equalsIgnoreCase("tool.managementtool.editCategory.header"))
+				return getCategoryButtons(toolbarKey, principal, locale, request, disableCloseButton);
+			
+			if(toolbarKey.equalsIgnoreCase("tool.managementtool.viewContentTypeDefinitionList.header"))
+				return getContentTypeDefinitionsButtons(toolbarKey, principal, locale, request, disableCloseButton);
+			if(toolbarKey.equalsIgnoreCase("tool.managementtool.viewContentTypeDefinition.header"))
+				return getContentTypeDefinitionDetailsButtons(toolbarKey, principal, locale, request, disableCloseButton);
+			
+			if(toolbarKey.equalsIgnoreCase("tool.managementtool.viewWorkflowDefinitionList.header"))
+				return getWorkflowDefinitionsButtons(toolbarKey, principal, locale, request, disableCloseButton);
+			if(toolbarKey.equalsIgnoreCase("tool.managementtool.viewWorkflowDefinition.header"))
+				return getWorkflowDefinitionDetailsButtons(toolbarKey, principal, locale, request, disableCloseButton);
+			
+			if(toolbarKey.equalsIgnoreCase("tool.managementtool.portletList.header"))
+				return getPortletsButtons(toolbarKey, principal, locale, request, disableCloseButton);
+			//if(toolbarKey.equalsIgnoreCase("tool.managementtool.portlet.header"))
+			//	return getPortletDetailsButtons();
+			
+			if(toolbarKey.equalsIgnoreCase("tool.managementtool.redirectList.header"))
+				return getRedirectsButtons(toolbarKey, principal, locale, request, disableCloseButton);
+			if(toolbarKey.equalsIgnoreCase("tool.managementtool.viewRedirect.header"))
+				return getRedirectDetailsButtons(toolbarKey, principal, locale, request, disableCloseButton);
+			
+			
 			if(toolbarKey.equalsIgnoreCase("tool.managementtool.viewGroupProperties.header"))
 				return getGroupPropertiesButtons(toolbarKey, principal, locale, request, disableCloseButton);
 			if(toolbarKey.equalsIgnoreCase("tool.managementtool.viewRoleProperties.header"))
@@ -126,57 +161,39 @@ public class ToolbarController
 			if(toolbarKey.equalsIgnoreCase("tool.managementtool.viewGroup.header"))
 				return getGroupDetailsButtons(toolbarKey, principal, locale, request, disableCloseButton);
 
-			if(toolbarKey.equalsIgnoreCase("tool.managementtool.viewLanguageList.header"))
-				return getLanguagesButtons(toolbarKey, principal, locale, request, disableCloseButton);
-			if(toolbarKey.equalsIgnoreCase("tool.managementtool.viewLanguage.header"))
-				return getLanguageDetailsButtons(toolbarKey, principal, locale, request, disableCloseButton);
-
 			if(toolbarKey.equalsIgnoreCase("tool.managementtool.viewInterceptionPointList.header"))
 				return getInterceptionPointsButtons(toolbarKey, principal, locale, request, disableCloseButton);
-
 			if(toolbarKey.equalsIgnoreCase("tool.managementtool.viewInterceptionPoint.header"))
 				return getInterceptionPointButtons(toolbarKey, principal, locale, request, disableCloseButton);
 
 			if(toolbarKey.equalsIgnoreCase("tool.managementtool.viewInterceptorList.header"))
 				return getInterceptorsButtons(toolbarKey, principal, locale, request, disableCloseButton);
-			//if(toolbarKey.equalsIgnoreCase("tool.managementtool.viewInterceptor.header"))
-			//	return getInterceptorButtons(toolbarKey, principal, locale, request, disableCloseButton);
+			if(toolbarKey.equalsIgnoreCase("tool.managementtool.viewInterceptor.header"))
+				return getInterceptorButtons(toolbarKey, principal, locale, request, disableCloseButton);
+			
 			if(toolbarKey.equalsIgnoreCase("tool.managementtool.viewServiceDefinitionList.header"))
 				return getServiceDefinitionsButtons(toolbarKey, principal, locale, request, disableCloseButton);
-			//if(toolbarKey.equalsIgnoreCase("tool.managementtool.viewServiceDefinition.header"))
-			//	return getServiceDefinitionDetailsButtons(toolbarKey, principal, locale, request, disableCloseButton);
+			if(toolbarKey.equalsIgnoreCase("tool.managementtool.viewServiceDefinition.header"))
+				return getServiceDefinitionDetailsButtons(toolbarKey, principal, locale, request, disableCloseButton);
+			
 			if(toolbarKey.equalsIgnoreCase("tool.managementtool.viewAvailableServiceBindingList.header"))
 				return getAvailableServiceBindingsButtons(toolbarKey, principal, locale, request, disableCloseButton);
-			//if(toolbarKey.equalsIgnoreCase("tool.managementtool.viewAvailableServiceBinding.header"))
-			//	return getAvailableServiceBindingDetailsButtons(toolbarKey, principal, locale, request, disableCloseButton);
+			if(toolbarKey.equalsIgnoreCase("tool.managementtool.viewAvailableServiceBinding.header"))
+				return getAvailableServiceBindingDetailsButtons(toolbarKey, principal, locale, request, disableCloseButton);
+			
 			if(toolbarKey.equalsIgnoreCase("tool.managementtool.viewSiteNodeTypeDefinitionList.header"))
 				return getSiteNodeTypeDefinitionsButtons(toolbarKey, principal, locale, request, disableCloseButton);
-			//if(toolbarKey.equalsIgnoreCase("tool.managementtool.viewSiteNodeTypeDefinition.header"))
-			//	return getSiteNodeTypeDefinitionDetailsButtons(toolbarKey, principal, locale, request, disableCloseButton);
-			if(toolbarKey.equalsIgnoreCase("tool.managementtool.viewContentTypeDefinitionList.header"))
-				return getContentTypeDefinitionsButtons(toolbarKey, principal, locale, request, disableCloseButton);
-			//if(toolbarKey.equalsIgnoreCase("tool.managementtool.viewContentTypeDefinition.header"))
-			//	return getContentTypeDefinitionDetailsButtons(toolbarKey, principal, locale, request, disableCloseButton);
-			if(toolbarKey.equalsIgnoreCase("tool.managementtool.viewCategoryList.header") || toolbarKey.equalsIgnoreCase("tool.managementtool.editCategory.header"))
-				return getCategoryButtons(toolbarKey, principal, locale, request, disableCloseButton);
+			if(toolbarKey.equalsIgnoreCase("tool.managementtool.viewSiteNodeTypeDefinition.header"))
+				return getSiteNodeTypeDefinitionDetailsButtons(toolbarKey, principal, locale, request, disableCloseButton);
+			
 			//if(toolbarKey.equalsIgnoreCase("tool.managementtool.viewUp2DateList.header"))
 			//	return getAvailablePackagesButtons(toolbarKey, principal, locale, request, disableCloseButton);
-			if(toolbarKey.equalsIgnoreCase("tool.managementtool.viewWorkflowDefinitionList.header"))
-				return getWorkflowDefinitionsButtons(toolbarKey, principal, locale, request, disableCloseButton);
-			//if(toolbarKey.equalsIgnoreCase("tool.managementtool.viewWorkflowDefinition.header"))
-			//	return getWorkflowDefinitionDetailsButtons(toolbarKey, principal, locale, request, disableCloseButton);
-			if(toolbarKey.equalsIgnoreCase("tool.managementtool.portletList.header"))
-				return getPortletsButtons(toolbarKey, principal, locale, request, disableCloseButton);
-			//if(toolbarKey.equalsIgnoreCase("tool.managementtool.portlet.header"))
-			//	return getPortletDetailsButtons();
-			if(toolbarKey.equalsIgnoreCase("tool.managementtool.redirectList.header"))
-				return getRedirectsButtons(toolbarKey, principal, locale, request, disableCloseButton);
-			//if(toolbarKey.equalsIgnoreCase("tool.managementtool.viewRedirect.header"))
-			//	return getRedirectDetailsButtons(toolbarKey, principal, locale, request, disableCloseButton);
 			if(toolbarKey.equalsIgnoreCase("tool.managementtool.serverNodeList.header"))
 				return getServerNodesButtons(toolbarKey, principal, locale, request, disableCloseButton);
+			
 			//if(toolbarKey.equalsIgnoreCase("tool.managementtool.viewServerNode.header"))
 			//	return getServerNodeDetailsButtons(toolbarKey, principal, locale, request, disableCloseButton);
+			
 			if(toolbarKey.equalsIgnoreCase("tool.managementtool.viewMessageCenter.header"))
 				return getMessageCenterButtons(toolbarKey, principal, locale, request, disableCloseButton);
 			
@@ -1564,32 +1581,6 @@ public class ToolbarController
 	}
 
 	/*
-	private List<ToolbarButton> getRepositoriesButtons() throws Exception
-	{
-		List<ToolbarButton> buttons = new ArrayList<ToolbarButton>();
-		buttons.add(new ToolbarButton("CreateRepository!input.action", getLocalizedString(locale, "images.managementtool.buttons.newRepository"), "tool.managementtool.createRepository.header"));	
-		buttons.add(new ToolbarButton(true, "javascript:submitListForm('repository');", getLocalizedString(locale, "images.managementtool.buttons.deleteRepository"), "tool.managementtool.deleteRepositories.header"));
-		buttons.add(new ToolbarButton(true, "javascript:openPopup('ImportRepository!input.action', 'Import', 'width=400,height=250,resizable=no');", getLocalizedString(locale, "images.managementtool.buttons.importRepository"), getLocalizedString(locale, "tool.managementtool.importRepository.header")));	
-		
-		return buttons;
-	}
-	
-	private List<ToolbarButton> getRepositoryDetailsButtons() throws Exception
-	{
-		List<ToolbarButton> buttons = new ArrayList<ToolbarButton>();
-		buttons.add(new ToolbarButton("Confirm.action?header=tool.managementtool.deleteRepository.header&yesDestination=" + URLEncoder.encode("DeleteRepository.action?repositoryId=" + primaryKey, "UTF-8") + "&noDestination=" + URLEncoder.encode("ViewListRepository.action?title=Repositories", "UTF-8") + "&message=tool.managementtool.deleteRepository.text&extraParameters=" + extraParameters, getLocalizedString(locale, "images.managementtool.buttons.deleteRepository"), "tool.managementtool.deleteRepository.header"));
-		buttons.add(new ToolbarButton(true, "javascript:openPopup('ExportRepository!input.action?repositoryId=" + primaryKey + "', 'Export', 'width=600,height=500,resizable=no,scrollbars=yes');", getLocalizedString(locale, "images.managementtool.buttons.exportRepository"), getLocalizedString(locale, "tool.managementtool.exportRepository.header")));	
-		buttons.add(new ToolbarButton("ViewRepositoryProperties.action?repositoryId=" + primaryKey, getLocalizedString(locale, "images.global.buttons.editProperties"), "Edit Properties", new Integer(22), new Integer(80)));
-		
-		String returnAddress = URLEncoder.encode(URLEncoder.encode("ViewRepository.action?repositoryId=" + primaryKey, "UTF-8"), "UTF-8");
-		buttons.add(new ToolbarButton("ViewAccessRights.action?interceptionPointCategory=Repository&extraParameters=" + primaryKey +"&colorScheme=ManagementTool&returnAddress=" + returnAddress, getLocalizedString(locale, "images.managementtool.buttons.accessRights"), "tool.managementtool.accessRights.header"));
-		buttons.add(new ToolbarButton("ViewListRepositoryLanguage.action?repositoryId=" + primaryKey +"&returnAddress=" + returnAddress, getLocalizedString(locale, "images.managementtool.buttons.repositoryLanguages"), "tool.managementtool.repositoryLanguages.header"));
-		
-		buttons.add(new ToolbarButton(true, "javascript:openPopup('RebuildRegistry!input.action?repositoryId=" + primaryKey + "', 'Registry', 'width=400,height=200,resizable=no');", getLocalizedString(locale, "images.managementtool.buttons.rebuildRegistry"), getLocalizedString(locale, "tool.managementtool.rebuildRegistry.header")));	
-		
-		return buttons;				
-	}
-
 	private List<ToolbarButton> getAvailablePackagesButtons() throws Exception
 	{
 		List<ToolbarButton> buttons = new ArrayList<ToolbarButton>();
@@ -1615,114 +1606,6 @@ public class ToolbarController
 	}
 
 	
-	private List<ToolbarButton> getRepositoriesButtons(String toolbarKey, InfoGluePrincipal principal, Locale locale, HttpServletRequest request, boolean disableCloseButton) throws Exception
-	{
-		List<ToolbarButton> buttons = new ArrayList<ToolbarButton>();
-
-		buttons.add(new ToolbarButton("",
-				  getLocalizedString(locale, "tool.managementtool.createRepository.header"), 
-				  getLocalizedString(locale, "tool.managementtool.createRepository.header"),
-				  "CreateRepository!inputV3.action",
-				  "images/v3/createBackgroundPenPaper.gif",
-				  "create",
-				  "managementWorkIframe"));
-
-		buttons.add(new ToolbarButton("",
-				getLocalizedString(locale, "tool.managementtool.deleteRepositories.header"),
-				getLocalizedString(locale, "tool.managementtool.deleteRepositories.header"),
-				"submitListForm('repository');",
-				"images/v3/deleteBackgroundWasteBasket.gif",
-				"left",
-				"delete",
-				true, 
-				false, 
-				"Delete repository?",
-				"Really want to delete rep...",
-				"managementWorkIframe"));
-
-		buttons.add(new ToolbarButton("",
-				  getLocalizedString(locale, "tool.managementtool.importRepository.header"), 
-				  getLocalizedString(locale, "tool.managementtool.importRepository.header"),
-				  "javascript:openPopup('ImportRepository!input.action', 'Import', 'width=600,height=500,resizable=no');",
-				  "images/v3/createBackgroundPenPaper.gif",
-				  "left",
-				  "import",
-				  true));
-
-
-		return buttons;
-	}
-	
-	private List<ToolbarButton> getRepositoryDetailsButtons(String toolbarKey, InfoGluePrincipal principal, Locale locale, HttpServletRequest request, boolean disableCloseButton) throws Exception
-	{
-		List<ToolbarButton> buttons = new ArrayList<ToolbarButton>();
-		
-		buttons.add(new ToolbarButton("",
-				  getLocalizedString(locale, "tool.managementtool.deleteRepository.header"), 
-				  getLocalizedString(locale, "tool.managementtool.deleteRepository.header"),
-				  "DeleteRepository!markForDelete.action?repositoryId=" + request.getParameter("repositoryId") + "&igSecurityCode=" + request.getSession().getAttribute("securityCode"),
-				  "images/v3/createBackgroundPenPaper.gif",
-				  "left",
-				  "create",
-				  false,
-				  true,
-				  getLocalizedString(locale, "tool.managementtool.deleteRepository.header"),
-				  getLocalizedString(locale, "tool.managementtool.deleteRepository.text"),
-				  "inlineDiv"));
-
-		buttons.add(new ToolbarButton("",
-				  getLocalizedString(locale, "tool.managementtool.exportRepository.header"), 
-				  getLocalizedString(locale, "tool.managementtool.exportRepository.header"),
-				  "javascript:openPopup('ExportRepository!input.action?repositoryId=" + request.getParameter("repositoryId") + "', 'Export', 'width=600,height=500,resizable=no');",
-				  "",
-				  "left",
-				  "export",
-				  true));
-
-		buttons.add(new ToolbarButton("",
-				  getLocalizedString(locale, "tool.managementtool.importRepositoryCopy.header"), 
-				  getLocalizedString(locale, "tool.managementtool.importRepositoryCopy.header"),
-				  "javascript:openPopup('ImportRepository!inputCopy.action?repositoryId=" + request.getParameter("repositoryId") + "', 'Copy', 'width=600,height=500,resizable=no');",
-				  "",
-				  "left",
-				  "copy",
-				  true));
-
-		buttons.add(new ToolbarButton("",
-				  getLocalizedString(locale, "tool.managementtool.repositoryProperties.header"), 
-				  getLocalizedString(locale, "tool.managementtool.repositoryProperties.header"),
-				  "ViewRepositoryProperties.action?repositoryId=" + request.getParameter("repositoryId"),
-				  "",
-				  "properties",
-				  "managementWorkIframe"));
-
-		buttons.add(new ToolbarButton("",
-				  getLocalizedString(locale, "tool.contenttool.accessRights.header"), 
-				  getLocalizedString(locale, "tool.contenttool.accessRights.header"),
-				  "ViewAccessRights!V3.action?interceptionPointCategory=Repository&extraParameters=" + request.getParameter("repositoryId") + "&returnAddress=ViewRepository.action?repositoryId=" + request.getParameter("repositoryId"),
-				  "images/v3/accessRightIcon.gif",
-				  "accessRights",
-				  "managementWorkIframe"));
-
-		buttons.add(new ToolbarButton("",
-				  getLocalizedString(locale, "tool.managementtool.repositoryLanguages.header"), 
-				  getLocalizedString(locale, "tool.managementtool.repositoryLanguages.header"),
-				  "ViewListRepositoryLanguage.action?repositoryId=" + request.getParameter("repositoryId") + "&returnAddress=ViewRepository.action?repositoryId=" + request.getParameter("repositoryId"),
-				  "",
-				  "languages",
-				  "managementWorkIframe"));
-
-		buttons.add(new ToolbarButton("",
-				  getLocalizedString(locale, "tool.managementtool.rebuildRegistry.header"), 
-				  getLocalizedString(locale, "tool.managementtool.rebuildRegistry.header"),
-				  "javascript:openPopup('RebuildRegistry!input.action?repositoryId=" + request.getParameter("repositoryId") + "', 'Registry', 'width=400,height=200,resizable=no');",
-				  "",
-				  "left",
-				  "rebuild",
-				  true));
-		
-		return buttons;
-	}
 	
 	private List<ToolbarButton> getSystemUsersButtons(String toolbarKey, InfoGluePrincipal principal, Locale locale, HttpServletRequest request, boolean disableCloseButton) throws Exception
 	{
@@ -1735,9 +1618,10 @@ public class ToolbarController
 				buttons.add(new ToolbarButton("",
 											  getLocalizedString(locale, "tool.managementtool.createSystemUser.header"), 
 											  getLocalizedString(locale, "tool.managementtool.createSystemUser.header"),
-											  "CreateSystemUser!inputV3.action",
+											  "CreateSystemUser!input.action",
 											  "images/v3/createBackgroundPenPaper.gif",
-											  "create"));
+											  "create",
+											  "managementWorkIframe"));
 			}
 		}
 		
@@ -1752,56 +1636,51 @@ public class ToolbarController
 	{
 		List<ToolbarButton> buttons = new ArrayList<ToolbarButton>();
 
-		String primaryKey = null;
-		try
+		String userName = request.getParameter("userName");
+		
+		if(!userName.equals(CmsPropertyHandler.getAnonymousUser()))
 		{
-			primaryKey = request.getParameter("userName");
-		}
-		catch (Exception e) 
-		{
-		}
-
-		String yesDestination 	= URLEncoder.encode("DeleteSystemUser!v3.action?userName=" + URLEncoder.encode(primaryKey, URIEncoding), URIEncoding);
-		String noDestination  	= URLEncoder.encode("ViewListSystemUser!v3.action", URIEncoding);
-		String message 		 	= URLEncoder.encode("Do you really want to delete the user " + URLEncoder.encode(primaryKey, URIEncoding), URIEncoding);
-
-		if(!primaryKey.equals(CmsPropertyHandler.getAnonymousUser()))
-		{
-			InfoGluePrincipal user = UserControllerProxy.getController().getUser(primaryKey);
+			InfoGluePrincipal user = UserControllerProxy.getController().getUser(userName);
 			if(user.getAutorizationModule().getSupportDelete())
 			{
 				buttons.add(new ToolbarButton("",
-						  getLocalizedString(locale, "tool.managementtool.deleteSystemUser.header"), 
-						  getLocalizedString(locale, "tool.managementtool.deleteSystemUser.header"),
-						  "Confirm.action?header=tool.managementtool.deleteSystemUser.header&yesDestination=" + yesDestination + "&noDestination=" + noDestination + "&message=tool.managementtool.deleteSystemUser.text&extraParameters=" + URLEncoder.encode(primaryKey, URIEncoding),
-						  "images/v3/createBackgroundPenPaper.gif",
-						  "delete"));
-
-				//buttons.add(new ToolbarButton("Confirm.action?header=tool.managementtool.deleteSystemUser.header&yesDestination=" + URLEncoder.encode("DeleteSystemUser.action?userName=" + URLEncoder.encode(primaryKey, URIEncoding), URIEncoding) + "&noDestination=" + URLEncoder.encode("ViewListSystemUser.action?title=SystemUsers", URIEncoding) + "&message=tool.managementtool.deleteSystemUser.text&extraParameters=" + URLEncoder.encode(primaryKey, URIEncoding), getLocalizedString(locale, "images.managementtool.buttons.deleteSystemUser"), "tool.managementtool.deleteSystemUser.header"));
+						getLocalizedString(locale, "tool.managementtool.deleteSystemUser.header"), 
+						getLocalizedString(locale, "tool.managementtool.deleteSystemUser.header"),
+						"DeleteSystemUser.action?userName=" + userName + "&igSecurityCode=" + request.getSession().getAttribute("securityCode"),
+						"images/v3/createBackgroundPenPaper.gif",
+						"left",
+						"delete",
+						false,
+						true,
+						getLocalizedString(locale, "tool.managementtool.deleteSystemUser.header"),
+						getLocalizedString(locale, "tool.managementtool.deleteSystemUser.text", new String[]{userName}),
+				  		"managementWorkIframe"));
 			}
-		
+			
 			if(user.getAutorizationModule().getSupportUpdate())
 			{
 				buttons.add(new ToolbarButton("",
 						  getLocalizedString(locale, "tool.managementtool.viewSystemUserPasswordDialog.header"), 
 						  getLocalizedString(locale, "tool.managementtool.viewSystemUserPasswordDialog.header"),
-						  "UpdateSystemUserPassword!inputV3.action?userName=" + URLEncoder.encode(URLEncoder.encode(primaryKey, URIEncoding), URIEncoding),
+						  "UpdateSystemUser!changePassword.action?userName=" + URLEncoder.encode(URLEncoder.encode(userName, URIEncoding), URIEncoding) + "&igSecurityCode=" + request.getSession().getAttribute("securityCode"),
 						  "images/v3/passwordIcon.gif",
-						  "password"));
+						  "accessRights",
+						  "managementWorkIframe"));
 
 				//buttons.add(new ToolbarButton("UpdateSystemUserPassword!input.action?userName=" + URLEncoder.encode(URLEncoder.encode(primaryKey, URIEncoding), URIEncoding), getLocalizedString(locale, "images.managementtool.buttons.updateSystemUserPassword"), "Update user password"));
 			}
 		}
 		
-		List contentTypeDefinitionVOList = UserPropertiesController.getController().getContentTypeDefinitionVOList(primaryKey);
+		List contentTypeDefinitionVOList = UserPropertiesController.getController().getContentTypeDefinitionVOList(userName);
 		if(contentTypeDefinitionVOList.size() > 0)
 		{
 			buttons.add(new ToolbarButton("",
 					  getLocalizedString(locale, "tool.managementtool.viewUserProperties.header"), 
 					  getLocalizedString(locale, "tool.managementtool.viewUserProperties.header"),
-					  "ViewUserProperties!v3.action?userName=" + URLEncoder.encode(URLEncoder.encode(primaryKey, URIEncoding), URIEncoding),
+					  "ViewUserProperties.action?userName=" + URLEncoder.encode(URLEncoder.encode(userName, URIEncoding), URIEncoding),
 					  "images/v3/advancedSettingsIcon.gif",
-					  "advancedSettings"));
+					  "properties",
+					  "managementWorkIframe"));
 
 			//buttons.add(new ToolbarButton("ViewUserProperties.action?userName=" + URLEncoder.encode(URLEncoder.encode(primaryKey, URIEncoding), URIEncoding), getLocalizedString(locale, "images.managementtool.buttons.viewSystemUserProperties"), "View User Properties"));
 		}
@@ -1811,11 +1690,10 @@ public class ToolbarController
 			buttons.add(new ToolbarButton("",
 					  getLocalizedString(locale, "tool.managementtool.transferAccessRights.header"), 
 					  getLocalizedString(locale, "tool.managementtool.transferAccessRights.header"),
-					  "AuthorizationSwitchManagement!inputUser.action?userName=" + URLEncoder.encode(URLEncoder.encode(primaryKey, URIEncoding)),
+					  "AuthorizationSwitchManagement!inputUser.action?userName=" + URLEncoder.encode(URLEncoder.encode(userName, URIEncoding), URIEncoding),
 					  "images/v3/createBackgroundPenPaper.gif",
-					  "create"));
-
-			//buttons.add(new ToolbarButton("AuthorizationSwitchManagement!inputUser.action?userName=" + URLEncoder.encode(URLEncoder.encode(primaryKey, URIEncoding)), getLocalizedString(locale, "images.managementtool.buttons.transferUserAccessRights"), "Transfer Users Access Rights"));
+					  "create",
+					  "managementWorkIframe"));
 		}
 
 		return buttons;				
@@ -1832,9 +1710,10 @@ public class ToolbarController
 				buttons.add(new ToolbarButton("",
 											  getLocalizedString(locale, "tool.managementtool.createRole.header"), 
 											  getLocalizedString(locale, "tool.managementtool.createRole.header"),
-											  "CreateRole!inputV3.action",
+											  "CreateRole!input.action",
 											  "images/v3/createBackgroundPenPaper.gif",
-											  "create"));
+											  "create",
+											  "managementWorkIframe"));
 			}
 		}
 		
@@ -1845,51 +1724,48 @@ public class ToolbarController
 	{
 		List<ToolbarButton> buttons = new ArrayList<ToolbarButton>();
 		
-		String primaryKey = null;
-		try
-		{
-			primaryKey = request.getParameter("roleName");
-		}
-		catch (Exception e) 
-		{
-		}
-
-		String yesDestination 	= URLEncoder.encode("DeleteRole!v3.action?roleName=" + URLEncoder.encode(primaryKey, URIEncoding), URIEncoding);
-		String noDestination  	= URLEncoder.encode("ViewListRole!listManagableRoles.action", URIEncoding);
-		String message 		 	= URLEncoder.encode("Do you really want to delete the role " + URLEncoder.encode(primaryKey, URIEncoding), URIEncoding);
+		String roleName = request.getParameter("roleName");
 		
-		InfoGlueRole role = RoleControllerProxy.getController().getRole(primaryKey);
+		InfoGlueRole role = RoleControllerProxy.getController().getRole(roleName);
 		if(role.getAutorizationModule().getSupportDelete())
 		{
-			boolean hasAccessToDeleteRole = hasAccessTo(principal, "Role.Delete", "" + primaryKey);
-			if(hasAccessToDeleteRole)
-			{
+			//boolean hasAccessToDeleteRole = hasAccessTo(principal, "Role.Delete", "" + roleName);
+			//if(hasAccessToDeleteRole)
+			//{
 				buttons.add(new ToolbarButton("",
-						  getLocalizedString(locale, "tool.managementtool.deleteRole.header"), 
-						  getLocalizedString(locale, "tool.managementtool.deleteRole.header"),
-						  "Confirm.action?header=tool.managementtool.deleteRole.header&yesDestination=" + yesDestination + "&noDestination=" + noDestination + "&message=tool.managementtool.deleteRole.text&extraParameters=" + URLEncoder.encode(primaryKey, URIEncoding),
-						  "images/v3/deleteBackgroundWasteBasket.gif",
-						  "delete"));
-			}
+						getLocalizedString(locale, "tool.managementtool.deleteRole.header"), 
+						getLocalizedString(locale, "tool.managementtool.deleteRole.header"),
+						"DeleteRole.action?roleName=" + roleName + "&igSecurityCode=" + request.getSession().getAttribute("securityCode"),
+						"images/v3/createBackgroundPenPaper.gif",
+						"left",
+						"delete",
+						false,
+						true,
+						getLocalizedString(locale, "tool.managementtool.deleteRole.header"),
+						getLocalizedString(locale, "tool.managementtool.deleteRole.text", new String[]{roleName}),
+				  		"managementWorkIframe"));
+			//}
 		}
 		
-		List contentTypeDefinitionVOList = RolePropertiesController.getController().getContentTypeDefinitionVOList(primaryKey);
+		List contentTypeDefinitionVOList = RolePropertiesController.getController().getContentTypeDefinitionVOList(roleName);
 		if(contentTypeDefinitionVOList.size() > 0)
 		{
-			boolean hasAccessToEditProperties = hasAccessTo(principal, "Role.EditProperties", true);
-			if(hasAccessToEditProperties)
-			{
+			//boolean hasAccessToEditProperties = hasAccessTo(principal, "Role.EditProperties", true);
+			//if(hasAccessToEditProperties)
+			//{
 				buttons.add(new ToolbarButton("",
 					  getLocalizedString(locale, "tool.managementtool.viewRoleProperties.header"), 
 					  getLocalizedString(locale, "tool.managementtool.viewRoleProperties.header"),
-					  "ViewRoleProperties!v3.action?roleName=" + URLEncoder.encode(URLEncoder.encode(primaryKey, URIEncoding)),
+					  "ViewRoleProperties.action?roleName=" + URLEncoder.encode(URLEncoder.encode(roleName, URIEncoding), URIEncoding),
 					  "images/v3/advancedSettingsIcon.gif",
-					  "advancedSettings"));
-			}
+					  "properties",
+					  "managementWorkIframe"));
+				//}
 		}
 
+		/*
 		boolean hasAccessToManageAllAccessRights = hasAccessTo(principal, "Role.ManageAllAccessRights", true);
-		boolean hasAccessToManageAccessRights = hasAccessTo(principal, "Role.ManageAccessRights", "" + primaryKey);
+		boolean hasAccessToManageAccessRights = hasAccessTo(principal, "Role.ManageAccessRights", "" + roleName);
 		if(hasAccessToManageAllAccessRights || hasAccessToManageAccessRights)
 		{
 			buttons.add(new ToolbarButton("",
@@ -1899,6 +1775,7 @@ public class ToolbarController
 				  "images/v3/accessRightsIcon.gif",
 				  "accessRights"));
 		}
+		*/
 		/*
 		if(principal.getIsAdministrator())
 			buttons.add(new ToolbarButton("AuthorizationSwitchManagement!inputRole.action?roleName=" + URLEncoder.encode(URLEncoder.encode(primaryKey, URIEncoding)), getLocalizedString(locale, "images.managementtool.buttons.transferRoleAccessRights"), "Transfer Roles Access Rights"));
@@ -1913,16 +1790,17 @@ public class ToolbarController
 		List<ToolbarButton> buttons = new ArrayList<ToolbarButton>();
 		if(GroupControllerProxy.getController().getSupportCreate())
 		{
-			boolean hasAccessToCreateGroup = hasAccessTo(principal, "Group.Create", true);
-			if(hasAccessToCreateGroup)
-			{
+			//boolean hasAccessToCreateGroup = hasAccessTo(principal, "Group.Create", true);
+			//if(hasAccessToCreateGroup)
+			//{
 				buttons.add(new ToolbarButton("",
 											  getLocalizedString(locale, "tool.managementtool.createGroup.header"), 
 											  getLocalizedString(locale, "tool.managementtool.createGroup.header"),
-											  "CreateGroup!inputV3.action",
+											  "CreateGroup!input.action",
 											  "images/v3/createBackgroundPenPaper.gif",
-											  "create"));
-			}
+											  "create",
+											  "managementWorkIframe"));
+			//}
 		}
 		
 		return buttons;
@@ -1932,51 +1810,48 @@ public class ToolbarController
 	{
 		List<ToolbarButton> buttons = new ArrayList<ToolbarButton>();
 		
-		String primaryKey = null;
-		try
-		{
-			primaryKey = request.getParameter("groupName");
-		}
-		catch (Exception e) 
-		{
-		}
-
-		String yesDestination 	= URLEncoder.encode("DeleteGroup!v3.action?groupName=" + URLEncoder.encode(primaryKey, URIEncoding), URIEncoding);
-		String noDestination  	= URLEncoder.encode("ViewListGroup!listManagableGroups.action", URIEncoding);
-		String message 		 	= URLEncoder.encode("Do you really want to delete the group " + URLEncoder.encode(primaryKey, URIEncoding), URIEncoding);
+		String groupName = request.getParameter("groupName");
 		
-		InfoGlueGroup group = GroupControllerProxy.getController().getGroup(primaryKey);
+		InfoGlueGroup group = GroupControllerProxy.getController().getGroup(groupName);
 		if(group.getAutorizationModule().getSupportDelete())
 		{
-			boolean hasAccessToDeleteGroup = hasAccessTo(principal, "Group.Delete", "" + primaryKey);
-			if(hasAccessToDeleteGroup)
-			{
+			//boolean hasAccessToDeleteGroup = hasAccessTo(principal, "Group.Delete", "" + primaryKey);
+			//if(hasAccessToDeleteGroup)
+			//{
 				buttons.add(new ToolbarButton("",
-						  getLocalizedString(locale, "tool.managementtool.deleteGroup.header"), 
-						  getLocalizedString(locale, "tool.managementtool.deleteGroup.header"),
-						  "Confirm.action?header=tool.managementtool.deleteGroup.header&yesDestination=" + yesDestination + "&noDestination=" + noDestination + "&message=tool.managementtool.deleteGroup.text&extraParameters=" + URLEncoder.encode(primaryKey, URIEncoding),
-						  "images/v3/deleteBackgroundWasteBasket.gif",
-						  "delete"));
-			}
+						getLocalizedString(locale, "tool.managementtool.deleteGroup.header"), 
+						getLocalizedString(locale, "tool.managementtool.deleteGroup.header"),
+						"DeleteGroup.action?groupName=" + groupName + "&igSecurityCode=" + request.getSession().getAttribute("securityCode"),
+						"images/v3/createBackgroundPenPaper.gif",
+						"left",
+						"delete",
+						false,
+						true,
+						getLocalizedString(locale, "tool.managementtool.deleteGroup.header"),
+						getLocalizedString(locale, "tool.managementtool.deleteGroup.text", new String[]{groupName}),
+				  		"managementWorkIframe"));
+				//}
 		}
 		
-		List contentTypeDefinitionVOList = GroupPropertiesController.getController().getContentTypeDefinitionVOList(primaryKey);
+		List contentTypeDefinitionVOList = GroupPropertiesController.getController().getContentTypeDefinitionVOList(groupName);
 		if(contentTypeDefinitionVOList.size() > 0)
 		{
-			boolean hasAccessToEditProperties = hasAccessTo(principal, "Group.EditProperties", true);
-			if(hasAccessToEditProperties)
-			{
+			//boolean hasAccessToEditProperties = hasAccessTo(principal, "Group.EditProperties", true);
+			//if(hasAccessToEditProperties)
+			//{
 				buttons.add(new ToolbarButton("",
 					  getLocalizedString(locale, "tool.managementtool.viewGroupProperties.header"), 
 					  getLocalizedString(locale, "tool.managementtool.viewGroupProperties.header"),
-					  "ViewGroupProperties!v3.action?groupName=" + URLEncoder.encode(URLEncoder.encode(primaryKey, URIEncoding)),
+					  "ViewGroupProperties.action?groupName=" + URLEncoder.encode(URLEncoder.encode(groupName, URIEncoding), URIEncoding),
 					  "images/v3/advancedSettingsIcon.gif",
-					  "advancedSettings"));
-			}
+					  "properties",
+					  "managementWorkIframe"));
+				//}
 		}
 
+		/*
 		boolean hasAccessToManageAllAccessRights = hasAccessTo(principal, "Group.ManageAllAccessRights", true);
-		boolean hasAccessToManageAccessRights = hasAccessTo(principal, "Group.ManageAccessRights", "" + primaryKey);
+		boolean hasAccessToManageAccessRights = hasAccessTo(principal, "Group.ManageAccessRights", "" + groupName);
 		if(hasAccessToManageAllAccessRights || hasAccessToManageAccessRights)
 		{
 			buttons.add(new ToolbarButton("",
@@ -1986,6 +1861,7 @@ public class ToolbarController
 				  "images/v3/accessRightsIcon.gif",
 				  "accessRights"));
 		}
+		*/
 		/*
 		if(principal.getIsAdministrator())
 			buttons.add(new ToolbarButton("AuthorizationSwitchManagement!inputGroup.action?groupName=" + URLEncoder.encode(URLEncoder.encode(primaryKey, URIEncoding)), getLocalizedString(locale, "images.managementtool.buttons.transferGroupAccessRights"), "Transfer Groups Access Rights"));
@@ -1998,23 +1874,19 @@ public class ToolbarController
 	{
 		List<ToolbarButton> buttons = new ArrayList<ToolbarButton>();
 
-		String primaryKey = null;
-		try
+		String entityId = request.getParameter("entityId");
+		
+		if(entityId != null && !entityId.equals(""))
 		{
-			primaryKey = request.getParameter("groupName");
-		}
-		catch (Exception e) 
-		{
-		}
-
-		buttons.add(new ToolbarButton("",
+			buttons.add(new ToolbarButton("",
 									  getLocalizedString(locale, "tool.contenttool.uploadDigitalAsset.label"), 
 									  getLocalizedString(locale, "tool.contenttool.uploadDigitalAsset.label"),
-									  "openWindow('ViewDigitalAsset.action?entity=org.infoglue.cms.entities.management.GroupProperties&entityId=" + primaryKey + "', 'DigitalAsset', 'width=400,height=200,resizable=no');",
+									  "openWindow('ViewDigitalAsset.action?entity=org.infoglue.cms.entities.management.GroupProperties&entityId=" + entityId + "', 'DigitalAsset', 'width=400,height=200,resizable=no');",
 									  "images/v3/attachAssetBackgroundIcon.gif",
 									  "left",
 									  "attachAsset",
 									  true));
+		}
 		
 		return buttons;
 	}
@@ -2023,23 +1895,19 @@ public class ToolbarController
 	{
 		List<ToolbarButton> buttons = new ArrayList<ToolbarButton>();
 
-		String primaryKey = null;
-		try
-		{
-			primaryKey = request.getParameter("roleName");
-		}
-		catch (Exception e) 
-		{
-		}
+		String entityId = request.getParameter("entityId");
 		
-		buttons.add(new ToolbarButton("",
+		if(entityId != null && !entityId.equals(""))
+		{
+			buttons.add(new ToolbarButton("",
 									  getLocalizedString(locale, "tool.contenttool.uploadDigitalAsset.label"), 
 									  getLocalizedString(locale, "tool.contenttool.uploadDigitalAsset.label"),
-									  "openWindow('ViewDigitalAsset.action?entity=org.infoglue.cms.entities.management.RoleProperties&entityId=" + primaryKey + "', 'DigitalAsset', 'width=400,height=200,resizable=no');",
+									  "openWindow('ViewDigitalAsset.action?entity=org.infoglue.cms.entities.management.RoleProperties&entityId=" + entityId + "', 'DigitalAsset', 'width=400,height=200,resizable=no');",
 									  "images/v3/attachAssetBackgroundIcon.gif",
 									  "left",
 									  "attachAsset",
 									  true));
+		}
 		
 		return buttons;
 	}
@@ -2048,23 +1916,19 @@ public class ToolbarController
 	{
 		List<ToolbarButton> buttons = new ArrayList<ToolbarButton>();
 
-		String primaryKey = null;
-		try
-		{
-			primaryKey = request.getParameter("userName");
-		}
-		catch (Exception e) 
-		{
-		}
+		String entityId = request.getParameter("entityId");
 		
-		buttons.add(new ToolbarButton("",
+		if(entityId != null && !entityId.equals(""))
+		{
+			buttons.add(new ToolbarButton("",
 									  getLocalizedString(locale, "tool.contenttool.uploadDigitalAsset.label"), 
 									  getLocalizedString(locale, "tool.contenttool.uploadDigitalAsset.label"),
-									  "openWindow('ViewDigitalAsset.action?entity=org.infoglue.cms.entities.management.UserProperties&entityId=" + primaryKey + "', 'DigitalAsset', 'width=400,height=200,resizable=no');",
+									  "openWindow('ViewDigitalAsset.action?entity=org.infoglue.cms.entities.management.UserProperties&entityId=" + entityId + "', 'DigitalAsset', 'width=400,height=200,resizable=no');",
 									  "images/v3/attachAssetBackgroundIcon.gif",
 									  "left",
 									  "attachAsset",
 									  true));
+		}
 		
 		return buttons;
 	}
@@ -2109,6 +1973,118 @@ public class ToolbarController
 	}
 	*/
 	
+	private List<ToolbarButton> getRepositoriesButtons(String toolbarKey, InfoGluePrincipal principal, Locale locale, HttpServletRequest request, boolean disableCloseButton) throws Exception
+	{
+		List<ToolbarButton> buttons = new ArrayList<ToolbarButton>();
+
+		buttons.add(new ToolbarButton("",
+				  getLocalizedString(locale, "tool.managementtool.createRepository.header"), 
+				  getLocalizedString(locale, "tool.managementtool.createRepository.header"),
+				  "CreateRepository!inputV3.action",
+				  "images/v3/createBackgroundPenPaper.gif",
+				  "create",
+				  "managementWorkIframe"));
+
+		buttons.add(new ToolbarButton("",
+				getLocalizedString(locale, "tool.managementtool.deleteRepositories.header"),
+				getLocalizedString(locale, "tool.managementtool.deleteRepositories.header"),
+				"submitListForm('repository');",
+				"images/v3/deleteBackgroundWasteBasket.gif",
+				"left",
+				"delete",
+				true, 
+				false, 
+				"Delete repository?",
+				"Really want to delete rep...",
+				"managementWorkIframe"));
+
+		buttons.add(new ToolbarButton("",
+				  getLocalizedString(locale, "tool.managementtool.importRepository.header"), 
+				  getLocalizedString(locale, "tool.managementtool.importRepository.header"),
+				  "javascript:openPopup('ImportRepository!input.action', 'Import', 'width=600,height=500,resizable=no');",
+				  "images/v3/createBackgroundPenPaper.gif",
+				  "left",
+				  "importContent",
+				  true));
+
+
+		return buttons;
+	}
+	
+	private List<ToolbarButton> getRepositoryDetailsButtons(String toolbarKey, InfoGluePrincipal principal, Locale locale, HttpServletRequest request, boolean disableCloseButton) throws Exception
+	{
+		List<ToolbarButton> buttons = new ArrayList<ToolbarButton>();
+		
+		Integer repositoryId = new Integer(request.getParameter("repositoryId"));
+		RepositoryVO repositoryVO = RepositoryController.getController().getRepositoryVOWithId(repositoryId);
+		
+		buttons.add(new ToolbarButton("",
+				  getLocalizedString(locale, "tool.managementtool.deleteRepository.header"), 
+				  getLocalizedString(locale, "tool.managementtool.deleteRepository.header"),
+				  "DeleteRepository!markForDelete.action?repositoryId=" + repositoryId + "&igSecurityCode=" + request.getSession().getAttribute("securityCode"),
+				  "images/v3/createBackgroundPenPaper.gif",
+				  "left",
+				  "create",
+				  false,
+				  true,
+				  getLocalizedString(locale, "tool.managementtool.deleteRepository.header"),
+				  getLocalizedString(locale, "tool.managementtool.deleteRepository.text", new String[]{repositoryVO.getName()}),
+				  "managementWorkIframe"));
+
+		buttons.add(new ToolbarButton("",
+				  getLocalizedString(locale, "tool.managementtool.exportRepository.header"), 
+				  getLocalizedString(locale, "tool.managementtool.exportRepository.header"),
+				  "javascript:openPopup('ExportRepository!input.action?repositoryId=" + request.getParameter("repositoryId") + "', 'Export', 'width=600,height=500,resizable=no');",
+				  "",
+				  "left",
+				  "exportContent",
+				  true));
+
+		buttons.add(new ToolbarButton("",
+				  getLocalizedString(locale, "tool.managementtool.importRepositoryCopy.header"), 
+				  getLocalizedString(locale, "tool.managementtool.importRepositoryCopy.header"),
+				  "javascript:openPopup('ImportRepository!inputCopy.action?repositoryId=" + request.getParameter("repositoryId") + "', 'Copy', 'width=600,height=500,resizable=no');",
+				  "",
+				  "left",
+				  "importContent",
+				  true));
+
+		buttons.add(new ToolbarButton("",
+				  getLocalizedString(locale, "tool.managementtool.repositoryProperties.header"), 
+				  getLocalizedString(locale, "tool.managementtool.repositoryProperties.header"),
+				  "ViewRepositoryProperties.action?repositoryId=" + request.getParameter("repositoryId"),
+				  "",
+				  "properties",
+				  "managementWorkIframe"));
+
+		buttons.add(new ToolbarButton("",
+				  getLocalizedString(locale, "tool.contenttool.accessRights.header"), 
+				  getLocalizedString(locale, "tool.contenttool.accessRights.header"),
+				  "ViewAccessRights!V3.action?interceptionPointCategory=Repository&extraParameters=" + request.getParameter("repositoryId") + "&returnAddress=ViewRepository.action?repositoryId=" + request.getParameter("repositoryId"),
+				  "images/v3/accessRightIcon.gif",
+				  "accessRights",
+				  "managementWorkIframe"));
+
+		buttons.add(new ToolbarButton("",
+				  getLocalizedString(locale, "tool.managementtool.repositoryLanguages.header"), 
+				  getLocalizedString(locale, "tool.managementtool.repositoryLanguages.header"),
+				  "ViewListRepositoryLanguage.action?repositoryId=" + request.getParameter("repositoryId") + "&returnAddress=ViewRepository.action?repositoryId=" + request.getParameter("repositoryId"),
+				  "",
+				  "changeLanguage",
+				  "managementWorkIframe"));
+
+		buttons.add(new ToolbarButton("",
+				  getLocalizedString(locale, "tool.managementtool.rebuildRegistry.header"), 
+				  getLocalizedString(locale, "tool.managementtool.rebuildRegistry.header"),
+				  "javascript:openPopup('RebuildRegistry!input.action?repositoryId=" + request.getParameter("repositoryId") + "', 'Registry', 'width=400,height=200,resizable=no');",
+				  "",
+				  "left",
+				  "runTask",
+				  true));
+		
+		return buttons;
+	}
+
 	private List<ToolbarButton> getLanguagesButtons(String toolbarKey, InfoGluePrincipal principal, Locale locale, HttpServletRequest request, boolean disableCloseButton) throws Exception
 	{
 		List<ToolbarButton> buttons = new ArrayList<ToolbarButton>();
@@ -2137,60 +2113,49 @@ public class ToolbarController
 		return buttons;
 	}
 
-/*	
-	private List<ToolbarButton> getLanguagesButtons() throws Exception
-	{
-		List<ToolbarButton> buttons = new ArrayList<ToolbarButton>();
-		buttons.add(new ToolbarButton("CreateLanguage!input.action", getLocalizedString(locale, "images.managementtool.buttons.newLanguage"), "New Language"));	
-		buttons.add(new ToolbarButton(true, "javascript:submitListForm('language');", getLocalizedString(locale, "images.managementtool.buttons.deleteLanguage"), "tool.managementtool.deleteLanguages.header"));
-		return buttons;
-	}
-*/
 	private List<ToolbarButton> getLanguageDetailsButtons(String toolbarKey, InfoGluePrincipal principal, Locale locale, HttpServletRequest request, boolean disableCloseButton) throws Exception
 	{
 		List<ToolbarButton> buttons = new ArrayList<ToolbarButton>();
 		
+		Integer languageId = new Integer(request.getParameter("languageId"));
+		LanguageVO languageVO = (LanguageVO)LanguageController.getController().getLanguageVOWithId(languageId);
+
 		buttons.add(new ToolbarButton("",
 				  getLocalizedString(locale, "tool.managementtool.deleteLanguage.header"), 
 				  getLocalizedString(locale, "tool.managementtool.deleteLanguage.header"),
-				  "DeleteLanguage.action?languageId=" + request.getParameter("languageId"),
+				  "DeleteLanguage.action?languageId=" + languageId + "&igSecurityCode=" + request.getSession().getAttribute("securityCode"),
 				  "images/v3/createBackgroundPenPaper.gif",
 				  "left",
 				  "create",
 				  false,
 				  true,
 				  getLocalizedString(locale, "tool.managementtool.deleteLanguage.header"),
-				  getLocalizedString(locale, "tool.managementtool.deleteLanguage.text"),
-				  "inlineDiv"));
+				  getLocalizedString(locale, "tool.managementtool.deleteLanguage.text", new String[]{languageVO.getName()}),
+				  "managementWorkIframe"));
 
 		return buttons;
 	}
-/*
-	private List<ToolbarButton> getLanguageDetailsButtons() throws Exception
-	{
-		List<ToolbarButton> buttons = new ArrayList<ToolbarButton>();
-		String name = LanguageController.getController().getLanguageVOWithId(primaryKeyAsInteger).getName();
-		buttons.add(new ToolbarButton("Confirm.action?header=tool.managementtool.deleteLanguage.header&yesDestination=" + URLEncoder.encode("DeleteLanguage.action?languageId=" + primaryKeyAsInteger, "UTF-8") + "&noDestination=" + URLEncoder.encode("ViewListLanguage.action?title=Languages", "UTF-8") + "&message=tool.managementtool.deleteLanguage.text&extraParameters=" + this.extraParameters, getLocalizedString(locale, "images.managementtool.buttons.deleteLanguage"), "tool.managementtool.deleteLanguage.header"));
-		return buttons;				
-	}
-	*/
 
-	private List<ToolbarButton> getInterceptionPointsButtons(String toolbarKey, InfoGluePrincipal principal, Locale locale, HttpServletRequest request, boolean disableCloseButton) throws Exception
+	private List<ToolbarButton> getCategoryButtons(String toolbarKey, InfoGluePrincipal principal, Locale locale, HttpServletRequest request, boolean disableCloseButton) throws Exception
 	{
 		List<ToolbarButton> buttons = new ArrayList<ToolbarButton>();
+
+		String url = "CategoryManagement!new.action";
+		//if(primaryKeyAsInteger != null)
+		//	url += "?model/parentId=" + primaryKeyAsInteger;
 
 		buttons.add(new ToolbarButton("",
-				  getLocalizedString(locale, "tool.managementtool.createInterceptionPoint.header"), 
-				  getLocalizedString(locale, "tool.managementtool.createInterceptionPoint.header"),
-				  "CreateInterceptionPoint!input.action",
+				  getLocalizedString(locale, "tool.managementtool.createCategory.header"), 
+				  getLocalizedString(locale, "tool.managementtool.createCategory.header"),
+				  url,
 				  "images/v3/createBackgroundPenPaper.gif",
 				  "create",
 				  "managementWorkIframe"));
 
 		buttons.add(new ToolbarButton("",
-				getLocalizedString(locale, "tool.managementtool.deleteInterceptionPoints.header"),
-				getLocalizedString(locale, "tool.managementtool.deleteInterceptionPoints.header"),
-				"submitListForm('interceptionPoint');",
+				getLocalizedString(locale, "tool.managementtool.deleteCategories.header"),
+				getLocalizedString(locale, "tool.managementtool.deleteCategories.header"),
+				"submitListForm('category');",
 				"images/v3/deleteBackgroundWasteBasket.gif",
 				"left",
 				"delete",
@@ -2200,248 +2165,23 @@ public class ToolbarController
 				"",
 				"managementWorkIframe"));
 
-		return buttons;
-	}
+	    final String protectCategories = CmsPropertyHandler.getProtectCategories();
+	    if(protectCategories != null && protectCategories.equalsIgnoreCase("true") && request.getParameter("categoryId") != null && !request.getParameter("categoryId").equals(""))
+	    {
+			Integer categoryId = new Integer(request.getParameter("categoryId"));
+			CategoryVO categoryVO = CategoryController.getController().findById(categoryId);
 
-	/*
-	private List<ToolbarButton> getInterceptionPointsButtons() throws Exception
-	{
-		List<ToolbarButton> buttons = new ArrayList<ToolbarButton>();
-		buttons.add(new ToolbarButton("CreateInterceptionPoint!input.action", getLocalizedString(locale, "images.managementtool.buttons.newInterceptionPoint"), "New InterceptionPoint"));	
-		buttons.add(new ToolbarButton(true, "javascript:submitListForm('interceptionPoint');", getLocalizedString(locale, "images.managementtool.buttons.deleteInterceptionPoint"), "tool.managementtool.deleteInterceptionPoints.header"));
-		return buttons;
-	}
-	*/
-	private List<ToolbarButton> getInterceptionPointButtons(String toolbarKey, InfoGluePrincipal principal, Locale locale, HttpServletRequest request, boolean disableCloseButton) throws Exception
-	{
-		List<ToolbarButton> buttons = new ArrayList<ToolbarButton>();
-		
-		InterceptionPointVO interceptionPointVO = InterceptionPointController.getController().getInterceptionPointVOWithId(new Integer(request.getParameter("interceptionPointId")));
-
-		buttons.add(new ToolbarButton("",
-				getLocalizedString(locale, "tool.managementtool.deleteInterceptionPoints.header"),
-				getLocalizedString(locale, "tool.managementtool.deleteInterceptionPoints.header"),
-				"DeleteInterceptionPoint.action?interceptionPointId=" + interceptionPointVO.getId(),
-				"images/v3/deleteBackgroundWasteBasket.gif",
-				"left",
-				"delete",
-				false, 
-				false, 
-				getLocalizedString(locale, "tool.managementtool.deleteInterceptionPoint.header"),
-				getLocalizedString(locale, "tool.managementtool.deleteInterceptionPoint.text"),
-				"managementWorkIframe"));
-
-		buttons.add(new ToolbarButton("",
-				  getLocalizedString(locale, "tool.contenttool.accessRights.header"), 
-				  getLocalizedString(locale, "tool.contenttool.accessRights.header"),
-				  "ViewAccessRights!V3.action?interceptionPointCategory=" + interceptionPointVO.getCategory() + "&interceptionPointId=" + interceptionPointVO.getId() + "&returnAddress=ViewInlineOperationMessages.action&originalAddress=refreshParent",
-				  "images/v3/accessRightsIcon.gif",
-				  "accessRights"));
+			buttons.add(new ToolbarButton("",
+					  getLocalizedString(locale, "tool.common.accessRights.accessRightsButtonLabel"), 
+					  getLocalizedString(locale, "tool.common.accessRights.accessRightsButtonTitle"),
+					  "ViewAccessRights!V3.action?interceptionPointCategory=Category&extraParameters=" + categoryVO.getName() + "&returnAddress=ViewInlineOperationMessages.action&originalAddress=refreshParent",
+					  "images/v3/accessRightIcon.gif",
+					  "accessRights"));
+	    }
 
 		return buttons;
 	}
 	
-	/*
-	private List<ToolbarButton> getInterceptionPointButtons() throws Exception
-	{
-		List<ToolbarButton> buttons = new ArrayList<ToolbarButton>();
-		InterceptionPointVO interceptionPointVO = InterceptionPointController.getController().getInterceptionPointVOWithId(primaryKeyAsInteger);
-		String name = interceptionPointVO.getName();
-		buttons.add(new ToolbarButton("Confirm.action?header=tool.managementtool.deleteInterceptionPoint.header&yesDestination=" + URLEncoder.encode("DeleteInterceptionPoint.action?interceptionPointId=" + primaryKeyAsInteger, "UTF-8") + "&noDestination=" + URLEncoder.encode("ViewListInterceptionPoint.action?title=InterceptionPoints", "UTF-8") + "&message=tool.managementtool.deleteInterceptionPoint.text&extraParameters=" + this.extraParameters, getLocalizedString(locale, "images.managementtool.buttons.deleteInterceptionPoint"), "tool.managementtool.deleteInterceptionPoint.header"));
-		if(interceptionPointVO.getUsesExtraDataForAccessControl().booleanValue() == false)
-			buttons.add(new ToolbarButton("ViewAccessRights.action?interceptionPointCategory=" + interceptionPointVO.getCategory() + "&interceptionPointId=" + primaryKeyAsInteger + "&returnAddress=ViewInterceptionPoint.action?interceptionPointId=" + primaryKeyAsInteger + "&colorScheme=ManagementTool", getLocalizedString(locale, "images.managementtool.buttons.accessRights"), "InterceptionPoint Access Rights"));
-		
-		return buttons;				
-	}
-	*/
-
-	private List<ToolbarButton> getInterceptorsButtons(String toolbarKey, InfoGluePrincipal principal, Locale locale, HttpServletRequest request, boolean disableCloseButton) throws Exception
-	{
-		List<ToolbarButton> buttons = new ArrayList<ToolbarButton>();
-
-		buttons.add(new ToolbarButton("",
-				  getLocalizedString(locale, "tool.managementtool.createInterceptor.header"), 
-				  getLocalizedString(locale, "tool.managementtool.createInterceptor.header"),
-				  "CreateInterceptor!input.action",
-				  "images/v3/createBackgroundPenPaper.gif",
-				  "create",
-				  "managementWorkIframe"));
-
-		buttons.add(new ToolbarButton("",
-				getLocalizedString(locale, "tool.managementtool.deleteInterceptors.header"),
-				getLocalizedString(locale, "tool.managementtool.deleteInterceptors.header"),
-				"submitListForm('interceptor');",
-				"images/v3/deleteBackgroundWasteBasket.gif",
-				"left",
-				"delete",
-				true, 
-				false, 
-				"",
-				"",
-				"managementWorkIframe"));
-
-		return buttons;
-	}
-
-	/*
-	private List<ToolbarButton> getInterceptorsButtons() throws Exception
-	{
-		List<ToolbarButton> buttons = new ArrayList<ToolbarButton>();
-		buttons.add(new ToolbarButton("CreateInterceptor!input.action", getLocalizedString(locale, "images.managementtool.buttons.newInterceptor"), "New Interceptor"));	
-		buttons.add(new ToolbarButton(true, "javascript:submitListForm('interceptor');", getLocalizedString(locale, "images.managementtool.buttons.deleteInterceptor"), "tool.managementtool.deleteInterceptors.header"));
-		return buttons;
-	}
-	
-	private List<ToolbarButton> getInterceptorButtons() throws Exception
-	{
-		List<ToolbarButton> buttons = new ArrayList<ToolbarButton>();
-		String name = InterceptorController.getController().getInterceptorVOWithId(primaryKeyAsInteger).getName();
-		buttons.add(new ToolbarButton("Confirm.action?header=tool.managementtool.deleteInterceptor.header&yesDestination=" + URLEncoder.encode("DeleteInterceptor.action?interceptorId=" + primaryKeyAsInteger, "UTF-8") + "&noDestination=" + URLEncoder.encode("ViewListInterceptor.action?title=Interceptors", "UTF-8") + "&message=tool.managementtool.deleteInterceptor.text&extraParameters=" + this.extraParameters, getLocalizedString(locale, "images.managementtool.buttons.deleteInterceptor"), "tool.managementtool.deleteInterceptor.header"));
-		return buttons;				
-	}
-	*/
-
-	private List<ToolbarButton> getServiceDefinitionsButtons(String toolbarKey, InfoGluePrincipal principal, Locale locale, HttpServletRequest request, boolean disableCloseButton) throws Exception
-	{
-		List<ToolbarButton> buttons = new ArrayList<ToolbarButton>();
-
-		buttons.add(new ToolbarButton("",
-				  getLocalizedString(locale, "tool.managementtool.createServiceDefinition.header"), 
-				  getLocalizedString(locale, "tool.managementtool.createServiceDefinition.header"),
-				  "CreateServiceDefinition!input.action",
-				  "images/v3/createBackgroundPenPaper.gif",
-				  "create",
-				  "managementWorkIframe"));
-
-		buttons.add(new ToolbarButton("",
-				getLocalizedString(locale, "tool.managementtool.deleteServiceDefinitions.header"),
-				getLocalizedString(locale, "tool.managementtool.deleteServiceDefinitions.header"),
-				"submitListForm('serviceDefinition');",
-				"images/v3/deleteBackgroundWasteBasket.gif",
-				"left",
-				"delete",
-				true, 
-				false, 
-				"",
-				"",
-				"managementWorkIframe"));
-
-		return buttons;
-	}
-
-	/*
-	private List<ToolbarButton> getServiceDefinitionsButtons() throws Exception
-	{
-		List<ToolbarButton> buttons = new ArrayList<ToolbarButton>();
-		buttons.add(new ToolbarButton("CreateServiceDefinition!input.action", getLocalizedString(locale, "images.managementtool.buttons.newServiceDefinition"), "New ServiceDefinition"));	
-		buttons.add(new ToolbarButton(true, "javascript:submitListForm('serviceDefinition');", getLocalizedString(locale, "images.managementtool.buttons.deleteServiceDefinition"), "tool.managementtool.deleteServiceDefinitions.header"));
-		return buttons;
-	}
-	
-	private List<ToolbarButton> getServiceDefinitionDetailsButtons() throws Exception
-	{
-		List<ToolbarButton> buttons = new ArrayList<ToolbarButton>();
-		String name = ServiceDefinitionController.getController().getServiceDefinitionVOWithId(primaryKeyAsInteger).getName();
-		buttons.add(new ToolbarButton("Confirm.action?header=tool.managementtool.deleteServiceDefinition.header&yesDestination=" + URLEncoder.encode("DeleteServiceDefinition.action?serviceDefinitionId=" + primaryKeyAsInteger, "UTF-8") + "&noDestination=" + URLEncoder.encode("ViewListServiceDefinition.action?title=ServiceDefinitions", "UTF-8") + "&message=tool.managementtool.deleteServiceDefinition.text&extraParameters=" + this.extraParameters, getLocalizedString(locale, "images.managementtool.buttons.deleteServiceDefinition"), "tool.managementtool.deleteServiceDefinition.header"));
-		return buttons;				
-	}
-	*/
-
-	private List<ToolbarButton> getAvailableServiceBindingsButtons(String toolbarKey, InfoGluePrincipal principal, Locale locale, HttpServletRequest request, boolean disableCloseButton) throws Exception
-	{
-		List<ToolbarButton> buttons = new ArrayList<ToolbarButton>();
-
-		buttons.add(new ToolbarButton("",
-				  getLocalizedString(locale, "tool.managementtool.createAvailableServiceBinding.header"), 
-				  getLocalizedString(locale, "tool.managementtool.createAvailableServiceBinding.header"),
-				  "CreateAvailableServiceBinding!input.action",
-				  "images/v3/createBackgroundPenPaper.gif",
-				  "create",
-				  "managementWorkIframe"));
-
-		buttons.add(new ToolbarButton("",
-				getLocalizedString(locale, "tool.managementtool.deleteAvailableServiceBindings.header"),
-				getLocalizedString(locale, "tool.managementtool.deleteAvailableServiceBindings.header"),
-				"submitListForm('availableServiceBinding');",
-				"images/v3/deleteBackgroundWasteBasket.gif",
-				"left",
-				"delete",
-				true, 
-				false, 
-				"",
-				"",
-				"managementWorkIframe"));
-
-		return buttons;
-	}
-
-	/*
-
-	private List<ToolbarButton> getAvailableServiceBindingsButtons() throws Exception
-	{
-		List<ToolbarButton> buttons = new ArrayList<ToolbarButton>();
-		buttons.add(new ToolbarButton("CreateAvailableServiceBinding!input.action", getLocalizedString(locale, "images.managementtool.buttons.newAvailableServiceBinding"), "New AvailableServiceBinding"));	
-		buttons.add(new ToolbarButton(true, "javascript:submitListForm('availableServiceBinding');", getLocalizedString(locale, "images.managementtool.buttons.deleteAvailableServiceBinding"), "tool.managementtool.deleteAvailableServiceBindings.header"));
-		return buttons;
-	}
-	
-	private List<ToolbarButton> getAvailableServiceBindingDetailsButtons() throws Exception
-	{
-		List<ToolbarButton> buttons = new ArrayList<ToolbarButton>();
-		String name = AvailableServiceBindingController.getController().getAvailableServiceBindingVOWithId(primaryKeyAsInteger).getName();
-		buttons.add(new ToolbarButton("Confirm.action?header=tool.managementtool.deleteAvailableServiceBinding.header&yesDestination=" + URLEncoder.encode("DeleteAvailableServiceBinding.action?availableServiceBindingId=" + primaryKeyAsInteger, "UTF-8") + "&noDestination=" + URLEncoder.encode("ViewListAvailableServiceBinding.action?title=AvailableServiceBindings", "UTF-8") + "&message=tool.managementtool.deleteAvailableServiceBinding.text&extraParameters=" + this.extraParameters, getLocalizedString(locale, "images.managementtool.buttons.deleteAvailableServiceBinding"), "tool.managementtool.deleteAvailableServiceBinding.header"));
-		return buttons;				
-	}
-	*/
-
-	private List<ToolbarButton> getSiteNodeTypeDefinitionsButtons(String toolbarKey, InfoGluePrincipal principal, Locale locale, HttpServletRequest request, boolean disableCloseButton) throws Exception
-	{
-		List<ToolbarButton> buttons = new ArrayList<ToolbarButton>();
-
-		buttons.add(new ToolbarButton("",
-				  getLocalizedString(locale, "tool.managementtool.createSiteNodeTypeDefinition.header"), 
-				  getLocalizedString(locale, "tool.managementtool.createSiteNodeTypeDefinition.header"),
-				  "CreateSiteNodeTypeDefinition!input.action",
-				  "images/v3/createBackgroundPenPaper.gif",
-				  "create",
-				  "managementWorkIframe"));
-
-		buttons.add(new ToolbarButton("",
-				getLocalizedString(locale, "tool.managementtool.deleteSiteNodeTypeDefinitions.header"),
-				getLocalizedString(locale, "tool.managementtool.deleteSiteNodeTypeDefinitions.header"),
-				"submitListForm('siteNodeTypeDefinition');",
-				"images/v3/deleteBackgroundWasteBasket.gif",
-				"left",
-				"delete",
-				true, 
-				false, 
-				"",
-				"",
-				"managementWorkIframe"));
-
-		return buttons;
-	}
-
-	/*
-
-	private List<ToolbarButton> getSiteNodeTypeDefinitionsButtons() throws Exception
-	{
-		List<ToolbarButton> buttons = new ArrayList<ToolbarButton>();
-		buttons.add(new ToolbarButton("CreateSiteNodeTypeDefinition!input.action", getLocalizedString(locale, "images.managementtool.buttons.newSiteNodeTypeDefinition"), "New SiteNodeTypeDefinition"));	
-		buttons.add(new ToolbarButton(true, "javascript:submitListForm('siteNodeTypeDefinition');", getLocalizedString(locale, "images.managementtool.buttons.deleteSiteNodeTypeDefinition"), "tool.managementtool.deleteSiteNodeTypeDefinitions.header"));
-		return buttons;
-	}
-	
-	private List<ToolbarButton> getSiteNodeTypeDefinitionDetailsButtons() throws Exception
-	{
-		List<ToolbarButton> buttons = new ArrayList<ToolbarButton>();
-		String name = SiteNodeTypeDefinitionController.getController().getSiteNodeTypeDefinitionVOWithId(primaryKeyAsInteger).getName();
-		buttons.add(new ToolbarButton("Confirm.action?header=tool.managementtool.deleteSiteNodeTypeDefinition.header&yesDestination=" + URLEncoder.encode("DeleteSiteNodeTypeDefinition.action?siteNodeTypeDefinitionId=" + primaryKeyAsInteger, "UTF-8") + "&noDestination=" + URLEncoder.encode("ViewListSiteNodeTypeDefinition.action?title=SiteNodeTypeDefinitions", "UTF-8") + "&message=tool.managementtool.deleteSiteNodeTypeDefinition.text&extraParameters=" + this.extraParameters, getLocalizedString(locale, "images.managementtool.buttons.deleteSiteNodeTypeDefinition"), "tool.managementtool.deleteSiteNodeTypeDefinition.header"));
-		return buttons;				
-	}
-
-	*/
-
 	private List<ToolbarButton> getContentTypeDefinitionsButtons(String toolbarKey, InfoGluePrincipal principal, Locale locale, HttpServletRequest request, boolean disableCloseButton) throws Exception
 	{
 		List<ToolbarButton> buttons = new ArrayList<ToolbarButton>();
@@ -2470,169 +2210,39 @@ public class ToolbarController
 		return buttons;
 	}
 
-	/*
-
-	private List<ToolbarButton> getContentTypeDefinitionsButtons() throws Exception
+	private List<ToolbarButton> getContentTypeDefinitionDetailsButtons(String toolbarKey, InfoGluePrincipal principal, Locale locale, HttpServletRequest request, boolean disableCloseButton) throws Exception
 	{
 		List<ToolbarButton> buttons = new ArrayList<ToolbarButton>();
-		buttons.add(new ToolbarButton("CreateContentTypeDefinition!input.action", getLocalizedString(locale, "images.managementtool.buttons.newContentTypeDefinition"), "New ContentTypeDefinition"));	
-		buttons.add(new ToolbarButton(true, "javascript:submitListForm('contentTypeDefinition');", getLocalizedString(locale, "images.managementtool.buttons.deleteContentTypeDefinition"), "tool.managementtool.deleteContentTypeDefinitions.header"));
-		return buttons;
-	}
-	
-	private List<ToolbarButton> getContentTypeDefinitionDetailsButtons() throws Exception
-	{
-		List<ToolbarButton> buttons = new ArrayList<ToolbarButton>();
-		String name = ContentTypeDefinitionController.getController().getContentTypeDefinitionVOWithId(primaryKeyAsInteger).getName();
-		buttons.add(new ToolbarButton("Confirm.action?header=tool.managementtool.deleteContentTypeDefinition.header&yesDestination=" + URLEncoder.encode("DeleteContentTypeDefinition.action?contentTypeDefinitionId=" + primaryKeyAsInteger, "UTF-8") + "&noDestination=" + URLEncoder.encode("ViewListContentTypeDefinition.action?title=ContentTypeDefinitions", "UTF-8") + "&message=tool.managementtool.deleteContentTypeDefinition.text&extraParameters=" + this.extraParameters, getLocalizedString(locale, "images.managementtool.buttons.deleteContentTypeDefinition"), "tool.managementtool.deleteContentTypeDefinition.header"));
 		
-		String protectContentTypes = CmsPropertyHandler.getProtectContentTypes();
-		if(protectContentTypes != null && protectContentTypes.equalsIgnoreCase("true"))
-		{
-			String returnAddress = URLEncoder.encode(URLEncoder.encode("ViewContentTypeDefinition.action?contentTypeDefinitionId=" + primaryKey, "UTF-8"), "UTF-8");
-			buttons.add(getAccessRightsButton("ContentTypeDefinition", primaryKey, returnAddress));
-		}
+		Integer contentTypeDefinitionId = new Integer(request.getParameter("contentTypeDefinitionId"));
+		ContentTypeDefinitionVO contentTypeDefinitionVO = (ContentTypeDefinitionVO)ContentTypeDefinitionController.getController().getContentTypeDefinitionVOWithId(contentTypeDefinitionId);
 		
-		return buttons;				
-	}
-
-	*/
-
-	private List<ToolbarButton> getCategoryButtons(String toolbarKey, InfoGluePrincipal principal, Locale locale, HttpServletRequest request, boolean disableCloseButton) throws Exception
-	{
-		List<ToolbarButton> buttons = new ArrayList<ToolbarButton>();
-
-	    String url = "CategoryManagement!new.action";
-		//if(primaryKeyAsInteger != null)
-		//	url += "?model/parentId=" + primaryKeyAsInteger;
-
 		buttons.add(new ToolbarButton("",
-				  getLocalizedString(locale, "tool.managementtool.createCategory.header"), 
-				  getLocalizedString(locale, "tool.managementtool.createCategory.header"),
-				  url,
+				  getLocalizedString(locale, "tool.managementtool.deleteContentTypeDefinition.header"), 
+				  getLocalizedString(locale, "tool.managementtool.deleteContentTypeDefinition.header"),
+				  "DeleteContentTypeDefinition.action?deleteContentTypeDefinitionId=" + contentTypeDefinitionId + "&igSecurityCode=" + request.getSession().getAttribute("securityCode"),
 				  "images/v3/createBackgroundPenPaper.gif",
-				  "create",
+				  "left",
+				  "delete",
+				  false,
+				  true,
+				  getLocalizedString(locale, "tool.managementtool.deleteContentTypeDefinition.header"),
+				  getLocalizedString(locale, "tool.managementtool.deleteContentTypeDefinition.text", new String[]{contentTypeDefinitionVO.getName()}),
 				  "managementWorkIframe"));
 
-		buttons.add(new ToolbarButton("",
-				getLocalizedString(locale, "tool.managementtool.deleteCategories.header"),
-				getLocalizedString(locale, "tool.managementtool.deleteCategories.header"),
-				"submitListForm('category');",
-				"images/v3/deleteBackgroundWasteBasket.gif",
-				"left",
-				"delete",
-				true, 
-				false, 
-				"",
-				"",
-				"managementWorkIframe"));
+	    final String protectContentTypes = CmsPropertyHandler.getProtectContentTypes();
+	    if(protectContentTypes != null && protectContentTypes.equalsIgnoreCase("true"))
+	    {
+			buttons.add(new ToolbarButton("",
+					  getLocalizedString(locale, "tool.common.accessRights.accessRightsButtonLabel"), 
+					  getLocalizedString(locale, "tool.common.accessRights.accessRightsButtonTitle"),
+					  "ViewAccessRights!V3.action?interceptionPointCategory=ContentTypeDefinition&extraParameters=" + contentTypeDefinitionVO.getName() + "&returnAddress=ViewInlineOperationMessages.action&originalAddress=refreshParent",
+					  "images/v3/accessRightIcon.gif",
+					  "accessRights"));
+	    }
 
 		return buttons;
 	}
-
-	/*
-
-	private List<ToolbarButton> getCategoryButtons() throws Exception
-	{
-	    String url = "CategoryManagement!new.action";
-		if(primaryKeyAsInteger != null)
-			url += "?model/parentId=" + primaryKeyAsInteger;
-
-		List<ToolbarButton> buttons = new ArrayList<ToolbarButton>();
-		buttons.add(new ToolbarButton(url, getLocalizedString(locale, "images.managementtool.buttons.newCategory"), "New Category"));
-
-		if(primaryKeyAsInteger != null)
-			buttons.add(new ToolbarButton(true, "javascript:openPopup('CategoryManagement!displayTreeForMove.action?categoryId=" + primaryKey + "', 'Category', 'width=400,height=600,resizable=no,status=yes');", getLocalizedString(locale, "images.managementtool.buttons.moveCategory"), "Move Category"));
-
-		buttons.add(new ToolbarButton(true, "javascript:submitListForm('category');", getLocalizedString(locale, "images.managementtool.buttons.deleteCategory"), "Delete Category"));
-		
-		if(primaryKeyAsInteger != null)
-		{	
-		    String returnAddress = URLEncoder.encode(URLEncoder.encode("CategoryManagement!edit.action?categoryId=" + primaryKey + "&title=Category%20Details", "UTF-8"), "UTF-8");
-		    buttons.add(getAccessRightsButton("Category", primaryKey, returnAddress));
-		}
-		
-		return buttons;
-	}
-	
-	private ToolbarButton getAccessRightsButton(String interceptionPointCategory, String extraParameter, String returnAddress) throws Exception
-	{
-		return new ToolbarButton("ViewAccessRights.action?interceptionPointCategory=" + interceptionPointCategory + "&extraParameters=" + extraParameter +"&colorScheme=ManagementTool&returnAddress=" + returnAddress, getLocalizedString(locale, "images.managementtool.buttons.accessRights"), "tool.managementtool.accessRights.header");
-	}
-	*/
-
-	private List<ToolbarButton> getRedirectsButtons(String toolbarKey, InfoGluePrincipal principal, Locale locale, HttpServletRequest request, boolean disableCloseButton) throws Exception
-	{
-		List<ToolbarButton> buttons = new ArrayList<ToolbarButton>();
-
-		buttons.add(new ToolbarButton("",
-				  getLocalizedString(locale, "tool.managementtool.createRedirect.header"), 
-				  getLocalizedString(locale, "tool.managementtool.createRedirect.header"),
-				  "CreateRedirect!input.action",
-				  "images/v3/createBackgroundPenPaper.gif",
-				  "create",
-				  "managementWorkIframe"));
-
-		buttons.add(new ToolbarButton("",
-				getLocalizedString(locale, "tool.managementtool.deleteRedirects.header"),
-				getLocalizedString(locale, "tool.managementtool.deleteRedirects.header"),
-				"submitListForm('redirect');",
-				"images/v3/deleteBackgroundWasteBasket.gif",
-				"left",
-				"delete",
-				true, 
-				false, 
-				"",
-				"",
-				"managementWorkIframe"));
-
-		return buttons;
-	}
-
-	/*
-	private List<ToolbarButton> getRedirectsButtons() throws Exception
-	{
-		
-		List<ToolbarButton> buttons = new ArrayList<ToolbarButton>();
-		buttons.add(new ToolbarButton("CreateRedirect!input.action", getLocalizedString(locale, "images.managementtool.buttons.newRedirect"), "New Redirect"));	
-		buttons.add(new ToolbarButton(true, "javascript:submitListForm('redirect');", getLocalizedString(locale, "images.managementtool.buttons.deleteRedirect"), "tool.managementtool.deleteRedirects.header"));
-		return buttons;
-	}
-	
-	private List<ToolbarButton> getRedirectDetailsButtons() throws Exception
-	{
-		List<ToolbarButton> buttons = new ArrayList<ToolbarButton>();
-		String name = RedirectController.getController().getRedirectVOWithId(primaryKeyAsInteger).getUrl();
-		buttons.add(new ToolbarButton("Confirm.action?header=tool.managementtool.deleteRedirect.header&yesDestination=" + URLEncoder.encode("DeleteRedirect.action?redirectId=" + primaryKeyAsInteger, "UTF-8") + "&noDestination=" + URLEncoder.encode("ViewListWorkflowDefinition.action", "UTF-8") + "&message=tool.managementtool.deleteWorkflowDefinition.text&extraParameters=" + this.extraParameters, getLocalizedString(locale, "images.managementtool.buttons.deleteWorkflowDefinition"), "tool.managementtool.deleteWorkflowDefinition.header"));
-		return buttons;				
-	}
-
-	*/
-
-	private List<ToolbarButton> getPortletsButtons(String toolbarKey, InfoGluePrincipal principal, Locale locale, HttpServletRequest request, boolean disableCloseButton) throws Exception
-	{
-		List<ToolbarButton> buttons = new ArrayList<ToolbarButton>();
-
-		buttons.add(new ToolbarButton("",
-				  getLocalizedString(locale, "tool.managementtool.createPortlet.header"), 
-				  getLocalizedString(locale, "tool.managementtool.createPortlet.header"),
-				  "UploadPortlet!inputV3.action",
-				  "images/v3/createBackgroundPenPaper.gif",
-				  "create"));
-
-		return buttons;
-	}
-
-	/*
-	private List<ToolbarButton> getPortletsButtons() throws Exception
-	{
-		List<ToolbarButton> buttons = new ArrayList<ToolbarButton>();
-		buttons.add(new ToolbarButton("UploadPortlet.action", getLocalizedString(locale, "images.managementtool.buttons.newPortlet"), "New Portlet"));	
-		//buttons.add(new ToolbarButton(true, "javascript:submitListForm('workflowDefinition');", getLocalizedString(locale, "images.managementtool.buttons.deleteWorkflowDefinition"), "tool.managementtool.deleteWorkflowDefinitions.header"));
-		return buttons;
-	}
-
-	*/
 
 	private List<ToolbarButton> getWorkflowDefinitionsButtons(String toolbarKey, InfoGluePrincipal principal, Locale locale, HttpServletRequest request, boolean disableCloseButton) throws Exception
 	{
@@ -2662,34 +2272,369 @@ public class ToolbarController
 		return buttons;
 	}
 
-	/*
-	
-	private List<ToolbarButton> getWorkflowDefinitionsButtons() throws Exception
+	private List<ToolbarButton> getWorkflowDefinitionDetailsButtons(String toolbarKey, InfoGluePrincipal principal, Locale locale, HttpServletRequest request, boolean disableCloseButton) throws Exception
 	{
+		List<ToolbarButton> buttons = new ArrayList<ToolbarButton>();
 		
-		List<ToolbarButton> buttons = new ArrayList<ToolbarButton>();
-		buttons.add(new ToolbarButton("CreateWorkflowDefinition!input.action", getLocalizedString(locale, "images.managementtool.buttons.newWorkflowDefinition"), "New WorkflowDefinition"));	
-		buttons.add(new ToolbarButton(true, "javascript:submitListForm('workflowDefinition');", getLocalizedString(locale, "images.managementtool.buttons.deleteWorkflowDefinition"), "tool.managementtool.deleteWorkflowDefinitions.header"));
-		return buttons;
-	}
-	
-	private List<ToolbarButton> getWorkflowDefinitionDetailsButtons() throws Exception
-	{
-		List<ToolbarButton> buttons = new ArrayList<ToolbarButton>();
-		String name = WorkflowDefinitionController.getController().getWorkflowDefinitionVOWithId(primaryKeyAsInteger).getName();
-		buttons.add(new ToolbarButton("Confirm.action?header=tool.managementtool.deleteWorkflowDefinition.header&yesDestination=" + URLEncoder.encode("DeleteWorkflowDefinition.action?workflowDefinitionId=" + primaryKeyAsInteger, "UTF-8") + "&noDestination=" + URLEncoder.encode("ViewListWorkflowDefinition.action", "UTF-8") + "&message=tool.managementtool.deleteWorkflowDefinition.text&extraParameters=" + this.extraParameters, getLocalizedString(locale, "images.managementtool.buttons.deleteWorkflowDefinition"), "tool.managementtool.deleteWorkflowDefinition.header"));
+		Integer workflowDefinitionId = new Integer(request.getParameter("workflowDefinitionId"));
+		WorkflowDefinitionVO workflowDefinitionVO = WorkflowDefinitionController.getController().getWorkflowDefinitionVOWithId(workflowDefinitionId);
+
+		
+		buttons.add(new ToolbarButton("",
+				  getLocalizedString(locale, "tool.managementtool.deleteWorkflowDefinition.header"), 
+				  getLocalizedString(locale, "tool.managementtool.deleteWorkflowDefinition.header"),
+				  "DeleteWorkflowDefinition.action?workflowDefinitionId=" + workflowDefinitionId + "&igSecurityCode=" + request.getSession().getAttribute("securityCode"),
+				  "images/v3/createBackgroundPenPaper.gif",
+				  "left",
+				  "delete",
+				  false,
+				  true,
+				  getLocalizedString(locale, "tool.managementtool.deleteWorkflowDefinition.header"),
+				  getLocalizedString(locale, "tool.managementtool.deleteWorkflowDefinition.text", new String[]{workflowDefinitionVO.getName()}),
+				  "managementWorkIframe"));
+
 	    final String protectWorkflows = CmsPropertyHandler.getProtectWorkflows();
 	    if(protectWorkflows != null && protectWorkflows.equalsIgnoreCase("true"))
 	    {
-			String returnAddress = URLEncoder.encode(URLEncoder.encode("ViewWorkflowDefinition.action?workflowDefinitionId=" + primaryKey, "UTF-8"), "UTF-8");
-			final WorkflowDefinitionVO workflowDefinition = WorkflowDefinitionController.getController().getWorkflowDefinitionVOWithId(primaryKeyAsInteger);
-			buttons.add(new ToolbarButton("ViewAccessRights.action?interceptionPointCategory=Workflow&extraParameters=" + workflowDefinition.getName() +"&colorScheme=ManagementTool&returnAddress=" + returnAddress, getLocalizedString(locale, "images.managementtool.buttons.accessRights"), "tool.managementtool.accessRights.header"));
+			buttons.add(new ToolbarButton("",
+					  getLocalizedString(locale, "tool.common.accessRights.accessRightsButtonLabel"), 
+					  getLocalizedString(locale, "tool.common.accessRights.accessRightsButtonTitle"),
+					  "ViewAccessRights!V3.action?interceptionPointCategory=Workflow&extraParameters=" + workflowDefinitionVO.getName() + "&returnAddress=ViewInlineOperationMessages.action&originalAddress=refreshParent",
+					  "images/v3/accessRightIcon.gif",
+					  "accessRights"));
 	    }
-		return buttons;				
+
+		return buttons;
 	}
 
-	*/
+	private List<ToolbarButton> getPortletsButtons(String toolbarKey, InfoGluePrincipal principal, Locale locale, HttpServletRequest request, boolean disableCloseButton) throws Exception
+	{
+		List<ToolbarButton> buttons = new ArrayList<ToolbarButton>();
 
+		buttons.add(new ToolbarButton("",
+				  getLocalizedString(locale, "tool.managementtool.createPortlet.header"), 
+				  getLocalizedString(locale, "tool.managementtool.createPortlet.header"),
+				  "UploadPortlet.action",
+				  "images/v3/createBackgroundPenPaper.gif",
+				  "create",
+				  "managementWorkIframe"));
+
+		return buttons;
+	}
+
+	private List<ToolbarButton> getRedirectsButtons(String toolbarKey, InfoGluePrincipal principal, Locale locale, HttpServletRequest request, boolean disableCloseButton) throws Exception
+	{
+		List<ToolbarButton> buttons = new ArrayList<ToolbarButton>();
+
+		buttons.add(new ToolbarButton("",
+				  getLocalizedString(locale, "tool.managementtool.createRedirect.header"), 
+				  getLocalizedString(locale, "tool.managementtool.createRedirect.header"),
+				  "CreateRedirect!input.action",
+				  "images/v3/createBackgroundPenPaper.gif",
+				  "create",
+				  "managementWorkIframe"));
+
+		buttons.add(new ToolbarButton("",
+				getLocalizedString(locale, "tool.managementtool.deleteRedirects.header"),
+				getLocalizedString(locale, "tool.managementtool.deleteRedirects.header"),
+				"submitListForm('redirect');",
+				"images/v3/deleteBackgroundWasteBasket.gif",
+				"left",
+				"delete",
+				true, 
+				false, 
+				"",
+				"",
+				"managementWorkIframe"));
+
+		return buttons;
+	}
+
+	private List<ToolbarButton> getRedirectDetailsButtons(String toolbarKey, InfoGluePrincipal principal, Locale locale, HttpServletRequest request, boolean disableCloseButton) throws Exception
+	{
+		List<ToolbarButton> buttons = new ArrayList<ToolbarButton>();
+		
+		Integer redirectId = new Integer(request.getParameter("redirectId"));
+		RedirectVO redirectVO = RedirectController.getController().getRedirectVOWithId(redirectId);
+		
+		buttons.add(new ToolbarButton("",
+				  getLocalizedString(locale, "tool.managementtool.deleteRedirect.header"), 
+				  getLocalizedString(locale, "tool.managementtool.deleteRedirect.header"),
+				  "DeleteRedirect.action?redirectId=" + redirectId + "&igSecurityCode=" + request.getSession().getAttribute("securityCode"),
+				  "images/v3/createBackgroundPenPaper.gif",
+				  "left",
+				  "delete",
+				  false,
+				  true,
+				  getLocalizedString(locale, "tool.managementtool.deleteRedirect.header"),
+				  getLocalizedString(locale, "tool.managementtool.deleteRedirect.text", new String[]{redirectVO.getUrl()}),
+				  "managementWorkIframe"));
+
+		return buttons;
+	}
+
+
+	private List<ToolbarButton> getInterceptionPointsButtons(String toolbarKey, InfoGluePrincipal principal, Locale locale, HttpServletRequest request, boolean disableCloseButton) throws Exception
+	{
+		List<ToolbarButton> buttons = new ArrayList<ToolbarButton>();
+
+		buttons.add(new ToolbarButton("",
+				  getLocalizedString(locale, "tool.managementtool.createInterceptionPoint.header"), 
+				  getLocalizedString(locale, "tool.managementtool.createInterceptionPoint.header"),
+				  "CreateInterceptionPoint!input.action",
+				  "images/v3/createBackgroundPenPaper.gif",
+				  "create",
+				  "managementWorkIframe"));
+
+		buttons.add(new ToolbarButton("",
+				getLocalizedString(locale, "tool.managementtool.deleteInterceptionPoints.header"),
+				getLocalizedString(locale, "tool.managementtool.deleteInterceptionPoints.header"),
+				"submitListForm('interceptionPoint');",
+				"images/v3/deleteBackgroundWasteBasket.gif",
+				"left",
+				"delete",
+				true, 
+				false, 
+				"",
+				"",
+				"managementWorkIframe"));
+
+		return buttons;
+	}
+
+
+	private List<ToolbarButton> getInterceptionPointButtons(String toolbarKey, InfoGluePrincipal principal, Locale locale, HttpServletRequest request, boolean disableCloseButton) throws Exception
+	{
+		List<ToolbarButton> buttons = new ArrayList<ToolbarButton>();
+		
+		InterceptionPointVO interceptionPointVO = InterceptionPointController.getController().getInterceptionPointVOWithId(new Integer(request.getParameter("interceptionPointId")));
+
+		buttons.add(new ToolbarButton("",
+				getLocalizedString(locale, "tool.managementtool.deleteInterceptionPoints.header"),
+				getLocalizedString(locale, "tool.managementtool.deleteInterceptionPoints.header"),
+				"DeleteInterceptionPoint.action?interceptionPointId=" + interceptionPointVO.getId() + "&igSecurityCode=" + request.getSession().getAttribute("securityCode"),
+				"images/v3/deleteBackgroundWasteBasket.gif",
+				"left",
+				"delete",
+				false, 
+				true, 
+				getLocalizedString(locale, "tool.managementtool.deleteInterceptionPoint.header"),
+				getLocalizedString(locale, "tool.managementtool.deleteInterceptionPoint.text", new String[]{interceptionPointVO.getName()}),
+				"managementWorkIframe"));
+
+		buttons.add(new ToolbarButton("",
+				  getLocalizedString(locale, "tool.contenttool.accessRights.header"), 
+				  getLocalizedString(locale, "tool.contenttool.accessRights.header"),
+				  "ViewAccessRights!V3.action?interceptionPointCategory=" + interceptionPointVO.getCategory() + "&interceptionPointId=" + interceptionPointVO.getId() + "&returnAddress=ViewInlineOperationMessages.action&originalAddress=refreshParent",
+				  "images/v3/accessRightsIcon.gif",
+				  "accessRights"));
+
+		return buttons;
+	}
+	
+	private List<ToolbarButton> getInterceptorsButtons(String toolbarKey, InfoGluePrincipal principal, Locale locale, HttpServletRequest request, boolean disableCloseButton) throws Exception
+	{
+		List<ToolbarButton> buttons = new ArrayList<ToolbarButton>();
+
+		buttons.add(new ToolbarButton("",
+				  getLocalizedString(locale, "tool.managementtool.createInterceptor.header"), 
+				  getLocalizedString(locale, "tool.managementtool.createInterceptor.header"),
+				  "CreateInterceptor!input.action",
+				  "images/v3/createBackgroundPenPaper.gif",
+				  "create",
+				  "managementWorkIframe"));
+
+		buttons.add(new ToolbarButton("",
+				getLocalizedString(locale, "tool.managementtool.deleteInterceptors.header"),
+				getLocalizedString(locale, "tool.managementtool.deleteInterceptors.header"),
+				"submitListForm('interceptor');",
+				"images/v3/deleteBackgroundWasteBasket.gif",
+				"left",
+				"delete",
+				true, 
+				false, 
+				"",
+				"",
+				"managementWorkIframe"));
+
+		return buttons;
+	}
+
+	private List<ToolbarButton> getInterceptorButtons(String toolbarKey, InfoGluePrincipal principal, Locale locale, HttpServletRequest request, boolean disableCloseButton) throws Exception
+	{
+		List<ToolbarButton> buttons = new ArrayList<ToolbarButton>();
+		
+		InterceptorVO interceptorVO = InterceptorController.getController().getInterceptorVOWithId(new Integer(request.getParameter("interceptorId")));
+
+		buttons.add(new ToolbarButton("",
+				getLocalizedString(locale, "tool.managementtool.deleteInterceptor.header"),
+				getLocalizedString(locale, "tool.managementtool.deleteInterceptor.header"),
+				"DeleteInterceptor.action?interceptorId=" + interceptorVO.getId() + "&igSecurityCode=" + request.getSession().getAttribute("securityCode"),
+				"images/v3/deleteBackgroundWasteBasket.gif",
+				"left",
+				"delete",
+				false, 
+				true, 
+				getLocalizedString(locale, "tool.managementtool.deleteInterceptor.header"),
+				getLocalizedString(locale, "tool.managementtool.deleteInterceptor.text", new String[]{interceptorVO.getName()}),
+				"managementWorkIframe"));
+
+		return buttons;
+	}
+
+	
+	private List<ToolbarButton> getServiceDefinitionsButtons(String toolbarKey, InfoGluePrincipal principal, Locale locale, HttpServletRequest request, boolean disableCloseButton) throws Exception
+	{
+		List<ToolbarButton> buttons = new ArrayList<ToolbarButton>();
+
+		buttons.add(new ToolbarButton("",
+				  getLocalizedString(locale, "tool.managementtool.createServiceDefinition.header"), 
+				  getLocalizedString(locale, "tool.managementtool.createServiceDefinition.header"),
+				  "CreateServiceDefinition!input.action",
+				  "images/v3/createBackgroundPenPaper.gif",
+				  "create",
+				  "managementWorkIframe"));
+
+		buttons.add(new ToolbarButton("",
+				getLocalizedString(locale, "tool.managementtool.deleteServiceDefinitions.header"),
+				getLocalizedString(locale, "tool.managementtool.deleteServiceDefinitions.header"),
+				"submitListForm('serviceDefinition');",
+				"images/v3/deleteBackgroundWasteBasket.gif",
+				"left",
+				"delete",
+				true, 
+				false, 
+				"",
+				"",
+				"managementWorkIframe"));
+
+		return buttons;
+	}
+
+	private List<ToolbarButton> getServiceDefinitionDetailsButtons(String toolbarKey, InfoGluePrincipal principal, Locale locale, HttpServletRequest request, boolean disableCloseButton) throws Exception
+	{
+		List<ToolbarButton> buttons = new ArrayList<ToolbarButton>();
+		
+		ServiceDefinitionVO serviceDefinitionVO = ServiceDefinitionController.getController().getServiceDefinitionVOWithId(new Integer(request.getParameter("serviceDefinitionId")));
+
+		buttons.add(new ToolbarButton("",
+				getLocalizedString(locale, "tool.managementtool.deleteServiceDefinition.header"),
+				getLocalizedString(locale, "tool.managementtool.deleteServiceDefinition.header"),
+				"DeleteServiceDefinition.action?serviceDefinitionId=" + serviceDefinitionVO.getId() + "&igSecurityCode=" + request.getSession().getAttribute("securityCode"),
+				"images/v3/deleteBackgroundWasteBasket.gif",
+				"left",
+				"delete",
+				false, 
+				true, 
+				getLocalizedString(locale, "tool.managementtool.deleteServiceDefinition.header"),
+				getLocalizedString(locale, "tool.managementtool.deleteServiceDefinition.text", new String[]{serviceDefinitionVO.getName()}),
+				"managementWorkIframe"));
+
+		return buttons;
+	}
+
+
+	private List<ToolbarButton> getAvailableServiceBindingsButtons(String toolbarKey, InfoGluePrincipal principal, Locale locale, HttpServletRequest request, boolean disableCloseButton) throws Exception
+	{
+		List<ToolbarButton> buttons = new ArrayList<ToolbarButton>();
+
+		buttons.add(new ToolbarButton("",
+				  getLocalizedString(locale, "tool.managementtool.createAvailableServiceBinding.header"), 
+				  getLocalizedString(locale, "tool.managementtool.createAvailableServiceBinding.header"),
+				  "CreateAvailableServiceBinding!input.action",
+				  "images/v3/createBackgroundPenPaper.gif",
+				  "create",
+				  "managementWorkIframe"));
+
+		buttons.add(new ToolbarButton("",
+				getLocalizedString(locale, "tool.managementtool.deleteAvailableServiceBindings.header"),
+				getLocalizedString(locale, "tool.managementtool.deleteAvailableServiceBindings.header"),
+				"submitListForm('availableServiceBinding');",
+				"images/v3/deleteBackgroundWasteBasket.gif",
+				"left",
+				"delete",
+				true, 
+				false, 
+				"",
+				"",
+				"managementWorkIframe"));
+
+		return buttons;
+	}
+
+	private List<ToolbarButton> getAvailableServiceBindingDetailsButtons(String toolbarKey, InfoGluePrincipal principal, Locale locale, HttpServletRequest request, boolean disableCloseButton) throws Exception
+	{
+		List<ToolbarButton> buttons = new ArrayList<ToolbarButton>();
+		
+		AvailableServiceBindingVO availableServiceBindingVO = AvailableServiceBindingController.getController().getAvailableServiceBindingVOWithId(new Integer(request.getParameter("availableServiceBindingId")));
+
+		buttons.add(new ToolbarButton("",
+				getLocalizedString(locale, "tool.managementtool.deleteAvailableServiceBinding.header"),
+				getLocalizedString(locale, "tool.managementtool.deleteAvailableServiceBinding.header"),
+				"DeleteAvailableServiceBinding.action?availableServiceBindingId=" + availableServiceBindingVO.getId() + "&igSecurityCode=" + request.getSession().getAttribute("securityCode"),
+				"images/v3/deleteBackgroundWasteBasket.gif",
+				"left",
+				"delete",
+				false, 
+				true, 
+				getLocalizedString(locale, "tool.managementtool.deleteAvailableServiceBinding.header"),
+				getLocalizedString(locale, "tool.managementtool.deleteAvailableServiceBinding.text", new String[]{availableServiceBindingVO.getName()}),
+				"managementWorkIframe"));
+
+		return buttons;
+	}
+	
+	private List<ToolbarButton> getSiteNodeTypeDefinitionsButtons(String toolbarKey, InfoGluePrincipal principal, Locale locale, HttpServletRequest request, boolean disableCloseButton) throws Exception
+	{
+		List<ToolbarButton> buttons = new ArrayList<ToolbarButton>();
+
+		buttons.add(new ToolbarButton("",
+				  getLocalizedString(locale, "tool.managementtool.createSiteNodeTypeDefinition.header"), 
+				  getLocalizedString(locale, "tool.managementtool.createSiteNodeTypeDefinition.header"),
+				  "CreateSiteNodeTypeDefinition!input.action",
+				  "images/v3/createBackgroundPenPaper.gif",
+				  "create",
+				  "managementWorkIframe"));
+
+		buttons.add(new ToolbarButton("",
+				getLocalizedString(locale, "tool.managementtool.deleteSiteNodeTypeDefinitions.header"),
+				getLocalizedString(locale, "tool.managementtool.deleteSiteNodeTypeDefinitions.header"),
+				"submitListForm('siteNodeTypeDefinition');",
+				"images/v3/deleteBackgroundWasteBasket.gif",
+				"left",
+				"delete",
+				true, 
+				false, 
+				"",
+				"",
+				"managementWorkIframe"));
+
+		return buttons;
+	}
+
+	private List<ToolbarButton> getSiteNodeTypeDefinitionDetailsButtons(String toolbarKey, InfoGluePrincipal principal, Locale locale, HttpServletRequest request, boolean disableCloseButton) throws Exception
+	{
+		List<ToolbarButton> buttons = new ArrayList<ToolbarButton>();
+		
+		SiteNodeTypeDefinitionVO siteNodeTypeDefinitionVO = SiteNodeTypeDefinitionController.getController().getSiteNodeTypeDefinitionVOWithId(new Integer(request.getParameter("siteNodeTypeDefinitionId")));
+
+		buttons.add(new ToolbarButton("",
+				getLocalizedString(locale, "tool.managementtool.deleteSiteNodeTypeDefinition.header"),
+				getLocalizedString(locale, "tool.managementtool.deleteSiteNodeTypeDefinition.header"),
+				"DeleteSiteNodeTypeDefinition.action?siteNodeTypeDefinitionId=" + siteNodeTypeDefinitionVO.getId() + "&igSecurityCode=" + request.getSession().getAttribute("securityCode"),
+				"images/v3/deleteBackgroundWasteBasket.gif",
+				"left",
+				"delete",
+				false, 
+				true, 
+				getLocalizedString(locale, "tool.managementtool.deleteSiteNodeTypeDefinition.header"),
+				getLocalizedString(locale, "tool.managementtool.deleteSiteNodeTypeDefinition.text", new String[]{siteNodeTypeDefinitionVO.getName()}),
+				"managementWorkIframe"));
+
+		return buttons;
+	}
+
+	
 	private List<ToolbarButton> getServerNodesButtons(String toolbarKey, InfoGluePrincipal principal, Locale locale, HttpServletRequest request, boolean disableCloseButton) throws Exception
 	{
 		List<ToolbarButton> buttons = new ArrayList<ToolbarButton>();

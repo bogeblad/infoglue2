@@ -6,6 +6,7 @@
 
 <div class="fullymarginalized">
 <form method="POST" action="CreateInterceptionPoint.action">
+<input type="hidden" name="igSecurityCode" value="$!securityCode"/>
 <table>
 
 	<tr>

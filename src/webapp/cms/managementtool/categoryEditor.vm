@@ -57,6 +57,7 @@
 
 <div class="fullymarginalized">
 <form method="POST" action="CategoryManagement!save.action">
+<input type="hidden" name="igSecurityCode" value="$!securityCode"/>
 <table class="managementtooledit" cellpadding="2" cellspacing="2" border="0" width="100%" height="30">
 	<tr>
 		<td>

@@ -502,6 +502,23 @@ public class ContentVersionController extends BaseController
 	 * This method returns the latest active content version.
 	 */
     
+	public ContentVersionVO getLatestActiveContentVersionVO(Integer contentId, Integer languageId, Integer stateId, Database db) throws SystemException, Bug, Exception
+	{
+    	ContentVersionVO contentVersionVO = null;
+
+       	ContentVersion contentVersion = getLatestActiveContentVersionReadOnly(contentId, languageId, stateId, db);
+            
+        if(contentVersion != null)
+            contentVersionVO = contentVersion.getValueObject();
+    	
+		return contentVersionVO;
+    }
+
+	
+   	/**
+	 * This method returns the latest active content version.
+	 */
+    
 	public ContentVersionVO getLatestActiveContentVersionVO(Integer contentId, Integer languageId, Database db) throws SystemException, Bug, Exception
 	{
 		ContentVersionVO contentVersionVO = null;
@@ -588,7 +605,7 @@ public class ContentVersionController extends BaseController
 	{
 		ContentVersion contentVersion = null;
     	
-		Content content = ContentController.getContentController().getReadOnlyContentWithId(contentId, db);
+		Content content = ContentController.getContentController().getReadOnlyMediumContentWithId(contentId, db);
 		Collection contentVersions = content.getContentVersions();
 		if(logger.isInfoEnabled())
 		{
@@ -620,6 +637,45 @@ public class ContentVersionController extends BaseController
 		return contentVersion;
 	}
 
+   	/**
+	 * This method returns the latest active content version in a certain version.
+	 */
+    
+	public ContentVersion getLatestActiveContentVersionReadOnly(Integer contentId, Integer languageId, Integer stateId, Database db) throws SystemException, Bug
+	{
+		ContentVersion contentVersion = null;
+    	
+		Content content = ContentController.getContentController().getReadOnlyMediumContentWithId(contentId, db);
+		Collection contentVersions = content.getContentVersions();
+		if(logger.isInfoEnabled())
+		{
+			logger.info("contentId:" + contentId);
+	    	logger.info("languageId:" + languageId);
+	    	logger.info("content:" + content.getName());
+			logger.info("contentVersions:" + contentVersions.size());
+		}
+        
+		Iterator i = contentVersions.iterator();
+        while(i.hasNext())
+		{
+			ContentVersion currentContentVersion = (ContentVersion)i.next();
+			if(logger.isInfoEnabled())
+				logger.info("found one candidate:" + currentContentVersion.getValueObject());
+			
+			if(contentVersion == null || (currentContentVersion.getId().intValue() > contentVersion.getId().intValue()))
+			{
+				if(logger.isInfoEnabled())
+				{
+					logger.info("currentContentVersion:" + currentContentVersion.getIsActive());
+					logger.info("currentContentVersion:" + currentContentVersion.getLanguage().getId());
+				}
+				if(currentContentVersion.getIsActive().booleanValue() &&  currentContentVersion.getLanguage().getId().intValue() == languageId.intValue() && currentContentVersion.getStateId() >= stateId)
+					contentVersion = currentContentVersion;
+			}
+		}
+        
+		return contentVersion;
+	}
 
 	public ContentVersionVO getLatestContentVersionVO(Integer contentId, Integer languageId) throws SystemException, Bug
     {
@@ -1794,8 +1850,15 @@ public class ContentVersionController extends BaseController
 		Iterator cit = childContentList.iterator();
 		while (cit.hasNext())
 		{
-			Content citContent = (Content) cit.next();
-			getContentAndAffectedItemsRecursive(citContent, stateId, checkedSiteNodes, checkedContents, db, siteNodeVersionVOList, contentVersionVOList, mustBeFirst, includeMetaInfo);
+			try
+			{
+				Content citContent = (Content) cit.next();
+				getContentAndAffectedItemsRecursive(citContent, stateId, checkedSiteNodes, checkedContents, db, siteNodeVersionVOList, contentVersionVOList, mustBeFirst, includeMetaInfo);
+			}
+			catch (Exception e) 
+			{
+				logger.error("Was a problem with content:" + e.getMessage());
+			}
 		}
 		
 	}

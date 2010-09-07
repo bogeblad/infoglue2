@@ -73,6 +73,7 @@
 
 <div class="fullymarginalized">
 <form method="POST" name="editForm" action="UpdateGroup.action">
+<input type="hidden" name="igSecurityCode" value="$!securityCode"/>
 <input type="hidden" name="groupName" value="$!groupName">
 <table>
 	<tr>

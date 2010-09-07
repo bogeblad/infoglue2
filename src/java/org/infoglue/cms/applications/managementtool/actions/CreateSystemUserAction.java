@@ -142,7 +142,7 @@ public class CreateSystemUserAction extends InfoGlueAbstractAction
 		return "successSaveAndExitV3";
 	}
 
-	public void setuserName(String userName)
+	public void setUserName(String userName)
 	{
 		this.systemUserVO.setUserName(userName);	
 	}

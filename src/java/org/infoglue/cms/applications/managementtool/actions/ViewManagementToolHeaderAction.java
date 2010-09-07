@@ -43,7 +43,7 @@ public class ViewManagementToolHeaderAction extends InfoGlueAbstractAction
     
     public String doExecute() throws Exception
     {
-    	this.repositories = RepositoryController.getController().getRepositoryVOList();
+    	this.repositories = RepositoryController.getController().getRepositoryVOListNotMarkedForDeletion();
     	
         return "success";
     }

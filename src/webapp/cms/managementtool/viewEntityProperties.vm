@@ -106,6 +106,7 @@
 
 
 <form method="POST" name="editForm" action="${updateAction}.action">
+<input type="hidden" name="igSecurityCode" value="$!securityCode"/>
 <table border="0" width="500">
 
 	<tr> 

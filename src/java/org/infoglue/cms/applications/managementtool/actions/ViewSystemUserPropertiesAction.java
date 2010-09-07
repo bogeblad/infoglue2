@@ -112,7 +112,12 @@ public class ViewSystemUserPropertiesAction extends ViewEntityPropertiesAction
         this.setCancelAction("ViewSystemUser.action");
         this.setToolbarKey("tool.managementtool.viewUserProperties.header");
         this.setTitleKey("tool.managementtool.viewUserProperties.header");
-        this.setArguments("");
+        
+        if(this.userPropertiesVO != null)
+            this.setArguments("entityId=" + this.userPropertiesVO.getId());
+        else
+        	this.setArguments("");
+
         this.setEntityName(GroupProperties.class.getName());
 
 		return "success";
@@ -128,7 +133,12 @@ public class ViewSystemUserPropertiesAction extends ViewEntityPropertiesAction
         this.setCancelAction("ViewSystemUser!v3.action");
         this.setToolbarKey("tool.managementtool.viewUserProperties.header");
         this.setTitleKey("tool.managementtool.viewUserProperties.header");
-        this.setArguments("");
+        
+        if(this.userPropertiesVO != null)
+            this.setArguments("entityId=" + this.userPropertiesVO.getId());
+        else
+        	this.setArguments("");
+
         this.setEntityName(GroupProperties.class.getName());
 
 		return "successV3";

@@ -50,7 +50,6 @@ import org.infoglue.cms.util.sorters.ContentComparator;
 import org.infoglue.deliver.applications.databeans.DeliveryContext;
 import org.infoglue.deliver.controllers.kernel.impl.simple.NodeDeliveryController;
 import org.infoglue.deliver.util.CacheController;
-import org.infoglue.deliver.util.Timer;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
@@ -149,13 +148,11 @@ public class ComponentController extends BaseController
 		else
 		{
 		    components = getComponents(allowedComponentNames, disallowedComponentNames, allowedComponentGroupNames, principal, db);
-	        
 		    Iterator componentsIterator = components.iterator();
 			while(componentsIterator.hasNext())
 			{
 			    ContentVO contentVO = (ContentVO)componentsIterator.next();
 			    
-				//System.out.println("contentVO:" + contentVO.getName() + ":" + contentVO.getRepositoryId() + ":" + contentVO.getId());
 			    LanguageVO masterLanguage = LanguageController.getController().getMasterLanguage(contentVO.getRepositoryId(), db); //.getMasterLanguage(db, contentVO.getRepositoryId());
 				//System.out.println("masterLanguage:" + masterLanguage);
 			    if(masterLanguage != null)
@@ -303,8 +300,6 @@ public class ComponentController extends BaseController
 	
 	public List getComponents(String[] allowedComponentNames, String[] disallowedComponentNames, String[] allowedComponentGroups/*, String[] disallowedComponentGroups*/, InfoGluePrincipal principal, Database db) throws Exception
 	{
-		Timer t = new Timer();
-		
 		HashMap arguments = new HashMap();
 		arguments.put("method", "selectListOnContentTypeName");
 		
@@ -389,8 +384,6 @@ public class ComponentController extends BaseController
 			}
 	    }
 		
-	    //t.printElapsedTime("Getting components took");
-	    
 		return results;	
 	}
 

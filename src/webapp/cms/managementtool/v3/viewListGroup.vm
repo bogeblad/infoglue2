@@ -1,52 +1,94 @@
-#beginCommonToolV3("tool.managementtool.viewGroupList.header" "" "" true true true)
+#define($headerMarkup)
 
-<script type="text/javascript">
-		
-	YAHOO.example.Data = {
-	    groups: 
-	    [
-	    	#foreach ($groupVO in $groups)
-	    		{sel:0,id:"$groupVO.name", displayName:"$groupVO.displayName", description:"$groupVO.description"}#if($velocityCount < $groups.size()),#end
-		 	#end
-	    ]
-	}
+	<style type="text/css" title="currentStyle">
+		@import "script/jqueryplugins/dataTables/media/css/ig_table.css";
+	</style>
+	<script type="text/javascript" language="javascript" src="script/jqueryplugins/dataTables/media/js/jquery.dataTables.min.js"></script>
+
+	<link rel="stylesheet" type="text/css" href="css/cms.css" />
+	<script type="text/javascript">
+	<!-- 		
+		$(document).ready(function(){
+			
+			$('#groups').dataTable({
+				"sPaginationType": "full_numbers",
+			    "iDisplayLength": 20,
+			    "bAutoWidth": false,
+			    "oLanguage": {
+							"sLengthMenu": "$ui.getString("tool.common.datatable.sLengthMenu")",
+							"sZeroRecords": "$ui.getString("tool.common.datatable.sZeroRecords")",
+							"sInfo": "$ui.getString("tool.common.datatable.sInfo")",
+							"sInfoEmtpy": "$ui.getString("tool.common.datatable.sInfoEmtpy")",
+							"sInfoFiltered": "$ui.getString("tool.common.datatable.sInfoFiltered")",
+							"sSearch": "$ui.getString("tool.common.datatable.sSearch")",
+							"oPaginate": {
+								"sFirst":    "$ui.getString("tool.common.datatable.oPaginate.sFirst")",
+								"sPrevious": "$ui.getString("tool.common.datatable.oPaginate.sPrevious")",
+								"sNext":     "$ui.getString("tool.common.datatable.oPaginate.sNext")",
+								"sLast":     "$ui.getString("tool.common.datatable.oPaginate.sLast")"
+							}
+						}
+			});
+			
+			setTimeout("resizeInlineTabDivs()", 100);
+		});
+	-->
+	</script>
 	
-	YAHOO.util.Event.addListener(window, "load", function() {
-	    YAHOO.example.Basic = new function() {
-	        var myColumnDefs = [
-	            {key:"sel", label:"", formatter:"checkbox", width:"30px"},
-	            {key:"id", label:"$ui.getString("entity.Group.groupName.label")", sortable:true, resizeable:true, formatter:"link"},
-	            {key:"displayName", label:"$ui.getString("entity.Group.displayName.label")", sortable:true, resizeable:true},
-	            {key:"description", label:"$ui.getString("entity.Group.description.label")", sortable:true, resizeable:true}
-	        ];
+	<style type="text/css">
+		.listheader
+		{
+			border-bottom: 1px solid #999999; 
+			border-top: 1px solid #ffffff; 
+			border-right: 0px solid #999999; 
+			white-space:nowrap
+		}
+	</style>
+
+#end
+
+################################
+##BEGIN REAL CODE
+################################
+
+#beginLightCommonToolV3Impl("tool.managementtool.viewGroupList.header" "" "" false true $!disableCloseButton $headerMarkup)
+
+	##lightMenuToolbar("" $buttons $rightButtons) 
+
+	<div style="clear: both;"></div>
+	
+	<h3>$ui.getString("tool.managementtool.viewGroupList.header")</h3>
+	
+	<div id="groupsArea" class="igScrollArea">
+		
+		<table cellpadding="0" cellspacing="0" border="0" class="display" id="groups">
+			<thead>
+				<tr>
+					<th>$ui.getString("entity.Group.groupName.label")</th>
+					<th>$ui.getString("entity.Group.displayName.label")</th>
+					<th>$ui.getString("entity.Group.description.label")</th>
+				</tr>
+			</thead>
+			<tbody>
 			
-			this.myDataSource = new YAHOO.util.DataSource(YAHOO.example.Data.groups);
-	        this.myDataSource.responseType = YAHOO.util.DataSource.TYPE_JSARRAY;
-	        this.myDataSource.responseSchema = {
-	            fields: ["id","name","displayName","description"]
-	        };
-			
-	        this.myDataTable = new YAHOO.widget.DataTable("groups", myColumnDefs, this.myDataSource);
-	        this.myDataTable.subscribe("rowClickEvent",this.myDataTable.onEventSelectRow);
-	        this.myDataTable.subscribe("checkboxClickEvent", this.myDataTable.onEventSelectRow);
-			
-			this.myDataTable.subscribe("linkClickEvent", function(oArgs){
-				YAHOO.util.Event.stopEvent(oArgs.event);
-	            var oRecord = this.getRecord(oArgs.target);
-	            //alert(YAHOO.lang.dump(oRecord.getData()));
-	            document.location.href = "ViewGroup!v3.action?groupName=" + oRecord.getData().id;
-	        });
-	        
-	    };
-	});
-</script>
-
-#menuToolbar("" $buttons $rightButtons) 
-
-<div style="clear: both;"></div>
-
-<div id="groups" class="igScrollArea"></div>
-
-#footerToolbar($footerButtons)
-
-#endCommonToolV3()
+				#foreach($group in $groups)
+					<tr>
+						<td>
+							<a href="#" class="group" onclick="top.openUrlInWorkArea('ViewGroup.action?groupName=$group.name', '$group.name', 'management', '$ui.getString("tool.common.managementTabLabelPrefix")'); return false;">$group.name</a>
+							##<a href="#" class="group" onclick="top.openUrlInWorkArea('ViewGroup!V3.action?groupName=$group.name', '$group.name', 'management', '$ui.getString("tool.common.managementTabLabelPrefix")'); return false;">$group.name</a>
+						</td>
+						<td>
+							<span>$group.displayName</span>
+						</td>
+						<td>
+							<span>$group.description</span>
+						</td>
+					</tr>
+				#end
+				
+			</tbody>
+		</table>
+				
+	</div>
+		
+#endLightCommonToolV3()

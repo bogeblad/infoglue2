@@ -95,7 +95,12 @@ public class ViewRolePropertiesAction extends ViewEntityPropertiesAction
         this.setCancelAction("ViewRole.action");
         this.setToolbarKey("tool.managementtool.viewRoleProperties.header");
         this.setTitleKey("tool.managementtool.viewRoleProperties.header");
-        this.setArguments("");
+        
+        if(this.rolePropertiesVO != null)
+        	this.setArguments("entityId=" + this.rolePropertiesVO.getId());
+        else
+        	this.setArguments("");
+
         this.setEntityName(RoleProperties.class.getName());
 
 		return "success";
@@ -111,7 +116,12 @@ public class ViewRolePropertiesAction extends ViewEntityPropertiesAction
         this.setCancelAction("ViewRole!v3.action");
         this.setToolbarKey("tool.managementtool.viewRoleProperties.header");
         this.setTitleKey("tool.managementtool.viewRoleProperties.header");
-        this.setArguments("");
+
+        if(this.rolePropertiesVO != null)
+        	this.setArguments("entityId=" + this.rolePropertiesVO.getId());
+        else
+        	this.setArguments("");
+
         this.setEntityName(RoleProperties.class.getName());
 		
 		return "successV3";

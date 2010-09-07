@@ -6,6 +6,7 @@
 
 <div class="fullymarginalized">
 <form method="POST" action="CreateRole.action">
+<input type="hidden" name="igSecurityCode" value="$!securityCode"/>
 <table class="managementtooledit" cellpadding="2" cellspacing="2" border="0" width="100%" height="30">
 	<tr>
 		<td>#editField("Role.roleName" "roleName" $!roleName "51")</td>

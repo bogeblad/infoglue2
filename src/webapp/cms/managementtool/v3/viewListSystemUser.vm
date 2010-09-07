@@ -1,67 +1,95 @@
-#beginCommonToolV3("tool.managementtool.viewSystemUserList.header" "" "" true true true)
+#define($headerMarkup)
 
-#menuToolbar("" $buttons $rightButtons) 
+	<style type="text/css" title="currentStyle">
+		@import "script/jqueryplugins/dataTables/media/css/ig_table.css";
+	</style>
+	<script type="text/javascript" language="javascript" src="script/jqueryplugins/dataTables/media/js/jquery.dataTables.min.js"></script>
 
-<div style="clear: both;"></div>
+	<link rel="stylesheet" type="text/css" href="css/cms.css" />
+	<script type="text/javascript">
+	<!-- 		
+		$(document).ready(function(){
+			
+			$('#users').dataTable({
+				"sPaginationType": "full_numbers",
+			    "iDisplayLength": 20,
+			    "bAutoWidth": false,
+			    "oLanguage": {
+							"sLengthMenu": "$ui.getString("tool.common.datatable.sLengthMenu")",
+							"sZeroRecords": "$ui.getString("tool.common.datatable.sZeroRecords")",
+							"sInfo": "$ui.getString("tool.common.datatable.sInfo")",
+							"sInfoEmtpy": "$ui.getString("tool.common.datatable.sInfoEmtpy")",
+							"sInfoFiltered": "$ui.getString("tool.common.datatable.sInfoFiltered")",
+							"sSearch": "$ui.getString("tool.common.datatable.sSearch")",
+							"oPaginate": {
+								"sFirst":    "$ui.getString("tool.common.datatable.oPaginate.sFirst")",
+								"sPrevious": "$ui.getString("tool.common.datatable.oPaginate.sPrevious")",
+								"sNext":     "$ui.getString("tool.common.datatable.oPaginate.sNext")",
+								"sLast":     "$ui.getString("tool.common.datatable.oPaginate.sLast")"
+							}
+						}
+			});
+			
+			setTimeout("resizeInlineTabDivs()", 100);
+		});
+	-->
+	</script>
+	
+	<style type="text/css">
+		.listheader
+		{
+			border-bottom: 1px solid #999999; 
+			border-top: 1px solid #ffffff; 
+			border-right: 0px solid #999999; 
+			white-space:nowrap
+		}
+	</style>
 
-<div class="igScrollArea">
-<div id="systemUsers"></div>
-<div id="bottom_pagination"></div>
-</div>
+#end
 
-<script type="text/javascript">
+################################
+##BEGIN REAL CODE
+################################
+
+#beginLightCommonToolV3Impl("tool.managementtool.viewSystemUserList.header" "" "" false true $!disableCloseButton $headerMarkup)
+
+	##lightMenuToolbar("" $buttons $rightButtons) 
+
+	<div style="clear: both;"></div>
+	
+	<h3>$ui.getString("tool.managementtool.viewSystemUserList.header")</h3>
+	
+	<div id="usersArea" class="igScrollArea">
 		
-	YAHOO.example.Data = {
-	    systemUsers: 
-	    [
-	    	#foreach ($infogluePrincipal in $infogluePrincipals)
-	    		{sel:0,id:"$infogluePrincipal.name", firstName:"$infogluePrincipal.firstName", lastName:"$infogluePrincipal.lastName", rolesAndGroups:"#inlinesimpleroles($infogluePrincipal.getRoles())"}#if($velocityCount < $infogluePrincipals.size()),#end
-		 	#end
-	    ]
-	}
-	
-	YAHOO.util.Event.addListener(window, "load", function() {
-	
-	    YAHOO.example.Basic = new function() {
+		<table cellpadding="0" cellspacing="0" border="0" class="display" id="users">
+			<thead>
+				<tr>
+					<th>$ui.getString("entity.SystemUser.userName.label")</th>
+					<th>$ui.getString("entity.SystemUser.firstName.label")</th>
+					<th>$ui.getString("entity.SystemUser.lastName.label")</th>
+				</tr>
+			</thead>
+			<tbody>
 			
-			var myConfigs = {
-                paginator: new YAHOO.widget.Paginator({
-                    rowsPerPage: 20,
-                    containers : "bottom_pagination"
-                }),
-                initialRequest: ""
-        	};
-			
-	        var myColumnDefs = [
-	            {key:"sel", label:"", formatter:"checkbox", width:"20px"},
-	            {key:"id", label:"$ui.getString("entity.SystemUser.userName.label")", sortable:true, resizeable:true, formatter:"link", minWidth:"200px"},
-	            {key:"firstName", label:"$ui.getString("entity.SystemUser.firstName.label")", sortable:true, resizeable:true, width:"120px"},
-	            {key:"lastName", label:"$ui.getString("entity.SystemUser.lastName.label")", sortable:true, resizeable:true, width:"120px"},
-	            {key:"rolesAndGroups", label:"$ui.getString("entity.SystemUser.rolesAndGroups.label")", sortable:true, resizeable:true, width:"50%"}
-	        ];
-			
-			this.myDataSource = new YAHOO.util.DataSource(YAHOO.example.Data.systemUsers);
-	        this.myDataSource.responseType = YAHOO.util.DataSource.TYPE_JSARRAY;
-	        this.myDataSource.responseSchema = {
-	            fields: ["id","firstName","lastName","rolesAndGroups"]
-	        };
-			
-	        this.myDataTable = new YAHOO.widget.DataTable("systemUsers", myColumnDefs, this.myDataSource, myConfigs);
-	        this.myDataTable.subscribe("rowClickEvent",this.myDataTable.onEventSelectRow);
-	        this.myDataTable.subscribe("checkboxClickEvent", this.myDataTable.onEventSelectRow);
-			
-			this.myDataTable.subscribe("linkClickEvent", function(oArgs){
-				YAHOO.util.Event.stopEvent(oArgs.event);
-	            var oRecord = this.getRecord(oArgs.target);
-	            //alert(YAHOO.lang.dump(oRecord.getData()));
-	            document.location.href = "ViewSystemUser!v3.action?userName=" + oRecord.getData().id;
-	        });
-
-	    };
-	});
-
-</script>
-
-#footerToolbar($footerButtons)
-
-#endManagementTool()
+		    	#foreach ($infogluePrincipal in $infogluePrincipals)
+	    		##rolesAndGroups:"#inlinesimpleroles($infogluePrincipal.getRoles())"}#if($velocityCount < $infogluePrincipals.size()),#end
+					<tr>
+						<td>
+							##<a href="#" class="user" onclick="top.openUrlInWorkArea('ViewSystemUser!V3.action?userName=$infogluePrincipal.name', '$infogluePrincipal.name', 'management', '$ui.getString("tool.common.managementTabLabelPrefix")'); return false;">$infogluePrincipal.name</a>
+							<a href="#" class="user" onclick="top.openUrlInWorkArea('ViewSystemUser.action?userName=$infogluePrincipal.name', '$infogluePrincipal.name', 'management', '$ui.getString("tool.common.managementTabLabelPrefix")'); return false;">$infogluePrincipal.name</a>
+						</td>
+						<td>
+							<span>$infogluePrincipal.firstName</span>
+						</td>
+						<td>
+							<span>$infogluePrincipal.lastName</span>
+						</td>
+					</tr>
+				#end
+				
+			</tbody>
+		</table>
+				
+	</div>
+		
+#endLightCommonToolV3()

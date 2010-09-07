@@ -68,7 +68,7 @@ public class ViewRepositoryPropertiesAction extends InfoGluePropertiesAbstractAc
     {
         this.repositoryVO = RepositoryController.getController().getRepositoryVOWithId(repositoryId);
         this.contentTypeDefinitionVOList = ContentTypeDefinitionController.getController().getContentTypeDefinitionVOList(ContentTypeDefinitionVO.CONTENT);
-        this.repositoryVOList = RepositoryController.getController().getRepositoryVOList();
+        this.repositoryVOList = RepositoryController.getController().getRepositoryVOListNotMarkedForDeletion();
             
         Map args = new HashMap();
 	    args.put("globalKey", "infoglue");

@@ -73,6 +73,7 @@
 
 <div class="fullymarginalized">
 <form method="POST" name="editForm" action="UpdateRole.action">
+<input type="hidden" name="igSecurityCode" value="$!securityCode"/>
 <input type="hidden" name="roleName" value="$!roleName">
 <table>
 	<tr>

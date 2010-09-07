@@ -43,6 +43,7 @@ public class ConfirmAction extends InfoGlueAbstractAction
 	private String message;
 	private String extraParameters;
 	private String choice;
+	private String igSecurityCode;
 
 	public ConfirmAction()
 	{
@@ -118,12 +119,22 @@ public class ConfirmAction extends InfoGlueAbstractAction
 	{
 		this.dest = dest;	
 	}
-	
+
+	public String getIgSecurityCode()
+	{
+		return igSecurityCode;
+	}
+
+	public void setIgSecurityCode(String igSecurityCode)
+	{
+		this.igSecurityCode = igSecurityCode;
+	}
+
 	private void Reroute()
 	{
 		if(this.choice.equalsIgnoreCase("yes"))
 		{
-			this.dest = this.yesDestination;
+			this.dest = this.yesDestination + (this.yesDestination.indexOf("?") > -1 ? "&" : "?") + "igSecurityCode" + this.igSecurityCode;
 		}
 		else
 		{
@@ -136,6 +147,7 @@ public class ConfirmAction extends InfoGlueAbstractAction
 		if(this.choice.length() > 0)
 		{
 			Reroute();
+			System.out.println("this.dest:" + this.dest);
 			return "reroute";
 		}						
 		

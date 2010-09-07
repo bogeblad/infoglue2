@@ -511,6 +511,7 @@
 
 <form name="editForm" method="POST" action="UpdateContentTypeDefinition.action">
 <table class="managementtooledit" cellpadding="2" cellspacing="2" border="0" width="100%">
+<input type="hidden" name="igSecurityCode" value="$!securityCode"/>
 <input type="hidden" name="contentTypeDefinitionId" value="$contentTypeDefinitionId">
 <input type="hidden" name="currentContentTypeEditorViewLanguageCode" value="$!currentContentTypeEditorViewLanguageCode">
 <input type="hidden" name="schemaValue" value="$formatter.escapeHTML($!schemaValue)">

@@ -595,14 +595,22 @@
 		  	if(length == null)
 		  	{
 		  		if (listForm.sel.checked)
-			    	str += '&' + entityName + 'Id=' + escape(listForm.sel.value);
+		  		{
+					if(str != "")
+		  				str += '&';
+					str += entityName + 'Id=' + escape(listForm.sel.value);
+		  		}
 		  	}
 		  	else
 		  	{	
 			  	for (i=0; i<length; i++)
 			  	{
 			   		if (listForm.sel[i].checked)
-			    		str += '&' + entityName + 'Id=' + escape(listForm.sel[i].value);
+			   		{
+						if(str != "")
+			  				str += '&';
+						str += entityName + 'Id=' + escape(listForm.sel[i].value);
+			   		}
 			 	}
 			}
 					 	
@@ -2125,7 +2133,8 @@ $ui.getString("entity.${fieldNameKey}.label")<br/>
                 		$("#genericDialog p").html("$formatter.escapeForAdvancedJavascripts($button.confirmationText)");
                 		$("#genericDialog").dialog({
                 			resizable: false,
-                			height:140,
+							//width: 400,
+                			//height:160,
                 			modal: true,
                 			overlay: {
                 				backgroundColor: '#000',
@@ -2136,9 +2145,13 @@ $ui.getString("entity.${fieldNameKey}.label")<br/>
                 					$(this).dialog('close');
                 					#if($button.target == "inlineDiv")
                 						openInlineDiv("$button.actionURL", 700, 900, true, true, "$button.confirmationTitle"); 
-			    		           	#else
-			    		           		window.frames["$button.target"].$button.actionURL;
-			    		           	#end
+									#else
+										#if($button.getIsJavascript())
+	                						window.frames["$button.target"].$button.actionURL;
+										#else
+		                					$("#$button.target").attr("src", "$button.actionURL");
+                						#end
+				    		        #end
                 				},
                 				Cancel: function() {
                 					$(this).dialog('close');
@@ -2209,7 +2222,8 @@ $ui.getString("entity.${fieldNameKey}.label")<br/>
 	                		$("#genericDialog p").html("$formatter.escapeForAdvancedJavascripts($button.confirmationText)");
 	                		$("#genericDialog").dialog({
 	                			resizable: false,
-	                			height:140,
+								//width: 400,
+	                			//height:140,
 	                			modal: true,
 	                			overlay: {
 	                				backgroundColor: '#000',
@@ -2221,7 +2235,11 @@ $ui.getString("entity.${fieldNameKey}.label")<br/>
 	                					#if($button.target == "inlineDiv")
 	                						openInlineDiv("$button.actionURL", 700, 900, true, true, "$button.confirmationTitle"); 
 				    		           	#else
-				    		           		window.frames["$button.target"].$button.actionURL;
+											#if($button.getIsJavascript())
+		                						window.frames["$button.target"].$button.actionURL;
+											#else
+			                					$("#$button.target").attr("src", "$button.actionURL");
+	                						#end
 				    		           	#end
 	                				},
 	                				Cancel: function() {
@@ -2271,7 +2289,11 @@ $ui.getString("entity.${fieldNameKey}.label")<br/>
 		                					#if($subButton.target == "inlineDiv")
 		                						openInlineDiv("$subButton.actionURL", 700, 900, true, true, "$subButton.confirmationTitle"); 
 					    		           	#else
-					    		           		window.frames["$subButton.target"].$subButton.actionURL;
+												#if($button.getIsJavascript())
+			                						window.frames["$subButton.target"].$subButton.actionURL;
+												#else
+				                					$("#$subButton.target").attr("src", "$subButton.actionURL");
+		                						#end
 					    		           	#end
 		                				},
 		                				Cancel: function() {

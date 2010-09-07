@@ -497,7 +497,7 @@ public class RepositoryController extends BaseController
 	{    	
 		List accessableRepositories = new ArrayList();
     	
-		List allRepositories = this.getRepositoryVOList();
+		List allRepositories = this.getRepositoryVOListNotMarkedForDeletion();
 		Iterator i = allRepositories.iterator();
 		while(i.hasNext())
 		{
@@ -518,6 +518,55 @@ public class RepositoryController extends BaseController
 	 * Returns a repository list marked for deletion.
 	 */
 	
+	public List<RepositoryVO> getRepositoryVOListNotMarkedForDeletion() throws SystemException, Bug
+	{
+		String key = "repositoryVOListActive";
+		logger.info("key:" + key);
+		List cachedRepositoryVOList = (List)CacheController.getCachedObject("repositoryCache", key);
+		if(cachedRepositoryVOList != null)
+		{
+			logger.info("There was an cached repositoryList:" + cachedRepositoryVOList.size());
+			return cachedRepositoryVOList;
+		}
+
+		Database db = CastorDatabaseService.getDatabase();
+		
+		List<RepositoryVO> repositoryVOListNotMarkedForDeletion = new ArrayList<RepositoryVO>();
+		
+		try 
+		{
+			beginTransaction(db);
+		
+			OQLQuery oql = db.getOQLQuery("SELECT r FROM org.infoglue.cms.entities.management.impl.simple.RepositoryImpl r WHERE r.isDeleted = $1 ORDER BY r.repositoryId");
+			oql.bind(false);
+			
+			QueryResults results = oql.execute(Database.READONLY);
+			while (results.hasMore()) 
+            {
+                Repository repository = (Repository)results.next();
+                repositoryVOListNotMarkedForDeletion.add(repository.getValueObject());
+            }
+            
+			results.close();
+			oql.close();
+
+			commitTransaction(db);
+		}
+		catch ( Exception e)		
+		{
+			throw new SystemException("An error occurred when we tried to fetch a list of deleted repositories. Reason:" + e.getMessage(), e);			
+		}
+
+		CacheController.cacheObject("repositoryCache", key, repositoryVOListNotMarkedForDeletion);
+			
+		return repositoryVOListNotMarkedForDeletion;
+	}
+
+	
+	/**
+	 * Returns a repository list marked for deletion.
+	 */
+	
 	public List<RepositoryVO> getRepositoryVOListMarkedForDeletion() throws SystemException, Bug
 	{
 		Database db = CastorDatabaseService.getDatabase();
@@ -532,7 +581,7 @@ public class RepositoryController extends BaseController
 			oql.bind(true);
 			
 			QueryResults results = oql.execute(Database.READONLY);
-			if (results.hasMore()) 
+			while (results.hasMore()) 
             {
                 Repository repository = (Repository)results.next();
                 repositoryVOListMarkedForDeletion.add(repository.getValueObject());

@@ -87,6 +87,7 @@
 #end
 <div class="fullymarginalized">
 <form method="POST" name="editForm" action="UpdateSystemUser.action">
+<input type="hidden" name="igSecurityCode" value="$!securityCode"/>
 <table>
 	<tr>
 		<td>#editReadOnlyField("SystemUser.firstName" "firstName" $!firstName "51" $readonly)</td>

@@ -6,6 +6,7 @@
 
 <div class="fullymarginalized">
 <form method="POST" name="editForm" action="UpdateAvailableServiceBinding.action">
+<input type="hidden" name="igSecurityCode" value="$!securityCode"/>
 <table>
 	<tr>
 		<td>#editField("AvailableServiceBinding.name" "name" $!name "51")</td>

@@ -6,6 +6,7 @@
 
 <div class="fullymarginalized">
 <form method="POST" name="editForm" action="UpdateInterceptionPoint.action">
+<input type="hidden" name="igSecurityCode" value="$!securityCode"/>
 <table>
 	<tr>
 		<td colspan="2">#editField("InterceptionPoint.category" "category" $!interceptionPointVO.category "50")</td>

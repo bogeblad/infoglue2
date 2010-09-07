@@ -78,6 +78,7 @@
 
 <div class="fullymarginalized">
 <form method="POST" name="editForm" action="CreateSystemUser.action">
+<input type="hidden" name="igSecurityCode" value="$!securityCode"/>
 <table border="0">
 	<tr>
 		<td>#editField("SystemUser.firstName" "firstName" $!firstName "51")</td>

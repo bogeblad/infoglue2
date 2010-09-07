@@ -94,7 +94,7 @@ public class ExportRepositoryAction extends InfoGlueAbstractAction
 
 	public String doInput() throws Exception
 	{
-		repositories = RepositoryController.getController().getRepositoryVOList();
+		repositories = RepositoryController.getController().getRepositoryVOListNotMarkedForDeletion();
 		
 		return "input";
 	}
