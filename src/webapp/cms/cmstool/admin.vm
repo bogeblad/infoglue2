@@ -171,7 +171,7 @@
 			<div style="clear: both;"></div>
 			<div id="activeTool">
 				#if($this.hasAccessTo("StructureTool.Read"))
-				<div id="structureMarkup" style="display: none;">
+				<div id="structureMarkup" style="display: none; float: left;">
 					<div class="onlyExpanded" id="structureRepositoryChoiceDiv" style="float: left;">
                     	<a id="structureRepositoriesDivHandle" href="#" onclick="$('#structureRepositoriesDiv').toggle(); return false;" style="display: block; float: left; width: 90%; overflow: hidden; margin-top: 6px; margin-bottom: 6px; font-weight: bold; text-indent: 8px; text-decoration: none;">$repositoryName</a>
                     	<img src="images/v3/refresh.png" onclick="$('#structureTreeIframe').get(0).contentWindow.reload(); return false;" style="display: block; float: left; width: 16px; overflow: hidden; margin-left: 4px; margin-top: 6px; margin-bottom: 6px; font-weight: bold;" alt="reload"/>
@@ -197,7 +197,7 @@
 				</div>
 				#end
 				#if($this.hasAccessTo("ContentTool.Read"))
-				<div id="contentMarkup" style="display: none;">
+				<div id="contentMarkup" style="display: none; float: left;">
 					<div class="onlyExpanded" id="contentRepositoryChoiceDiv" style="float: left;">
                     	<a id="contentRepositoriesDivHandle" href="#" onclick="$('#contentRepositoriesDiv').toggle(); return false;" style="display: block; float: left; width: 90%; overflow: hidden; margin-top: 6px; margin-bottom: 6px; font-weight: bold; text-indent: 8px; text-decoration: none;">$repositoryName</a>
                     	<img src="images/v3/refresh.png" onclick="$('#contentTreeIframe').get(0).contentWindow.reload(); return false;" style="display: block; float: left; width: 16px; overflow: hidden; margin-left: 4px; margin-top: 6px; margin-bottom: 6px; font-weight: bold;" alt="reload"/>
@@ -230,6 +230,13 @@
 					<iframe id="mydesktopTreeIframe" name="mydesktopTreeIframe" src="ViewMyDesktopToolMenu.action" width="100%" height="500" frameborder="0"></iframe>
 				</div>
 				#end
+				#*
+				#if($this.hasAccessTo("FormEditor.Read"))
+				<div id="formeditorMarkup" style="display: none;">
+					<iframe id="formeditorTreeIframe" name="formeditorTreeIframe" src="/infoglueDeliverWorking/formeditor/menu" width="100%" height="500" frameborder="0"></iframe>
+				</div>
+				#end
+				*#
             </div>
 			<div style="clear: both;"></div>
 			
@@ -252,7 +259,7 @@
     				<li id="mydesktopMarkupLink"><a href="#" class="mydesktop" onclick="return activateTool('mydesktopMarkup', '$ui.getString('tool.common.myDesktopTool.name')', '$ui.getString("tool.common.adminTool.header")', true, '$ui.getString("tool.common.mydesktopTabLabelPrefix")');">$ui.getString('tool.common.myDesktopTool.name')</a></li>
 					#end
 					#if($this.hasAccessTo("FormEditor.Read", true))
-    				<li id="formeditorMarkupLink"><a href="#" class="formeditor" onclick="return activateTool('formeditorMarkup', '$ui.getString('tool.common.formEditorTool.name')', '$ui.getString("tool.common.adminTool.header")', true, '$ui.getString("tool.common.formsTabLabelPrefix")');">$ui.getString('tool.common.formEditorTool.name')</a></li>
+    				<li id="formeditorMarkupLink"><a href="#" class="formeditor" onclick="window.open('/infoglueDeliverWorking/formeditor','Form editor','');/*return activateTool('formeditorMarkup', '$ui.getString('tool.common.formEditorTool.name')', '$ui.getString("tool.common.adminTool.header")', true, '$ui.getString("tool.common.formsTabLabelPrefix")');*/">$ui.getString('tool.common.formEditorTool.name')</a></li>
 					#end
 				</ul>
 			</div>
