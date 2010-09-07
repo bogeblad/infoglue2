@@ -85,7 +85,7 @@ public class ViewQuickDeploymentSynchronizeContentsAction extends InfoGlueAbstra
 	    	String targetEndpointAddress = deploymentServerUrl + "/services/RemoteDeploymentService";
 	    	logger.info("targetEndpointAddress:" + targetEndpointAddress);
 
-	    	localRepositories = RepositoryController.getController().getRepositoryVOList();
+	    	localRepositories = RepositoryController.getController().getRepositoryVOListNotMarkedForDeletion();
 	    	
 	    	Object[] repositoryVOArray = (Object[])invokeOperation(targetEndpointAddress, "getAllRepositories", "repository", null, new Class[]{RepositoryVO.class}, "infoglue", new Class[]{RepositoryVO.class}, deploymentServerBean.getUser());
 	    	remoteRepositories = Arrays.asList(repositoryVOArray);
