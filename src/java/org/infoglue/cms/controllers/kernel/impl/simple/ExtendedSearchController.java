@@ -165,7 +165,7 @@ public class ExtendedSearchController extends BaseController
 			final SqlBuilder sqlBuilder = new SqlBuilder(criterias);
 		    if(logger.isDebugEnabled())
 		    	logger.debug("sql:" + sqlBuilder.getSQL());
-		    System.out.println("sql:" + sqlBuilder.getSQL());
+		    //System.out.println("sql:" + sqlBuilder.getSQL());
 		    
 			final OQLQuery oql = db.getOQLQuery(sqlBuilder.getSQL());
 			for(Iterator i=sqlBuilder.getBindings().iterator(); i.hasNext(); )
@@ -179,7 +179,7 @@ public class ExtendedSearchController extends BaseController
 			
 			QueryResults results = oql.execute(Database.ReadOnly);
 			Set matchingResults = createResults(results);
-			System.out.println("\n\nmatchingResults:" + matchingResults.size() + "\n\n");
+			//System.out.println("\n\nmatchingResults:" + matchingResults.size() + "\n\n");
 			
 			results.close();
 			oql.close();
