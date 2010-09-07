@@ -223,7 +223,30 @@ public class FileHelper
 		return sb.toString();
 	}
 
-
+	public static String getFileAsStringOpt(File file) throws Exception 
+	{
+		InputStream in = null;
+		byte[] b = new byte[(int)file.length()];
+		try 
+		{
+		    in = new FileInputStream(file);
+		    in.read(b);
+		} 
+		finally 
+		{
+		    if (in != null) 
+		    {
+		        try 
+		        {
+		            in.close();
+		        } 
+		        catch (IOException e) {
+		        }
+		    }
+		}
+		return new String(b);
+	}
+			
 	/**
 	 * This method reads a file from the disk into a string.
 	 * @author Mattias Bogeblad
@@ -264,7 +287,7 @@ public class FileHelper
 	public static void writeToFile(File file, byte[] data) throws Exception
 	{
 		FileOutputStream fos = new FileOutputStream(file);
-		BufferedOutputStream bos = new BufferedOutputStream(fos);
+		BufferedOutputStream bos = new BufferedOutputStream(fos, data.length);
 		for(int i=0; i < data.length; i++)
 		{ 
 			bos.write(data[i]);
