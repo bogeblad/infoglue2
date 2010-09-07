@@ -23,15 +23,13 @@
 
 package org.infoglue.deliver.util;
 
-import java.io.File;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.log4j.Logger;
 import org.infoglue.cms.entities.content.ContentVersionVO;
-import org.infoglue.cms.io.FileHelper;
-import org.infoglue.deliver.controllers.kernel.impl.simple.InfoGlueHashSet;
 
 import com.opensymphony.oscache.base.NeedsRefreshException;
 import com.opensymphony.oscache.base.events.CacheEntryEvent;
@@ -40,6 +38,8 @@ import com.opensymphony.oscache.extra.CacheEntryEventListenerImpl;
 
 public class ExtendedCacheEntryEventListenerImpl extends CacheEntryEventListenerImpl 
 {
+    public final static Logger logger = Logger.getLogger(ExtendedCacheEntryEventListenerImpl.class.getName());
+
     private int totalSize = 0; 
 
     private int getOldSize(CacheEntryEvent event)
@@ -103,43 +103,54 @@ public class ExtendedCacheEntryEventListenerImpl extends CacheEntryEventListener
     public void cacheEntryAdded(CacheEntryEvent event) 
     {
         super.cacheEntryAdded(event);
-        Object content = event.getEntry().getContent();
-        if(content != null && content instanceof byte[])
+        
+        try
         {
-        	totalSize = totalSize + (((byte[])content).length * 2);        
+	        totalSize = totalSize + (event.getEntry().getKey().length() * 2) + 38; 
+	        
+	        Object content = event.getEntry().getContent();
+	        if(content != null && content instanceof byte[])
+	        {
+	        	totalSize = totalSize + (((byte[])content).length * 2);        
+	        }
+	        else if(content != null)
+	        {
+	        	if(content instanceof ContentVersionVO)
+	        	{
+	        		totalSize = totalSize + (((ContentVersionVO)content).getVersionValue().length() * 2) + 38 + 400; //An average of other things stored in object        	
+	        	}
+	        	else if(content instanceof Map || content instanceof Set || content instanceof List)
+	        	{
+	        		int size = 0;
+	        		Iterator mapIterator = null;
+	        		if(content instanceof Map)
+	        			mapIterator = ((Map)content).keySet().iterator();
+	        		else if(content instanceof List)
+	        			mapIterator = ((List)content).iterator();
+	        		else
+	        			mapIterator = ((Set)content).iterator();
+	        		
+	        		while(mapIterator.hasNext())
+	        		{
+	        			Object o = mapIterator.next();
+	        			if(o != null && o.toString() != null)
+	        				size += (o.toString().length() * 2) + 38;
+	        		}
+	        		totalSize = totalSize + size;        	
+	        	}
+	        	else if(content instanceof NullObject)
+	        	{
+	        		totalSize = totalSize + 10;
+	        	}
+	        	else
+	        	{
+	        		totalSize = totalSize + (content.toString().length() * 2) + 38;
+	        	}
+	        }
         }
-        else if(content != null)
+        catch(Exception e)
         {
-        	if(content instanceof ContentVersionVO)
-        	{
-        		totalSize = totalSize + (((ContentVersionVO)content).getVersionValue().length() * 2) + 38 + 400; //An average of other things stored in object        	
-        	}
-        	else if(content instanceof Map || content instanceof Set || content instanceof List)
-        	{
-        		int size = 0;
-        		Iterator mapIterator = null;
-        		if(content instanceof Map)
-        			mapIterator = ((Map)content).keySet().iterator();
-        		else if(content instanceof List)
-        			mapIterator = ((List)content).iterator();
-        		else
-        			mapIterator = ((Set)content).iterator();
-        		
-        		while(mapIterator.hasNext())
-        		{
-        			Object o = mapIterator.next();
-                	size += (o.toString().length()  * 2) + 38;
-         		}
-        		totalSize = totalSize + size;        	
-        	}
-        	else if(content instanceof NullObject)
-        	{
-        		totalSize = totalSize + 10;
-        	}
-        	else
-        	{
-        		totalSize = totalSize + (content.toString().length() * 2) + 38;
-        	}
+        	logger.warn("Error checking size on cache item:" + e.getMessage());
         }
     }
 

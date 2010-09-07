@@ -155,7 +155,7 @@ public class SelectiveLivePublicationThread extends PublicationThread
 	    }
 
 		logger.info("cacheEvictionBeans.size:" + cacheEvictionBeans.size() + ":" + RequestAnalyser.getRequestAnalyser().getBlockRequests());
-        if(cacheEvictionBeans.size() > 0)
+		if(cacheEvictionBeans.size() > 0)
 		{
 			try
 			{		
@@ -389,7 +389,7 @@ public class SelectiveLivePublicationThread extends PublicationThread
 							}
 						}
 						
-						if(CmsPropertyHandler.getServerNodeProperty("recacheEntities", true).equals("true"))
+						if(CmsPropertyHandler.getServerNodeProperty("recacheEntities", true, "false").equals("true"))
 							recacheEntities(cacheEvictionBean);
 					}	
 					else
@@ -429,7 +429,8 @@ public class SelectiveLivePublicationThread extends PublicationThread
 							//CacheController.clearCache("ServerNodeProperties");
 							//CacheController.clearCache("serverNodePropertiesCache");
 						    CacheController.clearCache("boundContentCache");
-							CacheController.clearCache("pageCache");
+					        CacheController.clearFileCaches("pageCache");
+					        CacheController.clearCache("pageCache");
 							CacheController.clearCache("pageCacheExtra");
 							CacheController.clearCache("componentCache");
 							CacheController.clearCache("NavigationCache");

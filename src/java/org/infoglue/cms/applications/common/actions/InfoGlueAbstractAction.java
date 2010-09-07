@@ -168,6 +168,98 @@ public abstract class InfoGlueAbstractAction extends WebworkAbstractAction
 	    return securityCode;
 	}
 
+	public final static List<String> actionNames = new ArrayList<String>();
+
+	static
+	{
+		actionNames.add("org.infoglue.cms.applications.managementtool.actions.UpdateRepositoryAction");
+		actionNames.add("org.infoglue.cms.applications.managementtool.actions.DeleteRepositoryAction");
+		actionNames.add("org.infoglue.cms.applications.managementtool.actions.CreateRepositoryAction");
+
+		actionNames.add("org.infoglue.cms.applications.managementtool.actions.CreateLanguageAction");
+		actionNames.add("org.infoglue.cms.applications.managementtool.actions.DeleteLanguageAction");
+		actionNames.add("org.infoglue.cms.applications.managementtool.actions.UpdateLanguageAction");
+	
+		actionNames.add("org.infoglue.cms.applications.managementtool.actions.CategoryAction");
+		
+		actionNames.add("org.infoglue.cms.applications.managementtool.actions.UpdateInterceptionPointAction");
+		actionNames.add("org.infoglue.cms.applications.managementtool.actions.DeleteInterceptionPointAction");
+		actionNames.add("org.infoglue.cms.applications.managementtool.actions.CreateInterceptionPointAction");
+		actionNames.add("org.infoglue.cms.applications.managementtool.actions.UpdateInterceptorAction");
+		actionNames.add("org.infoglue.cms.applications.managementtool.actions.DeleteInterceptorAction");
+		actionNames.add("org.infoglue.cms.applications.managementtool.actions.CreateInterceptorAction");
+		actionNames.add("org.infoglue.cms.applications.managementtool.actions.UpdateServiceDefinitionAction");
+		actionNames.add("org.infoglue.cms.applications.managementtool.actions.DeleteServiceDefinitionAction");
+		actionNames.add("org.infoglue.cms.applications.managementtool.actions.CreateServiceDefinitionAction");
+		actionNames.add("org.infoglue.cms.applications.managementtool.actions.UpdateSiteNodeTypeDefinitionAction");
+		actionNames.add("org.infoglue.cms.applications.managementtool.actions.DeleteSiteNodeTypeDefinitionAction");
+		actionNames.add("org.infoglue.cms.applications.managementtool.actions.CreateSiteNodeTypeDefinitionAction");
+		actionNames.add("org.infoglue.cms.applications.managementtool.actions.UpdateSystemUserAction");
+		actionNames.add("org.infoglue.cms.applications.managementtool.actions.UpdateSystemUserPasswordAction");
+		actionNames.add("org.infoglue.cms.applications.managementtool.actions.DeleteSystemUserAction");
+		actionNames.add("org.infoglue.cms.applications.managementtool.actions.CreateSystemUserAction");
+		actionNames.add("org.infoglue.cms.applications.managementtool.actions.DeleteSystemUserRoleAction");
+		actionNames.add("org.infoglue.cms.applications.managementtool.actions.AddUserRoleAction");
+		actionNames.add("org.infoglue.cms.applications.managementtool.actions.UpdateUserPropertiesAction");
+		actionNames.add("org.infoglue.cms.applications.managementtool.actions.CreateRoleAction");
+		actionNames.add("org.infoglue.cms.applications.managementtool.actions.DeleteRoleAction");
+		actionNames.add("org.infoglue.cms.applications.managementtool.actions.UpdateRoleAction");
+		actionNames.add("org.infoglue.cms.applications.managementtool.actions.AddRoleUserAction");
+		actionNames.add("org.infoglue.cms.applications.managementtool.actions.UpdateRolePropertiesAction");
+		actionNames.add("org.infoglue.cms.applications.managementtool.actions.CreateGroupAction");
+		actionNames.add("org.infoglue.cms.applications.managementtool.actions.DeleteGroupAction");
+		actionNames.add("org.infoglue.cms.applications.managementtool.actions.UpdateGroupAction");
+		actionNames.add("org.infoglue.cms.applications.managementtool.actions.UpdateGroupPropertiesAction");
+		actionNames.add("org.infoglue.cms.applications.managementtool.actions.UpdateContentTypeDefinitionAction");
+		actionNames.add("org.infoglue.cms.applications.managementtool.actions.DeleteContentTypeDefinitionAction");
+		actionNames.add("org.infoglue.cms.applications.managementtool.actions.CreateContentTypeDefinitionAction");
+		actionNames.add("org.infoglue.cms.applications.managementtool.actions.UpdateWorkflowDefinitionAction");
+		actionNames.add("org.infoglue.cms.applications.managementtool.actions.DeleteWorkflowDefinitionAction");
+		actionNames.add("org.infoglue.cms.applications.managementtool.actions.CreateWorkflowDefinitionAction");
+		actionNames.add("org.infoglue.cms.applications.managementtool.actions.UpdateRedirectAction");
+		actionNames.add("org.infoglue.cms.applications.managementtool.actions.DeleteRedirectAction");
+		actionNames.add("org.infoglue.cms.applications.managementtool.actions.CreateRedirectAction");
+		actionNames.add("org.infoglue.cms.applications.managementtool.actions.UpdateServerNodeAction");
+		actionNames.add("org.infoglue.cms.applications.managementtool.actions.DeleteServerNodeAction");
+		actionNames.add("org.infoglue.cms.applications.managementtool.actions.CreateServerNodeAction");
+		actionNames.add("org.infoglue.cms.applications.managementtool.actions.ViewServerNodePropertiesAction");
+		actionNames.add("org.infoglue.cms.applications.managementtool.actions.CreateEmailAction");
+		actionNames.add("org.infoglue.cms.applications.managementtool.actions.ViewArchiveToolAction");
+		actionNames.add("org.infoglue.cms.applications.managementtool.actions.ViewThemesAction");
+		actionNames.add("org.infoglue.cms.applications.managementtool.actions.ViewLabelsAction");
+		actionNames.add("org.infoglue.cms.applications.managementtool.actions.AuthorizationSwitchManagementAction");
+		actionNames.add("org.infoglue.cms.applications.managementtool.actions.deployment.ViewVCDeploymentAction");
+		actionNames.add("org.infoglue.cms.applications.managementtool.actions.RepositoryLanguageAction");
+		actionNames.add("org.infoglue.cms.applications.managementtool.actions.ViewRepositoryPropertiesAction");
+		actionNames.add("org.infoglue.cms.applications.managementtool.actions.ViewSystemUserAction");
+
+	}
+	
+	
+	public void protectFromCSSAttacks(String actionName, String commandName) throws Exception
+	{
+		//System.out.println("Checking if we should protect actionName:" + actionName + " : " + commandName);
+		if(commandName != null && (commandName.startsWith("input") || commandName.startsWith("new") || commandName.startsWith("list") || commandName.startsWith("edit")))
+		{
+			//System.out.println("Was input action - do not protect:" + commandName);
+			return;
+		}
+		//Special cases - please rewrite actions to conform
+		if((commandName == null || commandName.equalsIgnoreCase("V3")) && 
+				(actionName.equals("org.infoglue.cms.applications.managementtool.actions.ViewServerNodePropertiesAction") ||
+				 actionName.equals("org.infoglue.cms.applications.managementtool.actions.ViewThemesAction") ||
+				 actionName.equals("org.infoglue.cms.applications.managementtool.actions.ViewLabelsAction") ||
+				 actionName.equals("org.infoglue.cms.applications.managementtool.actions.ViewSystemUserAction")))
+		{
+			return;
+		}
+		if(actionNames.contains(actionName))
+		{
+			//System.out.println("Yes - we decided to protect:" + actionName);
+			validateSecurityCode();
+		}
+	}
+	
 	public void validateSecurityCode() throws Exception
 	{
 		String sessionSecurityCode = getSecurityCode();
@@ -176,6 +268,7 @@ public abstract class InfoGlueAbstractAction extends WebworkAbstractAction
 		{
 			throw new SystemException("Your request did not contain the correct checksum value - it was classified as a hack-attempt");
 		}
+		//System.out.println("Your security code validated");
 	}
 	
 	public List getAuthorizedRepositoryVOList() throws Exception

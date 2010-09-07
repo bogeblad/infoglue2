@@ -204,21 +204,29 @@ public class URLTag extends TemplateControllerTag
 	            else
 	                base = getRequest().getRequestURL().substring(0);
 	            
-	            String currentPageUrl = this.getController().getCurrentPageUrl().toString();
-
-		        int cidIndex = currentPageUrl.indexOf("cid");
-		        if(excludedQueryStringParameters != null && (excludedQueryStringParameters.indexOf("contentId") > -1 || excludedQueryStringParameters.indexOf("cid") > -1) && cidIndex > -1)
-		        {
-		        	int lastIndexOf = currentPageUrl.lastIndexOf("/", cidIndex);
-		        	int nextIndexOf = currentPageUrl.indexOf("/", cidIndex);
-
-		        	currentPageUrl = currentPageUrl.substring(0, lastIndexOf);
-		        	if(nextIndexOf > -1)
-		        		currentPageUrl = currentPageUrl + currentPageUrl.substring(nextIndexOf);
-		        }
-
-	            currentPageUrl = currentPageUrl.split("\\?")[0];
-	            newBaseUrl = (baseURL == null) ? base + currentPageUrl : baseURL;	        
+	            String currentPageUrl = this.getController().getCurrentPageUrl();
+	            
+	            if(currentPageUrl != null)
+	            {
+			        int cidIndex = currentPageUrl.indexOf("cid");
+			        if(excludedQueryStringParameters != null && (excludedQueryStringParameters.indexOf("contentId") > -1 || excludedQueryStringParameters.indexOf("cid") > -1) && cidIndex > -1)
+			        {
+			        	int lastIndexOf = currentPageUrl.lastIndexOf("/", cidIndex);
+			        	int nextIndexOf = currentPageUrl.indexOf("/", cidIndex);
+	
+			        	currentPageUrl = currentPageUrl.substring(0, lastIndexOf);
+			        	if(nextIndexOf > -1)
+			        		currentPageUrl = currentPageUrl + currentPageUrl.substring(nextIndexOf);
+			        }
+	
+		            currentPageUrl = currentPageUrl.split("\\?")[0];
+		            newBaseUrl = (baseURL == null) ? base + currentPageUrl : baseURL;	        
+	            }
+	            else
+	            {
+	            	logger.warn("How can this happen:" + this.getController().getOriginalFullURL());
+	            	newBaseUrl = (baseURL == null) ? base : baseURL;
+	            }
 	        }
 		    else
 		    {
@@ -241,7 +249,7 @@ public class URLTag extends TemplateControllerTag
 	    }
 	    catch(Exception e)
 	    {
-	        logger.warn("Error:", e);
+	        logger.warn("Error getting url:" + e.getMessage(), e);
 	        newBaseUrl = (baseURL == null) ? getRequest().getRequestURL().toString() : baseURL;
 	    }
 	    logger.info("newBaseUrl:" + newBaseUrl);

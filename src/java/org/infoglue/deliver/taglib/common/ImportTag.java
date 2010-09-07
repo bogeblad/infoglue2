@@ -106,59 +106,51 @@ public class ImportTag extends TemplateControllerTag
 				logger.info("useFileCacheFallback:" + useFileCacheFallback);
 				logger.info("cacheTimeout:" + cacheTimeout);
 			}
-			
-			if(!useCache)
+
+			if(fileCacheCharEncoding == null)
+				fileCacheCharEncoding = charEncoding;
+
+			if(!useCache && !useFileCacheFallback)
 			{
 				if(logger.isInfoEnabled())
-					logger.info("Calling url directly...");
+					logger.info("Calling url directly - no cache...");
 				String result = helper.getUrlContent(url, requestProperties, requestParameters, charEncoding, timeout.intValue());
 				produceResult(result);
 			}
 			else
 			{
-				if(logger.isInfoEnabled())
-					logger.info("Using cache...");
-
-				if(fileCacheCharEncoding == null)
-					fileCacheCharEncoding = charEncoding;
-
 				String completeUrl = url + "_" + helper.toEncodedString(requestParameters, charEncoding) + "_" + charEncoding + "_" + fileCacheCharEncoding;
 				
-				String localCacheKey = "result_" + completeUrl.hashCode();
+				String localCacheKey = "result_" + completeUrl;
 				if(cacheKey != null && !cacheKey.equals(""))
 					localCacheKey = cacheKey;
+
+				if(logger.isInfoEnabled())
+					logger.info("localCacheKey:" +localCacheKey);
 				
 				CachingIOResultHandler resultHandler = new CachingIOResultHandler();
 				resultHandler.setCacheKey(localCacheKey);
 				resultHandler.setCacheName(cacheName);
+				resultHandler.setUseMemoryCache(useCache);
 				resultHandler.setUseFileCacheFallback(useFileCacheFallback);
 				resultHandler.setFileCacheCharEncoding(fileCacheCharEncoding);
 
-				String cachedResult = (String)CacheController.getCachedObjectFromAdvancedCache(cacheName, localCacheKey, cacheTimeout.intValue(), false, fileCacheCharEncoding);
+				String cachedResult = null;
+				boolean callInBackground = false;
+				
+				if(logger.isInfoEnabled())
+					logger.info("Using some cache (useCache:" + useCache + ", useFileCacheFallback:" + useFileCacheFallback + ", cacheTimeout:" + cacheTimeout.intValue() + ")");
+
+				cachedResult = (String)CacheController.getCachedObjectFromAdvancedCache(cacheName, localCacheKey, cacheTimeout.intValue(), useFileCacheFallback, fileCacheCharEncoding, useCache);
 				if(logger.isInfoEnabled())
 					t.printElapsedTime("Getting timed cache result:" + cachedResult);
 				
-				boolean callInBackground = false;
-				
 				if((cachedResult == null || cachedResult.equals("")))
 				{
+					logger.info("No cached result either in memory or in filecache - getting old if exists");
+					cachedResult = (String)CacheController.getCachedObjectFromAdvancedCache(cacheName, localCacheKey, useFileCacheFallback, fileCacheCharEncoding, useCache);
+
 					callInBackground = true;
-					
-					if(logger.isInfoEnabled())
-						logger.info("Not valid...");
-					
-					if(useFileCacheFallback)
-					{
-						cachedResult = (String)CacheController.getCachedObjectFromAdvancedCache(cacheName, localCacheKey, true, fileCacheCharEncoding);						
-						if(logger.isInfoEnabled())
-							logger.info("getting cachedResult with useFileCacheFallback");
-					}
-					else
-					{
-						cachedResult = (String)CacheController.getCachedObjectFromAdvancedCache(cacheName, localCacheKey);
-						if(logger.isInfoEnabled())
-							logger.info("getting cachedResult without useFileCacheFallback");
-					}
 				}
 				
 				if(cachedResult == null || cachedResult.equals(""))

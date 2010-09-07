@@ -34,24 +34,18 @@ public abstract class TreeViewAbstractAction extends InfoGlueAbstractAction
 
     public String doExecute() throws Exception
     {
-    	try
-    	{
-	    	// Fix key
-			setExp(getExp().replaceAll(getRkey(), "") + getAkey());
-			
-			// Set nodes
-	        setNodes(this.initialize(getExp()));
-	    	getResponse().setBufferSize(0);
-	        
-	    	getResponse().setHeader("Cache-Control","no-cache"); 
-	    	getResponse().setHeader("Pragma","no-cache");
-	    	getResponse().setDateHeader ("Expires", 0);
-    	}
-    	catch (Exception e) 
-    	{
-    		e.printStackTrace();
-		}
-
+    	// Fix key
+		setExp(getExp().replaceAll(getRkey(), "") + getAkey());
+		
+		// Set nodes
+        setNodes(this.initialize(getExp()));
+    	getResponse().setBufferSize(0);
+        
+    	getResponse().setHeader("Cache-Control","no-cache"); 
+    	getResponse().setHeader("Pragma","no-cache");
+    	getResponse().setDateHeader ("Expires", 0);
+	   
+        // return
         return "success";
     }
     
