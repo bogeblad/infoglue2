@@ -247,6 +247,7 @@ public abstract class InfoGlueAbstractAction extends WebworkAbstractAction
 		//Special cases - please rewrite actions to conform
 		if((commandName == null || commandName.equalsIgnoreCase("V3")) && 
 				(actionName.equals("org.infoglue.cms.applications.managementtool.actions.ViewServerNodePropertiesAction") ||
+				 actionName.equals("org.infoglue.cms.applications.managementtool.actions.ViewRepositoryPropertiesAction") ||
 				 actionName.equals("org.infoglue.cms.applications.managementtool.actions.ViewThemesAction") ||
 				 actionName.equals("org.infoglue.cms.applications.managementtool.actions.ViewLabelsAction") ||
 				 actionName.equals("org.infoglue.cms.applications.managementtool.actions.ViewSystemUserAction")))
