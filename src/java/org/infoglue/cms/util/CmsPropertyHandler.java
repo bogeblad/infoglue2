@@ -1409,12 +1409,12 @@ public class CmsPropertyHandler
 
 	public static String getInfoGlueVersion()
 	{
-	    return getServerNodeProperty("infoGlueVersion", true, "3.0.0 A1");
+	    return getServerNodeProperty("infoGlueVersion", true, "3.0.0 A2");
 	}
 
 	public static String getInfoGlueVersionReleaseDate()
 	{
-	    return getServerNodeProperty("infoGlueVersionReleaseDate", true, "2009-10-04");
+	    return getServerNodeProperty("infoGlueVersionReleaseDate", true, "2010-09-09");
 	}
 
 	public static String getLogDatabaseMessages()
