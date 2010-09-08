@@ -7,6 +7,8 @@ import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
 
+import org.apache.commons.codec.binary.Base64;
+
 /* ===============================================================================
 *
 * Part of the InfoGlue Content Management Platform (www.infoglue.org)
@@ -81,8 +83,12 @@ public class DesEncryptionHelper
             // Encrypt
             byte[] enc = ecipher.doFinal(utf8);
 
+            //System.out.println("Nytt sätt:" + new String(new Base64().encode(enc), "ASCII"));
+            //System.out.println("Gammalt sätt:" + new sun.misc.BASE64Encoder().encode(enc));
+            
             // Encode bytes to base64 to get a string
-            return new sun.misc.BASE64Encoder().encode(enc);
+			return new String(new Base64().encode(enc), "ASCII");
+            //return new sun.misc.BASE64Encoder().encode(enc);
         } 
         catch (javax.crypto.BadPaddingException e) 
         {
@@ -104,11 +110,17 @@ public class DesEncryptionHelper
     {
         try 
         {
-            // Decode base64 to get bytes
-            byte[] dec = new sun.misc.BASE64Decoder().decodeBuffer(str);
-
+            // Decode base64 to get bytes        	
+        	byte[] dec = new Base64().decode(str.getBytes());
+           
             // Decrypt
             byte[] utf8 = dcipher.doFinal(dec);
+            
+            //byte[] decOld = new sun.misc.BASE64Decoder().decodeBuffer(str);
+            //byte[] utf8Old = dcipher.doFinal(decOld);
+
+            //System.out.println("Nytt sätt decrypt:" + new String(utf8, "UTF8"));
+            //System.out.println("Gammalt sätt decrypt:" + new String(utf8Old, "UTF8"));
 
             // Decode using utf-8
             return new String(utf8, "UTF8");

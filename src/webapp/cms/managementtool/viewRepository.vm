@@ -8,6 +8,17 @@
 <script type="text/javascript">
 <!--
 
+	function save(form)
+	{
+		form.submit();
+	}
+
+	function saveAndExit(form, action)
+	{
+		form.action = action;
+		save(form);
+	}
+
 	function composeDNSString()
 	{
 		var dnsString = "";
@@ -140,14 +151,17 @@
 	<tr>
 		<td><b>The repository is currently configured to support the following languages</b></td>
 	</tr>
-	
 	<tr>
 		<td>
-			<ul style="list-style-type: none; margin: 0px; padding: 0px;">
-			#foreach ($languageVO in $languageVOList)
-				<li style="height: 16px; background-repeat: no-repeat; background-position: 0px 0px; padding-left: 18px; background-image: url(images/v3/check.png);">$languageVO.name #if($velocityCount == 1) (Master) #end</li>
+			#if($languageVOList.size() > 0)
+				<ul style="list-style-type: none; margin: 0px; padding: 0px;">
+				#foreach ($languageVO in $languageVOList)
+					<li style="height: 16px; background-repeat: no-repeat; background-position: 0px 0px; padding-left: 18px; background-image: url(images/v3/check.png);">$languageVO.name #if($velocityCount == 1) (Master) #end</li>
+				#end
+				</ul>
+			#else
+				No languages defined yet. Use the "Languages"-button in the top menubar to add languages.
 			#end
-			</ul>
 		</td>
 	</tr>
 	<tr>
