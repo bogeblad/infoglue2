@@ -119,6 +119,7 @@
 <div onfocus="this.blur();">
 
 	<form method="POST" name="editForm" action="Trashcan!delete.action">
+		<input type="hidden" name="igSecurityCode" value="$!securityCode"/>
 		<input type="hidden" name="returnAddress" value="$returnAddress"/>
 		<input type="hidden" name="userSessionKey" value="$userSessionKey"/>
 		<input type="hidden" name="filterRepositorySelect" value="$filterRepositorySelect"/>

@@ -65,7 +65,7 @@
 		addition += '	<option value="-1">$ui.getString("tool.common.chooseFilterType.label")</option>';
 		addition += ' </select>';
 
-		addition += ' &nbsp; <a id="removeFilterRowLink' + i + '" href="javascript:removeFilterRow(' + i + ');">Remove filter</a>';
+		addition += ' &nbsp; <a id="removeFilterRowLink' + i + '" href="javascript:removeFilterRow(' + i + ');">$ui.getString("tool.common.deleteFilter.label")</a>';
 		
 		addition += ' <p id="andParagraph_' + i + '" style="padding-left: 300px; display: none; float: left; text-align: center;"><!--<label for="isAndCondition_' + i + '">isAndCondition</label>-->';
 		addition += ' <select id="isAndCondition_' + i + '" name="isAndCondition_' + i + '">';
@@ -163,7 +163,7 @@
 	#foreach($subscriptionVO in $subscriptionVOList)
 	
 		<a href="javascript:loadExistingSubscription($subscriptionVO.id);">$subscriptionVO.name</a> - 
-		<a href="Subscriptions!deleteGlobalSubscription.action?subscriptionId=$subscriptionVO.id&standalone=$standalone">Delete</a><br/>
+		<a href="Subscriptions!deleteGlobalSubscription.action?subscriptionId=$subscriptionVO.id&standalone=$standalone">$ui.getString("tool.common.delete.label")</a><br/>
 	
 	#end
 		
@@ -185,7 +185,7 @@
 		<li>
 			$this.getSubscriptionPresentationString($detailedSubscriptionVO)
 		 	- 
-		 	<a href="Subscriptions!deleteGlobalSubscription.action?subscriptionId=$detailedSubscriptionVO.id&standalone=$standalone">Delete</a>
+		 	<a href="Subscriptions!deleteGlobalSubscription.action?subscriptionId=$detailedSubscriptionVO.id&standalone=$standalone">$ui.getString("tool.common.delete.label")</a>
 		</li>
 	
 	#end
@@ -247,12 +247,12 @@
 									
 				<div id="break_0" style="clear:both"></div>
 				
-				<a href="javascript:addFilterRow();">Add filter</a>
+				<a href="javascript:addFilterRow();">$ui.getString("tool.common.addFilter.label")</a>
 				<br/>
 				<br/>
 				
 				<input type="hidden" name="standalone" value="$standalone"/>
-				<input type="submit" value="Save"/>
+				<input type="submit" value="$ui.getString("tool.common.saveButton.label")"/>
 	
 			</fieldset>
 		</form>
