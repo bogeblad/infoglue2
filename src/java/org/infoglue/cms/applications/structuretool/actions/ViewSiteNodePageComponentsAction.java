@@ -1514,7 +1514,11 @@ public class ViewSiteNodePageComponentsAction extends InfoGlueAbstractAction
 		//logger.info("assetKey:" + assetKey);
 		
 		Integer siteNodeId = new Integer(this.getRequest().getParameter("siteNodeId"));
-		Integer languageId = new Integer(this.getRequest().getParameter("languageId"));
+		Integer languageId = this.masterLanguageVO.getId();
+		if(this.getRequest().getParameter("languageId") != null && !this.getRequest().getParameter("languageId").equals(""))
+		{
+			languageId = new Integer(this.getRequest().getParameter("languageId"));
+		}
 		
 		Locale locale = LanguageController.getController().getLocaleWithId(languageId);
 		
