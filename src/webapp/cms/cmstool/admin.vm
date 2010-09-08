@@ -311,8 +311,8 @@
 			</div>
 			
 			<div id="versionBox">
-				You are logged in as: $infoGluePrincipal.displayName
-				<div id="versionInfo">Version build: $infoGlueVersion ($infoGlueVersionReleaseDate)</div>
+				$ui.getString("tool.common.loggedInAsLabel"): $infoGluePrincipal.displayName
+				<div id="versionInfo">Version: $infoGlueVersion ($infoGlueVersionReleaseDate)</div>
 			</div>
 
 			<div id="messagesDiv" style="display: none;">
