@@ -2153,7 +2153,7 @@ $ui.getString("entity.${fieldNameKey}.label")<br/>
                 						#end
 				    		        #end
                 				},
-                				Cancel: function() {
+                				'$ui.getString("tool.common.cancelButton.label")': function() {
                 					$(this).dialog('close');
                 				}
                 			}
@@ -2242,7 +2242,7 @@ $ui.getString("entity.${fieldNameKey}.label")<br/>
 	                						#end
 				    		           	#end
 	                				},
-	                				Cancel: function() {
+	                				'$ui.getString("tool.common.cancelButton.label")': function() {
 	                					$(this).dialog('close');
 	                				}
 	                			}
@@ -2296,7 +2296,7 @@ $ui.getString("entity.${fieldNameKey}.label")<br/>
 		                						#end
 					    		           	#end
 		                				},
-		                				Cancel: function() {
+		                				'$ui.getString("tool.common.cancelButton.label")': function() {
 		                					$(this).dialog('close');
 		                				}
 		                			}

@@ -1,78 +1,8 @@
-#beginLightCommonToolV3("tool.managementtool.mysettings.header" "" "" false true $!disableCloseButton)
+#define( $extraMarkup )
+#end
 
-<link rel="stylesheet" type="text/css" media="all" href="css/cms.css" title="cms" />
-<style type="text/css">
-	.ui-widget-header 
-	{
-		background-image:none;
-		background-repeat:repeat-x;
-		border-top: 1px solid transparent;
-		border-bottom: 1px solid #d0d1d0;
-		aheight: 20px;
-    }
-	.ui-tabs 
-	{
-		border: 0px;
-	}
-	.ui-tabs .ui-tabs-nav 
-	{
-		border-left: 0px;
-		border-right: 0px;
-        padding:2px 2px 0px 8px;
-        position:relative;
-        background-color: #f6f6f6;
-    }
-    .ui-tabs .ui-tabs-nav li a 
-	{
-        font-size:11px;
-		padding: 4px 10px 4px 10px;
-	    text-decoration:none;
-    }
-	.ui-corner-all {
-        -moz-border-radius-bottomleft:0px;
-        -moz-border-radius-bottomright:0px;
-        -moz-border-radius-topleft:0px;
-        -moz-border-radius-topright:0px;
-    }
-	.ui-tabs
-	{
-		padding:0px;
-	}
-	.ui-tabs .ui-tabs-panel 
-	{
-		padding: 8px;
-	}
-	.ui-state-default, .ui-widget-content .ui-state-default 
-	{ 
-		border: 1px solid #d0d1d0; 
-		background: #dfeffc url(images/v3/tabs.png) repeat-x; 
-		font-weight: bold; 
-		color: white; 
-		outline: none; 
-	}
-	.ui-state-active a, .ui-state-active a:link, .ui-state-active a:visited 
-	{
-		color: #555555;
-	}
-	.ui-state-default a, .ui-state-default a:link, .ui-state-default a:visited 
-	{
-		color: #555555;
-	}
-	.ui-tabs-nav .ui-tabs-selected a 
-	{
-		background: #dfeffc url(images/v3/tabs.png) repeat-x; 
-		background-position: 100% -28px;
-	}
-	.ui-tabs-nav .ui-tabs-selected a span 
-	{
-	    background-position: 0 -28px;
-	}
-	.ui-state-active, .ui-widget-content .ui-state-active 
-	{ 
-		border: 1px solid #d0d1d0;
-	}
-	
-</style>
+##beginLightCommonToolV3Impl("tool.managementtool.mysettings.header" "" "" false true $!disableCloseButton)
+#beginLightCommonToolV3Impl("tool.managementtool.mysettings.header" "" "" false true $!disableCloseButton $extraMarkup)
 
 <script type="text/javascript">
 	<!--
@@ -146,7 +76,7 @@
 						$(this).dialog('close');
 						reloadFull(); 
 					},
-					Cancel: function() {
+					'$ui.getString("tool.common.cancelButton.label")': function() {
 						$(this).dialog('close');
 					}
 				}
