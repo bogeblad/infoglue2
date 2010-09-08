@@ -1,8 +1,8 @@
 -------------------------------------------------------------------------------------
-- InfoGlue 2.9.7.2 Final
+- InfoGlue 2.9.9.4 Final
 -------------------------------------------------------------------------------------
 
-Release notes 2.9.7.2 Final
+Release notes 2.9.9.4 Final
 ---------------------------------------
 AAAAAAAAAAAAAAAAAAAA
 
@@ -11,6 +11,173 @@ The InfoGlue Team
 
 Abbreviated Changelog from 2.9.7.1 Final 
 ---------------------------------------
+Added an option to the matchingContents functionality to only retrieve contents below a certain content (i.e. folder) in the content tree, for instance getting only the news contents found under a certain folder while skipping all other news contents.
+Added better fallback for thumbnails so the original is allways fetched if not on disk allready.
+Added bugfix for when you ask for inherited components language varied property values.
+Added check to avoid unneccessary looping when the new user/role/group does not have any access rights.
+Added concurrency error check
+Added failhandling on session checkup in asset upload
+Added fix for evaluating variables in the startNodeId attribute.
+Added method to ajax set a component property
+Added more cleanup
+Added more frequent clean of caches
+Added new attribute to allow force refresh and changed the equals method
+Added new caches
+Added new method removeUserFromGroup and removeUserFromRole
+Added new parameters
+Added new quick deploy button on components and changed order a bit
+Added new tag assetFilePath. Also added assetKey to assets-tag
+Added optimizations and possibility to fetch other modes
+Added pageCache logic
+Added possibility to add users to roles / groups without overhead
+Added possibility to control if http/https should be used on protected pages / assets etc.
+Added possibility to customize logo-part in admin GUI header
+Added possibility to have a few custom caches which are not emptied upon publishing
+Added possibility to limit number of recipients in mailservice. So if a user tries to email to many the system denies it.
+Added possibility to set if a page should be forcing to https in site node cover
+Added possibility to state a file filter on properties of type asset bindning and made dialogs a bit nicer
+Added replyTo and bounceAddresses to common:mail-tag and changed the MailService interface
+Added small interface improvements and shortcuts
+Added so you can see and delete detailed subscriptions in the mysettings-subscriptions-GUI. Easier to get an overview and manage them there.
+Added some helper methods etc
+Added stats
+Added test-action
+Added timeouts
+Added two new tags: management:hasRole and management:hasGroup
+Added utility method
+Adjusted caches to leave a smaller footprint
+Better cache statistics
+Better concurrency checks on session management
+Better error check
+Better error messages
+Better fast-build process
+Better flow
+Better handling of , in names
+Better labels for file upload errors
+Better layout of text
+Better performance
+Better report on publishing
+Better setting of change date in remoteContentService
+Better support for , in displayName for category
+Better wildcard
+Changed formatting
+Changed some cache names to better use namespace
+Changed some details in logic
+Changed to stringBuilder and changed cache name
+Changed to XPP3
+Clearing pageCache when clearing all caches
+Correct status code
+Fixed a bug where the options in the select box had an id-attribute instead of a value attribute, which resulted in the selection getting the value from the display field, which resulted in the wrong values being added in the database.
+Fixed better category cleanup
+Fixed better fallback if language or site node not stated
+Fixed better handling
+Fixed better path-handling - not relying on the encoded path in the url all the time.
+Fixed bug
+Fixed bug in cache:ing of anonymous principal
+Fixed bug in handling of hardcoded attribute prio
+Fixed bug in how component properties was parsed. The bug made them allways be parsed from the latest version no matter state.
+Fixed bug in multiple asset component binding
+Fixed bug in search
+Fixed bug with inherited component properties when moving pages
+Fixed cache key bug
+Fixed check for if user anonymous has access to sitenode it should not switch to https
+Fixed equals-bug
+Fixed escape of comment
+Fixed failover if responsible person has left
+Fixed javascript errors
+Fixed new interception point Repositoy.Write. This means that a user can have access to edit content etc in a repository through edit on sight for example but not see the repository in any repository select box.
+Fixed nullcheck
+Fixed problem with high loaded webs
+Fixed search asset  - change in assetTypeFilter syntax
+Fixed so correct modifyer is set
+Fixed so modifyer is set right when forced down
+Fixed so principal is initialized correct
+Fixed so you can control sync and hashcode on caches
+Fixed solution for when you switch to assetBinding property from non-asset-binding property and get broken images
+Fixed typeo
+Fixed wrong cache fetch
+Formatted code
+Improved cache handling and cache cleanup
+Improved char-encoding on using filecache
+Improved document converter
+Improved importTag so duplicate entries are avoided and you can use fileCache without memory cache
+Improved monitor mails to include accurate memory figures when the thread started (not when finished)
+Improved performance
+Improved performance of latestAssets-method used in asset dialogs
+Improved performance on loading user when you have a lot of users/roles/groups inside InfoGlue.
+Improved so one now can run JSP as tasks
+Improved the asset binding dialog to use the new asset choose dialog form version 3 GUI
+Improved to support new word format
+Improved UpdateUser-tag to support password reset, change and user update
+Killing threads
+Larger default width
+Lazy loading of cmSystemUser, cmRole and cmGroup
+Logging
+Loose --> lose
+Made nice uri a bit nicer so port is not regarded
+Made some small changes to https-support
+Made templates and componentLabels attributes cache in less variants
+Made thumbnail creation better in handling non-file-cached assets
+Made validationQuery default to Select 1 from cmInfoGlueProperties to save performance when having huge numbers of users.
+Minimized caches
+Minimized error output and added cache clear of new caches
+More efficient queries
+Moved code
+Moved some errors to warnings
+New defaults
+New general error code
+New helper methods
+New info
+New labels
+New labels
+New labels
+New method in AuthorizationModule-interface to support user-updates better
+New parameter useSynchronizationOnCaches
+new properties
+New replace method
+New settings
+No large strings are cached in memory but on file instead
+Only notifications from cms
+Only register long pages
+Optimized
+Optimized caches
+Optimized code
+Optimized memory handling - more efficient key on content attributes
+Optimized user handling even more
+Optmized and less debug
+Removed all @override
+Removed cache validation and flushing
+Removed dead code
+Removed debug and optimized code
+Removed kill threads
+Removed reference to new isDeleted-field found first in 3.0
+Removed timed waits
+Removed validation which allways threw exception due to non unique username which it should not be
+Renoved debug
+Restructured a bit
+Reverted logic on request from users
+Right pagekey
+Separated meta info from ordinary
+Seperated cache info in application state view into another screen
+Setting encoding
+Small changes
+Smarter search form - senses what you want pretty good
+Splitted contentAttributeCache into one or each attributeName to somewhat avoid slow sync between threads. You must control their sizes more perhaps
+Switched to XPP3 for xml-parsing
+Timeout on mail
+Updated common:documentConvert to support expandable toc/menu
+Updated deployment parts to work better between systems with different user-sets.
+Updated multiple asset binding dialog to use the new V3 interface system.
+Using sync
+Width / height fixed
+Worked on CVS checkout deploy system
+Worked on disk-based pageCache - had to make cacheMap public
+Worked on new component quick deploy system
+
+Also generally improved logging and error checking/catching in many classes.
+
+
+
 - Fixed so you can now state if subContext should be used in include. Default now yes.
 - Fixed so includedComponentContentId is reset after include is done
 - Fixed huge bug in matchingContents-cache-key which could result in wrong results.
