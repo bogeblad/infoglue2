@@ -23,12 +23,16 @@
 
 package org.infoglue.cms.applications.managementtool.actions;
 
+import java.util.List;
+
 import org.exolab.castor.jdo.Database;
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.applications.databeans.LinkBean;
 import org.infoglue.cms.controllers.kernel.impl.simple.AccessRightController;
 import org.infoglue.cms.controllers.kernel.impl.simple.CastorDatabaseService;
+import org.infoglue.cms.controllers.kernel.impl.simple.LanguageController;
 import org.infoglue.cms.controllers.kernel.impl.simple.RepositoryController;
+import org.infoglue.cms.controllers.kernel.impl.simple.RepositoryLanguageController;
 import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeController;
 import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeControllerProxy;
 import org.infoglue.cms.entities.management.RepositoryVO;
@@ -107,6 +111,11 @@ public class CreateRepositoryAction extends InfoGlueAbstractAction
 		return returnAddress;
 	}
 
+	public List getAvailableLanguages() throws Exception
+	{
+		return LanguageController.getController().getLanguageVOList();
+	}
+	
 	public void setUserSessionKey(String userSessionKey)
 	{
 		this.userSessionKey = userSessionKey;
@@ -119,6 +128,12 @@ public class CreateRepositoryAction extends InfoGlueAbstractAction
     	
 		this.repositoryVO = RepositoryController.getController().create(repositoryVO);
 		
+    	String[] values = getRequest().getParameterValues("languageId");
+    	if(values != null && values.length > 0)
+    	{
+    		RepositoryLanguageController.getController().updateRepositoryLanguages(this.repositoryVO.getId(),values);
+    	}
+    	
 	    ViewMessageCenterAction.addSystemMessage(this.getInfoGluePrincipal().getName(), ViewMessageCenterAction.SYSTEM_MESSAGE_TYPE, "refreshRepositoryList();");
 
         return "success";
@@ -135,6 +150,12 @@ public class CreateRepositoryAction extends InfoGlueAbstractAction
     	ceb.throwIfNotEmpty();				
     	
 		this.repositoryVO = RepositoryController.getController().create(repositoryVO);
+
+		String[] values = getRequest().getParameterValues("languageId");
+    	if(values != null && values.length > 0)
+    	{
+    		RepositoryLanguageController.getController().updateRepositoryLanguages(this.repositoryVO.getId(),values);
+    	}
 
 	    ViewMessageCenterAction.addSystemMessage(this.getInfoGluePrincipal().getName(), ViewMessageCenterAction.SYSTEM_MESSAGE_TYPE, "refreshRepositoryList();");
 

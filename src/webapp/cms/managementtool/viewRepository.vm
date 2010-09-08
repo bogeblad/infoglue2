@@ -138,7 +138,7 @@
 		<td>&nbsp;</td>
 	</tr>
 	<tr>
-		<td class="biglabel">The repository is currently configured to support the following languages</td>
+		<td><b>The repository is currently configured to support the following languages</b></td>
 	</tr>
 	
 	<tr>

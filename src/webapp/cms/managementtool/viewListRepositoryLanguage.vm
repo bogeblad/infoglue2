@@ -7,6 +7,7 @@
 #lvHead(["Language name","Code","Status", "Action", "Order"] "" "" "" "")
 
 <form action="RepositoryLanguage!update.action">
+<input type="hidden" name="igSecurityCode" value="$!securityCode"/>
 <input type="hidden" name="repositoryId" value="$repository.repositoryId"
 
 #set( $lvConstraint =0 )
@@ -16,22 +17,22 @@
 	#set($status = $repositoryLanguageVO.isPublished)
 	#if($status == false)
 		#set ($state = "Unpublished")
-		#set ($act = "<a href='RepositoryLanguage.action?repositoryId=$repository.repositoryId&repositoryLanguageId=$repositoryLanguageVO.repositoryLanguageId'>Publish</a>")			
+		#set ($act = "<a href='RepositoryLanguage.action?repositoryId=$repository.repositoryId&repositoryLanguageId=$repositoryLanguageVO.repositoryLanguageId&igSecurityCode=$securityCode'>Publish</a>")			
 	#else
 		#set ($state = "Published")
-		#set ($act = "<a href='RepositoryLanguage!unpublish.action?repositoryId=$repository.repositoryId&repositoryLanguageId=$repositoryLanguageVO.repositoryLanguageId'>Unpublish</a>")
+		#set ($act = "<a href='RepositoryLanguage!unpublish.action?repositoryId=$repository.repositoryId&repositoryLanguageId=$repositoryLanguageVO.repositoryLanguageId&igSecurityCode=$securityCode'>Unpublish</a>")
 	#end
 
 	#if($velocityCount == 1)
    		#set($moveUp = "<img src='images/trans.gif' width='10' border='0'>")
    	#else
-	 	#set ($moveUp = "<a href='RepositoryLanguage!moveUp.action?repositoryId=$repository.repositoryId&repositoryLanguageId=$repositoryLanguageVO.repositoryLanguageId'><img src='images/upArrow.gif' border='0'></a>")
+	 	#set ($moveUp = "<a href='RepositoryLanguage!moveUp.action?repositoryId=$repository.repositoryId&repositoryLanguageId=$repositoryLanguageVO.repositoryLanguageId&igSecurityCode=$securityCode'><img src='images/upArrow.gif' border='0'></a>")
 	#end
 	
 	#if($velocityCount == $availableLanguages.size())
    		#set($moveDown = "<img src='images/trans.gif' width='10' border='0'>")
    	#else
-		#set ($moveDown = "<a href='RepositoryLanguage!moveDown.action?repositoryId=$repository.repositoryId&repositoryLanguageId=$repositoryLanguageVO.repositoryLanguageId'><img src='images/downArrow.gif' border='0'></a>")
+		#set ($moveDown = "<a href='RepositoryLanguage!moveDown.action?repositoryId=$repository.repositoryId&repositoryLanguageId=$repositoryLanguageVO.repositoryLanguageId&igSecurityCode=$securityCode'><img src='images/downArrow.gif' border='0'></a>")
 	#end
 	
 	#set ($cb = "<input type='checkbox' name='languageId' value='$languageVO.getLanguageId()' checked ></input>")

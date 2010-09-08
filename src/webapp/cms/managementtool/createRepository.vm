@@ -14,7 +14,7 @@
 			<p>#editField("Repository.description" "description" $!description "51")</p>
 			<p>#editField("Repository.dnsName" "dnsName" $!dnsName "51")</p>
 		</td>
-	</tr>	
+	</tr>
 	<tr>
 		<td>&nbsp;</th>
 	</tr>
