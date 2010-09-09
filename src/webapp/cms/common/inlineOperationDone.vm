@@ -97,7 +97,7 @@
 #if($automaticClose)
 	$scripts
 	<script type="text/javascript">
-		alert("actionUrl: $actionUrl");
+		//alert("actionUrl: $actionUrl");
 		refreshParent('$actionUrl', '$target', '$targetTitle');
 	</script>	
 #elseif($isAutomaticRedirect)		
