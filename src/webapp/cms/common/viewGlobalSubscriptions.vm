@@ -44,7 +44,7 @@
 	
 	function loadExistingSubscription(id)
 	{
-		//alert("Init " + id);
+		//alert("Init Subscriptions!getSubscriptionForm.action?subscriptionId=" + id);
 		$("#dialogDivBody").load("Subscriptions!getSubscriptionForm.action?subscriptionId=" + id);
 		$("#newSubscriptionForm").css("display", "block"); 
 	}

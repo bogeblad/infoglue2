@@ -1,4 +1,4 @@
-<!-- $Id: actions.xml,v 1.98 2010/09/07 07:55:54 mattias Exp $ -->
+<!-- $Id: actions.xml,v 1.99 2010/09/09 12:13:31 mattias Exp $ -->
 <actions>
 
 	<!-- MySettings -->
@@ -585,7 +585,7 @@
 	<action name="org.infoglue.cms.applications.managementtool.actions.ViewSystemUserAction" alias="ViewSystemUser">
 		<view name="input">CreateSystemUserForm.action</view>
 		<view name="success">/cms/managementtool/viewSystemUser.vm</view>
-		<view name="successV3">/cms/managementtool/v3/viewSystemUser.vm</view>
+		<view name="successV3">/cms/managementtool/viewSystemUser.vm</view>
 		<view name="error">/cms/managementtool/error.vm</view>
 	</action>
 	<action name="org.infoglue.cms.applications.managementtool.actions.UpdateSystemUserAction" alias="UpdateSystemUser">
@@ -661,7 +661,7 @@
 	</action>
 	<action name="org.infoglue.cms.applications.managementtool.actions.ViewRoleAction" alias="ViewRole">
 		<view name="success">/cms/managementtool/viewRole.vm</view>
-		<view name="successV3">/cms/managementtool/v3/viewRole.vm</view>
+		<view name="successV3">/cms/managementtool/viewRole.vm</view>
 		<view name="error">/cms/managementtool/error.vm</view>
 	</action>
 	<action name="org.infoglue.cms.applications.managementtool.actions.CreateRoleAction" alias="CreateRole">
@@ -724,7 +724,7 @@
 	</action>
 	<action name="org.infoglue.cms.applications.managementtool.actions.ViewGroupAction" alias="ViewGroup">
 		<view name="success">/cms/managementtool/viewGroup.vm</view>
-		<view name="successV3">/cms/managementtool/v3/viewGroup.vm</view>
+		<view name="successV3">/cms/managementtool/viewGroup.vm</view>
 		<view name="error">/cms/managementtool/error.vm</view>
 	</action>
 	<action name="org.infoglue.cms.applications.managementtool.actions.CreateGroupAction" alias="CreateGroup">

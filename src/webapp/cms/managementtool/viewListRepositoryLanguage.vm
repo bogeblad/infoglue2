@@ -4,7 +4,12 @@
 
 #beginManagementTool("tool.managementtool.repositoryLanguages.header" "tool.managementtool.repositoryLanguages.header" "")
 
-#lvHead(["Language name","Code","Status", "Action", "Order"] "" "" "" "")
+#set($languageNameLabel = $ui.getString("entity.Language.name.label"))
+#set($languageCodeLabel = $ui.getString("entity.Language.languageCode.label"))
+#set($actionLabel = $ui.getString("tool.mydesktoptool.actionNameLabel"))
+#set($moveLabel = $ui.getString("tool.structuretool.toolbarV3.movePageLabel"))
+
+#lvHead(["$languageNameLabel","$languageCodeLabel","Status", "$actionLabel", "$moveLabel"] "" "" "" "")
 
 <form action="RepositoryLanguage!update.action">
 <input type="hidden" name="igSecurityCode" value="$!securityCode"/>

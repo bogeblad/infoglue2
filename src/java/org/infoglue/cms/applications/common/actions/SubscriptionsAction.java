@@ -433,7 +433,7 @@ public class SubscriptionsAction extends InfoGlueAbstractAction
 		sb.append("</form>");
 		sb.append("<script type='text/javascript'>i=" + i + ";</script>");
     	
-		this.getResponse().setContentType("text/plain");
+		this.getResponse().setContentType("text/plain; charset=UTF-8");
         this.getResponse().getWriter().println(sb.toString());
         
         return NONE;

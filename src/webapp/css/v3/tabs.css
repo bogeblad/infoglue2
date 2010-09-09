@@ -166,6 +166,7 @@
 {
 	padding: 8px;
 }
+
 .ui-state-default, .ui-widget-content .ui-state-default 
 { 
 	border: 1px solid #d0d1d0; 
@@ -174,6 +175,7 @@
 	color: white; 
 	outline: none; 
 }
+
 .ui-state-active a, .ui-state-active a:link, .ui-state-active a:visited 
 {
 	color: #555555;
