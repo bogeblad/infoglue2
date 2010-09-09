@@ -18,6 +18,7 @@
 	<div style="clear: both;"></div>
 	
 	<form name="editForm" method="post" action="ViewQuickDeploymentSynchronizeContents!input.action">
+		<input type="hidden" name="igSecurityCode" value="$!securityCode"/>
 		<input type="hidden" name="contentId" value="$contentId"/>	
 
 		<div id="igEditArea" class="igScrollArea">

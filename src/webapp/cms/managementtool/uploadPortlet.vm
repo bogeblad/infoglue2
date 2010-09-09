@@ -121,6 +121,7 @@
 </div>
 
 <form enctype="multipart/form-data" name="editForm" method="POST" action="UploadPortlet.action">
+<input type="hidden" name="igSecurityCode" value="$!securityCode"/>
 <input type="hidden" name="entity" value="$!entity">
 <input type="hidden" name="entityId" value="$!entityId">
 <input type="hidden" name="contentVersionId" value="$!contentVersionId">

@@ -81,6 +81,7 @@
 <div id="igEditArea" class="igScrollArea">
 
 <form id="inputForm" name="inputForm" method="POST" action="UpdateRole!v3.action">
+<input type="hidden" name="igSecurityCode" value="$!securityCode"/>
 <input type="hidden" name="roleName" value="$!roleName">
 
 	<fieldset class="ig-fieldset">

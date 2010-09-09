@@ -107,6 +107,7 @@
 </div>
 
 <form name="editForm" method="POST" action="ExportRepository.action">
+<input type="hidden" name="igSecurityCode" value="$!securityCode"/>
 <input type="hidden" name="repositoryId" value="$!repositoryId">
 <table width="300">
 	<tr>

@@ -111,6 +111,7 @@
 		<div id="generalSettingsTab" class="recipientTab inlineTabDiv">
 
 			<form name="editForm" method="POST" action="UpdateMySettings.action">
+				<input type="hidden" name="igSecurityCode" value="$!securityCode"/>
 				<fieldset style="width: 90%; border: 0px solid red; margin: 0px; padding-left: 10px;">
 	
 				<p style="clear: both;">

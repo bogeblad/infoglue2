@@ -49,6 +49,7 @@
 <div class="fullymarginalized">
 
 <form enctype="multipart/form-data" name="editForm" method="POST" action="ImportRepository.action">
+<input type="hidden" name="igSecurityCode" value="$!securityCode"/>
 <table width="300" border="0">
 	<tr>
 		<td class="biglabel">

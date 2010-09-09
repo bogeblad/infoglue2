@@ -16,6 +16,7 @@
 	#lightMenuToolbar("" $buttons $rightButtons)
 
 	<form name="editForm" method="POST" action="CreateEmail!executeV3.action">
+		<input type="hidden" name="igSecurityCode" value="$!securityCode"/>
 		<input type="hidden" name="recipients" value="$usersAddresses"/>
 		<input type="hidden" name="extraText" value="$!extraText"/>
 		<input type="hidden" name="extraTextProperty" value="$!extraTextProperty"/>

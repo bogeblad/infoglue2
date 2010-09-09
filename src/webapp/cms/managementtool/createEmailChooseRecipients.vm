@@ -23,6 +23,7 @@ function toggleBlock(id)
 <p>$ui.getString("tool.managementtool.createEmailChooseRecipients.intro")</p>
 
 <form method="POST" name="editForm" action="CreateEmail!inputCreateEmail.action">
+<input type="hidden" name="igSecurityCode" value="$!securityCode"/>
 
 <div id="roles"> 
 <h3>$ui.getString("tool.managementtool.roles.title")</h3>

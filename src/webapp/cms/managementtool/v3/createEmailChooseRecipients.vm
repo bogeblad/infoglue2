@@ -184,6 +184,7 @@
 
 
 	<form method="POST" name="editForm" action="CreateEmail!inputCreateEmailV3.action" autocomplete="off" onsubmit="selectAll('userName')">
+		<input type="hidden" name="igSecurityCode" value="$!securityCode"/>
 		<input type="hidden" name="returnAddress" value="$!returnAddress"/>
 		<input type="hidden" name="originalUrl" value="$!originalUrl"/>
 		<input type="hidden" name="extraText" value="$!extraText"/>

@@ -49,6 +49,7 @@
 <div class="fullymarginalized">
 
 <form name="editForm" method="POST" action="ImportRepository!copy.action">
+<input type="hidden" name="igSecurityCode" value="$!securityCode"/>
 <input type="hidden" name="repositoryId" value="$repositoryId"/>
 <table width="300" border="0">
 	<tr>

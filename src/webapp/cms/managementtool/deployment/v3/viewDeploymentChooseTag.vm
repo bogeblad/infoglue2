@@ -29,6 +29,7 @@
 	<div style="clear: both;"></div>
 	
 	<form name="editForm" method="post" action="ViewVCDeployment!inputVerifyCheckout.action">
+		<input type="hidden" name="igSecurityCode" value="$!securityCode"/>
 		<input type="hidden" name="vcServerName" value="$vcServerName"/>
 		<input type="hidden" name="vcPassword" value="$vcPassword"/>
 				

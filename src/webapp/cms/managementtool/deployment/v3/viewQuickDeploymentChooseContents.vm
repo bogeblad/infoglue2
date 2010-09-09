@@ -167,6 +167,7 @@
 	<div style="clear: both;"></div>
 
 	<form name="editForm" action="ViewQuickDeploymentSynchronizeContents.action" method="post">
+		<input type="hidden" name="igSecurityCode" value="$!securityCode"/>
 		<input type="hidden" name="deploymentServerName" value="$!deploymentServerName"/>
 		<input type="hidden" name="synchronizationMethod" value="$!synchronizationMethod"/>		
 

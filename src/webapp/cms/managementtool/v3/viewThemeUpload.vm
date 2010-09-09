@@ -24,6 +24,7 @@
 	<div style="clear: both;"></div>
 	
 	<form enctype="multipart/form-data" name="editForm" method="POST" action="ViewThemes!add.action">
+		<input type="hidden" name="igSecurityCode" value="$!securityCode"/>
 
 		<div id="igEditArea" class="igScrollArea" onfocus="this.blur();">
 			<h3>$ui.getString("tool.managementtool.uploadTheme.header")</h3>

@@ -85,6 +85,7 @@
 
 <div id="newValidatorFormLayer" style="border: 1px solid black; background-color: white; LEFT:250px; position:absolute; TOP:250px; visibility:hidden; z-index:1">
 	<form name="newValidatorForm" action="ViewContentTypeDefinition!insertAttributeValidator.action" method="POST">
+	<input type="hidden" name="igSecurityCode" value="$!securityCode"/>
 	<table border="0" cellpadding="4" cellspacing="0">
 	<tr>
 		<td colspan="2" class="propertiesheader">Create new validator</td>
@@ -131,6 +132,7 @@
 	#foreach($validator in $attribute.validators)
 		<div id="${attribute.name}_${validator.name}_layer" style="border: 1px solid black; background-color: white; LEFT:250px; position:absolute; TOP:250px; visibility:hidden; z-index:1">
 			<form name="${attribute.name}_${validator.name}ArgumentsForm" action="ViewContentTypeDefinition!updateAttributeValidatorArguments.action" method="POST">
+			<input type="hidden" name="igSecurityCode" value="$!securityCode"/>
 			<table border="0" cellpadding="4" cellspacing="0">
 			<tr>
 				<td colspan="2" class="propertiesheader">Validator arguments</td>
@@ -183,6 +185,7 @@
 
 			<div id="${attribute.name}${parameter.key}${value.id}PropertyLayer" style="border: 1px solid black; background-color: white; LEFT:250px; position:absolute; TOP:250px; visibility:hidden; z-index:1">
 				<form name="${attribute.name}${parameter.key}${value.id}PropertiesForm" action="ViewContentTypeDefinition!updateAttributeParameterValue.action" method="POST">
+				<input type="hidden" name="igSecurityCode" value="$!securityCode"/>
 				<table border="0" cellpadding="4" cellspacing="0">
 				<tr>
 					<td colspan="2" class="propertiesheader">Edit values</td>
@@ -241,6 +244,7 @@
 
 <div id="${attribute.name}PropertyLayer" class="propertiesDiv" style="border: 1px solid black; background-color: white; position:absolute; left:20px; top:20px; display:${display}; visibility:${visibility}; z-index:0">
 <form name="${attribute.name}PropertiesForm" action="ViewContentTypeDefinition!updateAttribute.action" method="POST">
+<input type="hidden" name="igSecurityCode" value="$!securityCode"/>
 <input type="hidden" name="contentTypeDefinitionId" value="$contentTypeDefinitionId">
 <input type="hidden" name="currentContentTypeEditorViewLanguageCode" value="$!currentContentTypeEditorViewLanguageCode">
 <input type="hidden" name="attributeName" value="$attribute.name">
@@ -412,6 +416,7 @@
 #set($categoryKey = $category.value)
 <div id="${categoryKey}PropertyLayer" style="border: 1px solid black; background-color: white; LEFT:250px; position:absolute; TOP:250px; visibility:hidden; z-index:1">
 	<form name="${categoryKey}PropertiesForm" action="ViewContentTypeDefinition!updateCategoryKey.action" method="POST">
+	<input type="hidden" name="igSecurityCode" value="$!securityCode"/>
 	<table border="0" cellpadding="4" cellspacing="0">
 	<tr>
 		<td colspan="2" class="propertiesheader">Edit Category Attributes</td>
@@ -464,6 +469,7 @@
 	</div>
 	<div id="${assetKeyDefinition.assetKey}PropertiesBody" class="smallPropDivBody">
 		<form name="${assetKeyDefinition.assetKey}PropertiesForm" action="ViewContentTypeDefinition!updateAssetKey.action" method="POST">
+		<input type="hidden" name="igSecurityCode" value="$!securityCode"/>
 		<p>
 			<b>Asset Key:</b> <input type="textfield" name="newAssetKey" value="$assetKeyDefinition.assetKey" class="normaltextfield">
 		</p>

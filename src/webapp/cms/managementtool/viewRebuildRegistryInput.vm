@@ -50,6 +50,7 @@
 
 <form name="editForm" method="POST" action="RebuildRegistry.action">
 <input type="hidden" name="repositoryId" value="$!repositoryId">
+<input type="hidden" name="igSecurityCode" value="$!securityCode"/>
 <table width="300">
 	<tr>
 		<td class="biglabel">

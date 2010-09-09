@@ -13,6 +13,7 @@ function reloadMenu()
 
 <div class="fullymarginalized">
 <form method="POST" name="editForm" action="AuthorizationSwitchManagement!updateUser.action">
+<input type="hidden" name="igSecurityCode" value="$!securityCode"/>
 <input type="hidden" name="userName" value="$userName"/>
 <table>
 	<tr>

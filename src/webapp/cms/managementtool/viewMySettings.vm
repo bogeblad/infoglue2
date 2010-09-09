@@ -23,6 +23,7 @@
 
 <table class="managementtooledit" cellpadding="2" cellspacing="2" border="0" width="100%" height="30">
 <form name="editForm" method="POST" action="UpdateMySettings.action">
+<input type="hidden" name="igSecurityCode" value="$!securityCode"/>
 	<tr>
 		<td class="biglabel">
 			$ui.getString("tool.managementtool.mysettings.header")

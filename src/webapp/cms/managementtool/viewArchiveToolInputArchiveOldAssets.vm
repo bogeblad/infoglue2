@@ -105,6 +105,7 @@ function uncheckAll(element)
 	</p>
 	<p>
 		<form name="inputForm" action="ViewArchiveTool!inputArchiveOldAssets.action" method="POST">
+		<input type="hidden" name="igSecurityCode" value="$!securityCode"/>
  		<fieldset>
 		<legend>Asset criterias</legend>
  		<label for="assetFileSizeLimit">$ui.getString("tool.managementtool.archiveAssets.assetSizeLabel"):</label>
@@ -148,6 +149,7 @@ function uncheckAll(element)
 	<p>
  		<h3>$ui.getString("tool.managementtool.archiveAssets.foundAssetsLabel")</h3>		
 		<form name="resultForm" action="ViewArchiveTool!archiveOldAssets.action" method="POST">
+			<input type="hidden" name="igSecurityCode" value="$!securityCode"/>
 			
 			<a href="javascript:checkAll(document.resultForm.digitalAssetId);">
 				<img src="$ui.getString("images.contenttool.buttons.checkAll60x25")" width="60" height="25" border="0">

@@ -60,7 +60,7 @@
 <div id="igEditArea" class="igScrollArea">
 
 <form method="POST" name="inputForm" action="CreateSystemUser!v3.action">
-
+	<input type="hidden" name="igSecurityCode" value="$!securityCode"/>
 	<fieldset class="ig-fieldset">
 	
 		#editTextFieldCSS("SystemUser.userName" "userName" "$!userName" "51" true "")

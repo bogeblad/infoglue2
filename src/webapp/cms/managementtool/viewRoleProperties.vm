@@ -833,6 +833,7 @@
 </form>
 
 <form id="catForm" name="catForm" action="PropertiesCategory!add.action" method="POST">
+	<input type="hidden" name="igSecurityCode" value="$!securityCode"/>
 	<input type="hidden" id="propertiesCategoryId" name="propertiesCategoryId" value="">
 	<input type="hidden" id="model/attributeName" name="model/attributeName" value="">
 	<input type="hidden" id="model/category/categoryId" name="model/category/categoryId" value="">

@@ -20,7 +20,7 @@
 	<p>$ui.getString("tool.managementtool.deployment.introduction")</p>
 
 	<form method="POST" action="ViewDeploymentChooseServer.action">
-	
+		<input type="hidden" name="igSecurityCode" value="$!securityCode"/>
 	<p>
 		<select name="deploymentServerName" class="dropbox">
 			#foreach($deploymentServer in $deploymentServers)

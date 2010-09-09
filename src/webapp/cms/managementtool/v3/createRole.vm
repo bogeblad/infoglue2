@@ -78,7 +78,7 @@
 <div id="igEditArea" class="igScrollArea">
 
 	<form id="inputForm" name="inputForm" class="ig-form" method="post" action="CreateRole!v3.action">
-
+		<input type="hidden" name="igSecurityCode" value="$!securityCode"/>
 		<fieldset class="ig-fieldset">
 			<!--<legend class="ig-legend">$ui.getString("tool.managementtool.createRole.header")</legend>-->
 			#editTextFieldCSS("Role.roleName" "roleName" "$!roleName" "51" true "")

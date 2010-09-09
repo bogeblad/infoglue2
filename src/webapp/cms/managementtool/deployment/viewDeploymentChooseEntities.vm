@@ -167,6 +167,7 @@
 		<div class="tab" id="contentTypeDefinitions" style="display: block;">
 
 		<form name="contentTypesForm" action="ViewDeploymentSynchronizeServers!updateContentTypes.action" method="post">
+			<input type="hidden" name="igSecurityCode" value="$!securityCode"/>
 			<input type="hidden" name="deploymentServerName" value="$deploymentServerName"/>
 			<input type="hidden" name="synchronizationMethod" value="$synchronizationMethod"/>		
 		
@@ -304,6 +305,7 @@
 		<div class="tab" id="categories">
 		
 			<form name="categoriesForm" action="ViewDeploymentSynchronizeServers!updateCategories.action" method="post">
+				<input type="hidden" name="igSecurityCode" value="$!securityCode"/>
 				<input type="hidden" name="deploymentServerName" value="$deploymentServerName"/>
 				<input type="hidden" name="synchronizationMethod" value="$synchronizationMethod"/>		
 			
@@ -355,6 +357,7 @@
 	#if($synchronizeWorkflows)	
 		<div class="tab" id="workflows">
 			<form name="workflowsForm" action="ViewDeploymentSynchronizeServers!updateWorkflows.action" method="post">
+				<input type="hidden" name="igSecurityCode" value="$!securityCode"/>
 				<input type="hidden" name="deploymentServerName" value="$deploymentServerName"/>
 				<input type="hidden" name="synchronizationMethod" value="$synchronizationMethod"/>		
 			
@@ -462,6 +465,7 @@
 	#if($synchronizeComponents)
 		<div class="tab" id="components">
 			<form name="contentsForm" action="ViewDeploymentSynchronizeServers!updateComponents.action" method="post">
+				<input type="hidden" name="igSecurityCode" value="$!securityCode"/>
 				<input type="hidden" name="deploymentServerName" value="$deploymentServerName"/>
 				<input type="hidden" name="synchronizationMethod" value="$synchronizationMethod"/>		
 			

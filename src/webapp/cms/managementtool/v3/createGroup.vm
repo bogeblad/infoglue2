@@ -60,7 +60,8 @@
 <div id="igEditArea" class="igScrollArea">
 
 	<form id="inputForm" name="inputForm" class="ig-form" method="post" action="CreateGroup!v3.action">
-
+		<input type="hidden" name="igSecurityCode" value="$!securityCode"/>
+		
 		<fieldset class="ig-fieldset">
 			<!--<legend class="ig-legend">$ui.getString("tool.managementtool.createGroup.header")</legend>-->
 			#editTextFieldCSS("Group.groupName" "groupName" "$!groupName" "51" true "")

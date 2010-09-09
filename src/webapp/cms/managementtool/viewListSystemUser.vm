@@ -6,6 +6,7 @@
 
 <div id="filterDiv" style="position:relative; visibility: visible; overflow:hidden; margin: 0px 10px 0px 10px;">
 <form method="POST" name="filterForm" action="ViewListSystemUser.action">
+<input type="hidden" name="igSecurityCode" value="$!securityCode"/>
 <input type="hidden" name="mode" value="search">
 <table border="0">
 	<tr>

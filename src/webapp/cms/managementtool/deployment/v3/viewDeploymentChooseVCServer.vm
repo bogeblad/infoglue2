@@ -29,6 +29,7 @@
 	<div style="clear: both;"></div>
 	
 	<form name="editForm" method="post" action="ViewVCDeployment!inputChooseTag.action">
+		<input type="hidden" name="igSecurityCode" value="$!securityCode"/>
 		
 		<div id="igEditArea" class="igScrollArea" onfocus="this.blur();">
 		
