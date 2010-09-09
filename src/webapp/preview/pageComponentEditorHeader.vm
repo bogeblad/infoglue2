@@ -59,10 +59,15 @@
 <script type="text/javascript" src="${contextName}/applications/${WYSIWYGEditorJS}"></script>
 <script type="text/javascript" src="${contextName}/script/ckeditorplugins/autogrow/ckeditor_autogrow.js"></script>
 <script type="text/javascript">
-    var maxAutogrowHeight = $(window).height()-200;
-	CKEDITOR.config.extraPlugins = 'ckeditor_autogrow';
-	CKEDITOR.config.minHeight = 200;
-    CKEDITOR.config.maxHeight = maxAutogrowHeight;
+<!--
+	if(CKEDITOR)
+	{
+	 	var maxAutogrowHeight = $(window).height()-200;
+		CKEDITOR.config.extraPlugins = 'ckeditor_autogrow';
+		CKEDITOR.config.minHeight = 200;
+	    CKEDITOR.config.maxHeight = maxAutogrowHeight;
+	}    
+-->
 </script>
 
 <script type="text/javascript" src="${contextName}/applications/jscalendar/calendar.js"></script>
