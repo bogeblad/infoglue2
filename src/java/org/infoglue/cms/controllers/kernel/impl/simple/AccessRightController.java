@@ -1613,7 +1613,8 @@ public class AccessRightController extends BaseController
 			}
 		}
 
-		t.printElapsedTime("Getting hasAccess took");
+		if(logger.isInfoEnabled())
+			t.printElapsedTime("Getting hasAccess took");
 		
 	    if((principalHasRole && principalHasGroup) || (principalHasRole && !limitOnGroups))
 		    isPrincipalAuthorized = true;
