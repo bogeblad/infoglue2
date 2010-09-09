@@ -79,14 +79,14 @@
 			actualLivePath = "/" + livePath; 
 		}
 		
-		var explanation = "<p><b>Here is how your repository settings are currently configured with regards to addresses:</b><br/><br/>";
-		explanation += "1. When a user clicks preview in structure or content tool the user will be directed to the base url:<br/> <a href='" + workingUrl + "'><b>" + workingUrl + "</b></a><br/><br/>";
-		explanation += "2. When a user clicks preview in publishing tool the user will be directed to the base url:<br/> <a href='" + previewUrl + "'><b>" + previewUrl + "</b></a><br/><br/>";
-		explanation += "3. When a user visits the <b>working</b> site with NiceURI this repository will be selected if the user comes in with this base url:<br/> <a href='" + workingUrl + actualWorkingPath + "'><b>" + workingUrl + actualWorkingPath + "</b></a><br/><br/>";
-		explanation += "4. When a user visits the <b>live</b> site with NiceURI this repository will be selected if the user comes in with this base url:<br/> <a href='" + liveUrl + actualLivePath + "'><b>" + liveUrl + actualLivePath + "</b></a><br/><br/>";
-		explanation += "5. The following <b>working</b> base url:s will also be directed to repository if NiceURI is enabled:<br/> <b>" + extraUrls + " (Path: " + actualWorkingPath + ")</b><br/><br/>";
-		explanation += "6. The following <b>live</b> base url:s will also be directed to repository if NiceURI is enabled:<br/> <b>" + extraUrls + " (Path: " + actualLivePath + ")</b><br/><br/></p>";
-
+		var explanation = "<p><b>$ui.getString("entity.Repository.dnsNameExplainIntro.label")</b><br/><br/>";
+		explanation += "1. $ui.getString("entity.Repository.dnsNameExplain1.label"):<br/> <a href='" + workingUrl + "'><b>" + workingUrl + "</b></a><br/><br/>";
+		explanation += "2. $ui.getString("entity.Repository.dnsNameExplain2.label"):<br/> <a href='" + previewUrl + "'><b>" + previewUrl + "</b></a><br/><br/>";
+		explanation += "3. $ui.getString("entity.Repository.dnsNameExplain3.label"):<br/> <a href='" + workingUrl + actualWorkingPath + "'><b>" + workingUrl + actualWorkingPath + "</b></a><br/><br/>";
+		explanation += "4. $ui.getString("entity.Repository.dnsNameExplain4.label"):<br/> <a href='" + liveUrl + actualLivePath + "'><b>" + liveUrl + actualLivePath + "</b></a><br/><br/>";
+		explanation += "5. $ui.getString("entity.Repository.dnsNameExplain5.label"):<br/> <b>" + extraUrls + " (Path: " + actualWorkingPath + ")</b><br/><br/>";
+		explanation += "6. $ui.getString("entity.Repository.dnsNameExplain6.label"):<br/> <b>" + extraUrls + " (Path: " + actualLivePath + ")</b><br/><br/></p>";
+		
 		$("#explanationParagraph").html("" + explanation).show("slow");
 		$("#explanation").show("slow");
 	}
@@ -96,7 +96,7 @@
 		$("#dnsName").css("color","#999999");
 
 		$("#dnsName").click(function () {
-			alert("Use the form below - it assists you with the syntax");
+			alert("$ui.getString("entity.Repository.dnsNameAlert.label")");
 			$("#dnsFields").show("slow");
 	    });
 	    
@@ -111,13 +111,13 @@
 <div id="warning" style="border: 1px solid black; background-color: white; color: black; padding: 4px; display: none; position: absolute; right: 50px; top: 100px; float:left;">
 	<p id="warningParagraph">
 	</p>
-	<a href="#" onclick="$('#warning').hide('slow');">Close</a>
+	<a href="#" onclick="$('#warning').hide('slow');">$ui.getString("tool.common.closeWindowButton.label")</a>
 </div>
 
 <div id="explanation" style="border: 1px solid black; background-color: white; color: black; padding: 4px; display: none; position: absolute; left: 50px; top: 100px; float:left;">
 	<p id="explanationParagraph">
 	</p>
-	<a href="#" onclick="$('#explanation').hide('slow');">Close</a>
+	<a href="#" onclick="$('#explanation').hide('slow');">$ui.getString("tool.common.closeWindowButton.label")</a>
 </div>
 
 <div class="fullymarginalized">
@@ -129,18 +129,18 @@
 		<td>
 			<p>#editField("Repository.name" "name" $!name "51")</p>
 			<p>#editField("Repository.description" "description" $!description "51")</p>
-			<p>#editReadOnlyField("Repository.dnsName" "dnsName" $!dnsName "51" "READONLY") <a href="javascript:explainNiceURI();">Explain</a></p>
+			<p>#editReadOnlyField("Repository.dnsName" "dnsName" $!dnsName "51" "READONLY") <a href="javascript:explainNiceURI();">$ui.getString("entity.Repository.explainNiceURI.label")</a></p>
 			
 			<fieldset id="dnsFields" style="display:none; padding: 4px; width: 100%;">
 				<legend>Domain/Host/Nice URI settings</legend>
 				<p>
-					Working URL (used for site lookup when using nice uri in working deliver):<br/> <input class="longtextfield" style="width: 600px;" type="textfield" id="workingUrl" name="workingUrl" value="$!repositoryVO.workingBaseUrl"/><br/><br/>
-					Preview URL (used for site lookup when using nice uri in preview deliver):<br/> <input class="longtextfield" style="width: 600px;" type="textfield" id="previewUrl" name="previewUrl" value="$!repositoryVO.previewBaseUrl"/><br/><br/>
-					Live URL (used for site lookup when using nice uri in live deliver):<br/> <input class="longtextfield" type="textfield" style="width: 600px;" id="liveUrl" name="liveUrl" value="$!repositoryVO.liveBaseUrl"/><br/><br/>
-					Extra URL's (complementary addresses for site lookup when using nice uri in live deliver):<br/> <textarea class="normaltextarea" style="width: 600px; height: 50px;" id="extraUrls" name="extraUrls">$!repositoryVO.extraUrlsFormatted</textarea><br/><br/>
-					Working path (used for site lookup when using nice uri in working deliver - overrides live path):<br/> <input class="longtextfield" style="width: 600px;" type="textfield" id="workingPath" name="workingPath" value="$!repositoryVO.workingPath"/><br/><br/>
-					Live path (used for site lookup when using nice uri in deliver):<br/> <input class="longtextfield" type="textfield" style="width: 600px;" id="livePath" name="livePath" value="$!repositoryVO.path"/><br/><br/>
-					<a href="#" onclick="$('#dnsFields').hide('slow');">Close</a>
+					$ui.getString("entity.Repository.explainNiceURIWorkingUrl.label"):<br/> <input class="longtextfield" style="width: 600px;" type="textfield" id="workingUrl" name="workingUrl" value="$!repositoryVO.workingBaseUrl"/><br/><br/>
+					$ui.getString("entity.Repository.explainNiceURIPreviewUrl.label"):<br/> <input class="longtextfield" style="width: 600px;" type="textfield" id="previewUrl" name="previewUrl" value="$!repositoryVO.previewBaseUrl"/><br/><br/>
+					$ui.getString("entity.Repository.explainNiceURILiveUrl.label"):<br/> <input class="longtextfield" type="textfield" style="width: 600px;" id="liveUrl" name="liveUrl" value="$!repositoryVO.liveBaseUrl"/><br/><br/>
+					$ui.getString("entity.Repository.explainNiceURIExtraUrl.label"):<br/> <textarea class="normaltextarea" style="width: 600px; height: 50px;" id="extraUrls" name="extraUrls">$!repositoryVO.extraUrlsFormatted</textarea><br/><br/>
+					$ui.getString("entity.Repository.explainNiceURIWorkingPath.label"):<br/> <input class="longtextfield" style="width: 600px;" type="textfield" id="workingPath" name="workingPath" value="$!repositoryVO.workingPath"/><br/><br/>
+					$ui.getString("entity.Repository.explainNiceURILivePath.label"):<br/> <input class="longtextfield" type="textfield" style="width: 600px;" id="livePath" name="livePath" value="$!repositoryVO.path"/><br/><br/>
+					<a href="#" onclick="$('#dnsFields').hide('slow');">$ui.getString("tool.common.closeWindowButton.label")</a>
 				</p>
 			</fieldset>
 		</td>
@@ -149,7 +149,7 @@
 		<td>&nbsp;</td>
 	</tr>
 	<tr>
-		<td><b>The repository is currently configured to support the following languages</b></td>
+		<td><b>$ui.getString("entity.Repository.addedLanguages.label")</b></td>
 	</tr>
 	<tr>
 		<td>
@@ -160,7 +160,7 @@
 				#end
 				</ul>
 			#else
-				No languages defined yet. Use the "Languages"-button in the top menubar to add languages.
+				$ui.getString("entity.Repository.noLanguagesYet.label")
 			#end
 		</td>
 	</tr>

@@ -77,13 +77,17 @@
 			{
 				if(top.opener.document.title == "Image Properties")
 				{
-					txtUrl = top.opener.document.getElementById("txtLnkUrl").value;
-					if(txtUrl == null || txtUrl == "")
-						txtUrl = top.opener.document.getElementById("txtUrl").value;
+					if(top.opener.document.getElementById("txtLnkUrl"))
+					{
+						txtUrl = top.opener.document.getElementById("txtLnkUrl").value;
+						if(txtUrl == null || txtUrl == "")
+							txtUrl = top.opener.document.getElementById("txtUrl").value;
+					}
 				}
 				else
 				{
-					txtUrl = top.opener.document.getElementById("txtUrl").value;
+					if(top.opener.document.getElementById("txtLnkUrl"))
+						txtUrl = top.opener.document.getElementById("txtUrl").value;
 				}
 			}		
 			

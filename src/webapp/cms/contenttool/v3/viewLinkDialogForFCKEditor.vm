@@ -47,9 +47,12 @@
 		}
 		else if(window.top.opener)
 		{
-			txtUrl = top.opener.document.getElementById("txtLnkUrl").value;
-			if(txtUrl == "")
-				txtUrl = top.opener.document.getElementById("txtUrl").value;
+			if(top.opener.document.getElementById("txtLnkUrl"))
+			{
+				txtUrl = top.opener.document.getElementById("txtLnkUrl").value;
+				if(txtUrl == "")
+					txtUrl = top.opener.document.getElementById("txtUrl").value;
+			}
 		}
 
 		//alert("txtUrl:" + txtUrl);
