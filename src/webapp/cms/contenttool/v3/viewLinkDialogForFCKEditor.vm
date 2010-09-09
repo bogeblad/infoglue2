@@ -109,7 +109,7 @@
 	{
 		url = getDownloadUrl(contentId, assetKey);
 		var CKEditorFuncNum = getRequestParameter(window.location.href, "CKEditorFuncNum");
-		if(window.opener.CKEDITOR.tools.callFunction)
+		if(window.opener.CKEDITOR && window.opener.CKEDITOR.tools.callFunction)
 			window.opener.CKEDITOR.tools.callFunction(CKEditorFuncNum, url);
 		else
 			window.top.opener.SetUrl( url );
@@ -122,7 +122,7 @@
 	{
 		url = getInlineLinkUrl(siteNodeId, contentId);
 		var CKEditorFuncNum = getRequestParameter(window.location.href, "CKEditorFuncNum");
-		if(window.opener.CKEDITOR.tools.callFunction)
+		if(window.opener.CKEDITOR && window.opener.CKEDITOR.tools.callFunction)
 			window.opener.CKEDITOR.tools.callFunction(CKEditorFuncNum, url);
 		else
 			window.top.opener.SetUrl( url );
