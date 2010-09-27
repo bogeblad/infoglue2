@@ -307,7 +307,7 @@ img.divider
 	float: left; 
 	display: block; 
 	border: 1px solid #ccc; 
-	font-family: Tahoma; 
+	font-family: Tahoma, Verdana, Arial, sans-serif; 
 	font-size: 14px; 
 	color: #ccc;
 }
