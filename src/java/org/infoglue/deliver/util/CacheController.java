@@ -24,7 +24,10 @@
 package org.infoglue.deliver.util;
 
 //import org.exolab.castor.jdo.CacheManager;
+import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -1331,7 +1334,6 @@ public class CacheController extends Thread
 							    	{
 							    		logger.info("Missing content version: " + se.getMessage());
 							    	}
-
 							    }
 							    else if(selectiveCacheUpdate && (entity.indexOf("Content") > 0 && entity.indexOf("ContentTypeDefinition") == -1) && useSelectivePageCacheUpdate)
 							    {
@@ -2393,6 +2395,40 @@ public class CacheController extends Thread
     	catch (Exception e) 
     	{
     		logger.warn("Problem storing data to file:" + e.getMessage());
+		}
+    }
+
+    public static void removeScriptExtensionBundles()
+    {
+		int i = 0;
+		String filePath = CmsPropertyHandler.getDigitalAssetPath0();
+		while(filePath != null)
+		{
+			try
+			{
+				File extensionsDirectory = new File(filePath + File.separator + "extensions");
+				extensionsDirectory.mkdirs();
+				
+				File[] files = extensionsDirectory.listFiles();
+				for(int j=0; j<files.length; j++)
+				{
+					File file = files[j];
+					if(!file.isDirectory())
+					{
+						if(logger.isInfoEnabled())
+							logger.info("Deleting file as it is a bundle probably:" + file.getName());
+						file.delete();
+					}
+				}
+				
+				i++;
+				filePath = CmsPropertyHandler.getProperty("digitalAssetPath." + i);
+			}
+			catch (Exception e) 
+			{
+				System.out.println("Error 2:" + e.getMessage());
+				logger.warn("Error trying to write bundled scripts:" + e.getMessage());
+			}
 		}
     }
 

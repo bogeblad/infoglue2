@@ -179,6 +179,9 @@ public class WorkingPublicationThread extends Thread
 								Class typesExtraSmallest = SmallestContentVersionImpl.class;
 								Object[] idsExtraSmallest = {new Integer(objectId)};
 								CacheController.clearCache(typesExtraSmallest, idsExtraSmallest);
+
+								//Removing all scriptExtensionBundles to make sure
+								CacheController.removeScriptExtensionBundles();							    	
 							}
 							else if(Class.forName(className).getName().equals(AvailableServiceBindingImpl.class.getName()))
 							{
@@ -215,6 +218,9 @@ public class WorkingPublicationThread extends Thread
 									logger.info("We should delete all images with digitalAssetId " + objectId);
 									DigitalAssetDeliveryController.getDigitalAssetDeliveryController().deleteDigitalAssets(new Integer(objectId));
 								}
+
+								//Removing all scriptExtensionBundles to make sure
+								CacheController.removeScriptExtensionBundles();							    	
 							}
 							else if(Class.forName(className).getName().equals(SystemUserImpl.class.getName()))
 							{

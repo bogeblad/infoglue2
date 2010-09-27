@@ -120,6 +120,18 @@
     </tag>
 
 	<tag>
+        <name>htmlBodyItem</name>
+        <tagclass>org.infoglue.deliver.taglib.page.HTMLBodyItemTag</tagclass>
+        <bodycontent>empty</bodycontent>
+        <info>TemplateLogic</info>
+        <attribute>
+    	    <name>value</name>
+        	<required>true</required>
+	        <rtexprvalue>false</rtexprvalue>
+    	</attribute>
+    </tag>
+
+	<tag>
         <name>httpHeader</name>
         <tagclass>org.infoglue.deliver.taglib.page.HttpHeaderTag</tagclass>
         <bodycontent>empty</bodycontent>

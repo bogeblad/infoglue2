@@ -23,15 +23,22 @@
 
 package org.infoglue.deliver.invokers;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.zip.GZIPOutputStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
@@ -47,17 +54,23 @@ import org.infoglue.cms.entities.content.ContentVersion;
 import org.infoglue.cms.entities.content.ContentVersionVO;
 import org.infoglue.cms.entities.content.SmallestContentVersionVO;
 import org.infoglue.cms.entities.management.LanguageVO;
+import org.infoglue.cms.entities.structure.SiteNode;
 import org.infoglue.cms.exception.Bug;
 import org.infoglue.cms.exception.NoBaseTemplateFoundException;
 import org.infoglue.cms.exception.SystemException;
+import org.infoglue.cms.io.FileHelper;
 import org.infoglue.cms.util.CmsPropertyHandler;
 import org.infoglue.deliver.applications.databeans.DatabaseWrapper;
 import org.infoglue.deliver.applications.databeans.DeliveryContext;
+import org.infoglue.deliver.controllers.kernel.URLComposer;
+import org.infoglue.deliver.controllers.kernel.impl.simple.DigitalAssetDeliveryController;
 import org.infoglue.deliver.controllers.kernel.impl.simple.LanguageDeliveryController;
+import org.infoglue.deliver.controllers.kernel.impl.simple.NodeDeliveryController;
 import org.infoglue.deliver.controllers.kernel.impl.simple.TemplateController;
 import org.infoglue.deliver.portal.PortalController;
 import org.infoglue.deliver.util.CacheController;
 import org.infoglue.deliver.util.CompressionHelper;
+import org.infoglue.deliver.util.JSMin;
 import org.infoglue.deliver.util.RequestAnalyser;
 import org.infoglue.deliver.util.Timer;
 
@@ -522,8 +535,12 @@ public abstract class PageInvoker
 			pageString = this.getTemplateController().decoratePage(pageString);
 			
 			StringBuilder sb = null;
+
+			this.generateExtensionBundles(this.getTemplateController().getDeliveryContext().getScriptExtensionHeadBundles(), "text/javascript", "head");
+			this.generateExtensionBundles(this.getTemplateController().getDeliveryContext().getScriptExtensionBodyBundles(), "text/javascript", "body");
+			this.generateExtensionBundles(this.getTemplateController().getDeliveryContext().getCSSExtensionBundles(), "text/css", "head");
 			
-			List htmlHeadItems = this.getTemplateController().getDeliveryContext().getHtmlHeadItems();
+			Set htmlHeadItems = this.getTemplateController().getDeliveryContext().getHtmlHeadItems();
 			if(htmlHeadItems != null || htmlHeadItems.size() > 0)
 			{
 				int indexOfHeadEndTag = pageString.indexOf("</head");
@@ -533,16 +550,44 @@ public abstract class PageInvoker
 				if(indexOfHeadEndTag != -1)
 				{
 					sb = new StringBuilder(pageString);
+					String headerItems = "";
 					Iterator htmlHeadItemsIterator = htmlHeadItems.iterator();
 					while(htmlHeadItemsIterator.hasNext())
 					{
 						String value = (String)htmlHeadItemsIterator.next();
-						sb.insert(indexOfHeadEndTag, value + "\n");
+						//System.out.println("headItem:" + value);
+						headerItems = headerItems + value + "\n";
 					}
+					sb.insert(indexOfHeadEndTag, headerItems);
 					//pageString = sb.toString();
 				}
 			}
-			
+
+			Set htmlBodyEndItems = this.getTemplateController().getDeliveryContext().getHtmlBodyEndItems();
+			if(htmlBodyEndItems != null || htmlBodyEndItems.size() > 0)
+			{
+				if(sb == null)
+					sb = new StringBuilder(pageString);
+
+				int indexOfBodyEndTag = sb.indexOf("</body");
+				if(indexOfBodyEndTag == -1)
+					indexOfBodyEndTag = sb.indexOf("</BODY");
+	
+				if(indexOfBodyEndTag != -1)
+				{
+					String bodyItems = "";
+					Iterator htmlBodyItemsIterator = htmlBodyEndItems.iterator();
+					while(htmlBodyItemsIterator.hasNext())
+					{
+						String value = (String)htmlBodyItemsIterator.next();
+						//System.out.println("headItem:" + value);
+						bodyItems = bodyItems + value + "\n";
+					}
+					sb.insert(indexOfBodyEndTag, bodyItems);
+					//pageString = sb.toString();
+				}
+			}
+
 			try
 			{
 				int lastModifiedDateTimeIndex;
@@ -592,6 +637,169 @@ public abstract class PageInvoker
 		}
 		
 		return pageString;
+	}
+
+	private void generateExtensionBundles(Map<String,Set<String>> extensionBundles, String contentType, String targetElement) 
+	{
+		Timer t = new Timer();
+		
+		Set<String> bundledSignatures = new HashSet<String>();
+		
+		Iterator<String> scriptExtensionBundlesIterator = extensionBundles.keySet().iterator();
+		while(scriptExtensionBundlesIterator.hasNext())
+		{
+			String bundleName = scriptExtensionBundlesIterator.next();
+			if(logger.isInfoEnabled())
+				logger.info("bundleName:" + bundleName);
+			
+			Set<String> scriptExtensionFileNames = extensionBundles.get(bundleName);
+			
+			if(scriptExtensionFileNames != null && scriptExtensionFileNames.size() > 0)
+			{				
+				String scriptBundle = "";
+
+				int i = 0;
+				String filePath = CmsPropertyHandler.getDigitalAssetPath0();
+				while(filePath != null)
+				{
+					try
+					{
+						File extensionsDirectory = new File(filePath + File.separator + "extensions");
+						extensionsDirectory.mkdirs();
+						
+						File extensionsBundleFile = new File(filePath + File.separator + "extensions" + File.separator + bundleName + ".js");
+						if(contentType.equalsIgnoreCase("text/css"))
+							extensionsBundleFile = new File(filePath + File.separator + "extensions" + File.separator + bundleName + ".css");
+						
+						if(!extensionsBundleFile.exists())
+						{	
+							if(logger.isInfoEnabled())
+								logger.info("No script - generating:" + bundleName);
+							if(scriptBundle.equals(""))
+							{
+								Iterator<String> scriptExtensionFileNamesIterator = scriptExtensionFileNames.iterator(); 
+								while(scriptExtensionFileNamesIterator.hasNext())
+								{
+									String scriptExtensionFileName = scriptExtensionFileNamesIterator.next();
+									if(logger.isInfoEnabled())
+										logger.info("scriptExtensionFileName:" + scriptExtensionFileName);
+									try
+									{
+										File file = new File(filePath + File.separator + scriptExtensionFileName);
+										String signature = "" + file.getName() + "_" + file.length();
+										if(logger.isInfoEnabled())
+											logger.info("Checking file:" + filePath + File.separator + scriptExtensionFileName);
+										
+										if(file.exists() && !bundledSignatures.contains(signature))
+										{
+											StringBuffer content = new StringBuffer(FileHelper.getFileAsStringOpt(file));
+											//Wonder what is the best signature..
+											bundledSignatures.add(signature);
+											
+											//If CSS we should change url:s to point to the original folder
+											if(contentType.equalsIgnoreCase("text/css"))
+											{
+												if(logger.isInfoEnabled())
+													logger.info("contentType:" + contentType);
+												String extensionPath = file.getPath().substring(extensionsDirectory.getPath().length() + 1, file.getPath().lastIndexOf("/") + 1);
+												if(logger.isInfoEnabled())
+													logger.info("extensionPath:" + extensionPath);
+												
+												int urlStartIndex = content.indexOf("url(");
+												while(urlStartIndex > -1)
+												{
+													if(content.charAt(urlStartIndex + 4) == '"' || content.charAt(urlStartIndex + 4) == '\'')
+														content.insert(urlStartIndex + 5, extensionPath);
+													else
+														content.insert(urlStartIndex + 4, extensionPath);
+													urlStartIndex = content.indexOf("url(", urlStartIndex + extensionPath.length());
+												}
+											}	
+											//System.out.println("transformed content:" + content.substring(0, 500));
+
+											scriptBundle = scriptBundle + "\n\n" + content;
+										}
+										else
+										{
+											if(logger.isInfoEnabled())
+												logger.info("Not adding:" + signature + " as " + file.exists() + ":" + bundledSignatures.contains(signature));
+										}
+									}
+									catch (Exception e) 
+									{
+										logger.warn("Error trying to parse file and bundle it (" + scriptExtensionFileName + "):" + e.getMessage());
+									}
+								}
+							}
+							
+							if(logger.isInfoEnabled())
+								logger.info("scriptBundle:" + scriptBundle.length());
+							if(scriptBundle != null && !scriptBundle.equals(""))
+							{
+								if(contentType.equalsIgnoreCase("text/javascript"))
+								{
+									try 
+									{
+										JSMin jsmin = new JSMin(new ByteArrayInputStream(scriptBundle.getBytes()), new FileOutputStream(extensionsBundleFile));
+										jsmin.jsmin();
+									} 
+									catch (FileNotFoundException e) 
+									{
+										e.printStackTrace();
+									}
+								}
+								else
+								{
+									FileHelper.writeToFile(extensionsBundleFile, scriptBundle, false);
+								}
+								if(logger.isInfoEnabled())
+									logger.info("extensionsBundleFile:" + extensionsBundleFile.length());
+							}
+						}
+						
+						i++;
+						filePath = CmsPropertyHandler.getProperty("digitalAssetPath." + i);
+					}
+					catch (Exception e) 
+					{
+						logger.warn("Error trying to write bundled scripts:" + e.getMessage());
+					}
+				}
+				try
+				{
+					SiteNode siteNode = NodeDeliveryController.getNodeDeliveryController(deliveryContext).getSiteNode(getDatabase(), getTemplateController().getSiteNodeId());
+					String dnsName = CmsPropertyHandler.getWebServerAddress();
+					if(siteNode != null && siteNode.getRepository().getDnsName() != null && !siteNode.getRepository().getDnsName().equals(""))
+						dnsName = siteNode.getRepository().getDnsName();
+
+					String bundleUrl = "";
+					String bundleUrlTag = "";
+					
+					if(contentType.equalsIgnoreCase("text/javascript"))
+					{
+						bundleUrl = URLComposer.getURLComposer().composeDigitalAssetUrl(dnsName, "extensions", bundleName + ".js", deliveryContext); 
+						bundleUrlTag = "<script type=\"text/javascript\" src=\"" + bundleUrl + "\"></script>";
+					}
+					else if(contentType.equalsIgnoreCase("text/css"))
+					{
+						bundleUrl = URLComposer.getURLComposer().composeDigitalAssetUrl(dnsName, "extensions", bundleName + ".css", deliveryContext); 
+						bundleUrlTag = "<link href=\"" + bundleUrl + "\" rel=\"stylesheet\" type=\"text/css\" />";
+					}
+
+					if(targetElement.equalsIgnoreCase("head"))
+						this.getTemplateController().getDeliveryContext().getHtmlHeadItems().add(bundleUrlTag);
+					else
+						this.getTemplateController().getDeliveryContext().getHtmlBodyEndItems().add(bundleUrlTag);
+				}
+				catch (Exception e) 
+				{
+					logger.warn("Error trying  get assetBaseUrl:" + e.getMessage());
+				}
+			}
+
+		}
+		if(logger.isInfoEnabled())
+			t.printElapsedTime("Generating bundles took");	
 	}
 				
 	/**

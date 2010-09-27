@@ -315,6 +315,58 @@
         </attribute>
     </tag>
 
+	<tag>
+        <name>scriptExtensionUrl</name>
+        <tagclass>org.infoglue.deliver.taglib.content.ScriptExtensionUrlTag</tagclass>
+        <bodycontent>empty</bodycontent>
+        <info>getController().getScriptExtensionUrls()</info>
+        <attribute>
+    	    <name>id</name>
+        	<required>false</required>
+	        <rtexprvalue>false</rtexprvalue>
+    	</attribute>
+        <attribute>
+            <name>contentId</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>assetKey</name>
+            <required>false</required>
+            <rtexprvalue>false</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>fileNames</name>
+            <required>false</required>
+            <rtexprvalue>false</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>autoCreateMarkup</name>
+            <required>false</required>
+            <rtexprvalue>false</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>addToHTMLHeader</name>
+            <required>false</required>
+            <rtexprvalue>false</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>addToHTMLBody</name>
+            <required>false</required>
+            <rtexprvalue>false</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>addToBundledIncludes</name>
+            <required>false</required>
+            <rtexprvalue>false</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>bundleName</name>
+            <required>false</required>
+            <rtexprvalue>false</rtexprvalue>
+        </attribute>
+    </tag>
+
   	<tag>
         <name>contentExportUrl</name>
         <tagclass>org.infoglue.deliver.taglib.content.ContentExportUrlTag</tagclass>

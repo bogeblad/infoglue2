@@ -2178,6 +2178,115 @@ public class ContentDeliveryController extends BaseDeliveryController
 		return fileSize;
 	}
 
+	/**
+	 * This method deliveres a String containing the URL to the directory resulting from unpacking of a uploaded zip-digitalAsset.
+	 * This method is meant to be used for javascript plugins and similar bundles - and the target directory is therefore the infoglueDeliverXXXX/script/extensions
+	 */
+
+	public String getScriptExtensionUrls(Database db, Integer contentId, Integer languageId, String assetKey, String fileNames, Boolean autoCreateMarkup, Boolean addToHeader, Boolean addToBodyEnd, Boolean addToBundledIncludes, String bundleName, Integer siteNodeId, boolean useLanguageFallback, DeliveryContext deliveryContext, InfoGluePrincipal infoGluePrincipal) throws SystemException, Exception
+	{
+		Timer t = new Timer();
+		String scriptExtensionUrls = "";
+		
+		SmallestContentVersionVO contentVersion = getSmallestContentVersionVO(siteNodeId, contentId, languageId, db, useLanguageFallback, deliveryContext, infoGluePrincipal);
+		if (contentVersion != null) 
+        {
+			DigitalAssetVO digitalAsset = null;
+			if(assetKey == null)
+				digitalAsset = DigitalAssetController.getLatestDigitalAssetVO(contentVersion.getContentVersionId(), db);
+			else
+				digitalAsset = DigitalAssetController.getLatestDigitalAssetVO(contentVersion.getContentVersionId(), assetKey, db);
+			
+			if(digitalAsset != null)
+			{
+				String fileName = digitalAsset.getAssetFileName();
+				
+				int i = 0;
+				File masterFile = null;
+				String filePath = CmsPropertyHandler.getDigitalAssetPath0();
+				while(filePath != null)
+				{
+					File unzipDirectory = new File(filePath + File.separator + "extensions" + File.separator + fileName.substring(0, fileName.lastIndexOf(".")));
+					unzipDirectory.mkdirs();
+					
+					if(masterFile == null)
+					    masterFile = DigitalAssetDeliveryController.getDigitalAssetDeliveryController().dumpAndUnzipDigitalAsset(digitalAsset, fileName, filePath, unzipDirectory, db);
+					else
+					    DigitalAssetDeliveryController.getDigitalAssetDeliveryController().dumpAndUnzipDigitalAsset(masterFile, fileName, filePath, unzipDirectory);
+					    
+					i++;
+					filePath = CmsPropertyHandler.getProperty("digitalAssetPath." + i);
+				}
+
+				//System.out.println("filePath (Should be base url):" + filePath);
+				
+				SiteNode siteNode = NodeDeliveryController.getNodeDeliveryController(siteNodeId, languageId, contentId).getSiteNode(db, siteNodeId);
+				String dnsName = CmsPropertyHandler.getWebServerAddress();
+				if(siteNode != null && siteNode.getRepository().getDnsName() != null && !siteNode.getRepository().getDnsName().equals(""))
+					dnsName = siteNode.getRepository().getDnsName();
+					
+				String archiveBaseUrl = urlComposer.composeDigitalAssetUrl(dnsName, "extensions" + File.separator + fileName.substring(0, fileName.lastIndexOf(".")), deliveryContext); 
+			
+				if(logger.isInfoEnabled())
+					logger.info("archiveBaseUrl:" + archiveBaseUrl);
+				if(logger.isInfoEnabled())
+					logger.info("fileNames:" + fileNames);
+				if(fileNames == null || fileNames.equals(""))
+				{
+					scriptExtensionUrls = archiveBaseUrl;
+				}
+				else
+				{
+					String[] fileNamesArray = fileNames.split(",");
+					for(int j=0; j<fileNamesArray.length; j++)
+					{
+						String scriptExtensionFileUrl = archiveBaseUrl + "/" + fileNamesArray[j].trim();
+						if(autoCreateMarkup || addToHeader)
+						{
+							if(scriptExtensionFileUrl.toLowerCase().endsWith(".css"))
+								scriptExtensionFileUrl = "<link href=\"" + scriptExtensionFileUrl + "\" rel=\"stylesheet\" type=\"text/css\" />";
+							else
+								scriptExtensionFileUrl = "<script type=\"text/javascript\" src=\"" + scriptExtensionFileUrl + "\"></script>";
+						}
+
+						if(!addToHeader && !addToBundledIncludes)
+						{
+							scriptExtensionUrls = scriptExtensionUrls + scriptExtensionFileUrl + "";
+						}
+						else
+						{
+							if(addToBundledIncludes)
+							{
+								////// TODO - clean all bundles and extensions when assets are updated or similar.. figure out how.
+								String extensionSuffix = "extensions" + File.separator + fileName.substring(0, fileName.lastIndexOf(".")) + File.separator + fileNamesArray[j];
+								if(logger.isInfoEnabled())
+									logger.info("extensionSuffix:" + extensionSuffix);
+
+								if(extensionSuffix.toLowerCase().endsWith(".css"))
+									deliveryContext.addCSSExtensionBundleFile(bundleName, extensionSuffix);							
+								else
+								{
+									if(addToBodyEnd)
+										deliveryContext.addScriptExtensionBodyBundleFile(bundleName, extensionSuffix);							
+									else if(addToHeader)
+										deliveryContext.addScriptExtensionHeadBundleFile(bundleName, extensionSuffix);							
+								}
+							}
+							else if(addToHeader)
+								deliveryContext.getHtmlHeadItems().add(scriptExtensionFileUrl);
+							else if(addToBodyEnd)
+								deliveryContext.getHtmlBodyEndItems().add(scriptExtensionFileUrl);
+						}
+					}					
+				}
+			}
+        }				
+		
+		if(logger.isInfoEnabled())
+			t.printElapsedTime("Getting scriptExtensionUrls took");
+		
+		return scriptExtensionUrls;
+	}
 
 	/**
 	 * This method deliveres a String with the URL to the base path of the directory resulting from 

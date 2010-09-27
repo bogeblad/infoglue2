@@ -783,6 +783,13 @@ public interface TemplateController
      */
     public abstract String getArchiveBaseUrl(Integer contentId, String assetKey);
 
+    /**
+	 * This method deliveres a String containing the URL to the directory resulting from unpacking of a uploaded zip-digitalAsset.
+	 * This method is meant to be used for javascript plugins and similar bundles - and the target directory is therefore the infoglueDeliverXXXX/digitalAssets/extensions
+	 */
+	 
+	public abstract String getScriptExtensionUrls(Integer contentId, String assetKey, String fileNames, Boolean autoCreateMarkup, Boolean addToHeader, Boolean addToBody, Boolean addToBundledIncludes, String bundleName);
+
     public abstract Vector getArchiveEntries(Integer contentId, String assetKey);
 
     /**

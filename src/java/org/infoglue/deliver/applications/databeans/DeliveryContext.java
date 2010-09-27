@@ -131,7 +131,11 @@ public class DeliveryContext implements UsageListener
 	private String operatingMode = null;
 	
 	private Map pageAttributes = new HashMap();
-	private List htmlHeadItems = new ArrayList();
+	private Set<String> htmlHeadItems = new HashSet<String>();
+	private Set<String> htmlBodyEndItems = new HashSet<String>();
+	private Map<String, Set<String>> scriptExtensionHeadBundles = new HashMap<String, Set<String>>();
+	private Map<String, Set<String>> scriptExtensionBodyBundles = new HashMap<String, Set<String>>();
+	private Map<String, Set<String>> cssExtensionBundles = new HashMap<String, Set<String>>();
 	private Map httpHeaders = new HashMap();
 	
 	public static DeliveryContext getDeliveryContext()
@@ -159,6 +163,7 @@ public class DeliveryContext implements UsageListener
 		try
 		{
 			this.htmlHeadItems.clear();
+			this.htmlBodyEndItems.clear();
 			this.httpHeaders.clear();
 			this.httpServletRequest = null;
 			this.httpServletResponse = null;
@@ -498,14 +503,76 @@ public class DeliveryContext implements UsageListener
 		this.useDownloadAction = useDownloadAction;
 	}
 
-	public List getHtmlHeadItems()
+	public Set<String> getHtmlHeadItems()
 	{
 		return htmlHeadItems;
+	}
+
+	public Set<String> getHtmlBodyEndItems()
+	{
+		return htmlBodyEndItems;
 	}
 
 	public Map getHttpHeaders()
 	{
 		return httpHeaders;
+	}
+
+	public Map<String,Set<String>> getScriptExtensionHeadBundles()
+	{
+		return scriptExtensionHeadBundles;
+	}
+
+	public Map<String,Set<String>> getScriptExtensionBodyBundles()
+	{
+		return scriptExtensionBodyBundles;
+	}
+
+	public Map<String,Set<String>> getCSSExtensionBundles()
+	{
+		return cssExtensionBundles;
+	}
+
+	/*
+	 * Adds a file to the named bundle
+	 */
+	public void addScriptExtensionHeadBundleFile(String bundleName, String filePath)
+	{
+		Set<String> files = scriptExtensionHeadBundles.get(bundleName);
+		if(files == null)
+		{
+			files = new HashSet<String>();
+			scriptExtensionHeadBundles.put(bundleName, files);
+		}
+		files.add(filePath);
+	}
+
+	/*
+	 * Adds a file to the named bundle
+	 */
+	public void addScriptExtensionBodyBundleFile(String bundleName, String filePath)
+	{
+		Set<String> files = scriptExtensionBodyBundles.get(bundleName);
+		if(files == null)
+		{
+			files = new HashSet<String>();
+			scriptExtensionBodyBundles.put(bundleName, files);
+		}
+		files.add(filePath);
+	}
+
+	/*
+	 * Adds a file to the named bundle
+	 */
+	public void addCSSExtensionBundleFile(String bundleName, String filePath)
+	{
+		Set<String> files = cssExtensionBundles.get(bundleName);
+		if(files == null)
+		{
+			files = new HashSet<String>();
+			cssExtensionBundles.put(bundleName, files);
+		}
+		files.add(filePath);
 	}
 
 	public Object getExtraData()
