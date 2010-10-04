@@ -84,7 +84,7 @@
 			else
 			{
 				if(top.opener.document.getElementById("txtLnkUrl"))
-			{		txtUrl = top.opener.document.getElementById("txtLnkUrl").value;
+					txtUrl = top.opener.document.getElementById("txtLnkUrl").value;
 			}
 			
 			var contentId = getRequestParameter(txtUrl, "contentId");

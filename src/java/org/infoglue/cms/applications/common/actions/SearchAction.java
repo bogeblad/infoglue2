@@ -623,6 +623,9 @@ public class SearchAction extends InfoGlueAbstractAction
 
 	public void setAssetTypeFilter(String assetTypeFilter)
 	{
+		if(assetTypeFilter.equalsIgnoreCase(".*(jpeg|jpg|gif|png).*"))
+			assetTypeFilter = "image/jpeg,image/jpg,image/gif,image/png";
+		
 		this.assetTypeFilter = assetTypeFilter;
 	}
 	

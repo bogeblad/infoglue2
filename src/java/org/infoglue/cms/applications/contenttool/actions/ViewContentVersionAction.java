@@ -1948,6 +1948,9 @@ public class ViewContentVersionAction extends InfoGlueAbstractAction
 	{
 		if(assetTypeFilter != null && !assetTypeFilter.equals(""))
 			this.assetTypeFilter = assetTypeFilter;
+
+		if(this.assetTypeFilter != null && assetTypeFilter.equalsIgnoreCase(".*(jpeg|jpg|gif|png).*"))
+			this.assetTypeFilter = "image/jpeg,image/jpg,image/gif,image/png";
 	}
 
 
