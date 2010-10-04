@@ -8,25 +8,17 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
+import org.apache.log4j.Logger;
 import org.infoglue.cms.controllers.kernel.impl.simple.AccessRightController;
-import org.infoglue.cms.controllers.kernel.impl.simple.SystemUserController;
 import org.infoglue.cms.controllers.kernel.impl.simple.UserControllerProxy;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.security.AuthenticationModule;
-import org.infoglue.cms.security.AuthorizationModule;
 import org.infoglue.cms.security.InfoGluePrincipal;
 
 import com.bradmcevoy.http.Auth;
 import com.bradmcevoy.http.CollectionResource;
-import com.bradmcevoy.http.DigestResource;
 import com.bradmcevoy.http.FolderResource;
-import com.bradmcevoy.http.LockInfo;
-import com.bradmcevoy.http.LockResult;
-import com.bradmcevoy.http.LockTimeout;
-import com.bradmcevoy.http.LockToken;
-import com.bradmcevoy.http.LockableResource;
 import com.bradmcevoy.http.PropFindableResource;
 import com.bradmcevoy.http.Range;
 import com.bradmcevoy.http.Request;
@@ -35,11 +27,11 @@ import com.bradmcevoy.http.Request.Method;
 import com.bradmcevoy.http.exceptions.BadRequestException;
 import com.bradmcevoy.http.exceptions.ConflictException;
 import com.bradmcevoy.http.exceptions.NotAuthorizedException;
-import com.bradmcevoy.http.http11.auth.DigestGenerator;
-import com.bradmcevoy.http.http11.auth.DigestResponse;
 
 public class AllRepositoryResource implements PropFindableResource, FolderResource //, DigestResource
 {
+	private final static Logger logger = Logger.getLogger(AllRepositoryResource.class.getName());
+
 	private final RepositoryResourceFactory resourceFactory;
 	private InfoGluePrincipal principal = null;
 	
@@ -56,7 +48,8 @@ public class AllRepositoryResource implements PropFindableResource, FolderResour
 	@Override
 	public Object authenticate(String user, String pwd) 
 	{
-		System.out.println("authenticate user:" + user + ":" + pwd);
+		if(logger.isInfoEnabled())
+			logger.info("authenticate user:" + user);
 
 		try 
 		{
@@ -65,7 +58,9 @@ public class AllRepositoryResource implements PropFindableResource, FolderResour
 	        loginMap.put("j_username", user);
 	        loginMap.put("j_password", pwd);
 			String authenticatedUserName = AuthenticationModule.getAuthenticationModule(null, null).authenticateUser(loginMap);
-			System.out.println("authenticatedUserName:" + authenticatedUserName);
+			if(logger.isInfoEnabled())
+				logger.info("authenticatedUserName:" + authenticatedUserName);
+
 			if(authenticatedUserName != null)
 				this.principal = UserControllerProxy.getController().getUser(authenticatedUserName);
 
@@ -83,8 +78,19 @@ public class AllRepositoryResource implements PropFindableResource, FolderResour
 	@Override
 	public boolean authorise( Request request, Method method, Auth auth ) 
 	{
-		//AccessRightController.getController().getA
-		//return auth.getUser().equals( this.user );
+		if(logger.isInfoEnabled())
+			logger.info("authorise user in represource:" + this.principal + ":" + auth.getTag() + ":" + auth.getUser());
+		try 
+		{
+			boolean hasAccess = AccessRightController.getController().getIsPrincipalAuthorized(this.principal, "WebDAV.Read", true);
+			if(!hasAccess)
+				return false;
+		} 
+		catch (SystemException e) 
+		{
+			e.printStackTrace();
+		} 
+
 		return true;
 	}
 
@@ -116,15 +122,20 @@ public class AllRepositoryResource implements PropFindableResource, FolderResour
 	}
 
 	@Override
-	public Resource child(String name) {
-		System.out.println("child name:" + name);
+	public Resource child(String name) 
+	{
+		if(logger.isInfoEnabled())
+			logger.info("child name:" + name);
+
 		List<? extends Resource> children = getChildren();
-		System.out.println("children:" + children.size());
+		if(logger.isInfoEnabled())
+			logger.info("children:" + children.size());
 		Iterator<? extends Resource> childrenIterator = children.iterator();
 		while(childrenIterator.hasNext())
 		{
 			Resource resource = childrenIterator.next();
-			System.out.println("resource.getName():" + resource.getName());
+			if(logger.isInfoEnabled())
+				logger.info("resource.getName():" + resource.getName());
 			
 			if(resource.getName().equals(name))
 			{

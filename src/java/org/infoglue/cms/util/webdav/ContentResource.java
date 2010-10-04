@@ -11,6 +11,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.log4j.Logger;
 import org.infoglue.cms.controllers.kernel.impl.simple.AccessRightController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentVersionController;
@@ -39,6 +40,8 @@ import com.bradmcevoy.http.exceptions.NotAuthorizedException;
 
 public class ContentResource implements PropFindableResource, FolderResource
 {
+	private final static Logger logger = Logger.getLogger(ContentResource.class.getName());
+
 	private InfoGluePrincipal principal = null;
 	private final ContentVO content;
 	
@@ -56,7 +59,8 @@ public class ContentResource implements PropFindableResource, FolderResource
 	@Override
 	public Object authenticate(String user, String pwd) 
 	{
-		System.out.println("authenticate user in represource:" + user + ":" + pwd);
+		if(logger.isInfoEnabled())
+			logger.info("authenticate user in represource:" + user);
 
 		try 
 		{
@@ -124,7 +128,9 @@ public class ContentResource implements PropFindableResource, FolderResource
 	@Override
 	public Resource child(String name) 
 	{
-		//System.out.println("child name:" + name);
+		if(logger.isInfoEnabled())
+			logger.info("child name:" + name);
+		
 		List<? extends Resource> children = getChildren();
 		Iterator<? extends Resource> childrenIterator = children.iterator();
 		while(childrenIterator.hasNext())
@@ -141,16 +147,20 @@ public class ContentResource implements PropFindableResource, FolderResource
 	@Override
 	public List<? extends Resource> getChildren() 
 	{
-		//System.out.println("Looking for children on content:" + this.content.getId() + ":" + this.content.getName());
+		if(logger.isInfoEnabled())
+			logger.info("Looking for children on content:" + this.content.getId() + ":" + this.content.getName());
+		
 		List<Resource> contentChildren = new ArrayList<Resource>();
 		try 
 		{
 			List<LanguageVO> languageVOList = RepositoryLanguageController.getController().getAvailableLanguageVOListForRepositoryId(this.content.getRepositoryId());
-			//System.out.println("languageVOList:" + languageVOList.size());
+			if(logger.isInfoEnabled())
+				logger.info("languageVOList:" + languageVOList.size());
 			for(LanguageVO languageVO : languageVOList)
 			{
 				ContentVersionVO cv = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(this.content.getId(), languageVO.getId());
-				//System.out.println("cv:" + cv);
+				if(logger.isInfoEnabled())
+					logger.info("cv:" + cv);
 				
 				if(cv != null)
 				{
@@ -160,7 +170,8 @@ public class ContentResource implements PropFindableResource, FolderResource
 			}
 
 			List<ContentVO> children = ContentController.getContentController().getContentChildrenVOList(content.getId(), null, false);
-			//System.out.println("children:" + children.size());
+			if(logger.isInfoEnabled())
+				logger.info("children:" + children.size());
 			Iterator<ContentVO> childrenIterator = children.iterator();
 			while(childrenIterator.hasNext())
 			{
@@ -173,7 +184,9 @@ public class ContentResource implements PropFindableResource, FolderResource
 			e.printStackTrace();
 		}
 		
-		//System.out.println("contentChildren:" + contentChildren.size());
+		if(logger.isInfoEnabled())
+			logger.info("contentChildren:" + contentChildren.size());
+		
 		return contentChildren;
 	}
 

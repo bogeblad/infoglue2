@@ -9,21 +9,26 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import org.apache.log4j.Logger;
+import org.infoglue.cms.controllers.kernel.impl.simple.AccessRightController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentVersionController;
 import org.infoglue.cms.controllers.kernel.impl.simple.DigitalAssetController;
 import org.infoglue.cms.controllers.kernel.impl.simple.RepositoryLanguageController;
+import org.infoglue.cms.controllers.kernel.impl.simple.UserControllerProxy;
 import org.infoglue.cms.entities.content.ContentVO;
 import org.infoglue.cms.entities.content.ContentVersionVO;
 import org.infoglue.cms.entities.content.DigitalAssetVO;
 import org.infoglue.cms.entities.management.LanguageVO;
 import org.infoglue.cms.exception.ConstraintException;
 import org.infoglue.cms.exception.SystemException;
+import org.infoglue.cms.security.AuthenticationModule;
 import org.infoglue.cms.security.InfoGlueGroup;
 import org.infoglue.cms.security.InfoGluePrincipal;
 import org.infoglue.cms.security.InfoGlueRole;
@@ -50,6 +55,9 @@ import com.bradmcevoy.http.exceptions.PreConditionFailedException;
 
 public class ContentVersionResource implements PropFindableResource, FolderResource
 {
+	private final static Logger logger = Logger.getLogger(ContentVersionResource.class.getName());
+
+	private InfoGluePrincipal principal = null;
 	private final ContentVersionVO contentVersion;
 	
 	public ContentVersionResource(ContentVersionVO contentVersion) {
@@ -63,17 +71,47 @@ public class ContentVersionResource implements PropFindableResource, FolderResou
 	}
 
 	@Override
-	public Object authenticate(String user, String pwd) {
-		// always allow
-		return user;
-	}
+	public Object authenticate(String user, String pwd) 
+	{
+		if(logger.isInfoEnabled())
+			logger.info("authenticate user in represource:" + user);
 
+		try 
+		{
+		    Map loginMap = new HashMap();
+	        loginMap.put("j_username", user);
+	        loginMap.put("j_password", pwd);
+			String authenticatedUserName = AuthenticationModule.getAuthenticationModule(null, null).authenticateUser(loginMap);
+			if(authenticatedUserName != null)
+				this.principal = UserControllerProxy.getController().getUser(authenticatedUserName);
+
+			return authenticatedUserName;
+		} 
+		catch (Exception e) 
+		{
+			e.printStackTrace();
+		}
+		 
+		return null;
+	}
+	
 	@Override
-	public boolean authorise(Request arg0, Method arg1, Auth arg2) {
-		// Always allow
+	public boolean authorise(Request arg0, Method arg1, Auth arg2) 
+	{
+		try 
+		{
+			boolean hasAccess = AccessRightController.getController().getIsPrincipalAuthorized(this.principal, "ContentVersion.Read", contentVersion.getId().toString());
+			if(!hasAccess)
+				return false;
+		} 
+		catch (SystemException e) 
+		{
+			e.printStackTrace();
+		} 
+		
 		return true;
 	}
-
+	
 	@Override
 	public String checkRedirect(Request arg0) {
 		// No redirects
@@ -104,7 +142,9 @@ public class ContentVersionResource implements PropFindableResource, FolderResou
 	@Override
 	public Resource child(String name) 
 	{
-		//System.out.println("child name:" + name);
+		if(logger.isInfoEnabled())
+			logger.info("child name:" + name);
+		
 		List<? extends Resource> children = getChildren();
 		Iterator<? extends Resource> childrenIterator = children.iterator();
 		while(childrenIterator.hasNext())
@@ -121,13 +161,17 @@ public class ContentVersionResource implements PropFindableResource, FolderResou
 	@Override
 	public List<? extends Resource> getChildren() 
 	{
-		//System.out.println("Looking for children on contentversion:" + this.contentVersion.getId() + ":" + this.contentVersion.getLanguageName());
+		if(logger.isInfoEnabled())
+			logger.info("Looking for children on contentversion:" + this.contentVersion.getId() + ":" + this.contentVersion.getLanguageName());
 		List<DigitalAssetResource> assets = new ArrayList<DigitalAssetResource>();
 		
 		try 
 		{
 			List<DigitalAssetVO> assetVOList = DigitalAssetController.getController().getDigitalAssetVOList(this.contentVersion.getId());
-			//System.out.println("assetVOList:" + assetVOList.size());
+			
+			if(logger.isInfoEnabled())
+				logger.info("assetVOList:" + assetVOList.size());
+			
 			for(DigitalAssetVO asset : assetVOList)
 			{
 				assets.add( new DigitalAssetResource(asset, this.contentVersion) );
@@ -166,7 +210,8 @@ public class ContentVersionResource implements PropFindableResource, FolderResou
 	@Override
 	public Resource createNew(String newName, InputStream inputStream, Long length, String contentType) throws IOException, ConflictException 
 	{
-		System.out.println("Creating new asset:" + newName + ":" + length + ":" + contentType);
+		if(logger.isInfoEnabled())
+			logger.info("Creating new asset:" + newName + ":" + length + ":" + contentType);
 		
 		Resource resource = null;
 		try
@@ -174,7 +219,8 @@ public class ContentVersionResource implements PropFindableResource, FolderResou
 			DigitalAssetVO digitalAsset = null;
 			
 			List<DigitalAssetVO> assetVOList = DigitalAssetController.getController().getDigitalAssetVOList(this.contentVersion.getId());
-			//System.out.println("assetVOList:" + assetVOList.size());
+			if(logger.isInfoEnabled())
+				logger.info("assetVOList:" + assetVOList.size());
 			for(DigitalAssetVO asset : assetVOList)
 			{
 				if(asset.getAssetFileName().equalsIgnoreCase(newName))
@@ -208,7 +254,8 @@ public class ContentVersionResource implements PropFindableResource, FolderResou
 					
 				DigitalAssetVO asset = DigitalAssetController.create(digitalAsset, inputStream, this.contentVersion.getId(), getInfoGluePrincipal());
 			}
-			System.out.println("digitalAsset:" + digitalAsset);
+			if(logger.isInfoEnabled())
+				logger.info("digitalAsset:" + digitalAsset);
 			resource = new DigitalAssetResource(digitalAsset, this.contentVersion);
 		}
 		catch (Exception e) 

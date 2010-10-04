@@ -13,6 +13,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.log4j.Logger;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentVersionController;
 import org.infoglue.cms.controllers.kernel.impl.simple.DigitalAssetController;
@@ -42,6 +43,8 @@ import com.bradmcevoy.http.exceptions.NotAuthorizedException;
 
 public class DigitalAssetResource implements PropFindableResource, FileResource
 {
+	private final static Logger logger = Logger.getLogger(DigitalAssetResource.class.getName());
+
 	private final DigitalAssetVO digitalAsset;
 	private final ContentVersionVO cv;
 	
@@ -101,7 +104,9 @@ public class DigitalAssetResource implements PropFindableResource, FileResource
 	@Override
 	public void delete() throws NotAuthorizedException, ConflictException, BadRequestException 
 	{
-		System.out.println("Deleting asset:" + this.digitalAsset.getId() + " and decoupling it from " + cv.getId());
+		if(logger.isInfoEnabled())
+			logger.info("Deleting asset:" + this.digitalAsset.getId() + " and decoupling it from " + cv.getId());
+		
 		try
 		{
 			DigitalAssetController.getController().delete(this.digitalAsset.getId(), "ContentVersion", cv.getId());
@@ -135,9 +140,15 @@ public class DigitalAssetResource implements PropFindableResource, FileResource
 		try
 		{
 			String filePath = DigitalAssetController.getDigitalAssetFilePath(digitalAsset.getId());
-			System.out.println("filePath:" + filePath);
+			
+			if(logger.isInfoEnabled())
+				logger.info("filePath:" + filePath);
+			
 			File file = new File(filePath);
-			System.out.println("file:" + file.getPath());
+			
+			if(logger.isInfoEnabled())
+				logger.info("file:" + file.getPath());
+			
 			FileInputStream fis = new FileInputStream(filePath);
 	        BufferedInputStream bin = new BufferedInputStream(fis);
 	        final byte[] buffer = new byte[ 1024 ];

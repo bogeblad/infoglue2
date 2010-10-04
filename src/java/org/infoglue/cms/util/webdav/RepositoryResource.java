@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import org.apache.log4j.Logger;
 import org.infoglue.cms.controllers.kernel.impl.simple.AccessRightController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentController;
 import org.infoglue.cms.controllers.kernel.impl.simple.UserControllerProxy;
@@ -44,6 +45,8 @@ import com.bradmcevoy.http.exceptions.NotAuthorizedException;
 
 public class RepositoryResource implements PropFindableResource, FolderResource
 {
+	private final static Logger logger = Logger.getLogger(RepositoryResource.class.getName());
+
 	private final RepositoryVO repository;
 	private InfoGluePrincipal principal = null;
 	
@@ -63,7 +66,8 @@ public class RepositoryResource implements PropFindableResource, FolderResource
 	@Override
 	public Object authenticate(String user, String pwd) 
 	{
-		System.out.println("authenticate user in represource:" + user + ":" + pwd);
+		if(logger.isInfoEnabled())
+			logger.info("authenticate user in represource:" + user);
 
 		try 
 		{
@@ -85,8 +89,10 @@ public class RepositoryResource implements PropFindableResource, FolderResource
 	}
 
 	@Override
-	public boolean authorise(Request arg0, Method arg1, Auth arg2) {
-		System.out.println("authorise user in represource:" + this.principal + ":" + arg2.getTag() + ":" + arg2.getUser());
+	public boolean authorise(Request arg0, Method arg1, Auth arg2) 
+	{
+		if(logger.isInfoEnabled())
+			logger.info("authorise user in represource:" + this.principal + ":" + arg2.getTag() + ":" + arg2.getUser());
 		try 
 		{
 			boolean hasAccess = AccessRightController.getController().getIsPrincipalAuthorized(this.principal, "Repository.Read", repository.getId().toString());
@@ -131,7 +137,9 @@ public class RepositoryResource implements PropFindableResource, FolderResource
 	@Override
 	public Resource child(String name) 
 	{
-		//System.out.println("child name:" + name);
+		if(logger.isInfoEnabled())
+			logger.info("child name:" + name);
+		
 		List<? extends Resource> children = getChildren();
 		Iterator<? extends Resource> childrenIterator = children.iterator();
 		while(childrenIterator.hasNext())
@@ -148,30 +156,24 @@ public class RepositoryResource implements PropFindableResource, FolderResource
 	@Override
 	public List<? extends Resource> getChildren() 
 	{
-		//System.out.println("Looking for children on " + this.repository.getId() + ":" + this.repository.getName());
+		if(logger.isInfoEnabled())
+			logger.info("Looking for children on " + this.repository.getId() + ":" + this.repository.getName());
+		
 		List<ContentResource> contentChildren = new ArrayList<ContentResource>();
 		try 
 		{
 			ContentVO contentVO = ContentController.getContentController().getRootContentVO(this.repository.getId(), "administrator");
-			//System.out.println("contentVO:" + contentVO);
+			if(logger.isInfoEnabled())
+				logger.info("contentVO:" + contentVO);
+			
 			contentChildren.add( new ContentResource(contentVO) );
-			/*
-			List<ContentVO> children = ContentController.getContentController().getContentChildrenVOList(this.repository.getId(), null, false);
-			System.out.println("children:" + children.size());
-			Iterator<ContentVO> childrenIterator = children.iterator();
-			while(childrenIterator.hasNext())
-			{
-				ContentVO contentVO = childrenIterator.next();
-				//TODO - how to do with factories
-				contentChildren.add( new ContentResource(new ContentResourceFactory(), contentVO) );
-			}
-			*/
 		} 
 		catch (Exception e) 
 		{
 			e.printStackTrace();	
 		}
-		//System.out.println("contentChildren:" + contentChildren.size());
+		if(logger.isInfoEnabled())
+			logger.info("contentChildren:" + contentChildren.size());
 		
 		return contentChildren;
 	}

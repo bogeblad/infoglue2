@@ -173,6 +173,8 @@ public class InterceptionPointController extends BaseController
 	    systemInterceptionPoints.put("Group.ManageUsers", new InterceptionPointVO("Group", "Group.ManageUsers", "Intercepts the management of users", true));
 	    systemInterceptionPoints.put("Group.ManageAccessRights", new InterceptionPointVO("Group", "Group.ManageAccessRights", "Intercepts the management of access rights", true));
 	    systemInterceptionPoints.put("Group.ManageAllAccessRights", new InterceptionPointVO("Group", "Group.ManageAllAccessRights", "Intercepts the management of access rights", false));
+
+	    systemInterceptionPoints.put("WebDAV.Read", new InterceptionPointVO("WebDav", "WebDAV.Read", "Intercepts the WebDAV feature", false));
 	}
     
 	/**

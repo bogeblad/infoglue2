@@ -16,6 +16,7 @@
 				/ViewLogging.action,
 				/ErrorPage.action,
                 /digitalAssets/*,
+                /webdavedit/*,
                 /applications/*,
                 /scripts/*,
                 /script/*,
@@ -100,6 +101,7 @@
                 /unauthorizedLogin.jsp,
                 /robots.txt,
                 /services/*,
+                /webdavedit/*,
                 *.xml,
                 *.gif,
                 *.jpg,
@@ -175,6 +177,34 @@
 	    <display-name>Apache-Axis Servlet</display-name>
 	    <servlet-class>org.apache.axis.transport.http.AxisServlet</servlet-class>
     </servlet>
+    
+   <servlet>
+        <servlet-name>milton</servlet-name>
+        <servlet-class>com.bradmcevoy.http.MiltonServlet</servlet-class>
+        <init-param>
+		<param-name>resource.factory.factory.class</param-name>
+		<param-value>org.infoglue.cms.util.webdav.RepositoryResourceFactoryFactory</param-value>		
+        </init-param>
+        <init-param>
+            <param-name>resource.factory.class</param-name>
+            <param-value>org.infoglue.cms.util.webdav.RepositoryResourceFactory</param-value>
+        </init-param>
+        <init-param>
+            <param-name>authentication.handler.classes</param-name>
+            <param-value>com.bradmcevoy.http.http11.auth.BasicAuthHandler</param-value>
+        </init-param>
+
+        <init-param>
+            <param-name>not.found.url</param-name>
+            <param-value>/404.jsp</param-value>
+        </init-param>    
+	<!--
+	<init-param>
+	    <param-name>filter_0</param-name>
+  	    <param-value>com.bradmcevoy.http.DebugFilter</param-value>
+	</init-param>
+	-->
+    </servlet>    	
 	  
 	<!-- ************************************* -->
 	<!-- This part is for the tree services    -->
@@ -226,6 +256,12 @@
     	<servlet-name>AxisServlet</servlet-name>
     	<url-pattern>/services/*</url-pattern>
   	</servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>milton</servlet-name>
+        <url-pattern>/webdavedit/*</url-pattern>
+    </servlet-mapping>    
+	
   
 	<session-config>
 		<session-timeout>30</session-timeout>

@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.infoglue.cms.controllers.kernel.impl.simple.AccessRightController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentController;
 import org.infoglue.cms.controllers.kernel.impl.simple.RepositoryController;
@@ -25,6 +26,8 @@ import com.bradmcevoy.http.exceptions.NotAuthorizedException;
 
 public class RepositoryResourceFactory implements ResourceFactory 
 {
+	private final static Logger logger = Logger.getLogger(RepositoryResourceFactory.class.getName());
+
 	public static final String REALM = "infoglue";
 	
 	
@@ -38,19 +41,26 @@ public class RepositoryResourceFactory implements ResourceFactory
 		Path path = Path.path(p).getStripFirst();
 		
 		Resource resource = InfogluePathResolver.resolvePath(path, this);
-		//System.out.println("Returning resource:" + resource);
+		
+		if(logger.isInfoEnabled())
+			logger.info("Returning resource:" + resource);
+		
 		return resource;
 	}
 
 	public List<Resource> findAllRepositories() 
 	{
-		//System.out.println("Showing all repositories");
+		if(logger.isInfoEnabled())
+			logger.info("Showing all repositories");
 		List<Resource> list = new ArrayList<Resource>();
 		RepositoryVO repository;
 		try 
 		{
 			List<RepositoryVO> repositories = RepositoryController.getController().getRepositoryVOList();
-			System.out.println("repositories:" + repositories.size());
+			
+			if(logger.isInfoEnabled())
+				logger.info("repositories:" + repositories.size());
+			
 			Iterator<RepositoryVO> repositoriesIterator = repositories.iterator();
 			while(repositoriesIterator.hasNext())
 			{
@@ -75,7 +85,9 @@ public class RepositoryResourceFactory implements ResourceFactory
 	{
 		RepositoryResource resource = null;
 		
-		//System.out.println("find repository:" + name);
+		if(logger.isInfoEnabled())
+			logger.info("find repository:" + name);
+		
 		RepositoryVO repository = null;
 		try 
 		{
