@@ -40,6 +40,7 @@ import java.io.PrintWriter;
 import java.io.RandomAccessFile;
 import java.io.Writer;
 import java.util.Enumeration;
+import java.util.jar.JarFile;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
@@ -358,6 +359,15 @@ public class FileHelper
 	
 	public static void unzipFile(File file, String targetFolder) throws Exception
 	{
+		unzipFile(file, targetFolder, null);
+	}
+	
+	/**
+	 * This method unzips the cms war-file.
+	 */
+	
+	public static void unzipFile(File file, String targetFolder, String[] skipFileTypes) throws Exception
+	{
     	Enumeration entries;
     	
     	ZipFile zipFile = new ZipFile(file);
@@ -367,7 +377,8 @@ public class FileHelper
       	while(entries.hasMoreElements()) 
       	{
         	ZipEntry entry = (ZipEntry)entries.nextElement();
-
+        	System.out.println("entry:" + entry.getName());
+        	
 	        if(entry.isDirectory()) 
 	        {
 	          	(new File(targetFolder + File.separator + entry.getName())).mkdir();
@@ -375,12 +386,82 @@ public class FileHelper
 	        }
 	
 	        //System.err.println("Extracting file: " + this.cmsTargetFolder + File.separator + entry.getName());
-	        copyInputStream(zipFile.getInputStream(entry), new BufferedOutputStream(new FileOutputStream(targetFolder + File.separator + entry.getName())));
+	        boolean skip = false;
+	        if(skipFileTypes != null)
+	        {
+		        for(String skipFileType : skipFileTypes)
+		        {
+		        	if(entry.getName().endsWith(skipFileType))
+		        		skip = true;
+		        }
+	        }
+	        
+	        if(!skip)
+	        {	
+	        	File targetFile = new File(targetFolder + File.separator + entry.getName());
+	        	//targetFile.mkdirs();
+	        	copyInputStream(zipFile.getInputStream(entry), new BufferedOutputStream(new FileOutputStream(targetFile)));
+	        }
 	    }
 	
 	    zipFile.close();
 	}
 	
+	/**
+	 * This method unjars a file.
+	 */
+	
+	public static void unjarFile(File file, String targetFolder) throws Exception
+	{
+		unjarFile(file, targetFolder, null);
+	}
+	
+	/**
+	 * This method unjars a file.
+	 */
+	
+	public static void unjarFile(File file, String targetFolder, String[] skipFileTypes) throws Exception
+	{
+    	Enumeration entries;
+    	
+    	JarFile zipFile = new JarFile(file);
+    	
+    	(new File(targetFolder + File.separator + "META-INF")).mkdir();
+    	
+      	entries = zipFile.entries();
+
+      	while(entries.hasMoreElements()) 
+      	{
+        	ZipEntry entry = (ZipEntry)entries.nextElement();
+        	System.out.println("entry:" + entry.getName());
+        	
+	        if(entry.isDirectory()) 
+	        {
+	          	(new File(targetFolder + File.separator + entry.getName())).mkdir();
+	          	continue;
+	        }
+	
+	        //System.err.println("Extracting file: " + this.cmsTargetFolder + File.separator + entry.getName());
+	        boolean skip = false;
+	        if(skipFileTypes != null)
+	        {
+		        for(String skipFileType : skipFileTypes)
+		        {
+		        	if(entry.getName().endsWith(skipFileType))
+		        		skip = true;
+		        }
+	        }
+	        
+	        if(!skip)
+	        {	
+	        	File targetFile = new File(targetFolder + File.separator + entry.getName());
+	        	//targetFile.mkdirs();
+	        	copyInputStream(zipFile.getInputStream(entry), new BufferedOutputStream(new FileOutputStream(targetFile)));
+	        }
+	    }
+	
+	    zipFile.close();
+	}
 
 	/**
 	 * Just copies the files...

@@ -23,19 +23,16 @@
 
 package org.infoglue.cms.util;
 
-import java.io.File;
 import java.util.Date;
 import java.util.Enumeration;
 
-import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
 import org.apache.log4j.Logger;
 import org.apache.log4j.RollingFileAppender;
-import org.infoglue.deliver.invokers.ComponentBasedHTMLPageInvoker;
+import org.infoglue.cms.extensions.ExtensionLoader;
 import org.infoglue.deliver.util.CacheController;
-import org.infoglue.deliver.util.DeliverContextListener;
 
 import com.opensymphony.oscache.base.OSCacheUtility;
 
@@ -109,6 +106,10 @@ public final class CmsContextListener implements ServletContextListener
 					cacheController.start();
 			}
 
+			System.out.println("Star introspection");
+			ExtensionLoader el = new ExtensionLoader();
+			el.startExtensions();
+			
 			OSCacheUtility.setServletCacheParams(event.getServletContext());
 			
 			CmsPropertyHandler.setStartupTime(new Date()); 
@@ -120,7 +121,8 @@ public final class CmsContextListener implements ServletContextListener
 			e.printStackTrace();
 		}
     }
-
+    
+	
     /**
      * This method is invoked when the Servlet Context 
      * (the Web Application) is undeployed or 

@@ -23,8 +23,11 @@
 
 package org.infoglue.cms.applications.cmstool.actions;
 
+import java.util.List;
+
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
-import org.infoglue.cms.controllers.kernel.impl.simple.ThemeController;
+import org.infoglue.cms.applications.databeans.InfoglueTool;
+import org.infoglue.cms.services.AdminToolsService;
 import org.infoglue.cms.util.CmsPropertyHandler;
 
 /**
@@ -53,4 +56,10 @@ public class AdminAction extends InfoGlueAbstractAction
 		
 		return "successReset";
     }
+	
+	public List<InfoglueTool> getAvailableTools()
+	{
+		return AdminToolsService.getService().getTools(getInfoGluePrincipal(), getLocale());
+	}
+
 }

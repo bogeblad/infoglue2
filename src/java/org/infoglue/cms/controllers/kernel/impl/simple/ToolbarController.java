@@ -30,18 +30,15 @@ import org.infoglue.cms.entities.structure.SiteNodeVO;
 import org.infoglue.cms.entities.structure.SiteNodeVersionVO;
 import org.infoglue.cms.entities.workflow.WorkflowDefinitionVO;
 import org.infoglue.cms.exception.SystemException;
+import org.infoglue.cms.providers.ToolbarProvider;
 import org.infoglue.cms.security.InfoGlueGroup;
 import org.infoglue.cms.security.InfoGluePrincipal;
 import org.infoglue.cms.security.InfoGlueRole;
 import org.infoglue.cms.util.CmsPropertyHandler;
 import org.infoglue.cms.util.RemoteCacheUpdater;
-import org.infoglue.cms.util.StringManager;
-import org.infoglue.cms.util.StringManagerFactory;
-import org.infoglue.deliver.util.HttpHelper;
-import org.infoglue.deliver.util.HttpUtilities;
 import org.infoglue.deliver.util.Timer;
 
-public class ToolbarController
+public class ToolbarController implements ToolbarProvider
 {
 	private final static Logger logger = Logger.getLogger(ToolbarController.class.getName());
 
@@ -68,7 +65,7 @@ public class ToolbarController
 		}
 		catch(Exception e) {e.printStackTrace();}			
 					
-		return null;	
+		return new ArrayList<ToolbarButton>();	
 	}
 	
 	public List<ToolbarButton> getToolbarButtons(String toolbarKey, InfoGluePrincipal principal, Locale locale, HttpServletRequest request, boolean disableCloseButton)
@@ -209,7 +206,7 @@ public class ToolbarController
 		}
 		catch(Exception e) {e.printStackTrace();}			
 					
-		return null;				
+		return new ArrayList<ToolbarButton>();				
 	}
 	
 
@@ -407,7 +404,7 @@ public class ToolbarController
 		}
 		catch(Exception e) {e.printStackTrace();}			
 					
-		return null;				
+		return new ArrayList<ToolbarButton>();				
 	}
 
 	private List<ToolbarButton> getAssetDialogForMultipleBindingsFooterButtons(String toolbarKey, InfoGluePrincipal principal, Locale locale, HttpServletRequest request, boolean disableCloseButton) throws Exception

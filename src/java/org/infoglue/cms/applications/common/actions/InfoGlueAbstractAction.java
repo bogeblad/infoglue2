@@ -62,6 +62,7 @@ import org.infoglue.cms.exception.Bug;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.security.AuthenticationModule;
 import org.infoglue.cms.security.InfoGluePrincipal;
+import org.infoglue.cms.services.AdminToolbarService;
 import org.infoglue.cms.util.CmsPropertyHandler;
 import org.infoglue.deliver.controllers.kernel.impl.simple.ExtranetController;
 import org.infoglue.deliver.util.CacheController;
@@ -81,7 +82,7 @@ public abstract class InfoGlueAbstractAction extends WebworkAbstractAction
 {
     private final static Logger logger = Logger.getLogger(InfoGlueAbstractAction.class.getName());
 
-	private final static ToolbarController toolbarController = new ToolbarController();
+	private final static AdminToolbarService toolbarService = AdminToolbarService.getService();
 
     protected String colorScheme = null; 
     
@@ -336,12 +337,12 @@ public abstract class InfoGlueAbstractAction extends WebworkAbstractAction
 
 	public List getToolbarButtons(String toolbarKey, HttpServletRequest request)
 	{
-		return toolbarController.getToolbarButtons(toolbarKey, getInfoGluePrincipal(), getLocale(), request, false);
+		return toolbarService.getToolbarButtons(toolbarKey, getInfoGluePrincipal(), getLocale(), request, false);
 	}
 
 	public List getToolbarButtons(String toolbarKey, HttpServletRequest request, boolean disableCloseButton)
 	{
-		return toolbarController.getToolbarButtons(toolbarKey, getInfoGluePrincipal(), getLocale(), request, disableCloseButton);
+		return toolbarService.getToolbarButtons(toolbarKey, getInfoGluePrincipal(), getLocale(), request, disableCloseButton);
 	}
 
 	public List getToolbarButtons(String toolbarKey, String primaryKey, String extraParameters)
@@ -363,12 +364,12 @@ public abstract class InfoGlueAbstractAction extends WebworkAbstractAction
 			logger.error("Problem parsing extra parameters at url:" + getOriginalFullURL());
 		}
 		
-		return toolbarController.getToolbarButtons(toolbarKey, getInfoGluePrincipal(), getLocale(), getRequest(), false);
+		return toolbarService.getToolbarButtons(toolbarKey, getInfoGluePrincipal(), getLocale(), getRequest(), false);
 	}
 
 	public List getRightToolbarButtons(String toolbarKey, String primaryKey, String extraParameters, boolean disableCloseButton)
 	{
-		return toolbarController.getRightToolbarButtons(toolbarKey, getInfoGluePrincipal(), getLocale(), getRequest(), disableCloseButton);
+		return toolbarService.getRightToolbarButtons(toolbarKey, getInfoGluePrincipal(), getLocale(), getRequest(), disableCloseButton);
 	}
 	
 	public List getFooterToolbarButtons(String toolbarKey, String primaryKey, String extraParameters, boolean disableCloseButton)
@@ -390,7 +391,7 @@ public abstract class InfoGlueAbstractAction extends WebworkAbstractAction
 			logger.error("Problem parsing extra parameters at url:" + getOriginalFullURL());
 		}
 
-		return toolbarController.getFooterToolbarButtons(toolbarKey, getInfoGluePrincipal(), getLocale(), getRequest(), disableCloseButton);
+		return toolbarService.getFooterToolbarButtons(toolbarKey, getInfoGluePrincipal(), getLocale(), getRequest(), disableCloseButton);
 	}
 
 /*
