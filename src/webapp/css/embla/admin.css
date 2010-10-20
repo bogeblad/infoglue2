@@ -1,0 +1,220 @@
+html, body {
+	height: 100%; margin:0;
+}
+  
+#header {
+	height: 54px;
+    background-image: url(images/headerBackground.png); 
+	background-repeat: repeat-x; 
+}
+#searchForm {
+	float: left; 
+	clear: none; 
+	margin-top: 5px;
+}
+#searchField {
+	float: left; 
+	display: block; 
+	border: 0px solid #ccc; 
+	font-family: Tahoma, Verdana, Arial, sans-serif; 
+	font-size: 14px;
+	text-indent: 10px;
+	color: #ccc;
+	background-image: url(images/searchFieldBackground.png); 
+	background-repeat: no-repeat; 
+	height: 28px;
+	width: 160px;
+}
+#searchButton {
+	height: 30px;
+	width: 40px;
+	float: left; 
+	display: block;
+	background-image: url(images/searchButton.png); 
+	background-repeat: no-repeat; 
+}
+#menucontent {
+	float: left;
+	margin-top: 14px;
+}
+.leftButtonPart {
+	float: left;
+	background-image: url(images/toolTabLeft.png); 
+	background-repeat: no-repeat; 
+}
+.rightButtonPart {
+	float: left;
+	background-image: url(images/toolTabRight.png); 
+	background-repeat: no-repeat; 
+	background-position: right top;
+}
+.middleButtonPart {
+	margin-left: 10px;
+	float: left;
+	background-image: url(images/toolTabMiddle.png); 
+	background-repeat: repeat-x; 
+}
+#initialButton {
+	display: block; 
+	float: left; 
+	background: transparent url(images/menu-button-arrow.png) no-repeat; 
+	background-position: 4px 15px;
+	padding-left: 8px;
+	margin-left: 4px;
+}
+.subButtons {
+	position: absolute; 
+	display: none; 
+	background-color: #B2B2B2; 
+	border: 1px solid #9CAABD; 
+	border-top: 0px;
+}
+.menutab {
+	margin-top: 15px;
+	display: block;
+	awidth: 200px;
+	amin-width: 60px;
+	height: 25px;
+	padding: 0px 20px 0px 20px;
+	font-family: Tahoma, Verdana, Arial, sans-serif; 
+	font-size: 13px;
+	text-decoration: none;
+	color: #333;
+}
+#menutoolbar {
+	float: left;
+	width: 100%;
+	height: 115px;
+	background-image: url(images/toolbarBackground.png);
+	background-position: right top;
+	background-repeat: repeat-x;
+}
+#menutoolbar.compact {
+	height: 32px;
+	background-image: url(images/toolbarBackground.png);
+	background-position: right top;
+	background-repeat: repeat-x;
+}
+#toolsColumn {
+	float: left;
+	width: 250px; 
+	margin: 0px 0px 0px 0px;
+	padding-right: 3px;
+	background-image: url(images/verticalDivider.png);
+	background-position: right;
+	background-repeat: repeat-y;
+}
+#structureRepositoryChoiceDiv, #contentRepositoryChoiceDiv {
+	height: 25px;
+	width: 100%;
+}
+#structureRepositoriesDiv, #contentRepositoriesDiv {
+	float: left;
+	width: 100%; 
+	margin: 0px;
+	padding: 0px;
+	padding-top: 4px;
+}
+#structureRepositoriesDivHandle, #contentRepositoriesDivHandle, .generalToolRepositoriesDivHandle {
+	color: #333; 
+	background-color: #deecff;
+}
+#structureRepositoriesDiv ul, #contentRepositoriesDiv ul {
+	max-height: 200px; 
+	overflow: auto;
+	margin: 0px;
+	padding: 0px;
+}
+#structureRepositoriesDiv ul li, #contentRepositoriesDiv ul li {
+	margin: 0px;
+	float: left;
+	width: 100%; 
+	height: 18px;
+	list-style-type: none;
+}
+#structureRepositoriesDiv ul li a, #contentRepositoriesDiv ul li a {
+	display: block;
+	text-decoration: none;
+	text-indent: 8px;
+	line-height: 16px;
+}
+#structureRepositoriesDiv ul li a.current, #contentRepositoriesDiv ul li a.current {
+	text-decoration: none;
+	text-indent: 8px;
+}	
+#structureRepositoriesDiv, #contentRepositoriesDiv {
+	border-top: 1px solid #ADD1FF;
+}
+.shadow {
+	background-image: url(images/bottomShadow.png);
+	background-repeat: repeat-x;			
+}
+#structureRepositoriesDiv ul, #contentRepositoriesDiv ul {
+	background-color: white;
+}
+#structureRepositoriesDiv ul li, #contentRepositoriesDiv ul li {
+	background-color: #eef5ff;
+}
+#structureRepositoriesDiv ul li a, #contentRepositoriesDiv ul li a {
+	font-family: Lucida Grande, Lucida Sans, Arial, sans-serif;
+	font-size: 11px;
+	font-weight: bold;
+	color: black;
+}
+#structureRepositoriesDiv ul li a.current, #contentRepositoriesDiv ul li a.current {
+	font-weight: bold;
+	color: #d27600;
+	background-image: url(images/rightarrow.png);
+	background-position: 0px 5px;
+	background-repeat: no-repeat;			
+}	
+
+#paletteDiv {
+	float: left; 
+	height: 150px;
+}
+#componentPaletteHeader
+{
+	float: left;
+	width: 100%; 
+	height: 18px;
+	background-image: url(images/toolbarBackground.png);
+	background-position: right top;
+	background-repeat: repeat-x;
+}
+#componentPaletteHeader h3
+{
+	margin: 2px 4px 2px 4px;
+	font-family: Tahoma, Verdana, Arial, sans-serif; 
+	font-size: 12px;
+}
+
+#work {
+    /* height: auto% - see javascript */
+    /*border-bottom:1px solid #FFCC00;border-top:1px solid #FF3300;*/ 
+    background:url(../images/ad_home_page_big.jpg) no-repeat bottom center;
+}
+  
+#footer {
+    height: 34px;
+    background-image: url(images/footerBackground.png); 
+	background-repeat: repeat-x; 
+	background-color: #AEAEAE;
+}
+#logoButton {
+	margin-left: 4px;
+	margin-top: 2px;
+	float: left;
+	display: block;
+	width: 37px;
+	height: 26px;
+    background-image: url(images/infoglueLogoSmall.png); 
+	background-repeat: no-repeat;
+	border: 1px solid white;
+}
+iframe.tool {
+}
+
+iframe.inactiveTool {
+	display: none;
+}
