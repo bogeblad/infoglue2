@@ -1483,18 +1483,34 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 							}
 						}
 
+						boolean allIsSelected = false;
 						while(optionsIterator.hasNext())
 						{
 						    ComponentPropertyOption option = (ComponentPropertyOption)optionsIterator.next();
 						    boolean isSame = false;
 						    if(componentProperty != null && componentProperty.getValue() != null && option != null && option.getValue() != null)
 						    {
-						    	String[] values = componentProperty.getValue().split(",");
-						    	for(int i=0; i<values.length; i++)
+						    	if(componentProperty.getAllowMultipleSelections())
 						    	{
-						    		isSame = values[i].equals(option.getValue());
-						    		if(isSame)
-						    			break;
+						    		if(option.getValue().contains(",") && componentProperty.getValue().equals(option.getValue()))
+						    		{
+						    			isSame = true;
+						    			allIsSelected = true;
+						    		}
+						    		else if(!allIsSelected)
+						    		{
+							    		String[] values = componentProperty.getValue().split(",");
+								    	for(int i=0; i<values.length; i++)
+								    	{
+								    		isSame = values[i].equals(option.getValue());
+								    		if(isSame)
+								    			break;
+								    	}
+						    		}
+						    	}
+						    	else if(componentProperty.getValue().equals(option.getValue()))
+						    	{
+						    		isSame = true;
 						    	}
 						    }
 						    
