@@ -385,13 +385,7 @@ public class CreateSiteNodeAction extends InfoGlueAbstractAction
 	    int startIndex = (dnsName == null) ? -1 : dnsName.indexOf(keyword);
 	    if(startIndex != -1)
 	    {
-	        int endIndex = dnsName.indexOf(",", startIndex);
-		    if(endIndex > -1)
-	            dnsName = dnsName.substring(startIndex, endIndex);
-	        else
-	            dnsName = dnsName.substring(startIndex);
-
-		    workingUrl = dnsName.split("=")[1] + CmsPropertyHandler.getComponentRendererUrl() + "ViewPage!renderDecoratedPage.action";
+		    workingUrl = CmsPropertyHandler.getComponentRendererUrl() + "ViewPage!renderDecoratedPage.action";
 	    }
 	    else
 	    {
