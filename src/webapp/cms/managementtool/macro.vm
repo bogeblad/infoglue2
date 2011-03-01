@@ -2336,3 +2336,70 @@ $ui.getString("entity.${fieldNameKey}.label")<br/>
 		<p class="error">$errorMessageText</p>
 	#end
 #end
+
+##************************************##
+## MACROS for datatables              ##
+##************************************##
+
+#macro(initDataTable $tableId)
+	#set($extraParameter = '"aoColumns": [ { "sWidth": "30px" }, null ]')
+  #initDataTableImpl($tableId $extraParameter)
+#end
+
+#macro(initDataTableImpl $tableId $extraParameter)
+
+	$("#$tableId").dataTable({
+		"sPaginationType": "full_numbers",
+	    "iDisplayLength": 20,
+	    "bAutoWidth": false,
+	    "sDom": '<"top"lf<"clear">>rt<"bottom"ip<"clear">>',
+	    "oLanguage": {
+					"sLengthMenu": "$ui.getString("tool.common.datatable.sLengthMenu")",
+					"sZeroRecords": "$ui.getString("tool.common.datatable.sZeroRecords")",
+					"sInfo": "$ui.getString("tool.common.datatable.sInfo")",
+					"sInfoEmtpy": "$ui.getString("tool.common.datatable.sInfoEmtpy")",
+					"sInfoFiltered": "$ui.getString("tool.common.datatable.sInfoFiltered")",
+					"sSearch": "$ui.getString("tool.common.datatable.sSearch")",
+					"oPaginate": {
+						"sFirst":    "$ui.getString("tool.common.datatable.oPaginate.sFirst")",
+						"sPrevious": "$ui.getString("tool.common.datatable.oPaginate.sPrevious")",
+						"sNext":     "$ui.getString("tool.common.datatable.oPaginate.sNext")",
+						"sLast":     "$ui.getString("tool.common.datatable.oPaginate.sLast")"
+					}
+				},
+		$extraParameter
+	});
+
+#end
+
+#macro(initDeleteLink)
+
+	$(".deleteCross").live("click", function () {
+		var linkAddress = $(this).attr("href");
+		$("#genericDialog").dialog('destroy');
+		$("#genericDialog").attr("title", $(this).attr("title"));
+		$("#genericDialog h3").html($(this).attr("title"));
+		$("#genericDialog").dialog({
+			resizable: false,
+			width: 500,
+			minHeight: 400,
+			modal: true,
+			overlay: {
+				backgroundColor: '#000',
+				opacity: 0.8
+			},
+			buttons: {
+				'$ui.getString("tool.common.delete.label")': function() {
+					document.location.href = linkAddress;
+				},
+				'$ui.getString("tool.common.cancelButton.label")': function() {
+					$(this).dialog('close');
+				}
+			}
+		});
+		$(".ui-dialog-buttonpane button:first").addClass("ok"); 
+		$(".ui-dialog-buttonpane button:last").addClass("cancel");
+		$("#genericDialog").dialog('open');
+		return false;
+	});
+#end

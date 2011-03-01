@@ -4,195 +4,62 @@
 
 #beginManagementTool("tool.managementtool.viewSystemUserList.header" "tool.managementtool.viewSystemUserList.header" "")
 
-<div id="filterDiv" style="position:relative; visibility: visible; overflow:hidden; margin: 0px 10px 0px 10px;">
-<form method="POST" name="filterForm" action="ViewListSystemUser.action">
-<input type="hidden" name="mode" value="search">
-<table border="0">
-	<tr>
-	    <td colspan="3">&nbsp;</td>
-	</tr>
-	<tr>
-		<td>#editField("SystemUser.firstName" "filterFirstName" $!filterFirstName "31")</td>
-		<td rowspan="5" style="width:10px;">&nbsp;</td>
-		<td rowspan="5" valign="top" id="roleFilters" style="width:250px;">
-			Roles to filter on<br>
-			#set($index = 0) 
-			#foreach($roleName in $filterRoleNames)
-			  #if($roleName != "")
-			    <select id="filterRoleName" name="filterRoleName" class="sitedropbox" style="width:200px;" onchange="javascript:generateNewDropBox(this, $index);">
-					<option value="">Select another role to filter on</option>
-					<option value="">-------------</option>
-					#foreach ($roleVO in $roles)
-					<option value="$roleVO.name" #if("$roleName" == "$roleVO.name") selected #end>$roleVO.name</option>
-					#end
-				</select><br>
-				#set($index = $index + 1)
-			  #end
-			#end
-			
-			<select id="filterRoleName" name="filterRoleName" class="sitedropbox" style="width:200px;" onchange="javascript:generateNewDropBox(this, $index);">
-				<option value="">Select another role to filter on</option>
-				<option value="">-------------</option>
-				#foreach ($roleVO in $roles)
-				<option value="$roleVO.name">$roleVO.name</option>
-				#end
-			</select>
-		</td>
-	</tr>
-	<tr>	
-		<td>#editField("SystemUser.lastName" "filterLastName" $!filterLastName "31")</td>
-	</tr>
-	<tr>
-		<td>#editField("SystemUser.userName" "filterUserName" $!filterUserName "31")</td>
-	</tr>
-	<tr>
-		<td>#editField("SystemUser.email" "filterEmail" $!filterEmail "31")</td>
-	</tr>
-	<tr>
-	    <td>&nbsp;</td>
-	</tr>
-	<tr>
-	    <td>
-	        <input type="image" src="$ui.getString("images.managementtool.buttons.searchLong")">
-			<a href="javascript:clearForm();"><img src="$ui.getString("images.managementtool.buttons.clearLong")" border="0"></a>
-		</td>
-	</tr>
-	
-</table>	
-</form>
-</div>
-
-<div style="color: black; margin-left: 32px; margin-top: 10px; margin-bottom: 10px;">
-#if($slotId > 0)
-#set($previousSlotId = $slotId - 1)
-<a href="ViewListSystemUser.action?slotId=$previousSlotId">Previous</a>
-#end
-#foreach($additionalSlotId in [0..$numberOfSlots])
-	#if($slotId == $additionalSlotId)<span style="font-weight: bold; border: 1px solid black; color: red; padding: 2px;">$additionalSlotId</span>
-	#else<a href="ViewListSystemUser.action?slotId=$additionalSlotId">$additionalSlotId</a>#end
-#end
-#if($slotId < $numberOfSlots)
-#set($nextSlotId = $slotId + 1)
- <a href="ViewListSystemUser.action?slotId=$nextSlotId">Next</a>
-#end
-</div>
-
-#set($lvConstraint = 1) 
-#lvHead(["Username", "Full Name","Defined Roles"] "tool.managementtool.deleteSystemUsers.header" "DeleteSystemUser.action" "ViewListSystemUser.action?title=SystemUsers" "tool.managementtool.deleteSystemUsers.text")
-
-#set($cnt = 0)
-#foreach($infogluePrincipal in $infogluePrincipals)
-	#set($infogluePrincipalId = $formatter.encodeURI($infogluePrincipal.getName())) 
-
-	#set( $row = ["<input type=hidden name=rowtitle value='$infogluePrincipal.getFirstName() $infogluePrincipal.getLastName()'/><a href='ViewSystemUser.action?userName=$infogluePrincipalId'>$infogluePrincipal.getName() </a>", "<a href='ViewSystemUser.action?userName=$infogluePrincipal.getName()'>$infogluePrincipal.getFirstName() $infogluePrincipal.getLastName()</a>","#inlineroles($infogluePrincipal.getRoles())"] )
-	#set($cnt = $cnt + 1)
-
-	#lvAddRow($row $cnt $infogluePrincipal.getName())
-#end
-
-#lvEnd()
-
-<div style="color: black; margin-left: 32px; margin-top: 10px; margin-bottom: 10px;">
-#if($slotId > 0)
-#set($previousSlotId = $slotId - 1)
-<a href="ViewListSystemUser.action?slotId=$previousSlotId">Previous</a>
-#end
-#foreach($additionalSlotId in [0..$numberOfSlots])
-	#if($slotId == $additionalSlotId)<span style="font-weight: bold; border: 1px solid black; color: red; padding: 2px;">$additionalSlotId</span>
-	#else<a href="ViewListSystemUser.action?slotId=$additionalSlotId">$additionalSlotId</a>#end
-#end
-#if($slotId < $numberOfSlots)
-#set($nextSlotId = $slotId + 1)
- <a href="ViewListSystemUser.action?slotId=$nextSlotId">Next</a>
-#end
-</div>
+<style type="text/css">
+	@import "script/jqueryplugins/dataTables/media/css/ig_table.css";
+	body.managementtooledit {
+    	color: #333;
+	}
+</style>
+<script type="text/javascript" language="javascript" src="script/jqueryplugins/dataTables/media/js/jquery.dataTables.min.js"></script>
 
 <script type="text/javascript">
-<!--
-	
-	//------------------------------------------------
-	// This method invokes the method toggleSearchForm on the main area if it exists.
-	//------------------------------------------------
-	
-	function toggleSearchForm()
-	{
-		//alert("Toggle");
-		var div = document.getElementById("filterDiv");
-		//if(div && div.style.visibility == "hidden")
-		if(div && div.style.display == "none")
-		{
-			//div.style.visibility = "visible";
-			//div.style.overflow = "visible";
-			div.style.display = "block";
-		}
-		else
-		{
-			div.style.display = "none";
-			//div.style.height = "1px";
-			//div.style.visibility = "hidden";
-			//div.style.overflow = "hidden";
-		}
-	}
-	
-	/**
-	 * This method clears the form to enable a new search
-	 */
-	 
-	function clearForm()
-	{
-		document.location.href = "ViewListSystemUser.action";
-	}
-	
-	
-	/**
-	 * This method generates a new dropbox for choosing extranet roles to filter on.
-	 */
-	 
-	function generateNewDropBox(selectBox, index)
-	{
-		if(selectBox.value != "")
-		{
-			var roleFiltersElement = document.getElementById("roleFilters")
-			
-			br = document.createElement("br");
-			roleFiltersElement.appendChild(br);
-			
-			newSelect = document.createElement("select");
-			roleFiltersElement.appendChild(newSelect);
-			
-			newSelect.setAttribute("id", "filterRoleName");
-			newSelect.setAttribute("name", "filterRoleName");
-			newSelect.setAttribute("class", "sitedropbox");
-			newSelect.setAttribute("style", "width:200px;");
-			
-			newOption = document.createElement("option");
-			newOption.setAttribute("value", "");
-			newOption.setAttribute("selected", "true");
-			newSelect.appendChild(newOption);
-			var roleNameElement = document.createTextNode("Select another role to filter on");
-			newOption.appendChild(roleNameElement);
-	
-			newOption = document.createElement("option");
-			newOption.setAttribute("value", "");
-			newSelect.appendChild(newOption);
-			var roleNameElement = document.createTextNode("---------------------");
-			newOption.appendChild(roleNameElement);
-			
-			#foreach ($roleVO in $roles)
-				newOption = document.createElement("option");
-				newOption.setAttribute("value", "$roleVO.name");
-				newSelect.appendChild(newOption);
-				var roleNameElement = document.createTextNode("$roleVO.name");
-				newOption.appendChild(roleNameElement);
-			#end
-			
-			//index = index + 1;
-			newSelect.style.width = "200px";
-			newSelect.onchange = function(){generateNewDropBox(newSelect, (index + 1))};
-		}		
-	}
-	 	 
+<!-- 		
+	$(document).ready(function(){
+		#set($extraParameter = '"bProcessing": true, "bServerSide": true, "sAjaxSource": "ViewListSystemUser!processAndFilter.action", "aoColumns": [ null, null, null ]')
+
+		#initDataTableImpl("dataTable" $extraParameter)
+		
+		$("#dataTable_processing").prepend("<img src='css/embla/images/loading.gif' width='16'/>").css("color", "blue");
+		$("#dataTable_filter input").attr("id","sSearch").hide();
+		$("#dataTable_filter").append("<input type='text' id='searchField'/> <img id='reset' src='images/v3/cross.png'>");
+		$("#reset").click(function() { $(this).hide(); $("#searchField").val(""); $("#sSearch").val("").trigger('keyup'); }).hide();
+		$("#searchField").keyup(function(e) {
+			if(e.keyCode == 13) {
+				if($("#searchField").val().length > 2)
+				{
+					$("#sSearch").val($("#searchField").val()).trigger('keyup');
+					$("#reset").show();
+				}
+				else
+					alert("You must state at least 3 characters for the search to work");
+			}
+		});
+	});
 -->
 </script>
 
+<p/>
+<table cellpadding="0" cellspacing="0" border="1" class="display" id="dataTable">
+	<thead>
+		<tr>
+			<th>$ui.getString("entity.SystemUser.userName.label")</th>
+			<th>$ui.getString("entity.SystemUser.firstName.label")</th>
+			<th>$ui.getString("entity.SystemUser.lastName.label")</th>
+		</tr>
+	</thead>
+	<tbody>
+	
+    	#foreach ($infogluePrincipal in $infogluePrincipals)
+			<tr>
+				<td>
+					<a class="user" href="ViewSystemUser.action?userName=$infogluePrincipal.name">$infogluePrincipal.name</a>
+				</td>
+				<td>$infogluePrincipal.firstName</td>
+				<td>$infogluePrincipal.lastName</td>
+			</tr>
+		#end
+		
+	</tbody>
+</table>
+		
 #endManagementTool()

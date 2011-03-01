@@ -1,11 +1,11 @@
 /*
  * File:        TableTools.js
  * Version:     1.0.3
- * CVS:         $Id: TableTools.js,v 1.1 2009/10/08 21:47:40 mattias Exp $
+ * CVS:         $Id: TableTools.js,v 1.1.2.1 2011/03/01 15:33:23 mattias Exp $
  * Description: Copy, save and print functions for DataTables
  * Author:      Allan Jardine (www.sprymedia.co.uk)
  * Created:     Wed  1 Apr 2009 08:41:58 BST
- * Modified:    $Date: 2009/10/08 21:47:40 $ by $Author: mattias $
+ * Modified:    $Date: 2011/03/01 15:33:23 $ by $Author: mattias $
  * Language:    Javascript
  * License:     LGPL
  * Project:     Just a little bit of fun :-)

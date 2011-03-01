@@ -23,7 +23,9 @@
 
 package org.infoglue.cms.applications.managementtool.actions;
 
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.servlet.ServletOutputStream;
@@ -59,6 +61,14 @@ public class ViewListSystemUserAction extends InfoGlueAbstractAction
 	private int slotId					= 0;
 	private int numberOfSlots			= 0;
 	
+	private String filterChar = null;
+	
+	//DataTable parameters for dynamic filtering
+	private String sEcho = null;
+	private int iTotalRecords = 0;
+	private int iTotalDisplayRecords = 0;
+	private String sSearch = null;
+
 	protected String doExecute() throws Exception 
 	{
 		this.filterRoleNames = this.getRequest().getParameterValues("filterRoleName");
@@ -77,12 +87,14 @@ public class ViewListSystemUserAction extends InfoGlueAbstractAction
 		{
 			this.infogluePrincipals = UserControllerProxy.getController().getFilteredUsers(this.filterFirstName, this.filterLastName, this.filterUserName, this.filterEmail, filterRoleNames);
 		}
+		this.infogluePrincipals = this.infogluePrincipals.subList(0, 100);
 
 	    return "success";
 	}
 
 	public String doV3() throws Exception 
 	{
+		/*
 		this.filterRoleNames = this.getRequest().getParameterValues("filterRoleName");
 		if(filterFirstName == null && filterLastName == null && filterUserName == null && filterEmail == null && (filterRoleNames == null || filterRoleNames.length == 0 || (filterRoleNames.length == 1 && filterRoleNames[0].equals(""))))
 		{
@@ -99,8 +111,70 @@ public class ViewListSystemUserAction extends InfoGlueAbstractAction
 		{
 			this.infogluePrincipals = UserControllerProxy.getController().getFilteredUsers(this.filterFirstName, this.filterLastName, this.filterUserName, this.filterEmail, filterRoleNames);
 		}
+		*/
 
 	    return "successV3";
+	}
+
+	/**
+	 * 
+	 */
+
+	public String doPopupProcessAndFilter() throws Exception 
+	{
+		doProcessAndFilter();
+		
+		return "successPopupFiltered"; 
+	}
+	
+	public String doProcessAndFilter() throws Exception 
+	{
+		Timer t = new Timer();
+		System.out.println("sSearch:" + sSearch);
+		
+		String sortColNumber = getRequest().getParameter("iSortCol_0");
+		String sortDirection = getRequest().getParameter("sSortDir_0");
+		if(sortDirection == null || sortDirection.equals(""))
+			sortDirection = "asc";
+		
+		if(sSearch == null || sSearch.equals(""))
+			this.infogluePrincipals = UserControllerProxy.getController().getAllUsers();
+		else
+			this.infogluePrincipals = UserControllerProxy.getController().getFilteredUsers(this.sSearch);
+
+		String sortProperty = "name";
+		if(sortColNumber != null && sortColNumber.equals("1"))
+			sortProperty = "firstName";
+		else if(sortColNumber != null && sortColNumber.equals("2"))
+			sortProperty = "lastName";
+		
+		t.printElapsedTime("Before with:" + sortProperty);
+		Collections.sort(this.infogluePrincipals, new ReflectionComparator(sortProperty));
+		t.printElapsedTime("Sorting took " + sortDirection);
+		if(sortDirection.equals("desc"))
+		{
+			Collections.reverse(this.infogluePrincipals);
+			t.printElapsedTime("Reverse took...");
+		}
+			
+		this.iTotalRecords = this.infogluePrincipals.size();
+		this.iTotalDisplayRecords = this.infogluePrincipals.size();
+		t.printElapsedTime("Getting all users took ");
+		
+		String iDisplayStartString = getRequest().getParameter("iDisplayStart");
+		String iDisplayLengthString = getRequest().getParameter("iDisplayLength");
+		int start = new Integer(iDisplayStartString);
+		int end = start + new Integer(iDisplayLengthString);
+		
+		System.out.println("Getting principals:" + start + " to " + end + " from original list:" + this.infogluePrincipals.size());
+		if(this.infogluePrincipals.size() > end)
+			this.infogluePrincipals = this.infogluePrincipals.subList(start, end);
+		else
+			this.infogluePrincipals = this.infogluePrincipals.subList(start, this.infogluePrincipals.size());
+			
+		t.printElapsedTime("Getting subset of users took ");
+		
+	    return "successFiltered";
 	}
 
 	public String doUserListForPopup() throws Exception 
@@ -111,6 +185,58 @@ public class ViewListSystemUserAction extends InfoGlueAbstractAction
 	    return "successPopup";
 	}
 	
+	public String doUserListForPopupV3() throws Exception 
+	{
+		System.out.println("222222222222222222");
+		/*
+		this.infogluePrincipals = UserControllerProxy.getController().getAllUsers();
+		Collections.sort(this.infogluePrincipals, new ReflectionComparator("firstName"));
+		*/
+	    return "successPopupV3";
+	}
+
+	public List getUsersFirstNameChars()
+	{
+		List usersFirstNameChars = new ArrayList();
+		Iterator principalIterator = this.infogluePrincipals.iterator();
+		while(principalIterator.hasNext())
+		{
+			InfoGluePrincipal infogluePrincipal = (InfoGluePrincipal)principalIterator.next();
+			if(!usersFirstNameChars.contains(infogluePrincipal.getName().charAt(0)))
+				usersFirstNameChars.add(infogluePrincipal.getName().charAt(0));
+			//else
+			//	System.out.println("Exists:" + infogluePrincipal.getName().charAt(0));
+		}
+		
+		Collections.sort(usersFirstNameChars);
+		
+		return usersFirstNameChars;
+	}
+	
+	public List getFilteredInfogluePrincipals()
+	{
+		List subList = new ArrayList();
+		
+		char filterChar = ((InfoGluePrincipal)this.infogluePrincipals.get(0)).getFirstName().charAt(0);
+		if(this.filterChar != null && this.filterChar.length() == 1)
+			filterChar = this.filterChar.charAt(0);
+			
+		Iterator infogluePrincipalsIterator = this.infogluePrincipals.iterator();
+		boolean foundSection = false;
+		while(infogluePrincipalsIterator.hasNext())
+		{
+			InfoGluePrincipal infogluePrincipal = (InfoGluePrincipal)infogluePrincipalsIterator.next();
+			if(infogluePrincipal.getName().charAt(0) == filterChar)
+			{
+				subList.add(infogluePrincipal);
+				foundSection = true;
+			}
+			else if(foundSection)
+				break;
+		}
+		
+		return subList;
+	}
 	public String doUserListSearch() throws Exception
 	{
 		String searchString 					= this.getRequest().getParameter("searchString");		
@@ -185,6 +311,17 @@ public class ViewListSystemUserAction extends InfoGlueAbstractAction
 			this.filterUserName = userName;
 	}
 
+	public String getFilterChar()
+	{
+		return filterChar;
+	}
+	
+	public void setFilterChar(String filterChar)
+	{
+		if(filterChar != null && !filterChar.equals(""))
+			this.filterChar = filterChar;
+	}
+
 	public String getMode()
 	{
 		return mode;
@@ -220,4 +357,35 @@ public class ViewListSystemUserAction extends InfoGlueAbstractAction
 		this.numberOfSlots = numberOfSlots;
 	}
 	
+	public int getTotalRecords() 
+	{
+		return iTotalRecords;
+	}
+
+	public int getTotalDisplayRecords() 
+	{
+		return iTotalDisplayRecords;
+	}
+
+	public String getsEcho() 
+	{
+		return sEcho;
+	}
+
+	public void setsEcho(String sEcho) 
+	{
+		this.sEcho = sEcho;
+	}
+	
+	public String getsSearch() 
+	{
+		return sSearch;
+	}
+
+	public void setsSearch(String sSearch) 
+	{
+		this.sSearch = sSearch;
+	}
+	
+
 }

@@ -54,6 +54,7 @@ import javax.servlet.http.HttpSession;
 import org.apache.log4j.Logger;
 import org.infoglue.cms.applications.common.Session;
 import org.infoglue.cms.controllers.kernel.impl.simple.TransactionHistoryController;
+import org.infoglue.cms.controllers.kernel.impl.simple.UserControllerProxy;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.util.CmsPropertyHandler;
 import org.infoglue.cms.util.DesEncryptionHelper;
@@ -142,6 +143,18 @@ public class InfoGlueAuthenticationFilter implements Filter
         this.filterConfig = config;
         String filterURIs = filterConfig.getInitParameter(FILTER_URIS_PARAMETER);
         uriMatcher = URIMatcher.compilePatterns(splitString(filterURIs, ","), false);
+        
+        try
+        {
+			boolean anonymousExists = UserControllerProxy.getController().userExists(CmsPropertyHandler.getAnonymousUser());
+			if(!anonymousExists)
+				Log.error("The anonymous user '" + CmsPropertyHandler.getAnonymousUser() + "' was not found. Add it immediately.");
+        }
+        catch (Exception e) 
+        {
+        	Log.error("Error checking if the anonymous user '" + CmsPropertyHandler.getAnonymousUser() + "' was not found. Message:" + e.getMessage());
+		}
+
 	}
     
 	
@@ -676,6 +689,13 @@ public class InfoGlueAuthenticationFilter implements Filter
 		    	InfoGlueAuthenticationFilter.casLogoutUrl = casLogoutUrl;
 
 		    String extraPropertiesString = CmsPropertyHandler.getServerNodeDataProperty("deliver", "extraSecurityParameters", true, null);
+		    System.out.println("extraPropertiesString 1:" + extraPropertiesString);
+		    if(extraPropertiesString == null || extraPropertiesString.equals(""))
+		    {
+		    	extraPropertiesString = CmsPropertyHandler.getServerNodeDataProperty(null, "extraSecurityParameters", true, null);
+			    System.out.println("extraPropertiesString 2:" + extraPropertiesString);
+		    }
+		    
 		    if(extraPropertiesString != null)
 			{
 			    logger.info("Loading extra properties from propertyset. extraPropertiesString:" + extraPropertiesString);

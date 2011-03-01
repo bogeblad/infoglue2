@@ -291,13 +291,31 @@ public class CombinedJDBCBasicAuthorizationModule implements AuthorizationModule
 		
 		return users;
 	}
-/*
-	public List getFilteredUsers(String firstName, String lastName, String userName, String email, String[] roleIds) throws Exception
+	
+	public List getFilteredUsers(String searchString) throws Exception 
 	{
-		throw new Exception("Unsupported operation");
-		//return null;
+		List users = new ArrayList();
+		
+		try
+		{
+			users.addAll(getMainAuthorizationModule().getFilteredUsers(searchString));
+		}		
+		catch(Exception e)
+		{
+		}
+
+		try
+		{
+			users.addAll(getFallbackAuthorizationModule().getFilteredUsers(searchString));
+		}		
+		catch(Exception e)
+		{
+		}
+		
+		return users;
 	}
-*/
+
+
 	
 	public List getUsers(String roleName) throws Exception
 	{

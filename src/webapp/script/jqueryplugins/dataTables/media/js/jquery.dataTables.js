@@ -1,11 +1,11 @@
 /*
  * File:        jquery.dataTables.js
  * Version:     1.5.2
- * CVS:         $Id: jquery.dataTables.js,v 1.1 2009/10/08 21:47:40 mattias Exp $
+ * CVS:         $Id: jquery.dataTables.js,v 1.1.2.1 2011/03/01 15:33:23 mattias Exp $
  * Description: Paginate, search and sort HTML tables
  * Author:      Allan Jardine (www.sprymedia.co.uk)
  * Created:     28/3/2008
- * Modified:    $Date: 2009/10/08 21:47:40 $ by $Author: mattias $
+ * Modified:    $Date: 2011/03/01 15:33:23 $ by $Author: mattias $
  * Language:    Javascript
  * License:     GPL v2 or BSD 3 point style
  * Project:     Mtaala
