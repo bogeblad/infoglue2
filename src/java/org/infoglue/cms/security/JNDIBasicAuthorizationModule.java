@@ -1357,6 +1357,11 @@ public class JNDIBasicAuthorizationModule implements AuthorizationModule, Serial
 		return users;
 	}
 
+	public List getFilteredUsers(String searchString) throws Exception 
+	{
+		return getUsers();
+	}
+
     /* (non-Javadoc)
      * @see org.infoglue.cms.security.AuthorizationModule#getRoleUsers(java.lang.String)
      */

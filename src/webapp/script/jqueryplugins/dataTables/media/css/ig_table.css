@@ -1,10 +1,10 @@
 /*
  *  File:         demo_table.css
- *  CVS:          $Id: ig_table.css,v 1.1 2009/10/08 21:47:40 mattias Exp $
+ *  CVS:          $Id: ig_table.css,v 1.2 2011/03/01 14:53:15 mattias Exp $
  *  Description:  CSS descriptions for DataTables demo pages
  *  Author:       Allan Jardine
  *  Created:      Tue May 12 06:47:22 BST 2009
- *  Modified:     $Date: 2009/10/08 21:47:40 $ by $Author: mattias $
+ *  Modified:     $Date: 2011/03/01 14:53:15 $ by $Author: mattias $
  *  Language:     CSS
  *  Project:      DataTables
  *
@@ -32,9 +32,11 @@
 
 .dataTables_wrapper {
 	position: relative;
-	min-height: 302px;
-	_height: 302px;
+	min-height: 152px;
+	_height: 152px;
 	clear: both;
+	margin-left: 10px;
+	margin-right: 10px;
 }
 
 .dataTables_processing {
@@ -64,7 +66,7 @@
 }
 
 .dataTables_info {
-	width: 60%;
+	width: 40%;
 	float: left;
 	margin-left: 16px;
 }
@@ -112,16 +114,16 @@ table.display {
 	margin-bottom: 5px;
 	width: 100%;
 	clear: both;
+	border-collapse:collapse;
+	border: 1px solid #D0D0D0;
 }
 
 table.display thead th {
-	padding: 3px 18px 3px 16px;
-	border-top: 1px solid #9BBDDE;
-	border-bottom: 1px solid #9BBDDE;
+	padding: 5px 18px 5px 16px;
 	font-weight: bold;
 	cursor: pointer;
 	* cursor: hand;
-	background-color:#EEEEEE;
+	background-color:#ECECEC;
 }
 
 table.display tfoot th {
@@ -130,12 +132,16 @@ table.display tfoot th {
 	font-weight: bold;
 }
 
-table.display tr.heading2 td {
-	border-bottom: 1px solid #aaa;
-}
-
 table.display td {
 	padding: 3px 16px;
+	height: 26px;
+}
+
+table.display td a.deleteCross {
+	text-decoration: none;
+	display: block;
+	width: 20px;
+	height: 20px;
 }
 
 table.display td.center {
@@ -170,7 +176,7 @@ tr.odd {
 	background-color: #FFFFFF;
 }
 tr.even {
-	background-color: #FFFFFF;
+	background-color: #EEEEEE;
 }
 tr.odd:hover, tr.even:hover {
 	background-color: #DFEAF6;
@@ -184,7 +190,7 @@ tr.odd:hover, tr.even:hover {
  * Misc
  */
 .top, .bottom {
-	padding: 15px;
+	padding: 4px;
 	background-color: #F5F5F5;
 	border: 1px solid #CCCCCC;
 }
@@ -228,7 +234,7 @@ td.details {
 }
 
 .paging_full_numbers {
-	width: 400px;
+	width: 50%;
 	height: 22px;
 	line-height: 22px;
 }
@@ -264,6 +270,12 @@ table.display tr.odd.row_selected td {
 	background-color: #9FAFD1;
 }
 
+.next {
+	background: none;
+}
+.previous {
+	background: none;
+}
 
 /* For the Conditional-CSS grading rows */
 /*

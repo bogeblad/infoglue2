@@ -1,0 +1,10 @@
+{
+	"sEcho": $sEcho, 
+	"iTotalRecords": $totalRecords, 
+	"iTotalDisplayRecords": $totalDisplayRecords, 
+	"aaData": [ 
+		#foreach($principal in $infogluePrincipals)
+		#if($velocityCount > 1),#end["<a class='user' href='ViewSystemUser.action?userName=$principal.name'>$principal.name</a>","$principal.firstName","$principal.lastName"]
+		#end
+	] 
+}
