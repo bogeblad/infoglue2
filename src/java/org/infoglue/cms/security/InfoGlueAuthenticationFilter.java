@@ -152,7 +152,7 @@ public class InfoGlueAuthenticationFilter implements Filter
         }
         catch (Exception e) 
         {
-        	Log.error("Error checking if the anonymous user '" + CmsPropertyHandler.getAnonymousUser() + "' was not found. Message:" + e.getMessage());
+        	logger.error("Error checking if the anonymous user '" + CmsPropertyHandler.getAnonymousUser() + "' was not found. Message:" + e.getMessage());
 		}
 
 	}
