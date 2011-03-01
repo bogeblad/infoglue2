@@ -148,7 +148,7 @@ public class InfoGlueAuthenticationFilter implements Filter
         {
 			boolean anonymousExists = UserControllerProxy.getController().userExists(CmsPropertyHandler.getAnonymousUser());
 			if(!anonymousExists)
-				Log.error("The anonymous user '" + CmsPropertyHandler.getAnonymousUser() + "' was not found. Add it immediately.");
+				logger.error("The anonymous user '" + CmsPropertyHandler.getAnonymousUser() + "' was not found. Add it immediately.");
         }
         catch (Exception e) 
         {
