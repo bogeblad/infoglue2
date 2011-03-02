@@ -1,21 +1,36 @@
-<?xml version="1.0" encoding="UTF-8"?> 
- 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+#define($headerMarkup)
 
-<html>
-<head>
-	<title>Select user</title>
-	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+	<style type="text/css">
+		@import "script/jqueryplugins/dataTables/media/css/ig_table.css";
+	</style>
+	<script type="text/javascript" language="javascript" src="script/jqueryplugins/dataTables/media/js/jquery.dataTables.min.js"></script>
+
+	<script type="text/javascript">
+	<!-- 		
+		$(document).ready(function(){
+			
+			#set($extraParameter = '"bProcessing": true, "bServerSide": true, "sAjaxSource": "ViewListSystemUser!popupProcessAndFilter.action"')
+			#initDataTableImpl("dataTable" $extraParameter)
 	
-	<link rel="stylesheet" type="text/css" href="css/cms.css" /> 
-	<link rel="stylesheet" type="text/css" href="css/infogluecommons.css" /> 
-	
-	<script language="JavaScript" src="script/listview.js"></script>
-	<script type="text/javascript" src="script/infogluecommons.js"></script>
-	
-	<script language="JavaScript">
-	<!--
-		
+			$("#dataTable_processing").prepend("<img src='css/embla/images/loading.gif' width='16'/>").css("color", "blue");
+			$("#dataTable_filter input").attr("id","sSearch").hide();
+			$("#dataTable_filter").append("<input type='text' id='searchField'/> <img id='reset' src='images/v3/cross.png'>");
+			$("#reset").click(function() { $("#searchField").val(""); $("#sSearch").val("").trigger('keyup'); }).hide();
+			$("#searchField").keyup(function(e) {
+				if(e.keyCode == 13) {
+					if($("#searchField").val().length > 2)
+					{
+						$("#sSearch").val($("#searchField").val()).trigger('keyup');
+						$("#reset").show();
+					}
+					else
+						alert("You must state at least 3 characters for the search to work");
+				}
+			});
+			
+			window.resizeTo(500, 600);
+		});
+
 		function hideUsers()
 		{
 			window.close();
@@ -31,58 +46,69 @@
 		
 	-->
 	</script>
+
+#end
+
+################################
+##BEGIN REAL CODE
+################################
+
+#beginLightCommonToolV3Impl("tool.managementtool.viewSystemUserList.header" "" "" false true $!disableCloseButton $headerMarkup false "")
+
+	<div style="clear: both;"></div>
 	
-	<META HTTP-EQUIV="pragma" CONTENT="no-cache" />
-	<META HTTP-EQUIV="expires" CONTENT="-1" />	
-</head>
-
-<body class="managementtooledit">
-
-<table width="100%" bgcolor="white" cellpadding="0" cellspacing="0" border="0">
-
-	<tr>
-		<td class="lightblue" colspan="3"><h2>Alphabet</h2></td>
-	</tr>
-	<tr>
-		<td class="lightblue" colspan="3">
-			<ul id="index">
+	<h3>$ui.getString("tool.managementtool.viewSystemUserList.header")</h3>
+	
+	<div id="igEditArea" class="igScrollArea" onfocus="this.blur();">
+		
+		#*
+		<ul id="index" style="list-style: none; height: 16px; margin: 0 10px 0 10px; background-color:#F5F5F5; border:1px solid #CCCCCC; padding:4px;">
+			<li style="float: left;">Alphabetic: </li>
 			#foreach($char in $usersFirstNameChars)
-			<li>
-				<a href="ViewListSystemUser!userListForPopupV3.action?filterChar=$char" class="indexChar">$char</a>
+			<li style="float: left; margin-left: 4px; text-transform: capitalize;">
+				#if("$filterChar" == "$char")
+					$char
+				#else
+				<a href="ViewListSystemUser!userListForPopupV3.action?filterChar=$char" style="text-decoration: underline;">$char</a>
+				#end
 			</li>
 			#end
-			</ul>
-		</td>
-	</tr>
-	<tr class="darkblue">
-		<td class="smalllabel">Fullname</td>
-		<td class="smalllabel">Name</td>
-		<td class="smalllabel" width="90%" align="right"><a href="javascript:hideUsers();">Close</a></td>
-	</tr>
-	<tr>
-		<td class="lightblue" colspan="3" height="1"><img src="images/trans.gif" width="1" height="1"></td>
-	</tr>
-	<tr>
-		<td class="darkblue" colspan="3" height="1"><img src="images/trans.gif" width="1" height="1"></td>
-	</tr>
-		
-	#foreach($user in $filteredInfogluePrincipals)
-	
-		#set( $isOdd = $velocityCount % 2)
-		#if($isOdd==0)
-			#set($class = "class='lightblue'")
-		#else
-			#set($class = "class='white'")
-		#end	
-		
-		<tr $class>
-		  	<td style="padding: 2px;" nowrap><a href="javascript:selectUser('$user.name');">$user.firstName $user.lastName</a></td>
-		  	<td style="padding: 2px;">$user.name</td>
-		  	<td>&nbsp;</td>
-		</tr>
-	
-	#end
-</table>			
+			<li style="float: left; margin-left: 4px;">
+				#if("$filterChar" == "all")
+					All
+				#else
+					<a href="ViewListSystemUser!userListForPopupV3.action?filterChar=all" style="text-decoration: underline;">All</a>
+				#end
+			</li>
+		</ul>
+		*#
 
-</body>
-</html>
+		<table cellpadding="0" cellspacing="0" border="1" class="display" id="dataTable">
+			<thead>
+				<tr>
+					<th>$ui.getString("entity.SystemUser.userName.label")</th>
+					<th>$ui.getString("entity.SystemUser.firstName.label")</th>
+					<th>$ui.getString("entity.SystemUser.lastName.label")</th>
+				</tr>
+			</thead>
+			<tbody>
+				#if(("$!filterChar" == "" && $infogluePrincipals.size() < 300) || "$!filterChar" == "all")
+					#set($filteredInfogluePrincipals = $infogluePrincipals)
+				#end
+			
+				#foreach($user in $filteredInfogluePrincipals)
+
+					<tr>
+					  	<td><a href="javascript:selectUser('$user.name');">$user.name</a></td>
+					  	<td>$user.firstName</td>
+					  	<td>$user.lastName</td>
+					</tr>
+				
+				#end
+				
+			</tbody>
+		</table>
+				
+	</div>
+		
+#endLightCommonToolV3()
