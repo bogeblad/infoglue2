@@ -323,6 +323,27 @@ public class SystemUserController extends BaseController
         return getAllObjects(SystemUserImpl.class, "userName", db);
     }
     
+	public List<SystemUserVO> getSystemUserVOListWithPassword(String password, Database db) throws SystemException, Bug, Exception
+	{
+		List<SystemUserVO> filteredVOList = new ArrayList<SystemUserVO>();
+		
+		OQLQuery oql = db.getOQLQuery( "SELECT u FROM org.infoglue.cms.entities.management.impl.simple.SystemUserImpl u WHERE u.password = $1 ORDER BY u.userName");
+    	oql.bind(password);
+    	
+		QueryResults results = oql.execute(Database.ReadOnly);
+		
+		while (results.hasMore()) 
+		{
+			SystemUser extranetUser = (SystemUser)results.next();
+			filteredVOList.add(extranetUser.getValueObject());
+		}
+		
+		results.close();
+		oql.close();
+
+		return filteredVOList;
+	}
+	
 	public List getFilteredSystemUserVOList(String searchString) throws SystemException, Bug
 	{
 		List filteredList = new ArrayList();
