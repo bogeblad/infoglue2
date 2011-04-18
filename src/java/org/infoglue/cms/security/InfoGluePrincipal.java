@@ -59,12 +59,16 @@ public class InfoGluePrincipal implements Principal, Serializable
 	
 	public InfoGluePrincipal(String name, String displayName, String firstName, String lastName, String email, List roles, List groups, boolean isAdministrator, AuthorizationModule autorizationModule)
 	{
+		InfoGlueRole infoGlueRole = new InfoGlueRole("anonymous", "The default anonymous role", autorizationModule);
+		roles.add(infoGlueRole);
+
 		this.name = name;
 		this.displayName = displayName;
 		this.firstName = firstName;
 		this.lastName = lastName;
 		this.email = email;
 		this.roles = roles;
+
 		this.groups = groups;
 		this.metaInformation = new HashMap();
 		this.isAdministrator = isAdministrator;
@@ -78,6 +82,9 @@ public class InfoGluePrincipal implements Principal, Serializable
 	
 	public InfoGluePrincipal(String name, String displayName, String firstName, String lastName, String email, List roles, List groups, Map metaInformation, boolean isAdministrator, AuthorizationModule autorizationModule)
 	{
+		InfoGlueRole infoGlueRole = new InfoGlueRole("anonymous", "The default anonymous role", autorizationModule);
+		roles.add(infoGlueRole);
+
 		this.name = name;
 		this.displayName = displayName;
 		this.firstName = firstName;
