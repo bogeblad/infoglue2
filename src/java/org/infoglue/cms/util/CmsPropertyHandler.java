@@ -647,6 +647,11 @@ public class CmsPropertyHandler
 	    return getProperty("maxClients");
 	}
 
+	public static String getAllowedDirectLoginNames()
+	{
+	    return getServerNodeProperty("allowedDirectLoginNames", true, "eventPublisher");
+	}
+	
 	public static String getAdministratorUserName()
 	{
 	    return getProperty("administratorUserName");

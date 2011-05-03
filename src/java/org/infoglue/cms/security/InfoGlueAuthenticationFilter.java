@@ -689,11 +689,11 @@ public class InfoGlueAuthenticationFilter implements Filter
 		    	InfoGlueAuthenticationFilter.casLogoutUrl = casLogoutUrl;
 
 		    String extraPropertiesString = CmsPropertyHandler.getServerNodeDataProperty("deliver", "extraSecurityParameters", true, null);
-		    System.out.println("extraPropertiesString 1:" + extraPropertiesString);
+		    logger.info("extraPropertiesString 1:" + extraPropertiesString);
 		    if(extraPropertiesString == null || extraPropertiesString.equals(""))
 		    {
 		    	extraPropertiesString = CmsPropertyHandler.getServerNodeDataProperty(null, "extraSecurityParameters", true, null);
-			    System.out.println("extraPropertiesString 2:" + extraPropertiesString);
+		    	logger.info("extraPropertiesString 2:" + extraPropertiesString);
 		    }
 		    
 		    if(extraPropertiesString != null)
@@ -757,6 +757,8 @@ public class InfoGlueAuthenticationFilter implements Filter
 		    logger.error("An error occurred so we should not complete the transaction:" + e, e);
 			throw new SystemException("Setting the security parameters failed: " + e.getMessage(), e);
 		}
+		
+		UserControllerProxy.initializedImportClass = false;
 	}
 
     private String getContextRelativeURI(HttpServletRequest request) 

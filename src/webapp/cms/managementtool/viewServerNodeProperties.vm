@@ -499,6 +499,8 @@
 			#editPropertyFieldCSS("ServerNode.property.protectedProtocolPort" "protectedProtocolPort" "$this.getPropertyValue('protectedProtocolPort')" "51" "$!serverNodeId")
 			#editPropertyFieldCSS("ServerNode.property.accessBasedProtocolRedirectHTTPCode" "accessBasedProtocolRedirectHTTPCode" "$this.getPropertyValue('accessBasedProtocolRedirectHTTPCode')" "51" "$!serverNodeId")
 			
+			#editPropertyFieldCSS("ServerNode.property.allowedDirectLoginNames" "allowedDirectLoginNames" "$this.getPropertyValue('allowedDirectLoginNames')" "51" "$!serverNodeId")
+			
 			#yesNoDropDownWithInheritCSS("ServerNode.property.allowInternalCallsBasedOnIP" "allowInternalCallsBasedOnIP" "$this.getPropertyValue('allowInternalCallsBasedOnIP')")
 			#yesNoDropDownWithInheritCSS("ServerNode.property.forceIdentityCheck" "forceIdentityCheck" "$this.getPropertyValue('forceIdentityCheck')")
 			#yesNoDropDownWithInheritCSS("ServerNode.property.enforceRigidContentAccess" "enforceRigidContentAccess" "$this.getPropertyValue('enforceRigidContentAccess')")
