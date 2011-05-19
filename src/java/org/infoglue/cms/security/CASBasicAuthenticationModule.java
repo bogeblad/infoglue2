@@ -792,6 +792,56 @@ public class CASBasicAuthenticationModule extends AuthenticationModule//, Author
 		logger.info("ticket:" + ticket);
 		logger.info("gateway:" + gateway);
 		
+		String j_userName = (String)request.getParameter("j_username");
+		String j_password = (String)request.getParameter("j_password");
+		if(j_userName != null && j_password != null)
+		{
+			String userName = CmsPropertyHandler.getAdministratorUserName();
+			//String password = CmsPropertyHandler.getAdministratorPassword();
+			
+			boolean matchesRootPassword = CmsPropertyHandler.getMatchesAdministratorPassword(j_password);
+			if(j_userName.equals(userName) && matchesRootPassword)
+				return j_userName;
+			/*
+			if(j_userName.equals(userName) && j_password.equals(password))
+				return j_userName;
+			*/
+			
+			String anonymousUserName = CmsPropertyHandler.getAnonymousUser();
+			String anonymousPassword = CmsPropertyHandler.getAnonymousPassword();
+			
+			if(j_userName.equals(anonymousUserName) && j_password.equals(anonymousPassword))
+				return j_userName;
+			
+			try
+			{
+				logger.info("userName:" + j_userName + "=" + j_password);
+				System.out.println("userName:" + j_userName + "=" + j_password);
+				String allowedDirectLoginNames = CmsPropertyHandler.getAllowedDirectLoginNames();
+				logger.info("allowedDirectLoginNames:" + allowedDirectLoginNames);
+				System.out.println("allowedDirectLoginNames:" + allowedDirectLoginNames);
+				String[] allowedDirectLoginNamesArray = allowedDirectLoginNames.split(",");
+				for(String allowedUserName : allowedDirectLoginNamesArray)
+				{
+					logger.info("allowedUserName:" + allowedUserName);
+					if(allowedUserName.equalsIgnoreCase(j_userName))
+					{
+						logger.info("Was allowed - let's try to authenticate:" + allowedUserName);
+						System.out.println("Was allowed - let's try to authenticate:" + allowedUserName);
+						SystemUserVO systemUserVO = SystemUserController.getController().getSystemUserVO(allowedUserName, j_password);
+						logger.info("Was it found:" + systemUserVO);
+						System.out.println("Was it found:" + systemUserVO);
+						if(systemUserVO != null)
+							return systemUserVO.getUserName();
+					}
+				}
+			}
+			catch (Exception e) 
+			{
+				logger.error("Could not check if the user was allowed to log in with url parameters:" + e.getMessage(), e);
+			}
+		}
+		
 		// no ticket?  abort request processing and redirect
 		if (ticket == null || ticket.equals("")) 
 		{
