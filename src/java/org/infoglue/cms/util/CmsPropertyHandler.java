@@ -2118,6 +2118,11 @@ public class CmsPropertyHandler
 		return getServerNodeProperty("accessBasedProtocolRedirectHTTPCode", true, "301");
 	}
 
+	public static String getIpAddressesToFallbackToBasicAuth()
+	{
+		return getServerNodeProperty("ipAddressesToFallbackToBasicAuth", true, "");
+	}
+
 	public static boolean getDisableDecoratedFinalRendering()
 	{
 		String disableDecoratedFinalRendering = getServerNodeProperty("disableDecoratedFinalRendering", true, "false");

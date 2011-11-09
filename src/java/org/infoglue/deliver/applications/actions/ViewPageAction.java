@@ -1168,7 +1168,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
 			    {
 					Map status = new HashMap();
 					status.put("redirected", new Boolean(false));
-					principal = AuthenticationModule.getAuthenticationModule(db, this.getOriginalFullURL()).loginUser(getRequest(), getResponse(), status);
+					principal = AuthenticationModule.getAuthenticationModule(db, this.getOriginalFullURL(), getRequest(), false).loginUser(getRequest(), getResponse(), status);
 					Boolean redirected = (Boolean)status.get("redirected");
 					if(redirected != null && redirected.booleanValue())
 					{
@@ -1206,7 +1206,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
 			{				
 				Map status = new HashMap();
 				status.put("redirected", new Boolean(false));
-				principal = AuthenticationModule.getAuthenticationModule(db, this.getOriginalFullURL()).loginUser(getRequest(), getResponse(), status);
+				principal = AuthenticationModule.getAuthenticationModule(db, this.getOriginalFullURL(), getRequest(), false).loginUser(getRequest(), getResponse(), status);
 				Boolean redirected = (Boolean)status.get("redirected");
 				if(redirected != null && redirected.booleanValue())
 				{
@@ -1385,7 +1385,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
 
 					if(principal.getName().equals(CmsPropertyHandler.getAnonymousUser()))
 					{
-						String ssoUserName = AuthenticationModule.getAuthenticationModule(null, this.getOriginalFullURL()).getSSOUserName(getRequest());
+						String ssoUserName = AuthenticationModule.getAuthenticationModule(null, this.getOriginalFullURL(), this.getRequest(), false).getSSOUserName(getRequest());
 						//System.out.println("ssoUserName:" + ssoUserName);
 						if(ssoUserName != null)
 						{
@@ -1502,7 +1502,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
 					Map status = new HashMap();
 					status.put("redirected", new Boolean(false));
 					getRequest().setAttribute("gateway", "" + gateway);
-					principal = AuthenticationModule.getAuthenticationModule(db, this.getOriginalFullURL()).loginUser(getRequest(), getResponse(), status);
+					principal = AuthenticationModule.getAuthenticationModule(db, this.getOriginalFullURL(), this.getRequest(), false).loginUser(getRequest(), getResponse(), status);
 					Boolean redirected = (Boolean)status.get("redirected");
 					if(redirected != null && redirected.booleanValue())
 					{
@@ -1526,7 +1526,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
 				Map status = new HashMap();
 				status.put("redirected", new Boolean(false));
 				getRequest().setAttribute("gateway", "" + gateway);
-				principal = AuthenticationModule.getAuthenticationModule(db, this.getOriginalFullURL()).loginUser(getRequest(), getResponse(), status);
+				principal = AuthenticationModule.getAuthenticationModule(db, this.getOriginalFullURL(), this.getRequest(), false).loginUser(getRequest(), getResponse(), status);
 				Boolean redirected = (Boolean)status.get("redirected");
 				if(redirected != null && redirected.booleanValue())
 				{
@@ -1654,7 +1654,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
 			    arguments.put("j_username", userName);
 			    arguments.put("j_password", password);
 			    
-				principal = ExtranetController.getController().getAuthenticatedPrincipal(arguments);
+				principal = ExtranetController.getController().getAuthenticatedPrincipal(arguments, this.getRequest());
 				if(principal != null)
 				{
 				    this.getHttpSession().setAttribute("infogluePrincipal", principal);
@@ -1729,7 +1729,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
 		    Map arguments = new HashMap();
 		    arguments.put("ticket", ticket);
 		    
-			principal = ExtranetController.getController().getAuthenticatedPrincipal(arguments);
+			principal = ExtranetController.getController().getAuthenticatedPrincipal(arguments, this.getRequest());
 			if(principal != null)
 			{
 			    this.getHttpSession().setAttribute("infogluePrincipal", principal);
@@ -1743,7 +1743,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
 		    arguments.put("j_username", userName);
 		    arguments.put("j_password", password);
 		    
-			principal = ExtranetController.getController().getAuthenticatedPrincipal(arguments);
+			principal = ExtranetController.getController().getAuthenticatedPrincipal(arguments, this.getRequest());
 			if(principal != null)
 			{
 			    this.getHttpSession().setAttribute("infogluePrincipal", principal);
@@ -1809,7 +1809,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
 
   	private String getRedirectUrl(HttpServletRequest request, HttpServletResponse response) throws ServletException, Exception 
   	{
-		String url = AuthenticationModule.getAuthenticationModule(null, this.getOriginalFullURL()).getLoginDialogUrl(request, response);
+		String url = AuthenticationModule.getAuthenticationModule(null, this.getOriginalFullURL(), this.getRequest(), false).getLoginDialogUrl(request, response);
 		
 		String repositoryLoginUrl = RepositoryDeliveryController.getRepositoryDeliveryController().getExtraPropertyValue(repositoryId, "loginUrl");
 		//System.out.println("repositoryLoginUrl:" + repositoryLoginUrl);

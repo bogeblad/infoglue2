@@ -7124,7 +7124,7 @@ public class BasicTemplateController implements TemplateController
 			    arguments.put("j_username", CmsPropertyHandler.getAnonymousUser());
 			    arguments.put("j_password", CmsPropertyHandler.getAnonymousPassword());
 
-	            infoGluePrincipal = (InfoGluePrincipal) ExtranetController.getController().getAuthenticatedPrincipal(arguments);
+	            infoGluePrincipal = (InfoGluePrincipal) ExtranetController.getController().getAuthenticatedPrincipal(arguments, getHttpServletRequest());
 	        }
 	        
 			WorkflowController workflowController = WorkflowController.getController();
@@ -7157,7 +7157,7 @@ public class BasicTemplateController implements TemplateController
 	            arguments.put("j_username", CmsPropertyHandler.getAnonymousUser());
 			    arguments.put("j_password", CmsPropertyHandler.getAnonymousPassword());
 			    
-			    infoGluePrincipal = (InfoGluePrincipal) ExtranetController.getController().getAuthenticatedPrincipal(arguments);
+			    infoGluePrincipal = (InfoGluePrincipal) ExtranetController.getController().getAuthenticatedPrincipal(arguments, getHttpServletRequest());
 	        }
 	        
 			WorkflowController workflowController = WorkflowController.getController();
@@ -7188,7 +7188,7 @@ public class BasicTemplateController implements TemplateController
 	            arguments.put("j_username", CmsPropertyHandler.getAnonymousUser());
 			    arguments.put("j_password", CmsPropertyHandler.getAnonymousPassword());
 
-		        infoGluePrincipal = (InfoGluePrincipal) ExtranetController.getController().getAuthenticatedPrincipal(arguments);
+		        infoGluePrincipal = (InfoGluePrincipal) ExtranetController.getController().getAuthenticatedPrincipal(arguments, getHttpServletRequest());
 	        }
 
 			WorkflowController workflowController = WorkflowController.getController();
@@ -7485,7 +7485,7 @@ public class BasicTemplateController implements TemplateController
 	
 	public String getLogoutURL() throws Exception
 	{
-		AuthenticationModule authenticationModule = AuthenticationModule.getAuthenticationModule(this.getDatabase(), null);
+		AuthenticationModule authenticationModule = AuthenticationModule.getAuthenticationModule(this.getDatabase(), null, getHttpServletRequest(), false);
 	    return authenticationModule.getLogoutUrl();
 	}
 

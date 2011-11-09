@@ -90,7 +90,7 @@ public abstract class InfoGlueAbstractAction extends WebworkAbstractAction
 	
 	public String getLogoutURL() throws Exception
 	{
-		AuthenticationModule authenticationModule = AuthenticationModule.getAuthenticationModule(null, null);
+		AuthenticationModule authenticationModule = AuthenticationModule.getAuthenticationModule(null, null, this.getRequest(), false);
 	    return authenticationModule.getLogoutUrl();
 	}
 
@@ -278,7 +278,7 @@ public abstract class InfoGlueAbstractAction extends WebworkAbstractAction
 			    arguments.put("j_password", CmsPropertyHandler.getAnonymousPassword());
 			    arguments.put("ticket", this.getHttpSession().getAttribute("ticket"));
 
-			    principal = ExtranetController.getController().getAuthenticatedPrincipal(arguments);
+			    principal = ExtranetController.getController().getAuthenticatedPrincipal(arguments, getRequest());
 				
 				if(principal != null)
 					CacheController.cacheObject("userCache", "anonymous", principal);

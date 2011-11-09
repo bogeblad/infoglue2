@@ -386,6 +386,7 @@
 			#editPropertyFieldCSS("ServerNode.property.casProxyValidateUrl" "casProxyValidateUrl" "$this.getPropertyValue('casProxyValidateUrl')" "51" "$!serverNodeId")
 			#editPropertyFieldCSS("ServerNode.property.casServiceUrl" "casServiceUrl" "$this.getPropertyValue('casServiceUrl')" "51" "$!serverNodeId")
 			#editPropertyFieldCSS("ServerNode.property.casLogoutUrl" "casLogoutUrl" "$this.getPropertyValue('casLogoutUrl')" "51" "$!serverNodeId")
+			#editPropertyFieldCSS("ServerNode.property.ipAddressesToFallbackToBasicAuth" "ipAddressesToFallbackToBasicAuth" "$this.getPropertyValue('ipAddressesToFallbackToBasicAuth')" "51" "$!serverNodeId")
 			<div class="buttonRow">
 				<input type="image" src="$ui.getString("images.managementtool.buttons.save")" width="50" height="25" style="width: 50px;">
 				<a href="javascript:saveAndExit(document.editForm, 'ViewServerNodeProperties!saveAndExit.action');"><img src="$ui.getString("images.managementtool.buttons.saveAndExit")" width="80" height="25" border="0"></a>

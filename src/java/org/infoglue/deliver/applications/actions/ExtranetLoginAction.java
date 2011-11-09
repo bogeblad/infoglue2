@@ -84,7 +84,7 @@ public final class ExtranetLoginAction extends InfoGlueAbstractAction
 	{
 	    Map arguments = HttpUtilities.requestToHashtable((HttpServletRequest)this.getRequest());
 
-		if(ExtranetController.getController().getAuthenticatedPrincipal(arguments)!=null)
+		if(ExtranetController.getController().getAuthenticatedPrincipal(arguments, this.getRequest())!=null)
 			return "granted";
 		else
 			return "denied";
@@ -102,7 +102,7 @@ public final class ExtranetLoginAction extends InfoGlueAbstractAction
 		{
 		    Map arguments = HttpUtilities.requestToHashtable(hreq);
 		    
-			principal = ExtranetController.getController().getAuthenticatedPrincipal(arguments);
+			principal = ExtranetController.getController().getAuthenticatedPrincipal(arguments, hreq);
 		}
 		catch(Exception e)
 		{
@@ -153,7 +153,7 @@ public final class ExtranetLoginAction extends InfoGlueAbstractAction
 	    cookie_igpassword.setMaxAge(0);
 	    getResponse().addCookie(cookie_igpassword);
 
-		AuthenticationModule authenticationModule = AuthenticationModule.getAuthenticationModule(null, null);
+		AuthenticationModule authenticationModule = AuthenticationModule.getAuthenticationModule(null, null, getRequest(), false);
 		boolean redirected = authenticationModule.logoutUser(getRequest(), getResponse());
 		
 		if(redirected)

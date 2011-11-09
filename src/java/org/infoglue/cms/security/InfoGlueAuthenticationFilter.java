@@ -213,7 +213,23 @@ public class InfoGlueAuthenticationFilter implements Filter
 		        uriMatcher = URIMatcher.compilePatterns(splitString(filterURIs, ","), false);
 			}
 			
-			if(URI != null && URL != null && (URI.indexOf(loginUrl) > -1 || URL.indexOf(loginUrl) > -1 || URI.indexOf(invalidLoginUrl) > -1 || URL.indexOf(invalidLoginUrl) > -1 || URI.indexOf(logoutUrl) > -1 || URI.indexOf("Login!logout.action") > -1 || URL.indexOf(logoutUrl) > -1 || URI.indexOf("UpdateCache") > -1 || URI.indexOf("protectedRedirect.jsp") > -1 || uriMatcher.matches(requestURI)))
+			if(URI != null && URL != null && 
+					(
+							URI.indexOf(loginUrl) > -1 || 
+							URL.indexOf(loginUrl) > -1 || 
+							URI.indexOf("Login.action") > -1 || 
+							URL.indexOf("Login.action") > -1 || 
+							URI.indexOf(invalidLoginUrl) > -1 || 
+							URL.indexOf(invalidLoginUrl) > -1 || 
+							URI.indexOf("Login!invalidLogin.action") > -1 || 
+							URL.indexOf("Login!invalidLogin.action") > -1 || 
+							URI.indexOf(logoutUrl) > -1 || 
+							URI.indexOf("Login!logout.action") > -1 || 
+							URL.indexOf(logoutUrl) > -1 || 
+							URI.indexOf("UpdateCache") > -1 || 
+							URI.indexOf("protectedRedirect.jsp") > -1 || 
+							uriMatcher.matches(requestURI)
+					))
 			{
 				fc.doFilter(request, response); 
 				return;
@@ -252,7 +268,6 @@ public class InfoGlueAuthenticationFilter implements Filter
 
 			String userName = request.getParameter("j_username");
 			String password = request.getParameter("j_password");
-			
 			if(userName != null && password != null)
 			{
 				String administratorUserName = CmsPropertyHandler.getAdministratorUserName();
@@ -351,11 +366,9 @@ public class InfoGlueAuthenticationFilter implements Filter
 						String encryptedPassword = encHelper.encrypt(password);
 	
 						String deliverBaseUrl = CmsPropertyHandler.getComponentRendererUrl();
-				    	//System.out.println("deliverBaseUrl:" + deliverBaseUrl);
 						String[] parts = deliverBaseUrl.split("/");
 						
 						deliverBaseUrl = "/" + parts[parts.length -1];
-						//System.out.println("deliverBaseUrl:" + deliverBaseUrl);
 						//logger.info("used cmsBaseUrl:" + cmsBaseUrl);
 						
 					    ServletContext servletContext = filterConfig.getServletContext().getContext(deliverBaseUrl);
@@ -530,7 +543,7 @@ public class InfoGlueAuthenticationFilter implements Filter
 			currentUrl = request.getRequestURL() + (request.getQueryString() == null ? "" : "?" + request.getQueryString());
 		}
 
-  		AuthenticationModule authenticationModule = AuthenticationModule.getAuthenticationModule(null, currentUrl);
+  		AuthenticationModule authenticationModule = AuthenticationModule.getAuthenticationModule(null, currentUrl, request, false);
   		
 		authenticatedUserName = authenticationModule.authenticateUser(request, response, fc);
 		
