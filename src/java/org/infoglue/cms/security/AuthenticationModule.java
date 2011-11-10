@@ -37,6 +37,7 @@ import org.apache.log4j.Logger;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.util.CmsPropertyHandler;
 import org.infoglue.cms.util.IPMatcher;
+import org.infoglue.deliver.util.Timer;
 
 
 /**
@@ -154,6 +155,7 @@ public abstract class AuthenticationModule
 	
 	private static boolean fallBackToBasicBasedOnIP(HttpServletRequest request) 
 	{
+		Timer t = new Timer();
 		if(request == null)
 			return false;
 			
@@ -164,7 +166,7 @@ public abstract class AuthenticationModule
 		
 		String[] ipAddressesToFallbackToBasicAuthArray = ipAddressesToFallbackToBasicAuth.split(",");
 		List<String> list = Arrays.asList(ipAddressesToFallbackToBasicAuthArray);
-		
+				
 		boolean allowXForwardedIPCheck = CmsPropertyHandler.getAllowXForwardedIPCheck();
 		
 		String ipRemote = request.getRemoteAddr();
@@ -176,8 +178,11 @@ public abstract class AuthenticationModule
 	    }
 	    
 	    logger.info("ipAddressesToFallbackToBasicAuth: " + ipAddressesToFallbackToBasicAuth + "\nRequest: "+ipRequest+", Remote: "+ipRemote);
-        
-		return IPMatcher.isIpInList(list, ipRemote, ipRequest);
+		
+		boolean isInList = IPMatcher.isIpInList(list, ipRemote, ipRequest);
+		if(logger.isInfoEnabled())
+			t.printElapsedTime("Auth took");
+		return isInList;
 	}
 
 	public abstract String authenticateUser(HttpServletRequest request, HttpServletResponse response, FilterChain fc) throws Exception;
