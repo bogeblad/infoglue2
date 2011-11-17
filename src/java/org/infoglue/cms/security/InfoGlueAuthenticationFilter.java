@@ -158,6 +158,9 @@ public class InfoGlueAuthenticationFilter implements Filter
 	}
     
 	
+	/**
+	 * This filter is basically what secures Infoglue and enforces the authentication framework.
+	 */
 
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain fc) throws ServletException, IOException 
     {	
@@ -213,6 +216,7 @@ public class InfoGlueAuthenticationFilter implements Filter
 		        uriMatcher = URIMatcher.compilePatterns(splitString(filterURIs, ","), false);
 			}
 			
+			//Here are the url:s/paths that must be skipped by the security framework for it to work. Login screens etc must be reachable naturally.
 			if(URI != null && URL != null && 
 					(
 							URI.indexOf(loginUrl) > -1 || 

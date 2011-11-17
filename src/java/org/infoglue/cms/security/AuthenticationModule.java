@@ -41,7 +41,8 @@ import org.infoglue.deliver.util.Timer;
 
 
 /**
- * This interface defines what a authenticationmodule has to fulfill.
+ * This abstract class defines what a authentication module has to implement.
+ * It also acts as a factory class for the authentication framework.
  * 
  * @author Mattias Bogeblad
  */
@@ -50,7 +51,22 @@ public abstract class AuthenticationModule
 {
     private final static Logger logger = Logger.getLogger(AuthenticationModule.class.getName());
 
-	public static AuthenticationModule getAuthenticationModule(Object transactionObject, String successLoginUrl, HttpServletRequest request, boolean forceBasicModule) throws SystemException
+    /**
+     * This is the authentication framework factory method which looks at the system configuration and instantiates an implementation based on this.
+     * A deviation from the normal pattern exists and it is related to how SSO-implementations (in this case CAS initially) is handled. As CAS requires the 
+     * complete delegation of the request process (login form etc) to the CAS-service it is harder to login other systems or search spiders etc and a strong requirement 
+     * from customers has been to allow for certain IP-ranges to be directed to the basic authentication module instead (Infoglue's own) which is simpler to automate.   
+     * So for this to work the metod contains matching on IP and an optional parameter which forces fallback. 
+     * 
+     * @param transactionObject Optional database object if the authentication should be carried out within a transaction.
+     * @param successLoginUrl The url to return the user to when the login is successful. 
+     * @param request The user's HttpServletRequest.
+     * @param forceBasicModule In some cases - like when running WebDAV and CAS is not an option (or is it).
+     * @return The implementation of AuthenticationModule in question.
+     * @throws SystemException
+     */
+
+    public static AuthenticationModule getAuthenticationModule(Object transactionObject, String successLoginUrl, HttpServletRequest request, boolean forceBasicModule) throws SystemException
 	{
 		AuthenticationModule authenticationModule = null;
 		
