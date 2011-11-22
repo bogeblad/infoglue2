@@ -30,6 +30,7 @@ import java.util.List;
 
 import javax.servlet.ServletOutputStream;
 
+import org.apache.log4j.Logger;
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.RoleControllerProxy;
 import org.infoglue.cms.controllers.kernel.impl.simple.UserControllerProxy;
@@ -49,6 +50,8 @@ import org.infoglue.deliver.util.Timer;
 public class ViewListSystemUserAction extends InfoGlueAbstractAction 
 {
 	private static final long serialVersionUID = 1L;
+
+    private final static Logger logger = Logger.getLogger(ViewListSystemUserAction.class.getName());
 
 	private List infogluePrincipals;
 	
@@ -132,7 +135,10 @@ public class ViewListSystemUserAction extends InfoGlueAbstractAction
 	public String doProcessAndFilter() throws Exception 
 	{
 		Timer t = new Timer();
-		System.out.println("sSearch:" + sSearch);
+    	if(!logger.isInfoEnabled())
+    		t.setActive(false);
+
+		logger.info("sSearch:" + sSearch);
 		
 		String sortColNumber = getRequest().getParameter("iSortCol_0");
 		String sortDirection = getRequest().getParameter("sSortDir_0");
@@ -168,7 +174,7 @@ public class ViewListSystemUserAction extends InfoGlueAbstractAction
 		int start = new Integer(iDisplayStartString);
 		int end = start + new Integer(iDisplayLengthString);
 		
-		System.out.println("Getting principals:" + start + " to " + end + " from original list:" + this.infogluePrincipals.size());
+		logger.info("Getting principals:" + start + " to " + end + " from original list:" + this.infogluePrincipals.size());
 		if(this.infogluePrincipals.size() > end)
 			this.infogluePrincipals = this.infogluePrincipals.subList(start, end);
 		else

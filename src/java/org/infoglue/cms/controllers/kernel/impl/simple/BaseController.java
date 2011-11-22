@@ -249,7 +249,8 @@ public abstract class BaseController
         }
         catch(Exception e)
         {
-            logger.error("An error occurred so we should not complete the transaction:" + e, e);
+            logger.error("An error occurred so we should not complete the transaction:" + e);
+            logger.warn("An error occurred so we should not complete the transaction:" + e, e);
             //CmsSystem.log(entity,"Failed to create object", CmsSystem.DBG_LOW);
             rollbackTransaction(db);
             throw new SystemException(e.getMessage());
@@ -305,7 +306,8 @@ public abstract class BaseController
         }
         catch(Exception e)
         {
-            logger.error("An error occurred so we should not complete the transaction:" + e, e);
+            logger.error("An error occurred so we should not complete the transaction:" + e);
+            logger.warn("An error occurred so we should not complete the transaction:" + e, e);
             rollbackTransaction(db);
             throw new SystemException(e.getMessage());
         }
@@ -332,7 +334,8 @@ public abstract class BaseController
 		}
 		catch(Exception e)
 		{
-			logger.error("An error occurred so we should not complete the transaction:" + e, e);
+            logger.error("An error occurred so we should not complete the transaction:" + e);
+            logger.warn("An error occurred so we should not complete the transaction:" + e, e);
 			rollbackTransaction(db);
 			throw new SystemException(e.getMessage());
 		}
@@ -361,7 +364,8 @@ public abstract class BaseController
         }
         catch(Exception e)
         {
-            logger.error("An error occurred so we should not complete the transaction:" + e, e);
+            logger.error("An error occurred so we should not complete the transaction:" + e);
+            logger.warn("An error occurred so we should not complete the transaction:" + e, e);
             throw new SystemException(e.getMessage());
         }
     }        
@@ -384,7 +388,8 @@ public abstract class BaseController
         }
         catch(Exception e)
         {
-            logger.error("An error occurred so we should not complete the transaction:" + e, e);
+            logger.error("An error occurred so we should not complete the transaction:" + e);
+            logger.warn("An error occurred so we should not complete the transaction:" + e, e);
             rollbackTransaction(db);
             throw new SystemException(e.getMessage());
         }
@@ -457,7 +462,8 @@ public abstract class BaseController
         }
         catch(Exception e)
         {
-            logger.error("An error occurred so we should not complete the transaction:" + e, e);
+            logger.error("An error occurred so we should not complete the transaction:" + e);
+            logger.warn("An error occurred so we should not complete the transaction:" + e, e);
             rollbackTransaction(db);
             throw new SystemException(e.getMessage());
         }
@@ -1331,7 +1337,8 @@ public abstract class BaseController
         }
         catch(Exception e)
         {
-            logger.error("An error occurred so we should not complete the transaction:" + e, e);
+            logger.error("An error occurred so we should not complete the transaction:" + e);
+            logger.warn("An error occurred so we should not complete the transaction:" + e, e);
             rollbackTransaction(db);
             throw new SystemException(e.getMessage());
         }

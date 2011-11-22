@@ -138,7 +138,8 @@ public class RemoteContentServiceImpl extends RemoteInfoGlueService
         }
         catch(Throwable t)
         {
-            logger.error("En error occurred when we tried to get the contentVersionVO:" + t.getMessage(), t);
+            logger.error("En error occurred when we tried to get the contentVersionVO:" + t.getMessage());
+            logger.warn("En error occurred when we tried to get the contentVersionVO:" + t.getMessage(), t);
         }
         
         return contentVersionVO;
@@ -208,7 +209,8 @@ public class RemoteContentServiceImpl extends RemoteInfoGlueService
         }
         catch(Exception e)
         {
-            logger.error("En error occurred when we tried to create a new contentVersion:" + e.getMessage(), e);
+            logger.error("En error occurred when we tried to create a new contentVersion:" + e.getMessage());
+            logger.warn("En error occurred when we tried to create a new contentVersion:" + e.getMessage(), e);
         }
         
         updateCaches();
@@ -476,7 +478,7 @@ public class RemoteContentServiceImpl extends RemoteInfoGlueService
 			    			}
 			    			catch (Exception e)
 			    			{
-			    				e.printStackTrace();
+			    				logger.warn("Error in contentCategory loop: " + e.getMessage(), e);
 			    				rollbackTransaction(db);
 			    				throw new SystemException(e.getMessage());
 			    			}
@@ -596,7 +598,8 @@ public class RemoteContentServiceImpl extends RemoteInfoGlueService
         {
         	statusBean.setStatus(false);
         	statusBean.setMessage("En error occurred when we tried to create a new content:" + e.getMessage());
-            logger.error("En error occurred when we tried to create a new content:" + e.getMessage(), e);
+            logger.error("En error occurred when we tried to create a new content:" + e.getMessage());
+            logger.warn("En error occurred when we tried to create a new content:" + e.getMessage(), e);
         }
         
         updateCaches();
@@ -698,7 +701,8 @@ public class RemoteContentServiceImpl extends RemoteInfoGlueService
         catch(Throwable e)
         {
         	status = new Boolean(false);
-            logger.error("En error occurred when we tried to create a new content:" + e.getMessage(), e);
+            logger.error("En error occurred when we tried to create a new content:" + e.getMessage());
+            logger.warn("En error occurred when we tried to create a new content:" + e.getMessage(), e);
         }
         
         updateCaches();
@@ -905,7 +909,7 @@ public class RemoteContentServiceImpl extends RemoteInfoGlueService
 	    			}
 	    			catch (Exception e)
 	    			{
-	    				e.printStackTrace();
+		    			logger.warn("An error occurred so we should not complete the transaction:" + e);
 	    				rollbackTransaction(db);
 	    				throw new SystemException(e.getMessage());
 	    			}
@@ -937,7 +941,8 @@ public class RemoteContentServiceImpl extends RemoteInfoGlueService
         catch(Throwable e)
         {
         	status = new Boolean(false);
-            logger.error("En error occurred when we tried to create a new content:" + e.getMessage(), e);
+            logger.error("En error occurred when we tried to create a new content:" + e.getMessage());
+            logger.warn("En error occurred when we tried to create a new content:" + e.getMessage(), e);
         }
         
         updateCaches();
@@ -995,7 +1000,8 @@ public class RemoteContentServiceImpl extends RemoteInfoGlueService
         catch(Throwable e)
         {
         	status = new Boolean(false);
-        	logger.error("En error occurred when we tried to delete a digitalAsset:" + e.getMessage(), e);
+        	logger.error("En error occurred when we tried to delete a digitalAsset:" + e.getMessage());
+        	logger.warn("En error occurred when we tried to delete a digitalAsset:" + e.getMessage(), e);
         }
         
         updateCaches();
@@ -1083,7 +1089,8 @@ public class RemoteContentServiceImpl extends RemoteInfoGlueService
         catch(Throwable e)
         {
         	status = new Boolean(false);
-            logger.error("En error occurred when we tried to delete a digitalAsset:" + e.getMessage(), e);
+            logger.error("En error occurred when we tried to delete a digitalAsset:" + e.getMessage());
+            logger.warn("En error occurred when we tried to delete a digitalAsset:" + e.getMessage(), e);
         }
         
         updateCaches();
@@ -1135,7 +1142,8 @@ public class RemoteContentServiceImpl extends RemoteInfoGlueService
         catch(Throwable e)
         {
         	status = new Boolean(false);
-            logger.error("En error occurred when we tried to delete a digitalAsset:" + e.getMessage(), e);
+            logger.error("En error occurred when we tried to delete a digitalAsset:" + e.getMessage());
+            logger.warn("En error occurred when we tried to delete a digitalAsset:" + e.getMessage(), e);
         }
         
         updateCaches();

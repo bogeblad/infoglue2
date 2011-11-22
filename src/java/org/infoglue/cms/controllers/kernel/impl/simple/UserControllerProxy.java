@@ -157,6 +157,9 @@ public class UserControllerProxy extends BaseController
     	
     	List users = new ArrayList();
     	Timer t = new Timer();
+    	if(!logger.isInfoEnabled())
+    		t.setActive(false);
+    	
 		users = getAuthorizationModule().getUsers();
 		t.printElapsedTime("Getting all users...");
 		

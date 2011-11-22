@@ -221,7 +221,7 @@ public class CmsPropertyHandler
 	
 	public static void resetHardCachedSettings()
 	{
-		System.out.println("Resetting hard cached settings...");
+		logger.info("Resetting hard cached settings...");
 		
 		String newInputCharacterEncoding = getInputCharacterEncoding(SetCharacterEncodingFilter.defaultEncoding, true);
 		String newEnforceRigidContentAccess = getEnforceRigidContentAccess(true);
@@ -249,7 +249,7 @@ public class CmsPropertyHandler
 		useHashCodeInCaches 				= newUseHashCodeInCaches;
 		useSynchronizationOnCaches 			= newUseSynchronizationOnCaches;
 		
-		System.out.println("Done resetting hard cached settings...");
+		logger.info("Done resetting hard cached settings...");
 	}
 	
 	public static String getServerName()
