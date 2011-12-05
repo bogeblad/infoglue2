@@ -565,6 +565,30 @@ public class ImportContentAction extends InfoGlueAbstractAction
 		}
 
         
+		if(logger.isInfoEnabled())
+		{
+			logger.info("new contentVersions:" + contentVersions.size());
+			Iterator contentVersionsIteratorDebug = contentVersions.iterator();
+			while(contentVersionsIteratorDebug.hasNext())
+			{
+				ContentVersion contentVersion = (ContentVersion)contentVersionsIteratorDebug.next();
+				logger.info("debug contentVersion:" + contentVersion.getId());
+			}
+		}
+		
+		Collections.sort((List)contentVersions, new ReflectionComparator("id"));
+
+		if(logger.isInfoEnabled())
+		{
+			logger.info("new contentVersions:" + contentVersions.size());
+			Iterator contentVersionsIteratorDebug = contentVersions.iterator();
+			while(contentVersionsIteratorDebug.hasNext())
+			{
+				ContentVersion contentVersion = (ContentVersion)contentVersionsIteratorDebug.next();
+				logger.info("debug contentVersion:" + contentVersion.getId());
+			}
+		}
+
         Iterator contentVersionIterator = contentVersions.iterator();
         while(contentVersionIterator.hasNext())
         {
