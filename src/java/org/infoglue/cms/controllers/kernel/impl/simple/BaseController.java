@@ -36,6 +36,7 @@ import org.apache.log4j.Logger;
 import org.exolab.castor.jdo.Database;
 import org.exolab.castor.jdo.LockNotGrantedException;
 import org.exolab.castor.jdo.OQLQuery;
+import org.exolab.castor.jdo.ObjectNotFoundException;
 import org.exolab.castor.jdo.PersistenceException;
 import org.exolab.castor.jdo.QueryResults;
 import org.exolab.castor.jdo.TransactionAbortedException;
@@ -247,10 +248,16 @@ public abstract class BaseController
 			//CmsSystem.transactionLogEntry(entity.getClass().getName(), CmsSystem.TRANS_CREATE, getEntityId(entity), entity.toString());
             
         }
+        catch(ObjectNotFoundException e)
+        {
+            logger.warn("An error occurred so we should not complete the transaction: " + e.getMessage(), e);
+            rollbackTransaction(db);
+            throw new SystemException(e.getMessage());
+        }
         catch(Exception e)
         {
-            logger.error("An error occurred so we should not complete the transaction:" + e);
-            logger.warn("An error occurred so we should not complete the transaction:" + e, e);
+            logger.error("An error occurred so we should not complete the transaction: " + e.getMessage());
+            logger.warn("An error occurred so we should not complete the transaction: " + e.getMessage(), e);
             //CmsSystem.log(entity,"Failed to create object", CmsSystem.DBG_LOW);
             rollbackTransaction(db);
             throw new SystemException(e.getMessage());
@@ -265,26 +272,6 @@ public abstract class BaseController
         db.create(entity);
         return entity;
     }     
-/*
-    protected static Object createEntity(Object entity, Database db) throws SystemException, Bug
-    {
-        try
-        {
-            db.create(entity);
-            commitTransaction(db);
-            //CmsSystem.log(entity,"Created object", CmsSystem.DBG_NORMAL);
-			//CmsSystem.transactionLogEntry(entity.getClass().getName(), CmsSystem.TRANS_CREATE, getEntityId(entity), entity.toString());   
-        }
-        catch(Exception e)
-        {
-            logger.error("An error occurred so we should not complete the transaction:" + e, e);
-            //CmsSystem.log(entity,"Failed to create object", CmsSystem.DBG_LOW);
-            rollbackTransaction(db);
-            throw new SystemException(e.getMessage());
-        }
-        return entity;
-    }     
-*/
 
 	// Delete entity
     public static void deleteEntity(Class entClass, Integer id) throws Bug, SystemException
@@ -304,10 +291,16 @@ public abstract class BaseController
             //CmsSystem.log(entity,"Deleted object", CmsSystem.DBG_NORMAL);           
 			//CmsSystem.transactionLogEntry(entClass.getName(), CmsSystem.TRANS_DELETE, id, entity.toString());            
         }
+        catch(ObjectNotFoundException e)
+        {
+            logger.warn("An error occurred so we should not complete the transaction: " + e.getMessage(), e);
+            rollbackTransaction(db);
+            throw new SystemException(e.getMessage());
+        }
         catch(Exception e)
         {
-            logger.error("An error occurred so we should not complete the transaction:" + e);
-            logger.warn("An error occurred so we should not complete the transaction:" + e, e);
+            logger.error("An error occurred so we should not complete the transaction: " + e.getMessage());
+            logger.warn("An error occurred so we should not complete the transaction: " + e.getMessage(), e);
             rollbackTransaction(db);
             throw new SystemException(e.getMessage());
         }
@@ -332,10 +325,16 @@ public abstract class BaseController
 			//CmsSystem.log(entity,"Deleted object", CmsSystem.DBG_NORMAL);           
 			//CmsSystem.transactionLogEntry(entClass.getName(), CmsSystem.TRANS_DELETE, id, entity.toString());            
 		}
+        catch(ObjectNotFoundException e)
+        {
+            logger.warn("An error occurred so we should not complete the transaction: " + e.getMessage(), e);
+            rollbackTransaction(db);
+            throw new SystemException(e.getMessage());
+        }
 		catch(Exception e)
 		{
-            logger.error("An error occurred so we should not complete the transaction:" + e);
-            logger.warn("An error occurred so we should not complete the transaction:" + e, e);
+            logger.error("An error occurred so we should not complete the transaction:" + e.getMessage());
+            logger.warn("An error occurred so we should not complete the transaction:" + e.getMessage(), e);
 			rollbackTransaction(db);
 			throw new SystemException(e.getMessage());
 		}
@@ -362,10 +361,16 @@ public abstract class BaseController
             // Delete the entity
             db.remove(entity);
         }
+        catch(ObjectNotFoundException e)
+        {
+            logger.warn("An error occurred so we should not complete the transaction: " + e.getMessage(), e);
+            rollbackTransaction(db);
+            throw new SystemException(e.getMessage());
+        }
         catch(Exception e)
         {
-            logger.error("An error occurred so we should not complete the transaction:" + e);
-            logger.warn("An error occurred so we should not complete the transaction:" + e, e);
+            logger.error("An error occurred so we should not complete the transaction:" + e.getMessage());
+            logger.warn("An error occurred so we should not complete the transaction:" + e.getMessage(), e);
             throw new SystemException(e.getMessage());
         }
     }        
@@ -388,8 +393,8 @@ public abstract class BaseController
         }
         catch(Exception e)
         {
-            logger.error("An error occurred so we should not complete the transaction:" + e);
-            logger.warn("An error occurred so we should not complete the transaction:" + e, e);
+            logger.error("An error occurred so we should not complete the transaction: " + e.getMessage());
+            logger.warn("An error occurred so we should not complete the transaction: " + e.getMessage(), e);
             rollbackTransaction(db);
             throw new SystemException(e.getMessage());
         }
@@ -456,14 +461,14 @@ public abstract class BaseController
         }
         catch(ConstraintException ce)
         {
-            logger.warn("An error occurred so we should not complete the transaction:" + ce, ce);
+            logger.warn("An error occurred so we should not complete the transaction:" + ce.getMessage(), ce);
             rollbackTransaction(db);
             throw ce;
         }
         catch(Exception e)
         {
-            logger.error("An error occurred so we should not complete the transaction:" + e);
-            logger.warn("An error occurred so we should not complete the transaction:" + e, e);
+            logger.error("An error occurred so we should not complete the transaction:" + e.getMessage());
+            logger.warn("An error occurred so we should not complete the transaction:" + e.getMessage(), e);
             rollbackTransaction(db);
             throw new SystemException(e.getMessage());
         }
@@ -531,7 +536,8 @@ public abstract class BaseController
         Object object = null;
         try
         {
-            logger.info("Loading " + arg + " in read/write mode.");
+        	if(logger.isInfoEnabled())
+        		logger.info("Loading " + arg + " in read/write mode.");
             object = db.load(arg, id);
         }
         catch(Exception e)
@@ -820,7 +826,8 @@ public abstract class BaseController
 		try
 		{
         	
-			logger.info("BaseHelper::GetAllObjects for " + arg.getName());
+			if(logger.isInfoEnabled())
+				logger.info("BaseHelper::GetAllObjects for " + arg.getName());
 			oql = db.getOQLQuery( "SELECT u FROM " + arg.getName() + " u ORDER BY u." + orderByField + " " + direction);
 			QueryResults results = oql.execute(Database.ReadOnly);
 			
@@ -1337,8 +1344,8 @@ public abstract class BaseController
         }
         catch(Exception e)
         {
-            logger.error("An error occurred so we should not complete the transaction:" + e);
-            logger.warn("An error occurred so we should not complete the transaction:" + e, e);
+            logger.error("An error occurred so we should not complete the transaction: " + e.getMessage());
+            logger.warn("An error occurred so we should not complete the transaction: " + e.getMessage(), e);
             rollbackTransaction(db);
             throw new SystemException(e.getMessage());
         }
