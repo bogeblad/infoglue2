@@ -322,6 +322,8 @@ public class ViewContentToolToolBarAction extends InfoGlueAbstractAction
 			ImageButton deleteChildrenButton = getDeleteChildrenButton();
 			deleteButton.getSubButtons().add(deleteChildrenButton);
 			
+			buttons.add(getCopyButton());
+
 			buttons.add(deleteButton);
 			
 			buttons.add(getPublishButton());
@@ -658,6 +660,11 @@ public class ViewContentToolToolBarAction extends InfoGlueAbstractAction
 	private ImageButton getMoveMultipleButton()
 	{
 		return new ImageButton(true, "javascript:openPopup('MoveMultipleContent!input.action?contentId=" + this.contentId + "&repositoryId=" + this.repositoryId + "', 'MoveMultipleContent', 'width=400,height=640,resizable=no');", getLocalizedString(getSession().getLocale(), "images.contenttool.buttons.moveMultipleContent"), "tool.contenttool.moveMultipleContent.header");	
+	}
+
+	private ImageButton getCopyButton()
+	{
+		return new ImageButton(true, "javascript:openPopup('CopyContent!input.action?contentId=" + this.contentId + "&repositoryId=" + this.repositoryId + "&hideLeafs=true', 'CopyContent', 'width=400,height=600,resizable=no');", getLocalizedString(getSession().getLocale(), "images.contenttool.buttons.copyContent"), "tool.contenttool.copyContent.header");	
 	}
 
 	private ImageButton getSyncTreeButton()
