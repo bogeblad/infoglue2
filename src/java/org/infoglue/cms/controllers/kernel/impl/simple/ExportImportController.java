@@ -703,43 +703,21 @@ public class ExportImportController extends BaseController
 		List<ContentVersion> sortedVersions = new ArrayList<ContentVersion>(); 
 		sortedVersions.addAll(contentVersions);
 		
-		if(true)
-		{
-			logger.warn("sortedVersions:" + sortedVersions.size());
-			Iterator contentVersionsIteratorDebug = sortedVersions.iterator();
-			while(contentVersionsIteratorDebug.hasNext())
-			{
-				ContentVersion contentVersion = (ContentVersion)contentVersionsIteratorDebug.next();
-				logger.warn("debug sortedVersion:" + contentVersion.getId() + ":" + contentVersion.getOwningContent());
-			}
-		}
-		
 		Collections.sort(sortedVersions, new ReflectionComparator("id"));
 
 		if(true)
 		{
-			logger.warn("sortedVersions:" + sortedVersions.size());
+			logger.info("sortedVersions:" + sortedVersions.size());
 			Iterator contentVersionsIteratorDebug = sortedVersions.iterator();
 			while(contentVersionsIteratorDebug.hasNext())
 			{
 				ContentVersion contentVersion = (ContentVersion)contentVersionsIteratorDebug.next();
-				logger.warn("debug sortedVersion 2:" + contentVersion.getId() + ":" + contentVersion.getOwningContent());
+				logger.info("debug sortedVersion 2:" + contentVersion.getId() + ":" + contentVersion.getOwningContent());
 			}
 		}
 		
 		contentVersions.clear();
 		contentVersions.addAll(sortedVersions);
-
-		if(true)
-		{
-			logger.warn("sortedVersions:" + contentVersions.size());
-			Iterator contentVersionsIteratorDebug = sortedVersions.iterator();
-			while(contentVersionsIteratorDebug.hasNext())
-			{
-				ContentVersion contentVersion = (ContentVersion)contentVersionsIteratorDebug.next();
-				logger.warn("debug sortedVersion 2:" + contentVersion.getId() + ":" + contentVersion.getOwningContent());
-			}
-		}
 
 		if(logger.isInfoEnabled())
 		{

@@ -46,17 +46,24 @@
 		 
 		function finish()
 		{
-		   	document.inputForm.newParentContentId.value = document.inputForm.entityId.value;
-		   	alert("1:" + document.userForm.onlyLatestVersionsCheckbox.value)
-		   	alert("2:" + document.userForm.assetMaxSizeSelect.value)
-			if(document.userForm.onlyLatestVersionsCheckbox.checked)
-				document.inputForm.onlyLatestVersions.value = "true";
+			if(document.inputForm.entityId.value != "" && document.inputForm.entityId.value != "${select}")
+			{
+			   	document.inputForm.newParentContentId.value = document.inputForm.entityId.value;
+			   	//alert("1:" + document.userForm.onlyLatestVersionsCheckbox.value)
+			   	//alert("2:" + document.userForm.assetMaxSizeSelect.value)
+				if(document.userForm.onlyLatestVersionsCheckbox.checked)
+					document.inputForm.onlyLatestVersions.value = "true";
+				else
+					document.inputForm.onlyLatestVersions.value = "false";
+				
+				//document.inputForm.onlyLatestVersions.value = document.userForm.onlyLatestVersionsCheckbox.value;
+				document.inputForm.assetMaxSize.value = document.userForm.assetMaxSizeSelect.value;
+				document.inputForm.submit();
+			}
 			else
-				document.inputForm.onlyLatestVersions.value = "false";
-			
-			//	document.inputForm.onlyLatestVersions.value = document.userForm.onlyLatestVersionsCheckbox.value;
-			document.inputForm.assetMaxSize.value = document.userForm.assetMaxSizeSelect.value;
-			document.inputForm.submit();
+			{
+				alert("You must state target folder")
+			}
 		}
 	
 		/**
@@ -119,24 +126,31 @@
 		</tr>	
 		<tr>
 			<td>
-		 		<label for="assetMaxSize">$ui.getString("tool.contenttool.exportContent.assetMaxSizeLabel"):</label>
+		 		$ui.getString("tool.contenttool.exportContent.assetMaxSizeLabel"):
 		 		<select name="assetMaxSizeSelect">
-		 			<option value="50000" #checkSelected("50000" "$assetMaxSize")>50 KB</option>
-		 			<option value="100000" #checkSelected("100000" "$assetMaxSize")>100 KB</option>
-		 			<option value="300000" #checkSelected("300000" "$assetMaxSize")>300 KB</option>
-		 			<option value="500000" #checkSelected("500000" "$assetMaxSize")>500 KB</option>
-		 			<option value="1000000" #checkSelected("1000000" "$assetMaxSize")>1 MB</option>
-		 			<option value="5000000" #checkSelected("5000000" "$assetMaxSize")>5 MB</option>
-		 			<option value="10000000" #checkSelected("10000000" "$assetMaxSize")>10 MB</option>
+		 			<option value="50000">50 KB</option>
+		 			<option value="100000" >100 KB</option>
+		 			<option value="300000">300 KB</option>
+		 			<option value="500000">500 KB</option>
+		 			<option value="1000000">1 MB</option>
+		 			<option value="5000000" selected="1">5 MB</option>
+		 			<option value="10000000">10 MB</option>
+		 			<option value="20000000">20 MB</option>
 		 		</select>
 			</td>
 		</tr>
 		<tr>
+			<td height="1"><img src="images/trans.gif" width="1" height="10"></td>
+		</tr>	
+		<tr>
 			<td>
-				$ui.getString("tool.contenttool.importContent.onlyLatestVersionsLabel")<br/>
+				$ui.getString("tool.contenttool.importContent.onlyLatestVersionsLabel")
 				<input type="checkbox" name="onlyLatestVersionsCheckbox" value="true" checked="1">
 			</td>
 		</tr>
+		<tr>
+			<td height="1"><img src="images/trans.gif" width="1" height="10"></td>
+		</tr>	
 		<tr>
 			<td>
 				<a href="javascript:finish();"><img src="$ui.getString("images.contenttool.buttons.save")" border="0"></a>

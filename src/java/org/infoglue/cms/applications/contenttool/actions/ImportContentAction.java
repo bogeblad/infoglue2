@@ -412,7 +412,24 @@ public class ImportContentAction extends InfoGlueAbstractAction
 			}
 		}
 		
-		Collections.sort((List)contentVersions, new ReflectionComparator("id"));
+		List<ContentVersion> sortedVersions = new ArrayList<ContentVersion>(); 
+		sortedVersions.addAll(contentVersions);
+		
+		Collections.sort(sortedVersions, new ReflectionComparator("id"));
+
+		if(true)
+		{
+			logger.info("sortedVersions:" + sortedVersions.size());
+			Iterator contentVersionsIteratorDebug = sortedVersions.iterator();
+			while(contentVersionsIteratorDebug.hasNext())
+			{
+				ContentVersion contentVersion = (ContentVersion)contentVersionsIteratorDebug.next();
+				logger.info("debug sortedVersion 2:" + contentVersion.getId() + ":" + contentVersion.getOwningContent());
+			}
+		}
+		
+		contentVersions.clear();
+		contentVersions.addAll(sortedVersions);
 
 		if(logger.isInfoEnabled())
 		{

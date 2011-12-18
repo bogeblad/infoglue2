@@ -1,4 +1,4 @@
-<!-- $Id: actions.xml,v 1.83.2.7 2011/03/01 15:33:23 mattias Exp $ -->
+<!-- $Id: actions.xml,v 1.83.2.8 2011/12/18 23:13:58 mattias Exp $ -->
 <actions>
 
 	<!-- MySettings -->
@@ -868,6 +868,12 @@
 		<view name="input">/cms/contenttool/viewMoveMultipleContentsChooseContents.vm</view>
 		<view name="chooseDestination">/cms/contenttool/viewMoveMultipleContentsChooseDestination.vm</view>
 		<view name="success">/cms/contenttool/viewMoveMultipleContentsFinished.vm</view>
+		<view name="error">/cms/contenttool/error.vm</view>
+		<view name="accessDenied">/cms/contenttool/viewConstraintException.vm</view>
+	</action>
+	<action name="org.infoglue.cms.applications.contenttool.actions.CopyContentAction" alias="CopyContent">
+		<view name="input">/cms/contenttool/viewCopyContentChooseDestination.vm</view>
+		<view name="success">/cms/contenttool/viewCopyContentFinished.vm</view>
 		<view name="error">/cms/contenttool/error.vm</view>
 		<view name="accessDenied">/cms/contenttool/viewConstraintException.vm</view>
 	</action>
