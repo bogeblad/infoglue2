@@ -115,7 +115,8 @@ public abstract class WebworkAbstractAction implements Action, ServletRequestAwa
         } 
         catch(ResultException e) 
         {
-        	logger.error("ResultException " + e, e);
+        	logger.error("ResultException " + e.getMessage());
+        	logger.warn("ResultException " + e.getMessage(), e);
         	result = e.getResult();
         } 
 		catch(AccessConstraintException e) 
@@ -135,32 +136,37 @@ public abstract class WebworkAbstractAction implements Action, ServletRequestAwa
         } 
         catch(Bug e) 
         {
-        	logger.error("Bug " + e);
+        	logger.error("Bug " + e.getMessage());
+        	logger.warn("Bug  " + e.getMessage(), e);
             setError(e, e.getCause());
             result = ERROR;
         } 
         catch(ConfigurationError e) 
         {
-         	logger.error("ConfigurationError " + e);
-             setError(e, e.getCause());
-             result = ERROR;
+         	logger.error("ConfigurationError " + e.getMessage());
+         	logger.warn("ConfigurationError " + e.getMessage(), e);
+            setError(e, e.getCause());
+            result = ERROR;
         } 
         catch(SystemException e) 
         {
-            logger.error("SystemException " + e, e);
+            logger.error("SystemException " + e.getMessage());
+            logger.warn("SystemException " + e.getMessage(), e);
             setError(e, e.getCause());
             result = ERROR;
         } 
         catch(ThreadDeath e) 
         {
             logger.error("Thread died: " + e);
+            logger.warn("Thread died: " + e.getMessage(), e);
             final SystemException exception = new SystemException("Page took to long to load! Please try again later.");
             setError(exception, e);
             result = ERROR;
         }
         catch(Throwable e) 
         {
-            logger.error("Throwable " + e, new Exception(e));
+            logger.error("Throwable " + e.getMessage());
+            logger.warn("Throwable " + e.getMessage(), new Exception(e));
             final Bug bug = new Bug("Uncaught exception!", e);
             setError(bug, bug.getCause());
             result = ERROR;
@@ -173,7 +179,8 @@ public abstract class WebworkAbstractAction implements Action, ServletRequestAwa
         }
         catch(Exception e)
         {
-        	e.printStackTrace();
+        	logger.error("Error notifying listener " + e.getMessage());
+        	logger.warn("Error notifying listener " + e.getMessage(), e);
         }
         
         return result;

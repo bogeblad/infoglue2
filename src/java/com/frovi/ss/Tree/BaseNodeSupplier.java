@@ -108,13 +108,15 @@ public abstract class BaseNodeSupplier implements INodeSupplier
 			}
 			catch(Exception e)
 			{
-				logger.error("An error occurred so we should not complete the transaction:" + e, e);
+				logger.error("An error occurred so we should not complete the transaction: " + e.getMessage());
+				logger.warn("An error occurred so we should not complete the transaction: " + e.getMessage(), e);
 				rollbackTransaction(db);
 			}
         }
         catch(Exception e)
 		{
-			logger.error("An error occurred so we should not complete the transaction:" + e, e);
+			logger.error("An error occurred so we should not complete the transaction: " + e.getMessage());
+			logger.warn("An error occurred so we should not complete the transaction: " + e.getMessage(), e);
 		}
         
 		return hasUserContentAccess;
@@ -146,13 +148,15 @@ public abstract class BaseNodeSupplier implements INodeSupplier
 			}
 			catch(Exception e)
 			{
-				logger.error("An error occurred so we should not complete the transaction:" + e, e);
+				logger.error("An error occurred so we should not complete the transaction: " + e.getMessage());
+				logger.warn("An error occurred so we should not complete the transaction: " + e.getMessage(), e);
 				rollbackTransaction(db);
 			}
         }
         catch(Exception e)
 		{
-			logger.error("An error occurred so we should not complete the transaction:" + e, e);
+			logger.error("An error occurred so we should not complete the transaction: " + e.getMessage());
+			logger.warn("An error occurred so we should not complete the transaction: " + e.getMessage(), e);
 		}
         
 		return hasUserPageAccess;
@@ -170,7 +174,8 @@ public abstract class BaseNodeSupplier implements INodeSupplier
         }
         catch(Exception e)
         {
-			e.printStackTrace();
+			logger.error("An error occurred so we should not complete the transaction: " + e.getMessage());
+			logger.warn("An error occurred so we should not complete the transaction: " + e.getMessage(), e);
             throw new SystemException("An error occurred when we tried to begin an transaction. Reason:" + e.getMessage(), e);    
         }
     }
@@ -190,7 +195,8 @@ public abstract class BaseNodeSupplier implements INodeSupplier
         }
         catch(Exception e)
         {
-			e.printStackTrace();
+			logger.error("An error occurred so we should not complete the transaction: " + e.getMessage());
+			logger.warn("An error occurred so we should not complete the transaction: " + e.getMessage(), e);
             throw new SystemException("An error occurred when we tried to commit an transaction. Reason:" + e.getMessage(), e);    
         }
     }
