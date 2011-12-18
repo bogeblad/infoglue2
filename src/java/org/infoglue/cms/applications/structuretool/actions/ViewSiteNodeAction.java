@@ -464,7 +464,8 @@ public class ViewSiteNodeAction extends InfoGlueAbstractAction
 		}
 		catch(Exception e)
 		{
-			logger.error("An error occurred so we should not complete the transaction:" + e, e);
+			logger.error("An error occurred so we should not complete the transaction: " + e.getMessage());
+			logger.warn("An error occurred so we should not complete the transaction: " + e.getMessage(), e);
 			rollbackTransaction(db);
 			throw new SystemException(e.getMessage());
 		}
@@ -505,7 +506,8 @@ public class ViewSiteNodeAction extends InfoGlueAbstractAction
 		}
 		catch(Exception e)
 		{
-			logger.error("An error occurred so we should not complete the transaction:" + e, e);
+			logger.error("An error occurred so we should not complete the transaction: " + e.getMessage());
+			logger.warn("An error occurred so we should not complete the transaction: " + e.getMessage(), e);
 			rollbackTransaction(db);
 			throw new SystemException(e.getMessage());
 		}
@@ -530,7 +532,8 @@ public class ViewSiteNodeAction extends InfoGlueAbstractAction
 	    }
 		catch(Exception e)
 		{
-			logger.error("An error occurred so we should not complete the transaction:" + e, e);
+			logger.error("An error occurred so we should not complete the transaction: " + e.getMessage());
+			logger.warn("An error occurred so we should not complete the transaction: " + e.getMessage(), e);
 			rollbackTransaction(db);
 			throw new SystemException(e.getMessage());
 		}

@@ -629,7 +629,8 @@ public class ViewSiteNodePageComponentsAction extends InfoGlueAbstractAction
 		}
 		catch (Exception e) 
 		{
-			logger.error("Error adding/changing component:" + e.getMessage(), e);
+			logger.error("Error adding/changing component:" + e.getMessage());
+			logger.warn("Error adding/changing component:" + e.getMessage(), e);
 			return ERROR;
 		}
 	}
@@ -1099,7 +1100,8 @@ public class ViewSiteNodePageComponentsAction extends InfoGlueAbstractAction
 		}
 		catch(Exception e)
 		{
-			logger.error("Error setting property:" + e.getMessage(), e);
+			logger.error("Error setting property:" + e.getMessage());
+			logger.warn("Error setting property:" + e.getMessage(), e);
 			return ERROR;
 		}
 	}
@@ -1269,7 +1271,8 @@ public class ViewSiteNodePageComponentsAction extends InfoGlueAbstractAction
 		}
 		catch(Exception e)
 		{
-			logger.error("Error setting property:" + e.getMessage(), e);
+			logger.error("Error setting property:" + e.getMessage());
+			logger.warn("Error setting property:" + e.getMessage(), e);
 			return ERROR;
 		}
 	}
@@ -2032,7 +2035,8 @@ public class ViewSiteNodePageComponentsAction extends InfoGlueAbstractAction
 		}
 		catch(Exception e)
 		{
-			logger.error(e.getMessage(), e);
+			logger.error("Error getPageComponentsString:" + e.getMessage());
+			logger.warn("Error getPageComponentsString:" + e.getMessage(), e);
 			throw e;
 		}
 
