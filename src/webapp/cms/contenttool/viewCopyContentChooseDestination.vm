@@ -37,7 +37,7 @@
 		function changeRepository(selectBox)
 		{
 			var repositoryId = selectBox.value;
-			submitQualifyerWhenRepositoryChanges(repositoryId);
+			document.getElementById("itreeFrame").src="ViewContentHtmlTree!bindingView.action?repositoryId=" + repositoryId + "&showLeafs=false";
 		}
 		
 		/**
