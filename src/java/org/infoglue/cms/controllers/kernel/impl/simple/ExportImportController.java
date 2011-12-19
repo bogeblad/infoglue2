@@ -488,7 +488,7 @@ public class ExportImportController extends BaseController
 		
 		Collection contentVersions = content.getContentVersions();
 	    
-		System.out.println("onlyLatestVersions in createContents...:" + onlyLatestVersions);
+		logger.info("onlyLatestVersions in createContents...:" + onlyLatestVersions);
 		if(onlyLatestVersions.equalsIgnoreCase("true"))
 		{
 			logger.info("org contentVersions:" + contentVersions.size());
