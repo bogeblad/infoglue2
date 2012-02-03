@@ -85,6 +85,7 @@ import org.infoglue.deliver.portal.PortalService;
 import org.infoglue.deliver.util.BrowserBean;
 import org.infoglue.deliver.util.CacheController;
 import org.infoglue.deliver.util.HttpHelper;
+import org.infoglue.deliver.util.HttpUtilities;
 import org.infoglue.deliver.util.RequestAnalyser;
 import org.infoglue.deliver.util.ThreadMonitor;
 import org.infoglue.deliver.util.Timer;
@@ -296,6 +297,9 @@ public class ViewPageAction extends InfoGlueAbstractAction
 				}
 			}
 			
+			if(!isUserRedirected)
+				isUserRedirected = rewriteUrl();
+
 			String pageKey = this.nodeDeliveryController.getPageCacheKey(dbWrapper.getDatabase(), this.getHttpSession(), getRequest(), this.siteNodeId, this.languageId, this.contentId, browserBean.getUseragent(), this.getRequest().getQueryString(), "");
 
 	    	if(logger.isInfoEnabled())
@@ -534,6 +538,33 @@ public class ViewPageAction extends InfoGlueAbstractAction
         return NONE;
     }
 
+    
+    /**
+     * This method handles redirect of any special cases where we need to redirect the user based on particular situations. 
+     * For example to remove a CAS-ticket in the URL or similar.
+     * @return true if the user was redirected.
+     * @throws Exception
+     */
+    private boolean rewriteUrl() throws Exception
+    {
+    	boolean isUserRedirected = false;
+    	
+		logger.info("Ticket:" + getRequest().getParameter("ticket"));
+		String URI = getRequest().getRequestURI();
+		if(getRequest().getMethod().equalsIgnoreCase("get") && getRequest().getParameter("ticket") != null && getRequest().getParameter("ticket").length() > 0)
+		{
+			String remainingQueryString = HttpUtilities.removeParameter(getRequest().getQueryString(), "ticket");
+
+			logger.info("Redirecting to:" + URI + (remainingQueryString != null && !remainingQueryString.equals("") ? "?" + remainingQueryString : ""));
+			getResponse().sendRedirect(URI + (remainingQueryString != null && !remainingQueryString.equals("") ? "?" + remainingQueryString : ""));
+			//return true;
+			isUserRedirected = true;
+		}
+		
+		return isUserRedirected;
+	}
+
+    
     /**
      * This method checks out for and switches between protocols if set depending on if the page was protected or not.
      * @param protectedSiteNodeVersionId
@@ -689,7 +720,10 @@ public class ViewPageAction extends InfoGlueAbstractAction
 					isUserRedirected = handleExtranetLogic(dbWrapper.getDatabase(), true);
 			}
 			*/
-			
+
+			if(!isUserRedirected)
+				isUserRedirected = rewriteUrl();
+
 	    	String pageKey = this.nodeDeliveryController.getPageCacheKey(dbWrapper.getDatabase(), this.getHttpSession(), this.getRequest(), this.siteNodeId, this.languageId, this.contentId, browserBean.getUseragent(), this.getRequest().getQueryString(), "_" + this.showSimple + "_pagecomponentDecorated");
 
 			templateController = getTemplateController(dbWrapper, getSiteNodeId(), getLanguageId(), getContentId(), getRequest(), (InfoGluePrincipal)this.principal, true);

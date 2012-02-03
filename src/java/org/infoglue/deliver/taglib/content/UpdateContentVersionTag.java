@@ -87,6 +87,10 @@ public class UpdateContentVersionTag extends InfoGlueWebServiceTag implements Co
                 contentVersion.put("allowHTMLContent", this.allowHTMLContent);
             if(this.allowExternalLinks != null)
                 contentVersion.put("allowExternalLinks", this.allowExternalLinks);
+            if(this.allowDollarSigns != null)
+                contentVersion.put("allowDollarSigns", this.allowDollarSigns);
+            if(this.allowAnchorSigns != null)
+                contentVersion.put("allowAnchorSigns", this.allowAnchorSigns);
             if(this.keepExistingAttributes != null)
                 contentVersion.put("keepExistingAttributes", this.keepExistingAttributes);
             if(this.keepExistingAttributes != null)

@@ -63,6 +63,7 @@ import org.infoglue.deliver.applications.filters.URIMatcher;
 import org.infoglue.deliver.controllers.kernel.impl.simple.ExtranetController;
 import org.infoglue.deliver.util.CacheController;
 import org.infoglue.deliver.util.HttpHelper;
+import org.infoglue.deliver.util.HttpUtilities;
 
 import webwork.action.ActionContext;
 
@@ -430,6 +431,15 @@ public class InfoGlueAuthenticationFilter implements Filter
 				NotificationMessage notificationMessage = new NotificationMessage("Login success:", "Authentication", logUserName, NotificationMessage.AUTHENTICATION_SUCCESS, "" + authenticatedUserName, "name");
 				TransactionHistoryController.getController().create(notificationMessage);
 
+				//Rewriting URL if the CAS ticket is in the URL - we don't want it to be shown.
+				logger.info("URI:" + httpServletRequest.getRequestURI() + ":" + httpServletRequest.getParameter("ticket"));
+				if(httpServletRequest.getMethod().equalsIgnoreCase("get") && httpServletRequest.getParameter("ticket") != null && httpServletRequest.getParameter("ticket").length() > 0)
+				{
+					String remainingQueryString = HttpUtilities.removeParameter(httpServletRequest.getQueryString(), "ticket");
+					httpServletResponse.sendRedirect(URI + (remainingQueryString != null && !remainingQueryString.equals("") ? "?" + remainingQueryString : ""));
+					return;
+				}
+				
 			    if(successLoginBaseUrl != null && !URL.startsWith(successLoginBaseUrl))
 			    {
 			        checkSuccessRedirect(request, response, URL);
