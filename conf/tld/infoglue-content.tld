@@ -1457,6 +1457,11 @@
         	<required>false</required>
 	        <rtexprvalue>false</rtexprvalue>
     	</attribute>
+        <attribute>
+    	    <name>updateExistingAssets</name>
+        	<required>false</required>
+	        <rtexprvalue>false</rtexprvalue>
+    	</attribute>
 	</tag>
 
 	<tag>

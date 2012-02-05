@@ -751,6 +751,7 @@ public class RemoteContentServiceImpl extends RemoteInfoGlueService
             Boolean allowAnchorSigns = (Boolean)contentVersion.get("allowAnchorSigns");
             Boolean keepExistingAttributes 	= (Boolean)contentVersion.get("keepExistingAttributes");
             Boolean keepExistingCategories 	= (Boolean)contentVersion.get("keepExistingCategories");
+            Boolean updateExistingAssets 	= (Boolean)contentVersion.get("updateExistingAssets");
 
             if(allowHTMLContent == null)
             	allowHTMLContent = new Boolean(false);
@@ -760,6 +761,9 @@ public class RemoteContentServiceImpl extends RemoteInfoGlueService
 
             if(keepExistingCategories == null)
             	keepExistingCategories = new Boolean(true);
+
+            if(updateExistingAssets == null)
+            	updateExistingAssets = new Boolean(true);
 
             if(allowDollarSigns == null)
             	allowDollarSigns = new Boolean(false);
@@ -772,6 +776,7 @@ public class RemoteContentServiceImpl extends RemoteInfoGlueService
             logger.info("stateId:" + stateId);
             logger.info("keepExistingAttributes:" + keepExistingAttributes);
             logger.info("keepExistingCategories:" + keepExistingCategories);
+            logger.info("updateExistingAssets:" + updateExistingAssets);
             logger.info("versionComment:" + versionComment);
             logger.info("allowHTMLContent:" + allowHTMLContent);
             logger.info("allowExternalLinks:" + allowExternalLinks);
@@ -864,6 +869,9 @@ public class RemoteContentServiceImpl extends RemoteInfoGlueService
 					newAsset.setAssetFileSize(new Integer(new Long(remoteAttachment.getBytes().length).intValue()));
 					InputStream is = new ByteArrayInputStream(remoteAttachment.getBytes());
 	
+	    	        if(updateExistingAssets)
+	    	        	ContentVersionController.getContentVersionController().createOrUpdateDigitalAsset(newAsset, is, contentVersionVO.getContentVersionId(), principal);
+	    	        else
 	    	        DigitalAssetController.create(newAsset, is, contentVersionVO.getContentVersionId(), principal);
 	    	    }
             }

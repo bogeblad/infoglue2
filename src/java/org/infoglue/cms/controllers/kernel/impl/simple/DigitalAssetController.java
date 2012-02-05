@@ -516,6 +516,30 @@ public class DigitalAssetController extends BaseController
 		}
 	}
 	
+	
+  	/**
+   	 * This method updates a digital asset in the database.
+   	 */
+   	
+   	public static DigitalAssetVO update(DigitalAssetVO digitalAssetVO, InputStream is, Database db) throws ConstraintException, SystemException
+    {
+		DigitalAsset digitalAsset = null;
+		
+		if(is == null)
+		{
+			digitalAsset = getMediumDigitalAssetWithId(digitalAssetVO.getId(), db);
+			digitalAsset.setValueObject(digitalAssetVO);
+		}
+		else
+		{
+			digitalAsset = getDigitalAssetWithId(digitalAssetVO.getId(), db);
+			digitalAsset.setValueObject(digitalAssetVO);
+		    digitalAsset.setAssetBlob(is);
+		}
+
+		return digitalAsset.getValueObject();		
+    } 
+
    	/**
    	 * This method updates a digital asset in the database.
    	 */

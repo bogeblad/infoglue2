@@ -265,7 +265,7 @@ public class ContentVersionController extends BaseController
 		return resultList;
 	}
 
-	
+
 	public List getContentVersionVOWithParent(Integer contentId) throws SystemException, Bug
     {
         List resultList = new ArrayList();
@@ -324,7 +324,7 @@ public class ContentVersionController extends BaseController
     	
 		results.close();
 		oql.close();
-
+		
 		return resultList;
     }
 	
@@ -997,8 +997,10 @@ public class ContentVersionController extends BaseController
 				DigitalAsset currentDigitalAsset = (DigitalAsset)assetIterator.next();
 				if(currentDigitalAsset.getAssetKey().equals(assetKey))
 				{
+		            currentDigitalAsset.getContentVersions().remove(contentVersion);
 					assetIterator.remove();
-					db.remove(currentDigitalAsset);
+		            if(currentDigitalAsset.getContentVersions().size() == 0)
+		            	db.remove(currentDigitalAsset);
 					break;
 				}
 			}
@@ -1014,7 +1016,49 @@ public class ContentVersionController extends BaseController
         }
     }        
 	
+	/**
+	 * This method updates a digitalAsset.
+	 */
 	
+    public void createOrUpdateDigitalAsset(DigitalAssetVO assetVO, InputStream is, Integer contentVersionId, InfoGluePrincipal principal) throws ConstraintException, SystemException
+    {
+    	Database db = CastorDatabaseService.getDatabase();
+        beginTransaction(db);
+		try
+        {
+		    ContentVersion contentVersion = this.getContentVersionWithId(contentVersionId, db);
+		    
+		    boolean foundExistingAsset = false;
+		    
+		    Collection digitalAssets = contentVersion.getDigitalAssets();
+			Iterator assetIterator = digitalAssets.iterator();
+			while(assetIterator.hasNext())
+			{
+				DigitalAsset currentDigitalAsset = (DigitalAsset)assetIterator.next();
+				if(currentDigitalAsset.getAssetKey().equals(assetVO.getAssetKey()))
+				{
+					assetVO.setDigitalAssetId(currentDigitalAsset.getId());
+					DigitalAssetController.update(assetVO, is, db);
+					foundExistingAsset = true;
+					break;
+				}
+			}
+			
+			if(!foundExistingAsset)
+				DigitalAssetController.create(assetVO, is, contentVersion, db);
+			
+			commitTransaction(db);
+		}
+        catch(Exception e)
+        {
+            logger.error("An error occurred so we should not complete the transaction:" + e);
+            logger.warn("An error occurred so we should not complete the transaction:" + e, e);
+            rollbackTransaction(db);
+            throw new SystemException(e.getMessage());
+        }
+    }        
+
+    
     /**
      * This method updates the contentversion.
      */
@@ -2097,6 +2141,51 @@ public class ContentVersionController extends BaseController
 				}
 
 				previousContentId = version.getContentId();
+            }
+            
+			results.close();
+			oql.close();
+
+			commitTransaction(db);
+        }
+        catch(Exception e)
+        {
+            logger.error("An error occurred so we should not complete the transaction:" + e);
+            logger.warn("An error occurred so we should not complete the transaction:" + e, e);
+            rollbackTransaction(db);
+            throw new SystemException(e.getMessage());
+        }
+        
+		return contentVersionsIdList;
+	}
+	
+	/**
+	 * This method are here to return all content versions that are x number of versions behind the current active version. This is for cleanup purposes.
+	 * 
+	 * @param numberOfVersionsToKeep
+	 * @return
+	 * @throws SystemException 
+	 */
+	
+	public List<SmallestContentVersionVO> getSmallestContentVersionVOList(Integer contentId) throws SystemException 
+	{
+		Database db = CastorDatabaseService.getDatabase();
+    	
+    	List<SmallestContentVersionVO> contentVersionsIdList = new ArrayList();
+
+        beginTransaction(db);
+
+        try
+        {
+            OQLQuery oql = db.getOQLQuery("SELECT cv FROM org.infoglue.cms.entities.content.impl.simple.SmallestContentVersionImpl cv WHERE cv.contentId = $1 ORDER BY cv.contentVersionId desc");
+        	oql.bind(contentId);
+        	
+        	QueryResults results = oql.execute(Database.ReadOnly);
+			
+        	while (results.hasMore())
+            {
+				SmallestContentVersionImpl version = (SmallestContentVersionImpl)results.next();
+				contentVersionsIdList.add(version.getValueObject());
             }
             
 			results.close();
