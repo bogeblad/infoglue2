@@ -44,6 +44,7 @@ public class UpdateContentVersionTag extends InfoGlueWebServiceTag implements Co
 	private Boolean allowAnchorSigns = true;
 	private Boolean keepExistingAttributes = false;
 	private Boolean keepExistingCategories = true;
+	private Boolean updateExistingAssets = true;
 	
     /**
      *  
@@ -95,6 +96,8 @@ public class UpdateContentVersionTag extends InfoGlueWebServiceTag implements Co
                 contentVersion.put("keepExistingAttributes", this.keepExistingAttributes);
             if(this.keepExistingAttributes != null)
                 contentVersion.put("keepExistingCategories", this.keepExistingCategories);
+            if(this.updateExistingAssets != null)
+                contentVersion.put("updateExistingAssets", this.updateExistingAssets);
             if(this.versionValue != null)
                 contentVersion.put("versionValue", this.versionValue);
                 
@@ -115,8 +118,11 @@ public class UpdateContentVersionTag extends InfoGlueWebServiceTag implements Co
         this.stateId = null;
         this.allowHTMLContent = false;
         this.allowExternalLinks = false;
+        this.allowDollarSigns = false;
+        this.allowAnchorSigns = false;
         this.keepExistingAttributes = false;
         this.keepExistingCategories = true;
+        this.updateExistingAssets = true;
         return EVAL_PAGE;
     }
 
@@ -237,6 +243,11 @@ public class UpdateContentVersionTag extends InfoGlueWebServiceTag implements Co
 	public void setKeepExistingCategories(final String keepExistingCategories) throws JspException
 	{
 		this.keepExistingCategories = (Boolean)evaluate("updateContentVersion", "keepExistingCategories", keepExistingCategories, Boolean.class);
+	}
+
+	public void setUpdateExistingAssets(final String updateExistingAssets) throws JspException
+	{
+		this.updateExistingAssets = (Boolean)evaluate("updateContentVersion", "updateExistingAssets", updateExistingAssets, Boolean.class);
 	}
 
     public String getOperationName()
