@@ -864,6 +864,20 @@ public abstract class InfoGlueAbstractAction extends WebworkAbstractAction
 		return DigitalAssetController.getController().getContentId(digitalAssetId);
 	}
 
+	public LanguageVO getLanguageVO(Integer languageId) throws Exception
+	{
+		LanguageVO languageVO = LanguageController.getController().getLanguageVOWithId(languageId);
+
+		return languageVO;
+	}
+
+	public ContentVO getContentVO(Integer contentId) throws Exception
+	{
+		ContentVO contentVO = ContentController.getContentController().getContentVOWithId(contentId);
+
+		return contentVO;
+	}
+	
 	public String getContentPath(Integer contentId) throws Exception
 	{
 		StringBuffer sb = new StringBuffer();

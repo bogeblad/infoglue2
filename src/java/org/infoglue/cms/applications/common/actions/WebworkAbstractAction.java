@@ -44,6 +44,8 @@ import org.infoglue.cms.util.CmsPropertyHandler;
 import org.infoglue.cms.util.StringManager;
 import org.infoglue.cms.util.StringManagerFactory;
 import org.infoglue.deliver.util.BrowserBean;
+import org.infoglue.deliver.util.RequestAnalyser;
+import org.infoglue.deliver.util.Timer;
 
 import webwork.action.Action;
 import webwork.action.CommandDriven;
@@ -107,11 +109,17 @@ public abstract class WebworkAbstractAction implements Action, ServletRequestAwa
    */
     public String execute() throws Exception 
     {
+    	Timer t = new Timer();
+    	
     	String result = "";
     	
         try 
         {
         	result = isCommand() ? invokeCommand() : doExecute();
+        	setStandardResponseHeaders();
+        	
+      		if(logger.isInfoEnabled())
+  				RequestAnalyser.getRequestAnalyser().registerComponentStatistics("" + this.getCurrentUrl(), t.getElapsedTime());
         } 
         catch(ResultException e) 
         {
@@ -312,6 +320,8 @@ public abstract class WebworkAbstractAction implements Action, ServletRequestAwa
   	
   	private String invokeCommand() throws Exception 
   	{
+  		Timer t = new Timer();
+  		
     	final StringBuffer methodName = new StringBuffer("do" + this.commandName);
     	methodName.setCharAt(2, Character.toUpperCase(methodName.charAt(2)));
 
@@ -321,6 +331,10 @@ public abstract class WebworkAbstractAction implements Action, ServletRequestAwa
     	{
       		final Method method = getClass().getMethod(methodName.toString(), new Class[0]);
       		result = (String) method.invoke(this, new Object[0]);
+        	setStandardResponseHeaders();
+
+      		if(logger.isInfoEnabled())
+      			RequestAnalyser.getRequestAnalyser().registerComponentStatistics("" + this.getCurrentUrl(), t.getElapsedTime());
     	} 
     	catch(Exception ie) 
     	{
@@ -390,6 +404,22 @@ public abstract class WebworkAbstractAction implements Action, ServletRequestAwa
         return result;
     	
   	}
+
+  	/**
+  	 * This method adds a header to all responses which makes all latest IE-browsers fallback to IE8-mode.
+  	 * Some aspects of Infoglue (FCKEditor) does not work in IE9 for example.
+  	 */
+	public void setStandardResponseHeaders() 
+	{
+		try
+		{
+			getResponse().setHeader("X-UA-Compatible", "IE=EmulateIE8");
+		}
+		catch (Exception e) 
+		{
+			logger.warn("Could not set headers:" + e.getMessage());
+		}
+	}
 
     public final String getRoot() 
     {
