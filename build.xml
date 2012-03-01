@@ -5,8 +5,9 @@
     <property name="ant.build.javac.target" value="1.5"/>
 
 	<!-- Use local.build.properties to set your own path to override the build.properties -->
+	<property file="${local.buildfile}" />
 	<property file="local.build.properties" />
-	<property file="build.properties"/>
+	<property file="build.properties" />
 	<property name="project.fullname" value="InfoGlue content management system"/>
 
 	<property name="src" value="src"/>
@@ -38,8 +39,9 @@
 	<!--
 	* The master filterset, created from build.properties
 	-->
-	<filterset id="project.filters">
+	<filterset id="project.filters" onmissingfiltersfile="warn">
 		<filter token="database.validationQuery" value="select 1 from cmInfoGlueProperties"/>
+		<filtersfile file="${local.buildfile}"/>
 		<filtersfile file="build.properties"/>
 	</filterset>
 
@@ -151,7 +153,27 @@
 	<target name="fetchInfoGlueOnTag">
 		<cvs command="update -P -r '${tagName}'" cvsRoot=":pserver:anonymous@www.infoglue.org:2401/home/cvsroot"/>
 	</target>
-			    
+
+	<target name="debug" depends="init">
+		<echoproperties/>
+		
+		<copy todir="build">
+			<fileset dir="${conf}">
+				<include name="*.properties"/>
+				<include name="*.xml"/>
+				<include name="*.dtd"/>
+				<include name="LICENSE.HTML"/>
+				<exclude name="*web.xml"/>
+			</fileset>
+			<filterset refid="project.filters"/>
+			<filterset>
+				<filter token="context.root.deliver" value="${context.root.working}"/>
+				<filter token="operatingMode.deliver" value="${operatingMode.working}"/>
+			</filterset>
+		</copy>
+		
+	</target>
+	
 	<!--
 	* Compiles Java source files and copies resources to the build output directory
 	* that need to be on the classpath.  Also copies the Velocity templates required by
@@ -574,10 +596,14 @@
 						classes = (path.indexOf("tld") == -1 && path.indexOf("config") == -1);
 						System.out.println("classes:" + classes);
 			
+						int lastIndexOf = path.lastIndexOf("\\");
+						if(lastIndexOf == -1)
+							lastIndexOf = path.lastIndexOf("/");
+				
 						if(!onlyDeliver)
 						{
 							if(onlyCMS)
-								path = path.substring(0, path.lastIndexOf("\\"));
+								path = path.substring(0, lastIndexOf);
 							
 							File cmsDir = new File(project.getProperty("deploy.dir.cms") + "/WEB-INF/classes" + path); 
 							if(!classes)
@@ -593,7 +619,7 @@
 						if(!onlyCMS)
 						{
 							if(onlyDeliver)
-								path = path.substring(0, path.lastIndexOf("\\"));
+								path = path.substring(0, lastIndexOf);
 				
 							File deliverDir = new File(project.getProperty("deploy.dir.working") + "/WEB-INF/classes" + path); 
 							if(!classes)
@@ -658,7 +684,7 @@
 		</copy>
 
 		<echo message="Copying infoglueCMS/WEB-INF/classes"/>
-		<copy todir="${deploy.dir.cms}/WEB-INF/classes">
+		<copy todir="${deploy.dir.cms}/WEB-INF/classes" overwrite="true">
 			<fileset dir="${build.classes}">
 				<include name="**/*.*"/>
 				<exclude name="cms-web.xml"/>
@@ -667,7 +693,7 @@
 		</copy>
 
 		<echo message="Copying infoglueCMS/WEB-INF/classes"/>
-		<copy todir="${deploy.dir.cms}/WEB-INF/classes">
+		<copy todir="${deploy.dir.cms}/WEB-INF/classes" overwrite="true">
 			<fileset dir="${conf}/data/xml">
 				<include name="portletdefinitionmapping.xml"/>
 				<include name="portletentitymapping.xml"/>
@@ -686,7 +712,7 @@
 		</copy>
 
 		<echo message="Copying infoglueDeliver/WEB-INF/classes"/>
-		<copy todir="${deploy.dir.working}/WEB-INF/classes">
+		<copy todir="${deploy.dir.working}/WEB-INF/classes" overwrite="true">
 			<fileset dir="${build.classes}">
 				<include name="**/*.*"/>
 				<exclude name="cms-web.xml"/>
@@ -695,7 +721,7 @@
 		</copy>
 
 		<echo message="Copying infoglueDeliver/WEB-INF/classes"/>
-		<copy todir="${deploy.dir.working}/WEB-INF/classes">
+		<copy todir="${deploy.dir.working}/WEB-INF/classes" overwrite="true">
 			<fileset dir="${conf}/data/xml">
 				<include name="portletdefinitionmapping.xml"/>
 				<include name="portletentitymapping.xml"/>
@@ -704,19 +730,19 @@
 		</copy>
 
 		<echo message="Copying infoglueDeliver"/>
-		<copy todir="${deploy.dir.working}">
+		<copy todir="${deploy.dir.working}" overwrite="true">
 			<fileset dir="${webapp}">
 				<include name="**/*.*"/>
 			</fileset>
 		</copy>
 
 		<echo message="Copying infoglueCMS"/>
-		<copy todir="${deploy.dir.cms}">
+		<copy todir="${deploy.dir.cms}" overwrite="true">
 			<fileset dir="${webapp}">
 				<include name="**/*.*"/>
 			</fileset>
 		</copy>
-		<copy todir="${deploy.dir.cms}/WEB-INF/tld">
+		<copy todir="${deploy.dir.cms}/WEB-INF/tld" overwrite="true">
 			<fileset dir="${conf}/tld">
 				<include name="*.tld"/>
 			</fileset>
@@ -724,7 +750,7 @@
 
 
 		<echo message="Copying confs to deliver"/>
-		<copy todir="${deploy.dir.working}/WEB-INF/classes">
+		<copy todir="${deploy.dir.working}/WEB-INF/classes" overwrite="true">
 			<fileset dir="${conf}">
 				<include name="*.properties"/>
 				<include name="*.xml"/>
@@ -738,21 +764,21 @@
 				<filter token="operatingMode.deliver" value="${operatingMode.working}"/>
 			</filterset>
 		</copy>
-		<copy todir="${deploy.dir.working}/WEB-INF/classes">
+		<copy todir="${deploy.dir.working}/WEB-INF/classes" overwrite="true">
 			<fileset dir="${conf}/deliver" includes="mapping.xml,oracle_mapping.xml,jobs.xml"/>
 			<fileset dir="${conf}/deliver" includes="webwork.properties,actions.xml,jobs.xml"/>
 		</copy>
-		<copy file="${conf}/deliver-web.xml" tofile="${deploy.dir.working}/WEB-INF/web.xml">
+		<copy file="${conf}/deliver-web.xml" tofile="${deploy.dir.working}/WEB-INF/web.xml" overwrite="true">
 			<filterset refid="project.filters"/>
 			<filterset>
 				<filter token="context.root.deliver" value="${context.root.working}"/>
 				<filter token="operatingMode.deliver" value="${operatingMode.working}"/>
 			</filterset>
 		</copy>
-		<copy todir="${deploy.dir.working}/WEB-INF/classes">
+		<copy todir="${deploy.dir.working}/WEB-INF/classes" overwrite="true">
 			<fileset dir="${src}" includes="workflows/*.xml"/>
 		</copy>
-		<copy todir="${deploy.dir.working}/WEB-INF/tld">
+		<copy todir="${deploy.dir.working}/WEB-INF/tld" overwrite="true">
 			<fileset dir="${conf}/tld">
 				<include name="*.tld"/>
 			</fileset>
@@ -767,12 +793,12 @@
 				<include name="**/*.*"/>
 			</fileset>
 		</copy>
-		<copy todir="${deploy.dir.working}/META-INF">
+		<copy todir="${deploy.dir.working}/META-INF" overwrite="true">
 			<fileset dir="${conf}" includes="context.xml"/>
 		</copy>
 							
 		<echo message="Copying confs to cms"/>
-		<copy todir="${deploy.dir.cms}/WEB-INF/classes">
+		<copy todir="${deploy.dir.cms}/WEB-INF/classes" overwrite="true">
 			<fileset dir="${conf}">
 				<include name="*.properties"/>
 				<include name="*.xml"/>
@@ -786,12 +812,12 @@
 				<filter token="operatingMode.deliver" value="${operatingMode.working}"/>
 			</filterset>
 		</copy>
-		<copy todir="${deploy.dir.cms}/WEB-INF/classes">
+		<copy todir="${deploy.dir.cms}/WEB-INF/classes" overwrite="true">
 			<fileset dir="${conf}/cms" includes="mapping.xml,oracle_mapping.xml,jobs.xml"/>
 			<fileset dir="${conf}/cms" includes="webwork.properties,actions.xml,jobs.xml"/>
 		</copy>
 
-		<copy file="${conf}/cms-web.xml" tofile="${deploy.dir.cms}/WEB-INF/web.xml">
+		<copy file="${conf}/cms-web.xml" tofile="${deploy.dir.cms}/WEB-INF/web.xml" overwrite="true">
 		<filterset refid="project.filters"/>
 			<filterset>
 				<filter token="context.root.deliver" value="${context.root.working}"/>
@@ -799,14 +825,14 @@
 			</filterset>
 		</copy>
 
-		<copy todir="${deploy.dir.cms}/WEB-INF">
+		<copy todir="${deploy.dir.cms}/WEB-INF" overwrite="true">
 			<fileset dir="${conf}" includes="server-config.wsdd"/>
 		</copy>
 
-		<copy todir="${deploy.dir.cms}/WEB-INF/classes">
+		<copy todir="${deploy.dir.cms}/WEB-INF/classes" overwrite="true">
 			<fileset dir="${src}" includes="workflows/*.xml"/>
 		</copy>
-		<copy todir="${deploy.dir.cms}/META-INF">
+		<copy todir="${deploy.dir.cms}/META-INF" overwrite="true">
 			<fileset dir="${conf}" includes="context.xml"/>
 		</copy>					
 
