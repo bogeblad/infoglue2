@@ -39,11 +39,8 @@ import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeController;
 import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeVersionController;
 import org.infoglue.cms.controllers.usecases.structuretool.ViewSiteNodeTreeUCC;
 import org.infoglue.cms.controllers.usecases.structuretool.ViewSiteNodeTreeUCCFactory;
-import org.infoglue.cms.entities.content.Content;
 import org.infoglue.cms.entities.content.ContentVO;
 import org.infoglue.cms.entities.content.ContentVersion;
-import org.infoglue.cms.entities.content.ContentVersionVO;
-import org.infoglue.cms.entities.management.Language;
 import org.infoglue.cms.entities.management.LanguageVO;
 import org.infoglue.cms.entities.structure.SiteNode;
 import org.infoglue.cms.entities.structure.SiteNodeVO;
@@ -53,7 +50,6 @@ import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.security.InfoGluePrincipal;
 import org.infoglue.cms.util.CmsPropertyHandler;
 import org.infoglue.cms.util.ConstraintExceptionBuffer;
-import org.infoglue.cms.util.sorters.ReflectionComparator;
 import org.infoglue.cms.util.sorters.SiteNodeComparator;
 import org.infoglue.deliver.util.Timer;
 
@@ -167,7 +163,7 @@ public class SiteNodeNodeSupplier extends BaseNodeSupplier
 
 		return ret;
 	}
-*/
+*/   
 	/**
 	 * @see com.frovi.ss.Tree.INodeSupplier#getChildContainerNodes(Integer)
 	 */
@@ -190,7 +186,7 @@ public class SiteNodeNodeSupplier extends BaseNodeSupplier
         try
         {
             SiteNode parentSiteNode = SiteNodeController.getSiteNodeWithId(parentNode, db, true);
-	        Collection children = parentSiteNode.getChildSiteNodes();
+            Collection children = parentSiteNode.getChildSiteNodes();
 	    	List childrenVOList = SiteNodeController.toVOList(children);
 
 			Iterator childrenVOListIterator = childrenVOList.iterator();
@@ -217,6 +213,7 @@ public class SiteNodeNodeSupplier extends BaseNodeSupplier
 								{
 									LanguageVO masterLanguage = LanguageController.getController().getMasterLanguage(contentVO.getRepositoryId(), db);
 									ContentVersion contentVersion = ContentVersionController.getContentVersionController().getLatestActiveContentVersion(contentVO.getContentId(), masterLanguage.getId(), db);
+
 									if(contentVersion != null)
 									{
 										sortOrderProperty = sortOrderProperty.substring(6);
