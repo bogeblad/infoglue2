@@ -19,8 +19,6 @@
  * Place, Suite 330 / Boston, MA 02111-1307 / USA.
  *
  * ===============================================================================
- *
- * $Id: RegistryController.java,v 1.37 2008/07/09 15:34:34 mattias Exp $
  */
 
 package org.infoglue.cms.controllers.kernel.impl.simple;
@@ -41,20 +39,19 @@ import org.exolab.castor.jdo.QueryResults;
 import org.infoglue.cms.applications.databeans.ReferenceBean;
 import org.infoglue.cms.applications.databeans.ReferenceVersionBean;
 import org.infoglue.cms.entities.content.Content;
+import org.infoglue.cms.entities.content.ContentVO;
 import org.infoglue.cms.entities.content.ContentVersion;
 import org.infoglue.cms.entities.content.ContentVersionVO;
-import org.infoglue.cms.entities.content.impl.simple.ContentImpl;
 import org.infoglue.cms.entities.kernel.BaseEntityVO;
 import org.infoglue.cms.entities.management.CategoryVO;
 import org.infoglue.cms.entities.management.Language;
-import org.infoglue.cms.entities.management.LanguageVO;
 import org.infoglue.cms.entities.management.Registry;
 import org.infoglue.cms.entities.management.RegistryVO;
-import org.infoglue.cms.entities.management.impl.simple.LanguageImpl;
 import org.infoglue.cms.entities.management.impl.simple.RegistryImpl;
 import org.infoglue.cms.entities.structure.Qualifyer;
 import org.infoglue.cms.entities.structure.ServiceBinding;
 import org.infoglue.cms.entities.structure.SiteNode;
+import org.infoglue.cms.entities.structure.SiteNodeVO;
 import org.infoglue.cms.entities.structure.SiteNodeVersion;
 import org.infoglue.cms.entities.structure.SiteNodeVersionVO;
 import org.infoglue.cms.exception.Bug;
@@ -199,7 +196,7 @@ public class RegistryController extends BaseController
 	    ContentVersion oldContentVersion = contentVersion; //ContentVersionController.getContentVersionController().getContentVersionWithId(contentVersionVO.getContentVersionId(), db);
 	    Content oldContent = oldContentVersion.getOwningContent();
 	    
-	    if(oldContent.getContentTypeDefinition().getName().equalsIgnoreCase("Meta info"))
+	    if(oldContent!= null && oldContent.getContentTypeDefinition() != null && oldContent.getContentTypeDefinition().getName().equalsIgnoreCase("Meta info"))
 	    {
 	        logger.info("It was a meta info so lets check it for other stuff as well");
 		    
@@ -1257,9 +1254,9 @@ public class RegistryController extends BaseController
             {
                 try
                 {
-                    Content content = ContentController.getContentController().getContentWithId(new Integer(registryVO.getEntityId()), db);
-		    		logger.info("contentVersion:" + content.getContentId());
-		    		result.add(content.getValueObject());
+                    ContentVO contentVO = ContentController.getContentController().getContentVOWithId(new Integer(registryVO.getEntityId()), db);
+		    		logger.info("contentVO:" + contentVO.getId());
+		    		result.add(contentVO);
                 }
                 catch(Exception e)
                 {
@@ -1270,9 +1267,9 @@ public class RegistryController extends BaseController
             {
                 try
                 {
-	                SiteNode siteNode = SiteNodeController.getController().getSiteNodeWithId(new Integer(registryVO.getEntityId()), db);
-		    		logger.info("siteNode:" + siteNode.getId());
-		    		result.add(siteNode.getValueObject());
+	                SiteNodeVO siteNodeVO = SiteNodeController.getController().getSiteNodeVOWithId(new Integer(registryVO.getEntityId()), db);
+		    		logger.info("siteNodeVO:" + siteNodeVO.getId());
+		    		result.add(siteNodeVO);
 		    	}
                 catch(Exception e)
                 {
@@ -1287,31 +1284,42 @@ public class RegistryController extends BaseController
 	/**
 	 * Gets matching references
 	 */
-	
 	public List getMatchingRegistryVOListForReferencingEntity(String referencingEntityName, String referencingEntityId, Database db) throws SystemException, Exception
 	{
-	    List matchingRegistryVOList = new ArrayList();
-
-	    logger.info("referencingEntityName:" + referencingEntityName);
-	    logger.info("referencingEntityId:" + referencingEntityId);
+		String cacheName = "registryCache";
+		String cacheKey = "" + referencingEntityName + "_" + referencingEntityId;
 		
-	    OQLQuery oql = db.getOQLQuery("SELECT r FROM org.infoglue.cms.entities.management.impl.simple.RegistryImpl r WHERE r.referencingEntityName = $1 AND r.referencingEntityId = $2 ORDER BY r.registryId");
-		oql.bind(referencingEntityName);
-		oql.bind(referencingEntityId);
+		List matchingRegistryVOList = (List)CacheController.getCachedObjectFromAdvancedCache(cacheName, cacheKey); 
+		if(matchingRegistryVOList != null)
+		{
+			//System.out.println("\n\nFound cached match...:" + cacheKey);
+			return matchingRegistryVOList;
+		}
+		else
+		{
+		    matchingRegistryVOList = new ArrayList();
+		    			
+		    OQLQuery oql = db.getOQLQuery("SELECT r FROM org.infoglue.cms.entities.management.impl.simple.RegistryImpl r WHERE r.referencingEntityName = $1 AND r.referencingEntityId = $2 ORDER BY r.registryId");
+			oql.bind(referencingEntityName);
+			oql.bind(referencingEntityId);
+			
+			QueryResults results = oql.execute(Database.ReadOnly);
+			
+			while (results.hasMore()) 
+	        {
+	            Registry registry = (Registry)results.next();
+	            RegistryVO registryVO = registry.getValueObject();
+	    	    //logger.info("found match:" + registryVO.getEntityName() + ":" + registryVO.getEntityId());
+	            
+	            matchingRegistryVOList.add(registryVO);
+	        }       
+			
+			CacheController.cacheObjectInAdvancedCache(cacheName, cacheKey, matchingRegistryVOList, new String[]{""+cacheKey.hashCode()}, true);
+			
+			results.close();
+			oql.close();
+		}
 		
-		QueryResults results = oql.execute(Database.ReadOnly);
-		
-		while (results.hasMore()) 
-        {
-            Registry registry = (Registry)results.next();
-            RegistryVO registryVO = registry.getValueObject();
-    	    logger.info("found match:" + registryVO.getEntityName() + ":" + registryVO.getEntityId());
-            
-            matchingRegistryVOList.add(registryVO);
-        }       
-		
-		results.close();
-		oql.close();
 
 		return matchingRegistryVOList;		
 	}
