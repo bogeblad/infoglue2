@@ -48,10 +48,6 @@ import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeVersionController
 import org.infoglue.cms.controllers.kernel.impl.simple.UserControllerProxy;
 import org.infoglue.cms.entities.content.ContentVO;
 import org.infoglue.cms.entities.content.DigitalAssetVO;
-import org.infoglue.cms.entities.management.AccessRightGroupVO;
-import org.infoglue.cms.entities.management.AccessRightRoleVO;
-import org.infoglue.cms.entities.management.AccessRightUserVO;
-import org.infoglue.cms.entities.management.AvailableServiceBinding;
 import org.infoglue.cms.entities.management.AvailableServiceBindingVO;
 import org.infoglue.cms.entities.management.Language;
 import org.infoglue.cms.entities.management.LanguageVO;
@@ -64,9 +60,8 @@ import org.infoglue.cms.security.InfoGlueGroup;
 import org.infoglue.cms.security.InfoGluePrincipal;
 import org.infoglue.cms.security.InfoGlueRole;
 import org.infoglue.cms.util.CmsPropertyHandler;
-import org.infoglue.deliver.applications.actions.ViewPageAction;
-import org.infoglue.deliver.util.CacheController;
 import org.infoglue.deliver.util.HttpHelper;
+import org.infoglue.deliver.util.Timer;
 
 import webwork.action.Action;
 
@@ -197,7 +192,7 @@ public class InstallationValidatorAction extends InfoGlueAbstractAction
         }
         catch(Exception e)
         {
-            e.printStackTrace();
+            logger.warn("An error occurred validating assets: " + e.getMessage(), e);
             addValidationItem(name, description, false, "An error occurred: " + e.getMessage());
         }
     }
@@ -226,7 +221,7 @@ public class InstallationValidatorAction extends InfoGlueAbstractAction
     			}
     			catch(Exception e)
     			{
-    				e.printStackTrace();
+    	            logger.warn("Test failed on " + address + ":" + e.getMessage(), e);
     			    addValidationItem(name, description, false, "Test failed on " + address + ":" + e.getMessage());
     			}
     		}
@@ -303,7 +298,7 @@ public class InstallationValidatorAction extends InfoGlueAbstractAction
         }
         catch(Exception e)
         {
-            e.printStackTrace();
+            logger.warn("Test failed creating asset:" + e.getMessage(), e);
             throw e;
         }
         finally
@@ -390,7 +385,7 @@ public class InstallationValidatorAction extends InfoGlueAbstractAction
 			    			
 			    			if(siteNodeVersion == null)
 			    			{
-			    				System.out.println("Error:" + siteNode.getName() + "(" + siteNode.getId() + ") had no siteNodeVersions");
+			    				logger.error("Error:" + siteNode.getName() + "(" + siteNode.getId() + ") had no siteNodeVersions");
 			    			}
 			    			else
 			    			{
@@ -416,7 +411,6 @@ public class InstallationValidatorAction extends InfoGlueAbstractAction
 			    			
 				    			if(!hasMetaInfo)
 				    			{
-				        		    //System.out.println("Creating a new meta info for " + siteNode.getName());
 				        		    ContentVO contentVO = SiteNodeController.getController().createSiteNodeMetaInfoContent(db, siteNode, siteNode.getRepository().getId(), this.getInfoGluePrincipal(), null).getValueObject();
 				        		    metaInfoContentId = contentVO.getId(); 
 				    			}
@@ -431,7 +425,7 @@ public class InstallationValidatorAction extends InfoGlueAbstractAction
 	        }
 	        catch(Exception e)
 	        {
-	        	e.printStackTrace();
+	            logger.warn("An error occurred validating sitenodes:" + e.getMessage(), e);
 	            addValidationItem(name, description, false, "An error occurred: " + e.getMessage());
 	        }
 	        
@@ -461,43 +455,36 @@ public class InstallationValidatorAction extends InfoGlueAbstractAction
 	
 	        String name = "AccessRightUser names";
 	        String description = "Checks if the user names given exists in the current authorizationModule.";
-	
+	        
 	        try
 	        {
-	        	List invalidUsers = new ArrayList();
+	        	List<String> invalidUsers = new ArrayList<String>();
 	        	
-	        	List users = UserControllerProxy.getController(db).getAllUsers();
-	            List systemUserVOList = AccessRightController.getController().getAccessRightUserVOList(db);
-	            
-	            Iterator i = systemUserVOList.iterator();
-	            
-	        	while(i.hasNext())
-	            {
-	                AccessRightUserVO accessRightUserVO = (AccessRightUserVO)i.next(); 
-	                
+	        	List<String> accessRightUserNameList = AccessRightController.getController().getUniqueSystemUserNameListInAccessRightUser(db);
+	        	
+	        	for(String accessRightUserName : accessRightUserNameList)
+	        	{	                
 	                boolean isValid = false;
 	                
-	                Iterator userIterator = users.iterator();
-		            
-		        	while(userIterator.hasNext())
-		            {
-		                InfoGluePrincipal principal = (InfoGluePrincipal)userIterator.next();
-		                if(principal.getName().equalsIgnoreCase(accessRightUserVO.getUserName()))
-		                {
+	                try
+	    	        {
+	                	InfoGluePrincipal principal = UserControllerProxy.getController(db).getUser(accessRightUserName);
+		                if(principal != null)
 		                	isValid = true;
-		                	break;
-		                }
-		            }
+	    	        }
+	                catch (Exception e) 
+	                {
+	                	logger.warn("Could not find:" + accessRightUserName);
+					}
 	                
 		        	if(!isValid)
-		        		invalidUsers.add(accessRightUserVO.getUserName());
+		        		invalidUsers.add(accessRightUserName);
 	            }
 	            
 	            addValidationItem(name, description, true, "Faulty " + invalidUsers.size() + " usernames.");
 	        }
 	        catch(Exception e)
 	        {
-	        	e.printStackTrace();
 	            addValidationItem(name, description, false, "An error occurred: " + e.getMessage());
 	        }
 	        
@@ -513,7 +500,6 @@ public class InstallationValidatorAction extends InfoGlueAbstractAction
         {
             db.close();
         }
-
     }
 
     private void validateAccessRightsRole() throws Exception
@@ -530,40 +516,33 @@ public class InstallationValidatorAction extends InfoGlueAbstractAction
 	
 	        try
 	        {
-	        	List invalidRoles = new ArrayList();
+	        	List<String> invalidRoles = new ArrayList<String>();
 	        	
-	        	List users = RoleControllerProxy.getController(db).getAllRoles();
-	            List systemRoleVOList = AccessRightController.getController().getAccessRightRoleVOList(db);
-	            
-	            Iterator i = systemRoleVOList.iterator();
-	            
-	        	while(i.hasNext())
-	            {
-	                AccessRightRoleVO accessRightRoleVO = (AccessRightRoleVO)i.next(); 
-	                
+	        	List<String> accessRightRoleNameList = AccessRightController.getController().getUniqueRoleNameListInAccessRightRole(db);
+	        	
+	        	for(String accessRightRoleName : accessRightRoleNameList)
+	        	{	                
 	                boolean isValid = false;
 	                
-	                Iterator userIterator = users.iterator();
-		            
-		        	while(userIterator.hasNext())
-		            {
-		        		InfoGlueRole role = (InfoGlueRole)userIterator.next();
-		                if(role.getName().equalsIgnoreCase(accessRightRoleVO.getRoleName()))
-		                {
+	                try
+	    	        {
+	                	InfoGlueRole role = RoleControllerProxy.getController(db).getRole(accessRightRoleName);
+		                if(role != null)
 		                	isValid = true;
-		                	break;
-		                }
-		            }
+	    	        }
+	                catch (Exception e) 
+	                {
+	                	logger.warn("Could not find:" + accessRightRoleName);
+					}
 	                
 		        	if(!isValid)
-		        		invalidRoles.add(accessRightRoleVO.getRoleName());
+		        		invalidRoles.add(accessRightRoleName);
 	            }
 	            
 	            addValidationItem(name, description, true, "Faulty " + invalidRoles.size() + " rolenames.");
 	        }
 	        catch(Exception e)
 	        {
-	        	e.printStackTrace();
 	            addValidationItem(name, description, false, "An error occurred: " + e.getMessage());
 	        }
 	        
@@ -596,40 +575,33 @@ public class InstallationValidatorAction extends InfoGlueAbstractAction
 	
 	        try
 	        {
-	        	List invalidGroups = new ArrayList();
+	        	List<String> invalidGroups = new ArrayList<String>();
 	        	
-	        	List users = GroupControllerProxy.getController(db).getAllGroups();
-	            List systemGroupVOList = AccessRightController.getController().getAccessRightGroupVOList(db);
-	            
-	            Iterator i = systemGroupVOList.iterator();
-	            
-	        	while(i.hasNext())
-	            {
-	                AccessRightGroupVO accessRightGroupVO = (AccessRightGroupVO)i.next(); 
-	                
+	        	List<String> accessRightGroupNameList = AccessRightController.getController().getUniqueGroupNameListInAccessRightGroup(db);
+	        	
+	        	for(String accessRightGroupName : accessRightGroupNameList)
+	        	{	                
 	                boolean isValid = false;
 	                
-	                Iterator userIterator = users.iterator();
-		            
-		        	while(userIterator.hasNext())
-		            {
-		                InfoGlueGroup group = (InfoGlueGroup)userIterator.next();
-		                if(group.getName().equalsIgnoreCase(accessRightGroupVO.getGroupName()))
-		                {
+	                try
+	    	        {
+	                	InfoGlueGroup group = GroupControllerProxy.getController(db).getGroup(accessRightGroupName);
+		                if(group != null)
 		                	isValid = true;
-		                	break;
-		                }
-		            }
+	    	        }
+	                catch (Exception e) 
+	                {
+	                	logger.warn("Could not find:" + accessRightGroupName);
+					}
 	                
 		        	if(!isValid)
-		        		invalidGroups.add(accessRightGroupVO.getGroupName());
+		        		invalidGroups.add(accessRightGroupName);
 	            }
-	            
+	            	            
 	            addValidationItem(name, description, true, "Faulty " + invalidGroups.size() + " groupnames.");
 	        }
 	        catch(Exception e)
 	        {
-	        	e.printStackTrace();
 	            addValidationItem(name, description, false, "An error occurred: " + e.getMessage());
 	        }
 	        
@@ -645,7 +617,6 @@ public class InstallationValidatorAction extends InfoGlueAbstractAction
         {
             db.close();
         }
-
     }
 
     /**
@@ -673,7 +644,7 @@ public class InstallationValidatorAction extends InfoGlueAbstractAction
         }
         catch(Exception e)
         {
-        	e.printStackTrace();
+            logger.warn("An error occurred so we should not complete the transaction:" + e, e);
             addValidationItem(name, description, false, "An error occurred: " + e.getMessage());
         }
     }
