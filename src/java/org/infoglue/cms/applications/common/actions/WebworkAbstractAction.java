@@ -118,8 +118,7 @@ public abstract class WebworkAbstractAction implements Action, ServletRequestAwa
         	result = isCommand() ? invokeCommand() : doExecute();
         	setStandardResponseHeaders();
         	
-      		if(logger.isInfoEnabled())
-  				RequestAnalyser.getRequestAnalyser().registerComponentStatistics("" + this.getCurrentUrl(), t.getElapsedTime());
+			RequestAnalyser.getRequestAnalyser().registerComponentStatistics("" + this.getUnencodedCurrentURI(), t.getElapsedTime());
         } 
         catch(ResultException e) 
         {
@@ -218,6 +217,17 @@ public abstract class WebworkAbstractAction implements Action, ServletRequestAwa
 		String urlParameters = getRequest().getQueryString();
 		
 		return urlBase + (urlParameters != null ? "?" + urlParameters : "");
+	}
+
+	/**
+	 * This method returns the URI to the current page.
+	 */
+	
+	public String getUnencodedCurrentURI() throws Exception
+	{
+		String urlBase = getRequest().getRequestURI().toString();
+		
+		return urlBase;
 	}
 
     /**
@@ -333,8 +343,7 @@ public abstract class WebworkAbstractAction implements Action, ServletRequestAwa
       		result = (String) method.invoke(this, new Object[0]);
         	setStandardResponseHeaders();
 
-      		if(logger.isInfoEnabled())
-      			RequestAnalyser.getRequestAnalyser().registerComponentStatistics("" + this.getCurrentUrl(), t.getElapsedTime());
+   			RequestAnalyser.getRequestAnalyser().registerComponentStatistics("" + this.getUnencodedCurrentURI(), t.getElapsedTime());
     	} 
     	catch(Exception ie) 
     	{
