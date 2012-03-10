@@ -398,7 +398,6 @@ public class AccessRightController extends BaseController
 		}
 		catch(Exception e)
 		{
-		    e.printStackTrace();
 			throw new SystemException("An error occurred when we tried to fetch a list of Access rights. Reason:" + e.getMessage(), e);    
 		}
 		
@@ -999,7 +998,6 @@ public class AccessRightController extends BaseController
 					db.remove(accessRightUser);
 				}
 				*/
-				//System.out.println("Removing:" + accessRight.getId());
 				//db.remove(accessRight);
 			}
 			
@@ -1517,7 +1515,6 @@ public class AccessRightController extends BaseController
 		{
 			logger.warn("An error occurred so we should not complete the transaction:" + e, e);
 			rollbackTransaction(db);
-			//TODO - lägg kanske en koll på rader som inte har en valid user??
 			throw new SystemException(e.getMessage());
 		}
 		
@@ -1772,6 +1769,78 @@ public class AccessRightController extends BaseController
 		return accessRightGroupList;		
 	}
 
+	/**
+	 * Returns the latest digital asset for a contentversion.
+	 */
+	
+	public List<String> getUniqueSystemUserNameListInAccessRightUser(Database db) throws Exception
+	{
+		List<String> users = new ArrayList<String>();
+		
+		OQLQuery oql = db.getOQLQuery("CALL SQL select accessRightUserId, userName, accessRightId from cmAccessRightUser aru group by userName AS org.infoglue.cms.entities.management.impl.simple.AccessRightUserImpl");
+ 
+    	QueryResults results = oql.execute(Database.ReadOnly);
+		while(results.hasMore()) 
+        {
+			AccessRightUserImpl aru = (AccessRightUserImpl)results.next();
+			users.add(aru.getUserName());
+		}
+
+		results.close();
+		oql.close();
+        
+        return users;
+	}
+
+	/**
+	 * This method get all unique names used in cmAccessRightRole
+	 * @param db
+	 * @return
+	 * @throws Exception
+	 */
+	public List<String> getUniqueRoleNameListInAccessRightRole(Database db) throws Exception
+	{
+		List<String> roles = new ArrayList<String>();
+		
+		OQLQuery oql = db.getOQLQuery("CALL SQL select accessRightRoleId, roleName, accessRightId from cmAccessRightRole arr group by roleName AS org.infoglue.cms.entities.management.impl.simple.AccessRightRoleImpl");
+		 
+    	QueryResults results = oql.execute(Database.ReadOnly);
+		while(results.hasMore()) 
+        {
+			AccessRightRoleImpl arr = (AccessRightRoleImpl)results.next();
+			roles.add(arr.getRoleName());
+		}
+
+		results.close();
+		oql.close();
+
+		return roles;
+	}	
+
+	/**
+	 * This method get all unique names used in cmAccessRightUser
+	 * @param db
+	 * @return
+	 * @throws Exception
+	 */
+	public List<String> getUniqueGroupNameListInAccessRightGroup(Database db) throws Exception
+	{
+		List<String> groups = new ArrayList<String>();
+
+		OQLQuery oql = db.getOQLQuery("CALL SQL select accessRightGroupId, groupName, accessRightId from cmAccessRightGroup arr group by groupName AS org.infoglue.cms.entities.management.impl.simple.AccessRightGroupImpl");
+		 
+    	QueryResults results = oql.execute(Database.ReadOnly);
+		while(results.hasMore()) 
+        {
+			AccessRightGroupImpl arr = (AccessRightGroupImpl)results.next();
+			groups.add(arr.getGroupName());
+		}
+
+		results.close();
+		oql.close();
+		
+		return groups;
+	}	
 	
 	/**
 	 * This is a method that gives the user back an newly initialized ValueObject for this entity that the controller
