@@ -582,6 +582,8 @@ public class ContentDeliveryController extends BaseDeliveryController
 		}
 		else
 		{
+			Timer t = new Timer();
+
 		    String smallVersionKey = "" + contentId + "_" + languageId + "_" + operatingMode + "_smallestContentVersionVO";
 			Object smallestContentVersionVOCandidate = CacheController.getCachedObjectFromAdvancedCache("contentVersionCache", smallVersionKey);
 			if(smallestContentVersionVOCandidate instanceof NullObject)
@@ -620,6 +622,9 @@ public class ContentDeliveryController extends BaseDeliveryController
 				results.close();
 				oql.close();
 			}
+			
+			if(logger.isInfoEnabled())
+				RequestAnalyser.getRequestAnalyser().registerComponentStatistics("getContentVersionVO(Integer contentId, Integer languageId, Integer operatingMode, DeliveryContext deliveryContext, Database db)", t.getElapsedTimeNanos() / 1000);
 		}
 		
 		if(contentVersionVO != null)
@@ -786,13 +791,13 @@ public class ContentDeliveryController extends BaseDeliveryController
 		Boolean hasUserContentAccess = (Boolean)CacheController.getCachedObjectFromAdvancedCache("personalAuthorizationCache", key);
 		if(hasUserContentAccess != null)
 		{
-			//System.out.println("Cached");
+			//logger.info("Cached");
 			return hasUserContentAccess.booleanValue();
 		}
 		else
 		{
 			hasUserContentAccess = true;
-			//System.out.println("----- not Cached");
+			//logger.info("----- not Cached");
 			try 
 			{
 			    if(contentId != null)
@@ -834,7 +839,7 @@ public class ContentDeliveryController extends BaseDeliveryController
 		String enforceRigidContentAccess = CmsPropertyHandler.getEnforceRigidContentAccess();
 		if(enforceRigidContentAccess != null && enforceRigidContentAccess.equalsIgnoreCase("true") && !isMetaInfoQuery)
 		{
-			//System.out.println("Enforcing getHasUserContentAccess for attributeName:" + contentId + ":" + languageId + ":" + attributeName);
+			//logger.info("Enforcing getHasUserContentAccess for attributeName:" + contentId + ":" + languageId + ":" + attributeName);
 			boolean hasUserContentAccess = getHasUserContentAccess(db, infogluePrincipal, contentId);
 			if(!hasUserContentAccess)
 			{
@@ -876,9 +881,6 @@ public class ContentDeliveryController extends BaseDeliveryController
 		String attributeKey = attributeKeySB.toString();
 		String versionKey = versionKeySB.append("_contentVersionId").toString();
 		
-		//ContentVO contentVO = this.getContentVO(contentId, db);
-		//String matcher = "_" + contentVO.getContentTypeDefinitionId() + "_" + contentVO.getRepositoryId() + "_" + attributeName;
-		//String matcher = "_" + contentVO.getRepositoryId();
 		String matcher = "";
 		String cacheName = "contentAttributeCache" + matcher;
 		String contentVersionIdCacheName = "contentVersionIdCache" + matcher;
@@ -1966,16 +1968,11 @@ public class ContentDeliveryController extends BaseDeliveryController
 				    	filePath += File.separator + folderName;
 				}
 
-				//String filePath = CmsPropertyHandler.getDigitalAssetPath();
-				//DigitalAssetDeliveryController.getDigitalAssetDeliveryController().dumpDigitalAsset(digitalAsset, fileName, filePath);
-				//DigitalAssetDeliveryController.getDigitalAssetDeliveryController().dumpDigitalAssetThumbnail(digitalAsset, fileName, thumbnailFileName, filePath, width, height);
-				
 				SiteNode siteNode = NodeDeliveryController.getNodeDeliveryController(siteNodeId, languageId, contentId).getSiteNode(db, siteNodeId);
 				String dnsName = CmsPropertyHandler.getWebServerAddress();
 				if(siteNode != null && siteNode.getRepository().getDnsName() != null && !siteNode.getRepository().getDnsName().equals(""))
 					dnsName = siteNode.getRepository().getDnsName();
 
-				//assetUrl = dnsName + "/" + CmsPropertyHandler.getDigitalAssetBaseUrl() + "/" + thumbnailFileName;
 				assetUrl = urlComposer.composeDigitalAssetUrl(dnsName, folderName, thumbnailFileName, deliveryContext); 
 			}
 			else

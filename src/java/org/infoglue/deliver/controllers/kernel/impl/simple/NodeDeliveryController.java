@@ -72,7 +72,6 @@ import org.infoglue.deliver.controllers.kernel.URLComposer;
 import org.infoglue.deliver.util.CacheController;
 import org.infoglue.deliver.util.HttpHelper;
 import org.infoglue.deliver.util.NullObject;
-import org.infoglue.deliver.util.Timer;
 
 
 public class NodeDeliveryController extends BaseDeliveryController
@@ -1018,7 +1017,7 @@ public class NodeDeliveryController extends BaseDeliveryController
 				SiteNodeVersionVO siteNodeVersionVO = this.getLatestActiveSiteNodeVersionVOForPageCache(db, siteNodeId);
 				if(siteNodeVersionVO != null && siteNodeVersionVO.getForceProtocolChange() != null)
 				{	
-					//System.out.println("siteNodeVersionVO:" + siteNodeVersionVO.getId() + ":" + siteNodeVersionVO.getForceProtocolChange());
+					//logger.info("siteNodeVersionVO:" + siteNodeVersionVO.getId() + ":" + siteNodeVersionVO.getForceProtocolChange());
 					if(logger.isInfoEnabled())
 						logger.info("siteNodeVersionVO:" + siteNodeVersionVO.getId() + ":" + siteNodeVersionVO.getForceProtocolChange());
 					
@@ -1697,7 +1696,8 @@ public class NodeDeliveryController extends BaseDeliveryController
         if(parentSiteNodeId == null || parentSiteNodeId.intValue() == -1)
         {
             SiteNodeVO rootSiteNodeVO = this.getRootSiteNode(db, repositoryId);
-            siteNodes.add(rootSiteNodeVO);
+            if(rootSiteNodeVO != null)
+            	siteNodes.add(rootSiteNodeVO);
         }
         else
         {
@@ -2194,12 +2194,12 @@ public class NodeDeliveryController extends BaseDeliveryController
 		else
 		{
 	        siteNodeVOList = new ArrayList();
-	
+
 	        OQLQuery oql = db.getOQLQuery( "SELECT s FROM org.infoglue.cms.entities.structure.impl.simple.SmallSiteNodeImpl s WHERE s.parentSiteNode.siteNodeId = $1 ORDER BY s.siteNodeId");
 			oql.bind(siteNodeId);
 			
 	    	QueryResults results = oql.execute(Database.ReadOnly);
-			
+
 			while (results.hasMore()) 
 	        {
 	        	SiteNode siteNode = (SiteNode)results.next();
@@ -2210,15 +2210,14 @@ public class NodeDeliveryController extends BaseDeliveryController
 
 			results.close();
 			oql.close();
-
-			CacheController.cacheObjectInAdvancedCache("childSiteNodesCache", key, siteNodeVOList);
+			
+			CacheController.cacheObjectInAdvancedCache("childSiteNodesCache", key, siteNodeVOList, new String[] {"siteNode_" + siteNodeId}, true);
 		}
 
 		//logger.warn("getChildSiteNodes end:" + siteNodeId);
 
 		return siteNodeVOList;	
 	}
-
 	
 	/**
 	 * This method returns a sorted list of qualifyers.
