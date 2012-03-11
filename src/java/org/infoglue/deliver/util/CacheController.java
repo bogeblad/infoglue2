@@ -162,6 +162,29 @@ public class CacheController extends Thread
    
 	private static AtomicInteger numberOfPageCacheFiles = new AtomicInteger(0);
 	
+	//Force mode only happens when a cache eviction has to wait to long. Then we switch to force mode 
+    private static class ThreadLocalCacheEvictionMode extends ThreadLocal 
+    {
+    	public Object initialValue() 
+        {
+        	return false;
+        }
+    }
+
+    //boolean forcedCacheEvictionMode = false;
+    private static ThreadLocalCacheEvictionMode cem = new ThreadLocalCacheEvictionMode();
+
+    public static Boolean getForcedCacheEvictionMode() 
+    {
+        return (Boolean) cem.get();
+    }
+    public static void setForcedCacheEvictionMode(Boolean cemValue) 
+    {
+    	System.out.println("Forcing...");
+        cem.set(cemValue);
+    }
+    
+
 	public CacheController()
 	{
 		super();
@@ -350,9 +373,11 @@ public class CacheController extends Thread
 				if(cacheName != null && cacheName.equalsIgnoreCase("boundContentCache"))
 		    		cacheCapacity = "5000";
 				if(cacheName != null && cacheName.equalsIgnoreCase("childSiteNodesCache"))
-		    		cacheCapacity = "5000";
+		    		cacheCapacity = "20000";
+				if(cacheName != null && cacheName.equalsIgnoreCase("siteNodeCache"))
+		    		cacheCapacity = "30000";
 				if(cacheName != null && cacheName.equalsIgnoreCase("latestSiteNodeVersionCache"))
-		    		cacheCapacity = "7500";
+		    		cacheCapacity = "30000";
 					
 				/*
 				if(cacheName != null && (cacheName.equalsIgnoreCase("contentAttributeCache_Title") || 
@@ -487,16 +512,16 @@ public class CacheController extends Thread
 		}
 				
 		//if(cacheName.equals("pageCache"))
-		//	System.out.println("numberOfPageCacheFiles:" + numberOfPageCacheFiles.get());
+		//	logger.info("numberOfPageCacheFiles:" + numberOfPageCacheFiles.get());
 		if(cacheName.equals("pageCache") && numberOfPageCacheFiles.get() > 30000)
 		{
 			if(logger.isInfoEnabled())
-				System.out.println("Skipping file cache as to many files were allready there");
+				logger.info("Skipping file cache as to many files were allready there");
 			useFileCacheFallback = false;
 		}
 
 		//if(cacheName.equals("pageCache"))
-		//	System.out.println("useFileCacheFallback:" + useFileCacheFallback + " - useGroups:" + useGroups);
+		//	logger.info("useFileCacheFallback:" + useFileCacheFallback + " - useGroups:" + useGroups);
 	    if(useFileCacheFallback && !useGroups)
 	    {
 	    	if(logger.isInfoEnabled())
@@ -524,8 +549,6 @@ public class CacheController extends Thread
 		if(cacheName == null || key == null || key.length() == 0)
 			return null;
 		
-	    //logger.info("getCachedObjectFromAdvancedCache start:" + cacheName + ":" + key);
-		
 	    Object value = null;
 	    boolean stopUseFileCacheFallback = false;
 	    
@@ -541,10 +564,11 @@ public class CacheController extends Thread
 		    		{
 					    try 
 					    {
-							if(CmsPropertyHandler.getUseHashCodeInCaches())
+					    	if(CmsPropertyHandler.getUseHashCodeInCaches())
 								value = (cacheAdministrator == null) ? null : cacheAdministrator.getFromCache("" + key.hashCode(), CacheEntry.INDEFINITE_EXPIRY);
 							else
 								value = (cacheAdministrator == null) ? null : cacheAdministrator.getFromCache(key, CacheEntry.INDEFINITE_EXPIRY);
+					    	
 					    } 
 					    catch (NeedsRefreshException nre) 
 					    {
@@ -758,7 +782,6 @@ public class CacheController extends Thread
 
 	public static void clearCache(String cacheName, String key)
 	{
-		logger.info("Clearing the cache called " + cacheName + " and key: " + key);
 		synchronized(caches) 
 		{
 			if(caches.containsKey(cacheName))
@@ -780,8 +803,6 @@ public class CacheController extends Thread
 						cacheInstance.flushEntry(key);
 					}
 				}
-	
-			    logger.info("clearCache stop...");
 			}
 		}
 	}
@@ -827,14 +848,14 @@ public class CacheController extends Thread
 	 */
 	public static void clearFileCacheForGroup(GeneralCacheAdministrator cacheInstance, String groupName) throws Exception
 	{
-		//System.out.println("Cache entry set:" + cacheInstance.getCache().cacheMap.entrySet());
+		//logger.info("Cache entry set:" + cacheInstance.getCache().cacheMap.entrySet());
 		
         Set groupEntries = cacheInstance.getCache().cacheMap.getGroup(groupName);
         /*
         if(groupEntries != null)
-        	System.out.println("groupEntries for " + groupName + ":" + groupEntries.size());
+        	logger.info("groupEntries for " + groupName + ":" + groupEntries.size());
         else
-        	System.out.println("no groupEntries for " + groupName);
+        	logger.info("no groupEntries for " + groupName);
         */
         
 		if (groupEntries != null) 
@@ -844,7 +865,7 @@ public class CacheController extends Thread
             {
             	String key = (String) groupEntriesIterator.next();
             	CacheEntry entry = (CacheEntry) cacheInstance.getCache().cacheMap.get(key);
-            	//System.out.println("Removing file with key:" + key);
+            	//logger.info("Removing file with key:" + key);
             	removeCachedContentInFile("pageCache", key);
             	numberOfPageCacheFiles.decrementAndGet();
             }
@@ -860,22 +881,21 @@ public class CacheController extends Thread
 	{	
 		Timer t = new Timer();
 		
-		/**/
 		long wait = 0;
 		//while(RequestAnalyser.getRequestAnalyser().getNumberOfCurrentRequests() > 0)
-		while(!forceClear && RequestAnalyser.getRequestAnalyser().getNumberOfActiveRequests() > 0)
+		while(!forceClear &&  !getForcedCacheEvictionMode() && RequestAnalyser.getRequestAnalyser().getNumberOfActiveRequests() > 0)
 	    {
 	        //logger.warn("Number of requests: " + RequestAnalyser.getRequestAnalyser().getNumberOfCurrentRequests() + " was more than 0 - lets wait a bit.");
-	        if(wait > 3000)
+	        if(wait > 1000)
 			{
 				logger.warn("The clearCache method waited over " + ((wait * 10) / 1000) + " seconds but there seems to be " + RequestAnalyser.getRequestAnalyser().getNumberOfCurrentRequests() + " requests blocking all the time. Continuing anyway.");
 				//printThreads();
+				setForcedCacheEvictionMode(true);
 				break;
 			}
 	        Thread.sleep(10);
 			wait++;
 	    }
-		/**/
 		
 	    logger.info("clearCaches start in " + CmsPropertyHandler.getContextRootPath());
 		if(entity == null)
@@ -1111,6 +1131,7 @@ public class CacheController extends Thread
 					if(cacheName.equalsIgnoreCase("childContentCache") && (entity.indexOf("Content") > 0 || entity.indexOf("ContentVersion") > 0 || entity.indexOf("AccessRight") > 0 || entity.indexOf("SystemUser") > 0 || entity.indexOf("Role") > 0  || entity.indexOf("Group") > 0))
 					{
 						clear = true;
+						selectiveCacheUpdate = true;
 					}
 					if(cacheName.equalsIgnoreCase("matchingContentsCache") && (entity.indexOf("Content") > 0 || entity.indexOf("ContentVersion") > 0 || entity.indexOf("AccessRight") > 0 || entity.indexOf("SystemUser") > 0 || entity.indexOf("Role") > 0  || entity.indexOf("Group") > 0))
 					{
@@ -1124,9 +1145,18 @@ public class CacheController extends Thread
 					{
 						clear = true;
 					}
+					if(cacheName.equalsIgnoreCase("siteNodeCache") && entity.indexOf("SiteNode") > 0)
+					{
+						clear = true;
+					}
+					if(cacheName.equalsIgnoreCase("contentCache") && entity.indexOf("Content") > 0)
+					{
+						clear = true;
+					}
 					if(cacheName.equalsIgnoreCase("childSiteNodesCache") && entity.indexOf("SiteNode") > 0)
 					{
 						clear = true;
+						selectiveCacheUpdate = true;
 					}
 					if(cacheName.equalsIgnoreCase("propertySetCache") && entity.indexOf("SiteNode") > 0)
 					{
@@ -1225,6 +1255,18 @@ public class CacheController extends Thread
 							    	logger.info("clearing:" + e.getKey());
 							    }
 							    */
+								if(entity.indexOf("pageCache") > 0)
+							    {
+							    	logger.error("clearing " + e.getKey() + " selectiveCacheUpdateNonApplicable");
+							    	if(cacheName.equals("pageCacheExtra"))
+							    	{
+							    		clearFileCacheForGroup(cacheInstance, "selectiveCacheUpdateNonApplicable");
+							    	}
+							    	else if(cacheName.equals("pageCache"))
+							    	{
+								    	cacheInstance.flushGroup("selectiveCacheUpdateNonApplicable");							    		
+							    	}
+							    }
 								if(selectiveCacheUpdate && entity.indexOf("Repository") > 0 && useSelectivePageCacheUpdate)
 							    {
 							    	logger.info("clearing " + e.getKey() + " with group " + "repository_" + entityId);
@@ -1344,7 +1386,6 @@ public class CacheController extends Thread
 								    	cacheInstance.flushGroup("selectiveCacheUpdateNonApplicable");
 							    	}
 							    	logger.info("clearing " + e.getKey() + " with group " + "content_" + entityId);
-							    	//System.out.println("clearing " + e.getKey() + " with group " + "content_" + entityId);
 								}
 							    else if(selectiveCacheUpdate && entity.indexOf("Publication") > 0 && useSelectivePageCacheUpdate && (operatingMode != null && operatingMode.equalsIgnoreCase("3")) && CmsPropertyHandler.getLivePublicationThreadClass().equalsIgnoreCase("org.infoglue.deliver.util.SelectiveLivePublicationThread"))
 							    {
@@ -1355,8 +1396,8 @@ public class CacheController extends Thread
 									while(publicationDetailVOListIterator.hasNext())
 									{
 										PublicationDetailVO publicationDetailVO = (PublicationDetailVO)publicationDetailVOListIterator.next();
-										System.out.println("publicationDetailVO.getEntityClass():" + publicationDetailVO.getEntityClass());
-										System.out.println("publicationDetailVO.getEntityId():" + publicationDetailVO.getEntityId());
+										logger.info("publicationDetailVO.getEntityClass():" + publicationDetailVO.getEntityClass());
+										logger.info("publicationDetailVO.getEntityId():" + publicationDetailVO.getEntityId());
 										if(Class.forName(publicationDetailVO.getEntityClass()).getName().equals(ContentVersion.class.getName()))
 										{
 											logger.error("We clear all caches having references to contentVersion: " + publicationDetailVO.getEntityId());
@@ -1366,7 +1407,7 @@ public class CacheController extends Thread
 									    	cacheInstance.flushGroup("contentVersion_" + publicationDetailVO.getEntityId().toString());
 									    	cacheInstance.flushGroup("selectiveCacheUpdateNonApplicable");
 									    	logger.info("clearing " + e.getKey() + " with group " + "content_" + contentId);
-									    	System.out.println("clearing " + e.getKey() + " with group " + "content_" + contentId);
+									    	logger.info("clearing " + e.getKey() + " with group " + "content_" + contentId);
 										}
 										else if(Class.forName(publicationDetailVO.getEntityClass()).getName().equals(SiteNodeVersion.class.getName()))
 										{
@@ -1379,7 +1420,7 @@ public class CacheController extends Thread
 								}
 							    else
 							    {
-							    	//System.out.println("Flushing all:" + cacheName);
+							    	//logger.info("Flushing all:" + cacheName);
 							    	cacheInstance.flushAll();
 							    	eventListeners.remove(cacheName + "_cacheEntryEventListener");
 								    eventListeners.remove(cacheName + "_cacheMapAccessEventListener");
@@ -1403,7 +1444,7 @@ public class CacheController extends Thread
 			
     		if(!useSelectivePageCacheUpdate)
     		{
-    			System.out.println("Clearing all pageCaches");
+    			logger.info("Clearing all pageCaches");
     			CacheController.clearFileCaches("pageCache");
     		}
 
@@ -1454,15 +1495,19 @@ public class CacheController extends Thread
 	{
 	    logger.info("Emptying the Castor Caches");
 	    
-	    /**/
-	    //while(RequestAnalyser.getRequestAnalyser().getNumberOfCurrentRequests() > 0)
-	    while(RequestAnalyser.getRequestAnalyser().getNumberOfActiveRequests() > 0)
-	    {
-	        //logger.warn("Number of requests: " + RequestAnalyser.getRequestAnalyser().getNumberOfCurrentRequests() + " was more than 0 - lets wait a bit.");
-			//System.out.println("The clearCastorCaches method waited");
-	    	Thread.sleep(10);
+		long wait = 0;
+		while(!getForcedCacheEvictionMode() && RequestAnalyser.getRequestAnalyser().getNumberOfActiveRequests() > 0)
+		{
+	    	if(wait > 1000)
+			{
+				logger.warn("The clearCastorCaches method waited over " + ((wait * 10) / 1000) + " seconds but there seems to be " + RequestAnalyser.getRequestAnalyser().getNumberOfCurrentRequests() + " requests blocking all the time. Continuing anyway.");
+				setForcedCacheEvictionMode(true);
+				break;
+			}
+			
+			Thread.sleep(10);
+			wait++;
 	    }
-	    /**/
 	    
 		Database db = CastorDatabaseService.getDatabase();
 		//CastorDatabaseService.setBlock(true);
@@ -1560,23 +1605,21 @@ public class CacheController extends Thread
 	
 	public static synchronized void clearCache(Class type, Object[] ids, boolean forceClear) throws Exception
 	{
-		/**/
-        long wait = 0;
-		//while(RequestAnalyser.getRequestAnalyser().getNumberOfCurrentRequests() > 0)
-		while(!forceClear && RequestAnalyser.getRequestAnalyser().getNumberOfActiveRequests() > 0)
-	    {
-			//logger.warn("Number of requests: " + RequestAnalyser.getRequestAnalyser().getNumberOfCurrentRequests() + " was more than 0 - lets wait a bit.");
-	        if(wait > 3000)
+		long wait = 0;
+		while(!forceClear && !getForcedCacheEvictionMode() && RequestAnalyser.getRequestAnalyser().getNumberOfActiveRequests() > 0)
+		{
+	        //logger.warn("Number of requests: " + RequestAnalyser.getRequestAnalyser().getNumberOfCurrentRequests() + " was more than 0 - lets wait a bit.");
+	        if(wait > 1000)
 			{
 				logger.warn("The clearCache method waited over " + ((wait * 10) / 1000) + " seconds but there seems to be " + RequestAnalyser.getRequestAnalyser().getNumberOfCurrentRequests() + " requests blocking all the time. Continuing anyway.");
 				//printThreads();
+				setForcedCacheEvictionMode(true);
 				break;
 			}
 			
 			Thread.sleep(10);
 			wait++;
 	    }
-        /**/
 		
 	    Database db = CastorDatabaseService.getDatabase();
 
@@ -1640,12 +1683,10 @@ public class CacheController extends Thread
 	
 	public static void clearCache(Class type, Object[] ids, boolean forceClear, Database db) throws Exception
 	{
-		/**/
 		long wait = 0;
-	    //while(RequestAnalyser.getRequestAnalyser().getNumberOfCurrentRequests() > 0)
-	    while(!forceClear && RequestAnalyser.getRequestAnalyser().getNumberOfActiveRequests() > 0)
+		while(!forceClear && !getForcedCacheEvictionMode() && RequestAnalyser.getRequestAnalyser().getNumberOfActiveRequests() > 0)
 	    {
-	        if(wait > 3000)
+	        if(wait > 1000)
 			{
 				logger.warn("The clearCache method waited over " + ((wait * 10) / 1000) + " seconds but there seems to be " + RequestAnalyser.getRequestAnalyser().getNumberOfCurrentRequests() + " requests blocking all the time. Continuing anyway.");
 				//printThreads();
@@ -1655,7 +1696,6 @@ public class CacheController extends Thread
 	        Thread.sleep(10);
 	        wait++;
 	    }
-		/**/
 		
 	    CacheManager manager = db.getCacheManager();
 	    manager.expireCache(type, ids);
@@ -1809,13 +1849,13 @@ public class CacheController extends Thread
     	{
     		String key = (String)cacheKeyIterator.next();
     		Object cacheObject = caches.get(key);
-    		//System.out.println("cacheObject:" + cacheObject.getClass());
+    		//logger.info("cacheObject:" + cacheObject.getClass());
     		if(cacheObject instanceof GeneralCacheAdministrator)
     		{
     			GeneralCacheAdministrator generalCacheAdministrator = (GeneralCacheAdministrator)cacheObject;
-    			//System.out.println("cacheObject:" + generalCacheAdministrator.getCache().getCacheEventListenerList().getListenerCount());
+    			//logger.info("cacheObject:" + generalCacheAdministrator.getCache().getCacheEventListenerList().getListenerCount());
     			Object cacheEntryEventListener = CacheController.getEventListeners().get(key + "_cacheEntryEventListener");
-    			//System.out.println("EventListener:" + cacheEntryEventListener);
+    			//logger.info("EventListener:" + cacheEntryEventListener);
     			if(cacheEntryEventListener == null)
     			{
     				logger.warn("cacheEntryEventListener was null - lets clear it: " + key);
@@ -1832,7 +1872,6 @@ public class CacheController extends Thread
 	    {
 	       	if(RequestAnalyser.getRequestAnalyser().getBlockRequests())
 		    {
-			    //System.out.println("evictWaitingCache allready in progress - returning to avoid conflict");
 			    logger.info("evictWaitingCache allready in progress - returning to avoid conflict");
 		        return;
 		    }
@@ -1999,7 +2038,7 @@ public class CacheController extends Thread
  			{
  				String svc = svcs[i].substring(svcs[i].lastIndexOf('.') + 1);
  				String msg = "Initialization of " + svc + " service for hot deployment failed!"; 
- 				System.out.println(msg);
+ 				logger.error(msg);
  				break;
  			}
  	
@@ -2011,7 +2050,7 @@ public class CacheController extends Thread
  			{
  				String svc = svcs[i].substring(svcs[i].lastIndexOf('.') + 1);
  				String msg = "Post initialization of " + svc + " service for hot deployment failed!"; 
- 				System.out.println(msg);
+ 				logger.error(msg);
  				break;
  			}
 		}		
@@ -2227,16 +2266,14 @@ public class CacheController extends Thread
     		String firstPart = ("" + key.hashCode()).substring(0, 3);
             String filePath = CmsPropertyHandler.getDigitalAssetPath() + File.separator + "caches" + File.separator + cacheName + File.separator + firstPart + File.separator + key.hashCode();
             File file = new File(filePath);
-        	t.printElapsedTime("Creating file");
             if(file.exists())
             {
-            	t.printElapsedTime("In if");
-	        	//System.out.println("updateInterval:" + updateInterval);
+	        	//logger.info("updateInterval:" + updateInterval);
 	            if(updateInterval != null)
 	            {
 		            long updateDateTime = file.lastModified();
 		            long now = System.currentTimeMillis();
-		            //System.out.println("diff:" + (now - updateDateTime) / 1000);
+		            //logger.info("diff:" + (now - updateDateTime) / 1000);
 		            if((now - updateDateTime) / 1000 < updateInterval)
 		            {
 		            	if(cacheName.equals("pageCache") && compressPageCache != null && compressPageCache.equals("true"))
