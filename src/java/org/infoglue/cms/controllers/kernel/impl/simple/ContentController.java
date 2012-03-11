@@ -332,7 +332,7 @@ public class ContentController extends BaseController
 	 * This method deletes a content and also erases all the children and all versions.
 	 */
 	    
-	public /*synchronized*/ void delete(ContentVO contentVO, Database db, boolean skipRelationCheck, boolean skipServiceBindings, boolean forceDelete, InfoGluePrincipal infogluePrincipal) throws ConstraintException, SystemException, Exception
+	public void delete(ContentVO contentVO, Database db, boolean skipRelationCheck, boolean skipServiceBindings, boolean forceDelete, InfoGluePrincipal infogluePrincipal) throws ConstraintException, SystemException, Exception
 	{
 		Content content = null;
 		try
@@ -1234,6 +1234,31 @@ public class ContentController extends BaseController
         return childrenVOList;
     } 
    	
+	/**
+	 * This method returns a list of the children a siteNode has.
+	 */
+   	
+	public List<ContentVO> getContentChildrenVOList(Integer parentSiteNodeId, Database db) throws Exception
+	{
+		List<ContentVO> childrenVOList = new ArrayList<ContentVO>();
+
+		OQLQuery oql = db.getOQLQuery( "SELECT content FROM org.infoglue.cms.entities.content.impl.simple.SmallishContentImpl content WHERE content.parentContentId = $1");
+		oql.bind(parentSiteNodeId);
+		
+		QueryResults results = oql.execute(Database.ReadOnly);
+
+		while (results.hasMore()) 
+		{
+			Content content = (Content)results.next();
+			childrenVOList.add(content.getValueObject());
+		}
+
+		results.close();
+		oql.close();
+        
+		return childrenVOList;
+	} 
+	
    	/**
    	 * This method returns a list of the children a content has.
    	 */
@@ -1251,7 +1276,7 @@ public class ContentController extends BaseController
 		if(logger.isInfoEnabled())
 			logger.info("key:" + key);
 		
-		List<ContentVO> cachedChildContentVOList = (List<ContentVO>)CacheController.getCachedObject("childContentCache", key);
+		List<ContentVO> cachedChildContentVOList = (List<ContentVO>)CacheController.getCachedObjectFromAdvancedCache("childContentCache", key);
 		if(cachedChildContentVOList != null)
 		{
 			if(logger.isInfoEnabled())
@@ -1274,7 +1299,7 @@ public class ContentController extends BaseController
             Content content = getReadOnlyContentWithId(parentContentId, db);
             Collection children = content.getChildren();
         	childrenVOList = ContentController.toVOList(children);
-        	System.out.println("childrenVOList under:" + content.getName() + ":" + childrenVOList.size());
+        	logger.info("childrenVOList under:" + content.getName() + ":" + childrenVOList.size());
         	
             //If any of the validations or setMethods reported an error, we throw them up now before create.
             ceb.throwIfNotEmpty();
@@ -1327,6 +1352,9 @@ public class ContentController extends BaseController
     			childrenVOList.add(content.getValueObject());
     		}
     		
+    		if(childrenVOList != null)
+    			CacheController.cacheObjectInAdvancedCache("childContentCache", key, childrenVOList, new String[]{"content_" + parentContentId}, true);
+
     		results.close();
     		oql.close();
         	
@@ -1348,9 +1376,7 @@ public class ContentController extends BaseController
             rollbackTransaction(db);
             throw new SystemException(e.getMessage());
         }
-   		
-		CacheController.cacheObject("childContentCache", key, childrenVOList);
-        
+   		        
         return childrenVOList;
     } 
 	
@@ -2117,7 +2143,6 @@ public class ContentController extends BaseController
 		{
 			logger.error("An error occurred trying to get related contents from qualifyerXML " + qualifyerXML + ":" + e.getMessage());
 			logger.warn("An error occurred so we should not complete the transaction:" + e.getMessage(), e);
-
 		}
 		
 		return relatedContentVOList;
