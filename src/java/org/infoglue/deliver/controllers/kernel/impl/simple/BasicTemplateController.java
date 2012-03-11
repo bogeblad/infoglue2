@@ -58,8 +58,6 @@ import org.apache.oro.text.regex.PatternMatcher;
 import org.apache.oro.text.regex.PatternMatcherInput;
 import org.apache.oro.text.regex.Perl5Compiler;
 import org.apache.oro.text.regex.Perl5Matcher;
-import org.dom4j.Document;
-import org.dom4j.Element;
 import org.exolab.castor.jdo.Database;
 import org.infoglue.cms.applications.common.VisualFormatter;
 import org.infoglue.cms.applications.databeans.ReferenceBean;
@@ -67,14 +65,12 @@ import org.infoglue.cms.controllers.kernel.impl.simple.AccessRightController;
 import org.infoglue.cms.controllers.kernel.impl.simple.CastorDatabaseService;
 import org.infoglue.cms.controllers.kernel.impl.simple.CategoryConditions;
 import org.infoglue.cms.controllers.kernel.impl.simple.CategoryController;
-import org.infoglue.cms.controllers.kernel.impl.simple.ContentController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentTypeDefinitionController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentVersionController;
 import org.infoglue.cms.controllers.kernel.impl.simple.DigitalAssetController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ExportImportController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ExtendedSearchController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ExtendedSearchCriterias;
-import org.infoglue.cms.controllers.kernel.impl.simple.GroupController;
 import org.infoglue.cms.controllers.kernel.impl.simple.GroupControllerProxy;
 import org.infoglue.cms.controllers.kernel.impl.simple.GroupPropertiesController;
 import org.infoglue.cms.controllers.kernel.impl.simple.InfoGluePrincipalControllerProxy;
@@ -96,8 +92,6 @@ import org.infoglue.cms.entities.management.RepositoryVO;
 import org.infoglue.cms.entities.structure.SiteNode;
 import org.infoglue.cms.entities.structure.SiteNodeVO;
 import org.infoglue.cms.entities.structure.SiteNodeVersionVO;
-import org.infoglue.cms.exception.Bug;
-import org.infoglue.cms.exception.ConstraintException;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.io.FileHelper;
 import org.infoglue.cms.security.AuthenticationModule;
@@ -114,7 +108,6 @@ import org.infoglue.deliver.applications.databeans.ComponentProperty;
 import org.infoglue.deliver.applications.databeans.DatabaseWrapper;
 import org.infoglue.deliver.applications.databeans.DeliveryContext;
 import org.infoglue.deliver.applications.databeans.WebPage;
-import org.infoglue.deliver.applications.filters.FilterConstants;
 import org.infoglue.deliver.controllers.kernel.URLComposer;
 import org.infoglue.deliver.invokers.DecoratedComponentBasedHTMLPageInvoker;
 import org.infoglue.deliver.util.BrowserBean;
@@ -616,7 +609,7 @@ public class BasicTemplateController implements TemplateController
 		}
 		catch(Exception e)
 		{
-			logger.warn("An error occurred trying to get the current content:" + e.getMessage(), e);
+			logger.warn("An error occurred trying to get the current content:" + e.getMessage());
 		}
 
 		return content;
@@ -2146,6 +2139,58 @@ public class BasicTemplateController implements TemplateController
 			{
 				String unparsedAttributeValue = ContentDeliveryController.getContentDeliveryController().getContentAttribute(getDatabase(), contentId, languageId, attributeName, this.siteNodeId, USE_LANGUAGE_FALLBACK, this.deliveryContext, this.infoGluePrincipal, false);
 				logger.info("Found unparsedAttributeValue:" + unparsedAttributeValue);
+				
+				templateLogicContext.put("inlineContentId", contentId);
+				
+				Map context = new HashMap();
+				context.put("inheritedTemplateLogic", this);
+				context.put("templateLogic", getTemplateController(this.siteNodeId, languageId, contentId, this.request, this.infoGluePrincipal, this.deliveryContext));
+
+				// Add the templateLogicContext objects to this context. (SS - 040219)
+				context.putAll(templateLogicContext);
+				
+				StringWriter cacheString = new StringWriter();
+				PrintWriter cachedStream = new PrintWriter(cacheString);
+				new VelocityTemplateProcessor().renderTemplate(context, cachedStream, unparsedAttributeValue, true);
+				attributeValue = cacheString.toString();
+			}
+		}
+		catch(Exception e)
+		{
+			logger.warn("\nError on url: " + this.getOriginalFullURL() + "\n    ComponentName=[ " + this.getComponentLogic().getInfoGlueComponent().getName() + " ]\nAn error occurred trying to get attributeName=" + attributeName + " on content " + this.contentId + "\nReason:" + e.getMessage());
+			//logger.error("\nError on url: " + this.getOriginalFullURL() + "\nAn error occurred trying to get attributeName=" + attributeName + " on content with id " + contentId + "\nReason:" + e.getMessage(), e);
+		}
+				
+		return attributeValue;
+	}
+
+	/**
+	 * This method is just a dummy method used to ensure that we can ensure to not get a decorated attribute
+	 * value if OnSiteEdit is on.
+	 */
+
+	public String getEscapedParsedContentAttribute(Integer contentId, Integer languageId, String attributeName, boolean clean)
+	{
+		return getEscapedParsedContentAttribute(contentId, languageId, attributeName);
+	}
+
+	/**
+	 * This method deliveres a String with the content-attribute asked for after it has been parsed and all special tags have been converted.
+	 * The attribute is fetched from the specified content.
+	 */
+	 
+	public String getEscapedParsedContentAttribute(Integer contentId, Integer languageId, String attributeName) 
+	{
+		String attributeValue = "";
+		
+		try
+		{
+			if(contentId != null)
+			{
+				String unparsedAttributeValue = ContentDeliveryController.getContentDeliveryController().getContentAttribute(getDatabase(), contentId, languageId, attributeName, this.siteNodeId, USE_LANGUAGE_FALLBACK, this.deliveryContext, this.infoGluePrincipal, false);
+				
+				unparsedAttributeValue = unparsedAttributeValue.replaceAll("\\$(?!(\\.|\\(|templateLogic\\.(getPageUrl|getInlineAssetUrl|languageId)))", "&#36;");
+				//logger.info("Found unparsedAttributeValue:" + unparsedAttributeValue);
 				
 				templateLogicContext.put("inlineContentId", contentId);
 				
@@ -5933,8 +5978,13 @@ public class BasicTemplateController implements TemplateController
 		List childPages = new ArrayList();
 		try
 		{
+			Timer t = new Timer();
 			List childNodeVOList = this.nodeDeliveryController.getChildSiteNodes(getDatabase(), siteNodeId);
+			if(logger.isInfoEnabled())
+				RequestAnalyser.getRequestAnalyser().registerComponentStatistics("getChildSiteNodes", t.getElapsedTimeNanos() / 1000);
 			childPages = getPages(childNodeVOList, escapeHTML, hideUnauthorizedPages);
+			if(logger.isInfoEnabled())
+				RequestAnalyser.getRequestAnalyser().registerComponentStatistics("getPages", t.getElapsedTimeNanos() / 1000);
 		}
 		catch(Exception e)
 		{
@@ -7653,13 +7703,13 @@ public class BasicTemplateController implements TemplateController
 			Integer componentId = this.getComponentLogic().getInfoGlueComponent().getId();
 			Integer repositoryId = this.getSiteNode().getRepositoryId();
 			
-			if(property.getVisualizingAction() != null && !property.getVisualizingAction().equals(""))
+			if(property != null && property.getVisualizingAction() != null && !property.getVisualizingAction().equals(""))
 			{
 				assignUrl = componentEditorUrl + property.getVisualizingAction() + "?repositoryId=" + repositoryId + "&siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&componentId=" + componentId + "&propertyName=" + property.getName() + "&showSimple=" + getDeliveryContext().getShowSimple() + "&showDecorated=" + showDecorated + "&hideComponentPropertiesOnLoad=" +hideComponentPropertiesOnLoad;
 			}
 			else
 			{	
-				if(property.getEntityClass().equalsIgnoreCase("Content"))
+				if(property != null && property.getEntityClass().equalsIgnoreCase("Content"))
 				{
 				    String allowedContentTypeIdParameters = "";
 
