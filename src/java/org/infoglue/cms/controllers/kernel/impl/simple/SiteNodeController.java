@@ -67,6 +67,7 @@ import org.infoglue.cms.util.CmsPropertyHandler;
 import org.infoglue.cms.util.ConstraintExceptionBuffer;
 import org.infoglue.cms.util.DateHelper;
 import org.infoglue.cms.util.XMLHelper;
+import org.infoglue.deliver.util.CacheController;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -530,6 +531,30 @@ public class SiteNodeController extends BaseController
 		return childrenVOList;
 	} 
 	
+	/**
+	 * This method returns a list of the children a siteNode has.
+	 */
+   	
+	public List<SiteNodeVO> getSiteNodeChildrenVOList(Integer parentSiteNodeId, Database db) throws Exception
+	{
+		List<SiteNodeVO> childrenVOList = new ArrayList<SiteNodeVO>();
+
+		OQLQuery oql = db.getOQLQuery( "SELECT s FROM org.infoglue.cms.entities.structure.impl.simple.SmallSiteNodeImpl s WHERE s.parentSiteNode = $1");
+		oql.bind(parentSiteNodeId);
+		
+		QueryResults results = oql.execute(Database.ReadOnly);
+
+		while (results.hasMore()) 
+		{
+			SiteNode siteNode = (SiteNode)results.next();
+			childrenVOList.add(siteNode.getValueObject());
+		}
+
+		results.close();
+		oql.close();
+        
+		return childrenVOList;
+	} 
     
     /**
 	 * This method is sort of a sql-query-like method where you can send in arguments in form of a list
@@ -604,38 +629,69 @@ public class SiteNodeController extends BaseController
         
         return siteNodes;
     }
-	/**
+    /**
 	 * This method fetches the root siteNode for a particular repository.
 	 */
 	        
    	public SiteNodeVO getRootSiteNodeVO(Integer repositoryId) throws ConstraintException, SystemException
    	{
-        Database db = CastorDatabaseService.getDatabase();
-        ConstraintExceptionBuffer ceb = new ConstraintExceptionBuffer();
+   		String key = "rootSiteNode_" + repositoryId;
+   		SiteNodeVO cachedRootNodeVO = (SiteNodeVO)CacheController.getCachedObject("repositoryRootNodesCache", key);
+		if(cachedRootNodeVO != null)
+		{
+			if(logger.isInfoEnabled())
+				logger.info("There was an cachedRootNodeVO:" + cachedRootNodeVO);
+			return cachedRootNodeVO;
+		}
 
-        SiteNode siteNode = null;
+        Database db = CastorDatabaseService.getDatabase();
+
+        SiteNodeVO siteNodeVO = null;
 
         beginTransaction(db);
 
         try
         {
-        	siteNode = getRootSiteNode(repositoryId, db);
+        	siteNodeVO = getRootSiteNodeVO(repositoryId, db);
 			
-			commitTransaction(db);
+    		if(siteNodeVO != null)
+    			CacheController.cacheObject("repositoryRootNodesCache", key, siteNodeVO);
 
-            //If any of the validations or setMethods reported an error, we throw them up now before create. 
-            ceb.throwIfNotEmpty();
+			commitTransaction(db);
         }
         catch(Exception e)
         {
-			logger.error("An error occurred so we should not complete the transaction: " + e.getMessage());
-			logger.warn("An error occurred so we should not complete the transaction: " + e.getMessage(), e);
+            logger.error("An error occurred so we should not complete the transaction:" + e, e);
             rollbackTransaction(db);
             throw new SystemException(e.getMessage());
         }
 
-        return (siteNode == null) ? null : siteNode.getValueObject();
+        return siteNodeVO;
    	}
+
+	/**
+	 * This method fetches the root siteNode for a particular repository within a certain transaction.
+	 */
+	        
+	public SiteNodeVO getRootSiteNodeVO(Integer repositoryId, Database db) throws ConstraintException, SystemException, Exception
+	{
+		SiteNodeVO siteNodeVO = null;
+		
+		OQLQuery oql = db.getOQLQuery( "SELECT s FROM org.infoglue.cms.entities.structure.impl.simple.SmallSiteNodeImpl s WHERE is_undefined(s.parentSiteNode) AND s.repositoryId = $1");
+		oql.bind(repositoryId);
+		
+		QueryResults results = oql.execute(Database.ReadOnly);
+		if (results.hasMore()) 
+		{
+			SiteNode siteNode = (SiteNode)results.next();
+			siteNodeVO = siteNode.getValueObject();
+		}
+
+		results.close();
+		oql.close();
+
+		return siteNodeVO;
+	}
 
 	/**
 	 * This method fetches the root siteNode for a particular repository within a certain transaction.
@@ -720,14 +776,14 @@ public class SiteNodeController extends BaseController
             siteNode.setParentSiteNode((SiteNodeImpl)newParentSiteNode);
             
             Integer metaInfoContentId = siteNode.getMetaInfoContentId();
-            //System.out.println("metaInfoContentId:" + metaInfoContentId);
+            //logger.info("metaInfoContentId:" + metaInfoContentId);
             if(!siteNode.getRepository().getId().equals(newParentSiteNode.getRepository().getId()) && metaInfoContentId != null)
             {
             	Content metaInfoContent = ContentController.getContentController().getContentWithId(metaInfoContentId, db);
             	Content newParentContent = ContentController.getContentController().getContentWithPath(newParentSiteNode.getRepository().getId(), "Meta info folder", true, principal, db);
             	if(metaInfoContent != null && newParentContent != null)
             	{
-            		//System.out.println("Moving:" + metaInfoContent.getName() + " to " + newParentContent.getName());
+            		//logger.info("Moving:" + metaInfoContent.getName() + " to " + newParentContent.getName());
             		newParentContent.getChildren().add(metaInfoContent);
             		Content previousParentContent = metaInfoContent.getParentContent();
             		metaInfoContent.setParentContent((ContentImpl)newParentContent);
@@ -1099,7 +1155,8 @@ public class SiteNodeController extends BaseController
         try
         {
         	SiteNode siteNode = getSiteNodeWithMetaInfoContentId(db, contentId);
-        	siteNodeVO = siteNode.getValueObject();
+        	if(siteNode != null)
+        		siteNodeVO = siteNode.getValueObject();
         	
             commitTransaction(db);
         }
