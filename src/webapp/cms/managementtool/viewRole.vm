@@ -109,17 +109,8 @@
 		    	<SELECT $readonly id="unassignedUserNameList" NAME="unassignedUserNameList" MULTIPLE SIZE="10" #if($hasAccessToManageUsers)onDblClick="opt.transferRight()"#end style="font-size: 10px; width:300px;">
 					#if($supportsUpdate)
 						#if($hasAccessToManageUsers)
-				          	#foreach ($infoGluePrincipal in $allInfoGluePrincipals)
-								#set($checked = "")
-								#foreach ($assignedInfoGluePrincipal in $assignedInfoGluePrincipals)
-									#if($assignedInfoGluePrincipal.getName() == $infoGluePrincipal.getName())
-										#set($checked = "checked")
-									#end 
-								#end
-								
-								#if($checked == "")
-									<option value="$infoGluePrincipal.name" title="$infoGluePrincipal.name">$infoGluePrincipal.name</option>
-								#end
+				          	#foreach ($infoGluePrincipal in $unAssignedInfoGluePrincipals)
+								<option value="$infoGluePrincipal.name" title="$infoGluePrincipal.name">$infoGluePrincipal.name</option>
 							#end
 						#else
 							#if($isAnonymousRole)

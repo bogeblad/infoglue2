@@ -50,6 +50,7 @@ public class ViewGroupAction extends InfoGlueAbstractAction
 	private InfoGlueGroup infoGlueGroup;
 	private List infoGluePrincipals = new ArrayList();
 	private List assignedInfoGluePrincipals;
+	private List unassignedInfoGluePrincipals;
 	private List contentTypeDefinitionVOList;
 	private List assignedContentTypeDefinitionVOList;    
 	
@@ -60,7 +61,14 @@ public class ViewGroupAction extends InfoGlueAbstractAction
 		this.supportsUpdate 			= this.infoGlueGroup.getAutorizationModule().getSupportUpdate();
 		this.assignedInfoGluePrincipals	= this.infoGlueGroup.getAutorizationModule().getGroupUsers(groupName);
 		if(this.supportsUpdate) //Only fetch if the user can edit.
+		{
 			this.infoGluePrincipals			= this.infoGlueGroup.getAutorizationModule().getUsers();
+		
+			List newInfogluePrincipals = new ArrayList();
+			newInfogluePrincipals.addAll(this.infoGluePrincipals);
+			newInfogluePrincipals.removeAll(assignedInfoGluePrincipals);
+			this.unassignedInfoGluePrincipals = newInfogluePrincipals;
+		}
 		
 		this.contentTypeDefinitionVOList 			= ContentTypeDefinitionController.getController().getContentTypeDefinitionVOList(ContentTypeDefinitionVO.EXTRANET_GROUP_PROPERTIES);
 		this.assignedContentTypeDefinitionVOList 	= GroupPropertiesController.getController().getContentTypeDefinitionVOList(groupName);  
@@ -123,6 +131,11 @@ public class ViewGroupAction extends InfoGlueAbstractAction
 	    Collections.sort(this.assignedInfoGluePrincipals, new ReflectionComparator("name"));
 
 		return this.assignedInfoGluePrincipals;
+	}
+
+	public List getUnAssignedInfoGluePrincipals() throws Exception
+	{
+		return this.unassignedInfoGluePrincipals;
 	}
 
 	public List getAssignedContentTypeDefinitionVOList()

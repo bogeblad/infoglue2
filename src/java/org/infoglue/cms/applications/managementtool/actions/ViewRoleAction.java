@@ -50,6 +50,7 @@ public class ViewRoleAction extends InfoGlueAbstractAction
 	private InfoGlueRole infoGlueRole;
 	private List infoGluePrincipals = new ArrayList();
 	private List assignedInfoGluePrincipals;
+	private List unassignedInfoGluePrincipals;
 	private List contentTypeDefinitionVOList;
 	private List assignedContentTypeDefinitionVOList;    
 	
@@ -60,8 +61,15 @@ public class ViewRoleAction extends InfoGlueAbstractAction
 		this.supportsUpdate				= this.infoGlueRole.getAutorizationModule().getSupportUpdate();
 		this.assignedInfoGluePrincipals	= this.infoGlueRole.getAutorizationModule().getRoleUsers(roleName);
 		if(this.supportsUpdate) //Only fetch if the user can edit.
+		{
 			this.infoGluePrincipals		= this.infoGlueRole.getAutorizationModule().getUsers();
 			
+			List newInfogluePrincipals = new ArrayList();
+			newInfogluePrincipals.addAll(this.infoGluePrincipals);
+			newInfogluePrincipals.removeAll(assignedInfoGluePrincipals);
+			this.unassignedInfoGluePrincipals = newInfogluePrincipals;
+		}
+		
 		this.contentTypeDefinitionVOList 			= ContentTypeDefinitionController.getController().getContentTypeDefinitionVOList(ContentTypeDefinitionVO.EXTRANET_ROLE_PROPERTIES);
 		this.assignedContentTypeDefinitionVOList 	= RolePropertiesController.getController().getContentTypeDefinitionVOList(roleName);  
     } 
@@ -123,6 +131,11 @@ public class ViewRoleAction extends InfoGlueAbstractAction
 	    Collections.sort(this.assignedInfoGluePrincipals, new ReflectionComparator("name"));
 
 	    return this.assignedInfoGluePrincipals;
+	}
+
+	public List getUnAssignedInfoGluePrincipals() throws Exception
+	{
+		return this.unassignedInfoGluePrincipals;
 	}
 
 	public List getAssignedContentTypeDefinitionVOList()
