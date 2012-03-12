@@ -238,7 +238,7 @@ public class DeploymentController
 					Content newParentContent = null;
 					if(localParentContent != null)
 					{
-						List childContents = ContentController.getContentController().getContentChildrenVOList(localParentContent.getId(), new String[]{"HTMLTemplate"}, false);
+						List childContents = ContentController.getContentController().getContentChildrenVOList(localParentContent.getId(), new String[]{"HTMLTemplate"});
 						logger.info("Looking for children on " + localParentContent.getName() + " - matching " + childFile.getName());
 						Iterator childContentsIterator = childContents.iterator();
 						while(childContentsIterator.hasNext())

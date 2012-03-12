@@ -69,7 +69,7 @@ public class DeleteContentChildrenAction extends InfoGlueAbstractAction
 	
 	public String doExecute() throws Exception 
 	{
-		List children = ContentController.getContentController().getContentChildrenVOList(contentVO.getContentId());
+		List children = ContentController.getContentController().getContentChildrenVOList(contentVO.getContentId(), null);
 		Iterator childrenIterator = children.iterator();
 		while(childrenIterator.hasNext())
 		{

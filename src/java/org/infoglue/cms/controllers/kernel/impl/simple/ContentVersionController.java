@@ -1988,7 +1988,7 @@ public class ContentVersionController extends BaseController
 		
 	    //	  Get the children of this content and do the recursion
 		//Collection childContentList = content.getChildren();
-		List<ContentVO> childContentList = ContentController.getContentController().getContentChildrenVOList(contentVO.getId(), db);
+		List<ContentVO> childContentList = ContentController.getContentController().getContentChildrenVOList(contentVO.getId(), null, db);
 		Iterator cit = childContentList.iterator();
 		while (cit.hasNext())
 		{
