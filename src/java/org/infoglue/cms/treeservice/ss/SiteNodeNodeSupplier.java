@@ -185,9 +185,7 @@ public class SiteNodeNodeSupplier extends BaseNodeSupplier
 
         try
         {
-            SiteNode parentSiteNode = SiteNodeController.getSiteNodeWithId(parentNode, db, true);
-            Collection children = parentSiteNode.getChildSiteNodes();
-	    	List childrenVOList = SiteNodeController.toVOList(children);
+        	List<SiteNodeVO> childrenVOList = SiteNodeController.getController().getSiteNodeChildrenVOList(parentNode, db);
 
 			Iterator childrenVOListIterator = childrenVOList.iterator();
 			while(childrenVOListIterator.hasNext())

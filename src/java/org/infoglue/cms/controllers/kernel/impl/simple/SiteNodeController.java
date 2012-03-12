@@ -494,7 +494,7 @@ public class SiteNodeController extends BaseController
 	 * This method returns a list of the children a siteNode has.
 	 */
    	
-	public List getSiteNodeChildren(Integer parentSiteNodeId) throws ConstraintException, SystemException
+	public List getSiteNodeChildrenVOList(Integer parentSiteNodeId) throws ConstraintException, SystemException
 	{
 		Database db = CastorDatabaseService.getDatabase();
 		ConstraintExceptionBuffer ceb = new ConstraintExceptionBuffer();
@@ -505,10 +505,13 @@ public class SiteNodeController extends BaseController
 
 		try
 		{
+			/*
 			SiteNode siteNode = getSiteNodeWithId(parentSiteNodeId, db);
 			Collection children = siteNode.getChildSiteNodes();
 			childrenVOList = SiteNodeController.toVOList(children);
-        	
+        	*/
+			childrenVOList = getSiteNodeChildrenVOList(parentSiteNodeId, db);
+				
 			//If any of the validations or setMethods reported an error, we throw them up now before create.
 			ceb.throwIfNotEmpty();
             
@@ -548,10 +551,10 @@ public class SiteNodeController extends BaseController
 				logger.info("There was an cached cachedChildSiteNodeVOList:" + childrenVOList.size());
 			return childrenVOList;
 		}
-		
+
 		childrenVOList = new ArrayList<SiteNodeVO>();
 
-		OQLQuery oql = db.getOQLQuery( "SELECT s FROM org.infoglue.cms.entities.structure.impl.simple.SmallSiteNodeImpl s WHERE s.parentSiteNode = $1");
+		OQLQuery oql = db.getOQLQuery( "SELECT s FROM org.infoglue.cms.entities.structure.impl.simple.SiteNodeImpl s WHERE s.parentSiteNode = $1");
 		oql.bind(parentSiteNodeId);
 		
 		QueryResults results = oql.execute(Database.ReadOnly);
@@ -1066,7 +1069,7 @@ public class SiteNodeController extends BaseController
 		resultList.add(getSiteNodeVOWithId(siteNodeId));
 		
 		// Get the children of this content and do the recursion
-		List childSiteNodeList = SiteNodeController.getController().getSiteNodeChildren(siteNodeId);
+		List childSiteNodeList = SiteNodeController.getController().getSiteNodeChildrenVOList(siteNodeId);
 		Iterator cit = childSiteNodeList.iterator();
 		while (cit.hasNext())
 		{

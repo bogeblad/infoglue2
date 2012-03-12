@@ -993,7 +993,7 @@ public class SiteNodeVersionController extends BaseController
 			resultList.add(siteNodeVersionVO);
 		
 		// Get the children of this sitenode and do the recursion
-		List childSiteNodeList = SiteNodeController.getController().getSiteNodeChildren(siteNodeId);
+		List childSiteNodeList = SiteNodeController.getController().getSiteNodeChildrenVOList(siteNodeId);
 		Iterator childSiteNodeListIterator = childSiteNodeList.iterator();
 		while(childSiteNodeListIterator.hasNext())
 		{
