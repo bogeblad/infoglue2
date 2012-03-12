@@ -537,7 +537,19 @@ public class SiteNodeController extends BaseController
    	
 	public List<SiteNodeVO> getSiteNodeChildrenVOList(Integer parentSiteNodeId, Database db) throws Exception
 	{
-		List<SiteNodeVO> childrenVOList = new ArrayList<SiteNodeVO>();
+   		String key = "" + parentSiteNodeId;
+		if(logger.isInfoEnabled())
+			logger.info("key:" + key);
+		
+		List<SiteNodeVO> childrenVOList = (List<SiteNodeVO>)CacheController.getCachedObjectFromAdvancedCache("childSiteNodesCache", key);
+		if(childrenVOList != null)
+		{
+			if(logger.isInfoEnabled())
+				logger.info("There was an cached cachedChildSiteNodeVOList:" + childrenVOList.size());
+			return childrenVOList;
+		}
+		
+		childrenVOList = new ArrayList<SiteNodeVO>();
 
 		OQLQuery oql = db.getOQLQuery( "SELECT s FROM org.infoglue.cms.entities.structure.impl.simple.SmallSiteNodeImpl s WHERE s.parentSiteNode = $1");
 		oql.bind(parentSiteNodeId);
@@ -552,6 +564,8 @@ public class SiteNodeController extends BaseController
 
 		results.close();
 		oql.close();
+        
+		CacheController.cacheObjectInAdvancedCache("childSiteNodesCache", key, childrenVOList, new String[]{"siteNode_" + parentSiteNodeId}, true);
         
 		return childrenVOList;
 	} 

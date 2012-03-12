@@ -1182,183 +1182,35 @@ public class ContentController extends BaseController
 		return content;
 	}
 	
-   	/**
-   	 * This method returns a list of the children a content has.
-   	 */
-   	
-   	public List getContentChildrenVOList(Integer parentContentId) throws ConstraintException, SystemException
-    {
-   		String key = "" + parentContentId;
-		logger.info("key:" + key);
-		List cachedChildContentVOList = (List)CacheController.getCachedObject("childContentCache", key);
-		if(cachedChildContentVOList != null)
-		{
-			logger.info("There was an cached childContentVOList:" + cachedChildContentVOList.size());
-			return cachedChildContentVOList;
-		}
-		
-		Database db = CastorDatabaseService.getDatabase();
-        ConstraintExceptionBuffer ceb = new ConstraintExceptionBuffer();
-
-        List childrenVOList = null;
-
-        beginTransaction(db);
-
-        try
-        {
-            Content content = getReadOnlyContentWithId(parentContentId, db);
-            Collection children = content.getChildren();
-        	childrenVOList = ContentController.toVOList(children);
-        	
-            //If any of the validations or setMethods reported an error, we throw them up now before create.
-            ceb.throwIfNotEmpty();
-            
-            commitTransaction(db);
-        }
-        catch(ConstraintException ce)
-        {
-            logger.warn("An error occurred so we should not complete the transaction:" + ce, ce);
-            rollbackTransaction(db);
-            throw ce;
-        }
-        catch(Exception e)
-        {
-			logger.error("An error occurred so we should not complete the transaction:" + e.getMessage());
-			logger.warn("An error occurred so we should not complete the transaction:" + e.getMessage(), e);
-            rollbackTransaction(db);
-            throw new SystemException(e.getMessage());
-        }
-        
-		CacheController.cacheObject("childContentCache", key, childrenVOList);
-        
-        return childrenVOList;
-    } 
-   	
-	/**
-	 * This method returns a list of the children a siteNode has.
-	 */
-   	
-	public List<ContentVO> getContentChildrenVOList(Integer parentSiteNodeId, Database db) throws Exception
-	{
-		List<ContentVO> childrenVOList = new ArrayList<ContentVO>();
-
-		OQLQuery oql = db.getOQLQuery( "SELECT content FROM org.infoglue.cms.entities.content.impl.simple.SmallishContentImpl content WHERE content.parentContentId = $1");
-		oql.bind(parentSiteNodeId);
-		
-		QueryResults results = oql.execute(Database.ReadOnly);
-
-		while (results.hasMore()) 
-		{
-			Content content = (Content)results.next();
-			childrenVOList.add(content.getValueObject());
-		}
-
-		results.close();
-		oql.close();
-        
-		return childrenVOList;
-	} 
+	
 	
    	/**
    	 * This method returns a list of the children a content has.
    	 */
    	
-   	public List<ContentVO> getContentChildrenVOList(Integer parentContentId, String[] allowedContentTypeIds, Boolean showDeletedItems) throws ConstraintException, SystemException
+   	public List<ContentVO> getContentChildrenVOList(Integer parentContentId) throws ConstraintException, SystemException
     {
-   		String allowedContentTypeIdsString = "";
-   		if(allowedContentTypeIds != null)
-   		{
-	   		for(int i=0; i < allowedContentTypeIds.length; i++)
-	   			allowedContentTypeIdsString += "_" + allowedContentTypeIds[i];
-   		}
-   		
-   		String key = "" + parentContentId + allowedContentTypeIdsString + "_" + showDeletedItems;
-		if(logger.isInfoEnabled())
-			logger.info("key:" + key);
-		
-		List<ContentVO> cachedChildContentVOList = (List<ContentVO>)CacheController.getCachedObjectFromAdvancedCache("childContentCache", key);
-		if(cachedChildContentVOList != null)
-		{
-			if(logger.isInfoEnabled())
-				logger.info("There was an cached childContentVOList:" + cachedChildContentVOList.size());
-			return cachedChildContentVOList;
-		}
-		
+   		return getContentChildrenVOList(parentContentId, null);
+    }
+   	
+   	/**
+   	 * This method returns a list of the children a content has.
+   	 */
+   	
+   	public List<ContentVO> getContentChildrenVOList(Integer parentContentId, String[] allowedContentTypeIds) throws ConstraintException, SystemException
+    {
 		Database db = CastorDatabaseService.getDatabase();
         ConstraintExceptionBuffer ceb = new ConstraintExceptionBuffer();
 
         List childrenVOList = new ArrayList();
 
         beginTransaction(db);
-
-   		Timer t = new Timer();
-   		
-   		/*
         try
         {
-            Content content = getReadOnlyContentWithId(parentContentId, db);
-            Collection children = content.getChildren();
-        	childrenVOList = ContentController.toVOList(children);
-        	logger.info("childrenVOList under:" + content.getName() + ":" + childrenVOList.size());
         	
-            //If any of the validations or setMethods reported an error, we throw them up now before create.
-            ceb.throwIfNotEmpty();
-            
-            commitTransaction(db);
-        }
-        catch(Exception e)
-        {
-			logger.error("An error occurred so we should not complete the transaction:" + e.getMessage());
-			logger.warn("An error occurred so we should not complete the transaction:" + e.getMessage(), e);
-            rollbackTransaction(db);
-            throw new SystemException(e.getMessage());
-        }
-		*/
-   		
-        try
-        {
-        	String contentTypeINClause = "";
-        	if(allowedContentTypeIds != null && allowedContentTypeIds.length > 0)
-        	{
-	        	contentTypeINClause = " AND content.contentTypeDefinitionId IN LIST (";
-	        	for(int i=0; i < allowedContentTypeIds.length; i++)
-	        	{
-	        		if(i > 0)
-	        			contentTypeINClause += ",";
-	        		contentTypeINClause += "$" + (i+3);
-	        	}
-	        	contentTypeINClause += ")";
-        	}
-        	
-        	String SQL = "SELECT content FROM org.infoglue.cms.entities.content.impl.simple.SmallishContentImpl content WHERE content.parentContentId = $1 " + contentTypeINClause + " ORDER BY content.contentId";
-        	//System.out.println("SQL:" + SQL);
-        	OQLQuery oql = db.getOQLQuery(SQL);
-    		//OQLQuery oql = db.getOQLQuery( "SELECT content FROM org.infoglue.cms.entities.content.impl.simple.SmallishContentImpl content WHERE content.parentContentId = $1 ORDER BY content.contentId");
-    		oql.bind(parentContentId);
-    		oql.bind(showDeletedItems);
-    		if(allowedContentTypeIds != null)
-    		{
-	        	for(int i=0; i < allowedContentTypeIds.length; i++)
-	        	{
-	        		logger.info("allowedContentTypeIds[i]:" + allowedContentTypeIds[i]);
-	        		oql.bind(allowedContentTypeIds[i]);
-	        	}
-    		}
-    		
-    		QueryResults results = oql.execute(Database.ReadOnly);
-    		while (results.hasMore()) 
-    		{
-    			Content content = (Content)results.next();
-    			childrenVOList.add(content.getValueObject());
-    		}
-    		
-    		if(childrenVOList != null)
-    			CacheController.cacheObjectInAdvancedCache("childContentCache", key, childrenVOList, new String[]{"content_" + parentContentId}, true);
+        	childrenVOList = getContentChildrenVOList(parentContentId, allowedContentTypeIds, db);	
 
-    		results.close();
-    		oql.close();
-        	
-            //If any of the validations or setMethods reported an error, we throw them up now before create.
+        	//If any of the validations or setMethods reported an error, we throw them up now before create.
             ceb.throwIfNotEmpty();
             
             commitTransaction(db);
@@ -1380,6 +1232,79 @@ public class ContentController extends BaseController
         return childrenVOList;
     } 
 	
+   	
+   	/**
+   	 * This method returns a list of the children a content has.
+   	 */
+   	
+   	public List<ContentVO> getContentChildrenVOList(Integer parentContentId, String[] allowedContentTypeIds, Database db) throws ConstraintException, SystemException, Exception
+    {
+   		String allowedContentTypeIdsString = "";
+   		if(allowedContentTypeIds != null)
+   		{
+	   		for(int i=0; i < allowedContentTypeIds.length; i++)
+	   			allowedContentTypeIdsString += "_" + allowedContentTypeIds[i];
+   		}
+   		
+   		String key = "" + parentContentId + allowedContentTypeIdsString;
+		if(logger.isInfoEnabled())
+			logger.info("key:" + key);
+		
+		List<ContentVO> cachedChildContentVOList = (List<ContentVO>)CacheController.getCachedObjectFromAdvancedCache("childContentCache", key);
+		if(cachedChildContentVOList != null)
+		{
+			if(logger.isInfoEnabled())
+				logger.info("There was an cached childContentVOList:" + cachedChildContentVOList.size());
+			return cachedChildContentVOList;
+		}
+		
+        ConstraintExceptionBuffer ceb = new ConstraintExceptionBuffer();
+
+        List childrenVOList = new ArrayList();
+
+    	String contentTypeINClause = "";
+    	if(allowedContentTypeIds != null && allowedContentTypeIds.length > 0)
+    	{
+        	contentTypeINClause = " AND (content.isBranch = true OR content.contentTypeDefinitionId IN LIST (";
+        	for(int i=0; i < allowedContentTypeIds.length; i++)
+        	{
+        		if(i > 0)
+        			contentTypeINClause += ",";
+        		contentTypeINClause += "$" + (i+3);
+        	}
+        	contentTypeINClause += "))";
+    	}
+    	
+    	String SQL = "SELECT content FROM org.infoglue.cms.entities.content.impl.simple.SmallishContentImpl content WHERE content.parentContentId = $1 " + contentTypeINClause + " ORDER BY content.contentId";
+    	OQLQuery oql = db.getOQLQuery(SQL);
+		oql.bind(parentContentId);
+
+		if(allowedContentTypeIds != null)
+		{
+        	for(int i=0; i < allowedContentTypeIds.length; i++)
+        	{
+        		logger.info("allowedContentTypeIds[i]:" + allowedContentTypeIds[i]);
+        		oql.bind(allowedContentTypeIds[i]);
+        	}
+		}
+		
+		QueryResults results = oql.execute(Database.ReadOnly);
+		while (results.hasMore()) 
+		{
+			Content content = (Content)results.next();
+			childrenVOList.add(content.getValueObject());
+		}
+		
+		if(childrenVOList != null)
+			CacheController.cacheObjectInAdvancedCache("childContentCache", key, childrenVOList, new String[]{"content_" + parentContentId}, true);
+
+		results.close();
+		oql.close();
+        	
+   		        
+        return childrenVOList;
+    } 
+   	
 	/**
 	 * This method returns the contentTypeDefinitionVO which is associated with this content.
 	 */
@@ -1880,7 +1805,7 @@ public class ContentController extends BaseController
 		resultList.add(getContentVOWithId(contentId));
 		
 		// Get the children of this content and do the recursion
-		List childContentList = ContentController.getContentController().getContentChildrenVOList(contentId);
+		List childContentList = ContentController.getContentController().getContentChildrenVOList(contentId, null);
 		Iterator cit = childContentList.iterator();
 		while (cit.hasNext())
 		{

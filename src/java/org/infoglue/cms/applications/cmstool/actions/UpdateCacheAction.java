@@ -27,6 +27,9 @@ package org.infoglue.cms.applications.cmstool.actions;
 import org.apache.log4j.Logger;
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.applications.common.actions.SimpleXmlServiceAction;
+import org.infoglue.cms.controllers.kernel.impl.simple.ContentController;
+import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeController;
+import org.infoglue.cms.entities.content.ContentVO;
 import org.infoglue.cms.entities.content.impl.simple.ContentImpl;
 import org.infoglue.cms.entities.content.impl.simple.ContentVersionImpl;
 import org.infoglue.cms.entities.content.impl.simple.DigitalAssetImpl;
@@ -49,6 +52,7 @@ import org.infoglue.cms.entities.management.impl.simple.SmallGroupImpl;
 import org.infoglue.cms.entities.management.impl.simple.SmallRoleImpl;
 import org.infoglue.cms.entities.management.impl.simple.SmallSystemUserImpl;
 import org.infoglue.cms.entities.management.impl.simple.SystemUserImpl;
+import org.infoglue.cms.entities.structure.SiteNodeVO;
 import org.infoglue.cms.entities.structure.impl.simple.SiteNodeImpl;
 import org.infoglue.cms.entities.structure.impl.simple.SiteNodeVersionImpl;
 import org.infoglue.cms.entities.structure.impl.simple.SmallSiteNodeImpl;
@@ -239,11 +243,32 @@ public class UpdateCacheAction extends InfoGlueAbstractAction
 				}
 				if(className.indexOf("Content") > 0)
 				{
-					CacheController.clearCache("childContentCache");					
+					CacheController.clearCacheForGroup("childContentCache", "content_" + objectId);
+					try
+					{
+						ContentVO contentVO = ContentController.getContentController().getContentVOWithId(Integer.parseInt(objectId));
+						if(contentVO != null && contentVO.getParentContentId() != null)
+							CacheController.clearCacheForGroup("childContentCache", "content_" + contentVO.getParentContentId());					
+					}
+					catch (Exception e) 
+					{
+						logger.warn("Error when looking for parent content to update: " + e.getMessage(), e);
+					}
 				}
 				if(className.indexOf("SiteNode") > 0 || className.indexOf("Content") > 0)
 				{
 					CacheController.clearCache("NavigationCache");					
+					CacheController.clearCacheForGroup("childSiteNodesCache", "siteNode_" + objectId);
+					try
+					{
+						SiteNodeVO siteNodeVO = SiteNodeController.getController().getSiteNodeVOWithId(Integer.parseInt(objectId));
+						if(siteNodeVO.getParentSiteNodeId() != null)
+							CacheController.clearCacheForGroup("childSiteNodesCache", "siteNode_" + siteNodeVO.getParentSiteNodeId());					
+					}
+					catch (Exception e) 
+					{
+						logger.warn("Error in JDOCallback:" + e.getMessage(), e);
+					}
 				}
 				if(className.indexOf("DigitalAsset") > 0 || className.indexOf("ContentVersion") > 0)
 				{

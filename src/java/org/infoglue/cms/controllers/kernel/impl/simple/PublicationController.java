@@ -99,6 +99,14 @@ public class PublicationController extends BaseController
 	}
 
 	/**
+	 * This method just returns the publication with the given id.
+	 */
+	public PublicationVO getPublicationVOWithId(Integer publicationId) throws SystemException
+	{
+		return (PublicationVO) getVOWithId(PublicationImpl.class, publicationId);
+	}
+
+	/**
 	 * This method just returns the publication detail with the given id.
 	 */
 	public PublicationDetailVO getPublicationDetailVOWithId(Integer publicationDetailId) throws SystemException
@@ -119,9 +127,9 @@ public class PublicationController extends BaseController
 	 * This method returns a list of those events that are publication events and
 	 * concerns this repository and the submitter is in a group that the publisher also is in.
 	 */
-	public static List getPublicationEvents(Integer repositoryId, InfoGluePrincipal principal, String filter) throws SystemException, Exception
+	public static List getPublicationEvents(Integer repositoryId, InfoGluePrincipal principal, String filter, boolean validate) throws SystemException, Exception
 	{
-		return EventController.getPublicationEventVOListForRepository(repositoryId, principal, filter);
+		return EventController.getPublicationEventVOListForRepository(repositoryId, principal, filter, validate);
 	}
 
 	/**
