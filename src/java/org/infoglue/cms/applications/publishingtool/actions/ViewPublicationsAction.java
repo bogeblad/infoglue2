@@ -96,7 +96,7 @@ public class ViewPublicationsAction extends InfoGlueAbstractAction
 		}
 
 		repositoryVO		= RepositoryController.getController().getRepositoryVOWithId(repositoryId);
-		publicationEvents	= PublicationController.getPublicationEvents(repositoryId, getInfoGluePrincipal(), filter);
+		publicationEvents	= PublicationController.getPublicationEvents(repositoryId, getInfoGluePrincipal(), filter, true);
 		editionBrowser		= PublicationController.getEditionPage(repositoryId, startIndex);
 					
 		return SUCCESS;
