@@ -252,7 +252,7 @@ public class CmsJDOCallback implements CallbackInterceptor
 
 				//CacheController.clearCache("childSiteNodesCache");
 				CacheController.clearCache("parentSiteNodeCache");
-				CacheController.clearCache("latestSiteNodeVersionCache","" + (Integer)getObjectIdentity(object));
+				CacheController.clearCacheForGroup("latestSiteNodeVersionCache", "siteNode_" + (Integer)getObjectIdentity(object));
 				CacheController.clearCache("siteNodeCache","" + (Integer)getObjectIdentity(object));
 			}
 			else if(object.getClass().getName().equals(SiteNodeVersionImpl.class.getName()))
@@ -276,7 +276,7 @@ public class CmsJDOCallback implements CallbackInterceptor
 				//CacheController.clearCache("childSiteNodesCache");
 				CacheController.clearCache("parentSiteNodeCache");
 				SiteNodeVersionImpl siteNodeVersion = (SiteNodeVersionImpl)object;
-				CacheController.clearCache("latestSiteNodeVersionCache","" + siteNodeVersion.getOwningSiteNode().getId());
+				CacheController.clearCacheForGroup("latestSiteNodeVersionCache", "siteNode_" + siteNodeVersion.getOwningSiteNode().getId());
 			}
 			else if(object.getClass().getName().equals(WorkflowDefinitionImpl.class.getName()))
 			{
@@ -437,7 +437,7 @@ public class CmsJDOCallback implements CallbackInterceptor
 			{
 				//CacheController.clearCache("childSiteNodesCache");
 				CacheController.clearCache("parentSiteNodeCache");
-				CacheController.clearCache("latestSiteNodeVersionCache","" + (Integer)getObjectIdentity(object));
+				CacheController.clearCacheForGroup("latestSiteNodeVersionCache", "siteNode_" + (Integer)getObjectIdentity(object));
 				CacheController.clearCache("siteNodeCache","" + (Integer)getObjectIdentity(object));
 			}
 			else if(object.getClass().getName().equals(SiteNodeVersionImpl.class.getName()))
@@ -445,7 +445,7 @@ public class CmsJDOCallback implements CallbackInterceptor
 				//CacheController.clearCache("childSiteNodesCache");
 				CacheController.clearCache("parentSiteNodeCache");
 				SiteNodeVersionImpl siteNodeVersion = (SiteNodeVersionImpl)object;
-				CacheController.clearCache("latestSiteNodeVersionCache","" + siteNodeVersion.getOwningSiteNode().getId());
+				CacheController.clearCacheForGroup("latestSiteNodeVersionCache", "siteNode_" + siteNodeVersion.getOwningSiteNode().getId());
 			}
 			else if(object.getClass().getName().equals(RepositoryLanguageImpl.class.getName()))
 			{
@@ -635,7 +635,7 @@ public class CmsJDOCallback implements CallbackInterceptor
 				//CacheController.clearCache("childSiteNodesCache");
 				CacheController.clearCache("parentSiteNodeCache");
 				CacheController.clearCache("repositoryRootNodesCache");
-				CacheController.clearCache("latestSiteNodeVersionCache","" + (Integer)getObjectIdentity(object));
+				CacheController.clearCacheForGroup("latestSiteNodeVersionCache", "siteNode_" + (Integer)getObjectIdentity(object));
 				CacheController.clearCache("siteNodeCache","" + (Integer)getObjectIdentity(object));
 
 			}
@@ -658,7 +658,7 @@ public class CmsJDOCallback implements CallbackInterceptor
 				//CacheController.clearCache("childSiteNodesCache");
 				CacheController.clearCache("parentSiteNodeCache");
 				SiteNodeVersionImpl siteNodeVersion = (SiteNodeVersionImpl)object;
-				CacheController.clearCache("latestSiteNodeVersionCache","" + siteNodeVersion.getOwningSiteNode().getId());
+				CacheController.clearCacheForGroup("latestSiteNodeVersionCache", "siteNode_" + siteNodeVersion.getOwningSiteNode().getId());
 
 				RegistryController.getController().clearRegistryForReferencingEntityName(SiteNodeVersion.class.getName(), getObjectIdentity(object).toString());
 			}

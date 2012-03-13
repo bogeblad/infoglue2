@@ -180,7 +180,7 @@ public class CacheController extends Thread
     }
     public static void setForcedCacheEvictionMode(Boolean cemValue) 
     {
-    	System.out.println("Forcing...");
+    	logger.warn("Forcing quick cache eviction...");
         cem.set(cemValue);
     }
     
@@ -834,7 +834,8 @@ public class CacheController extends Thread
 					synchronized(cacheInstance)
 					{
 			    		cacheInstance.flushGroup(group);
-						logger.info("Clearing cache for group:" + cacheName + " - " + group);
+						if(logger.isInfoEnabled())
+							logger.info("Clearing cache for group:" + cacheName + " - " + group);
 					}
 				}
 			}

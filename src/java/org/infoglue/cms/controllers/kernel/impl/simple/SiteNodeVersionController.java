@@ -414,7 +414,6 @@ public class SiteNodeVersionController extends BaseController
 			{
 	        	StringBuilder groupKey1 = new StringBuilder("siteNodeVersion_").append(siteNodeVersionVO.getId());
 	        	StringBuilder groupKey2 = new StringBuilder("siteNode_").append(siteNodeId);
-	
 	        	CacheController.cacheObjectInAdvancedCache("latestSiteNodeVersionCache", key, siteNodeVersionVO, new String[]{groupKey1.toString(), groupKey2.toString()}, true);
 			}
 			
