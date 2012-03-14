@@ -1,4 +1,4 @@
-<!-- $Id: actions.xml,v 1.11.2.1 2009/11/11 23:53:56 mattias Exp $ -->
+<!-- $Id: actions.xml,v 1.11.2.2 2012/03/14 22:45:32 mattias Exp $ -->
 <actions>
 
 	<!-- InstallationValidator -->
@@ -134,6 +134,7 @@
 	<action name="org.infoglue.deliver.applications.actions.ViewApplicationStateAction" alias="ViewApplicationState">
 		<view name="cleared">ExtendedRedirect.action?url=ViewApplicationState.action</view>
 		<view name="success">/deliver/viewApplicationState.vm</view>
+		<view name="successOngoingPublications">/deliver/viewOngoingPublications.vm</view>
 		<view name="successComponentStatistics">/deliver/viewComponentStatistics.vm</view>
 		<view name="successPageStatistics">/deliver/viewPageStatistics.vm</view>
 		<view name="successCacheStatistics">/deliver/viewCacheStatistics.vm</view>

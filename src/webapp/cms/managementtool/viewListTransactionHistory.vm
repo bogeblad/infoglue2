@@ -80,6 +80,8 @@
 		<option value="">---------</option>
 		<option value="auth" #checkSelected("$typeFilter" "auth")>Authentication/Authorization operations</option>
 		<option value="crud" #checkSelected("$typeFilter" "crud")>Create/Update/Delete operations</option>
+		<option value="publ" #checkSelected("$typeFilter" "publ")>Publication operations</option>
+		<option value="surv" #checkSelected("$typeFilter" "surv")>Server surveillance</option>
 	</select>
 	<br/><br/>
 	

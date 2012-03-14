@@ -9,6 +9,15 @@
 	<link rel="stylesheet" type="text/css" href="css/infogluecommons.css" />
 	<script language="JavaScript" type="text/javascript" src="script/listview.js"></script>
 
+	<script type="text/javascript">
+	<!-- 		
+		function downloadFile()
+		{
+			window.open("ViewLogging!downloadFile.action?logFileName=" + document.getElementById("logFileName").value, "Download", "");
+		}
+	-->
+	</script>
+
 	<meta http-equiv="Expires" content="Tue, 01 Jan 1980 1:00:00 GMT" />
 	<meta http-equiv="Cache-Control" content="no-cache" />
 	<meta http-equiv="Pragma" content="no-cache" />
@@ -39,7 +48,10 @@
 				<option value="500" #checkSelected("$logLines" "500")>500</option>
 				<option value="1000" #checkSelected("$logLines" "1000")>1000</option>
 				<option value="10000" #checkSelected("$logLines" "10000")>10000</option>
-			</select><br/>
+			</select>		
+			<a href="#" onclick="downloadFile(); return false;">Download</a>
+			<br/>
+
 			
 			<strong>$ui.getString("tool.managementtool.logFragment.label"):</strong><br/>
 	  	</form>
