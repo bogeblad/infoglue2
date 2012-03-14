@@ -42,6 +42,16 @@ public class VisualFormatter
     {
     }
     
+    public String formatDate(long timeAsMillis, String pattern)
+    {	
+    	Date date = new Date(timeAsMillis);
+    	
+        SimpleDateFormat formatter = new SimpleDateFormat(pattern);
+        String dateString = formatter.format(date);
+
+        return dateString;
+    }
+
     public String formatDate(Date date, String pattern)
     {	
         if(date == null)
