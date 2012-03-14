@@ -271,8 +271,6 @@ public class ThreadMonitor implements Runnable
 	                {
 	                }
 		        }
-		        //System.out.println("Stack:\n" + sb.toString());
-		        //logger.error("Stack:" + sb.toString());
 
 		        String warningEmailReceiver = CmsPropertyHandler.getWarningEmailReceiver();
 		        if(warningEmailReceiver != null && !warningEmailReceiver.equals("") && warningEmailReceiver.indexOf("@warningEmailReceiver@") == -1)
@@ -305,7 +303,6 @@ public class ThreadMonitor implements Runnable
 	        ThreadMXBean threadMXBean = ManagementFactory.getThreadMXBean();
         	long stopTimeInNs = threadMXBean.getThreadUserTime(targetThread.getId());
 	        long diff = (stopTimeInNs - startTimeInNs) / 1000000000;
-        	//System.out.println("diff:" + diff);
         	
 	        StringBuffer stackString = new StringBuffer("\n\n" + message + "\n\n");
 	        stackString.append("ServerName: " + getServerName() + "\n");
