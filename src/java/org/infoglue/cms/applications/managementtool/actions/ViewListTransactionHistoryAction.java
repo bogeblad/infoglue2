@@ -24,14 +24,12 @@
 package org.infoglue.cms.applications.managementtool.actions;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
 import org.infoglue.cms.applications.common.VisualFormatter;
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.TransactionHistoryController;
-import org.infoglue.cms.util.sorters.ReflectionComparator;
 
 
 /**
@@ -76,6 +74,19 @@ public class ViewListTransactionHistoryAction extends InfoGlueAbstractAction
 			typeFilterFull.add("0");
 			typeFilterFull.add("1");
 			typeFilterFull.add("2");
+		}
+		else if(typeFilter != null && typeFilter.equals("publ"))
+		{
+			typeFilterFull = new ArrayList();
+			typeFilterFull.add("300");
+			typeFilterFull.add("301");
+			typeFilterFull.add("302");
+			typeFilterFull.add("303");
+		}
+		else if(typeFilter != null && typeFilter.equals("surv"))
+		{
+			typeFilterFull = new ArrayList();
+			typeFilterFull.add("304");
 		}
 		
 		

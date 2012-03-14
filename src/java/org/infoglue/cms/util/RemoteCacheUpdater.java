@@ -39,7 +39,10 @@ import java.util.Map;
 import java.util.StringTokenizer;
 
 import org.apache.log4j.Logger;
+import org.infoglue.cms.controllers.kernel.impl.simple.TransactionHistoryController;
 import org.infoglue.cms.security.InfoGluePrincipal;
+import org.infoglue.deliver.util.ioqueue.PublicationQueue;
+import org.infoglue.deliver.util.ioqueue.PublicationQueueBean;
 
 
 /**
@@ -147,7 +150,7 @@ public class RemoteCacheUpdater implements NotificationListener
 			}
 			catch(Exception e)
 			{
-				logger.warn("Error updating cache at " + address + ":" + e.getMessage(), e);
+				logger.warn("Error updating cache at " + address + ":" + e.getMessage());
 			}
 		}
 		*/
@@ -161,10 +164,13 @@ public class RemoteCacheUpdater implements NotificationListener
 	 */
 	public void updateRemoteCaches(Hashtable internalMessage, Hashtable publicMessage) throws Exception
 	{		
-	    List internalUrls = CmsPropertyHandler.getInternalDeliveryUrls();
+		if((internalMessage == null && publicMessage == null) || (internalMessage.size() == 0 && publicMessage.size() == 0))
+			return;
 		
-	    if(internalMessage != null)
+		if(internalMessage != null && internalMessage.size() > 0)
 	    {
+			List internalUrls = CmsPropertyHandler.getInternalDeliveryUrls();
+		
 			Iterator urlsIterator = internalUrls.iterator();
 			while(urlsIterator.hasNext())
 			{
@@ -183,16 +189,16 @@ public class RemoteCacheUpdater implements NotificationListener
 					}
 					catch(Exception e)
 					{
-						logger.error("Error updating cache at " + address + ":" + e.getMessage(), e);
+						logger.error("Error updating cache at " + address + ":" + e.getMessage());
 					}
 				}
 			}
 	    }
 
-	    List publicUrls = CmsPropertyHandler.getPublicDeliveryUrls();
-
-	    if(publicMessage != null)
+	    if(publicMessage != null && publicMessage.size() > 0)
 	    {
+		    List publicUrls = CmsPropertyHandler.getPublicDeliveryUrls();
+	
 			Iterator urlsIterator = publicUrls.iterator();
 			while(urlsIterator.hasNext())
 			{
@@ -211,26 +217,20 @@ public class RemoteCacheUpdater implements NotificationListener
 					}
 					catch(Exception e)
 					{
-						logger.error("Error updating cache at " + address + ":" + e.getMessage(), e);
+						NotificationMessage notificationMessage = new NotificationMessage("Publishing notification failed", "Publication", "SYSTEM", NotificationMessage.LIVE_NOTIFICATION_QUEUED, "n/a", "" + deliverUrl);
+						TransactionHistoryController.getController().create(notificationMessage);
+
+						logger.error("Error updating cache at " + address + ":" + e.getMessage() + ". Adding it to the queue-thread.");
+						PublicationQueueBean pqb = new PublicationQueueBean();
+						pqb.setUrlAddress(address);
+						pqb.setRequestParameters(publicMessage);
+						pqb.setSerializedParameters(toEncodedString(publicMessage));
+						PublicationQueue.getPublicationQueue().addPublicationQueueBean(deliverUrl, pqb);
 					}
 				}
 			}
 	    }
 
-	}
-
-	private Hashtable notificationMessageToHashtable(NotificationMessage notificationMessage)
-	{
-		Hashtable hash = new Hashtable();
-
-		logger.info("Serializing:" + notificationMessage);
-		
-		hash.put("className", notificationMessage.getClassName());
-		hash.put("objectId", notificationMessage.getObjectId());
-		hash.put("objectName", notificationMessage.getObjectName());
-		hash.put("typeId", "" + notificationMessage.getType());
-				
-		return hash;		
 	}
 	
 
@@ -385,4 +385,24 @@ public class RemoteCacheUpdater implements NotificationListener
         }
 	}
 
+	public static synchronized void pushAndClearSystemNotificationMessages(String userName)
+	{
+		List localMessages = new ArrayList();
+        List messages = RemoteCacheUpdater.getSystemNotificationMessages();
+        System.out.println("messages:" + messages.size());
+        synchronized(messages)
+        {
+        	localMessages.addAll(messages);
+        	messages.clear();
+        }
+
+        Iterator localMessagesIterator = localMessages.iterator(); 
+        while(localMessagesIterator.hasNext())
+        {
+			NotificationMessage notificationMessage = (NotificationMessage)localMessagesIterator.next();
+			notificationMessage = new NotificationMessage("PushAndClearSystemNotificationMessages", "" + notificationMessage.getClassName(), userName, NotificationMessage.SYSTEM, notificationMessage.getObjectId(), notificationMessage.getObjectName());
+	        System.out.println("notificationMessage:" + notificationMessage);
+			ChangeNotificationController.getInstance().addNotificationMessage(notificationMessage);
+        }
+	}
 }

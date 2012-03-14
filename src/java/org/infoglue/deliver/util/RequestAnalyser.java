@@ -24,17 +24,13 @@
 package org.infoglue.deliver.util;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import org.infoglue.cms.util.CmsPropertyHandler;
+import org.infoglue.deliver.applications.databeans.CacheEvictionBean;
 
 /**
  * @author Mattias Bogeblad
@@ -93,14 +89,39 @@ public class RequestAnalyser
         return Counter.getMaxElapsedTime();
     }
 
-    public List getLatestPublications()
+    public Integer getNumberOfPublicationsSinceStart()
+    {
+        return Counter.getNumberOfPublicationsSinceStart();
+    }
+
+    public void resetNumberOfPublicationsSinceStart()
+    {
+        Counter.resetNumberOfPublicationsSinceStart();
+    }
+
+    public List<CacheEvictionBean> getLatestPublications()
     {
         return Counter.getLatestPublications();
     }
 
-    public void addPublication(String description)
+    public void addPublication(CacheEvictionBean bean)
     {
-        Counter.addPublication(description);
+        Counter.addPublication(bean);
+    }
+
+    public List<CacheEvictionBean> getOngoingPublications()
+    {
+        return Counter.getOngoingPublications();
+    }
+
+    public void addOngoingPublications(CacheEvictionBean bean)
+    {
+        Counter.addOngoingPublication(bean);
+    }
+
+    public void removeOngoingPublications(CacheEvictionBean bean)
+    {
+        Counter.removeOngoingPublication(bean);
     }
 
     public void incNumberOfCurrentRequests(ThreadMonitor tk)

@@ -24,7 +24,6 @@ package org.infoglue.deliver.util;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -32,7 +31,10 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.LinkedBlockingQueue;
 
+import org.apache.log4j.Logger;
 import org.infoglue.cms.util.sorters.AverageInvokingTimeComparator;
+import org.infoglue.deliver.applications.databeans.CacheEvictionBean;
+import org.infoglue.deliver.invokers.ComponentBasedHTMLPageInvoker;
 
 /**
  * @author mattias
@@ -42,6 +44,8 @@ import org.infoglue.cms.util.sorters.AverageInvokingTimeComparator;
  */
 public class Counter
 {
+    private final static Logger logger = Logger.getLogger(Counter.class.getName());
+
     private static Integer count = new Integer(0);
     private static Integer activeCount = new Integer(0);
     private static Integer totalCount = new Integer(0);
@@ -49,7 +53,9 @@ public class Counter
     private static Long maxElapsedTime = new Long(0);
     private static Map allComponentsStatistics = new HashMap();
     private static Map allPageStatistics = new HashMap();
-    private static LinkedBlockingQueue latestPublications = new LinkedBlockingQueue(10);
+    private static LinkedBlockingQueue<CacheEvictionBean> latestPublications = new LinkedBlockingQueue<CacheEvictionBean>(200);
+    private static List<CacheEvictionBean> ongoingPublications = new ArrayList<CacheEvictionBean>();
+     private static Integer numberOfPublicationsSinceStart = new Integer(0);
     
     private Counter(){}
 
@@ -81,12 +87,12 @@ public class Counter
         return maxElapsedTime.longValue();
     }
 
-    static List getLatestPublications()
+    static List<CacheEvictionBean> getLatestPublications()
     {
-    	List latestPublicationsList = new ArrayList();
+    	List<CacheEvictionBean> latestPublicationsList = new ArrayList<CacheEvictionBean>();
     	synchronized (latestPublications)
 		{
-    		Iterator latestPublicationsIterator = latestPublications.iterator();
+    		Iterator<CacheEvictionBean> latestPublicationsIterator = latestPublications.iterator();
     		while(latestPublicationsIterator.hasNext())
     		{
     			latestPublicationsList.add(latestPublicationsIterator.next());
@@ -95,14 +101,57 @@ public class Counter
         return latestPublicationsList;
     }
 
-    synchronized static void addPublication(String description)
+    static List<CacheEvictionBean> getOngoingPublications()
     {
+    	List<CacheEvictionBean> ongoingPublicationsList = new ArrayList<CacheEvictionBean>();
+    	synchronized (ongoingPublications)
+		{
+    		Iterator<CacheEvictionBean> ongoingPublicationsIterator = ongoingPublications.iterator();
+    		while(ongoingPublicationsIterator.hasNext())
+    		{
+    			ongoingPublicationsList.add(ongoingPublicationsIterator.next());
+    		}
+		}
+        return ongoingPublicationsList;
+    }
+    
+    static Integer getNumberOfPublicationsSinceStart()
+    {
+    	return numberOfPublicationsSinceStart;
+    }
+
+    static void resetNumberOfPublicationsSinceStart()
+    {
+    	numberOfPublicationsSinceStart = 0;
+    }
+
+    synchronized static void addPublication(CacheEvictionBean bean)
+    {
+    	if(bean.getClassName().indexOf("ServerNodeProperties") == -1)
+    		numberOfPublicationsSinceStart++;
+
     	synchronized (latestPublications)
 		{
     		if(latestPublications.remainingCapacity() == 0)
     			latestPublications.poll();
     		
-    		latestPublications.add(description);
+    		latestPublications.add(bean);
+		}
+    }
+
+    synchronized static void addOngoingPublication(CacheEvictionBean bean)
+    {
+    	synchronized (ongoingPublications)
+		{
+    		ongoingPublications.add(bean);
+		}
+    }
+
+    synchronized static void removeOngoingPublication(CacheEvictionBean bean)
+    {
+    	synchronized (ongoingPublications)
+		{
+    		ongoingPublications.remove(bean);
 		}
     }
 
@@ -191,7 +240,7 @@ public class Counter
     	}  
     	catch (Exception e) 
     	{
-    		System.out.println("Error in registerComponentStatistics: " + e.getMessage());
+    		logger.error("Error in registerComponentStatistics: " + e.getMessage());
 		}
     }
 
@@ -211,7 +260,7 @@ public class Counter
     	}    	
     	catch (Exception e) 
     	{
-    		System.out.println("Error in registerPageStatistics: " + e.getMessage());
+    		logger.error("Error in registerPageStatistics: " + e.getMessage());
 		}
     }
 
@@ -325,7 +374,7 @@ public class Counter
     	}
     	catch (Exception e) 
     	{
-    		System.out.println("Error in shortenPageStatistics:" + e.getMessage());
+    		logger.error("Error in shortenPageStatistics:" + e.getMessage());
 		}
    	}
 

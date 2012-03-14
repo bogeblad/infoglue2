@@ -36,6 +36,7 @@ import org.apache.log4j.RollingFileAppender;
 import org.infoglue.deliver.invokers.ComponentBasedHTMLPageInvoker;
 import org.infoglue.deliver.util.CacheController;
 import org.infoglue.deliver.util.DeliverContextListener;
+import org.infoglue.deliver.util.LiveInstanceMonitor;
 
 import com.opensymphony.oscache.base.OSCacheUtility;
 
@@ -108,6 +109,9 @@ public final class CmsContextListener implements ServletContextListener
 				if(cacheController.getExpireCacheAutomatically())
 					cacheController.start();
 			}
+
+			System.out.println("Starting deliver instance monitoring");
+			LiveInstanceMonitor.getInstance();
 
 			OSCacheUtility.setServletCacheParams(event.getServletContext());
 			

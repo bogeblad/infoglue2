@@ -173,6 +173,8 @@ public class InterceptionPointController extends BaseController
 	    systemInterceptionPoints.put("Group.ManageUsers", new InterceptionPointVO("Group", "Group.ManageUsers", "Intercepts the management of users", true));
 	    systemInterceptionPoints.put("Group.ManageAccessRights", new InterceptionPointVO("Group", "Group.ManageAccessRights", "Intercepts the management of access rights", true));
 	    systemInterceptionPoints.put("Group.ManageAllAccessRights", new InterceptionPointVO("Group", "Group.ManageAllAccessRights", "Intercepts the management of access rights", false));
+	
+	    systemInterceptionPoints.put("ViewApplicationState.Read", new InterceptionPointVO("ViewApplicationState", "ViewApplicationState.Read", "Intercepts access to the View application state screens", false));
 	}
     
 	/**

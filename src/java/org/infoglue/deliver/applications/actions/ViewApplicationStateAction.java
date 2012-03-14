@@ -23,7 +23,10 @@
 
 package org.infoglue.deliver.applications.actions;
 
+import java.lang.management.ManagementFactory;
+import java.lang.management.MemoryPoolMXBean;
 import java.net.InetAddress;
+import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -34,6 +37,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.swing.event.EventListenerList;
 
@@ -47,12 +52,16 @@ import org.apache.pluto.portalImpl.services.ServiceManager;
 import org.apache.pluto.portalImpl.services.portletentityregistry.PortletEntityRegistry;
 import org.infoglue.cms.applications.common.VisualFormatter;
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
+import org.infoglue.cms.controllers.kernel.impl.simple.AccessRightController;
 import org.infoglue.cms.controllers.kernel.impl.simple.CastorDatabaseService;
 import org.infoglue.cms.controllers.kernel.impl.simple.ServerNodeController;
 import org.infoglue.cms.controllers.kernel.impl.simple.WorkflowController;
+import org.infoglue.cms.security.AuthenticationModule;
+import org.infoglue.cms.security.InfoGluePrincipal;
 import org.infoglue.cms.util.CmsPropertyHandler;
 import org.infoglue.cms.util.CmsSessionContextListener;
 import org.infoglue.cms.util.sorters.AverageInvokingTimeComparator;
+import org.infoglue.deliver.applications.databeans.CacheEvictionBean;
 import org.infoglue.deliver.invokers.ComponentBasedHTMLPageInvoker;
 import org.infoglue.deliver.portal.ServletConfigContainer;
 import org.infoglue.deliver.portal.services.PortletEntityRegistryServiceDBImpl;
@@ -149,21 +158,68 @@ public class ViewApplicationStateAction extends InfoGlueAbstractAction
         return category;
     }
 
+	private String handleAccess(HttpServletRequest request) throws Exception
+	{
+		String returnValue = null;
+		
+        boolean allowAccess = false;
+        if(!ServerNodeController.getController().getIsIPAllowed(this.getRequest()))
+        {
+			Principal principal = (Principal)this.getHttpSession().getAttribute("infogluePrincipal");
+        	logger.info("principal:" + principal);
+        	Principal anonymousPrincipal = this.getAnonymousPrincipal();
+        	if(principal == null || principal.getName().equals(anonymousPrincipal.getName()))
+        	{
+            	this.getHttpSession().removeAttribute("infogluePrincipal");
+    		    this.getHttpSession().removeAttribute("infoglueRemoteUser");
+    		    this.getHttpSession().removeAttribute("cmsUserName");
+
+    		    String redirectUrl = getRedirectUrl(getRequest(), getResponse());								
+    			getResponse().sendRedirect(redirectUrl);
+    			returnValue = NONE;
+        	}
+        	else
+        	{
+				if(AccessRightController.getController().getIsPrincipalAuthorized((InfoGluePrincipal)principal, "ViewApplicationState.Read", false, true))
+				{
+					allowAccess = true;
+				}
+				else
+				{
+		        	logger.warn("A user from an IP(" + this.getRequest().getRemoteAddr() + ") and username [" + principal + "] was denied access to ViewApplicationState.");
+
+		        	this.getHttpSession().removeAttribute("infogluePrincipal");
+	    		    this.getHttpSession().removeAttribute("infoglueRemoteUser");
+	    		    this.getHttpSession().removeAttribute("cmsUserName");
+
+	    		    this.getResponse().setContentType("text/plain");
+		            this.getResponse().setStatus(HttpServletResponse.SC_FORBIDDEN);
+		            this.getResponse().getWriter().println("You have no access to this view as you don't have ViewApplicationState.Read-rights.");				
+		            returnValue = NONE;
+				}
+        	}
+        	
+		    if(!allowAccess)
+	        {
+	        	logger.warn("A user from an IP(" + this.getRequest().getRemoteAddr() + ") and username [" + principal + "] was denied access to ViewApplicationState.");
+		    	this.getResponse().setContentType("text/plain");
+		        this.getResponse().setStatus(HttpServletResponse.SC_FORBIDDEN);
+	            this.getResponse().getWriter().println("You have no access to this view - talk to your administrator if you should.");				
+	            returnValue = NONE;
+	        }
+        }
+
+		return returnValue;
+	}
+
     /**
      * This action allows clearing of the given cache manually.
      */
     public String doClearCache() throws Exception
     {
-        if(!ServerNodeController.getController().getIsIPAllowed(this.getRequest()))
-        {
-        	logger.error("A user from an IP(" + this.getRequest().getRemoteAddr() + ") which is not allowed tried to call doReCache.");
-
-            this.getResponse().setContentType("text/plain");
-            this.getResponse().setStatus(HttpServletResponse.SC_FORBIDDEN);
-            this.getResponse().getWriter().println("You have no access to this view - talk to your administrator if you should.");
-            
-            return NONE;
-        }
+    	String returnValue = handleAccess(this.getRequest());
+    	if(returnValue != null)
+    		return returnValue;
         
         CacheController.clearCache(cacheName);
         if(clearFileCache || cacheName.equals("pageCache"))
@@ -183,18 +239,35 @@ public class ViewApplicationStateAction extends InfoGlueAbstractAction
     /**
      * This action allows clearing of the given cache manually.
      */
-    public String doClearCacheStartingWith() throws Exception
+    /*
+    public String doFlushCache() throws Exception
     {
-        if(!ServerNodeController.getController().getIsIPAllowed(this.getRequest()))
+    	String returnValue = handleAccess(this.getRequest());
+    	if(returnValue != null)
+    		return returnValue;
+        
+        CacheController.flushCache(cacheName);
+        
+        //this.getHttpSession().invalidate();
+        if(this.returnAddress != null && !this.returnAddress.equals(""))
         {
-        	logger.error("A user from an IP(" + this.getRequest().getRemoteAddr() + ") which is not allowed tried to call doReCache.");
-
-            this.getResponse().setContentType("text/plain");
-            this.getResponse().setStatus(HttpServletResponse.SC_FORBIDDEN);
-            this.getResponse().getWriter().println("You have no access to this view - talk to your administrator if you should.");
+            this.getResponse().sendRedirect(this.returnAddress);
             
             return NONE;
         }
+ 
+        return "cleared";
+    }
+    */
+
+    /**
+     * This action allows clearing of the given cache manually.
+     */
+    public String doClearCacheStartingWith() throws Exception
+    {
+    	String returnValue = handleAccess(this.getRequest());
+    	if(returnValue != null)
+    		return returnValue;
         
         Map caches = getCaches();
         Iterator cachesIterator = caches.keySet().iterator();
@@ -221,16 +294,9 @@ public class ViewApplicationStateAction extends InfoGlueAbstractAction
      */
     public String doClearPageCache() throws Exception
     {
-        if(!ServerNodeController.getController().getIsIPAllowed(this.getRequest()))
-        {
-        	logger.error("A user from an IP(" + this.getRequest().getRemoteAddr() + ") which is not allowed tried to call doReCache.");
-
-            this.getResponse().setContentType("text/plain");
-            this.getResponse().setStatus(HttpServletResponse.SC_FORBIDDEN);
-            this.getResponse().getWriter().println("You have no access to this view - talk to your administrator if you should.");
-            
-            return NONE;
-        }
+    	String returnValue = handleAccess(this.getRequest());
+    	if(returnValue != null)
+    		return returnValue;
         
         CacheController.clearFileCaches("pageCache");
         
@@ -252,16 +318,9 @@ public class ViewApplicationStateAction extends InfoGlueAbstractAction
      */
     public String doClearCastorCache() throws Exception
     {
-        if(!ServerNodeController.getController().getIsIPAllowed(this.getRequest()))
-        {
-        	logger.error("A user from an IP(" + this.getRequest().getRemoteAddr() + ") which is not allowed tried to call doReCache.");
-
-            this.getResponse().setContentType("text/plain");
-            this.getResponse().setStatus(HttpServletResponse.SC_FORBIDDEN);
-            this.getResponse().getWriter().println("You have no access to this view - talk to your administrator if you should.");
-            
-            return NONE;
-        }
+    	String returnValue = handleAccess(this.getRequest());
+    	if(returnValue != null)
+    		return returnValue;
         
         CacheController.clearCache(Class.forName(className));
         
@@ -273,16 +332,9 @@ public class ViewApplicationStateAction extends InfoGlueAbstractAction
      */
     public String doClearApplicationCache() throws Exception
     {
-        if(!ServerNodeController.getController().getIsIPAllowed(this.getRequest()))
-        {
-        	logger.error("A user from an IP(" + this.getRequest().getRemoteAddr() + ") which is not allowed tried to call doClearApplicationCache.");
-
-            this.getResponse().setContentType("text/plain");
-            this.getResponse().setStatus(HttpServletResponse.SC_FORBIDDEN);
-            this.getResponse().getWriter().println("You have no access to this view - talk to your administrator if you should.");
-            
-            return NONE;
-        }
+    	String returnValue = handleAccess(this.getRequest());
+    	if(returnValue != null)
+    		return returnValue;
         
         if(attributeName != null && attributeName.equals("all"))
         {
@@ -307,16 +359,9 @@ public class ViewApplicationStateAction extends InfoGlueAbstractAction
      */
     public String doRestoreWorkflows() throws Exception
     {
-        if(!ServerNodeController.getController().getIsIPAllowed(this.getRequest()))
-        {
-        	logger.error("A user from an IP(" + this.getRequest().getRemoteAddr() + ") which is not allowed tried to call doRestoreWorkflows.");
-
-            this.getResponse().setContentType("text/plain");
-            this.getResponse().setStatus(HttpServletResponse.SC_FORBIDDEN);
-            this.getResponse().getWriter().println("You have no access to this view - talk to your administrator if you should.");
-            
-            return NONE;
-        }
+    	String returnValue = handleAccess(this.getRequest());
+    	if(returnValue != null)
+    		return returnValue;
         
         WorkflowController.restoreSessionFactory(null);
         
@@ -339,16 +384,9 @@ public class ViewApplicationStateAction extends InfoGlueAbstractAction
             return NONE;
         }
         
-        if(!ServerNodeController.getController().getIsIPAllowed(this.getRequest()))
-        {
-        	logger.error("A user from an IP(" + this.getRequest().getRemoteAddr() + ") which is not allowed tried to call doRestoreWorkflows.");
-
-            this.getResponse().setContentType("text/plain");
-            this.getResponse().setStatus(HttpServletResponse.SC_FORBIDDEN);
-            this.getResponse().getWriter().println("You have no access to this view - talk to your administrator if you should.");
-            
-            return NONE;
-        }
+    	String returnValue = handleAccess(this.getRequest());
+    	if(returnValue != null)
+    		return returnValue;
         
         RequestAnalyser.getRequestAnalyser().decNumberOfCurrentRequests(1000);
         
@@ -441,16 +479,9 @@ public class ViewApplicationStateAction extends InfoGlueAbstractAction
      */
     public String doClearCaches() throws Exception
     {
-        if(!ServerNodeController.getController().getIsIPAllowed(this.getRequest()))
-        {
-        	logger.error("A user from an IP(" + this.getRequest().getRemoteAddr() + ") which is not allowed tried to call doClearCaches.");
-
-            this.getResponse().setContentType("text/plain");
-            this.getResponse().setStatus(HttpServletResponse.SC_FORBIDDEN);
-            this.getResponse().getWriter().println("You have no access to this view - talk to your administrator if you should.");
-            
-            return NONE;
-        }
+    	String returnValue = handleAccess(this.getRequest());
+    	if(returnValue != null)
+    		return returnValue;
         
         CacheController.clearServerNodeProperty(true);
         CacheController.clearCastorCaches();
@@ -475,16 +506,9 @@ public class ViewApplicationStateAction extends InfoGlueAbstractAction
      */
     public String doClearCastorCaches() throws Exception
     {
-        if(!ServerNodeController.getController().getIsIPAllowed(this.getRequest()))
-        {
-        	logger.error("A user from an IP(" + this.getRequest().getRemoteAddr() + ") which is not allowed tried to call doClearCastorCaches.");
-
-            this.getResponse().setContentType("text/plain");
-            this.getResponse().setStatus(HttpServletResponse.SC_FORBIDDEN);
-            this.getResponse().getWriter().println("You have no access to this view - talk to your administrator if you should.");
-            
-            return NONE;
-        }
+    	String returnValue = handleAccess(this.getRequest());
+    	if(returnValue != null)
+    		return returnValue;
         
         CacheController.clearCastorCaches();
         
@@ -493,16 +517,9 @@ public class ViewApplicationStateAction extends InfoGlueAbstractAction
 
     public String doClearOSCaches() throws Exception
 	{
-        if(!ServerNodeController.getController().getIsIPAllowed(this.getRequest()))
-        {
-        	logger.error("A user from an IP(" + this.getRequest().getRemoteAddr() + ") which is not allowed tried to call doReCache.");
-
-            this.getResponse().setContentType("text/plain");
-            this.getResponse().setStatus(HttpServletResponse.SC_FORBIDDEN);
-            this.getResponse().getWriter().println("You have no access to this view - talk to your administrator if you should.");
-            
-            return NONE;
-        }
+    	String returnValue = handleAccess(this.getRequest());
+    	if(returnValue != null)
+    		return returnValue;
 
 		ServletCacheAdministrator servletCacheAdministrator = ServletCacheAdministrator.getInstance(ActionContext.getServletContext());
 		servletCacheAdministrator.flushAll();
@@ -566,16 +583,9 @@ public class ViewApplicationStateAction extends InfoGlueAbstractAction
      */
     public String doReCache() throws Exception
     {
-        if(!ServerNodeController.getController().getIsIPAllowed(this.getRequest()))
-        {
-        	logger.error("A user from an IP(" + this.getRequest().getRemoteAddr() + ") which is not allowed tried to call doReCache.");
-
-        	this.getResponse().setContentType("text/plain");
-            this.getResponse().setStatus(HttpServletResponse.SC_FORBIDDEN);
-            this.getResponse().getWriter().println("You have no access to this view - talk to your administrator if you should.");
-            
-            return NONE;
-        }
+    	String returnValue = handleAccess(this.getRequest());
+    	if(returnValue != null)
+    		return returnValue;
         
         CacheController.cacheCentralCastorCaches();
         
@@ -593,16 +603,9 @@ public class ViewApplicationStateAction extends InfoGlueAbstractAction
     
     public String doGC() throws Exception
     {
-        if(!ServerNodeController.getController().getIsIPAllowed(this.getRequest()))
-        {
-        	logger.error("A user from an IP(" + this.getRequest().getRemoteAddr() + ") which is not allowed tried to call doReCache.");
-
-            this.getResponse().setContentType("text/plain");
-            this.getResponse().setStatus(HttpServletResponse.SC_FORBIDDEN);
-            this.getResponse().getWriter().println("You have no access to this view - talk to your administrator if you should.");
-            
-            return NONE;
-        }
+    	String returnValue = handleAccess(this.getRequest());
+    	if(returnValue != null)
+    		return returnValue;
         
         Runtime.getRuntime().gc();
         
@@ -611,16 +614,9 @@ public class ViewApplicationStateAction extends InfoGlueAbstractAction
 
     public String doResetAverageResponseTimeStatistics() throws Exception
     {
-    	logger.error("A user from an IP(" + this.getRequest().getRemoteAddr() + ") which is not allowed tried to call doReCache.");
-
-        if(!ServerNodeController.getController().getIsIPAllowed(this.getRequest()))
-        {
-            this.getResponse().setContentType("text/plain");
-            this.getResponse().setStatus(HttpServletResponse.SC_FORBIDDEN);
-            this.getResponse().getWriter().println("You have no access to this view - talk to your administrator if you should.");
-            
-            return NONE;
-        }
+    	String returnValue = handleAccess(this.getRequest());
+    	if(returnValue != null)
+    		return returnValue;
         
         RequestAnalyser.resetAverageResponseTimeStatistics();
         
@@ -629,16 +625,9 @@ public class ViewApplicationStateAction extends InfoGlueAbstractAction
 
     public String doResetComponentStatistics() throws Exception
     {
-    	logger.error("A user from an IP(" + this.getRequest().getRemoteAddr() + ") which is not allowed tried to call doReCache.");
-
-        if(!ServerNodeController.getController().getIsIPAllowed(this.getRequest()))
-        {
-            this.getResponse().setContentType("text/plain");
-            this.getResponse().setStatus(HttpServletResponse.SC_FORBIDDEN);
-            this.getResponse().getWriter().println("You have no access to this view - talk to your administrator if you should.");
-            
-            return NONE;
-        }
+    	String returnValue = handleAccess(this.getRequest());
+    	if(returnValue != null)
+    		return returnValue;
         
         RequestAnalyser.resetComponentStatistics();
         
@@ -647,34 +636,34 @@ public class ViewApplicationStateAction extends InfoGlueAbstractAction
 
     public String doResetPageStatistics() throws Exception
     {
-    	logger.error("A user from an IP(" + this.getRequest().getRemoteAddr() + ") which is not allowed tried to call doReCache.");
-
-        if(!ServerNodeController.getController().getIsIPAllowed(this.getRequest()))
-        {
-            this.getResponse().setContentType("text/plain");
-            this.getResponse().setStatus(HttpServletResponse.SC_FORBIDDEN);
-            this.getResponse().getWriter().println("You have no access to this view - talk to your administrator if you should.");
-            
-            return NONE;
-        }
+    	String returnValue = handleAccess(this.getRequest());
+    	if(returnValue != null)
+    		return returnValue;
         
         RequestAnalyser.resetPageStatistics();
         
         return "cleared";
     }
 
+    public String doOngoingPublicationDetails() throws Exception
+    {
+    	String returnValue = handleAccess(this.getRequest());
+    	if(returnValue != null)
+    		return returnValue;
+
+        return "successOngoingPublications";
+    }
+    
+    public List<CacheEvictionBean> getOngoingPublications()
+    {
+    	return RequestAnalyser.getRequestAnalyser().getOngoingPublications();
+    }
+
     public String doComponentStatistics() throws Exception
     {
-        if(!ServerNodeController.getController().getIsIPAllowed(this.getRequest()))
-        {
-        	logger.error("A user from an IP(" + this.getRequest().getRemoteAddr() + ") which is not allowed tried to call doReCache.");
-
-            this.getResponse().setContentType("text/plain");
-            this.getResponse().setStatus(HttpServletResponse.SC_FORBIDDEN);
-            this.getResponse().getWriter().println("You have no access to this view - talk to your administrator if you should.");
-            
-            return NONE;
-        }
+    	String returnValue = handleAccess(this.getRequest());
+    	if(returnValue != null)
+    		return returnValue;
         
         states.add(getList("Average processing time per request (ms)", "" + RequestAnalyser.getRequestAnalyser().getAverageElapsedTime()));
 		
@@ -701,17 +690,9 @@ public class ViewApplicationStateAction extends InfoGlueAbstractAction
 
     public String doPageStatistics() throws Exception
     {
-        if(!ServerNodeController.getController().getIsIPAllowed(this.getRequest()))
-        {
-        	logger.error("A user from an IP(" + this.getRequest().getRemoteAddr() + ") which is not allowed tried to call doReCache.");
-
-            this.getResponse().setContentType("text/plain");
-            this.getResponse().setStatus(HttpServletResponse.SC_FORBIDDEN);
-            this.getResponse().getWriter().println("You have no access to this view - talk to your administrator if you should.");
-            
-            return NONE;
-        }
-        
+    	String returnValue = handleAccess(this.getRequest());
+    	if(returnValue != null)
+    		return returnValue;
         states.add(getList("Average processing time per request (ms)", "" + RequestAnalyser.getRequestAnalyser().getAverageElapsedTime()));
 		
         states.add(getList("<br/><strong>Individual pages (in milliseconds)</strong>", "&nbsp;"));
@@ -736,32 +717,18 @@ public class ViewApplicationStateAction extends InfoGlueAbstractAction
     
     public String doCacheStatistics() throws Exception
     {
-        if(!ServerNodeController.getController().getIsIPAllowed(this.getRequest()))
-        {
-        	logger.error("A user from an IP(" + this.getRequest().getRemoteAddr() + ") which is not allowed tried to call doReCache.");
-
-            this.getResponse().setContentType("text/plain");
-            this.getResponse().setStatus(HttpServletResponse.SC_FORBIDDEN);
-            this.getResponse().getWriter().println("You have no access to this view - talk to your administrator if you should.");
-            
-            return NONE;
-        }
+    	String returnValue = handleAccess(this.getRequest());
+    	if(returnValue != null)
+    		return returnValue;
         
         return "successCacheStatistics";
     }
 
     public String doCacheDetailsStatistics() throws Exception
     {
-        if(!ServerNodeController.getController().getIsIPAllowed(this.getRequest()))
-        {
-        	logger.error("A user from an IP(" + this.getRequest().getRemoteAddr() + ") which is not allowed tried to call doReCache.");
-
-            this.getResponse().setContentType("text/plain");
-            this.getResponse().setStatus(HttpServletResponse.SC_FORBIDDEN);
-            this.getResponse().getWriter().println("You have no access to this view - talk to your administrator if you should.");
-            
-            return NONE;
-        }
+    	String returnValue = handleAccess(this.getRequest());
+    	if(returnValue != null)
+    		return returnValue;
         
         if(this.cacheName != null && !this.cacheName.equals(""))
         	this.cache = CacheController.getCaches().get(this.cacheName);
@@ -769,6 +736,12 @@ public class ViewApplicationStateAction extends InfoGlueAbstractAction
         return "successCacheDetailsStatistics";
     }
 
+    private String getRedirectUrl(HttpServletRequest request, HttpServletResponse response) throws ServletException, Exception 
+  	{
+		String url = AuthenticationModule.getAuthenticationModule(null, this.getOriginalFullURL(), request, false).getLoginDialogUrl(request, response);
+		return url;
+  	}
+    
     /**
      * This method is the application entry-point. The method does a lot of checks to see if infoglue
      * is installed correctly and if all resources needed are available.
@@ -776,17 +749,9 @@ public class ViewApplicationStateAction extends InfoGlueAbstractAction
          
     public String doExecute() throws Exception
     {
-        long start = System.currentTimeMillis();
-        if(!ServerNodeController.getController().getIsIPAllowed(this.getRequest()))
-        {
-        	logger.error("A user from an IP(" + this.getRequest().getRemoteAddr() + ") which is not allowed tried to call doReCache.");
-
-            this.getResponse().setContentType("text/plain");
-            this.getResponse().setStatus(HttpServletResponse.SC_FORBIDDEN);
-            this.getResponse().getWriter().println("You have no access to this view - talk to your administrator if you should.");
-            
-            return NONE;
-        }
+    	String returnValue = handleAccess(this.getRequest());
+    	if(returnValue != null)
+    		return returnValue;
         
         String sessionTimeout = CmsPropertyHandler.getSessionTimeout();
 		if(sessionTimeout == null)
@@ -797,6 +762,7 @@ public class ViewApplicationStateAction extends InfoGlueAbstractAction
         states.add(getList("Used memory (MB)", "" + ((Runtime.getRuntime().totalMemory()- Runtime.getRuntime().freeMemory()) / 1024 / 1024)));
         states.add(getList("Free memory (MB)", "" + Runtime.getRuntime().freeMemory() / 1024 / 1024));
         states.add(getList("Total memory (MB)", "" + Runtime.getRuntime().totalMemory() / 1024 / 1024));
+        addPermGenStatistics(states);
         states.add(getList("Number of sessions <br/>(remains for " + (Integer.parseInt(sessionTimeout) / 60) + " minutes after last request)", "" + CmsSessionContextListener.getActiveSessions()));
         states.add(getList("Number of request being handled now", "" + RequestAnalyser.getRequestAnalyser().getNumberOfCurrentRequests()));
         states.add(getList("Number of active request being handled now", "" + RequestAnalyser.getRequestAnalyser().getNumberOfActiveRequests()));
@@ -805,13 +771,16 @@ public class ViewApplicationStateAction extends InfoGlueAbstractAction
         states.add(getList("Slowest request (ms)", "" + RequestAnalyser.getRequestAnalyser().getMaxElapsedTime()));
         states.add(getList("Number of pages in the statistics", RequestAnalyser.getAllPageUrls().size()));
 
-        states.add(getList("<br/><strong>Latest publications</strong>", "&nbsp;"));
-        List publications = RequestAnalyser.getRequestAnalyser().getLatestPublications();
-        Iterator publicationsIterator = publications.iterator();
+        states.add(getList("<br/><strong>Ongoing publications (handling in process)</strong>", "&nbsp;"));
+    	states.add(getList("Number of publications in process", "" + RequestAnalyser.getRequestAnalyser().getOngoingPublications().size() + " <a href=\"ViewApplicationState!ongoingPublicationDetails.action\">(Details)</a>"));
+        List<CacheEvictionBean> publications = RequestAnalyser.getRequestAnalyser().getLatestPublications();
+
+        states.add(getList("<br/><strong>Latest publications (Finished, Timestamp, user, object name)</strong>", "&nbsp;"));
+        Iterator<CacheEvictionBean> publicationsIterator = publications.iterator();
         while(publicationsIterator.hasNext())
         {
-        	String publication = (String)publicationsIterator.next();
-        	states.add(getList("Date/type:", "" + publication));
+        	CacheEvictionBean publication = publicationsIterator.next();
+        	states.add(getList("PublicationId: " + publication.getPublicationId() + ", User: " + publication.getUserName() + ", Finished: " + formatter.formatDate(publication.getProcessedTimestamp(), "yyyy-MM-dd HH:mm:ss") + ", Initiated: " + formatter.formatDate(publication.getTimestamp(), "yyyy-MM-dd HH:mm:ss") + ", Received: " + formatter.formatDate(publication.getReceivedTimestamp(), "yyyy-MM-dd HH:mm:ss"), ""));
         }
 		        
     	getApplicationAttributes();
@@ -819,6 +788,39 @@ public class ViewApplicationStateAction extends InfoGlueAbstractAction
 		//this.getHttpSession().invalidate();
 
         return "success";
+    }
+
+    private void addPermGenStatistics(List states)
+    {
+    	Iterator iter1 = ManagementFactory.getMemoryPoolMXBeans().iterator();
+    	while (iter1.hasNext()) 
+    	{
+    	    MemoryPoolMXBean item = (MemoryPoolMXBean) iter1.next();
+    	    long used = item.getUsage().getUsed() / 1024 / 1024;
+    	    long max = item.getUsage().getMax() / 1024 / 1024;
+    	    long usedDivided = used;
+    	    long maxDivided = max;
+    	    if(max > 100)
+    	    {
+    	    	usedDivided = used / 10;
+    	    	maxDivided = max / 10;
+    	    }
+    	    
+    	    states.add(getList("" + item.getName(), "" + used + " / " + max + "<div style='border: 1px solid #ccc; background-color: green; height: 10px; width: " + maxDivided + "px;'><div style='margin-top: 2px; background-color: red; height: 6px; width: " + usedDivided + "px;'></div></div>"));
+    	}	
+    	
+	    long max = Runtime.getRuntime().maxMemory() / 1024 / 1024;
+	    long used = ((Runtime.getRuntime().totalMemory()- Runtime.getRuntime().freeMemory()) / 1024 / 1024);
+	    long usedDivided = used;
+	    long maxDivided = max;
+	    if(max > 100)
+	    {
+	    	usedDivided = used / 10;
+	    	maxDivided = max / 10;
+	    }
+
+        states.add(getList("Heap summary", "" + used + " / " + max + "<div style='border: 1px solid #ccc; background-color: green; height: 10px; width: " + maxDivided + "px;'><div style='margin-top: 2px; background-color: red; height: 6px; width: " + usedDivided + "px;'></div></div>"));
+
     }
 
 	private void getApplicationAttributes()

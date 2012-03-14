@@ -201,11 +201,11 @@ public class CmsPropertyHandler
 		    	}
 		    	catch(Exception e)
 		    	{
-		    		System.out.println("Error initializing serverNodeName:" + e.getMessage());
+		    		logger.error("Error initializing serverNodeName:" + e.getMessage());
 		    	}
 		    }
 		    
-		    System.out.println("serverNodeName:" + serverNodeName);
+		    logger.info("serverNodeName:" + serverNodeName);
 		    
 		    initializeLocalServerNodeId();
 		    
@@ -1702,7 +1702,6 @@ public class CmsPropertyHandler
 			catch(Exception e)
 			{
 			    logger.error("Error loading properties from string. Reason:" + e.getMessage());
-				e.printStackTrace();
 			}
 		}
 	    else

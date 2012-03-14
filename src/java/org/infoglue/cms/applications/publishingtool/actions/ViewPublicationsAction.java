@@ -23,6 +23,7 @@
 
 package org.infoglue.cms.applications.publishingtool.actions;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
@@ -52,8 +53,11 @@ public class ViewPublicationsAction extends InfoGlueAbstractAction
 	private RepositoryVO repositoryVO;
 	private List publicationEvents;
 	private List publicationDetailVOList;
+	private List<String[]> publicationStatusList = new ArrayList<String[]>();
 	private EditionBrowser editionBrowser;
 	private String filter = null;
+
+	public List<String[]> getPublicationStatusList(){ return publicationStatusList; }
 
 	public int getStartIndex()			{ return startIndex; }
 	public void setStartIndex(int i)	{ startIndex = i; }
@@ -104,13 +108,15 @@ public class ViewPublicationsAction extends InfoGlueAbstractAction
 	
 	public String doShowPublicationDetails() throws Exception
 	{
-		publicationDetailVOList = PublicationController.getPublicationDetailVOList(publicationId);
+		publicationDetailVOList = PublicationController.getController().getPublicationDetailVOList(publicationId);
+		this.publicationStatusList = PublicationController.getPublicationStatusList(publicationId);
+
 		return "showPublicationDetails";
 	}
 
 	public static List getPublicationDetails(Integer publicationId) throws SystemException
 	{
-		return PublicationController.getPublicationDetailVOList(publicationId);
+		return PublicationController.getController().getPublicationDetailVOList(publicationId);
 	}
 
 	public ContentVO getOwningContent(Integer id) throws SystemException

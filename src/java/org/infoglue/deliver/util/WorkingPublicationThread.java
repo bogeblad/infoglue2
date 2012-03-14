@@ -28,6 +28,7 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.exolab.castor.jdo.Database;
+import org.infoglue.cms.applications.common.VisualFormatter;
 import org.infoglue.cms.controllers.kernel.impl.simple.CastorDatabaseService;
 import org.infoglue.cms.entities.content.impl.simple.ContentImpl;
 import org.infoglue.cms.entities.content.impl.simple.DigitalAssetImpl;
@@ -52,6 +53,7 @@ import org.infoglue.cms.entities.structure.impl.simple.SiteNodeImpl;
 import org.infoglue.cms.entities.structure.impl.simple.SiteNodeVersionImpl;
 import org.infoglue.cms.entities.structure.impl.simple.SmallSiteNodeImpl;
 import org.infoglue.cms.entities.structure.impl.simple.SmallSiteNodeVersionImpl;
+import org.infoglue.cms.services.CacheEvictionBeanListenerService;
 import org.infoglue.cms.util.CmsPropertyHandler;
 import org.infoglue.cms.util.NotificationMessage;
 import org.infoglue.deliver.applications.databeans.CacheEvictionBean;
@@ -66,6 +68,7 @@ import org.infoglue.deliver.controllers.kernel.impl.simple.DigitalAssetDeliveryC
 public class WorkingPublicationThread extends Thread
 {
     public final static Logger logger = Logger.getLogger(WorkingPublicationThread.class.getName());
+	private static VisualFormatter formatter = new VisualFormatter();
 
     private List cacheEvictionBeans = new ArrayList();
 	
@@ -110,6 +113,9 @@ public class WorkingPublicationThread extends Thread
 				while(i.hasNext())
 				{
 				    CacheEvictionBean cacheEvictionBean = (CacheEvictionBean)i.next();
+				    
+				    RequestAnalyser.getRequestAnalyser().addOngoingPublications(cacheEvictionBean);
+
 				    String className = cacheEvictionBean.getClassName();
 				    String objectId = cacheEvictionBean.getObjectId();
 				    String objectName = cacheEvictionBean.getObjectName();
@@ -237,11 +243,18 @@ public class WorkingPublicationThread extends Thread
 	
 						    logger.info("4");
 						}	
+					    
+						CacheEvictionBeanListenerService.getService().notifyListeners(cacheEvictionBean);
 					}
 					catch (Exception e) 
 					{
 						logger.error("Error handling cache update message:" + className + ":" + objectId);
 					}
+					
+				    RequestAnalyser.getRequestAnalyser().removeOngoingPublications(cacheEvictionBean);
+				    cacheEvictionBean.setProcessed();
+				    if(cacheEvictionBean.getPublicationId() > -1)
+				    	RequestAnalyser.getRequestAnalyser().addPublication(cacheEvictionBean);
 				}
 			} 
 			catch (Exception e)

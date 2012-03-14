@@ -1922,7 +1922,7 @@ public class CacheController extends Thread
 			    
 				logger.info("className:" + className);
 				logger.info("pt:" + pt);
-				RequestAnalyser.getRequestAnalyser().addPublication("" + formatter.formatDate(new Date(), "yyyy-MM-dd HH:mm:ss") + " - " + cacheEvictionBean.getClassName() + " - " + cacheEvictionBean.getObjectId());
+				//RequestAnalyser.getRequestAnalyser().addPublication("" + formatter.formatDate(new Date(), "yyyy-MM-dd HH:mm:ss") + " - " + cacheEvictionBean.getClassName() + " - " + cacheEvictionBean.getObjectId());
 				
 			    if(pt == null)
 			    	wpt.getCacheEvictionBeans().add(cacheEvictionBean);
