@@ -167,7 +167,8 @@ public class PublicationController extends BaseController
         }
         catch(Exception e)
         {
-            logger.error("An error occurred so we should not completes the transaction:" + e, e);
+            logger.error("An error occurred so we should not completes the transaction:" + e);
+            logger.warn("An error occurred so we should not completes the transaction:" + e, e);
             rollbackTransaction(db);
             throw new SystemException(e.getMessage());
         }
@@ -963,7 +964,7 @@ public class PublicationController extends BaseController
 		}
 		catch(Exception e)
 		{
-			logger.error("Error:" + e.getMessage(), e);
+			logger.error("Error getting ongoing publication status:" + e.getMessage());
 		}
 		
         return beans;
@@ -994,7 +995,7 @@ public class PublicationController extends BaseController
 		}
 		catch (Exception e) 
 		{
-			logger.error("Error getting failed publications:" + e.getMessage(), e);
+			logger.error("Error getting failed publications:" + e.getMessage());
 		}
 		
 		return failedPublications;
@@ -1020,7 +1021,7 @@ public class PublicationController extends BaseController
 		}
 		catch(Exception e)
 		{
-			logger.error("Error:" + e.getMessage(), e);
+			logger.error("Error getting latest publication:" + e.getMessage());
 		}
 		
         return beans;

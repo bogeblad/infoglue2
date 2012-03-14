@@ -30,6 +30,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.exolab.castor.jdo.Database;
@@ -55,7 +56,10 @@ import org.infoglue.cms.security.InfoGluePrincipal;
 import org.infoglue.cms.util.CmsPropertyHandler;
 import org.infoglue.deliver.controllers.kernel.impl.simple.ExtranetController;
 import org.infoglue.deliver.util.CacheController;
+import org.infoglue.deliver.util.LiveInstanceMonitor;
 import org.infoglue.deliver.util.graphics.ColorHelper;
+import org.infoglue.deliver.util.ioqueue.PublicationQueue;
+import org.infoglue.deliver.util.ioqueue.PublicationQueueBean;
 
 import webwork.action.ActionContext;
 import webwork.config.Configuration;
@@ -450,7 +454,8 @@ public abstract class InfoGlueAbstractAction extends WebworkAbstractAction
 		InfoGluePrincipal infoGluePrincipal = null;
 		try
 		{
-			infoGluePrincipal = (InfoGluePrincipal)ActionContext.getRequest().getSession().getAttribute("org.infoglue.cms.security.user");
+			if(ActionContext.getRequest() != null && ActionContext.getRequest().getSession() != null)
+				infoGluePrincipal = (InfoGluePrincipal)ActionContext.getRequest().getSession().getAttribute("org.infoglue.cms.security.user");
 		}
 		catch (Exception e) 
 		{
@@ -582,6 +587,21 @@ public abstract class InfoGlueAbstractAction extends WebworkAbstractAction
 	public void setToolId(Integer toolId)
 	{
 		this.getSession().setToolId(toolId);
+	}
+
+	public Boolean getInstanceStatus(String baseUrl)
+	{
+		return LiveInstanceMonitor.getInstance().getServerStatus(baseUrl);
+	}
+
+	public Map<String,Boolean> getInstanceStatusMap()
+	{
+		return LiveInstanceMonitor.getInstance().getInstanceStatusMap();
+	}
+
+	public Map<String, Set<PublicationQueueBean>> getInstancePublicationQueueBeans()
+	{
+		return PublicationQueue.getPublicationQueue().getInstancePublicationQueueBeans();
 	}
 
 	//--------------------------------------------------------------------------

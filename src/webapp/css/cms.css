@@ -736,3 +736,10 @@ li.normalitem {
 	}
 	
 .deleteCross { background:url(../images/v3/cross.png) no-repeat left center; background-position: 4px 2px;}
+
+.ok {
+	background-color: green;
+}
+.cancel {
+	background-color: red;
+}
