@@ -1953,7 +1953,7 @@ public class ContentController extends BaseController
         try
         {
     		OQLQuery oql = db.getOQLQuery("SELECT c FROM org.infoglue.cms.entities.content.impl.simple.SmallContentImpl c WHERE " +
-    				"c.expireDateTime > $1 AND c.expireDateTime < $2 AND c.publishDateTime < $3");
+    				"c.expireDateTime > $1 AND c.expireDateTime < $2 AND c.publishDateTime < $3 ORDER BY c.contentId");
 
         	Calendar now = Calendar.getInstance();
         	Date currentDate = now.getTime();

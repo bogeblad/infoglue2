@@ -63,13 +63,13 @@ public class CacheEvictionBeanListenerService
 	{
 		try
 		{
-			System.out.println("CLASS:" + cacheEvictionBean.getClassName());
+			logger.info("CLASS:" + cacheEvictionBean.getClassName());
 			List<CacheEvictionBeanListener> listeners = getListeners(cacheEvictionBean.getClassName());
 			if(listeners != null)
 			{
 				for(CacheEvictionBeanListener listener : listeners)
 				{
-					System.out.println("listener:" + listener);
+					logger.info("listener:" + listener);
 					listener.notify(cacheEvictionBean);					
 				}
 			}

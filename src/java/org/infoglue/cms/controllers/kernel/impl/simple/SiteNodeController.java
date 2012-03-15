@@ -554,7 +554,7 @@ public class SiteNodeController extends BaseController
 
 		childrenVOList = new ArrayList<SiteNodeVO>();
 
-		OQLQuery oql = db.getOQLQuery( "SELECT s FROM org.infoglue.cms.entities.structure.impl.simple.SiteNodeImpl s WHERE s.parentSiteNode = $1");
+		OQLQuery oql = db.getOQLQuery( "SELECT s FROM org.infoglue.cms.entities.structure.impl.simple.SiteNodeImpl s WHERE s.parentSiteNode = $1 ORDER BY s.siteNodeId");
 		oql.bind(parentSiteNodeId);
 		
 		QueryResults results = oql.execute(Database.ReadOnly);
@@ -897,7 +897,7 @@ public class SiteNodeController extends BaseController
     {
 		List siteNodes = new ArrayList();
 		
-		OQLQuery oql = db.getOQLQuery("SELECT sn FROM org.infoglue.cms.entities.structure.impl.simple.SiteNodeImpl sn WHERE sn.repository.repositoryId = $1");
+		OQLQuery oql = db.getOQLQuery("SELECT sn FROM org.infoglue.cms.entities.structure.impl.simple.SiteNodeImpl sn WHERE sn.repository.repositoryId = $1 ORDER BY sn.siteNodeId");
     	oql.bind(repositoryId);
     	
     	QueryResults results = oql.execute(Database.ReadOnly);
@@ -1142,7 +1142,7 @@ public class SiteNodeController extends BaseController
     {
 		List siteNodes = new ArrayList();
 
-		OQLQuery oql = db.getOQLQuery("SELECT sn FROM org.infoglue.cms.entities.structure.impl.simple.SiteNodeImpl sn WHERE sn.metaInfoContentId = $1");
+		OQLQuery oql = db.getOQLQuery("SELECT sn FROM org.infoglue.cms.entities.structure.impl.simple.SiteNodeImpl sn WHERE sn.metaInfoContentId = $1 ORDER BY sn.siteNodeId");
     	oql.bind(new Integer(-1));
     	
     	QueryResults results = oql.execute();
@@ -1192,7 +1192,7 @@ public class SiteNodeController extends BaseController
     {
 		SiteNode siteNode = null;
 
-		OQLQuery oql = db.getOQLQuery("SELECT sn FROM org.infoglue.cms.entities.structure.impl.simple.SiteNodeImpl sn WHERE sn.metaInfoContentId = $1");
+		OQLQuery oql = db.getOQLQuery("SELECT sn FROM org.infoglue.cms.entities.structure.impl.simple.SiteNodeImpl sn WHERE sn.metaInfoContentId = $1 ORDER BY sn.siteNodeId");
     	oql.bind(contentId);
     	
     	QueryResults results = oql.execute();
@@ -1271,7 +1271,7 @@ public class SiteNodeController extends BaseController
         try
         {
     		OQLQuery oql = db.getOQLQuery("SELECT sn FROM org.infoglue.cms.entities.structure.impl.simple.SmallSiteNodeImpl sn WHERE " +
-    				"sn.expireDateTime > $1 AND sn.expireDateTime < $2 AND sn.publishDateTime < $3");
+    				"sn.expireDateTime > $1 AND sn.expireDateTime < $2 AND sn.publishDateTime < $3 ORDER BY sn.siteNodeId");
 
         	Calendar now = Calendar.getInstance();
         	Date currentDate = now.getTime();
