@@ -182,7 +182,10 @@ public class SelectiveLivePublicationThread extends PublicationThread
 				        isDependsClass = true;
 			
 				    if(!typeId.equalsIgnoreCase("" + NotificationMessage.SYSTEM))
+				    {
 				    	CacheController.clearCaches(className, objectId, null);
+						CacheController.setForcedCacheEvictionMode(true);
+				    }
 		
 				    boolean processedInterupted = false;
 				    

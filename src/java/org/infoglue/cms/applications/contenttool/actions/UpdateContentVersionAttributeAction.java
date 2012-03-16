@@ -118,7 +118,8 @@ public class UpdateContentVersionAttributeAction extends ViewContentVersionActio
 	
 	public String doSaveAndReturnValue()
     {
-		while(active)
+		int index = 0;
+		while(active && index < 100)
 		{
 			logger.info("Waiting for previous thread..");
 			try
@@ -128,6 +129,7 @@ public class UpdateContentVersionAttributeAction extends ViewContentVersionActio
 			catch (Exception e)
 			{
 			}
+			index++;
 		}
 		
 		synchronized(active)

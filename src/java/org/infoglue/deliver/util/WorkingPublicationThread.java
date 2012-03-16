@@ -133,6 +133,7 @@ public class WorkingPublicationThread extends Thread
 					        isDependsClass = true;
 				
 					    CacheController.clearCaches(className, objectId, null);
+						CacheController.setForcedCacheEvictionMode(true);
 			
 					    logger.info("Updating className with id:" + className + ":" + objectId);
 					    if(className != null && !typeId.equalsIgnoreCase("" + NotificationMessage.SYSTEM))

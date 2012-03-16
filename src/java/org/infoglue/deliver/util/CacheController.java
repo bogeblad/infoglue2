@@ -891,9 +891,12 @@ public class CacheController extends Thread
 			{
 				logger.warn("The clearCache method waited over " + ((wait * 10) / 1000) + " seconds but there seems to be " + RequestAnalyser.getRequestAnalyser().getNumberOfCurrentRequests() + " requests blocking all the time. Continuing anyway.");
 				//printThreads();
-				setForcedCacheEvictionMode(true);
 				break;
 			}
+
+	        if(wait > 100)
+				setForcedCacheEvictionMode(true);
+
 	        Thread.sleep(10);
 			wait++;
 	    }
@@ -1502,10 +1505,12 @@ public class CacheController extends Thread
 	    	if(wait > 1000)
 			{
 				logger.warn("The clearCastorCaches method waited over " + ((wait * 10) / 1000) + " seconds but there seems to be " + RequestAnalyser.getRequestAnalyser().getNumberOfCurrentRequests() + " requests blocking all the time. Continuing anyway.");
-				setForcedCacheEvictionMode(true);
 				break;
 			}
-			
+
+	        if(wait > 100)
+				setForcedCacheEvictionMode(true);
+
 			Thread.sleep(10);
 			wait++;
 	    }
@@ -1614,10 +1619,12 @@ public class CacheController extends Thread
 			{
 				logger.warn("The clearCache method waited over " + ((wait * 10) / 1000) + " seconds but there seems to be " + RequestAnalyser.getRequestAnalyser().getNumberOfCurrentRequests() + " requests blocking all the time. Continuing anyway.");
 				//printThreads();
-				setForcedCacheEvictionMode(true);
 				break;
 			}
-			
+
+	        if(wait > 100)
+				setForcedCacheEvictionMode(true);
+
 			Thread.sleep(10);
 			wait++;
 	    }
