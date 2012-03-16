@@ -197,8 +197,8 @@ public class CacheController extends Thread
 
 	public static void renameCache(String cacheName, String newCacheName)
 	{
-		synchronized(caches) 
-		{
+		//synchronized(caches) 
+		//{
 		    Object cacheInstance = caches.get(cacheName);
 		    
 		    if(cacheInstance != null)
@@ -209,7 +209,7 @@ public class CacheController extends Thread
 		            caches.remove(cacheName);
 		        }
 		    }
-		}
+		//}
 	}	
 	
 	public static void clearServerNodeProperty(boolean reCache)
@@ -229,12 +229,12 @@ public class CacheController extends Thread
 		if(cacheName == null || key == null || value == null)
 			return;
 
-		synchronized(caches)
-		{
+		//synchronized(caches)
+		//{
 			if(!caches.containsKey(cacheName))
 				//caches.put(cacheName, Collections.synchronizedMap(new HashMap()));
 			    caches.put(cacheName, new HashMap());
-		}
+		//}
 			
 		//synchronized(caches)
 		//{
@@ -905,8 +905,8 @@ public class CacheController extends Thread
 		if(entity == null)
 		{	
 			logger.info("Clearing the caches");
-			synchronized(caches)
-			{
+			//synchronized(caches)
+			//{
 				for (Iterator i = caches.entrySet().iterator(); i.hasNext(); ) 
 				{
 					Map.Entry e = (Map.Entry) i.next();
@@ -949,7 +949,7 @@ public class CacheController extends Thread
 				    	i.remove();
 					}
 				}
-			}
+			//}
 		}
 	    else if(entity.equalsIgnoreCase("CacheNames"))
 	    {
@@ -972,8 +972,8 @@ public class CacheController extends Thread
 		        
 		    String operatingMode = CmsPropertyHandler.getOperatingMode();
 
-			synchronized(caches)
-			{
+			//synchronized(caches)
+		    //{
 				for (Iterator i = caches.entrySet().iterator(); i.hasNext(); ) 
 				{
 					Map.Entry e = (Map.Entry) i.next();
@@ -1444,7 +1444,7 @@ public class CacheController extends Thread
 						logger.info("Did not clear " + e.getKey());
 					}
 				}
-			}
+			//}
 			
     		if(!useSelectivePageCacheUpdate)
     		{
