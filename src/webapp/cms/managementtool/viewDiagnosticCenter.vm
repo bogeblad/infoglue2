@@ -18,7 +18,7 @@
 				<a href="ViewApplicationState.action">infoglueCMS</a>
 			</td>
 			<td>
-				<div style="height: 20px; background-position: 0px 0px; text-indent: 20px;" class="ok">(0 in queue)</div>
+				<div style="height: 20px; background-position: 0px 0px; text-indent: 20px;" class="okstatus">(0 in queue)</div>
 			</td>
 			<td>
 				<a href="ViewApplicationState!clearCaches.action?returnAddress=$formatter.encodeURI($originalFullURL)">Clear caches</a> | <a href="ViewLogging.action" target="_blank">Logs</a> | 
@@ -42,9 +42,9 @@
 			<td>
 				#set($ongoingPublicationBeans = $!this.getOngoingPublicationBeans("$url"))
 				#if($!this.getInstanceStatus("$url") == "false")
-					<div style="margin-top: 5px; height: 20px; background-position: 0px 0px; text-indent: 20px;" class="cancel">($beans.size() in queue)</div>			
+					<div style="margin-top: 5px; height: 20px; background-position: 0px 0px; text-indent: 20px;" class="nokstatus">($beans.size() in queue)</div>			
 				#else
-					<div style="margin-top: 5px; height: 20px; background-position: 0px 0px; text-indent: 20px;" class="ok">($beans.size() in queue)</div>
+					<div style="margin-top: 5px; height: 20px; background-position: 0px 0px; text-indent: 20px;" class="okstatus">($beans.size() in queue)</div>
 				#end
 			</td>
 			<td>
@@ -73,14 +73,14 @@
 					#set($ongoingPublicationBeans = $!this.getOngoingPublicationBeans("$url"))
 					#set($failedPublications = $!this.getFailedPublicationVOList("$url"))
 					#if($!this.getInstanceStatus("$url") == "false")
-						<div style="margin-top: 5px; height: 20px; background-position: 0px 0px; text-indent: 20px;" class="cancel">
+						<div style="margin-top: 5px; height: 20px; background-position: 0px 0px; text-indent: 20px;" class="nokstatus">
 							(
 								$beans.size() in queue, 
 							 	<a href="$url/ViewApplicationState!ongoingPublicationDetails.action" target="_blank">$ongoingPublicationBeans.size() ongoing</a>, 
 							 	<a href="javascript:void(0);" onclick="top.openInlineDiv('ViewDiagnosticCenter!viewFailedPublications.action?liveInstanceValidationUrl=$formatter.encodeURI($url)', 600, 800, true, true, 'Failed publications');" target="_blank">$failedPublications.size() failed</a>)
 						</div>	
 					#else
-						<div style="margin-top: 5px; height: 20px; background-position: 0px 0px; text-indent: 20px;" class="ok">
+						<div style="margin-top: 5px; height: 20px; background-position: 0px 0px; text-indent: 20px;" class="okstatus">
 							($beans.size() in queue, 
 							 <a href="$url/ViewApplicationState!ongoingPublicationDetails.action" target="_blank">$ongoingPublicationBeans.size() ongoing</a>, 
 							 <a href="$url/ViewApplicationState!ongoingPublicationDetails.action" target="_blank">$failedPublications.size() failed</a>)
