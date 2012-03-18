@@ -30,6 +30,7 @@ import java.util.List;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
+import org.infoglue.cms.applications.common.VisualFormatter;
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.PublicationController;
 import org.infoglue.cms.controllers.kernel.impl.simple.RepositoryController;
@@ -59,6 +60,8 @@ import com.google.gson.Gson;
 public class UpdateCacheAction extends InfoGlueAbstractAction 
 {
     private final static Logger logger = Logger.getLogger(UpdateCacheAction.class.getName());
+
+	private static VisualFormatter formatter = new VisualFormatter();
 
 	private ThreadMonitor tk = null;
 
@@ -231,13 +234,13 @@ public class UpdateCacheAction extends InfoGlueAbstractAction
         {
         	foundOngoingPublicationBean = ongoingPublication;
         }
-        
+
         if(foundPublishedBean != null)
         	sb.append("" + foundPublishedBean.toQueryString());
         else if(foundOngoingPublicationBean != null)
         	sb.append("" + foundOngoingPublicationBean.toQueryString());
         else
-        	sb.append("status=Unknown");
+        	sb.append("status=Unknown; serverStartDateTime:" + formatter.formatDate(CmsPropertyHandler.getStartupTime(), "yyyy-MM-dd HH:mm:ss"));
         
         this.getResponse().setContentType("text/plain");
         this.getResponse().getWriter().println("" + sb.toString());
