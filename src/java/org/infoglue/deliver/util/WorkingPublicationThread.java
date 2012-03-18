@@ -254,7 +254,7 @@ public class WorkingPublicationThread extends Thread
 					
 				    RequestAnalyser.getRequestAnalyser().removeOngoingPublications(cacheEvictionBean);
 				    cacheEvictionBean.setProcessed();
-				    if(cacheEvictionBean.getPublicationId() > -1)
+				    //if(cacheEvictionBean.getPublicationId() > -1)
 				    	RequestAnalyser.getRequestAnalyser().addPublication(cacheEvictionBean);
 				}
 			} 
