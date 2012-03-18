@@ -103,7 +103,14 @@ public final class DeliverContextListener implements ServletContextListener
 				cacheController.setCacheExpireInterval(Integer.parseInt(intervalString));
 			
 			//System.out.println("Clearing previous filebased page cache");
-        	CacheController.clearFileCaches("pageCache");
+        	try 
+        	{
+        		CacheController.clearFileCaches("pageCache");
+        	}
+        	catch (Exception e) 
+        	{
+				logger.error("Could not clear file cache:" + e.getMessage());
+			}
 
 			//Starting the cache-expire-thread
 			if(cacheController.getExpireCacheAutomatically())
