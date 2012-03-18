@@ -1870,13 +1870,14 @@ public class ContentVersionController extends BaseController
 			                List<ContentVersionVO> relatedContentVersions = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVOIfInState(relatedContentVO.getId(), stateId, db);
 			                logger.info("relatedContentVersions:" + relatedContentVersions.size());
 			                
-			                Iterator relatedContentVersionsIterator = relatedContentVersions.iterator();
+			                Iterator<ContentVersionVO> relatedContentVersionsIterator = relatedContentVersions.iterator();
 			                while(relatedContentVersionsIterator.hasNext())
 			                {
-			                    ContentVersion relatedContentVersion = (ContentVersion)relatedContentVersionsIterator.next();
-				                if(relatedContentVersion != null && content.getRepository().getId().intValue() == relatedContentVersion.getOwningContent().getRepository().getId().intValue())
+			                    ContentVersionVO relatedContentVersion = relatedContentVersionsIterator.next();
+			                    ContentVO contentVO = ContentController.getContentController().getContentVOWithId(relatedContentVersion.getContentId(), db);
+				                if(relatedContentVersion != null && content.getRepository().getId().intValue() == contentVO.getRepositoryId().intValue())
 				                {
-				        	        contentVersionVOList.add(relatedContentVersion.getValueObject());
+				        	        contentVersionVOList.add(relatedContentVersion);
 				                    logger.info("Added:" + relatedContentVersion.getId());
 					            }
 			
