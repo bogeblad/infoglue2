@@ -592,7 +592,13 @@ public class ContentDeliveryController extends BaseDeliveryController
 			}
 			else if(smallestContentVersionVOCandidate != null)
 			{
-				contentVersionVO = (ContentVersionVO)getVOWithId(SmallContentVersionImpl.class, ((SmallestContentVersionVO)smallestContentVersionVOCandidate).getId(), db);
+				if(object instanceof SmallestContentVersionVO)
+				{
+					logger.warn("Object was instanceof SmallestContentVersionVO for key:" + versionKey);
+					contentVersionVO = (ContentVersionVO)getVOWithId(SmallContentVersionImpl.class, ((SmallestContentVersionVO)smallestContentVersionVOCandidate).getId(), db);
+				}
+				else
+					contentVersionVO = (ContentVersionVO)smallestContentVersionVOCandidate;
 	        	
 				CacheController.cacheObjectInAdvancedCache("contentVersionCache", versionKey, contentVersionVO, new String[]{"contentVersion_" + contentVersionVO.getId(), "content_" + contentVersionVO.getContentId()}, true);
 			}
