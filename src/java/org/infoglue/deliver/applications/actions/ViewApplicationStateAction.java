@@ -29,7 +29,6 @@ import java.net.InetAddress;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -40,13 +39,11 @@ import java.util.Set;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.swing.event.EventListenerList;
 
 import org.apache.log4j.Appender;
 import org.apache.log4j.Category;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
-import org.apache.log4j.RollingFileAppender;
 import org.apache.pluto.PortletContainerServices;
 import org.apache.pluto.portalImpl.services.ServiceManager;
 import org.apache.pluto.portalImpl.services.portletentityregistry.PortletEntityRegistry;
@@ -55,16 +52,17 @@ import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.AccessRightController;
 import org.infoglue.cms.controllers.kernel.impl.simple.CastorDatabaseService;
 import org.infoglue.cms.controllers.kernel.impl.simple.ServerNodeController;
+import org.infoglue.cms.controllers.kernel.impl.simple.UserControllerProxy;
 import org.infoglue.cms.controllers.kernel.impl.simple.WorkflowController;
+import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.security.AuthenticationModule;
 import org.infoglue.cms.security.InfoGluePrincipal;
 import org.infoglue.cms.util.CmsPropertyHandler;
 import org.infoglue.cms.util.CmsSessionContextListener;
 import org.infoglue.cms.util.sorters.AverageInvokingTimeComparator;
 import org.infoglue.deliver.applications.databeans.CacheEvictionBean;
-import org.infoglue.deliver.invokers.ComponentBasedHTMLPageInvoker;
+import org.infoglue.deliver.controllers.kernel.impl.simple.ExtranetController;
 import org.infoglue.deliver.portal.ServletConfigContainer;
-import org.infoglue.deliver.portal.services.PortletEntityRegistryServiceDBImpl;
 import org.infoglue.deliver.util.CacheController;
 import org.infoglue.deliver.util.RequestAnalyser;
 
@@ -163,55 +161,191 @@ public class ViewApplicationStateAction extends InfoGlueAbstractAction
 		String returnValue = null;
 		
         boolean allowAccess = false;
-        if(!ServerNodeController.getController().getIsIPAllowed(this.getRequest()))
+        try
         {
-			Principal principal = (Principal)this.getHttpSession().getAttribute("infogluePrincipal");
-        	logger.info("principal:" + principal);
-        	Principal anonymousPrincipal = this.getAnonymousPrincipal();
-        	if(principal == null || principal.getName().equals(anonymousPrincipal.getName()))
-        	{
-            	this.getHttpSession().removeAttribute("infogluePrincipal");
-    		    this.getHttpSession().removeAttribute("infoglueRemoteUser");
-    		    this.getHttpSession().removeAttribute("cmsUserName");
-
-    		    String redirectUrl = getRedirectUrl(getRequest(), getResponse());								
-    			getResponse().sendRedirect(redirectUrl);
-    			returnValue = NONE;
-        	}
-        	else
-        	{
-				if(AccessRightController.getController().getIsPrincipalAuthorized((InfoGluePrincipal)principal, "ViewApplicationState.Read", false, true))
-				{
-					allowAccess = true;
-				}
-				else
-				{
-		        	logger.warn("A user from an IP(" + this.getRequest().getRemoteAddr() + ") and username [" + principal + "] was denied access to ViewApplicationState.");
-
-		        	this.getHttpSession().removeAttribute("infogluePrincipal");
+        	//System.out.println("IPAllowed:" + ServerNodeController.getController().getIsIPAllowed(this.getRequest()));
+	        if(!ServerNodeController.getController().getIsIPAllowed(this.getRequest()))
+	        {
+	        	Principal principal = getPrincipal();
+	        	//System.out.println("principal:" + principal);
+	        	if(principal == null)
+	        		principal = (Principal)this.getHttpSession().getAttribute("infogluePrincipal");
+	        	
+	        	logger.info("principal:" + principal);
+	        	Principal anonymousPrincipal = this.getAnonymousPrincipal();
+	        	if(principal == null || principal.getName().equals(anonymousPrincipal.getName()))
+	        	{
+	            	this.getHttpSession().removeAttribute("infogluePrincipal");
 	    		    this.getHttpSession().removeAttribute("infoglueRemoteUser");
 	    		    this.getHttpSession().removeAttribute("cmsUserName");
-
-	    		    this.getResponse().setContentType("text/plain");
-		            this.getResponse().setStatus(HttpServletResponse.SC_FORBIDDEN);
-		            this.getResponse().getWriter().println("You have no access to this view as you don't have ViewApplicationState.Read-rights.");				
+	
+	    		    String redirectUrl = getRedirectUrl(getRequest(), getResponse());								
+	    			getResponse().sendRedirect(redirectUrl);
+	    			returnValue = NONE;
+	        	}
+	        	else
+	        	{
+					if(AccessRightController.getController().getIsPrincipalAuthorized((InfoGluePrincipal)principal, "ViewApplicationState.Read", false, true))
+					{
+						allowAccess = true;
+					}
+					else
+					{
+			        	logger.warn("A user from an IP(" + this.getRequest().getRemoteAddr() + ") and username [" + principal + "] was denied access to ViewApplicationState.");
+	
+			        	this.getHttpSession().removeAttribute("infogluePrincipal");
+		    		    this.getHttpSession().removeAttribute("infoglueRemoteUser");
+		    		    this.getHttpSession().removeAttribute("cmsUserName");
+	
+		    		    this.getResponse().setContentType("text/plain");
+			            this.getResponse().setStatus(HttpServletResponse.SC_FORBIDDEN);
+			            this.getResponse().getWriter().println("You have no access to this view as you don't have ViewApplicationState.Read-rights.");				
+			            returnValue = NONE;
+					}
+	        	}
+	        	
+			    if(!allowAccess)
+		        {
+		        	logger.warn("A user from an IP(" + this.getRequest().getRemoteAddr() + ") and username [" + principal + "] was denied access to ViewApplicationState.");
+			    	this.getResponse().setContentType("text/plain");
+			        this.getResponse().setStatus(HttpServletResponse.SC_FORBIDDEN);
+		            this.getResponse().getWriter().println("You have no access to this view - talk to your administrator if you should.");				
 		            returnValue = NONE;
-				}
-        	}
-        	
-		    if(!allowAccess)
-	        {
-	        	logger.warn("A user from an IP(" + this.getRequest().getRemoteAddr() + ") and username [" + principal + "] was denied access to ViewApplicationState.");
-		    	this.getResponse().setContentType("text/plain");
-		        this.getResponse().setStatus(HttpServletResponse.SC_FORBIDDEN);
-	            this.getResponse().getWriter().println("You have no access to this view - talk to your administrator if you should.");				
-	            returnValue = NONE;
+		        }
 	        }
         }
-
+        catch (Exception e) 
+        {
+        	logger.warn("Error checking for access: " + e.getMessage());
+		}
 		return returnValue;
 	}
 
+	
+	/**
+	 * This method validates that the current page is accessible to the requesting user.
+	 * It fetches information from the page metainfo about if the page is protected and if it is 
+	 * validates the users credentials against the extranet database,
+	 */
+	
+	public Principal getPrincipal() throws SystemException, Exception
+	{
+		Principal principal = (Principal)this.getHttpSession().getAttribute("infogluePrincipal");
+		logger.info("principal:" + principal);
+
+		try
+		{
+			if(principal == null || CmsPropertyHandler.getAnonymousUser().equalsIgnoreCase(principal.getName()))
+			{
+				if(logger.isInfoEnabled())
+					logger.info("Principal in session was:" + principal + " - we clear it as only cms-users are allowed.");
+				//System.out.println("principal1:" + principal);
+				if(principal != null)
+				{
+					principal = null;
+					this.getHttpSession().removeAttribute("infogluePrincipal");
+				    this.getHttpSession().removeAttribute("infoglueRemoteUser");
+				    this.getHttpSession().removeAttribute("cmsUserName");
+
+					Map status = new HashMap();
+					status.put("redirected", new Boolean(false));
+					principal = AuthenticationModule.getAuthenticationModule(null, this.getOriginalFullURL(), getRequest(), false).loginUser(getRequest(), getResponse(), status);
+					Boolean redirected = (Boolean)status.get("redirected");
+					if(redirected != null && redirected.booleanValue())
+					{
+					    this.getHttpSession().removeAttribute("infogluePrincipal");
+					    principal = null;
+					    return principal;
+					}
+					else if(principal != null)
+					{
+					    this.getHttpSession().setAttribute("infogluePrincipal", principal);
+						this.getHttpSession().setAttribute("infoglueRemoteUser", principal.getName());
+						this.getHttpSession().setAttribute("cmsUserName", principal.getName());
+					}
+				}
+				//System.out.println("principal2:" + principal);
+				
+			    if(principal == null)
+			        principal = loginWithRequestArguments();
+			    //System.out.println("principal3:" + principal);
+
+			    if(principal == null || CmsPropertyHandler.getAnonymousUser().equalsIgnoreCase(principal.getName()))
+			    {
+					String ssoUserName = AuthenticationModule.getAuthenticationModule(null, this.getOriginalFullURL(), this.getRequest(), false).getSSOUserName(getRequest());
+					//System.out.println("ssoUserName:" + ssoUserName);
+					if(ssoUserName != null)
+					{
+						principal = UserControllerProxy.getController().getUser(ssoUserName);
+						if(principal != null)
+						{
+						    this.getHttpSession().setAttribute("infogluePrincipal", principal);
+							this.getHttpSession().setAttribute("infoglueRemoteUser", principal.getName());
+							this.getHttpSession().setAttribute("cmsUserName", principal.getName());
+						}
+					}
+			    }							
+			}
+		}
+		catch(Exception e)
+		{
+			logger.error("An error occurred:" + e.getMessage(), e);
+		}
+		
+		return principal;
+	}
+	
+	/**
+	 * This method (if enabled in deliver.properties) checks for arguments in the request
+	 * and logs the user in if available.
+	 * 
+	 * @return Principal
+	 * @throws Exception
+	 */
+	private Principal loginWithRequestArguments() throws Exception
+	{
+	    Principal principal = null;
+	    
+        String userName = this.getRequest().getParameter("j_username");
+	    String password = this.getRequest().getParameter("j_password");
+	    String ticket 	= null; //this.getRequest().getParameter("ticket");
+	    //System.out.println("userName:" + userName);
+	    //System.out.println("password:" + password);
+	    //System.out.println("ticket:" + ticket);
+		
+		if(ticket != null)
+	    {
+			//System.out.println("ticket used in loginWithRequestArguments:" + ticket);
+		    Map arguments = new HashMap();
+		    arguments.put("ticket", ticket);
+		    
+			principal = ExtranetController.getController().getAuthenticatedPrincipal(arguments, this.getRequest());
+			if(principal != null)
+			{
+			    this.getHttpSession().setAttribute("infogluePrincipal", principal);
+				this.getHttpSession().setAttribute("infoglueRemoteUser", principal.getName());
+				this.getHttpSession().setAttribute("cmsUserName", principal.getName());
+			}
+	    }		    
+	    else if(userName != null && password != null)
+	    {
+		    Map arguments = new HashMap();
+		    arguments.put("j_username", userName);
+		    arguments.put("j_password", password);
+		    
+			principal = ExtranetController.getController().getAuthenticatedPrincipal(arguments, this.getRequest());
+			if(principal != null)
+			{
+			    this.getHttpSession().setAttribute("infogluePrincipal", principal);
+				this.getHttpSession().setAttribute("infoglueRemoteUser", principal.getName());
+				this.getHttpSession().setAttribute("cmsUserName", principal.getName());
+			}
+	    }
+	    
+	    return principal;
+	}
+
+	
     /**
      * This action allows clearing of the given cache manually.
      */
@@ -259,6 +393,7 @@ public class ViewApplicationStateAction extends InfoGlueAbstractAction
         return "cleared";
     }
     */
+
 
     /**
      * This action allows clearing of the given cache manually.
@@ -776,11 +911,18 @@ public class ViewApplicationStateAction extends InfoGlueAbstractAction
         List<CacheEvictionBean> publications = RequestAnalyser.getRequestAnalyser().getLatestPublications();
 
         states.add(getList("<br/><strong>Latest publications (Finished, Timestamp, user, object name)</strong>", "&nbsp;"));
-        Iterator<CacheEvictionBean> publicationsIterator = publications.iterator();
+        
+        List<CacheEvictionBean> publicationsToShow = new ArrayList<CacheEvictionBean>();
+        publicationsToShow.addAll(publications);
+    	Collections.reverse(publicationsToShow);
+        if(publications.size() > 20)
+        	publicationsToShow = publicationsToShow.subList(0, 20);
+        
+        Iterator<CacheEvictionBean> publicationsIterator = publicationsToShow.iterator();
         while(publicationsIterator.hasNext())
         {
         	CacheEvictionBean publication = publicationsIterator.next();
-        	states.add(getList("PublicationId: " + publication.getPublicationId() + ", User: " + publication.getUserName() + ", Finished: " + formatter.formatDate(publication.getProcessedTimestamp(), "yyyy-MM-dd HH:mm:ss") + ", Initiated: " + formatter.formatDate(publication.getTimestamp(), "yyyy-MM-dd HH:mm:ss") + ", Received: " + formatter.formatDate(publication.getReceivedTimestamp(), "yyyy-MM-dd HH:mm:ss"), ""));
+        	states.add(getList("PublicationId: " + publication.getPublicationId() + ", User: " + publication.getUserName() + ", Finished: " + formatter.formatDate(publication.getProcessedTimestamp(), "yyyy-MM-dd HH:mm:ss") + ", Initiated: " + formatter.formatDate(publication.getTimestamp(), "yyyy-MM-dd HH:mm:ss") + ", Received: " + formatter.formatDate(publication.getReceivedTimestamp(), "yyyy-MM-dd HH:mm:ss") + ", Entity: " + publication.getClassName(), ""));
         }
 		        
     	getApplicationAttributes();
