@@ -180,7 +180,8 @@ public class CacheController extends Thread
     }
     public static void setForcedCacheEvictionMode(Boolean cemValue) 
     {
-    	logger.warn("Forcing quick cache eviction...");
+    	if(logger.isInfoEnabled())
+    		logger.info("Forcing quick cache eviction...");
         cem.set(cemValue);
     }
     
@@ -2500,28 +2501,38 @@ public class CacheController extends Thread
             	//System.out.println("subCacheDir:" + subCacheDir.getName());
             	if(subCacheDir.isDirectory() && subCacheDir.getName().equals(cacheName))
             	{
-                	File[] subSubCacheFiles = subCacheDir.listFiles();
-                	for(int j=0; j<subSubCacheFiles.length; j++)
-                	{
-                		File subSubCacheDir = subSubCacheFiles[j];
-                    	if(subSubCacheDir.isDirectory())
-                    	{
-                        	File[] cacheFiles = subSubCacheDir.listFiles();
-                        	for(int k=0; k<cacheFiles.length; k++)
-                        	{
-                        		File cacheFile = cacheFiles[k];
-                        		//System.out.println("cacheFile:" + cacheFile.getName());
-                    			cacheFile.delete();
-                        	}
+            		try
+            		{
+	                	File[] subSubCacheFiles = subCacheDir.listFiles();
+	                	for(int j=0; j<subSubCacheFiles.length; j++)
+	                	{
+	                		File subSubCacheDir = subSubCacheFiles[j];
+	                    	if(subSubCacheDir.isDirectory())
+	                    	{
+	                        	File[] cacheFiles = subSubCacheDir.listFiles();
+	                        	if(cacheFiles != null)
+	                        	{
+		                        	for(int k=0; k<cacheFiles.length; k++)
+		                        	{
+		                        		File cacheFile = cacheFiles[k];
+		                        		//System.out.println("cacheFile:" + cacheFile.getName());
+		                    			cacheFile.delete();
+		                        	}
+	                        	}
+	                        	
+	                    		subCacheDir.delete();
+	                    	}			                
+	
+	                		//System.out.println("cacheFile:" + cacheFile.getName());
+	                    	subSubCacheDir.delete();
+	                	}
+	            		subCacheDir.delete();
 
-                    		subCacheDir.delete();
-                    	}			                
-
-                		//System.out.println("cacheFile:" + cacheFile.getName());
-                    	subSubCacheDir.delete();
-                	}
-
-            		subCacheDir.delete();
+            		}
+            		catch (Exception e) 
+            		{
+            			logger.warn("It seems the cache dir: " + cacheName + " was allready empty or removed. Error: " + e.getMessage());
+					}
             	}
             	if(cacheName.equals("pageCache") && numberOfPageCacheFiles.get() > 0)
             		numberOfPageCacheFiles.decrementAndGet();
