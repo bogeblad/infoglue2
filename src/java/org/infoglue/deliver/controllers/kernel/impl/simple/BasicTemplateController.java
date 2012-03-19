@@ -1814,7 +1814,10 @@ public class BasicTemplateController implements TemplateController
 		}
 		catch(Exception e)
 		{
-			logger.warn("\nError on url: " + this.getOriginalFullURL() + "\n    ComponentName=[ " + this.getComponentLogic().getInfoGlueComponent().getName() + " ]\nAn error occurred trying to get attributeName=" + attributeName + " on content " + this.contentId + "\nReason:" + e.getMessage());
+			if(this.getComponentLogic() != null && this.getComponentLogic().getInfoGlueComponent() != null)
+				logger.warn("\nError on url: " + this.getOriginalFullURL() + "\n    ComponentName=[ " + this.getComponentLogic().getInfoGlueComponent().getName() + " ]\nAn error occurred trying to get attributeName=" + attributeName + " on content " + this.contentId + "\nReason:" + e.getMessage());
+			else
+				logger.warn("\nError on url: " + this.getOriginalFullURL() + "\n    ComponentName=[ null - how? ]\nAn error occurred trying to get attributeName=" + attributeName + " on content " + this.contentId + "\nReason:" + e.getMessage());
 			//logger.error("\nError on url: " + this.getOriginalFullURL() + "\nAn error occurred trying to get attributeName=" + attributeName + " on content " + contentId + "\nReason:" + e.getMessage(), e);
 		}
 				
@@ -1915,7 +1918,10 @@ public class BasicTemplateController implements TemplateController
 		}
 		catch(Exception e)
 		{
-			logger.warn("\nError on url: " + this.getOriginalFullURL() + "\n    ComponentName=[ " + this.getComponentLogic().getInfoGlueComponent().getName() + " ]\nAn error occurred trying to get attributeName=" + attributeName + " on content " + this.contentId + "\nReason:" + e.getMessage());
+			if(this.getComponentLogic() != null && this.getComponentLogic().getInfoGlueComponent() != null)
+				logger.warn("\nError on url: " + this.getOriginalFullURL() + "\n    ComponentName=[ " + this.getComponentLogic().getInfoGlueComponent().getName() + " ]\nAn error occurred trying to get attributeName=" + attributeName + " on content " + this.contentId + "\nReason:" + e.getMessage());
+			else
+				logger.warn("\nError on url: " + this.getOriginalFullURL() + "\n    ComponentName=[ null - how? ]\nAn error occurred trying to get attributeName=" + attributeName + " on content " + this.contentId + "\nReason:" + e.getMessage());
 			//logger.error("\nError on url: " + this.getOriginalFullURL() + "\nAn error occurred trying to get attributeName=" + attributeName + " on content " + contentId + "\nReason:" + e.getMessage(), e);
 		}
 				
@@ -1958,7 +1964,10 @@ public class BasicTemplateController implements TemplateController
 		}
 		catch(Exception e)
 		{
-			logger.warn("\nError on url: " + this.getOriginalFullURL() + "\n    ComponentName=[ " + this.getComponentLogic().getInfoGlueComponent().getName() + " ]\nAn error occurred trying to get attributeName=" + attributeName + " on content " + this.contentId + "\nReason:" + e.getMessage());
+			if(this.getComponentLogic() != null && this.getComponentLogic().getInfoGlueComponent() != null)
+				logger.warn("\nError on url: " + this.getOriginalFullURL() + "\n    ComponentName=[ " + this.getComponentLogic().getInfoGlueComponent().getName() + " ]\nAn error occurred trying to get attributeName=" + attributeName + " on content " + this.contentId + "\nReason:" + e.getMessage());
+			else
+				logger.warn("\nError on url: " + this.getOriginalFullURL() + "\n    ComponentName=[ null - how? ]\nAn error occurred trying to get attributeName=" + attributeName + " on content " + this.contentId + "\nReason:" + e.getMessage());
 			//logger.error("\nError on url: " + this.getOriginalFullURL() + "\nAn error occurred trying to get attributeName=" + attributeName + " on content version" + version.getId() + "\nReason:" + e.getMessage(), e);
 		}
 	
