@@ -295,7 +295,8 @@ public class ViewPageFilter implements Filter
 	            catch (SystemException e) 
 	            {
 	                BaseDeliveryController.rollbackTransaction(db);
-	                logger.error("Failed to resolve siteNodeId", e);
+	                logger.error("Failed to resolve siteNodeId:" + e.getMessage());
+	                logger.warn("Failed to resolve siteNodeId:" + e.getMessage(), e);
 	                throw new ServletException(e);
 	            } 
 	            catch (Exception e) 
