@@ -563,7 +563,7 @@ public class ContentDeliveryController extends BaseDeliveryController
 		ContentVersionVO contentVersionVO = null;
 		
 	    String versionKey = "" + contentId + "_" + languageId + "_" + operatingMode + "_contentVersionVO";
-		
+
 		Object object = CacheController.getCachedObjectFromAdvancedCache("contentVersionCache", versionKey);
 		if(object instanceof NullObject)
 		{
@@ -592,7 +592,7 @@ public class ContentDeliveryController extends BaseDeliveryController
 			}
 			else if(smallestContentVersionVOCandidate != null)
 			{
-				if(object instanceof SmallestContentVersionVO)
+				if(smallestContentVersionVOCandidate instanceof SmallestContentVersionVO)
 				{
 					logger.warn("Object was instanceof SmallestContentVersionVO for key:" + versionKey);
 					contentVersionVO = (ContentVersionVO)getVOWithId(SmallContentVersionImpl.class, ((SmallestContentVersionVO)smallestContentVersionVOCandidate).getId(), db);
