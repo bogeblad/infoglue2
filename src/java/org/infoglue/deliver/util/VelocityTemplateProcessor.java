@@ -184,44 +184,8 @@ public class VelocityTemplateProcessor
 	    } else {
 	        fileName = "Template_" + templateAsString.hashCode() + ".jsp";
 	    }
-	    final File template = new File(dir , fileName);
+	    final File template = new File(dir, fileName);
 
-	    /*
-	     * This is untested and work in progress. per jonsson 2008-03-06
-	     * 
-	    FileOutputStream fileOutputStream = null;
-	    FileChannel channel = null;
-	    FileLock fileLock = null;
-	    try {
-	        fileOutputStream = new FileOutputStream(template, false);
-	        channel = fileOutputStream.getChannel();
-	        // The .lock() is blocking until the lock can be fetched.
-	        // the .tryLock() is not blocking.
-	        fileLock = channel.lock();
-	        logger.info("Lock aquired: + " + fileLock);
-	        if ( fileLock != null && fileLock.isValid()) {
-	            if ( !template.exists() ) {
-        	        final PrintWriter fpw = new PrintWriter(fileOutputStream);
-        	        fpw.print(templateAsString);    
-        	        fpw.flush();
-        	        fpw.close();
-        	        logger.info("templet written: " + templateAsString);
-        	        fileLock.release();
-	            }
-	        }
-	    } catch ( IOException ioe ) {
-	        // Do nothing, file exists.
-	        ioe.printStackTrace();
-	    } finally {
-	        if ( fileOutputStream != null ) {
-	            fileOutputStream.close();
-	        }
-	        if ( channel != null) { 
-	            channel.close();
-	        }
-	    }
-	    */
-	    
 	    synchronized (fileName.intern()) {
 		    if(!template.exists()) {
 		        final PrintWriter fpw = new PrintWriter(template);
