@@ -243,9 +243,10 @@ public class UpdateContentVersionAction extends ViewContentVersionAction
 		}
 		catch (Exception e) 
 		{
-			e.printStackTrace();
+			logger.warn("Error in UpdateContentVersion.doStandaloneXML: " + e.getMessage());
+			if(logger.isInfoEnabled())
+				logger.info("Error in UpdateContentVersion.doStandaloneXML: " + e.getMessage(), e);
 		}
-		System.out.println("Done standalone XML...");
 		
 		return NONE;
 	}
