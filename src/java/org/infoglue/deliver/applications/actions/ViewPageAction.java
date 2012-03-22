@@ -439,7 +439,8 @@ public class ViewPageAction extends InfoGlueAbstractAction
 			extraInformation += "UserAgent: " + getRequest().getHeader("User-Agent") + "\n";
 			extraInformation += "User IP: " + getRequest().getRemoteAddr();
 
-			logger.error("An error occurred so we should not complete the transaction:" + e.getMessage() + "\n" + extraInformation, e);
+			logger.error("An error occurred (se warning log for further info):" + e.getMessage());
+			logger.warn("An error occurred so we should not complete the transaction:" + e.getMessage() + "\n" + extraInformation, e);
 			rollbackTransaction(dbWrapper.getDatabase());
 
 			getResponse().setContentType("text/html; charset=UTF-8");
