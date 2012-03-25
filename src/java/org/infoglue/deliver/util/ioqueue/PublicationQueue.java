@@ -41,6 +41,8 @@ import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.infoglue.cms.applications.common.VisualFormatter;
+import org.infoglue.cms.controllers.kernel.impl.simple.TransactionHistoryController;
+import org.infoglue.cms.util.NotificationMessage;
 import org.infoglue.deliver.util.LiveInstanceMonitor;
 
 /*
@@ -172,6 +174,10 @@ public class PublicationQueue implements Runnable
 								String response = postToUrl(publicationQueueBean.getUrlAddress(), publicationQueueBean.getRequestParameters());
 								if(logger.isInfoEnabled())
 									logger.info("response:" + response);
+																
+								NotificationMessage notificationMessage = new NotificationMessage("Publishing notification solved", "Publication", "SYSTEM", NotificationMessage.LIVE_NOTIFICATION_SOLVED, "" + publicationQueueBean.getRequestParameters().get("0.objectId"), "" + serverBaseUrl);
+								TransactionHistoryController.getController().create(notificationMessage);
+
 								beansIterator.remove();
 							}
 							catch(Exception e)
