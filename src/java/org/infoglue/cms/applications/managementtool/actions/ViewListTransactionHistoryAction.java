@@ -82,11 +82,13 @@ public class ViewListTransactionHistoryAction extends InfoGlueAbstractAction
 			typeFilterFull.add("301");
 			typeFilterFull.add("302");
 			typeFilterFull.add("303");
+			typeFilterFull.add("305");
 		}
 		else if(typeFilter != null && typeFilter.equals("surv"))
 		{
 			typeFilterFull = new ArrayList();
 			typeFilterFull.add("304");
+			typeFilterFull.add("306");
 		}
 		
 		

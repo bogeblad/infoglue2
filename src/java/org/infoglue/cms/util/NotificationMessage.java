@@ -41,6 +41,8 @@ public class NotificationMessage
 	public final static int LIVE_NOTIFICATION_QUEUED 	= 302;
 	public final static int LIVE_NOTIFICATION_FAILED 	= 303;
 	public final static int SERVER_UNAVAILABLE			= 304;
+	public final static int LIVE_NOTIFICATION_SOLVED 	= 305;
+	public final static int SERVER_UNAVAILABLE_SOLVED	= 306;
 
 	public final static String TRANS_CREATE_TEXT 		= "Create";
 	public final static String TRANS_UPDATE_TEXT 		= "Update";
@@ -53,9 +55,11 @@ public class NotificationMessage
 	public final static String AUTHENTICATION_FAILED_TEXT   	= "Authentication failed";
 	public final static String AUTHORIZATION_FAILED_TEXT   		= "Authorization failed";
 
+	public final static String LIVE_NOTIFICATION_SOLVED_TEXT 	= "Publication republished";
 	public final static String LIVE_NOTIFICATION_QUEUED_TEXT   	= "Publication queued";
 	public final static String LIVE_NOTIFICATION_FAILED_TEXT   	= "Publication failed";
 	public final static String SERVER_UNAVAILABLE_TEXT   		= "Server unavailable";
+	public final static String SERVER_UNAVAILABLE_SOLVED_TEXT   = "Server available again";
 
 	private long timeStamp = System.currentTimeMillis();
 	private String name;
@@ -136,8 +140,12 @@ public class NotificationMessage
 				return LIVE_NOTIFICATION_QUEUED_TEXT;
 			case (LIVE_NOTIFICATION_FAILED):
 				return LIVE_NOTIFICATION_FAILED_TEXT;
+			case (LIVE_NOTIFICATION_SOLVED):
+				return LIVE_NOTIFICATION_SOLVED_TEXT;
 			case (SERVER_UNAVAILABLE):
 				return SERVER_UNAVAILABLE_TEXT;
+			case (SERVER_UNAVAILABLE_SOLVED):
+				return SERVER_UNAVAILABLE_SOLVED_TEXT;
 		}
 		return "unknown - map " + transactionType + " to correct text";
 	}
