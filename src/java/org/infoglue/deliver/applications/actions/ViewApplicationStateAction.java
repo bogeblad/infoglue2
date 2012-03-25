@@ -788,7 +788,7 @@ public class ViewApplicationStateAction extends InfoGlueAbstractAction
 
         return "successOngoingPublications";
     }
-    
+
     public List<CacheEvictionBean> getOngoingPublications()
     {
     	return RequestAnalyser.getRequestAnalyser().getOngoingPublications();
@@ -870,6 +870,17 @@ public class ViewApplicationStateAction extends InfoGlueAbstractAction
         
         return "successCacheDetailsStatistics";
     }
+    
+    public String doClearPublications() throws Exception
+    {
+    	String returnValue = handleAccess(this.getRequest());
+    	if(returnValue != null)
+    		return returnValue;
+        
+    	RequestAnalyser.getRequestAnalyser().resetLatestPublications();
+    	
+        return "cleared";
+    }
 
     private String getRedirectUrl(HttpServletRequest request, HttpServletResponse response) throws ServletException, Exception 
   	{
@@ -900,9 +911,9 @@ public class ViewApplicationStateAction extends InfoGlueAbstractAction
         addPermGenStatistics(states);
         states.add(getList("Number of sessions <br/>(remains for " + (Integer.parseInt(sessionTimeout) / 60) + " minutes after last request)", "" + CmsSessionContextListener.getActiveSessions()));
         states.add(getList("Number of request being handled now", "" + RequestAnalyser.getRequestAnalyser().getNumberOfCurrentRequests()));
-        states.add(getList("Number of active request being handled now", "" + RequestAnalyser.getRequestAnalyser().getNumberOfActiveRequests()));
+        states.add(getList("Number of active request being handled now", "" + RequestAnalyser.getRequestAnalyser().getNumberOfActiveRequests() + " <a href=\"ViewApplicationState!decreaseActiveCount.action\">Decrease (experts)</a>"));
         states.add(getList("Total number of requests handled", "" + RequestAnalyser.getRequestAnalyser().getTotalNumberOfRequests()));
-        states.add(getList("Average processing time per request (ms)", "" + RequestAnalyser.getRequestAnalyser().getAverageElapsedTime()));
+        states.add(getList("Average processing time per request (ms)", "" + RequestAnalyser.getRequestAnalyser().getAverageElapsedTime() + " <a href=\"ViewApplicationState!resetAverageResponseTimeStatistics.action\">(Reset)</a>"));
         states.add(getList("Slowest request (ms)", "" + RequestAnalyser.getRequestAnalyser().getMaxElapsedTime()));
         states.add(getList("Number of pages in the statistics", RequestAnalyser.getAllPageUrls().size()));
 
@@ -922,9 +933,11 @@ public class ViewApplicationStateAction extends InfoGlueAbstractAction
         while(publicationsIterator.hasNext())
         {
         	CacheEvictionBean publication = publicationsIterator.next();
-        	states.add(getList("PublicationId: " + publication.getPublicationId() + ", User: " + publication.getUserName() + ", Finished: " + formatter.formatDate(publication.getProcessedTimestamp(), "yyyy-MM-dd HH:mm:ss") + ", Initiated: " + formatter.formatDate(publication.getTimestamp(), "yyyy-MM-dd HH:mm:ss") + ", Received: " + formatter.formatDate(publication.getReceivedTimestamp(), "yyyy-MM-dd HH:mm:ss") + ", Entity: " + publication.getClassName(), ""));
+        	states.add(getList("<a href=\"javascript:void(0);\" onclick=\"window.open('" + CmsPropertyHandler.getCmsFullBaseUrl() + "/ViewPublications!showPublicationDetails.action?publicationId=" + publication.getPublicationId() + "', 'Publication details', 'width=900,height=600');\">PublicationId: " + publication.getPublicationId() + ", User: " + publication.getUserName() + ", Finished: " + formatter.formatDate(publication.getProcessedTimestamp(), "yyyy-MM-dd HH:mm:ss") + ", Initiated: " + formatter.formatDate(publication.getTimestamp(), "yyyy-MM-dd HH:mm:ss") + ", Received: " + formatter.formatDate(publication.getReceivedTimestamp(), "yyyy-MM-dd HH:mm:ss") + ", Entity: " + publication.getClassName().replaceAll(".*\\.", "") + "</a>", ""));
         }
-		        
+
+        states.add(getList("<a href=\"ViewApplicationState!clearPublications.action\">Clear (" + publications.size() + " publications done since last reset)</a>", "&nbsp;"));
+
     	getApplicationAttributes();
     	
 		//this.getHttpSession().invalidate();

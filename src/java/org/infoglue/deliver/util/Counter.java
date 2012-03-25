@@ -101,6 +101,15 @@ public class Counter
         return latestPublicationsList;
     }
 
+    static void resetLatestPublications()
+    {
+    	synchronized (latestPublications)
+		{
+    		latestPublications.clear();
+    		numberOfPublicationsSinceStart = 0;
+		}
+    }
+
     static List<CacheEvictionBean> getOngoingPublications()
     {
     	List<CacheEvictionBean> ongoingPublicationsList = new ArrayList<CacheEvictionBean>();
@@ -114,17 +123,22 @@ public class Counter
 		}
         return ongoingPublicationsList;
     }
-    
+
     static Integer getNumberOfPublicationsSinceStart()
     {
-    	return numberOfPublicationsSinceStart;
+    	synchronized (latestPublications)
+		{
+    		return latestPublications.size();
+		}
+    	//return numberOfPublicationsSinceStart;
     }
-
+/*
     static void resetNumberOfPublicationsSinceStart()
     {
-    	numberOfPublicationsSinceStart = 0;
+    	resetLatestPublications();
+    	//numberOfPublicationsSinceStart = 0;
     }
-
+*/
     synchronized static void addPublication(CacheEvictionBean bean)
     {
     	if(bean.getClassName().indexOf("ServerNodeProperties") == -1)
