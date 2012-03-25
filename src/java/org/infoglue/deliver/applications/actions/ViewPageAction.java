@@ -550,13 +550,24 @@ public class ViewPageAction extends InfoGlueAbstractAction
     {
     	boolean isUserRedirected = false;
     	
-		logger.info("Ticket:" + getRequest().getParameter("ticket"));
-		String URI = getRequest().getRequestURI();
+    	String URI = getOriginalURI();
+		if(logger.isInfoEnabled())
+		{
+			logger.info("Ticket:" + getRequest().getParameter("ticket"));
+			logger.info("URI:" + URI);
+		}
+		
 		if(getRequest().getMethod().equalsIgnoreCase("get") && getRequest().getParameter("ticket") != null && getRequest().getParameter("ticket").length() > 0)
 		{
-			String remainingQueryString = HttpUtilities.removeParameter(getRequest().getQueryString(), "ticket");
+			String queryString = getOriginalQueryString();
+			if(logger.isInfoEnabled())
+				logger.info("queryString:" + queryString);
+			String remainingQueryString = HttpUtilities.removeParameter(queryString, "ticket");
+			if(logger.isInfoEnabled())
+				logger.info("remainingQueryString:" + remainingQueryString);
 
-			logger.info("Redirecting to:" + URI + (remainingQueryString != null && !remainingQueryString.equals("") ? "?" + remainingQueryString : ""));
+			if(logger.isInfoEnabled())
+				logger.info("Redirecting to:" + URI + (remainingQueryString != null && !remainingQueryString.equals("") ? "?" + remainingQueryString : ""));
 			getResponse().sendRedirect(URI + (remainingQueryString != null && !remainingQueryString.equals("") ? "?" + remainingQueryString : ""));
 			//return true;
 			isUserRedirected = true;
@@ -1869,6 +1880,20 @@ public class ViewPageAction extends InfoGlueAbstractAction
 		
 		return errorUrl;
   	}
+
+	/**
+	 * This method returns the exact full url excluding query string from the original request - not modified
+	 * @return
+	 */
+	
+	public String getOriginalURI()
+	{
+    	String originalRequestURI = this.getRequest().getParameter("originalRequestURI");
+    	if(originalRequestURI == null || originalRequestURI.length() == 0)
+    		originalRequestURI = this.getRequest().getRequestURI().toString();
+
+    	return originalRequestURI;
+	}
 
 	/**
 	 * This method returns the exact full url excluding query string from the original request - not modified
