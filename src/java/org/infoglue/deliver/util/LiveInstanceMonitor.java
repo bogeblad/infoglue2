@@ -128,6 +128,9 @@ public class LiveInstanceMonitor implements Runnable
     			{
     				newInstanceStatus.put(serverBase, true);
     				newInstanceErrorInformation.remove(serverBase);
+    				
+    				NotificationMessage serverErrorMessage = new NotificationMessage("Server available after being unavailable", serverBase, "SYSTEM", NotificationMessage.SERVER_UNAVAILABLE_SOLVED, "n/a", serverBase);
+					TransactionHistoryController.getController().create(serverErrorMessage);
     			}
     		}
 			catch(Exception e)
@@ -148,9 +151,6 @@ public class LiveInstanceMonitor implements Runnable
 					logger.error("Error adding transaction history log for error: " + e2.getMessage(), e);
 				}
 				
-				logger.error("A deliver instance is down or unresponsive. Tested instance: " + address + ". Message: " + e.getMessage());
-				sendWarningMail(serverBase);
-
 				newInstanceStatus.put(serverBase, false);
 				Integer retries = newInstanceErrorInformation.get(serverBase);
 				if(retries == null)
@@ -158,6 +158,14 @@ public class LiveInstanceMonitor implements Runnable
 					retries = 0;
 				}
 				newInstanceErrorInformation.put(serverBase, retries+1);
+
+				boolean isDivisibleBy10 = retries % 10 == 0;
+				if(retries == 0 || isDivisibleBy10)
+				{
+					logger.error("A deliver instance is down or unresponsive. Tested instance: " + address + ". Message: " + e.getMessage());
+					sendWarningMail(serverBase);
+				}
+				
 				/*
 				if(retries == 20)
 				{
@@ -184,6 +192,9 @@ public class LiveInstanceMonitor implements Runnable
     			{
     				newInstanceStatus.put(serverBase, true);
     				newInstanceErrorInformation.remove(serverBase);
+
+    				NotificationMessage serverErrorMessage = new NotificationMessage("Server available after being unavailable", serverBase, "SYSTEM", NotificationMessage.SERVER_UNAVAILABLE_SOLVED, "n/a", serverBase);
+					TransactionHistoryController.getController().create(serverErrorMessage);
     			}
 			}
 			catch(Exception e)
@@ -203,9 +214,7 @@ public class LiveInstanceMonitor implements Runnable
 				{
 					logger.error("Error adding transaction history log for error: " + e2.getMessage(), e);
 				}
-				
-				logger.error("A deliver instance is down or unresponsive. Tested instance: " + address + ". Message: " + e.getMessage());
-			    sendWarningMail(serverBase);
+								
 				newInstanceStatus.put(serverBase, false);
 				Integer retries = newInstanceErrorInformation.get(serverBase);
 				if(retries == null)
@@ -213,6 +222,13 @@ public class LiveInstanceMonitor implements Runnable
 					retries = 0;
 				}
 				newInstanceErrorInformation.put(serverBase, retries+1);
+				boolean isDivisibleBy10 = retries % 10 == 0;
+				if(retries == 0 || isDivisibleBy10)
+				{
+					logger.error("A deliver instance is down or unresponsive. Tested instance: " + address + ". Message: " + e.getMessage());
+				    sendWarningMail(serverBase);
+				}
+
 				/*
 				if(retries == 20)
 				{
