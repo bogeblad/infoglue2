@@ -591,10 +591,12 @@ public class ViewPageFilter implements Filter
             
             String originalServletPath = ((HttpServletRequest)httpServletRequest).getServletPath();
             String originalRequestURL = ((HttpServletRequest)httpServletRequest).getRequestURL().toString();
+            String originalRequestURI = ((HttpServletRequest)httpServletRequest).getRequestURI();
             String originalQueryString = ((HttpServletRequest)httpServletRequest).getQueryString();
 
             requestParameters.put("originalServletPath", new String[] { originalServletPath });
     		requestParameters.put("originalRequestURL", new String[] { originalRequestURL });
+    		requestParameters.put("originalRequestURI", new String[] { originalRequestURI });
     		if(originalQueryString != null && originalQueryString.length() > 0)
     			requestParameters.put("originalQueryString", new String[] { originalQueryString });
     			
