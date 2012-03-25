@@ -173,7 +173,7 @@
 #set($cnt = 0)
 #foreach($cv in $versions)
 
-	#set( $row = ["$cv.getSiteNodeId() - $cv.getName()", ""] )
+	#set( $row = ["$this.getSiteNodePath($cv.siteNodeId) ($cv.siteNodeId)", ""] )
 	#set($cnt = $cnt + 1)
 	#lvAddRow($row $cnt $cv.getSiteNodeId())
 
