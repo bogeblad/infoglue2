@@ -73,6 +73,7 @@ import org.infoglue.cms.util.RemoteCacheUpdater;
 import org.infoglue.cms.util.mail.MailServiceFactory;
 import org.infoglue.deliver.applications.databeans.CacheEvictionBean;
 import org.infoglue.deliver.util.HttpHelper;
+import org.infoglue.deliver.util.LiveInstanceMonitor;
 import org.infoglue.deliver.util.VelocityTemplateProcessor;
 
 import com.google.gson.Gson;
@@ -915,6 +916,7 @@ public class PublicationController extends BaseController
 		for(String deliverUrl : publicUrls)
 		{
 			String address = deliverUrl + "/UpdateCache!getPublicationState.action?publicationId=" + publicationId;
+			
 			if(address.indexOf("@") > -1)
 			{
 				publicationDetails.add(new String[]{"" + deliverUrl, "Error", "Not valid server url"});
@@ -923,26 +925,99 @@ public class PublicationController extends BaseController
 			{
 				try
 				{
-					HttpHelper httpHelper = new HttpHelper();
-					String response = httpHelper.getUrlContent(address, 2000);
-					Map<String,String> responseMap = httpHelper.toMap(response.trim(), "utf-8");
-					CacheEvictionBean bean = CacheEvictionBean.getCacheEvictionBean(responseMap);
-					if(bean == null)
-						throw new Exception("No information found");
-					
-					VisualFormatter visualFormatter = new VisualFormatter();
-					publicationDetails.add(new String[]{"" + deliverUrl, responseMap.get("status"), "" + visualFormatter.formatDate(bean.getProcessedTimestamp(), "yyyy-MM-dd HH:mm:ss")});
+					Boolean serverStatus = LiveInstanceMonitor.getInstance().getServerStatus(deliverUrl);
+					if(!serverStatus)
+					{
+						publicationDetails.add(new String[]{"" + deliverUrl, "Error", "Server not available for status query"});					
+					}
+					else
+					{
+						HttpHelper httpHelper = new HttpHelper();
+						String response = httpHelper.getUrlContent(address, 2000);
+						logger.info("response:" + response);
+						if(response != null && response.indexOf("status=Unknown;") > -1)
+						{
+							if(response.indexOf("serverStartDateTime:") > -1)
+							{
+								String applicationStartupDateTimeString = response.substring(response.indexOf("serverStartDateTime:") + 20).trim();
+								logger.info("applicationStartupDateTimeString:" + applicationStartupDateTimeString);
+								VisualFormatter visualFormatter = new VisualFormatter();
+								Date serverStartupDate = visualFormatter.parseDate(applicationStartupDateTimeString, "yyyy-MM-dd HH:mm:ss");
+								PublicationVO publicationVO = PublicationController.getController().getPublicationVO(publicationId);
+								if(publicationVO.getPublicationDateTime().before(serverStartupDate))
+									publicationDetails.add(new String[]{"" + deliverUrl, "N/A", "Application restarted after the publication: " + applicationStartupDateTimeString});							
+								else
+									publicationDetails.add(new String[]{"" + deliverUrl, "N/A", "No information found"});							
+							}
+							else
+							{
+								publicationDetails.add(new String[]{"" + deliverUrl, "N/A", "No information found"});							
+							}
+						}
+						else
+						{
+							Map<String,String> responseMap = httpHelper.toMap(response.trim(), "utf-8");
+							CacheEvictionBean bean = CacheEvictionBean.getCacheEvictionBean(responseMap);
+							if(bean == null)
+								throw new Exception("No information found");
+							
+							VisualFormatter visualFormatter = new VisualFormatter();
+							publicationDetails.add(new String[]{"" + deliverUrl, responseMap.get("status"), "" + visualFormatter.formatDate(bean.getProcessedTimestamp(), "yyyy-MM-dd HH:mm:ss")});
+						}
+					}
 				}
 				catch(Exception e)
 				{
 					logger.error("Problem getting publication status:" + e.getMessage());
 					publicationDetails.add(new String[]{"" + deliverUrl, "Error", "" + e.getMessage()});
 				}
+
 			}
 		}
 		
         return publicationDetails;
 	}
+	
+	/**
+	 * This method returns a list of all details a publication has.
+	 */
+	public static Date getApplicationStartDate(String deliverUrl) throws SystemException
+	{
+		Date serverStartupDate = new Date();
+		
+		String address = deliverUrl + "/UpdateCache!getPublicationState.action?publicationId=1";
+		try
+		{
+			Boolean serverStatus = LiveInstanceMonitor.getInstance().getServerStatus(deliverUrl);
+			if(!serverStatus)
+			{
+				throw new Exception("Server down... could not get start date");					
+			}
+			else
+			{
+				HttpHelper httpHelper = new HttpHelper();
+				String response = httpHelper.getUrlContent(address, 2000);
+				logger.info("response:" + response);
+				if(response != null && response.indexOf("status=Unknown;") > -1)
+				{
+					if(response.indexOf("serverStartDateTime:") > -1)
+					{
+						String applicationStartupDateTimeString = response.substring(response.indexOf("serverStartDateTime:") + 20).trim();
+						logger.info("applicationStartupDateTimeString:" + applicationStartupDateTimeString);
+						VisualFormatter visualFormatter = new VisualFormatter();
+						serverStartupDate = visualFormatter.parseDate(applicationStartupDateTimeString, "yyyy-MM-dd HH:mm:ss");
+					}
+				}
+			}
+		}
+		catch(Exception e)
+		{
+			logger.error("Problem getting application startup date:" + e.getMessage());
+		}
+		
+        return serverStartupDate;
+	}
+	
 	
 	/**
 	 * This method fetches a json-list from the live server in question with all ongoing publications.
@@ -979,6 +1054,11 @@ public class PublicationController extends BaseController
 		{
 			Calendar minus24hours = Calendar.getInstance();
 			minus24hours.add(Calendar.HOUR_OF_DAY, -24);
+
+			Date applicationStartupDate = getApplicationStartDate(baseUrl);
+			if(applicationStartupDate.after(minus24hours.getTime()))
+				minus24hours.setTime(applicationStartupDate);
+
 			List<PublicationVO> publicationsToCheck = getPublicationsSinceDate(minus24hours.getTime());
 			List<CacheEvictionBean> latestPublications = getLatestPublicationList(baseUrl);
 			for(PublicationVO publication : publicationsToCheck)
