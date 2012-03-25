@@ -18,11 +18,12 @@
 				<a href="ViewApplicationState.action">infoglueCMS</a>
 			</td>
 			<td>
-				<div style="height: 20px; background-position: 0px 0px; text-indent: 20px;" class="okstatus">(0 in queue)</div>
+				<div style="height: 20px; background-position: 0px 0px; text-indent: 20px;" class="okstatus">&nbsp;</div>
 			</td>
 			<td>
-				<a href="ViewApplicationState!clearCaches.action?returnAddress=$formatter.encodeURI($originalFullURL)">Clear caches</a> | <a href="ViewLogging.action" target="_blank">Logs</a> | 
-				<a href="ViewDiagnosticsCenter!clearQueue.action?returnAddress=$formatter.encodeURI($originalFullURL)">Clear queue</a>
+				<a href="ViewApplicationState!clearCaches.action?returnAddress=$formatter.encodeURI($originalFullURL)">Clear caches</a> | <a href="ViewLogging.action" target="_blank">Logs</a> 
+				<!--
+				| <a href="ViewDiagnosticsCenter!clearQueue.action?returnAddress=$formatter.encodeURI($originalFullURL)">Clear queue</a>-->
 			</td>
 		</tr>
 		<tr>
@@ -43,8 +44,10 @@
 				#set($ongoingPublicationBeans = $!this.getOngoingPublicationBeans("$url"))
 				#if($!this.getInstanceStatus("$url") == "false")
 					<div style="margin-top: 5px; height: 20px; background-position: 0px 0px; text-indent: 20px;" class="nokstatus">($beans.size() in queue)</div>			
-				#else
+				#elseif($!this.getInstanceStatus("$url") == "true")
 					<div style="margin-top: 5px; height: 20px; background-position: 0px 0px; text-indent: 20px;" class="okstatus">($beans.size() in queue)</div>
+				#else
+					<div style="margin-top: 5px; height: 20px; background-position: 0px 0px; text-indent: 20px;">Waiting for status</div>
 				#end
 			</td>
 			<td>
@@ -76,15 +79,17 @@
 						<div style="margin-top: 5px; height: 20px; background-position: 0px 0px; text-indent: 20px;" class="nokstatus">
 							(
 								$beans.size() in queue, 
-							 	<a href="$url/ViewApplicationState!ongoingPublicationDetails.action" target="_blank">$ongoingPublicationBeans.size() ongoing</a>, 
-							 	<a href="javascript:void(0);" onclick="top.openInlineDiv('ViewDiagnosticCenter!viewFailedPublications.action?liveInstanceValidationUrl=$formatter.encodeURI($url)', 600, 800, true, true, 'Failed publications');" target="_blank">$failedPublications.size() failed</a>)
+							 	<a href="javascript:void(0);" onclick="window.open('$url/ViewApplicationState!ongoingPublicationDetails.action', 'Failed publications', 'width=900,height=600');">$ongoingPublicationBeans.size() ongoing</a>, 
+							 	<a href="javascript:void(0);" onclick="window.open('ViewDiagnosticCenter!viewFailedPublications.action?liveInstanceValidationUrl=$formatter.encodeURI($url)', 'Failed publications', 'width=900,height=600');">$failedPublications.size() failed</a>)
 						</div>	
-					#else
+					#elseif($!this.getInstanceStatus("$url") == "true")
 						<div style="margin-top: 5px; height: 20px; background-position: 0px 0px; text-indent: 20px;" class="okstatus">
 							($beans.size() in queue, 
-							 <a href="$url/ViewApplicationState!ongoingPublicationDetails.action" target="_blank">$ongoingPublicationBeans.size() ongoing</a>, 
-							 <a href="$url/ViewApplicationState!ongoingPublicationDetails.action" target="_blank">$failedPublications.size() failed</a>)
+								<a href="javascript:void(0);" onclick="window.open('$url/ViewApplicationState!ongoingPublicationDetails.action', 'Failed publications', 'width=900,height=600');">$ongoingPublicationBeans.size() ongoing</a>, 
+						 	 	<a href="javascript:void(0);" onclick="window.open('ViewDiagnosticCenter!viewFailedPublications.action?liveInstanceValidationUrl=$formatter.encodeURI($url)', 'Failed publications', 'width=900,height=600');">$failedPublications.size() failed</a>)
 						</div>
+					#else
+						<div style="margin-top: 5px; height: 20px; background-position: 0px 0px; text-indent: 20px;">Waiting for status</div>
 					#end
 			</td>
 			<td>
