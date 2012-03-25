@@ -1,4 +1,4 @@
-<!-- $Id: actions.xml,v 1.83.2.8 2011/12/18 23:13:58 mattias Exp $ -->
+<!-- $Id: actions.xml,v 1.83.2.9 2012/03/25 20:43:45 mattias Exp $ -->
 <actions>
 
 	<!-- MySettings -->
@@ -1627,6 +1627,7 @@
 
 	<action name="org.infoglue.cms.applications.managementtool.actions.ViewDiagnosticCenterAction" alias="ViewDiagnosticCenter">
 		<view name="success">/cms/managementtool/viewDiagnosticCenter.vm</view>
+		<view name="successFailedPublications">/cms/managementtool/viewFailedPublications.vm</view>
 		<view name="error">/cms/managementtool/error.vm</view>
 	</action>
 
