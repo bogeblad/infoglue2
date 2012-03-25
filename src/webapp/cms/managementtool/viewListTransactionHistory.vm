@@ -110,10 +110,17 @@
 #lvHead(["Name","User","date/time","type","object id","object name"] "Delete roles" "DeleteRole.action" "ViewListRole.action?title=Roles" "Do you really want to delete the role:<br/><br/>")
 
 #set($cnt = 0)
+#set($fnutt = '"') 
 #foreach ($transactionHistoryVO in $transactionHistories)
 	#set( $transactionHistoryId = $transactionHistoryVO.getTransactionHistoryId() ) 
 	
-	#set( $row = ["$transactionHistoryVO.getName()","$transactionHistoryVO.getSystemUserName()","$formatter.formatDate($transactionHistoryVO.getTransactionDateTime(), 'yyyy-MM-dd HH:mm')","$transactionHistoryVO.getTransactionTypeName()","$transactionHistoryVO.getTransactionObjectId()","$transactionHistoryVO.getTransactionObjectName()"])
+	#if($transactionHistoryVO.getTransactionTypeName() == "Publication queued" || $transactionHistoryVO.getTransactionTypeName() == "Publication republished")
+		#set($objectId = "<a href=${fnutt}javascript:void(0);${fnutt} onclick=${fnutt}window.open('ViewPublications!showPublicationDetails.action?publicationId=$transactionHistoryVO.transactionObjectId', 'Publication details', 'width=900,height=600');${fnutt}>$transactionHistoryVO.transactionObjectId</a>")
+	#else
+		#set($objectId = "$transactionHistoryVO.transactionObjectId")
+	#end
+	
+	#set( $row = ["$transactionHistoryVO.getName()","$transactionHistoryVO.getSystemUserName()","$formatter.formatDate($transactionHistoryVO.getTransactionDateTime(), 'yyyy-MM-dd HH:mm')","$transactionHistoryVO.getTransactionTypeName()","$objectId","$transactionHistoryVO.getTransactionObjectName()"])
 	#set($cnt = $cnt + 1)
 
 	#lvAddRow($row $cnt $transactionHistoryId)

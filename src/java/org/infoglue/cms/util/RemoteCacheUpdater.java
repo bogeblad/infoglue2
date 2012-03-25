@@ -217,7 +217,7 @@ public class RemoteCacheUpdater implements NotificationListener
 					}
 					catch(Exception e)
 					{
-						NotificationMessage notificationMessage = new NotificationMessage("Publishing notification failed", "Publication", "SYSTEM", NotificationMessage.LIVE_NOTIFICATION_QUEUED, "n/a", "" + deliverUrl);
+						NotificationMessage notificationMessage = new NotificationMessage("Publishing notification failed", "Publication", "SYSTEM", NotificationMessage.LIVE_NOTIFICATION_QUEUED, "" + publicMessage.get("0.objectId"), "" + deliverUrl);
 						TransactionHistoryController.getController().create(notificationMessage);
 
 						logger.error("Error updating cache at " + address + ":" + e.getMessage() + ". Adding it to the queue-thread.");
