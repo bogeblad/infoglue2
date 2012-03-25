@@ -95,8 +95,8 @@
     <td colspan="3" class="label">Release date</td>
   </tr>
   <tr>
-    <td colspan="1" class="text">2.10.0.0 Final</td>
-    <td colspan="3" class="text">2012-03-13</td>
+    <td colspan="1" class="text">2.10.0.1 Final</td>
+    <td colspan="3" class="text">2012-03-25</td>
   </tr>
   <tr>
     <td colspan="4" class="text">&nbsp;</td>
@@ -115,12 +115,6 @@
     #end
   </tr>
   #end
-  <tr>
-    <td class="text" colspan="4"><a href="ViewApplicationState!resetAverageResponseTimeStatistics.action">Reset average response time</a></td>
-  </tr>
-  <tr>
-    <td class="text" colspan="4"><a href="ViewApplicationState!decreaseActiveCount.action">Decrease active user count (only in special situations)</a></td>
-  </tr>
   
   <!--	
   <tr class="label">
