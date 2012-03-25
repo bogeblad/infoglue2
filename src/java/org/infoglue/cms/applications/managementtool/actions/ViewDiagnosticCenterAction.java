@@ -133,7 +133,7 @@ public class ViewDiagnosticCenterAction extends InfoGlueAbstractAction
     }
 	
 	/**
-     * This action allows to clear notification queue manually.
+     * This action allows to view the failed publications.
      */
     public String doViewFailedPublications() throws Exception
     {
