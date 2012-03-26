@@ -106,11 +106,17 @@
 			{
 				listForm.action = "ChangeMultiSiteNodeVersionStatePublish.action"
 				listForm.versionComment.value = commentElm.value;
-				if(overrideVersionModifyerElm.checked == true)
-					listForm.overrideVersionModifyer.value = overrideVersionModifyerElm.value;
+
+				if(overrideVersionModifyerElm)
+				{
+					if(overrideVersionModifyerElm.checked == true)
+						listForm.overrideVersionModifyer.value = overrideVersionModifyerElm.value;
+					else
+						listForm.overrideVersionModifyer.value = "false";
+				}
 				else
-					listForm.overrideVersionModifyer.value = "false";
-					
+					listForm.overrideVersionModifyer.value = "true";
+										
 				#if($allowPublicationEventFilter == "true")
 					var xrecipientFilter = document.getElementById("xrecipientFilter");
 					#if($infoGluePrincipal.groups.size() > 1)
@@ -149,13 +155,15 @@
 				<tr>
 					<td colspan="3">#editTextArea("SiteNodeVersion.versionComment" "xversionComment" $!versionComment "10" "10" "smalltextarea")</td>
 				</tr>		
+				#if($!this.allowOverrideModifyer != "false")
 				<tr>
 					<td colspan="3"><img src="images/trans.gif" height="10" width="1"></td>
 				</tr>
 				<tr>
 					<td colspan="3">#yesNoCheckBox("SiteNodeVersion.overrideVersionModifyer" "xoverrideVersionModifyer" "true" $ui.getString('tool.common.yes'))</td>
 				</tr>	
-				
+				#end
+							
 				#if($allowPublicationEventFilter == "true")
 					#if($infoGluePrincipal.groups.size() > 1)
 						<tr>

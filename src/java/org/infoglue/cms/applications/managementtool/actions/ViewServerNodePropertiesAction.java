@@ -246,7 +246,8 @@ public class ViewServerNodePropertiesAction extends InfoGluePropertiesAbstractAc
 	    populate(ps, "protectCategories");
 
 	    populate(ps, "internalSearchEngine");
-
+	    populate(ps, "allowOverrideModifyer");
+	    
 	    populate(ps, "maxRows");
 	    populate(ps, "maxNumberOfAssetInSearches");
 	    populate(ps, "componentBindningAssetBrowser");

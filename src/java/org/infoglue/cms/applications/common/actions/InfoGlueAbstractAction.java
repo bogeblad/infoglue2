@@ -559,6 +559,11 @@ public abstract class InfoGlueAbstractAction extends WebworkAbstractAction
     	return CmsPropertyHandler.getAllowPublicationEventFilter();
     }
 
+	public String getAllowOverrideModifyer()
+	{
+	    return CmsPropertyHandler.getAllowOverrideModifyer();
+	}
+
     public Locale getLocale()
     {
         return this.getSession().getLocale();
