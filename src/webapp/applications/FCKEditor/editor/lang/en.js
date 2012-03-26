@@ -189,6 +189,7 @@ DlgGenTitle			: "Advisory Title",
 DlgGenContType		: "Advisory Content Type",
 DlgGenLinkCharset	: "Linked Resource Charset",
 DlgGenStyle			: "Style",
+DlgGenRel			: "Link Relationship",
 
 // Image Dialog
 DlgImgTitle			: "Image Properties",

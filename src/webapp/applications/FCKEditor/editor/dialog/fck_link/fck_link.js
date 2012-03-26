@@ -475,6 +475,7 @@ function LoadSelection()
 	GetE('txtAttAccessKey').value	= oLink.accessKey ;
 	GetE('txtAttTabIndex').value	= oLink.tabIndex <= 0 ? '' : oLink.tabIndex ;
 	GetE('txtAttTitle').value		= oLink.title ;
+	GetE('txtAttRel').value         = oLink.rel ; 
 	GetE('txtAttContentType').value	= oLink.type ;
 	GetE('txtAttCharSet').value		= oLink.charset ;
 
@@ -767,6 +768,7 @@ function Ok()
 		SetAttribute( oLink, 'accesskey', GetE('txtAttAccessKey').value ) ;
 		SetAttribute( oLink, 'tabindex'	, ( GetE('txtAttTabIndex').value > 0 ? GetE('txtAttTabIndex').value : null ) ) ;
 		SetAttribute( oLink, 'title'	, GetE('txtAttTitle').value ) ;
+		SetAttribute( oLink, 'rel'      , GetE('txtAttRel').value ) ;
 		SetAttribute( oLink, 'type'		, GetE('txtAttContentType').value ) ;
 		SetAttribute( oLink, 'charset'	, GetE('txtAttCharSet').value ) ;
 

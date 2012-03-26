@@ -189,6 +189,7 @@ DlgGenTitle			: "Titel",
 DlgGenContType		: "Innehållstyp",
 DlgGenLinkCharset	: "Teckenuppställning",
 DlgGenStyle			: "Style",
+DlgGenRel			: "Link Relationship",
 
 // Image Dialog
 DlgImgTitle			: "Bildegenskaper",
