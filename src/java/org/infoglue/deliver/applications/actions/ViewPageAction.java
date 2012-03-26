@@ -626,7 +626,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
 				{
 					if(originalFullURL.indexOf(unprotectedProtocolName + "://") > -1)
 					{	
-						String redirectUrl = originalFullURL.replaceFirst(unprotectedProtocolName + "://", protectedProtocolName + "://").replaceFirst(unprotectedProtocolPort, protectedProtocolPort);
+						String redirectUrl = originalFullURL.replaceFirst(unprotectedProtocolName + "://", protectedProtocolName + "://").replaceFirst(":" + unprotectedProtocolPort + "/", ":" + protectedProtocolPort + "/");
 						getResponse().sendRedirect(redirectUrl);
 						logger.info("Redirecting user to:" + redirectUrl);
 						isUserRedirected = true;
@@ -638,7 +638,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
 					{
 						if(originalFullURL.indexOf(protectedProtocolName + "://") > -1)
 						{	
-							String redirectUrl = originalFullURL.replaceFirst(protectedProtocolName + "://", unprotectedProtocolName + "://").replaceFirst(protectedProtocolPort, unprotectedProtocolPort);;
+							String redirectUrl = originalFullURL.replaceFirst(protectedProtocolName + "://", unprotectedProtocolName + "://").replaceFirst(":" + protectedProtocolPort + "/", ":" + unprotectedProtocolPort + "/");
 							getResponse().setStatus(new Integer(accessBasedProtocolRedirectHTTPCode));
 							getResponse().sendRedirect(redirectUrl);
 							logger.info("Redirecting user to:" + redirectUrl);
