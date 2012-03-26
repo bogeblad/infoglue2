@@ -218,9 +218,19 @@ public class PortletEntityRegistryServiceDBImpl extends PortletEntityRegistrySer
     }
 
     private DigitalAsset getPortletRegistry() throws Exception {
+        
+    	// Try to get the portlet by id in order to optimize the db fetch (can take up to 5 minutes to get
+    	// the PORTLET_REGISTRY_CONTENT_NAME when getting it by name).
+    	DigitalAsset da = PortletAssetController.getPortletRegistry();
+    	if(da != null)
+    	{
+    		return da;
+    	}
+    	
+    	// Fallback: Try to get the portlet by name
         List das = PortletAssetController.getDigitalAssetByName(PORTLET_REGISTRY_CONTENT_NAME);
         if (das != null && das.size() > 0) {
-            DigitalAsset da = (DigitalAsset) das.get(0);
+            da = (DigitalAsset) das.get(0);
             LOG.debug("Registry located as id=" + da.getId());
             return da;
         } else {

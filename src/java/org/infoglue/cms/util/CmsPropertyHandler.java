@@ -74,6 +74,7 @@ public class CmsPropertyHandler
 	private static PropertySet propertySet			= null; 
 
 	private static String serverNodeName			= null;
+	private static String digitalAssetPortletRegistryId = null;
 	
 	private static String globalSettingsServerNodeId= "-1";
 	private static String localSettingsServerNodeId	= null;
@@ -99,6 +100,10 @@ public class CmsPropertyHandler
 	private static Boolean useHashCodeInCaches 				= null;
 	private static Boolean useSynchronizationOnCaches 		= null;
 	   
+	public static String getDigitalAssetPortletRegistryId()
+	{
+		 return digitalAssetPortletRegistryId;
+	}
 	public static void setApplicationName(String theApplicationName)
 	{
 		CmsPropertyHandler.applicationName = theApplicationName;
@@ -162,6 +167,7 @@ public class CmsPropertyHandler
 			    cachedProperties.load(new FileInputStream(propertyFile));
 			else
 			    cachedProperties.load(CmsPropertyHandler.class.getResourceAsStream("/" + applicationName + ".properties"));
+			digitalAssetPortletRegistryId = cachedProperties.getProperty("digitalAssetPortletRegistryId");
 			
 			Enumeration enumeration = cachedProperties.keys();
 			while(enumeration.hasMoreElements())
@@ -1598,6 +1604,11 @@ public class CmsPropertyHandler
 	public static String getEncodeCasServiceUrl()
 	{
         return getServerNodeProperty("encodeCasServiceUrl", true, "true");
+	}
+	
+	public static String getAllowOverrideModifyer()
+	{
+	    return getServerNodeProperty("allowOverrideModifyer", true, "true");
 	}
 
 	public static String getSetDerivedLastModifiedInLive()
