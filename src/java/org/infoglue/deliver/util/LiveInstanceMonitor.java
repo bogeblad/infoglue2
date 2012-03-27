@@ -126,15 +126,18 @@ public class LiveInstanceMonitor implements Runnable
     			    throw new Exception("Got wrong answer");
     			else
     			{
+    				Boolean wasError = newInstanceStatus.get(serverBase);
     				newInstanceStatus.put(serverBase, true);
     				newInstanceErrorInformation.remove(serverBase);
-    				
-    				NotificationMessage serverErrorMessage = new NotificationMessage("Server available after being unavailable", serverBase, "SYSTEM", NotificationMessage.SERVER_UNAVAILABLE_SOLVED, "n/a", serverBase);
-					TransactionHistoryController.getController().create(serverErrorMessage);
+    				if(wasError != null && wasError)
+    				{
+	    				NotificationMessage serverErrorMessage = new NotificationMessage("Server available after being unavailable", serverBase, "SYSTEM", NotificationMessage.SERVER_UNAVAILABLE_SOLVED, "n/a", serverBase);
+						TransactionHistoryController.getController().create(serverErrorMessage);
+    				}
     			}
     		}
 			catch(Exception e)
-			{
+			{				
 				try
 				{
 					String cause = "" + e.getMessage();
@@ -190,11 +193,14 @@ public class LiveInstanceMonitor implements Runnable
     			    throw new Exception("Got wrong answer");
     			else
     			{
+    				Boolean wasError = newInstanceStatus.get(serverBase);
     				newInstanceStatus.put(serverBase, true);
     				newInstanceErrorInformation.remove(serverBase);
-
-    				NotificationMessage serverErrorMessage = new NotificationMessage("Server available after being unavailable", serverBase, "SYSTEM", NotificationMessage.SERVER_UNAVAILABLE_SOLVED, "n/a", serverBase);
-					TransactionHistoryController.getController().create(serverErrorMessage);
+    				if(wasError != null && wasError)
+    				{
+	    				NotificationMessage serverErrorMessage = new NotificationMessage("Server available after being unavailable", serverBase, "SYSTEM", NotificationMessage.SERVER_UNAVAILABLE_SOLVED, "n/a", serverBase);
+						TransactionHistoryController.getController().create(serverErrorMessage);
+    				}
     			}
 			}
 			catch(Exception e)
