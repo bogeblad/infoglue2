@@ -1776,9 +1776,9 @@ public class AccessRightController extends BaseController
 	public List<String> getUniqueSystemUserNameListInAccessRightUser(Database db) throws Exception
 	{
 		List<String> users = new ArrayList<String>();
+	
+		OQLQuery oql = db.getOQLQuery("CALL SQL select max(accessRightUserId), userName, max(accessRightId) from cmAccessRightUser aru group by userName AS org.infoglue.cms.entities.management.impl.simple.AccessRightUserImpl");
 		
-		OQLQuery oql = db.getOQLQuery("CALL SQL select accessRightUserId, userName, accessRightId from cmAccessRightUser aru group by userName AS org.infoglue.cms.entities.management.impl.simple.AccessRightUserImpl");
- 
     	QueryResults results = oql.execute(Database.ReadOnly);
 		while(results.hasMore()) 
         {
@@ -1802,7 +1802,7 @@ public class AccessRightController extends BaseController
 	{
 		List<String> roles = new ArrayList<String>();
 		
-		OQLQuery oql = db.getOQLQuery("CALL SQL select accessRightRoleId, roleName, accessRightId from cmAccessRightRole arr group by roleName AS org.infoglue.cms.entities.management.impl.simple.AccessRightRoleImpl");
+		OQLQuery oql = db.getOQLQuery("CALL SQL select max(accessRightRoleId), roleName, max(accessRightId) from cmAccessRightRole arr group by roleName AS org.infoglue.cms.entities.management.impl.simple.AccessRightRoleImpl");
 		 
     	QueryResults results = oql.execute(Database.ReadOnly);
 		while(results.hasMore()) 
@@ -1827,7 +1827,7 @@ public class AccessRightController extends BaseController
 	{
 		List<String> groups = new ArrayList<String>();
 
-		OQLQuery oql = db.getOQLQuery("CALL SQL select accessRightGroupId, groupName, accessRightId from cmAccessRightGroup arr group by groupName AS org.infoglue.cms.entities.management.impl.simple.AccessRightGroupImpl");
+		OQLQuery oql = db.getOQLQuery("CALL SQL select max(accessRightGroupId), groupName, max(accessRightId) from cmAccessRightGroup arr group by groupName AS org.infoglue.cms.entities.management.impl.simple.AccessRightGroupImpl");
 		 
     	QueryResults results = oql.execute(Database.ReadOnly);
 		while(results.hasMore()) 
