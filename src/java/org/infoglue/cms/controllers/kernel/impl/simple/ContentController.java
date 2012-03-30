@@ -1494,7 +1494,8 @@ public class ContentController extends BaseController
 				HashMap arguments = new HashMap();
 				arguments.put("method", "selectContentListOnIdList");
             		
-				List qualifyerList = new ArrayList();
+				List<Map> qualifyerList = new ArrayList<Map>();
+				
 				Collection qualifyers = serviceBinding.getBindingQualifyers();
 
 				qualifyers = sortQualifyers(qualifyers);
@@ -1503,22 +1504,35 @@ public class ContentController extends BaseController
 				while(iterator.hasNext())
 				{
 					Qualifyer qualifyer = (Qualifyer)iterator.next();
-					HashMap argument = new HashMap();
+					Map argument = new HashMap();
 					argument.put(qualifyer.getName(), qualifyer.getValue());
 					qualifyerList.add(argument);
 				}
 				arguments.put("arguments", qualifyerList);
         		
-				List contents = service.selectMatchingEntities(arguments, db);
-        		
-				if(contents != null)
+				try
 				{
-					Iterator i = contents.iterator();
-					while(i.hasNext())
+					List contents = service.selectMatchingEntities(arguments, db);
+	        		
+					if(contents != null)
 					{
-						ContentVO candidate = (ContentVO)i.next();
-						result.add(candidate);        		
+						Iterator i = contents.iterator();
+						while(i.hasNext())
+						{
+							ContentVO candidate = (ContentVO)i.next();
+							result.add(candidate);        		
+						}
 					}
+				}
+				catch (SystemException e) 
+				{
+					logger.warn("Error getting entities:" + e.getMessage());
+					logger.info("Error getting entities:" + e.getMessage(), e);
+					for(Map arg : qualifyerList)
+					{
+						logger.info("arg:" + arg);
+					}
+					//throw e;
 				}
 			}
 		}
