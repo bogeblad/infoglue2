@@ -24,6 +24,7 @@ package org.infoglue.deliver.jobs;
 
 import java.io.File;
 import java.util.Date;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.log4j.Logger;
 import org.infoglue.cms.util.CmsPropertyHandler;
@@ -43,6 +44,7 @@ public class ExpireCacheJob implements Job
 {
     private final static Logger logger = Logger.getLogger(ExpireCacheJob.class.getName());
     private static Integer intervalCount = 0;
+    private static AtomicBoolean running = new AtomicBoolean(false);
     
     private static long lastCacheCheck = System.currentTimeMillis();
     private static long lastCacheCleanup = System.currentTimeMillis();
@@ -51,6 +53,16 @@ public class ExpireCacheJob implements Job
     {
     	long diffLastCacheCheck = ((System.currentTimeMillis() - lastCacheCheck) / 1000);
 		logger.info("diffLastCacheCheck " + diffLastCacheCheck + " in " + CmsPropertyHandler.getApplicationName() + " - " + Thread.currentThread().getId());
+		if(running.compareAndSet(false, true))
+		{
+			//System.out.println("Should run.....");
+		}
+		else
+		{
+			//System.out.println("Returning as allready running thread");
+			return;
+		}
+		
 	    if(diffLastCacheCheck > 600)
 		{
 	        synchronized(RequestAnalyser.getRequestAnalyser()) 
@@ -58,7 +70,8 @@ public class ExpireCacheJob implements Job
 		       	if(RequestAnalyser.getRequestAnalyser().getBlockRequests())
 			    {
 				    logger.warn("evictWaitingCache allready in progress - returning to avoid conflict");
-			        return;
+				    running.set(false);
+				    return;
 			    }
 	
 		       	RequestAnalyser.getRequestAnalyser().setBlockRequests(true);
@@ -91,6 +104,7 @@ public class ExpireCacheJob implements Job
     	       	if(RequestAnalyser.getRequestAnalyser().getBlockRequests())
     		    {
     			    logger.warn("evictWaitingCache allready in progress - returning to avoid conflict");
+					running.set(false);
     		        return;
     		    }
 
@@ -148,6 +162,7 @@ public class ExpireCacheJob implements Job
         	       	if(RequestAnalyser.getRequestAnalyser().getBlockRequests())
         		    {
         			    logger.warn("evictWaitingCache allready in progress - returning to avoid conflict");
+        			    running.set(false);
         		        return;
         		    }
 
@@ -202,9 +217,11 @@ public class ExpireCacheJob implements Job
                 logger.info("setting block");
                 synchronized(RequestAnalyser.getRequestAnalyser()) 
         	    {
+                	
         	       	if(RequestAnalyser.getRequestAnalyser().getBlockRequests())
         		    {
         			    logger.warn("evictWaitingCache allready in progress - returning to avoid conflict");
+        			    running.set(false);
         		        return;
         		    }
 
@@ -216,7 +233,7 @@ public class ExpireCacheJob implements Job
 	        	    String operatingMode = CmsPropertyHandler.getOperatingMode();
 	        	    if(operatingMode != null && operatingMode.equalsIgnoreCase("3"))
 	        	    {
-	        	        logger.info("Updating all caches as this was a publishing-update");
+	                    logger.info("Updating all caches as this was a publishing-update");
 		    			CacheController.clearCastorCaches();
 		
 		    			logger.info("clearing all except page cache as we are in publish mode..");
@@ -309,6 +326,8 @@ public class ExpireCacheJob implements Job
             logger.error("An error occurred when we tried to update cache:" + e.getMessage());
             logger.warn("An error occurred when we tried to update cache:" + e.getMessage(), e);
         }
+        
+        running.set(false);
     }
     
 

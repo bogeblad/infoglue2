@@ -1320,7 +1320,7 @@ public class CacheController extends Thread
 							    	}
 							    	catch(SystemException se)
 							    	{
-							    		logger.info("Missing content version: " + se.getMessage());
+							    		logger.warn("Missing siteNode version: " + se.getMessage(), se);
 							    	}
 							    }
 							    else if(selectiveCacheUpdate && (entity.indexOf("SiteNode") > 0 && entity.indexOf("SiteNodeTypeDefinition") == -1) && useSelectivePageCacheUpdate)
@@ -1890,7 +1890,17 @@ public class CacheController extends Thread
 
 	    logger.info("evictWaitingCache starting");
     	logger.info("blocking");
-
+    	
+    	synchronized(notifications)
+        {
+        	if(notifications == null || notifications.size() == 0)
+        	{
+        		//System.out.println("No notifications...");
+        		RequestAnalyser.getRequestAnalyser().setBlockRequests(false);
+        		return;
+        	}
+        }
+    	
     	WorkingPublicationThread wpt = new WorkingPublicationThread();
     	
     	SelectiveLivePublicationThread pt = null;
@@ -1898,7 +1908,7 @@ public class CacheController extends Thread
     	try
     	{
     		livePublicationThreadClass = CmsPropertyHandler.getLivePublicationThreadClass();
-	    	if(operatingMode != null && operatingMode.equalsIgnoreCase("3")) //If published-mode we update entire cache to be sure..
+    		if(operatingMode != null && operatingMode.equalsIgnoreCase("3")) //If published-mode we update entire cache to be sure..
 			{
 	        	if(livePublicationThreadClass.equalsIgnoreCase("org.infoglue.deliver.util.SelectiveLivePublicationThread"))
 	    			pt = new SelectiveLivePublicationThread(notifications);
