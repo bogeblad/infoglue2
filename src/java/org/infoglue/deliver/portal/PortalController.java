@@ -33,6 +33,7 @@ import org.apache.log4j.Logger;
 import org.apache.pluto.PortletContainerException;
 import org.apache.pluto.om.window.PortletWindow;
 import org.apache.pluto.portalImpl.services.ServiceManager;
+import org.infoglue.deliver.applications.databeans.DeliveryContext;
 import org.infoglue.deliver.portal.services.PortletWindowRegistryService;
 import org.infoglue.deliver.util.ThreadMonitor;
 
@@ -51,9 +52,12 @@ public class PortalController
 
     private HttpServletResponse response;
 
-    public PortalController(HttpServletRequest request, HttpServletResponse response) {
+    private DeliveryContext deliveryContext;
+
+    public PortalController(HttpServletRequest request, HttpServletResponse response, DeliveryContext deliveryContext) {
         this.request = request;
         this.response = response;
+        this.deliveryContext = deliveryContext;
     }
 
     /**
@@ -102,6 +106,11 @@ public class PortalController
             PortletWindowRegistryService windowService = (PortletWindowRegistryService) ServiceManager.getService(PortletWindowRegistryService.class);
             PortletWindow renderWindow = windowService.createPortletWindow(windowID, portletID);
             logger.info("Portlet window of " + portletID + "," + windowID + ": " + renderWindow);
+            System.out.println("Portlet window of " + portletID + "," + windowID + ": " + renderWindow + ":" + renderWindow.getPortletEntity());
+            
+    		//this.deliveryContext.addUsedContent("selectiveCacheUpdateNonApplicable");
+    		this.deliveryContext.addUsedContent("portlet_" + portletID);
+    		System.out.println("Adding portlet_" + portletID);
             return new PortletWindowIGImpl(renderWindow, request, response);
         } 
         catch (NameNotFoundException e) 

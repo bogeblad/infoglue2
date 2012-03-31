@@ -660,7 +660,7 @@ public abstract class PageInvoker
         boolean active = ((portalEnabled != null) && portalEnabled.equals("true"));
 		if (active) 
 		{
-		    PortalController pController = new PortalController(getRequest(), getResponse());
+		    PortalController pController = new PortalController(getRequest(), getResponse(), getTemplateController().getDeliveryContext());
 		    context.put(PortalController.NAME, pController);
 		    if(logger.isInfoEnabled())
 		    {
