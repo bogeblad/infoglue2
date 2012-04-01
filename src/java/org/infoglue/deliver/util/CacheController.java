@@ -867,7 +867,8 @@ public class CacheController extends Thread
             {
             	String key = (String) groupEntriesIterator.next();
             	CacheEntry entry = (CacheEntry) cacheInstance.getCache().cacheMap.get(key);
-            	//logger.info("Removing file with key:" + key);
+            	if(logger.isInfoEnabled())
+            		logger.info("Removing file with key:" + key);
             	removeCachedContentInFile("pageCache", key);
             	numberOfPageCacheFiles.decrementAndGet();
             }
@@ -1234,6 +1235,13 @@ public class CacheController extends Thread
 						if(logger.isInfoEnabled())
 						    logger.info("clearing:" + e.getKey());
 
+						if(logger.isInfoEnabled())
+						{
+							logger.info("cacheName:" + cacheName);
+							logger.info("entity:" + entity);
+							logger.info("clearing:" + e.getKey());
+						}
+						
 						Object object = e.getValue();
 						
 						if(object instanceof Map)
@@ -1260,17 +1268,34 @@ public class CacheController extends Thread
 							    	logger.info("clearing:" + e.getKey());
 							    }
 							    */
-								if(entity.indexOf("pageCache") > 0)
+								if(entity.indexOf("pageCache") == 0)
 							    {
-							    	logger.error("clearing " + e.getKey() + " selectiveCacheUpdateNonApplicable");
-							    	if(cacheName.equals("pageCacheExtra"))
-							    	{
-							    		clearFileCacheForGroup(cacheInstance, "selectiveCacheUpdateNonApplicable");
-							    	}
-							    	else if(cacheName.equals("pageCache"))
-							    	{
-								    	cacheInstance.flushGroup("selectiveCacheUpdateNonApplicable");							    		
-							    	}
+									if(entity.indexOf("pageCache:") == 0)
+									{
+										String groupQualifyer = entity.substring("pageCache:".length());
+										logger.info("CacheController: This is a application pageCache-clear request... specific:" + groupQualifyer);
+										logger.info("clearing " + e.getKey() + " : " + groupQualifyer);
+								    	if(cacheName.equals("pageCacheExtra"))
+								    	{
+								    		clearFileCacheForGroup(cacheInstance, "" + groupQualifyer);
+								    	}
+								    	else if(cacheName.equals("pageCache"))
+								    	{
+									    	cacheInstance.flushGroup("" + groupQualifyer);							    		
+								    	}
+									}
+									else
+									{
+										logger.error("clearing " + e.getKey() + " selectiveCacheUpdateNonApplicable");
+								    	if(cacheName.equals("pageCacheExtra"))
+								    	{
+								    		clearFileCacheForGroup(cacheInstance, "selectiveCacheUpdateNonApplicable");
+								    	}
+								    	else if(cacheName.equals("pageCache"))
+								    	{
+									    	cacheInstance.flushGroup("selectiveCacheUpdateNonApplicable");							    		
+								    	}
+									}
 							    }
 								if(selectiveCacheUpdate && entity.indexOf("Repository") > 0 && useSelectivePageCacheUpdate)
 							    {
@@ -2438,6 +2463,31 @@ public class CacheController extends Thread
 		}
     }
 
+    public static void clearPageCache(String key)
+    {        
+    	try
+    	{
+        	String firstPart = ("" + key.hashCode()).substring(0, 3);
+            String dir = CmsPropertyHandler.getDigitalAssetPath() + File.separator + "caches" + File.separator + "pageCache" + File.separator + firstPart;
+            File dirFile = new File(dir);
+            dirFile.mkdirs();
+            File file = new File(dir + File.separator + key.hashCode());
+            if(logger.isInfoEnabled())
+            	logger.info("Deleting " + file.getPath() + ":" + file.exists());
+            if(file.exists())
+            {
+            	boolean deleted = file.delete();
+            	if(logger.isInfoEnabled())
+            		logger.info("Deleted: " + deleted);
+            }
+    	}
+    	catch (Exception e) 
+    	{
+    		logger.warn("Problem storing data to file:" + e.getMessage());
+		}
+
+    }
+    
     private static void removeCachedContentInFile(String cacheName, String key)
     {
     	try
@@ -2447,7 +2497,7 @@ public class CacheController extends Thread
             File dirFile = new File(dir);
             dirFile.mkdirs();
             File file = new File(dir + File.separator + key);
-            //System.out.println("Deleting " + file.getPath());
+            System.out.println("Deleting " + file.getPath());
             file.delete();
     	}
     	catch (Exception e) 

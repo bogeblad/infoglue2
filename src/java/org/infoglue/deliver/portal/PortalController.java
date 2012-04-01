@@ -106,11 +106,10 @@ public class PortalController
             PortletWindowRegistryService windowService = (PortletWindowRegistryService) ServiceManager.getService(PortletWindowRegistryService.class);
             PortletWindow renderWindow = windowService.createPortletWindow(windowID, portletID);
             logger.info("Portlet window of " + portletID + "," + windowID + ": " + renderWindow);
-            System.out.println("Portlet window of " + portletID + "," + windowID + ": " + renderWindow + ":" + renderWindow.getPortletEntity());
             
     		//this.deliveryContext.addUsedContent("selectiveCacheUpdateNonApplicable");
     		this.deliveryContext.addUsedContent("portlet_" + portletID);
-    		System.out.println("Adding portlet_" + portletID);
+    		logger.info("Adding portlet_" + portletID);
             return new PortletWindowIGImpl(renderWindow, request, response);
         } 
         catch (NameNotFoundException e) 
@@ -120,17 +119,20 @@ public class PortalController
 		}
         catch (PortletException e) 
         {
-        	logger.error("Error:" + e.getMessage(), e);
+        	logger.error("Error in portlet (more info in debug log):" + e.getMessage());
+        	logger.warn("Error in portlet:" + e.getMessage(), e);
             throw new PortalException(e);
         } 
         catch (PortletContainerException e) 
         {
-        	logger.error("Error:" + e.getMessage(), e);
+        	logger.error("Error in portlet (more info in debug log):" + e.getMessage());
+        	logger.warn("Error in portlet:" + e.getMessage(), e);
             throw new PortalException(e);
         } 
         catch (Throwable e) 
         {
-        	logger.error("Error:" + e.getMessage(), e);
+        	logger.error("Error in portlet (more info in debug log):" + e.getMessage());
+        	logger.warn("Error in portlet:" + e.getMessage(), e);
             throw new PortalException(e);
         }
     }

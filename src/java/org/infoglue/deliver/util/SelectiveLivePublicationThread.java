@@ -318,14 +318,21 @@ public class SelectiveLivePublicationThread extends PublicationThread
 									
 										if(publicationDetailVO.getEntityClass().indexOf("pageCache") > -1)
 										{
-									    	if(publicationDetailVO.getEntityClass().equals("pageCacheExtra"))
-									    	{
-									    		CacheController.clearCacheForGroup("pageCacheExtra", "selectiveCacheUpdateNonApplicable");
-									    	}
-									    	else
-									    	{
-									    		CacheController.clearCacheForGroup("pageCache", "selectiveCacheUpdateNonApplicable");							    		
-									    	}
+											logger.info("publicationDetailVO.getEntityClass():" + publicationDetailVO.getEntityClass());
+											
+											if(publicationDetailVO.getEntityClass().indexOf("pageCache:") == 0)
+											{
+												String groupQualifyer = publicationDetailVO.getEntityClass().substring("pageCache:".length());
+												logger.info("This is a application pageCache-clear request... specific:" + groupQualifyer);
+												CacheController.clearCaches(publicationDetailVO.getEntityClass(), "" + publicationDetailVO.getEntityId(), null);
+											}
+											else
+											{
+												CacheController.clearCaches("pageCache", "selectiveCacheUpdateNonApplicable", null);
+											}
+											
+								    		//CacheController.clearCacheForGroup("pageCacheExtra", "selectiveCacheUpdateNonApplicable");
+											//CacheController.clearCacheForGroup("pageCache", "selectiveCacheUpdateNonApplicable");							    		
 										}
 										else if(Class.forName(publicationDetailVO.getEntityClass()).getName().equals(ContentVersion.class.getName()))
 										{
