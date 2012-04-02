@@ -389,7 +389,7 @@ public class RemoteCacheUpdater implements NotificationListener
 	{
 		List localMessages = new ArrayList();
         List messages = RemoteCacheUpdater.getSystemNotificationMessages();
-        System.out.println("messages:" + messages.size());
+        logger.info("messages:" + messages.size());
         synchronized(messages)
         {
         	localMessages.addAll(messages);
@@ -401,7 +401,7 @@ public class RemoteCacheUpdater implements NotificationListener
         {
 			NotificationMessage notificationMessage = (NotificationMessage)localMessagesIterator.next();
 			notificationMessage = new NotificationMessage("PushAndClearSystemNotificationMessages", "" + notificationMessage.getClassName(), userName, NotificationMessage.SYSTEM, notificationMessage.getObjectId(), notificationMessage.getObjectName());
-	        System.out.println("notificationMessage:" + notificationMessage);
+			logger.info("notificationMessage:" + notificationMessage);
 			ChangeNotificationController.getInstance().addNotificationMessage(notificationMessage);
         }
 	}

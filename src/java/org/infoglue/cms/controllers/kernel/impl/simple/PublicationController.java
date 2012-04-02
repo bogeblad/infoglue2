@@ -651,7 +651,7 @@ public class PublicationController extends BaseController
             Map hashMap = new HashMap();
         	hashMap.put("publicationId", publicationVO.getId());
         	
-        	System.out.println("*****************Calling Publication.Write");
+        	logger.info("*****************Calling Publication.Write");
     		intercept(hashMap, "Publication.Write", UserControllerProxy.getController().getUser(publisherName));
 		}
 		catch (Exception e)
