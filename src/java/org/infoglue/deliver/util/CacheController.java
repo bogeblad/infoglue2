@@ -329,6 +329,18 @@ public class CacheController extends Thread
 		if(cacheName == null || key == null || value == null || key.toString().length() == 0)
 			return;
 
+		if(logger.isInfoEnabled() && cacheName.equalsIgnoreCase("pageCacheExtra"))
+		{			
+			logger.info("cacheName: " + cacheName);
+			logger.info("key: " + key);
+			logger.info("useGroups: " + useGroups);
+			logger.info("useFileCacheFallback: " + useFileCacheFallback);
+			logger.info("useMemoryCache: "+ useMemoryCache);
+			logger.info("groups: " + groups.length);
+			for(String group : groups)
+				logger.info(group + ",");
+		}
+
 		if(useMemoryCache) 
 		{
 		    if(!caches.containsKey(cacheName))
@@ -427,14 +439,29 @@ public class CacheController extends Thread
 			boolean containsSelectiveCacheUpdateNonApplicable = false;
 			if(groups != null)
 			{
+				List<String> groupCandidateListStandard = new ArrayList<String>();
+				List<String> groupCandidateListSpecial = new ArrayList<String>();
 				for(int i=0; i<groups.length; i++)
 				{
-					if(groups[i].equalsIgnoreCase("selectiveCacheUpdateNonApplicable"))
-					{
-						groups = new String[]{"selectiveCacheUpdateNonApplicable"};
-						break;
-					}
+					if(groups[i].startsWith("content") || groups[i].startsWith("siteNode"))
+						groupCandidateListStandard.add(groups[i]);
+					else
+						groupCandidateListSpecial.add(groups[i]);
 				}
+				
+				if(!groupCandidateListSpecial.contains("selectiveCacheUpdateNonApplicable"))
+				{
+					groupCandidateListSpecial.addAll(groupCandidateListStandard);
+				}
+				String[] newGroups = new String[groupCandidateListSpecial.size()];
+				groups = groupCandidateListSpecial.toArray(newGroups);
+			}
+			
+			if(logger.isInfoEnabled() && cacheName.equalsIgnoreCase("pageCacheExtra"))
+			{
+				logger.info("real groups: " + groups.length);
+				for(String group : groups)
+					logger.info(group + ",");
 			}
 			
 			//Kanske tillbaka om minnet sticker
@@ -457,7 +484,7 @@ public class CacheController extends Thread
 			
 			//if(cacheName.startsWith("importTag"))
 			//	System.out.println("CacheKey:" + key.toString());
-				
+						
 			//TODO
 			if(CmsPropertyHandler.getUseSynchronizationOnCaches())
 			{
@@ -511,8 +538,7 @@ public class CacheController extends Thread
 				}
 			}
 		}
-				
-		//if(cacheName.equals("pageCache"))
+			
 		//	logger.info("numberOfPageCacheFiles:" + numberOfPageCacheFiles.get());
 		if(cacheName.equals("pageCache") && numberOfPageCacheFiles.get() > 30000)
 		{
@@ -853,14 +879,16 @@ public class CacheController extends Thread
 		//logger.info("Cache entry set:" + cacheInstance.getCache().cacheMap.entrySet());
 		
         Set groupEntries = cacheInstance.getCache().cacheMap.getGroup(groupName);
-        /*
-        if(groupEntries != null)
-        	logger.info("groupEntries for " + groupName + ":" + groupEntries.size());
-        else
-        	logger.info("no groupEntries for " + groupName);
-        */
         
-		if (groupEntries != null) 
+        if(logger.isInfoEnabled())
+        {
+	        if(groupEntries != null)
+	        	logger.info("groupEntries for " + groupName + ":" + groupEntries.size() + " in cacheInstance:" + cacheInstance);
+	        else
+	        	logger.info("no groupEntries for " + groupName + " in cacheInstance:" + cacheInstance);
+        }
+        
+        if (groupEntries != null) 
         {
             Iterator groupEntriesIterator = groupEntries.iterator();
             while (groupEntriesIterator.hasNext()) 
