@@ -1719,12 +1719,15 @@ public class ContentDeliveryController extends BaseDeliveryController
 			return cachedAssetUrl;
 		}
 		
+		deliveryContext.addUsedContent("content_" + contentId);
+
 		String assetUrl = "";
 		assetUrl = urlComposer.composeDigitalAssetUrl("", null, "", deliveryContext); 
 		
 		SmallestContentVersionVO contentVersion = getSmallestContentVersionVO(siteNodeId, contentId, languageId, db, useLanguageFallback, deliveryContext, infoGluePrincipal);
 		ContentVO contentVO = this.getContentVO(db, contentId, deliveryContext);
 		LanguageVO masterLanguageVO = LanguageDeliveryController.getLanguageDeliveryController().getMasterLanguageForRepository(contentVO.getRepositoryId(), db);
+		
 		if(logger.isInfoEnabled())
 		{
 			logger.info("languageId:" + languageId);
