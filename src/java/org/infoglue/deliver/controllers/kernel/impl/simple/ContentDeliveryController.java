@@ -1700,6 +1700,9 @@ public class ContentDeliveryController extends BaseDeliveryController
 		if(contentId == null || contentId.intValue() < 1)
 			return "";
 
+		//System.out.println("Adding:" + "content_" + contentId);
+		deliveryContext.addUsedContent("content_" + contentId);
+
 	    SiteNodeVO siteNodeVO = SiteNodeController.getController().getSiteNodeVOWithId(siteNodeId, db);
 
 	    String assetCacheKey = "" + languageId + "_" + contentId + "_" + siteNodeVO.getRepositoryId() + "_" + assetKey + "_" + useLanguageFallback + "_" + deliveryContext.getUseFullUrl() + "_" + deliveryContext.getUseDownloadAction();
@@ -1718,8 +1721,6 @@ public class ContentDeliveryController extends BaseDeliveryController
 			
 			return cachedAssetUrl;
 		}
-		
-		deliveryContext.addUsedContent("content_" + contentId);
 
 		String assetUrl = "";
 		assetUrl = urlComposer.composeDigitalAssetUrl("", null, "", deliveryContext); 
