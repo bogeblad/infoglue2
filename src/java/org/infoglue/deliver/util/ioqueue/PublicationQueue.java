@@ -46,7 +46,8 @@ import org.infoglue.cms.util.NotificationMessage;
 import org.infoglue.deliver.util.LiveInstanceMonitor;
 
 /*
- *  This class keeps track of all live deliver states by polling them with regular intervals. It also acts as a message queue so publication messages are resent if not successful the first time.
+ *  This class keeps track of all live deliver states by polling them with regular intervals. 
+ *  It also acts as a message queue so publication messages are resent if not successful the first time.
  */
 
 public class PublicationQueue implements Runnable
@@ -64,6 +65,9 @@ public class PublicationQueue implements Runnable
 	{
 	}
 
+	/**
+	 * Get the singleton and start the thread if not active
+	 */
 	public static PublicationQueue getPublicationQueue()
 	{
 		if(singleton == null)
@@ -80,7 +84,10 @@ public class PublicationQueue implements Runnable
 	{
 		return instancePublicationQueueBeans;
 	}
-
+	
+	/**
+	 * This method gets when the queue for a specific instance was cleared manually last.
+	 */
 	public String getInstancePublicationQueueManualClearTimestamp(String serverURL)
 	{
 		String timestamp = instancePublicationQueueMeta.get(serverURL + "_manualClearTimestamp");
@@ -93,6 +100,9 @@ public class PublicationQueue implements Runnable
 			return "Never cleared";
 	}
 
+	/**
+	 * This method gets when the queued beans for a specific instance.
+	 */
 	public Set<PublicationQueueBean> getInstancePublicationQueueBeans(String serverURL)
 	{
 		if(instancePublicationQueueBeans.containsKey(serverURL))
@@ -101,6 +111,10 @@ public class PublicationQueue implements Runnable
 			return new HashSet<PublicationQueueBean>();
 	}
 
+	/**
+	 * This method allows you to add a publication queue bean and register it against a certain deliver instance.
+	 * It makes sure each bean is unique.
+	 */
 	public void addPublicationQueueBean(String liveInstanceValidationUrl, PublicationQueueBean bean)
 	{
 		logger.info("Adding url..");
@@ -121,6 +135,9 @@ public class PublicationQueue implements Runnable
 		logger.info("Done...");
 	}
 
+	/**
+	 * Allows for manual clearing of a live instance queue.
+	 */
 	public void clearPublicationQueueBean(String liveInstanceValidationUrl)
 	{
 		logger.error("Clearing queue manually for " + liveInstanceValidationUrl);
@@ -138,6 +155,11 @@ public class PublicationQueue implements Runnable
 		instancePublicationQueueMeta.put(liveInstanceValidationUrl + "_manualClearTimestamp", "" + System.currentTimeMillis());
 	}
 
+	/**
+	 * The thread runner - with each run it goes through all the queues and tries to call (POST) the deliver instance
+	 * If the post fails the beans is kept in the queue and retried later if the instance is up at that time.  
+	 */
+	 
 	public synchronized void run()
 	{
 		logger.info("Running HttpUniqueRequestQueue...");

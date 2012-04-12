@@ -558,7 +558,11 @@ public abstract class InfoGlueAbstractAction extends WebworkAbstractAction
     {
     	return CmsPropertyHandler.getAllowPublicationEventFilter();
     }
-
+    
+    /**
+     * Getter for if the system should allow a user to override the 
+     * version modifyer upon publication. 
+     */
 	public String getAllowOverrideModifyer()
 	{
 	    return CmsPropertyHandler.getAllowOverrideModifyer();
@@ -594,16 +598,26 @@ public abstract class InfoGlueAbstractAction extends WebworkAbstractAction
 		this.getSession().setToolId(toolId);
 	}
 
+	/**
+	 * Helper method to get the instance status defined by the delivery-base-url.
+	 */
 	public Boolean getInstanceStatus(String baseUrl)
 	{
 		return LiveInstanceMonitor.getInstance().getServerStatus(baseUrl);
 	}
 
+	/**
+	 * This method returns a map of all the registered deliver instances and their current state.
+	 */
 	public Map<String,Boolean> getInstanceStatusMap()
 	{
 		return LiveInstanceMonitor.getInstance().getInstanceStatusMap();
 	}
 
+	/**
+	 * This method returns a set of all queued publication beans divided inte a map where each set represents a certain deliver instance.
+	 * So it returns all the queues so to speak.
+	 */
 	public Map<String, Set<PublicationQueueBean>> getInstancePublicationQueueBeans()
 	{
 		return PublicationQueue.getPublicationQueue().getInstancePublicationQueueBeans();

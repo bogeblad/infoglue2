@@ -116,6 +116,10 @@ public class UpdateContentVersionAttributeAction extends ViewContentVersionActio
 
 	private static Boolean active = new Boolean(false);
 	
+	/**
+	 * This command updates a certain attribute in a content version.
+	 * Lately we added a timeout on the wait for other threads to finish to avoid locks.
+	 */
 	public String doSaveAndReturnValue()
     {
 		int index = 0;

@@ -88,6 +88,10 @@ public class PortletAssetController extends DigitalAssetController
         return digitalAsset;
     }
 
+    /**
+     * This method finds and returns an asset containing the portlet registry. 
+     * It only works in the case you have stated "digitalAssetPortletRegistryId" in your deliver.properties.
+     */
     public static DigitalAsset getPortletRegistry() throws SystemException
     {
         Database db = CastorDatabaseService.getDatabase();

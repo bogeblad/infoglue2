@@ -23,6 +23,10 @@
 
 package org.infoglue.cms.util;
 
+/**
+ * This bean contains all information about what kind of notification message to send to
+ * the deliver instaces.
+ */
 public class NotificationMessage
 {
 	public final static int TRANS_CREATE      		= 0;

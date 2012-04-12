@@ -42,6 +42,14 @@ public class VisualFormatter
     {
     }
     
+    /**
+     * This method takes a date in the form of milliseconds from 1970 and formats it as a 
+     * string according to the java.text.SimpleDateFormat syntax.
+     *
+     * @param timeAsMillis - Date in the form of millseconds
+     * @param pattern - The output format
+     * @return The formatted date as a string
+     */
     public String formatDate(long timeAsMillis, String pattern)
     {	
     	Date date = new Date(timeAsMillis);

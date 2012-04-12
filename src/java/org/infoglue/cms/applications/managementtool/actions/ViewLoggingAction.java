@@ -27,14 +27,12 @@ import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
-import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Locale;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
@@ -42,19 +40,12 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.log4j.Logger;
 import org.infoglue.cms.applications.common.VisualFormatter;
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
-import org.infoglue.cms.controllers.kernel.impl.simple.ContentVersionController;
-import org.infoglue.cms.controllers.kernel.impl.simple.DigitalAssetController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ServerNodeController;
-import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.io.FileHelper;
 import org.infoglue.cms.util.CmsPropertyHandler;
-import org.infoglue.cms.util.FileUploadHelper;
 import org.infoglue.cms.util.sorters.FileComparator;
-import org.infoglue.cms.util.sorters.ReflectionComparator;
-import org.infoglue.deliver.applications.actions.ViewApplicationStateAction;
 import org.infoglue.deliver.util.MathHelper;
 
-import webwork.action.ActionContext;
 
 /**
  * This class acts as a system tail on the logfiles available.
@@ -73,6 +64,10 @@ public class ViewLoggingAction extends InfoGlueAbstractAction
 	private List logFiles = new ArrayList();
 	private String logFileName = null;
 
+	/**
+	 * This command allows the user to download a logfile. It does some access controls first
+	 * and also makes sure you cannot download any arbitraty file.
+	 */
 	public String doDownloadFile() throws Exception
 	{
 		boolean allowAccess = true;
@@ -161,7 +156,9 @@ public class ViewLoggingAction extends InfoGlueAbstractAction
 		return NONE;
 	}
 
-	
+	/**
+	 * This is the normal log view action. Takes a file name as input and tail the file with x-lines.
+	 */
     public String doExecute() throws Exception
     {
     	boolean allowAccess = true;

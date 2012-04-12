@@ -105,7 +105,7 @@ public class ViewServerNodePropertiesAction extends InfoGluePropertiesAbstractAc
     }
 
     /**
-     * The main method that fetches the Value-objects for this use-case
+     * This method saves all application settings by grabbing the stated parameter values from the request.
      */
     
     public String doSave() throws Exception

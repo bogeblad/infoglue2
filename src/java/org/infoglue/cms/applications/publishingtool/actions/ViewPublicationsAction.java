@@ -84,6 +84,10 @@ public class ViewPublicationsAction extends InfoGlueAbstractAction
 		}
 	}
 	
+	/**
+	 * The main execution point. Populates any filter settings (not common) and also the repo, the publication events (items to be published) and
+	 * an edition browser so you can see earlier publications. 
+	 */
 	public String doExecute() throws Exception
 	{
 		if(filter == null)
@@ -106,6 +110,10 @@ public class ViewPublicationsAction extends InfoGlueAbstractAction
 		return SUCCESS;
 	}
 	
+	/**
+	 * This command shows the items in a earlier publication. It also shows the status reported from all the 
+	 * deliver instances on if the publication was processed or not.
+	 */
 	public String doShowPublicationDetails() throws Exception
 	{
 		publicationDetailVOList = PublicationController.getController().getPublicationDetailVOList(publicationId);
@@ -114,6 +122,9 @@ public class ViewPublicationsAction extends InfoGlueAbstractAction
 		return "showPublicationDetails";
 	}
 
+	/**
+	 * Returns the status reported from all the  deliver instances on if the publication given as input was processed or not.
+	 */
 	public static List getPublicationDetails(Integer publicationId) throws SystemException
 	{
 		return PublicationController.getController().getPublicationDetailVOList(publicationId);

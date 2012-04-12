@@ -24,22 +24,13 @@
 package org.infoglue.deliver.util;
 
 import java.io.FileNotFoundException;
-import java.lang.Thread.State;
-import java.lang.management.ManagementFactory;
-import java.lang.management.ThreadInfo;
-import java.lang.management.ThreadMXBean;
-import java.net.InetAddress;
 import java.net.SocketTimeoutException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicBoolean;
-
-import javax.servlet.http.HttpServletRequest;
 
 import org.apache.log4j.Logger;
-import org.infoglue.cms.applications.managementtool.actions.ViewMessageCenterAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.TransactionHistoryController;
 import org.infoglue.cms.util.CmsPropertyHandler;
 import org.infoglue.cms.util.DateHelper;
@@ -103,7 +94,10 @@ public class LiveInstanceMonitor implements Runnable
 			}
 		}
 	}
-	
+
+	/**
+	 * This works by calling the status action on each registered deliver instance. 
+	 */
 	private void validateInstances()
     {
 		//System.out.println("validateInstances");

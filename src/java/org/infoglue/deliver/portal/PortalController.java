@@ -35,7 +35,6 @@ import org.apache.pluto.om.window.PortletWindow;
 import org.apache.pluto.portalImpl.services.ServiceManager;
 import org.infoglue.deliver.applications.databeans.DeliveryContext;
 import org.infoglue.deliver.portal.services.PortletWindowRegistryService;
-import org.infoglue.deliver.util.ThreadMonitor;
 
 /**
  * @author robert lerner

@@ -51,6 +51,9 @@ public class ViewListTransactionHistoryAction extends InfoGlueAbstractAction
 	
 	private List transactionHistoryVOList;
 	
+	/**
+	 * This is the main execution method. Allows for a few filtering options to show only events / transactions of a certain kind.
+	 */
 	protected String doExecute() throws Exception 
 	{
 		/*

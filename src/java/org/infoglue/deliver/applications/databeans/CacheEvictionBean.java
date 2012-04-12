@@ -29,7 +29,7 @@ import java.util.Map;
 import org.infoglue.deliver.util.HttpHelper;
 
 /**
- * This class is meant to store information about a cache update.
+ * This class contains information about a cache update.
  * 
  * @author mattias
  */

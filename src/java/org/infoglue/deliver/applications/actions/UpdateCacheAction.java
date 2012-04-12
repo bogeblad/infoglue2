@@ -82,7 +82,10 @@ public class UpdateCacheAction extends InfoGlueAbstractAction
     }
     
     /**
-     * This method will just reply to a testcall. 
+     * This method will allow for 3:rd party systems to send a publication message
+     * through to all deliver instances. This enables the same 3:rd party integrations to 
+     * register pages where it's used with a special key which can later be cleared. It also enables 
+     * those "publications" to be traced and logged in the same manner as all the others. 
      */
          
     public String doPassThroughPublication() throws Exception
@@ -196,7 +199,8 @@ public class UpdateCacheAction extends InfoGlueAbstractAction
     }
 
     /**
-     * This method return status information about a certain publication. It should be able to inform us about if the publication was performed or if it's waiting or ongoing. 
+     * This method return status information about a certain publication. 
+     * It should be able to inform us about if the publication was performed or if it's waiting or ongoing. 
      */
          
     public String doGetPublicationState() throws Exception

@@ -81,7 +81,8 @@ import com.google.gson.reflect.TypeToken;
 
 
 /**
- * PublicationController.java
+ * This controller is responsible for all publications management. 
+ *  
  *
  * @author Stefan Sik, Mattias Bogeblad
  */

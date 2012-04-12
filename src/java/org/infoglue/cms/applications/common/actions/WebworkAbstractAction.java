@@ -104,9 +104,10 @@ public abstract class WebworkAbstractAction implements Action, ServletRequestAwa
 
 
 
-  /**
-   *
-   */
+	/**
+	 * This is the main execution point for any webwork action.
+	 * Lately we added statistics on each action for debugging and optimization purposes.
+	 */
     public String execute() throws Exception 
     {
     	Timer t = new Timer();
@@ -325,7 +326,7 @@ public abstract class WebworkAbstractAction implements Action, ServletRequestAwa
   	}
 
   	/**
-   	 *
+   	 * This is a complement to the normal webwork execution which allows for a command-based execution of actions. 
    	 */
   	
   	private String invokeCommand() throws Exception 

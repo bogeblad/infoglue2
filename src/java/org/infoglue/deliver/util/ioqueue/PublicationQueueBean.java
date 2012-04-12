@@ -23,12 +23,13 @@
 
 package org.infoglue.deliver.util.ioqueue;
 
-import java.net.URLEncoder;
-import java.util.Enumeration;
-import java.util.HashMap;
 import java.util.Hashtable;
-import java.util.Map;
 
+/**
+ * This bean represents all the data needed in the publication queue.
+ * Mainly it contains the url to the deliver instance (the bean is unique to each instance), the request parameters
+ * and also the serialized parameters. 
+ */
 public class PublicationQueueBean
 {
 	private String urlAddress;
@@ -39,14 +40,17 @@ public class PublicationQueueBean
 	{
 		return urlAddress;
 	}
+	
 	public void setUrlAddress(String urlAddress)
 	{
 		this.urlAddress = urlAddress;
 	}
+	
 	public Hashtable getRequestParameters()
 	{
 		return requestParameters;
 	}
+	
 	public void setRequestParameters(Hashtable requestParameters)
 	{
 		this.requestParameters = requestParameters;

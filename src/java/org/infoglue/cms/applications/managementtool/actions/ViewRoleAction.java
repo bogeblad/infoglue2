@@ -54,6 +54,12 @@ public class ViewRoleAction extends InfoGlueAbstractAction
 	private List contentTypeDefinitionVOList;
 	private List assignedContentTypeDefinitionVOList;    
 	
+	/**
+	 * This method initializes the view by populating all the entities. 
+	 * It fetches the role itself, the type of authorization update support and all the assigned principals.
+	 * It then populates a list of unassigned principals.
+	 */
+
     protected void initialize(String roleName) throws Exception
     {
 		//this.supportsUpdate				= RoleControllerProxy.getController().getSupportUpdate();

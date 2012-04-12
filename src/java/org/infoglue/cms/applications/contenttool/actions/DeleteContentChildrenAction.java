@@ -67,6 +67,12 @@ public class DeleteContentChildrenAction extends InfoGlueAbstractAction
 		this.contentVO = contentVO;
 	}
 	
+	/**
+	 * This action deletes all child contents. It basically only 
+	 * checks for any relations which prevents a delete and shows that info or if
+	 * non exists deletes the children and refreshes the view.
+	 */
+
 	public String doExecute() throws Exception 
 	{
 		List children = ContentController.getContentController().getContentChildrenVOList(contentVO.getContentId(), null);

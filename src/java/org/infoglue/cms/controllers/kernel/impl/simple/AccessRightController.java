@@ -1770,7 +1770,7 @@ public class AccessRightController extends BaseController
 	}
 
 	/**
-	 * Returns the latest digital asset for a contentversion.
+	 * Returns all system user names used in any access rights related queries.
 	 */
 	
 	public List<String> getUniqueSystemUserNameListInAccessRightUser(Database db) throws Exception
@@ -1818,7 +1818,7 @@ public class AccessRightController extends BaseController
 	}	
 
 	/**
-	 * This method get all unique names used in cmAccessRightUser
+	 * This method get all unique names used in cmAccessRightGroup
 	 * @param db
 	 * @return
 	 * @throws Exception

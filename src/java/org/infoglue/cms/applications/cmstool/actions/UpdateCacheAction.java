@@ -267,7 +267,7 @@ public class UpdateCacheAction extends InfoGlueAbstractAction
 					}
 					catch (Exception e) 
 					{
-						logger.warn("Error in JDOCallback:" + e.getMessage(), e);
+						logger.warn("Error in UpdateCacheAction:" + e.getMessage(), e);
 					}
 				}
 				if(className.indexOf("DigitalAsset") > 0 || className.indexOf("ContentVersion") > 0)

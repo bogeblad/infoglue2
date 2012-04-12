@@ -39,9 +39,9 @@ import org.infoglue.deliver.invokers.ComponentBasedHTMLPageInvoker;
 /**
  * @author mattias
  *
- * TODO To change the template for this generated type comment go to
- * Window - Preferences - Java - Code Style - Code Templates
+ * This class contains a lot of statistics. Badly implemented now that Atomic operations are part of Java.
  */
+
 public class Counter
 {
     private final static Logger logger = Logger.getLogger(Counter.class.getName());

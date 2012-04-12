@@ -54,6 +54,11 @@ public class ViewGroupAction extends InfoGlueAbstractAction
 	private List contentTypeDefinitionVOList;
 	private List assignedContentTypeDefinitionVOList;    
 	
+	/**
+	 * This method initializes the view by populating all the entities. 
+	 * It fetches the group itself, the type of authorization update support and all the assigned principals.
+	 * It then populates a list of unassigned principals.
+	 */
     protected void initialize(String groupName) throws Exception
     {
 		//this.supportsUpdate				= GroupControllerProxy.getController().getSupportUpdate();
@@ -133,6 +138,9 @@ public class ViewGroupAction extends InfoGlueAbstractAction
 		return this.assignedInfoGluePrincipals;
 	}
 
+	/**
+	 * Method which returns all the principals not assigned to the group.
+	 */
 	public List getUnAssignedInfoGluePrincipals() throws Exception
 	{
 		return this.unassignedInfoGluePrincipals;

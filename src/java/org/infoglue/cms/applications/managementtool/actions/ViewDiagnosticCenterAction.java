@@ -23,22 +23,15 @@
 
 package org.infoglue.cms.applications.managementtool.actions;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.BaseController;
-import org.infoglue.cms.controllers.kernel.impl.simple.ContentController;
-import org.infoglue.cms.controllers.kernel.impl.simple.ContentVersionController;
 import org.infoglue.cms.controllers.kernel.impl.simple.DigitalAssetController;
 import org.infoglue.cms.controllers.kernel.impl.simple.PublicationController;
-import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeController;
-import org.infoglue.cms.entities.management.Chat;
-import org.infoglue.cms.entities.management.Message;
 import org.infoglue.cms.entities.management.TableCount;
 import org.infoglue.cms.entities.publishing.PublicationVO;
 import org.infoglue.cms.util.CmsPropertyHandler;
-import org.infoglue.cms.util.CmsSessionContextListener;
 import org.infoglue.deliver.applications.databeans.CacheEvictionBean;
 import org.infoglue.deliver.util.ioqueue.PublicationQueue;
 
@@ -60,10 +53,16 @@ public class ViewDiagnosticCenterAction extends InfoGlueAbstractAction
 	private int numberOfContentVersions = 0;
 	private int numberOfDigitalAssets = 0;
 	private int numberOfUnusedDigitalAssets = 0;
-		
+	
+	//The url to validate
 	private String liveInstanceValidationUrl = "";
+
+	//The address to return the user to after come action commands
 	private String returnAddress = "";
 
+	/**
+	 * This method does several checks and return the diagnostic view.
+	 */
 	public String doExecute() throws Exception
     {
     	this.internalDeliverUrls = CmsPropertyHandler.getInternalDeliveryUrls();
@@ -117,7 +116,8 @@ public class ViewDiagnosticCenterAction extends InfoGlueAbstractAction
     }
 
 	/**
-     * This action allows to clear notification queue manually.
+     * This action allows to clear notification queue manually. It can return the user to the
+     * same normal diagnostics view again or to a custom url if sent in.
      */
     public String doClearQueue() throws Exception
     {
@@ -205,16 +205,25 @@ public class ViewDiagnosticCenterAction extends InfoGlueAbstractAction
 		return PublicationQueue.getPublicationQueue();
 	}
 
+	/**
+	 * Method which returns the timestamp (if any) of the last manual clearing of the publication queue for a particular instance.
+	 */
 	public String getInstancePublicationQueueManualClearTimestamp(String baseUrl)
 	{
 		return PublicationQueue.getPublicationQueue().getInstancePublicationQueueManualClearTimestamp(baseUrl);
 	}
 
+	/**
+	 * Method which returns all ongoing publications for a certain instance. It calls the instance to check which ones are in process.
+	 */
 	public List<CacheEvictionBean> getOngoingPublicationBeans(String baseUrl)
 	{
 		return PublicationController.getOngoingPublicationStatusList(baseUrl);
 	}
 
+	/**
+	 * Method which returns all failed publications for a certain instance. It calls the instance to check which ones failed.
+	 */
 	public List<PublicationVO> getFailedPublicationVOList(String baseUrl)
 	{
 		return PublicationController.getController().getFailedPublicationVOList(baseUrl);
