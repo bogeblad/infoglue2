@@ -99,12 +99,6 @@ public class RequestAnalyser
         Counter.resetLatestPublications();
     }
 
-    /*
-    public void resetNumberOfPublicationsSinceStart()
-    {
-        Counter.resetNumberOfPublicationsSinceStart();
-    }
-*/
     public List<CacheEvictionBean> getLatestPublications()
     {
         return Counter.getLatestPublications();

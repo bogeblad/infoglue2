@@ -61,16 +61,6 @@ public class CacheEvictionBean
 	private String objectName = null;
 	private String typeId = null;
 
-		/*
-	public CacheEvictionBean(String className, String typeId, String objectId, String objectName)
-	{
-		this.className = className;
-		this.typeId = typeId;
-		this.objectId = objectId;
-		this.objectName = objectName;	
-	}
-		*/
-	
 	public CacheEvictionBean(Integer publicationId, String userName, String timestamp, String className, String typeId, String objectId, String objectName)
 	{
 		this.publicationId = publicationId;

@@ -132,13 +132,7 @@ public class Counter
 		}
     	//return numberOfPublicationsSinceStart;
     }
-/*
-    static void resetNumberOfPublicationsSinceStart()
-    {
-    	resetLatestPublications();
-    	//numberOfPublicationsSinceStart = 0;
-    }
-*/
+
     synchronized static void addPublication(CacheEvictionBean bean)
     {
     	if(bean.getClassName().indexOf("ServerNodeProperties") == -1)

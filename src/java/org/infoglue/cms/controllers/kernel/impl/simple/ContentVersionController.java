@@ -710,30 +710,8 @@ public class ContentVersionController extends BaseController
 		
 		return contentVersionVO;
     }
-	/*
-	public ContentVersionVO getLatestContentVersionVO(Integer contentId, Integer languageId, Database db) throws SystemException, Bug, Exception
-    {
-        ContentVersionVO contentVersionVO = null;
-        
-        OQLQuery oql = db.getOQLQuery( "SELECT cv FROM org.infoglue.cms.entities.content.impl.simple.SmallContentVersionImpl cv WHERE cv.contentId = $1 AND cv.languageId = $2 ORDER BY cv.contentVersionId desc");
-    	oql.bind(contentId);
-    	oql.bind(languageId);
-    	
-    	QueryResults results = oql.execute(Database.ReadOnly);
-		
-		if (results.hasMore()) 
-        {
-			ContentVersion contentVersion = (ContentVersion)results.next();
-			contentVersionVO = contentVersion.getValueObject();
-        }
-		
-		results.close();
-		oql.close();
-		
-		return contentVersionVO;
-    }
-	*/
 
+	
 	public ContentVersion getContentVersionWithId(Integer contentVersionId) throws SystemException, Bug
     {
     	Database db = CastorDatabaseService.getDatabase();
@@ -1109,7 +1087,6 @@ public class ContentVersionController extends BaseController
 	
     public ContentVersionVO update(Integer contentId, Integer languageId, ContentVersionVO contentVersionVO, InfoGluePrincipal principal) throws ConstraintException, SystemException
     {
-		//System.out.println("update:" + contentId + " - " + languageId);
         ContentVersionVO updatedContentVersionVO;
 		
         Database db = CastorDatabaseService.getDatabase();
