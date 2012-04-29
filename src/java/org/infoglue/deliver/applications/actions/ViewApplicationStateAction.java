@@ -163,11 +163,10 @@ public class ViewApplicationStateAction extends InfoGlueAbstractAction
         boolean allowAccess = false;
         try
         {
-        	//System.out.println("IPAllowed:" + ServerNodeController.getController().getIsIPAllowed(this.getRequest()));
 	        if(!ServerNodeController.getController().getIsIPAllowed(this.getRequest()))
 	        {
 	        	Principal principal = getPrincipal();
-	        	//System.out.println("principal:" + principal);
+	        	logger.info("principal:" + principal);
 	        	if(principal == null)
 	        		principal = (Principal)this.getHttpSession().getAttribute("infogluePrincipal");
 	        	
