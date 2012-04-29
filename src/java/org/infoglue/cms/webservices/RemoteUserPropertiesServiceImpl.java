@@ -25,6 +25,7 @@ package org.infoglue.cms.webservices;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -111,7 +112,7 @@ public class RemoteUserPropertiesServiceImpl extends RemoteInfoGlueService
      * Inserts a new UserProperty.
      */
     
-    public Boolean updateUserProperties(final String principalName, int languageId, int contentTypeDefinitionId, boolean forcePublication, final Object[] inputsArray, final Object[] assetsArray) 
+    public Boolean updateUserProperties(final String principalName, int languageId, int contentTypeDefinitionId, boolean forcePublication, boolean allowHTMLContent, boolean allowExternalLinks, boolean allowDollarSigns, boolean allowAnchorSigns, boolean keepExistingAttributes, boolean keepExistingCategories, boolean updateExistingAssets, final Object[] inputsArray, final Object[] assetsArray) 
     {
         if(!ServerNodeController.getController().getIsIPAllowed(getRequest()))
         {
@@ -143,14 +144,43 @@ public class RemoteUserPropertiesServiceImpl extends RemoteInfoGlueService
             UserPropertiesVO userPropertiesVO = new UserPropertiesVO();
             userPropertiesVO.setUserName(principal.getName());
             
+    	    Collection userPropertiesVOList = UserPropertiesController.getController().getUserPropertiesVOList(principal.getName(), languageId);
+    		Iterator userPropertiesVOListIterator = userPropertiesVOList.iterator();
+    		while(userPropertiesVOListIterator.hasNext())
+    		{
+    			UserPropertiesVO userProperties = (UserPropertiesVO)userPropertiesVOListIterator.next();
+
+    			if(userProperties != null && userProperties.getLanguageId().equals(languageId) && userProperties.getValue() != null)
+    			{
+    				userPropertiesVO = userProperties;
+    				break;
+    			}
+    		}
+            
             logger.info("userPropertiesAttributesMap:" + userPropertiesAttributesMap.size());
             
             DOMBuilder domBuilder = new DOMBuilder();
             Document document = domBuilder.createDocument();
+            Element rootElement = null;
+            Element attributesRoot = null;
             
-            Element rootElement = domBuilder.addElement(document, "article");
-            Element attributesRoot = domBuilder.addElement(rootElement, "attributes");
+            logger.info("keepExistingAttributes:" + keepExistingAttributes);
+            if(keepExistingAttributes && userPropertiesVO.getValue() != null)
+        	{
+				String propertyXML = userPropertiesVO.getValue();
+				document = domBuilder.getDocument(propertyXML);
+				
+        		attributesRoot = (Element)document.getRootElement().element("attributes");
+        	}
+        	else
+        	{
+	            rootElement = domBuilder.addElement(document, "article");
+	            attributesRoot = domBuilder.addElement(rootElement, "attributes");
+        	}
             
+            logger.info("attributesRoot:" + attributesRoot);
+            logger.info("XML before:" + document.asXML());
+
             Iterator attributesIterator = userPropertiesAttributesMap.keySet().iterator();
             while(attributesIterator.hasNext())
             {
@@ -159,10 +189,23 @@ public class RemoteUserPropertiesServiceImpl extends RemoteInfoGlueService
                 
                 logger.info(attributeName + "=" + attributeValue);
                 
+                List<Element> elements = attributesRoot.elements(attributeName);
+                logger.info("elements:" + elements.size());
+                for(Element attribute : elements)
+                {
+                	logger.info("attribute:" + attribute);
+                    if(attribute != null)
+                    	attributesRoot.remove(attribute);                	
+                }
                 Element attribute = domBuilder.addElement(attributesRoot, attributeName);
+               	
+                logger.info("attribute after:" + attribute);
+                
                 domBuilder.addCDATAElement(attribute, attributeValue);
             }	                
-
+            
+            logger.info("XML:" + document.asXML());
+            
             userPropertiesVO.setValue(document.asXML());
             
             UserPropertiesVO newUserPropertiesVO = userPropertiesController.update(new Integer(languageId), new Integer(contentTypeDefinitionId), userPropertiesVO);
@@ -173,7 +216,7 @@ public class RemoteUserPropertiesServiceImpl extends RemoteInfoGlueService
 	        List digitalAssets = assets;
 	        
 	        logger.info("digitalAssets:" + digitalAssets);
-	        //System.out.println("digitalAssets:" + digitalAssets.size());
+	        //logger.info("digitalAssets:" + digitalAssets.size());
 	        if(digitalAssets != null)
 	        {
     	        Iterator digitalAssetIterator = digitalAssets.iterator();
@@ -181,7 +224,7 @@ public class RemoteUserPropertiesServiceImpl extends RemoteInfoGlueService
     	        {
     	            RemoteAttachment remoteAttachment = (RemoteAttachment)digitalAssetIterator.next();
 	    	        logger.info("digitalAssets in ws:" + remoteAttachment);
-	    	        //System.out.println("remoteAttachment:" + remoteAttachment.getName() + ":" + remoteAttachment.getSize() + ":" + remoteAttachment.getFilePath());
+	    	        //logger.info("remoteAttachment:" + remoteAttachment.getName() + ":" + remoteAttachment.getSize() + ":" + remoteAttachment.getFilePath());
 	    	        
 	            	DigitalAssetVO newAsset = new DigitalAssetVO();
 					newAsset.setAssetContentType(remoteAttachment.getContentType());
@@ -196,10 +239,10 @@ public class RemoteUserPropertiesServiceImpl extends RemoteInfoGlueService
 					while(existingDigitalAssetVOListIterator.hasNext())
 					{
 						DigitalAssetVO assetVO = (DigitalAssetVO)existingDigitalAssetVOListIterator.next();
-						//System.out.println("assetVO:" + assetVO.getAssetKey());
+						//logger.info("assetVO:" + assetVO.getAssetKey());
 						if(assetVO.getAssetKey().equals(newAsset.getAssetKey()))
 						{
-							//System.out.println("Removing:" + assetVO.getAssetKey() + ":" + assetVO.getAssetFileName());
+							//logger.info("Removing:" + assetVO.getAssetKey() + ":" + assetVO.getAssetFileName());
 							DigitalAssetController.getController().delete(assetVO.getId(), UserProperties.class.getName(), newUserPropertiesId);
 						}
 					}
