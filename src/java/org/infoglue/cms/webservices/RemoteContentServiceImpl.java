@@ -752,6 +752,7 @@ public class RemoteContentServiceImpl extends RemoteInfoGlueService
             Boolean keepExistingAttributes 	= (Boolean)contentVersion.get("keepExistingAttributes");
             Boolean keepExistingCategories 	= (Boolean)contentVersion.get("keepExistingCategories");
             Boolean updateExistingAssets 	= (Boolean)contentVersion.get("updateExistingAssets");
+            Boolean createVersionIfNotExists = (Boolean)contentVersion.get("createVersionIfNotExists");
 
             if(allowHTMLContent == null)
             	allowHTMLContent = new Boolean(false);
@@ -769,7 +770,10 @@ public class RemoteContentServiceImpl extends RemoteInfoGlueService
             	allowDollarSigns = new Boolean(false);
             if(allowAnchorSigns == null)
             	allowAnchorSigns = new Boolean(true);
-            
+
+            if(createVersionIfNotExists == null)
+            	createVersionIfNotExists = new Boolean(true);
+
             logger.info("contentVersionId:" + contentVersionId);
             logger.info("contentId:" + contentId);
             logger.info("languageId:" + languageId);
@@ -782,19 +786,38 @@ public class RemoteContentServiceImpl extends RemoteInfoGlueService
             logger.info("allowExternalLinks:" + allowExternalLinks);
 	        logger.info("allowDollarSigns:" + allowDollarSigns);
 	        logger.info("allowAnchorSigns:" + allowAnchorSigns);
+	        logger.info("createVersionIfNotExists:" + createVersionIfNotExists);
 
             ContentVersionVO contentVersionVO = null;
             if(contentVersionId != null)
                 contentVersionVO = ContentVersionController.getContentVersionController().getContentVersionVOWithId(contentVersionId);
             else
                 contentVersionVO = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(contentId, languageId);
-                
+
+            logger.info("contentVersionVO:" + contentVersionVO);
+
             if(contentVersionVO == null)
-                return new Boolean(false);
-                
-            contentVersionVO.setVersionComment(versionComment);
-            contentVersionVO.setModifiedDateTime(new Date());
-            contentVersionVO.setVersionModifier("" + principalName);
+            {
+            	logger.info("createVersionIfNotExists:" + createVersionIfNotExists);
+            	if(createVersionIfNotExists)
+            	{
+            		ContentVersionVO newContentVersionVO = new ContentVersionVO();
+            		newContentVersionVO.setVersionComment(versionComment);
+            		newContentVersionVO.setModifiedDateTime(new Date());
+            		newContentVersionVO.setVersionModifier("" + principalName);
+
+    	            contentVersionVO = contentVersionControllerProxy.acCreate(this.principal, contentId, languageId, newContentVersionVO);            		
+    	            logger.info("contentVersionVO:" + contentVersionVO);
+            	}
+            	else
+            		return new Boolean(false);            	
+            }
+            else
+            {
+	            contentVersionVO.setVersionComment(versionComment);
+	            contentVersionVO.setModifiedDateTime(new Date());
+	            contentVersionVO.setVersionModifier("" + principalName);
+            }
             
             Map attributes = (Map)contentVersion.get("contentVersionAttributes");
             
