@@ -1426,9 +1426,12 @@ public class ComponentLogic
 			    while(contentVersionIdListIterator.hasNext())
 			    {
 					Integer contentVersionId = (Integer)contentVersionIdListIterator.next();
-					ContentVersionVO contentVersionVO = ContentVersionController.getContentVersionController().getContentVersionVOWithId(contentVersionId, this.templateController.getDatabase());
-				    groups.add("contentVersion_" + contentVersionId);
-				    groups.add("content_" + contentVersionVO.getContentId());
+					if(contentVersionId != null)
+					{
+						ContentVersionVO contentVersionVO = ContentVersionController.getContentVersionController().getContentVersionVOWithId(contentVersionId, this.templateController.getDatabase());
+						groups.add("contentVersion_" + contentVersionId);
+					    groups.add("content_" + contentVersionVO.getContentId());
+					}
 				}
 
 			    //System.out.println("Adding group: " + "siteNode_" + templateController.getSiteNodeId());
@@ -1688,9 +1691,12 @@ public class ComponentLogic
 							Integer contentVersionId = (Integer)contentVersionIdListIterator.next();
 							try
 							{
-								ContentVersionVO contentVersionVO = ContentVersionController.getContentVersionController().getContentVersionVOWithId(contentVersionId, this.templateController.getDatabase());
-							    groups.add("contentVersion_" + contentVersionId);
-							    groups.add("content_" + contentVersionVO.getContentId());
+								if(contentVersionId != null)
+								{
+									ContentVersionVO contentVersionVO = ContentVersionController.getContentVersionController().getContentVersionVOWithId(contentVersionId, this.templateController.getDatabase());
+								    groups.add("contentVersion_" + contentVersionId);
+								    groups.add("content_" + contentVersionVO.getContentId());
+								}
 							}
 							catch (Exception e) 
 							{
@@ -1957,9 +1963,12 @@ public class ComponentLogic
 					Integer contentVersionId = (Integer)contentVersionIdListIterator.next();
 					try
 					{
-				        ContentVersionVO contentVersionVO = ContentVersionController.getContentVersionController().getContentVersionVOWithId(contentVersionId, this.templateController.getDatabase());
-					    groups.add("contentVersion_" + contentVersionId);
-					    groups.add("content_" + contentVersionVO.getContentId());
+						if(contentVersionId != null)
+						{
+							ContentVersionVO contentVersionVO = ContentVersionController.getContentVersionController().getContentVersionVOWithId(contentVersionId, this.templateController.getDatabase());
+							groups.add("contentVersion_" + contentVersionId);
+							groups.add("content_" + contentVersionVO.getContentId());
+						}
 					}
 					catch (Exception e) 
 					{
@@ -1987,9 +1996,12 @@ public class ComponentLogic
 						Integer contentVersionId = (Integer)contentVersionIdListIterator.next();
 						try
 						{
-							ContentVersionVO contentVersionVO = ContentVersionController.getContentVersionController().getContentVersionVOWithId(contentVersionId, this.templateController.getDatabase());
-						    groups.add("contentVersion_" + contentVersionId);
-						    groups.add("content_" + contentVersionVO.getContentId());
+							if(contentVersionId != null)
+							{
+								ContentVersionVO contentVersionVO = ContentVersionController.getContentVersionController().getContentVersionVOWithId(contentVersionId, this.templateController.getDatabase());
+								groups.add("contentVersion_" + contentVersionId);
+								groups.add("content_" + contentVersionVO.getContentId());
+							}
 						}
 						catch (Exception e) 
 						{
@@ -2578,10 +2590,12 @@ public class ComponentLogic
 			    while(contentVersionIdListIterator.hasNext())
 			    {
 					Integer contentVersionId = (Integer)contentVersionIdListIterator.next();
-					ContentVersionVO contentVersionVO = ContentVersionController.getContentVersionController().getContentVersionVOWithId(contentVersionId, this.templateController.getDatabase());
-
-				    groups.add("contentVersion_" + contentVersionId);
-				    groups.add("content_" + contentVersionVO.getContentId());
+					if(contentVersionId != null)
+					{
+						ContentVersionVO contentVersionVO = ContentVersionController.getContentVersionController().getContentVersionVOWithId(contentVersionId, this.templateController.getDatabase());
+						groups.add("contentVersion_" + contentVersionId);
+						groups.add("content_" + contentVersionVO.getContentId());
+					}
 				}
 				
 			    groups.add("siteNode_" + templateController.getSiteNodeId());
@@ -2935,9 +2949,12 @@ public class ComponentLogic
 		    while(contentVersionIdListIterator.hasNext())
 		    {
 				Integer contentVersionId = (Integer)contentVersionIdListIterator.next();
-			    ContentVersionVO contentVersionVO = ContentVersionController.getContentVersionController().getContentVersionVOWithId(contentVersionId, this.templateController.getDatabase());
-			    groups.add("contentVersion_" + contentVersionId);
-			    groups.add("content_" + contentVersionVO.getContentId());
+				if(contentVersionId != null)
+				{
+					ContentVersionVO contentVersionVO = ContentVersionController.getContentVersionController().getContentVersionVOWithId(contentVersionId, this.templateController.getDatabase());
+				    groups.add("contentVersion_" + contentVersionId);
+				    groups.add("content_" + contentVersionVO.getContentId());
+				}
 			}
 
 		    CacheController.cacheObjectInAdvancedCacheWithGroupsAsSet("componentEditorVersionIdCache", versionKey, usedContentVersionId, groups, true);

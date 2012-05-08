@@ -932,7 +932,7 @@ public class ContentDeliveryController extends BaseDeliveryController
 				deliveryContext.addUsedContentVersion("contentVersion_" + contentVersionId);
 				if(isMetaInfoQuery && contentVersionId != null)
 					deliveryContext.getUsedPageMetaInfoContentVersionIdSet().add(contentVersionId);
-				if(attributeName.equals("ComponentStructure"))
+				if(attributeName.equals("ComponentStructure") && contentVersionId != null)
 					deliveryContext.getUsedPageComponentsMetaInfoContentVersionIdSet().add(contentVersionId);
 			}
 	

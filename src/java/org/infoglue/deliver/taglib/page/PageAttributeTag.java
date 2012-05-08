@@ -25,6 +25,7 @@ package org.infoglue.deliver.taglib.page;
 
 import javax.servlet.jsp.JspException;
 
+import org.apache.log4j.Logger;
 import org.infoglue.deliver.taglib.TemplateControllerTag;
 
 /**
@@ -32,20 +33,23 @@ import org.infoglue.deliver.taglib.TemplateControllerTag;
  */
 public class PageAttributeTag extends TemplateControllerTag
 {
+    private final static Logger logger = Logger.getLogger(PageAttributeTag.class.getName());
+
 	private static final long serialVersionUID = 3905242346756059449L;
 	private String name;
 	private Object value;
-	
+	private boolean isError = false;
 
 	public int doEndTag() throws JspException
     {
-		if(value == null) //Read operation
+		if(value == null && !isError) //Read operation
 			produceResult(getController().getDeliveryContext().getPageAttributes().get(name));
-		else
+		else if(!isError)
 			getController().getDeliveryContext().getPageAttributes().put(name, value);
-        
+			
 		name = null;
 		value = null;
+		isError = false;
 		
 		return EVAL_PAGE;
     }	
@@ -69,7 +73,19 @@ public class PageAttributeTag extends TemplateControllerTag
 	 */
 	public void setValue(final String value) throws JspException
 	{
-		this.value = evaluate("PageAttribute", "value", value, Object.class);
+		if(value != null && !value.equals(""))
+		{
+			try
+			{
+				this.value = evaluate("PageAttribute", "value", value, Object.class);
+			}
+			catch (Exception e) 
+			{
+				logger.warn("PageAttributeTag was send a null reference in expression \"" + value + "\": " + getController().getOriginalFullURL() + " - component:" + getController().getComponentLogic().getInfoGlueComponent().getName());
+			}
+		}
+		else
+			this.isError = true;
 	}
 
 }

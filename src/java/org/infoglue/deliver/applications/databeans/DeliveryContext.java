@@ -37,6 +37,7 @@ import java.util.Set;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.log4j.Logger;
 import org.infoglue.cms.util.CmsPropertyHandler;
 
 /**
@@ -48,6 +49,8 @@ import org.infoglue.cms.util.CmsPropertyHandler;
 
 public class DeliveryContext implements UsageListener
 {
+    private final static Logger logger = Logger.getLogger(DeliveryContext.class.getName());
+
 	public static final String META_INFO_BINDING_NAME 					= "Meta information";
 	public static final String TEMPLATE_ATTRIBUTE_NAME   				= "Template";
 	public static final String TITLE_ATTRIBUTE_NAME     		 		= "Title";
@@ -476,6 +479,14 @@ public class DeliveryContext implements UsageListener
 	public Set getUsedPageMetaInfoContentVersionIdSet() 
 	{
 		return usedPageMetaInfoContentVersionIdSet;
+	}
+
+	public void addUsedPageComponentsMetaInfoContentVersionId(Integer contentVersionId) 
+	{
+		if(contentVersionId == null)
+			logger.warn("Null was sent in...");
+		else
+			this.usedPageComponentsMetaInfoContentVersionIdSet.add(contentVersionId);
 	}
 
 	public Set getUsedPageComponentsMetaInfoContentVersionIdSet() 
