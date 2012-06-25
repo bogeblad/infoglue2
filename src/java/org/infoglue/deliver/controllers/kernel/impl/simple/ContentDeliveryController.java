@@ -261,15 +261,19 @@ public class ContentDeliveryController extends BaseDeliveryController
 		ContentVersionVO contentVersionVO = null;
 		SiteNodeVO siteNodeVO = (SiteNodeVO)getVOWithId(SmallSiteNodeImpl.class, siteNodeId, db);
 		String contentVersionKey = "contentVersionVO_" + siteNodeVO.getRepositoryId() + "_" + contentId + "_" + languageId + "_" + useLanguageFallback;
-		
+
+		deliveryContext.addDebugInformation("contentVersionKey:" + contentVersionKey);
+
 		contentVersionVO = (ContentVersionVO)CacheController.getCachedObjectFromAdvancedCache("contentVersionCache", contentVersionKey);
 			
 		if(contentVersionVO != null)
 		{
+			deliveryContext.addDebugInformation("There was an cached contentVersionVO:" + contentVersionVO.getContentVersionId());
 			//logger.info("There was an cached contentVersionVO:" + contentVersionVO.getContentVersionId());
 		}
 		else
 		{
+			deliveryContext.addDebugInformation("There was not an cached contentVersionVO");
 			contentVersionVO = this.getContentVersionVO(siteNodeId, contentId, languageId, db, useLanguageFallback, deliveryContext, infoGluePrincipal);
         	if(contentVersionVO != null)
 			{
@@ -410,7 +414,7 @@ public class ContentDeliveryController extends BaseDeliveryController
 		
 		return contentVersion;
 	}
-
+	
 	/**
 	 * This method returns that contentVersion which matches the parameters sent in and which 
 	 * also has the correct state for this delivery-instance.
@@ -424,13 +428,19 @@ public class ContentDeliveryController extends BaseDeliveryController
 		ContentVersionVO contentVersion = null;
 		
 		MediumContentImpl content = (MediumContentImpl)getObjectWithId(MediumContentImpl.class, contentId, db);
+		deliveryContext.addDebugInformation("getContentVersionVO() with:" + siteNodeId + ", " + contentId + ", " + languageId);
+		
 		boolean isValidContent = isValidContent(infoGluePrincipal, content, languageId, useLanguageFallback, false, db, deliveryContext);
+		
+		deliveryContext.addDebugInformation("isValidContent:" + isValidContent);
 		if(isValidContent)
 		{
 			contentVersion = getContentVersionVO(contentId, languageId, getOperatingMode(deliveryContext), deliveryContext, db);
+			deliveryContext.addDebugInformation("contentVersion:" + contentVersion);
 			if(contentVersion == null && useLanguageFallback)
 			{
 				Integer masterLanguageId = LanguageDeliveryController.getLanguageDeliveryController().getMasterLanguageForSiteNode(db, siteNodeId).getLanguageId();
+				deliveryContext.addDebugInformation("masterLanguageId:" + masterLanguageId);
 				if(languageId != null && !languageId.equals(masterLanguageId))
 				{
 					contentVersion = getContentVersionVO(contentId, masterLanguageId, getOperatingMode(deliveryContext), deliveryContext, db);
@@ -440,6 +450,7 @@ public class ContentDeliveryController extends BaseDeliveryController
 				if(languageId != null && contentVersion == null && useLanguageFallback)
 				{
 					Integer contentMasterLanguageId = LanguageDeliveryController.getLanguageDeliveryController().getMasterLanguageForRepository(db, content.getRepositoryId()).getLanguageId();
+					deliveryContext.addDebugInformation("contentMasterLanguageId:" + contentMasterLanguageId);
 					if(languageId != null && !languageId.equals(contentMasterLanguageId) && !masterLanguageId.equals(contentMasterLanguageId))
 					{
 						contentVersion = getContentVersionVO(contentId, contentMasterLanguageId, getOperatingMode(deliveryContext), deliveryContext, db);
@@ -812,7 +823,7 @@ public class ContentDeliveryController extends BaseDeliveryController
 			    {
 					Integer protectedContentId = ContentDeliveryController.getContentDeliveryController().getProtectedContentId(db, contentId);
 					logger.info("IsProtected:" + protectedContentId);
-					if(protectedContentId != null && !AccessRightController.getController().getIsPrincipalAuthorized(infoGluePrincipal, "Content.Read", protectedContentId.toString()))
+					if(protectedContentId != null && !AccessRightController.getController().getIsPrincipalAuthorized(db, infoGluePrincipal, "Content.Read", protectedContentId.toString()))
 					{
 					    hasUserContentAccess = false;
 					}
@@ -843,12 +854,21 @@ public class ContentDeliveryController extends BaseDeliveryController
 		if(attributeName.equalsIgnoreCase("Template") || attributeName.equalsIgnoreCase("PreTemplate") || attributeName.equalsIgnoreCase("ComponentLabels"))
 			isTemplateQuery = true;
 		
+		deliveryContext.addDebugInformation("getContentAttribute with params:");
+		deliveryContext.addDebugInformation("	contentId: " + contentId);
+		deliveryContext.addDebugInformation("	languageId: " + languageId);
+		deliveryContext.addDebugInformation("	attributeName: " + attributeName);
+		deliveryContext.addDebugInformation("	siteNodeId: " + siteNodeId);
+		deliveryContext.addDebugInformation("	useLanguageFallback: " + useLanguageFallback);
+		deliveryContext.addDebugInformation("	infogluePrincipal: " + infogluePrincipal);
+		
 		//logger.info("usedContentVersionId:" + usedContentVersionId);
 		String enforceRigidContentAccess = CmsPropertyHandler.getEnforceRigidContentAccess();
 		if(enforceRigidContentAccess != null && enforceRigidContentAccess.equalsIgnoreCase("true") && !isMetaInfoQuery)
 		{
 			//logger.info("Enforcing getHasUserContentAccess for attributeName:" + contentId + ":" + languageId + ":" + attributeName);
 			boolean hasUserContentAccess = getHasUserContentAccess(db, infogluePrincipal, contentId);
+			deliveryContext.addDebugInformation("hasUserContentAccess: " + hasUserContentAccess);
 			if(!hasUserContentAccess)
 			{
 				return "";
@@ -888,12 +908,19 @@ public class ContentDeliveryController extends BaseDeliveryController
 
 		String attributeKey = attributeKeySB.toString();
 		String versionKey = versionKeySB.append("_contentVersionId").toString();
-		
+
+		deliveryContext.addDebugInformation("attributeKey: " + attributeKey);
+
 		String matcher = "";
 		String cacheName = "contentAttributeCache" + matcher;
 		String contentVersionIdCacheName = "contentVersionIdCache" + matcher;
 		
 		String attribute = (String)CacheController.getCachedObjectFromAdvancedCache(cacheName, attributeKey);
+		if(attribute != null)
+			deliveryContext.addDebugInformation("cachedAttribute: " + attribute.length());
+		else
+			deliveryContext.addDebugInformation("cachedAttribute: null");
+			
 		Integer contentVersionId = null;
 		
 	    try
@@ -906,9 +933,12 @@ public class ContentDeliveryController extends BaseDeliveryController
 			else
 			{
 				ContentVersionVO contentVersionVO = getContentVersionVO(db, siteNodeId, contentId, languageId, useLanguageFallback, deliveryContext, infogluePrincipal);
+				deliveryContext.addDebugInformation("contentVersionVO:" + contentVersionVO);
 			   
 	        	if (contentVersionVO != null) 
 				{
+					deliveryContext.addDebugInformation("contentVersionVO.versionValue:" + contentVersionVO.getVersionValue().length());
+
 				    attribute = getAttributeValue(db, contentVersionVO, attributeName, escapeHTML);	
 					contentVersionId = contentVersionVO.getId();
 				}
@@ -2696,8 +2726,14 @@ public class ContentDeliveryController extends BaseDeliveryController
 		if(infoGluePrincipal == null)
 		    throw new SystemException("There was no anonymous user found in the system. There must be - add the user anonymous/anonymous and try again.");
 		
-		if(content.getContentTypeDefinition() != null && content.getContentTypeDefinition().getName().equalsIgnoreCase("Meta info"))
+		if(content.getContentTypeDefinition() != null && (content.getContentTypeDefinition().getName().equalsIgnoreCase("Meta info") || 
+														  content.getContentTypeDefinition().getName().equalsIgnoreCase("HTMLTemplate") || 
+														  content.getContentTypeDefinition().getName().equalsIgnoreCase("PagePartTemplate") || 
+														  content.getContentTypeDefinition().getName().equalsIgnoreCase("PageTemplate")))
+		{
+			//logger.warn("Returning as it was a system content type:" + content.getContentTypeDefinition().getName());
 			return true;
+		}
 
 		boolean validateOnDates = true;
 		String operatingMode = CmsPropertyHandler.getOperatingMode();
@@ -2711,13 +2747,56 @@ public class ContentDeliveryController extends BaseDeliveryController
 
 		//RequestAnalyser.getRequestAnalyser().registerComponentStatistics("isValidContentPart1", t.getElapsedTimeNanos() / 1000);
 
-		Integer protectedContentId = getProtectedContentId(db, content);
-		if(logger.isInfoEnabled())
-			logger.info("content:" + content.getName() + ":" + protectedContentId);
-		if(protectedContentId != null && !AccessRightController.getController().getIsPrincipalAuthorized(db, infoGluePrincipal, "Content.Read", protectedContentId.toString()))
+		try
 		{
-		    return false;
+			Integer protectedContentId = getProtectedContentId(db, content);
+			deliveryContext.addDebugInformation("content:" + content.getName() + ":" + protectedContentId);
+			if(logger.isInfoEnabled())
+				logger.info("content:" + content.getName() + ":" + protectedContentId);
+			if(protectedContentId != null && !AccessRightController.getController().getIsPrincipalAuthorized(db, infoGluePrincipal, "Content.Read", protectedContentId.toString()))
+			{
+				deliveryContext.addDebugInformation("No access to Content.READ for " + infoGluePrincipal);
+			    return false;
+			}
 		}
+		catch (Exception e) 
+		{
+			logger.error("An error occurred trying to validate access to a content. Resetting datalayer and disabling page cache but allowing for now. Reson: " + e.getMessage());
+			logger.warn("An error occurred trying to validate access to a content. Resetting datalayer and disabling page cache but allowing for now. Reson: " + e.getMessage(), e);
+			
+			deliveryContext.setDisablePageCache(true);
+			
+			try
+			{
+				logger.warn("Clearing caches...");
+				CacheController.clearCastorCaches();
+		        CacheController.clearCaches(null, null, null);
+		        CacheController.clearFileCaches("pageCache");
+		        /*
+		        CacheController.clearCache(db, AccessRightImpl.class);
+				CacheController.clearCache(db, AccessRightRoleImpl.class);
+				CacheController.clearCache(db, AccessRightGroupImpl.class);
+				CacheController.clearCache(db, AccessRightUserImpl.class);
+				CacheController.clearCache("authorizationCache");
+				CacheController.clearCache("personalAuthorizationCache");
+				CacheController.clearCache("componentContentsCache");
+				*/
+			
+				logger.warn("Giving lookup one more chance...");
+				Integer protectedContentId = getProtectedContentId(db, content);
+				if(logger.isInfoEnabled())
+					logger.info("content:" + content.getName() + ":" + protectedContentId);
+				if(protectedContentId != null && !AccessRightController.getController().getIsPrincipalAuthorized(db, infoGluePrincipal, "Content.Read", protectedContentId.toString()))
+				{
+				    return false;
+				}
+			}
+			catch (Exception e2) 
+			{
+				logger.warn("Error second try as well. Reson: " + e2.getMessage(), e2);
+			}
+		}
+		
 			    
 		//RequestAnalyser.getRequestAnalyser().registerComponentStatistics("isValidContentPart protectedContentId", t.getElapsedTimeNanos() / 1000);
 
@@ -2791,6 +2870,7 @@ public class ContentDeliveryController extends BaseDeliveryController
 	}
 
 	private static Integer metaInfoContentTypeId = null;
+	private static Integer HTMLTemplateContentTypeId = null;
 	
 	public boolean isValidContent(InfoGluePrincipal infoGluePrincipal, Content content, Integer languageId, boolean useLanguageFallBack, boolean includeFolders, Database db, DeliveryContext deliveryContext, boolean checkVersionExists, boolean checkAccessRights) throws Exception
 	{
@@ -2806,8 +2886,16 @@ public class ContentDeliveryController extends BaseDeliveryController
 			if(ctdVO != null)
 				metaInfoContentTypeId = ctdVO.getId();
 		}
-		
-		if(content.getContentTypeDefinitionId() != null && content.getContentTypeDefinitionId().equals(metaInfoContentTypeId))
+
+		if(HTMLTemplateContentTypeId == null)
+		{
+			ContentTypeDefinitionVO ctdVO = ContentTypeDefinitionController.getController().getContentTypeDefinitionVOWithName("HTMLTemplate", db);
+			if(ctdVO != null)
+				HTMLTemplateContentTypeId = ctdVO.getId();
+		}
+
+		if(content.getContentTypeDefinitionId() != null && (content.getContentTypeDefinitionId().equals(metaInfoContentTypeId) ||
+															content.getContentTypeDefinitionId().equals(HTMLTemplateContentTypeId)))
 			return true;
 
 		boolean validateOnDates = true;

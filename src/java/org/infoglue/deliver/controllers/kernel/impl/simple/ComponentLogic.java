@@ -1922,10 +1922,10 @@ public class ComponentLogic
 				
 			if(propertyCandidateVersions != null)
 			{
-				contentVersionIdList.addAll(propertyCandidateVersions);
-				
 				try
 				{
+					contentVersionIdList.addAll(propertyCandidateVersions);
+
 					Iterator propertyCandidateVersionsIterator = propertyCandidateVersions.iterator();
 					while(propertyCandidateVersionsIterator.hasNext())
 					{
@@ -3407,6 +3407,7 @@ public class ComponentLogic
 
 		try
 		{
+			pageEditorHelper.setTemplateController(this.templateController);
 			org.dom4j.Document document = pageEditorHelper.getComponentPropertiesDOM4JDocument(siteNodeId, languageId, componentContentId, db, principal);
 			
 			if(document != null)

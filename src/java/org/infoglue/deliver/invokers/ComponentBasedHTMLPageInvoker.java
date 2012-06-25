@@ -1556,10 +1556,40 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 		    
 			try
 			{
+				templateController.getDeliveryContext().setDebugMode(true);
 			    String componentString = getComponentString(templateController, component.getContentId(), component); 
+			    
 				if(logger.isDebugEnabled())
 					logger.debug("componentString:" + componentString);
-			    
+
+				if(componentString == null || componentString.equals(""))
+				{
+					logger.warn("The component template was empty. This seems fishy. Lets not cache this. Please fix your template (user: " + templateController.getPrincipal().getName() + ", contentID: " + component.getContentId() + " (" + component.getName() + "). \nSource URL:" + templateController.getOriginalFullURL());
+					if(templateController.getDeliveryContext().getDebugInformation() != null)
+						logger.warn("Debug information:\n" + templateController.getDeliveryContext().getDebugInformation());
+					
+					templateController.getDeliveryContext().setDisablePageCache(true);
+					
+					try
+					{
+						logger.warn("Clearing caches...");
+						CacheController.clearCastorCaches();
+				        CacheController.clearCaches(null, null, null);
+				        CacheController.clearFileCaches("pageCache");
+					
+						logger.warn("Giving lookup of component string one more chance...");
+						componentString = getComponentString(templateController, component.getContentId(), component); 
+						logger.warn("componentString length:" + (componentString == null ? "null" : componentString.length()));
+					}
+					catch (Exception e2) 
+					{
+						logger.warn("Error second try as well. Reson: " + e2.getMessage(), e2);
+					}
+
+				}
+				templateController.getDeliveryContext().setDebugMode(false);
+				templateController.getDeliveryContext().resetDebugMode();
+
 				Map context = getDefaultContext();
 		    	context.put("templateLogic", templateController);
 		    	StringWriter cacheString = new StringWriter();
@@ -1571,7 +1601,14 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 
 				if(logger.isDebugEnabled())
 					logger.debug("componentString:" + componentString);
-
+				
+				if(componentString == null || componentString.equals(""))
+				{
+					logger.warn("The component rendering produced an empty string. This seems fishy. Lets not cache this. Please fix your template (contentID: " + component.getContentId() + " (" + component.getName() + "). \nSource URL:" + templateController.getOriginalFullURL());
+					//TODO - add page cache disable or perhaps a error...
+					templateController.getDeliveryContext().setDisablePageCache(true);
+				}
+				
 				int offset = 0;
 				int slotStartIndex = componentString.indexOf("<ig:slot", offset);
 				int slotStopIndex = 0;
@@ -1638,7 +1675,9 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 			}
 			catch(Exception e)
 			{		
-			    logger.warn("An component with either an empty template or with no template in the sitelanguages was found:" + e.getMessage(), e);	
+				templateController.getDeliveryContext().setDisablePageCache(true);
+				logger.error("The component rendering threw an exception. Lets not cache the page. Please fix your template (contentID: " + component.getContentId() + " (" + component.getName() + "). \nReason" + e.getMessage() + "\nSource URL:" + templateController.getOriginalFullURL());
+				logger.warn("The component rendering threw an exception. Lets not cache the page. Please fix your template (contentID: " + component.getContentId() + " (" + component.getName() + "). \nReason" + e.getMessage() + "\nSource URL:" + templateController.getOriginalFullURL(), e);	
 			}    	
 
 		}
@@ -1753,12 +1792,17 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 	{
 		String template = null;
 
+		templateController.getDeliveryContext().addDebugInformation("Getting component template. ContentID: " + contentId);
+		templateController.getDeliveryContext().addDebugInformation("User: " + templateController.getPrincipal().getName());
 		try
 		{
 		    if(templateController.getDeliveryContext().getShowSimple() == true)
 		    {
-		        String componentString = templateController.getContentAttribute(contentId, templateController.getTemplateAttributeName(), true);
-                String slots = "";
+				templateController.getDeliveryContext().addDebugInformation("Was a simple command..");
+
+				String componentString = templateController.getContentAttribute(contentId, templateController.getTemplateAttributeName(), true);
+                
+		    	String slots = "";
                 int offset = 0;
 		        int index = componentString.indexOf("<ig:slot");
                 int end = componentString.indexOf("</ig:slot>", offset);
@@ -1773,7 +1817,21 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 		    }
 		    else
 		    {
-		    	template = templateController.getContentAttribute(contentId, templateController.getTemplateAttributeName(), true);
+				templateController.getDeliveryContext().addUsedContent("content_" + contentId);
+				
+				try
+				{
+					template = ContentDeliveryController.getContentDeliveryController().getContentAttribute(getDatabase(), contentId, templateController.getLanguageId(), templateController.getTemplateAttributeName(), templateController.getSiteNodeId(), true, templateController.getDeliveryContext(), templateController.getPrincipal(), false);				
+		    	}
+		    	catch(Exception e)
+				{
+					if(templateController.getComponentLogic() != null && templateController.getComponentLogic().getInfoGlueComponent() != null)
+						logger.warn("\nError on url: " + templateController.getOriginalFullURL() + "\n    ComponentName=[ " + templateController.getComponentLogic().getInfoGlueComponent().getName() + " ]\nAn error occurred trying to get attributeName=" + templateController.getTemplateAttributeName() + " on content " + contentId + "\nReason:" + e.getMessage());
+					else
+						logger.warn("\nError on url: " + templateController.getOriginalFullURL() + "\n    ComponentName=[ null - how? ]\nAn error occurred trying to get attributeName=" + templateController.getTemplateAttributeName() + " on content " + contentId + "\nReason:" + e.getMessage());
+				}
+				
+		    	//template = templateController.getContentAttribute(contentId, templateController.getTemplateAttributeName(), true);
 		    }
 		    
 			if(template == null)

@@ -38,6 +38,7 @@ import org.infoglue.cms.entities.kernel.BaseEntityVO;
 import org.infoglue.cms.entities.kernel.IBaseEntity;
 import org.infoglue.cms.exception.Bug;
 import org.infoglue.cms.exception.SystemException;
+import org.infoglue.deliver.util.RequestAnalyser;
 
 
 /**
@@ -61,13 +62,26 @@ public abstract class BaseDeliveryController
 		Object object = null;
 		try
 		{
+			RequestAnalyser.getRequestAnalyser().incApproximateNumberOfDatabaseQueries();
 			object = db.load(arg, id, Database.ReadOnly);
 		}
 		catch(Exception e)
 		{
-			throw new SystemException("An error occurred when we tried to fetch the object " + arg.getName() + ". Reason:" + e.getMessage(), e);    
+			logger.warn("Error getting object. Message: " + e.getMessage() + ". Retrying...");
+			try
+			{
+				object = getObjectWithId(arg, id, db);
+			}
+			catch(Exception e2)
+			{
+				throw new SystemException("An error occurred when we tried to fetch the object " + arg.getName() + ". Reason:" + e.getMessage(), e);    
+			}
 		}
-    
+		finally
+		{
+			RequestAnalyser.getRequestAnalyser().decApproximateNumberOfDatabaseQueries();
+		}
+		
 		if(object == null)
 		{
 			throw new Bug("The object with id [" + id + "] was not found. This should never happen.");
@@ -85,11 +99,24 @@ public abstract class BaseDeliveryController
 		IBaseEntity vo = null;
 		try
 		{
+			RequestAnalyser.getRequestAnalyser().incApproximateNumberOfDatabaseQueries();
 			vo = (IBaseEntity)db.load(arg, id, Database.ReadOnly);
 		}
 		catch(Exception e)
 		{
-			throw new SystemException("An error occurred when we tried to fetch the object " + arg.getName() + ". Reason:" + e.getMessage(), e);    
+			logger.warn("Error getting object. Message: " + e.getMessage() + ". Retrying...");
+			try
+			{
+				vo = (IBaseEntity)getVOWithId(arg, id, db);
+			}
+			catch(Exception e2)
+			{
+				throw new SystemException("An error occurred when we tried to fetch the object " + arg.getName() + ". Reason:" + e.getMessage(), e);    
+			}
+		}
+		finally
+		{
+			RequestAnalyser.getRequestAnalyser().decApproximateNumberOfDatabaseQueries();
 		}
     
 		if(vo == null)

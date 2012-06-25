@@ -101,9 +101,18 @@ public class PageEditorHelper extends BaseDeliveryController
 	private final static VisualFormatter formatter = new VisualFormatter();
 	private final static HttpHelper httpHelper = new HttpHelper();
 	//protected NodeDeliveryController nodeDeliveryController = NodeDeliveryController.getNodeDeliveryController();
+	protected TemplateController templateController = null;
 
-    private final static Logger logger = Logger.getLogger(PageEditorHelper.class.getName());
+	private final static Logger logger = Logger.getLogger(PageEditorHelper.class.getName());
 
+    /**
+	 * @param templateController the templateController to set
+	 */
+	public void setTemplateController(TemplateController templateController) 
+	{
+		this.templateController = templateController;
+	}
+    
 
 	public String getComponentPropertiesDiv(Database db, 
 											 InfoGluePrincipal principal, 
@@ -1718,10 +1727,17 @@ public class PageEditorHelper extends BaseDeliveryController
 		    		logger.error("Error getting operating mode:" + e.getMessage(), e);
 				}
 		    }
-		    	
-			componentPropertiesString = ContentController.getContentController().getContentAttribute(db, contentId, masterLanguageId, operatingMode, "ComponentProperties", true);
-			//componentPropertiesString = ContentDeliveryController.getContentDeliveryController().getContentAttribute(db, contentId, masterLanguageId, "ComponentProperties", siteNodeId, true, null, principal, false, true);
-
+		    
+		    if(this.templateController != null)
+		    {
+		    	componentPropertiesString = this.templateController.getContentAttribute(contentId, masterLanguageId, "ComponentProperties", true);
+			}
+		    else
+		    {
+		    	componentPropertiesString = ContentController.getContentController().getContentAttribute(db, contentId, masterLanguageId, operatingMode, "ComponentProperties", true);
+		    	//componentPropertiesString = ContentDeliveryController.getContentDeliveryController().getContentAttribute(db, contentId, masterLanguageId, "ComponentProperties", siteNodeId, true, null, principal, false, true);
+		    }
+		    
 			if(componentPropertiesString == null)
 				throw new SystemException("There was no properties assigned to this content.");
 		
