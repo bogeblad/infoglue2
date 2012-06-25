@@ -160,7 +160,7 @@ public class VelocityTemplateProcessor
 		        pw.println("Error rendering template:" + e.getMessage());
 		    else
 		    {
-			    logger.warn("Warning rendering template::" + e.getMessage(), e);
+			    logger.warn("Warning rendering template::" + e.getMessage());
 			    throw e;
 		    }
 		}
