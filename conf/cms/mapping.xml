@@ -269,7 +269,7 @@
 <!--  Mapping for AccessRight  -->
   <class name="org.infoglue.cms.entities.management.impl.simple.AccessRightImpl" identity="accessRightId" key-generator="IDENTITY">
     <description>AccessRight</description>
-    <cache-type type="unlimited" capacity="10000"/>
+    <cache-type type="none" capacity="10000"/>
     <map-to table="cmAccessRight"/>
     <field name="accessRightId" type="java.lang.Integer">
       <sql name="accessRightId" type="integer" dirty="check" />
@@ -293,7 +293,7 @@
   
   <class name="org.infoglue.cms.entities.management.impl.simple.AccessRightRoleImpl" identity="accessRightRoleId" key-generator="IDENTITY">
     <description>AccessRightRole</description>
-    <cache-type type="unlimited" capacity="10000"/>
+    <cache-type type="none" capacity="10000"/>
     <map-to table="cmAccessRightRole"/>
     <field name="accessRightRoleId" type="java.lang.Integer">
       <sql name="accessRightRoleId" type="integer" dirty="check" />
@@ -308,7 +308,7 @@
   
   <class name="org.infoglue.cms.entities.management.impl.simple.AccessRightGroupImpl" identity="accessRightGroupId" key-generator="IDENTITY">
     <description>AccessRightGroup</description>
-    <cache-type type="unlimited" capacity="10000"/>
+    <cache-type type="none" capacity="10000"/>
     <map-to table="cmAccessRightGroup"/>
     <field name="accessRightGroupId" type="java.lang.Integer">
       <sql name="accessRightGroupId" type="integer" dirty="check" />
@@ -323,7 +323,7 @@
 
   <class name="org.infoglue.cms.entities.management.impl.simple.AccessRightUserImpl" identity="accessRightUserId" key-generator="IDENTITY">
     <description>AccessRightUser</description>
-    <cache-type type="unlimited" capacity="10000"/>
+    <cache-type type="none" capacity="10000"/>
     <map-to table="cmAccessRightUser"/>
     <field name="accessRightUserId" type="java.lang.Integer">
       <sql name="accessRightUserId" type="integer" dirty="check" />
