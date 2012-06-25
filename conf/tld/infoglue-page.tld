@@ -83,6 +83,11 @@
         	<required>false</required>
 	        <rtexprvalue>false</rtexprvalue>
     	</attribute>
+        <attribute>
+            <name>defeatCaches</name>
+            <required>false</required>
+            <rtexprvalue>false</rtexprvalue>
+        </attribute>
     </tag>
 
 	<tag>
