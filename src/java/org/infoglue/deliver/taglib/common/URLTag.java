@@ -230,21 +230,26 @@ public class URLTag extends TemplateControllerTag
 	        }
 		    else
 		    {
-		        String currentPageUrl = this.getController().getCurrentPageUrl().toString();
+		        String currentPageUrl = this.getController().getCurrentPageUrl();
 		        
-		        int cidIndex = currentPageUrl.indexOf("cid");
-		        if(excludedQueryStringParameters != null && (excludedQueryStringParameters.indexOf("contentId") > -1 || excludedQueryStringParameters.indexOf("cid") > -1) && cidIndex > -1)
-		        {
-		        	int lastIndexOf = currentPageUrl.lastIndexOf("/", cidIndex);
-		        	int nextIndexOf = currentPageUrl.indexOf("/", cidIndex);
-
-		        	currentPageUrl = currentPageUrl.substring(0, lastIndexOf);
-		        	if(nextIndexOf > -1)
-		        		currentPageUrl = currentPageUrl + currentPageUrl.substring(nextIndexOf);
-		        }
+		        if(currentPageUrl != null)
+	            {
+		        	currentPageUrl = currentPageUrl.toString();
 		        	
-		        currentPageUrl = currentPageUrl.split("\\?")[0];
-	            newBaseUrl = (baseURL == null) ? currentPageUrl : baseURL;	        
+			        int cidIndex = currentPageUrl.indexOf("cid");
+			        if(excludedQueryStringParameters != null && (excludedQueryStringParameters.indexOf("contentId") > -1 || excludedQueryStringParameters.indexOf("cid") > -1) && cidIndex > -1)
+			        {
+			        	int lastIndexOf = currentPageUrl.lastIndexOf("/", cidIndex);
+			        	int nextIndexOf = currentPageUrl.indexOf("/", cidIndex);
+	
+			        	currentPageUrl = currentPageUrl.substring(0, lastIndexOf);
+			        	if(nextIndexOf > -1)
+			        		currentPageUrl = currentPageUrl + currentPageUrl.substring(nextIndexOf);
+			        }
+			        	
+			        currentPageUrl = currentPageUrl.split("\\?")[0];
+		            newBaseUrl = (baseURL == null) ? currentPageUrl : baseURL;
+	            }
 		    }
 	    }
 	    catch(Exception e)
