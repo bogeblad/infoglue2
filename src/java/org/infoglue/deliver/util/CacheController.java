@@ -29,7 +29,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -51,10 +50,8 @@ import org.exolab.castor.jdo.CacheManager;
 import org.exolab.castor.jdo.Database;
 import org.infoglue.cms.applications.common.VisualFormatter;
 import org.infoglue.cms.controllers.kernel.impl.simple.CastorDatabaseService;
-import org.infoglue.cms.controllers.kernel.impl.simple.ContentController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentVersionController;
 import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeVersionController;
-import org.infoglue.cms.entities.content.ContentVO;
 import org.infoglue.cms.entities.content.impl.simple.ContentCategoryImpl;
 import org.infoglue.cms.entities.content.impl.simple.ContentImpl;
 import org.infoglue.cms.entities.content.impl.simple.ContentRelationImpl;
@@ -67,7 +64,10 @@ import org.infoglue.cms.entities.content.impl.simple.SmallContentVersionImpl;
 import org.infoglue.cms.entities.content.impl.simple.SmallDigitalAssetImpl;
 import org.infoglue.cms.entities.content.impl.simple.SmallestContentVersionImpl;
 import org.infoglue.cms.entities.content.impl.simple.SmallishContentImpl;
+import org.infoglue.cms.entities.management.impl.simple.AccessRightGroupImpl;
 import org.infoglue.cms.entities.management.impl.simple.AccessRightImpl;
+import org.infoglue.cms.entities.management.impl.simple.AccessRightRoleImpl;
+import org.infoglue.cms.entities.management.impl.simple.AccessRightUserImpl;
 import org.infoglue.cms.entities.management.impl.simple.AvailableServiceBindingImpl;
 import org.infoglue.cms.entities.management.impl.simple.CategoryImpl;
 import org.infoglue.cms.entities.management.impl.simple.ContentTypeDefinitionImpl;
@@ -124,7 +124,6 @@ import org.infoglue.deliver.applications.databeans.DatabaseWrapper;
 import org.infoglue.deliver.portal.ServletConfigContainer;
 
 import com.opensymphony.oscache.base.AbstractCacheAdministrator;
-import com.opensymphony.oscache.base.Cache;
 import com.opensymphony.oscache.base.CacheEntry;
 import com.opensymphony.oscache.base.NeedsRefreshException;
 import com.opensymphony.oscache.base.events.CacheEntryEventListener;
@@ -185,6 +184,39 @@ public class CacheController extends Thread
         cem.set(cemValue);
     }
     
+
+	//Force defeatCaches-mode 
+    private static class ThreadLocalDefeatCacheMode extends ThreadLocal 
+    {
+    	public Object initialValue() 
+        {
+        	return false;
+        }
+    }
+
+    private static ThreadLocalDefeatCacheMode defeatCaches = new ThreadLocalDefeatCacheMode();
+
+    public static Boolean getDefeatCaches() 
+    {
+        return (Boolean) defeatCaches.get();
+    }
+    public static void setDefeatCaches(Boolean defeatCachesValue) 
+    {
+    	if(logger.isInfoEnabled())
+    		logger.info("Forcing defeatCaches...");
+    	defeatCaches.set(defeatCachesValue);
+    	if(defeatCachesValue == true)
+    	{
+    		try 
+    		{
+				clearCastorCaches();
+			} 
+    		catch (Exception e) 
+    		{
+    			logger.error("Error setting defeatCaches:" + e.getMessage(), e);
+			}
+    	}
+    }
 
 	public CacheController()
 	{
@@ -266,6 +298,9 @@ public class CacheController extends Thread
 	public static Object getCachedObject(String cacheName, Object key)
 	{
 		if(cacheName == null || key == null)
+			return null;
+		
+		if(getDefeatCaches())
 			return null;
 		
 		//synchronized(caches)
@@ -576,6 +611,9 @@ public class CacheController extends Thread
 		if(cacheName == null || key == null || key.length() == 0)
 			return null;
 		
+		if(getDefeatCaches())
+			return null;
+		
 	    Object value = null;
 	    boolean stopUseFileCacheFallback = false;
 	    
@@ -679,6 +717,9 @@ public class CacheController extends Thread
 		if(cacheName == null || key == null)
 			return null;
 		
+		if(getDefeatCaches())
+			return null;
+
 	    //logger.info("getCachedObjectFromAdvancedCache start:" + cacheName + ":" + key + ":" + updateInterval);
 
 	    //return getCachedObject(cacheName, key);
@@ -1554,11 +1595,13 @@ public class CacheController extends Thread
 	    logger.info("Emptying the Castor Caches");
 	    
 		long wait = 0;
-		while(!getForcedCacheEvictionMode() && RequestAnalyser.getRequestAnalyser().getNumberOfActiveRequests() > 0)
+		
+		while(!getForcedCacheEvictionMode() && RequestAnalyser.getRequestAnalyser().getApproximateNumberOfDatabaseQueries() > 0)
+		//while(!getForcedCacheEvictionMode() && RequestAnalyser.getRequestAnalyser().getNumberOfActiveRequests() > 0)
 		{
 	    	if(wait > 1000)
 			{
-				logger.warn("The clearCastorCaches method waited over " + ((wait * 10) / 1000) + " seconds but there seems to be " + RequestAnalyser.getRequestAnalyser().getNumberOfCurrentRequests() + " requests blocking all the time. Continuing anyway.");
+				logger.warn("The clearCastorCaches method waited over " + ((wait * 10) / 1000) + " seconds but there seems to be " + RequestAnalyser.getRequestAnalyser().getApproximateNumberOfDatabaseQueries() + " queries blocking all the time. Continuing anyway.");
 				break;
 			}
 
@@ -1625,6 +1668,9 @@ public class CacheController extends Thread
 			clearCache(db, InterceptionPointImpl.class);
 			clearCache(db, InterceptorImpl.class);
 			clearCache(db, AccessRightImpl.class);
+			clearCache(db, AccessRightUserImpl.class);
+			clearCache(db, AccessRightRoleImpl.class);
+			clearCache(db, AccessRightGroupImpl.class);
 	
 			clearCache(db, RolePropertiesImpl.class);
 			clearCache(db, UserPropertiesImpl.class);
@@ -1664,9 +1710,9 @@ public class CacheController extends Thread
 	}
 	
 	public static synchronized void clearCache(Class type, Object[] ids, boolean forceClear) throws Exception
-	{
+	{		
 		long wait = 0;
-		while(!forceClear && !getForcedCacheEvictionMode() && RequestAnalyser.getRequestAnalyser().getNumberOfActiveRequests() > 0)
+		while(!forceClear && !getForcedCacheEvictionMode() && RequestAnalyser.getRequestAnalyser().getApproximateNumberOfDatabaseQueries() > 0)
 		{
 	        //logger.warn("Number of requests: " + RequestAnalyser.getRequestAnalyser().getNumberOfCurrentRequests() + " was more than 0 - lets wait a bit.");
 	        if(wait > 1000)
@@ -1746,14 +1792,17 @@ public class CacheController extends Thread
 	public static void clearCache(Class type, Object[] ids, boolean forceClear, Database db) throws Exception
 	{
 		long wait = 0;
-		while(!forceClear && !getForcedCacheEvictionMode() && RequestAnalyser.getRequestAnalyser().getNumberOfActiveRequests() > 0)
-	    {
+	    while(!forceClear && !getForcedCacheEvictionMode() && RequestAnalyser.getRequestAnalyser().getApproximateNumberOfDatabaseQueries() > 0)
+		{
 	        if(wait > 1000)
 			{
 				logger.warn("The clearCache method waited over " + ((wait * 10) / 1000) + " seconds but there seems to be " + RequestAnalyser.getRequestAnalyser().getNumberOfCurrentRequests() + " requests blocking all the time. Continuing anyway.");
 				//printThreads();
 				break;
 			}
+
+	        if(wait > 100)
+				setForcedCacheEvictionMode(true);
 
 	        Thread.sleep(10);
 	        wait++;
@@ -1776,8 +1825,25 @@ public class CacheController extends Thread
 	    }
 	}
 
-	private static synchronized void clearCache(Database db, Class c) throws Exception
+	public static synchronized void clearCache(Database db, Class c) throws Exception
 	{
+		long wait = 0;
+		while(!getForcedCacheEvictionMode() && RequestAnalyser.getRequestAnalyser().getApproximateNumberOfDatabaseQueries() > 0)
+		{
+	        if(wait > 1000)
+			{
+				logger.warn("The clearCache method waited over " + ((wait * 10) / 1000) + " seconds but there seems to be " + RequestAnalyser.getRequestAnalyser().getNumberOfCurrentRequests() + " requests blocking all the time. Continuing anyway.");
+				//printThreads();
+				break;
+			}
+
+	        if(wait > 100)
+				setForcedCacheEvictionMode(true);
+
+	        Thread.sleep(10);
+	        wait++;
+	    }
+
 		Class[] types = {c};
 		CacheManager manager = db.getCacheManager();
 		manager.expireCache(types);

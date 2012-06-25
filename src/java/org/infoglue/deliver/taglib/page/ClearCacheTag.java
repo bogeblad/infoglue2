@@ -55,6 +55,10 @@ public class ClearCacheTag extends TemplateControllerTag
     {
 		try
 		{	
+			//CacheController.clearCastorCaches();
+	        //CacheController.clearCaches(null, null, null);
+	        //CacheController.clearFileCaches("pageCache");
+	        
 			CacheController.clearCache(Class.forName(entity), new Object[]{entityId}, true);
 		    CacheController.clearCaches(entity, entityId, null, true);
 		    //CacheController.clearCaches(null, null, null, true);

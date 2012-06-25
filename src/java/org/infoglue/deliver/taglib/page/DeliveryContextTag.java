@@ -103,9 +103,18 @@ public class DeliveryContextTag extends TemplateControllerTag
 			getController().getDeliveryContext().addUsedContent("selectiveCacheUpdateNonApplicable");
 	}
 
-	public void setOperatingMode(String operatingMode) throws JspException
+	public void setOperatingMode(String operatingModeVariable) throws JspException
 	{
-	    getController().getDeliveryContext().setOperatingMode(operatingMode);
+		String operatingMode = evaluateString("DeliverContextTag", "operatingMode", operatingModeVariable);
+		if(operatingMode != null)
+			getController().getDeliveryContext().setOperatingMode(operatingMode);
 	}
+
+    public void setDefeatCaches(final String defeatCachesVariable) throws JspException
+    {
+        Boolean defeatCaches = (Boolean)evaluate("DeliverContextTag", "defeatCaches", defeatCachesVariable, Boolean.class);
+		if(defeatCaches != null)
+			getController().getDeliveryContext().setDefeatCaches(defeatCaches);
+    }
 
 }

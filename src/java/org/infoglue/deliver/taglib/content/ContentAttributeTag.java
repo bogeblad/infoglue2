@@ -65,6 +65,7 @@ public class ContentAttributeTag extends ComponentLogicTag
     private boolean useAttributeLanguageFallback = false; 
     private boolean parse				= false;
     private boolean fullBaseUrl			= false;
+    private boolean defeatCaches 		= false;
     
     public ContentAttributeTag()
     {
@@ -138,6 +139,11 @@ public class ContentAttributeTag extends ComponentLogicTag
         {
             getController().getDeliveryContext().setUseFullUrl(fullBaseUrl);
         }
+
+        //Here we store the defeat caches setting for later reset
+        boolean previousDefeatCaches = getController().getDeliveryContext().getDefeatCaches();
+        getController().getDeliveryContext().setDefeatCaches(defeatCaches);
+        
         // Have to force a disable editon sight, not good with renderstuff
         // when converting a attributeto a map.
         // per.jonsson@it-huset.se
@@ -172,6 +178,9 @@ public class ContentAttributeTag extends ComponentLogicTag
         produceResult( result );
         //Resetting the full url to the previous state
         getController().getDeliveryContext().setUseFullUrl(previousSetting);
+        
+        //Resetting the defeatcaches setting
+        getController().getDeliveryContext().setDefeatCaches(previousDefeatCaches);
 
         contentVersionVO = null;
 	    contentId = null;
@@ -186,6 +195,7 @@ public class ContentAttributeTag extends ComponentLogicTag
 	    parse = false;
 	    fullBaseUrl	= false;
 	    languageId = null;
+	    defeatCaches = false;
 
         return EVAL_PAGE;
     }
@@ -255,4 +265,9 @@ public class ContentAttributeTag extends ComponentLogicTag
         this.useAttributeLanguageFallback = useAttributeLanguageFallback;
     }
 
+    public void setDefeatCaches(final String defeatCaches) throws JspException
+    {
+        this.defeatCaches = (Boolean)evaluate("contentAttribute", "defeatCaches", defeatCaches, Boolean.class);
+    }
+    
 }
