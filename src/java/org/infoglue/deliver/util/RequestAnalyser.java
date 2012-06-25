@@ -42,6 +42,7 @@ public class RequestAnalyser
 	private static Map threadMonitors = new HashMap();
 	//private static int maxClientsInt = 0;
 	private static boolean blockRequests = false;
+	
 	/*
 	static
 	{
@@ -72,6 +73,21 @@ public class RequestAnalyser
     public int getNumberOfActiveRequests()
     {
         return Counter.getNumberOfActiveRequests();
+    }
+
+    public int getApproximateNumberOfDatabaseQueries()
+    {
+        return Counter.getApproximateNumberOfDatabaseQueries();
+    }
+
+    public void incApproximateNumberOfDatabaseQueries()
+    {
+        Counter.incApproximateNumberOfDatabaseQueries();
+    }
+
+    public void decApproximateNumberOfDatabaseQueries()
+    {
+        Counter.decApproximateNumberOfDatabaseQueries();
     }
 
     public int getTotalNumberOfRequests()

@@ -49,13 +49,14 @@ public class Counter
     private static Integer count = new Integer(0);
     private static Integer activeCount = new Integer(0);
     private static Integer totalCount = new Integer(0);
+    private static Integer approximateNumberOfDatabaseQueries = new Integer(0);
     private static Long totalElapsedTime = new Long(0);
     private static Long maxElapsedTime = new Long(0);
     private static Map allComponentsStatistics = new HashMap();
     private static Map allPageStatistics = new HashMap();
     private static LinkedBlockingQueue<CacheEvictionBean> latestPublications = new LinkedBlockingQueue<CacheEvictionBean>(200);
     private static List<CacheEvictionBean> ongoingPublications = new ArrayList<CacheEvictionBean>();
-     private static Integer numberOfPublicationsSinceStart = new Integer(0);
+    private static Integer numberOfPublicationsSinceStart = new Integer(0);
     
     private Counter(){}
 
@@ -87,6 +88,23 @@ public class Counter
         return maxElapsedTime.longValue();
     }
 
+    static int getApproximateNumberOfDatabaseQueries()
+    {
+        return approximateNumberOfDatabaseQueries.intValue();
+    }
+
+    static void incApproximateNumberOfDatabaseQueries()
+    {
+    	approximateNumberOfDatabaseQueries = new Integer(approximateNumberOfDatabaseQueries.intValue() + 1);
+    }
+
+    static void decApproximateNumberOfDatabaseQueries()
+    {
+    	if(approximateNumberOfDatabaseQueries > 0)
+    		approximateNumberOfDatabaseQueries = new Integer(approximateNumberOfDatabaseQueries.intValue() - 1);
+    }
+
+    
     static List<CacheEvictionBean> getLatestPublications()
     {
     	List<CacheEvictionBean> latestPublicationsList = new ArrayList<CacheEvictionBean>();
@@ -187,7 +205,7 @@ public class Counter
 	    		maxElapsedTime = new Long(elapsedTime);
         }
     }
-
+    
     synchronized static Set getAllComponentNames()
     {
     	synchronized (allComponentsStatistics) 
