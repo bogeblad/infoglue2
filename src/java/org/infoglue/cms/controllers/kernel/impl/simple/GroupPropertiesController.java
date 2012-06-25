@@ -60,6 +60,7 @@ import org.infoglue.cms.util.CmsPropertyHandler;
 import org.infoglue.cms.util.ConstraintExceptionBuffer;
 import org.infoglue.cms.util.dom.DOMBuilder;
 import org.infoglue.deliver.util.CacheController;
+import org.infoglue.deliver.util.RequestAnalyser;
 import org.w3c.dom.CDATASection;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
@@ -271,40 +272,61 @@ public class GroupPropertiesController extends BaseController
 	{
 		List groupPropertiesList = new ArrayList();
 
-		OQLQuery oql = db.getOQLQuery("SELECT f FROM org.infoglue.cms.entities.management.impl.simple.GroupPropertiesImpl f WHERE f.groupName = $1 AND f.language = $2 ORDER BY f.groupPropertiesId");
-		oql.bind(groupName);
-		oql.bind(languageId);
-
-		if(logger.isInfoEnabled())
+		try
 		{
-			logger.info("groupName:" + groupName);
-			logger.info("languageId:" + languageId);
+			RequestAnalyser.getRequestAnalyser().incApproximateNumberOfDatabaseQueries();
+
+			OQLQuery oql = db.getOQLQuery("SELECT f FROM org.infoglue.cms.entities.management.impl.simple.GroupPropertiesImpl f WHERE f.groupName = $1 AND f.language = $2 ORDER BY f.groupPropertiesId");
+			oql.bind(groupName);
+			oql.bind(languageId);
+	
+			if(logger.isInfoEnabled())
+			{
+				logger.info("groupName:" + groupName);
+				logger.info("languageId:" + languageId);
+			}
+	
+			QueryResults results;
+			if(readOnly)
+			{
+				logger.info("Fetching groupPropertiesList in readonly mode");
+			    results = oql.execute(Database.ReadOnly);
+			}
+			else
+			{
+				logger.info("Fetching groupPropertiesList in read/write mode");
+			    results = oql.execute();
+			}   
+	
+			while (results.hasMore()) 
+			{
+				GroupProperties groupProperties = (GroupProperties)results.next();
+				logger.info("Found one:" + groupProperties);
+				groupPropertiesList.add(groupProperties);
+			}
+			
+			logger.info("In total:" + groupPropertiesList.size());
+	
+			results.close();
+			oql.close();
 		}
-
-		QueryResults results;
-		if(readOnly)
+		catch(Exception e)
+        {
+			logger.warn("Error getting groupPropertiesList. Message: " + e.getMessage() + ". Retrying...");
+			try
+			{
+				groupPropertiesList = getGroupPropertiesList(groupName, languageId, db, readOnly);
+			}
+			catch(Exception e2)
+			{
+	            throw e2;    
+			}
+        }
+		finally
 		{
-			logger.info("Fetching groupPropertiesList in readonly mode");
-		    results = oql.execute(Database.ReadOnly);
-		}
-		else
-		{
-			logger.info("Fetching groupPropertiesList in read/write mode");
-		    results = oql.execute();
-		}   
-
-		while (results.hasMore()) 
-		{
-			GroupProperties groupProperties = (GroupProperties)results.next();
-			logger.info("Found one:" + groupProperties);
-			groupPropertiesList.add(groupProperties);
+			RequestAnalyser.getRequestAnalyser().decApproximateNumberOfDatabaseQueries();
 		}
 		
-		logger.info("In total:" + groupPropertiesList.size());
-
-		results.close();
-		oql.close();
-
 		return groupPropertiesList;
 	}
 

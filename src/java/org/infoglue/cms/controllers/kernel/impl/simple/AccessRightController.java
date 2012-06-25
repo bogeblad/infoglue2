@@ -59,6 +59,7 @@ import org.infoglue.cms.security.InfoGlueGroup;
 import org.infoglue.cms.security.InfoGluePrincipal;
 import org.infoglue.cms.security.InfoGlueRole;
 import org.infoglue.deliver.util.CacheController;
+import org.infoglue.deliver.util.RequestAnalyser;
 import org.infoglue.deliver.util.Timer;
 
 /**
@@ -363,24 +364,26 @@ public class AccessRightController extends BaseController
 		return accessRightList;		
 	}
 
-	
+
 	public List getAccessRightListOnlyReadOnly(Integer interceptionPointId, String parameters, Database db) throws SystemException, Bug
 	{
 		List accessRightList = new ArrayList();
 		
 		try
 		{
+			RequestAnalyser.getRequestAnalyser().incApproximateNumberOfDatabaseQueries();
+
 			OQLQuery oql = null;
 			
 			if(parameters == null || parameters.length() == 0)
 			{
-				oql = db.getOQLQuery("SELECT f FROM org.infoglue.cms.entities.management.impl.simple.AccessRightImpl f WHERE f.interceptionPoint = $1 AND (is_undefined(f.parameters) OR f.parameters = $2)");
+				oql = db.getOQLQuery("SELECT f FROM org.infoglue.cms.entities.management.impl.simple.AccessRightImpl f WHERE f.interceptionPoint = $1 AND (is_undefined(f.parameters) OR f.parameters = $2) ORDER BY f.accessRightId");
 				oql.bind(interceptionPointId);
 				oql.bind(parameters);
 			}
 			else
 			{
-		    	oql = db.getOQLQuery("SELECT f FROM org.infoglue.cms.entities.management.impl.simple.AccessRightImpl f WHERE f.interceptionPoint = $1 AND f.parameters = $2");
+		    	oql = db.getOQLQuery("SELECT f FROM org.infoglue.cms.entities.management.impl.simple.AccessRightImpl f WHERE f.interceptionPoint = $1 AND f.parameters = $2 ORDER BY f.accessRightId");
 				oql.bind(interceptionPointId);
 				oql.bind(parameters);
 			}
@@ -398,9 +401,21 @@ public class AccessRightController extends BaseController
 		}
 		catch(Exception e)
 		{
-			throw new SystemException("An error occurred when we tried to fetch a list of Access rights. Reason:" + e.getMessage(), e);    
+			logger.warn("Error getting access rights. Message: " + e.getMessage() + ". Retrying...");
+			try
+			{
+				accessRightList = getAccessRightListOnlyReadOnly(interceptionPointId, parameters, db);
+			}
+			catch(Exception e2)
+			{
+				throw new SystemException("An error occurred when we tried to fetch a list of Access rights. Reason:" + e.getMessage(), e);    
+			}
 		}
-		
+		finally
+		{
+			RequestAnalyser.getRequestAnalyser().decApproximateNumberOfDatabaseQueries();
+		}
+
 		return accessRightList;		
 	}
 
@@ -1138,7 +1153,15 @@ public class AccessRightController extends BaseController
 	 * This method checks if a role has access to an entity. It takes name and id of the entity. 
 	 */
 	public boolean getIsPrincipalAuthorized(Database db, InfoGluePrincipal infoGluePrincipal, String interceptionPointName, String extraParameters) throws SystemException
-	{		
+	{	
+		boolean enableDebug = false;
+		if(interceptionPointName != null && interceptionPointName.equalsIgnoreCase("Content.Read") && extraParameters != null && (extraParameters.equalsIgnoreCase("995") || extraParameters.equalsIgnoreCase("297")))
+			enableDebug = true;
+		
+		String debugInfo = "";
+		if(enableDebug)
+			debugInfo += "\n	getIsPrincipalAuthorized with: " + infoGluePrincipal + ", " + interceptionPointName + ", " + extraParameters;
+		
 		if(infoGluePrincipal == null)
 	      return false;
 	    
@@ -1146,8 +1169,11 @@ public class AccessRightController extends BaseController
 			return true;
 		
 	    //TODO
-		
 	    String key = "" + infoGluePrincipal.getName() + "_" + interceptionPointName + "_" + extraParameters;
+
+		if(enableDebug)
+			debugInfo += "\n	key: " + key;
+
 		if(logger.isInfoEnabled())
 		{
 			logger.info("key:" + key);
@@ -1158,6 +1184,9 @@ public class AccessRightController extends BaseController
 		Boolean cachedIsPrincipalAuthorized = (Boolean)CacheController.getCachedObjectFromAdvancedCache("personalAuthorizationCache", key);
 		if(cachedIsPrincipalAuthorized != null)
 		{
+			if(enableDebug)
+				debugInfo += "\n	Principal " + infoGluePrincipal.getName() + " was not allowed to " + interceptionPointName + " on " + extraParameters + " (Cached value)";
+
 			if(logger.isInfoEnabled() && !cachedIsPrincipalAuthorized.booleanValue())
 				logger.info("Principal " + infoGluePrincipal.getName() + " was not allowed to " + interceptionPointName + " on " + extraParameters + " (Cached value)");
 		    return cachedIsPrincipalAuthorized.booleanValue();
@@ -1170,6 +1199,10 @@ public class AccessRightController extends BaseController
 		   
 		Collection roles = infoGluePrincipal.getRoles();
 		Collection groups = infoGluePrincipal.getGroups();
+		
+		if(enableDebug)
+			debugInfo += "\n	roles:" + roles.size();
+
 		if(logger.isInfoEnabled())
 		{
 			logger.info("roles:" + roles.size());
@@ -1177,6 +1210,10 @@ public class AccessRightController extends BaseController
 		}
 		
 		InterceptionPointVO interceptionPointVO = InterceptionPointController.getController().getInterceptionPointVOWithName(interceptionPointName, db);
+
+		if(enableDebug)
+			debugInfo += "\n	interceptionPointVO:" + interceptionPointVO;
+		
 		if(interceptionPointVO == null)
 			return true;
 				
@@ -1194,6 +1231,9 @@ public class AccessRightController extends BaseController
 			return true;
 		}
 
+		if(enableDebug)
+			debugInfo += "\n	Access right debug:";
+
 		Iterator accessRightListIterator = accessRightList.iterator();
 		while(accessRightListIterator.hasNext() && !isPrincipalAuthorized)
 		{
@@ -1206,6 +1246,8 @@ public class AccessRightController extends BaseController
 			while(approvedUsersIterator.hasNext())
 			{
 			    AccessRightUser accessRightUser = (AccessRightUser)approvedUsersIterator.next();
+				if(enableDebug)
+					debugInfo += "\n		accessRightUser:" + accessRightUser.getUserName();
 			    if(accessRightUser.getUserName().equals(infoGluePrincipal.getName()))
 			    {
 			        isPrincipalAuthorized = true;
@@ -1214,11 +1256,13 @@ public class AccessRightController extends BaseController
 
 			if(!isPrincipalAuthorized)
 			{
-			    
-			    Iterator rolesIterator = roles.iterator();
+				Iterator rolesIterator = roles.iterator();
 				outer:while(rolesIterator.hasNext())
 				{
 					InfoGlueRole role = (InfoGlueRole)rolesIterator.next();
+					if(enableDebug)
+						debugInfo += "\n		role:" + role.getName();
+
 					if(logger.isInfoEnabled())
 					    logger.info("role:" + role.getName());
 					
@@ -1226,11 +1270,19 @@ public class AccessRightController extends BaseController
 					while(approvedRolesIterator.hasNext())
 					{
 					    AccessRightRole accessRightRole = (AccessRightRole)approvedRolesIterator.next();
-					    if(logger.isInfoEnabled())
+
+						if(enableDebug)
+							debugInfo += "\n		" + role.getName() + " = " + accessRightRole.getRoleName();
+
+						if(logger.isInfoEnabled())
 					    	logger.info("" + role.getName() + " = " + accessRightRole.getRoleName());
-					    if(accessRightRole.getRoleName().equals(role.getName()))
+
+						if(accessRightRole.getRoleName().equals(role.getName()))
 					    {
-					        if(logger.isInfoEnabled())
+							if(enableDebug)
+								debugInfo += "\n		Principal " + infoGluePrincipal.getName() + " has role " + accessRightRole.getRoleName();
+
+							if(logger.isInfoEnabled())
 						    	logger.info("Principal " + infoGluePrincipal.getName() + " has role " + accessRightRole.getRoleName());
 						
 					        principalHasRole = true;
@@ -1243,6 +1295,10 @@ public class AccessRightController extends BaseController
 				outer:while(approvedGroupsIterator.hasNext())
 				{
 				    AccessRightGroup accessRightGroup = (AccessRightGroup)approvedGroupsIterator.next();
+
+					if(enableDebug)
+						debugInfo += "\n		accessRightGroup:" + accessRightGroup.getGroupName();
+
 				    if(logger.isInfoEnabled())
 					    logger.info("accessRightGroup:" + accessRightGroup.getGroupName());
 	
@@ -1252,13 +1308,21 @@ public class AccessRightController extends BaseController
 					while(groupsIterator.hasNext())
 					{
 					    InfoGlueGroup group = (InfoGlueGroup)groupsIterator.next();
+
+						if(enableDebug)
+							debugInfo += "\n		group:" + group.getName();
+
 					    if(logger.isInfoEnabled())
 					    	logger.info("" + group.getName() + " = " + accessRightGroup.getGroupName());
+					    
 					    if(accessRightGroup.getGroupName().equals(group.getName()))
 					    {
 					        if(logger.isInfoEnabled())
 						    	logger.info("Principal " + infoGluePrincipal.getName() + " has group " + accessRightGroup.getGroupName());
-						
+
+							if(enableDebug)
+								debugInfo += "\n		Principal " + infoGluePrincipal.getName() + " has group " + accessRightGroup.getGroupName();
+
 					        principalHasGroup = true;
 					        break outer;
 					    }
@@ -1266,7 +1330,14 @@ public class AccessRightController extends BaseController
 				}
 			}
 		}
-		
+
+		if(enableDebug)
+		{
+			debugInfo += "\n		principalHasRole: " + principalHasRole;
+			debugInfo += "\n		principalHasGroup: " + principalHasGroup;
+			debugInfo += "\n		limitOnGroups: " + limitOnGroups;
+		}
+
         if(logger.isInfoEnabled())
         {
 	    	logger.info("principalHasRole: " + principalHasRole);
@@ -1281,6 +1352,9 @@ public class AccessRightController extends BaseController
 		{
 			logger.info("Principal " + infoGluePrincipal.getName() + " was not allowed to " + interceptionPointName + " on " + extraParameters);
 		}
+		
+		if(debugInfo != null && !debugInfo.equals(""))
+			logger.warn("Access debug:\n" + debugInfo);
 		
 	    //CacheController.cacheObject("authorizationCache", key, new Boolean(isPrincipalAuthorized));
 	    CacheController.cacheObjectInAdvancedCache("personalAuthorizationCache", key, new Boolean(isPrincipalAuthorized), new String[]{infoGluePrincipal.getName()}, true);

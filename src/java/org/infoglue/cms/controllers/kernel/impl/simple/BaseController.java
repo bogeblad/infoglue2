@@ -60,6 +60,7 @@ import org.infoglue.cms.util.validators.ConstraintRule;
 import org.infoglue.cms.util.validators.EmailValidator;
 import org.infoglue.cms.util.validators.StringValidator;
 import org.infoglue.deliver.util.CacheController;
+import org.infoglue.deliver.util.RequestAnalyser;
 
 import com.opensymphony.module.propertyset.PropertySet;
 import com.opensymphony.module.propertyset.PropertySetManager;
@@ -562,12 +563,25 @@ public abstract class BaseController
         Object object = null;
         try
         {
+			RequestAnalyser.getRequestAnalyser().incApproximateNumberOfDatabaseQueries();
             object = db.load(arg, id, Database.ReadOnly);    			
         }
         catch(Exception e)
         {
-            throw new SystemException("An error occurred when we tried to fetch the object " + arg.getName() + ". Reason:" + e.getMessage(), e);    
+			logger.warn("Error getting object. Message: " + e.getMessage() + ". Retrying...");
+			try
+			{
+				object = getObjectWithIdAsReadOnly(arg, id, db);
+			}
+			catch(Exception e2)
+			{
+	            throw new SystemException("An error occurred when we tried to fetch the object " + arg.getName() + ". Reason:" + e.getMessage(), e);    
+			}
         }
+		finally
+		{
+			RequestAnalyser.getRequestAnalyser().decApproximateNumberOfDatabaseQueries();
+		}
     
         if(object == null)
         {
@@ -702,6 +716,14 @@ public abstract class BaseController
 	
     public static BaseEntityVO getVOWithId(Class arg, Integer id, Database db) throws SystemException, Bug
     {
+    	/*
+    	if(id == null)
+    	{
+    		System.out.println("Got null id... returning null");
+    		return null;
+    	}
+    	*/
+    	
         IBaseEntity vo = null;
         try
         {

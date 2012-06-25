@@ -68,6 +68,7 @@ import org.infoglue.cms.util.ConstraintExceptionBuffer;
 import org.infoglue.cms.util.DateHelper;
 import org.infoglue.cms.util.XMLHelper;
 import org.infoglue.deliver.util.CacheController;
+import org.infoglue.deliver.util.RequestAnalyser;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -135,7 +136,9 @@ public class SiteNodeController extends BaseController
         SiteNode siteNode = null;
         try
         {
-        	if(readOnly)
+			RequestAnalyser.getRequestAnalyser().incApproximateNumberOfDatabaseQueries();
+
+			if(readOnly)
 	            siteNode = (SiteNode)db.load(org.infoglue.cms.entities.structure.impl.simple.SiteNodeImpl.class, siteNodeId, Database.ReadOnly);
     		else
     		{
@@ -145,9 +148,21 @@ public class SiteNodeController extends BaseController
     	}
         catch(Exception e)
         {
-            throw new SystemException("An error occurred when we tried to fetch the SiteNode. Reason:" + e.getMessage(), e);    
+			logger.warn("An error occurred when we tried to fetch the SiteNode. Reason:" + e.getMessage() + ". Retrying...");
+			try
+			{
+				siteNode = getSiteNodeWithId(siteNodeId, db, readOnly);
+			}
+			catch(Exception e2)
+			{
+	            throw new SystemException("An error occurred when we tried to fetch the SiteNode. Reason:" + e.getMessage(), e);    
+			}
         }
-    
+		finally
+		{
+			RequestAnalyser.getRequestAnalyser().decApproximateNumberOfDatabaseQueries();
+		}
+
         if(siteNode == null)
         {
             throw new Bug("The SiteNode with id [" + siteNodeId + "] was not found in SiteNodeHelper.getSiteNodeWithId. This should never happen.");
