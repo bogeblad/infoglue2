@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <applicationState>
 	<title>Delivery engine status ($serverName)</title>
-	<version>2.10.10.0 Final</version>
+	<version>2.10.1.0 Final</version>
 	<releaseDate>2012-06-25</releaseDate>
 	<serverName>$serverName</serverName>
 	<items>
