@@ -26,7 +26,6 @@ package org.infoglue.cms.applications.cmstool.actions;
 
 import org.apache.log4j.Logger;
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
-import org.infoglue.cms.applications.common.actions.SimpleXmlServiceAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentController;
 import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeController;
 import org.infoglue.cms.entities.content.ContentVO;
@@ -41,24 +40,12 @@ import org.infoglue.cms.entities.content.impl.simple.SmallDigitalAssetImpl;
 import org.infoglue.cms.entities.content.impl.simple.SmallestContentVersionImpl;
 import org.infoglue.cms.entities.content.impl.simple.SmallishContentImpl;
 import org.infoglue.cms.entities.management.impl.simple.AvailableServiceBindingImpl;
-import org.infoglue.cms.entities.management.impl.simple.ContentTypeDefinitionImpl;
-import org.infoglue.cms.entities.management.impl.simple.GroupImpl;
-import org.infoglue.cms.entities.management.impl.simple.InterceptionPointImpl;
-import org.infoglue.cms.entities.management.impl.simple.InterceptorImpl;
-import org.infoglue.cms.entities.management.impl.simple.RepositoryImpl;
-import org.infoglue.cms.entities.management.impl.simple.RoleImpl;
 import org.infoglue.cms.entities.management.impl.simple.SmallAvailableServiceBindingImpl;
-import org.infoglue.cms.entities.management.impl.simple.SmallGroupImpl;
-import org.infoglue.cms.entities.management.impl.simple.SmallRoleImpl;
-import org.infoglue.cms.entities.management.impl.simple.SmallSystemUserImpl;
-import org.infoglue.cms.entities.management.impl.simple.SystemUserImpl;
 import org.infoglue.cms.entities.structure.SiteNodeVO;
 import org.infoglue.cms.entities.structure.impl.simple.SiteNodeImpl;
 import org.infoglue.cms.entities.structure.impl.simple.SiteNodeVersionImpl;
 import org.infoglue.cms.entities.structure.impl.simple.SmallSiteNodeImpl;
 import org.infoglue.cms.entities.structure.impl.simple.SmallSiteNodeVersionImpl;
-import org.infoglue.cms.util.CmsPropertyHandler;
-import org.infoglue.deliver.controllers.kernel.impl.simple.DigitalAssetDeliveryController;
 import org.infoglue.deliver.util.CacheController;
 
 
@@ -183,24 +170,6 @@ public class UpdateCacheAction extends InfoGlueAbstractAction
 					Class typesExtraMedium = MediumDigitalAssetImpl.class;
 					Object[] idsExtraMedium = {new Integer(objectId)};
 					CacheController.clearCache(typesExtraMedium, idsExtraMedium);
-				}
-				else if(Class.forName(className).getName().equals(SystemUserImpl.class.getName()))
-				{
-				    Class typesExtra = SmallSystemUserImpl.class;
-					Object[] idsExtra = {objectId};
-					CacheController.clearCache(typesExtra, idsExtra);
-				}
-				else if(Class.forName(className).getName().equals(RoleImpl.class.getName()))
-				{
-				    Class typesExtra = SmallRoleImpl.class;
-					Object[] idsExtra = {objectId};
-					CacheController.clearCache(typesExtra, idsExtra);
-				}
-				else if(Class.forName(className).getName().equals(GroupImpl.class.getName()))
-				{
-				    Class typesExtra = SmallGroupImpl.class;
-					Object[] idsExtra = {objectId};
-					CacheController.clearCache(typesExtra, idsExtra);
 				}
 
 				CacheController.clearCache("workflowCache");
