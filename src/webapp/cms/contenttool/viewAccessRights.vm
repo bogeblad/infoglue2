@@ -214,12 +214,7 @@ Rights saved...
 			#if($interceptionPointVO.name == "Content.Read" || $interceptionPointVO.name == "SiteNodeVersion.Read")
 				<script type="text/javascript">useAnonymousWarningCheck = true;</script>	
 			#end
-			#*
-			$interceptionPointVO.name<br/>
-			getUsesExtraDataForAccessControl: $interceptionPointVO.getUsesExtraDataForAccessControl()<br/>
-			extraParameters: $extraParameters<br/>
-			extraMultiParameters: $extraMultiParameters<br/>
-			*#
+
 			##if(($interceptionPointVO.getUsesExtraDataForAccessControl() && $extraParameters && $extraParameters != "") || (!$interceptionPointVO.getUsesExtraDataForAccessControl() && (!$extraParameters || $extraParameters == "")))
 			#if(($interceptionPointVO.getUsesExtraDataForAccessControl() && (($extraParameters && $extraParameters != "") || $extraMultiParameters)) || (!$interceptionPointVO.getUsesExtraDataForAccessControl() && (!$extraParameters || $extraParameters == "") && !$extraMultiParameters))
 				#set($accessRightId = -1)
@@ -261,55 +256,58 @@ Rights saved...
 	#set($roleIndex = 0)
 	#foreach ($role in $roleList)
 	
-		#set($isOdd = $velocityCount % 2)
-		#if($isOdd==0)
-			#set($class = "class='lightGreen'")
-		#else
-			#set($class = "class='white'")
-		#end
+		#if($role.isActive)
 		
-		<tr>
-			<td $class>
-				$role.displayName #if($role.displayName == "anonymous") (All users, logged in or not have this role)#end
-				<input type="hidden" name="${roleIndex}_roleName" value="$role.name">
-			</td>
-			<td $class></td>
-			#set($interceptionPointIndex = 0)
-			#foreach($interceptionPointVO in $interceptionPointVOList)
-				##if(($interceptionPointVO.getUsesExtraDataForAccessControl() && $extraParameters && $extraParameters != "") || (!$interceptionPointVO.getUsesExtraDataForAccessControl() && (!$extraParameters || $extraParameters == "")))
-				#if(($interceptionPointVO.getUsesExtraDataForAccessControl() && (($extraParameters && $extraParameters != "") || $extraMultiParameters)) || (!$interceptionPointVO.getUsesExtraDataForAccessControl() && (!$extraParameters || $extraParameters == "") && !$extraMultiParameters))
-					<td $class align="center" nowrap>
-						#set($checked = "")
-						#if($this.getHasAccessRight($interceptionPointVO.id, $extraParameters, $role.name))
-							#set($checked = "checked")
-							#set($accessRightId = $this.getAccessRightId($interceptionPointVO.id, $extraParameters))
-						#end 
-						
-						#if($interceptionPointVO.name == "Content.Read" || $interceptionPointVO.name == "SiteNodeVersion.Read")
-							#set($anonymousRolesCount = 0)
-							#foreach($anonymousRole in $anonymousPrincipal.roles)
-								#if($anonymousRole.name == $role.name)
-									<script type="text/javascript">
-										//alert("Anonymous role found $role.name");
-										roles[$anonymousRolesCount] = "${interceptionPointVO.id}_${role.name}_hasAccess";
-									</script>
-									#set($anonymousRolesCount = $anonymousRolesCount + 1)
+			#set($isOdd = $velocityCount % 2)
+			#if($isOdd==0)
+				#set($class = "class='lightGreen'")
+			#else
+				#set($class = "class='white'")
+			#end
+			
+			<tr>
+				<td $class>
+					$role.displayName #if($role.displayName == "anonymous") (All users, logged in or not have this role)#end
+					<input type="hidden" name="${roleIndex}_roleName" value="$role.name"/>
+				</td>
+				<td $class></td>
+				#set($interceptionPointIndex = 0)
+				#foreach($interceptionPointVO in $interceptionPointVOList)
+					##if(($interceptionPointVO.getUsesExtraDataForAccessControl() && $extraParameters && $extraParameters != "") || (!$interceptionPointVO.getUsesExtraDataForAccessControl() && (!$extraParameters || $extraParameters == "")))
+					#if(($interceptionPointVO.getUsesExtraDataForAccessControl() && (($extraParameters && $extraParameters != "") || $extraMultiParameters)) || (!$interceptionPointVO.getUsesExtraDataForAccessControl() && (!$extraParameters || $extraParameters == "") && !$extraMultiParameters))
+						<td $class align="center" nowrap>
+							#set($checked = "")
+							#if($this.getHasAccessRight($interceptionPointVO.id, $extraParameters, $role.name))
+								#set($checked = "checked")
+								#set($accessRightId = $this.getAccessRightId($interceptionPointVO.id, $extraParameters))
+							#end 
+							
+							#if($interceptionPointVO.name == "Content.Read" || $interceptionPointVO.name == "SiteNodeVersion.Read")
+								#set($anonymousRolesCount = 0)
+								#foreach($anonymousRole in $anonymousPrincipal.roles)
+									#if($anonymousRole.name == $role.name)
+										<script type="text/javascript">
+											//alert("Anonymous role found $role.name");
+											roles[$anonymousRolesCount] = "${interceptionPointVO.id}_${role.name}_hasAccess";
+										</script>
+										#set($anonymousRolesCount = $anonymousRolesCount + 1)
+									#end
 								#end
 							#end
-						#end
-																	
-						<input type="hidden" name="${interceptionPointIndex}_InterceptionPointId" value="$interceptionPointVO.id">
-						<input type="hidden" name="${interceptionPointVO.id}_${roleIndex}_roleName" value="$role.name">
-						<input type="checkbox" id="${interceptionPointVO.id}_${role.name}_hasAccess" name="${interceptionPointVO.id}_${role.name}_hasAccess" value="true" $checked>
-						
-					</td>
-					<td $class></td>
-					#set($interceptionPointIndex = $interceptionPointIndex + 1)
+																		
+							<input type="hidden" name="${interceptionPointIndex}_InterceptionPointId" value="$interceptionPointVO.id">
+							<input type="hidden" name="${interceptionPointVO.id}_${roleIndex}_roleName" value="$role.name">
+							<input type="checkbox" id="${interceptionPointVO.id}_${role.name}_hasAccess" name="${interceptionPointVO.id}_${role.name}_hasAccess" value="true" $checked>
+							
+						</td>
+						<td $class></td>
+						#set($interceptionPointIndex = $interceptionPointIndex + 1)
+					#end
 				#end
-			#end
-			<td $class></td>
-		</tr>
-		#set($roleIndex = $roleIndex + 1)
+				<td $class></td>
+			</tr>
+			#set($roleIndex = $roleIndex + 1)
+		#end
 	#end
 	
 	<tr>
@@ -514,7 +512,7 @@ Rights saved...
 			}
 				
 		</script>
-	<div id="groups$accessRightId" style="position: absolute; overflow: auto; top: 10px; left: 150px; visibility: hidden; width:400px; height:500px; background-color: white; border:1px solid black;">
+	<div id="groups$accessRightId" style="position: absolute; overflow: auto; top: 10px; left: 50px; visibility: hidden; width:700px; height:500px; background-color: white; border:1px solid black;">
 		<form method="POST" name="groups${accessRightId}Form" action="UpdateAccessRights!addGroups.action">
 		<input type="hidden" name="interceptionPointCategory" value="$interceptionPointCategory">
 		<input type="hidden" name="parameters" value="$extraParameters">
@@ -524,41 +522,49 @@ Rights saved...
 		<table width="100%" bgcolor="white" cellpadding="0" cellspacing="0" border="0">
 		<tr class="darkgreen">
 			<td class="smalllabel">&nbsp;</td>
-			<td class="smalllabel" width="90%">Group</td>
+			<td class="smalllabel">$ui.getString("entity.Group.groupName.label")</td>
+			<td class="smalllabel">$ui.getString("entity.Group.source.label")</td>
+			<td class="smalllabel">$ui.getString("entity.Group.groupType.label")</td>
 		</tr>
 		<tr>
-			<td bgcolor="#EEF7DC" colspan="2" height="1"><img src="images/trans.gif" width="1" height="1"></td>
+			<td bgcolor="#EEF7DC" colspan="4" height="1"><img src="images/trans.gif" width="1" height="1"></td>
 		</tr>
 		<tr>
-			<td bgcolor="#C7D1B3" colspan="2" height="1"><img src="images/trans.gif" width="1" height="1"></td>
+			<td bgcolor="#C7D1B3" colspan="4" height="1"><img src="images/trans.gif" width="1" height="1"></td>
 		</tr>
 		
 		#foreach($group in $groupList)
 		
-			#set($selected = "")
-			#foreach($accessRightGroup in $accessRightGroups)
-				#if($accessRightGroup.groupName == $group.name)
-					#set($selected = "checked='1'")
-				#end
-			#end
-
-			#if($interceptionPointVO.name == "Content.Read" || $interceptionPointVO.name == "SiteNodeVersion.Read")
-				#set($anonymousGroupsCount = 0)
-				#foreach($anonymousGroup in $anonymousPrincipal.groups)
-					#if($anonymousGroup.name == $group.name)
-						<script type="text/javascript">
-							//alert("Anonymous group found $group.name");
-							groups[$anonymousGroupsCount] = "${interceptionPointVO.id}_${group.name}_hasAccess";
-						</script>
-						#set($anonymousGroupsCount = $anonymousGroupsCount + 1)
+			#if($group.isActive)
+				#set($selected = "")
+				#set($selectedSortText = "1")
+				#foreach($accessRightGroup in $accessRightGroups)
+					#if($accessRightGroup.groupName == $group.name)
+						#set($selected = "checked='1'")
+						#set($selectedSortText = "0")
 					#end
 				#end
-			#end
 
-		<tr>
-			  	<td><input type="checkbox" id="${interceptionPointVO.id}_${group.name}_hasAccess" name="groupName" value="${group.name}" $selected></td>
-		  	<td>$group.displayName</td>
-		</tr>
+				#if($interceptionPointVO.name == "Content.Read" || $interceptionPointVO.name == "SiteNodeVersion.Read")
+					#set($anonymousGroupsCount = 0)
+					#foreach($anonymousGroup in $anonymousPrincipal.groups)
+						#if($anonymousGroup.name == $group.name)
+							<script type="text/javascript">
+								//alert("Anonymous group found $group.name");
+								groups[$anonymousGroupsCount] = "${interceptionPointVO.id}_${group.name}_hasAccess";
+							</script>
+							#set($anonymousGroupsCount = $anonymousGroupsCount + 1)
+						#end
+					#end
+				#end
+
+				<tr>
+					<td><span style="display:none;">$selectedSortText</span><input type="checkbox" id="${interceptionPointVO.id}_${group.name}_hasAccess" name="groupName" value="${group.name}" $selected/></td>
+					<td>$group.displayName</td>
+					<td>$group.source</td>
+					<td>$group.groupType</td>
+				</tr>
+			#end
 		#end
 		<tr>
 		  	<td colspan="2">&nbsp;</td>

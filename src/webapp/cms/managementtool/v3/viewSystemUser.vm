@@ -84,7 +84,7 @@
 		<tr>
 		  <td>
 		  	$ui.getString("tool.managementtool.availableRoles.label")<br/>
-			<SELECT $readonly id="unassignedRoleNameList" NAME="unassignedRoleNameList" MULTIPLE SIZE="10" onDblClick="opt1.transferRight()" style="font-size: 10px; width:300px; border: solid 1px #C2D0E2;">
+			<select $readonly id="unassignedRoleNameList" NAME="unassignedRoleNameList" MULTIPLE SIZE="10" onDblClick="opt1.transferRight()" style="font-size: 10px; width:300px; border: solid 1px #C2D0E2;">
 	        #if($supportsUpdate)
 	          	#foreach ($roleVO in $allRoles)
 					#set($hasAccessToManageUsersInRole = $this.hasAccessTo("Role.ManageUsers", "$roleVO.name"))
@@ -112,7 +112,7 @@
 		  </td>
 		  <td>
 		  	$ui.getString("tool.managementtool.assignedRoles.label")<br/>
-		  	<SELECT $readonly id="roleName" name="roleName" multiple size="10" onDblClick="opt1.transferLeft()" style="font-size: 10px; width:300px; border: solid 1px #C2D0E2;">
+		  	<select $readonly id="roleName" name="roleName" multiple size="10" onDblClick="opt1.transferLeft()" style="font-size: 10px; width:300px; border: solid 1px #C2D0E2;">
 	        	#foreach ($assignedRoleVO in $assignedRoles)
 					#set($hasAccessToManageUsersInRole = $this.hasAccessTo("Role.ManageUsers", "$assignedRoleVO.name"))
 					<option value="$assignedRoleVO.name" title="$assignedRoleVO.name" #if(!$hasAccessToManageUsersInRole)disabled="1" style="color:#999; background:white;"#end>$assignedRoleVO.name</option>
@@ -130,7 +130,7 @@
 		<tr>
 		    <td>
 		    	$ui.getString("tool.managementtool.availableGroups.label")<br/>
-		    	<SELECT $readonly id="unassignedGroupNameList" NAME="unassignedGroupNameList" MULTIPLE SIZE="10" onDblClick="opt2.transferRight()" style="font-size: 10px; width:300px; border: solid 1px #C2D0E2;">
+		    	<select $readonly id="unassignedGroupNameList" NAME="unassignedGroupNameList" MULTIPLE SIZE="10" onDblClick="opt2.transferRight()" style="font-size: 10px; width:300px; border: solid 1px #C2D0E2;">
 		        #if($supportsUpdate)
 		          	#foreach ($groupVO in $allGroups)
 						#set($hasAccessToManageUsersInGroup = $this.hasAccessTo("Group.ManageUsers", "$groupVO.name"))
@@ -158,7 +158,7 @@
 		    </td>
 		    <td>
 		    	$ui.getString("tool.managementtool.assignedGroups.label")<br/>
-		      	<SELECT $readonly id="groupName" name="groupName" multiple size="10" onDblClick="opt2.transferLeft()" style="font-size: 10px; width:300px; border: solid 1px #C2D0E2;">
+		      	<select $readonly id="groupName" name="groupName" multiple size="10" onDblClick="opt2.transferLeft()" style="font-size: 10px; width:300px; border: solid 1px #C2D0E2;">
 		        	#foreach ($assignedGroupVO in $assignedGroups)
 		        		#set($hasAccessToManageUsersInGroup = $this.hasAccessTo("Group.ManageUsers", "$assignedGroupVO.name"))
 						<option value="$assignedGroupVO.name" title="$assignedGroupVO.name" #if(!$hasAccessToManageUsersInGroup)disabled="1" style="color:#999; background:white;"#end>$assignedGroupVO.name</option>

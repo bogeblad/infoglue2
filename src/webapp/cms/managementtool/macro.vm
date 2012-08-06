@@ -551,6 +551,49 @@
 
 #end
 
+##**************************************************
+## This is the header for all managementtool pages *
+##**************************************************
+
+#macro(beginManagementToolTransitional $titleKey $toolbarKey $arguments)
+
+<html>
+<head>
+	<title>$ui.getString($titleKey)</title>
+
+	<script type="text/javascript" src="script/jquery/jquery-1.4.4.min.js"></script>
+	<script type="text/javascript" src="script/jqueryplugins/ui/jquery-ui-dragDropTabs-1.6rc2.min.js"></script>
+
+	<link rel="stylesheet" type="text/css" href="css/cms.css" />
+	<link rel="stylesheet" type="text/css" href="css/infogluecommons.css" />
+	<script language="JavaScript" type="text/javascript" src="script/listview.js"></script>
+	<script language="JavaScript" type="text/javascript" >
+		refreshManagementToolBar('$toolbarKey', '$arguments');
+	</script>
+
+	<script type="text/javascript" src="script/v3/infoglueWidgets.js"></script>
+	<script type="text/javascript" src="script/v3/infoglueFormUtilities.js"></script>
+	<link rel="stylesheet" type="text/css" href="css/v3/infoglueWidgets.css" /> 
+
+	<link rel="stylesheet" type="text/css" media="all" href="applications/jscalendar/skins/aqua/theme.css" title="aqua" />
+	<script type="text/javascript" src="applications/jscalendar/calendar.js"></script>
+	<script type="text/javascript" src="applications/jscalendar/lang/calendar-en.js"></script>
+	<script type="text/javascript" src="applications/jscalendar/calendar-setup.js"></script>
+
+	<meta http-equiv="Expires" content="Tue, 01 Jan 1980 1:00:00 GMT" />
+	<meta http-equiv="Cache-Control" content="no-cache" />
+	<meta http-equiv="Pragma" content="no-cache" />
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+</head>
+
+<body class="managementtooledit">
+#workingDiv()
+<div class="listmarginalized">
+<!--div class="fullymarginalized"-->
+#set( $lvColor = "blue")
+
+#end
+
 
 ##*****************************************************
 ## This is the header for all V3 managementtool pages *

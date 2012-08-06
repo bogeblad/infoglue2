@@ -5,10 +5,11 @@
 	"iTotalDisplayRecords": $totalDisplayRecords, 
 	"aaData": [ 
 		#foreach($principal in $infogluePrincipals)
-		#if($velocityCount > 1),#end["<a href='javascript:selectUser(&#34;$principal.name&#34;);'>$principal.name</a>","$principal.firstName","$principal.lastName"]
+		#if($velocityCount > 1),#end["<a class='deleteCross' title='$ui.getString("tool.common.delete.label") $principal.name' href='UpdateRole!deleteUser.action?roleName=$formatter.encodeBase64("$roleName")&userName=$formatter.encodeBase64($principal.name)&igSecurityCode=$securityCode&test=$principal.name'>&nbsp;</a>","$principal.name","$principal.firstName","$principal.lastName"]
 		#end
 	] 
-}#else
+}
+#else
 {
 	"sEcho": $sEcho, 
 	"iTotalRecords": $totalRecords, 

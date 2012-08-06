@@ -4,9 +4,9 @@
 
 #beginManagementTool("tool.managementtool.viewSystemUser.header" "tool.managementtool.viewSystemUser.header" "userName=$formatter.encodeURI($userName)")
 
-<SCRIPT type="text/javascript" SRC="script/OptionTransfer.js"></SCRIPT>
+<script type="text/javascript" src="script/OptionTransfer.js"></script>
 
-<SCRIPT LANGUAGE="JavaScript">
+<script type="text/javascript">
 
 	var opt1 = new OptionTransfer("unassignedRoleNameList","roleName");
 	opt1.setAutoSort(true);
@@ -79,14 +79,14 @@
 		save(form);
 	}
 
-</SCRIPT>
+</script>
 #if($supportsUpdate == false)
 	#set($readonly = "disabled")
 #else
 	#set($readonly = "")
 #end
 <div class="fullymarginalized">
-<form method="POST" name="editForm" action="UpdateSystemUser.action">
+<form method="post" name="editForm" action="UpdateSystemUser.action">
 <table>
 	<tr>
 		<td>#editReadOnlyField("SystemUser.firstName" "firstName" $!firstName "51" $readonly)</td>
@@ -103,6 +103,19 @@
 		<td>&nbsp;</td>
 	</tr>
 	<tr>
+		<td>
+			#editReadOnlyField("SystemUser.source" "source" $source "51" "$readonly")
+		</td>
+		<td>
+			#yesNoDropDown("SystemUser.isActive" "isActive" $isActive)
+		</td>
+	</tr>
+	<tr>
+		<td colspan="2">
+			$ui.getString("tool.contenttool.lastUpdatedLabel"): $modifiedDateTime
+		</td>
+	</tr>
+	<tr>
 		<td>&nbsp;</td>
 	</tr>
 	
@@ -111,17 +124,18 @@
 	</tr>
 	<tr>
 	  <td colspan="2">
-		<table width="50%" border="0">
+		<table width="100%" border="0">
 		  <tr>
-		    <td>State a name or choose from list:<br>
+		    <td>
+		    	State a name or choose from list:<br>
 		        <input type="text" id="roleSearchField" name="roleSearchField" style="font-size: 10px; width:300px; border: solid 1px #C2D0E2;"/ onkeypress="javascript:markNearestOption('roleSearchField', 'unassignedRoleNameList');" onchange="javascript:markNearestOption('roleSearchField', 'unassignedRoleNameList');">
-		      </td>
+		    </td>
 		    <td>&nbsp;</td>
 		    <td valign="bottom">Current Roles</td>
 		  </tr>
 		  <tr>
 		    <td>
-		    	<SELECT $readonly id="unassignedRoleNameList" NAME="unassignedRoleNameList" MULTIPLE SIZE="10" onDblClick="opt1.transferRight()" style="font-size: 10px; width:300px; border: solid 1px #C2D0E2;">
+		    	<select $readonly id="unassignedRoleNameList" name="unassignedRoleNameList" MULTIPLE SIZE="10" onDblClick="opt1.transferRight()" style="font-size: 10px; width:300px; border: solid 1px #C2D0E2;">
 		        #if($supportsUpdate)
 		          	#foreach ($roleVO in $allRoles)
 						#set($hasAccessToManageUsersInRole = $this.hasAccessTo("Role.ManageUsers", "$roleVO.name"))
@@ -137,7 +151,7 @@
 						#end
 					#end
 				#else
-					<option value="" disabled="1" style="color:#999;>No need to show roles</option>
+					<option value="" disabled="1" style="color:#999;">No need to show roles</option>
 				#end	
 		        </select>
 		    </td>
@@ -148,7 +162,7 @@
 				<INPUT TYPE="button" NAME="roleLeft" VALUE="All &lt;&lt;" ONCLICK="opt1.transferAllLeft()" style="width:50px; font-family: verdana; font-size: 10px;">
 		    </td>
 		    <td>
-		      	<SELECT $readonly id="roleName" name="roleName" multiple size="10" onDblClick="opt1.transferLeft()" style="font-size: 10px; width:300px; border: solid 1px #C2D0E2;">
+		      	<select $readonly id="roleName" name="roleName" multiple size="10" onDblClick="opt1.transferLeft()" style="font-size: 10px; width:300px; border: solid 1px #C2D0E2;">
 		        	#foreach ($assignedRoleVO in $assignedRoles)
 						#set($hasAccessToManageUsersInRole = $this.hasAccessTo("Role.ManageUsers", "$assignedRoleVO.name"))
 						<option value="$assignedRoleVO.name" title="$assignedRoleVO.name" #if(!$hasAccessToManageUsersInRole)disabled="1" style="color:#999; background:white;"#end>$assignedRoleVO.name</option>
@@ -240,7 +254,7 @@
 		</td>
 	</tr>
 	
-	##if($supportsUpdate)
+	#if($supportsUpdate)
 	<tr>
 		<td>&nbsp;</td>
 	</tr>
@@ -252,7 +266,7 @@
 			<a href="ViewListSystemUser.action"><img border="0" src="$ui.getString("images.managementtool.buttons.cancel")" width="50" height="25"></a>
 		</td>
 	</tr>
-	##end
+	#end
 </table>
 </form>
 </div>
