@@ -59,9 +59,6 @@ import org.infoglue.cms.entities.management.impl.simple.AvailableServiceBindingI
 import org.infoglue.cms.entities.management.impl.simple.GroupImpl;
 import org.infoglue.cms.entities.management.impl.simple.RoleImpl;
 import org.infoglue.cms.entities.management.impl.simple.SmallAvailableServiceBindingImpl;
-import org.infoglue.cms.entities.management.impl.simple.SmallGroupImpl;
-import org.infoglue.cms.entities.management.impl.simple.SmallRoleImpl;
-import org.infoglue.cms.entities.management.impl.simple.SmallSystemUserImpl;
 import org.infoglue.cms.entities.management.impl.simple.SystemUserImpl;
 import org.infoglue.cms.entities.publishing.PublicationDetailVO;
 import org.infoglue.cms.entities.publishing.PublicationVO;
@@ -201,10 +198,7 @@ public class SelectiveLivePublicationThread extends PublicationThread
 						    if(!isDependsClass && 
 						    		className.equalsIgnoreCase(SystemUserImpl.class.getName()) || 
 						    		className.equalsIgnoreCase(RoleImpl.class.getName()) || 
-						    		className.equalsIgnoreCase(GroupImpl.class.getName()) ||
-						    		className.equalsIgnoreCase(SmallSystemUserImpl.class.getName()) || 
-						    		className.equalsIgnoreCase(SmallRoleImpl.class.getName()) || 
-						    		className.equalsIgnoreCase(SmallGroupImpl.class.getName()))
+						    		className.equalsIgnoreCase(GroupImpl.class.getName()))
 						    {
 						        Object[] ids = {objectId};
 						        CacheController.clearCache(type, ids);
@@ -280,24 +274,6 @@ public class SelectiveLivePublicationThread extends PublicationThread
 									logger.info("We should delete all images with digitalAssetId " + objectId);
 									DigitalAssetDeliveryController.getDigitalAssetDeliveryController().deleteDigitalAssets(new Integer(objectId));
 								}
-							}
-							else if(Class.forName(className).getName().equals(SystemUserImpl.class.getName()))
-							{
-							    Class typesExtra = SmallSystemUserImpl.class;
-								Object[] idsExtra = {objectId};
-								CacheController.clearCache(typesExtra, idsExtra);
-							}
-							else if(Class.forName(className).getName().equals(RoleImpl.class.getName()))
-							{
-							    Class typesExtra = SmallRoleImpl.class;
-								Object[] idsExtra = {objectId};
-								CacheController.clearCache(typesExtra, idsExtra);
-							}
-							else if(Class.forName(className).getName().equals(GroupImpl.class.getName()))
-							{
-							    Class typesExtra = SmallGroupImpl.class;
-								Object[] idsExtra = {objectId};
-								CacheController.clearCache(typesExtra, idsExtra);
 							}
 							else if(Class.forName(className).getName().equals(PublicationImpl.class.getName()))
 							{
