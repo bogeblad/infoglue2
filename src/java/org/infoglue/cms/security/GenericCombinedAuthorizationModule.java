@@ -25,35 +25,15 @@ package org.infoglue.cms.security;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
-import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
 
-import javax.naming.Context;
-import javax.naming.NamingEnumeration;
-import javax.naming.NamingException;
-import javax.naming.directory.Attribute;
-import javax.naming.directory.Attributes;
-import javax.naming.directory.DirContext;
-import javax.naming.directory.InitialDirContext;
-import javax.naming.directory.SearchControls;
-import javax.naming.directory.SearchResult;
-
 import org.apache.log4j.Logger;
 import org.exolab.castor.jdo.Database;
-import org.infoglue.cms.controllers.kernel.impl.simple.CastorDatabaseService;
-import org.infoglue.cms.controllers.kernel.impl.simple.GroupController;
-import org.infoglue.cms.controllers.kernel.impl.simple.RoleController;
-import org.infoglue.cms.controllers.kernel.impl.simple.SystemUserController;
-import org.infoglue.cms.entities.kernel.BaseEntityVO;
-import org.infoglue.cms.entities.management.Group;
 import org.infoglue.cms.entities.management.GroupVO;
-import org.infoglue.cms.entities.management.Role;
 import org.infoglue.cms.entities.management.RoleVO;
-import org.infoglue.cms.entities.management.SystemUser;
 import org.infoglue.cms.entities.management.SystemUserVO;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.util.CmsPropertyHandler;
@@ -95,8 +75,6 @@ public class GenericCombinedAuthorizationModule implements AuthorizationModule, 
 	private Database transactionObject 	= null;
 
 	private List authorizationModules = new ArrayList();
-	//private AuthorizationModule mainAuthorizationModule = null;
-	//private AuthorizationModule authorizationModule = null;
 
 	private AuthorizationModule getAuthorizationModule(String authorizationModuleClassName, int index) throws SystemException
 	{
@@ -124,8 +102,6 @@ public class GenericCombinedAuthorizationModule implements AuthorizationModule, 
 			
 			if(logger.isInfoEnabled())
 				logger.info("authorizationModule:" + authorizationModule);
-			
-			//localProperties.list(System.out);
 			
 			authorizationModule.setExtraProperties(localProperties);
 			authorizationModule.setTransactionObject(this.getTransactionObject());
@@ -229,35 +205,6 @@ public class GenericCombinedAuthorizationModule implements AuthorizationModule, 
 
 	
 	/**
-	 * This method gets a users roles
-	 */
-
-	public List authorizeUser(String userName) throws Exception
-	{
-		List roles = new ArrayList();
-		
-		int i=0;
-		String authorizerClassName = this.extraProperties.getProperty("" + i + ".authorizerClassName");
-		while(authorizerClassName != null && !authorizerClassName.equals(""))
-		{
-			try
-			{
-				roles.addAll(getAuthorizationModule(authorizerClassName, i).authorizeUser(userName));
-			}
-			catch(Exception e)
-			{
-				e.printStackTrace();
-			}
-			
-			i++;
-			authorizerClassName = this.extraProperties.getProperty("" + i + ".authorizerClassName");
-		}
-
-		return roles;
-	}
-
-	
-	/**
 	 * This method gets a list of roles
 	 */
 	
@@ -356,7 +303,7 @@ public class GenericCombinedAuthorizationModule implements AuthorizationModule, 
 		return users;
 	}
 
-	public List getFilteredUsers(String searchString) throws Exception 
+	public List getFilteredUsers(Integer offset, Integer limit,	String sortProperty, String direction, String searchString, boolean populateRolesAndGroups) throws Exception 
 	{
 		List users = new ArrayList();
 
@@ -369,7 +316,7 @@ public class GenericCombinedAuthorizationModule implements AuthorizationModule, 
 			
 			try
 			{
-				users.addAll(getAuthorizationModule(authorizerClassName, i).getFilteredUsers(searchString));
+				users.addAll(getAuthorizationModule(authorizerClassName, i).getFilteredUsers(offset, limit, sortProperty, direction, searchString, populateRolesAndGroups));
 			}
 			catch(Exception e)
 			{
@@ -671,4 +618,212 @@ public class GenericCombinedAuthorizationModule implements AuthorizationModule, 
         return this.transactionObject;
     }
 
+	public Integer getRoleCount(String searchString) throws Exception 
+	{
+		return getRoles().size();
+	}
+
+	public Integer getGroupCount(String searchString) throws Exception 
+	{
+		return getGroups().size();
+	}
+
+	public Integer getUserCount(String searchString) throws Exception 
+	{
+		return getUsers().size();
+	}
+
+	public Integer getRoleUserCount(String roleName, String searchString) throws Exception 
+	{
+		Integer userCount = 0;
+		
+		int i=0;
+		String authorizerClassName = this.extraProperties.getProperty("" + i + ".authorizerClassName");
+		while(authorizerClassName != null && !authorizerClassName.equals(""))
+		{
+			try
+			{
+				userCount += getAuthorizationModule(authorizerClassName, i).getRoleUserCount(roleName, searchString);
+			}
+			catch(Exception e)
+			{
+				e.printStackTrace();
+			}
+			
+			i++;
+			authorizerClassName = this.extraProperties.getProperty("" + i + ".authorizerClassName");
+		}
+		
+		return userCount;
+	}
+
+	public Integer getRoleUserInvertedCount(String roleName, String searchString) throws Exception 
+	{
+		Integer count = 0;
+		
+		int i=0;
+		String authorizerClassName = this.extraProperties.getProperty("" + i + ".authorizerClassName");
+		while(authorizerClassName != null && !authorizerClassName.equals(""))
+		{
+			try
+			{
+				count += getAuthorizationModule(authorizerClassName, i).getRoleUserInvertedCount(roleName, searchString);
+			}
+			catch(Exception e)
+			{
+				e.printStackTrace();
+			}
+			
+			i++;
+			authorizerClassName = this.extraProperties.getProperty("" + i + ".authorizerClassName");
+		}
+		
+		return count;
+	}
+
+	public Integer getGroupUserCount(String groupName, String searchString) throws Exception 
+	{
+		Integer count = 0;
+		
+		int i=0;
+		String authorizerClassName = this.extraProperties.getProperty("" + i + ".authorizerClassName");
+		while(authorizerClassName != null && !authorizerClassName.equals(""))
+		{
+			try
+			{
+				count += getAuthorizationModule(authorizerClassName, i).getGroupUserCount(groupName, searchString);
+			}
+			catch(Exception e)
+			{
+				e.printStackTrace();
+			}
+			
+			i++;
+			authorizerClassName = this.extraProperties.getProperty("" + i + ".authorizerClassName");
+		}
+		
+		return count;
+	}
+
+	public Integer getGroupUserInvertedCount(String groupName, String searchString) throws Exception 
+	{
+		Integer count = 0;
+		
+		int i=0;
+		String authorizerClassName = this.extraProperties.getProperty("" + i + ".authorizerClassName");
+		while(authorizerClassName != null && !authorizerClassName.equals(""))
+		{
+			try
+			{
+				count += getAuthorizationModule(authorizerClassName, i).getGroupUserInvertedCount(groupName, searchString);
+			}
+			catch(Exception e)
+			{
+				e.printStackTrace();
+			}
+			
+			i++;
+			authorizerClassName = this.extraProperties.getProperty("" + i + ".authorizerClassName");
+		}
+		
+		return count;
+	}
+
+	public List<InfoGluePrincipal> getRoleUsers(String roleName, Integer offset, Integer limit, String sortProperty, String direction, String searchString) throws Exception 
+	{
+		List<InfoGluePrincipal> users = new ArrayList<InfoGluePrincipal>();
+		
+		int i=0;
+		String authorizerClassName = this.extraProperties.getProperty("" + i + ".authorizerClassName");
+		while(authorizerClassName != null && !authorizerClassName.equals(""))
+		{
+			try
+			{
+				users.addAll(getAuthorizationModule(authorizerClassName, i).getRoleUsers(roleName, offset, limit, sortProperty, direction, searchString));
+			}
+			catch(Exception e)
+			{
+				e.printStackTrace();
+			}
+			
+			i++;
+			authorizerClassName = this.extraProperties.getProperty("" + i + ".authorizerClassName");
+		}
+		
+		return users;
+	}
+
+	public List<InfoGluePrincipal> getRoleUsersInverted(String roleName, Integer offset, Integer limit, String sortProperty, String direction, String searchString) throws Exception 
+	{
+		List<InfoGluePrincipal> users = new ArrayList<InfoGluePrincipal>();
+		
+		int i=0;
+		String authorizerClassName = this.extraProperties.getProperty("" + i + ".authorizerClassName");
+		while(authorizerClassName != null && !authorizerClassName.equals(""))
+		{
+			try
+			{
+				users.addAll(getAuthorizationModule(authorizerClassName, i).getRoleUsersInverted(roleName, offset, limit, sortProperty, direction, searchString));
+			}
+			catch(Exception e)
+			{
+				e.printStackTrace();
+			}
+			
+			i++;
+			authorizerClassName = this.extraProperties.getProperty("" + i + ".authorizerClassName");
+		}
+		
+		return users;
+	}
+
+	public List<InfoGluePrincipal> getGroupUsers(String groupName, Integer offset, Integer limit, String sortProperty, String direction, String searchString) throws Exception
+	{
+		List<InfoGluePrincipal> users = new ArrayList<InfoGluePrincipal>();
+		
+		int i=0;
+		String authorizerClassName = this.extraProperties.getProperty("" + i + ".authorizerClassName");
+		while(authorizerClassName != null && !authorizerClassName.equals(""))
+		{
+			try
+			{
+				users.addAll(getAuthorizationModule(authorizerClassName, i).getGroupUsers(groupName, offset, limit, sortProperty, direction, searchString));
+			}
+			catch(Exception e)
+			{
+				e.printStackTrace();
+			}
+			
+			i++;
+			authorizerClassName = this.extraProperties.getProperty("" + i + ".authorizerClassName");
+		}
+		
+		return users;
+	}
+
+
+	public List<InfoGluePrincipal> getGroupUsersInverted(String groupName, Integer offset, Integer limit, String sortProperty, String direction, String searchString) throws Exception
+	{
+		List<InfoGluePrincipal> users = new ArrayList<InfoGluePrincipal>();
+		
+		int i=0;
+		String authorizerClassName = this.extraProperties.getProperty("" + i + ".authorizerClassName");
+		while(authorizerClassName != null && !authorizerClassName.equals(""))
+		{
+			try
+			{
+				users.addAll(getAuthorizationModule(authorizerClassName, i).getGroupUsersInverted(groupName, offset, limit, sortProperty, direction, searchString));
+			}
+			catch(Exception e)
+			{
+				e.printStackTrace();
+			}
+			
+			i++;
+			authorizerClassName = this.extraProperties.getProperty("" + i + ".authorizerClassName");
+		}
+		
+		return users;
+	}
+	
 }

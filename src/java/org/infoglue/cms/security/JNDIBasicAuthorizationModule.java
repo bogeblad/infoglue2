@@ -25,16 +25,13 @@ package org.infoglue.cms.security;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Hashtable;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
 import javax.naming.Context;
-import javax.naming.InitialContext;
 import javax.naming.NamingEnumeration;
 import javax.naming.NamingException;
 import javax.naming.directory.Attribute;
@@ -62,7 +59,7 @@ import org.infoglue.deliver.util.NullObject;
  * This authentication module authenticates an user against the ordinary infoglue database.
  */
 
-public class JNDIBasicAuthorizationModule implements AuthorizationModule, Serializable
+public class JNDIBasicAuthorizationModule extends BasicAuthorizationModule implements AuthorizationModule, Serializable
 {
     private final static Logger logger = Logger.getLogger(JNDIBasicAuthorizationModule.class.getName());
 
@@ -1357,7 +1354,7 @@ public class JNDIBasicAuthorizationModule implements AuthorizationModule, Serial
 		return users;
 	}
 
-	public List getFilteredUsers(String searchString) throws Exception 
+	public List getFilteredUsers(Integer offset, Integer limit,	String sortProperty, String direction, String searchString, boolean populateRolesAndGroups) throws Exception 
 	{
 		return getUsers();
 	}
@@ -1869,5 +1866,23 @@ public class JNDIBasicAuthorizationModule implements AuthorizationModule, Serial
     {
     	return (getAuthorizedInfoGlueGroup(groupName) == null ? false : true);
     }
+
+	@Override
+	public Integer getRoleCount(String searchString) throws Exception 
+	{
+		return getRoles().size();
+	}
+
+	@Override
+	public Integer getGroupCount(String searchString) throws Exception 
+	{
+		return getGroups().size();
+	}
+
+	@Override
+	public Integer getUserCount(String searchString) throws Exception 
+	{
+		return getUsers().size();
+	}
 
 }
