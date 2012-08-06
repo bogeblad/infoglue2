@@ -29,6 +29,7 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.Properties;
 
+import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.log4j.Logger;
 import org.infoglue.cms.util.CmsPropertyHandler;
@@ -497,7 +498,6 @@ public class VisualFormatter
 		
 		boolean toLowerCase = CmsPropertyHandler.getNiceURIUseLowerCase();
 		Properties properties = CmsPropertyHandler.getCharacterReplacingMapping();
-		
 		StringBuffer sb = new StringBuffer();
 		int n = s.length();
 		for (int i = 0; i < n; i++) 
@@ -543,34 +543,6 @@ public class VisualFormatter
 			return null;
 		
 		return StringEscapeUtils.escapeHtml(s);
-		
-		/*
-		StringBuffer sb = new StringBuffer();
-		int n = s.length();
-		for (int i = 0; i < n; i++) 
-		{
-			char c = s.charAt(i);
-			if(c < 128 && c > 32)
-			{
-				//System.out.println(c + "=" + (int)c);
-			    if(Character.isLetterOrDigit(c) ||  c == '-' || c == '_' || c == '.')
-			        sb.append(c);
-			    else
-			    {
-					sb.append(c);
-					//sb.append("\\u" + c);
-			    }
-			}
-			else
-			{
-				//System.out.println(c + "=" + (int)c);
-	        	sb.append("&#" + (int)c + ";");
-			}
-		}
-		
-		System.out.println("3:\n" + sb.toString() + "\n\n");
-		return sb.toString();
-		*/
 	}
 
 	/**
@@ -592,6 +564,14 @@ public class VisualFormatter
 		return encodedString;
 	}
 
+	public final String encodeBase64(String s) throws Exception
+	{
+		if(s == null)
+			return null;
+		
+		return Base64.encodeBase64URLSafeString(s.getBytes("utf-8"));
+	}
+	
 	/**
 	 * This method converts all non-standard characters to html-equivalents.
 	 */
