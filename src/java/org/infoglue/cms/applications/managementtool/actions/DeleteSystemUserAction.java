@@ -22,6 +22,8 @@
  */
 
 package org.infoglue.cms.applications.managementtool.actions;
+import org.apache.commons.codec.binary.Base64;
+import org.apache.log4j.Logger;
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.UserControllerProxy;
 import org.infoglue.cms.entities.management.SystemUserVO;
@@ -37,6 +39,8 @@ import org.infoglue.cms.util.CmsPropertyHandler;
 
 public class DeleteSystemUserAction extends InfoGlueAbstractAction
 {
+	private final static Logger logger = Logger.getLogger(DeleteSystemUserAction.class.getName());
+
 	private SystemUserVO systemUserVO;
 	
 	public DeleteSystemUserAction()
@@ -67,8 +71,21 @@ public class DeleteSystemUserAction extends InfoGlueAbstractAction
 		return "successV3";
 	}
 
-	public void setUserName(String userName)
+	public void setUserName(String userName) throws Exception
 	{
+		logger.info("userName:" + userName);
+		byte[] bytes = Base64.decodeBase64(userName);
+		String decodedName = new String(bytes, "utf-8");
+		logger.info("decodedName:" + decodedName);
+		if(UserControllerProxy.getController().userExists(decodedName))
+		{
+			userName = decodedName;
+		}
+		else
+		{
+			logger.info("No match on base64-based userName:" + userName);
+		}
+		
 		this.systemUserVO.setUserName(userName);	
 	}
 

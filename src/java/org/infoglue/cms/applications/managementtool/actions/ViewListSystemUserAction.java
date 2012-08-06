@@ -24,19 +24,29 @@
 package org.infoglue.cms.applications.managementtool.actions;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
 import javax.servlet.ServletOutputStream;
 
-import org.apache.log4j.Logger;
+import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.collections.CollectionUtils;
+import org.exolab.castor.jdo.Database;
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
+import org.infoglue.cms.controllers.kernel.impl.simple.GroupControllerProxy;
 import org.infoglue.cms.controllers.kernel.impl.simple.RoleControllerProxy;
 import org.infoglue.cms.controllers.kernel.impl.simple.UserControllerProxy;
+import org.infoglue.cms.exception.ConstraintException;
+import org.infoglue.cms.exception.SystemException;
+import org.infoglue.cms.security.InfoGlueGroup;
 import org.infoglue.cms.security.InfoGluePrincipal;
+import org.infoglue.cms.security.InfoGlueRole;
+import org.infoglue.cms.util.CmsPropertyHandler;
 import org.infoglue.cms.util.sorters.ReflectionComparator;
 import org.infoglue.deliver.util.Timer;
+import org.jfree.util.Log;
 
 
 /**
@@ -50,8 +60,6 @@ import org.infoglue.deliver.util.Timer;
 public class ViewListSystemUserAction extends InfoGlueAbstractAction 
 {
 	private static final long serialVersionUID = 1L;
-
-    private final static Logger logger = Logger.getLogger(ViewListSystemUserAction.class.getName());
 
 	private List infogluePrincipals;
 	
@@ -71,53 +79,20 @@ public class ViewListSystemUserAction extends InfoGlueAbstractAction
 	private int iTotalRecords = 0;
 	private int iTotalDisplayRecords = 0;
 	private String sSearch = null;
+	private String format = "normal";
+	
+	private String roleName;
+	private String groupName;
+	private List assignedInfoGluePrincipals;
 
+	
 	protected String doExecute() throws Exception 
 	{
-		this.filterRoleNames = this.getRequest().getParameterValues("filterRoleName");
-		if(filterFirstName == null && filterLastName == null && filterUserName == null && filterEmail == null && (filterRoleNames == null || filterRoleNames.length == 0 || (filterRoleNames.length == 1 && filterRoleNames[0].equals(""))))
-		{
-			this.infogluePrincipals = UserControllerProxy.getController().getAllUsers();
-			this.numberOfSlots = this.infogluePrincipals.size() / 100;
-			int startIndex = 0 + (slotId * 100);
-			int endIndex = 0 + (slotId * 100) + 100;
-			if(endIndex > this.infogluePrincipals.size())
-				endIndex = this.infogluePrincipals.size();
-			
-			this.infogluePrincipals = this.infogluePrincipals.subList(startIndex, endIndex);
-		}
-		else
-		{
-			this.infogluePrincipals = UserControllerProxy.getController().getFilteredUsers(this.filterFirstName, this.filterLastName, this.filterUserName, this.filterEmail, filterRoleNames);
-		}
-		
-		if(this.infogluePrincipals.size() > 100)
-			this.infogluePrincipals = this.infogluePrincipals.subList(0, 100);
-
-	    return "success";
+		return doV3();
 	}
 
 	public String doV3() throws Exception 
 	{
-		/*
-		this.filterRoleNames = this.getRequest().getParameterValues("filterRoleName");
-		if(filterFirstName == null && filterLastName == null && filterUserName == null && filterEmail == null && (filterRoleNames == null || filterRoleNames.length == 0 || (filterRoleNames.length == 1 && filterRoleNames[0].equals(""))))
-		{
-			this.infogluePrincipals = UserControllerProxy.getController().getAllUsers();
-			this.numberOfSlots = this.infogluePrincipals.size() / 100;
-			int startIndex = 0 + (slotId * 100);
-			int endIndex = 0 + (slotId * 100) + 100;
-			if(endIndex > this.infogluePrincipals.size())
-				endIndex = this.infogluePrincipals.size();
-			
-			this.infogluePrincipals = this.infogluePrincipals.subList(startIndex, endIndex);
-		}
-		else
-		{
-			this.infogluePrincipals = UserControllerProxy.getController().getFilteredUsers(this.filterFirstName, this.filterLastName, this.filterUserName, this.filterEmail, filterRoleNames);
-		}
-		*/
-
 	    return "successV3";
 	}
 
@@ -134,57 +109,304 @@ public class ViewListSystemUserAction extends InfoGlueAbstractAction
 	
 	public String doProcessAndFilter() throws Exception 
 	{
-		Timer t = new Timer();
-    	if(!logger.isInfoEnabled())
-    		t.setActive(false);
-
-		logger.info("sSearch:" + sSearch);
-		
 		String sortColNumber = getRequest().getParameter("iSortCol_0");
 		String sortDirection = getRequest().getParameter("sSortDir_0");
 		if(sortDirection == null || sortDirection.equals(""))
 			sortDirection = "asc";
 		
-		if(sSearch == null || sSearch.equals(""))
-			this.infogluePrincipals = UserControllerProxy.getController().getAllUsers();
-		else
-			this.infogluePrincipals = UserControllerProxy.getController().getFilteredUsers(this.sSearch);
-
-		String sortProperty = "name";
-		if(sortColNumber != null && sortColNumber.equals("1"))
+		String sortProperty = "userName";
+		if(sortColNumber != null && sortColNumber.equals("2"))
 			sortProperty = "firstName";
-		else if(sortColNumber != null && sortColNumber.equals("2"))
+		else if(sortColNumber != null && sortColNumber.equals("3"))
 			sortProperty = "lastName";
-		
-		t.printElapsedTime("Before with:" + sortProperty);
-		Collections.sort(this.infogluePrincipals, new ReflectionComparator(sortProperty));
-		t.printElapsedTime("Sorting took " + sortDirection);
-		if(sortDirection.equals("desc"))
-		{
-			Collections.reverse(this.infogluePrincipals);
-			t.printElapsedTime("Reverse took...");
-		}
-			
-		this.iTotalRecords = this.infogluePrincipals.size();
-		this.iTotalDisplayRecords = this.infogluePrincipals.size();
-		t.printElapsedTime("Getting all users took ");
+		else if(sortColNumber != null && sortColNumber.equals("4"))
+			sortProperty = "source";
+		else if(sortColNumber != null && sortColNumber.equals("5"))
+			sortProperty = "isActive";
 		
 		String iDisplayStartString = getRequest().getParameter("iDisplayStart");
 		String iDisplayLengthString = getRequest().getParameter("iDisplayLength");
+		if(iDisplayStartString == null)
+			iDisplayStartString = "0";
+		if(iDisplayLengthString == null)
+			iDisplayLengthString = "1000000";
+
+		int start = new Integer(iDisplayStartString);
+		int end = start + new Integer(iDisplayLengthString);
+
+		if(sSearch == null || sSearch.equals(""))
+		{																
+			String filterAssignedRoleUsers = getRequest().getParameter("filterAssignedRoleUsers");
+			String filterAssignedGroupUsers = getRequest().getParameter("filterAssignedGroupUsers");
+			if(filterAssignedRoleUsers != null && filterAssignedRoleUsers.equalsIgnoreCase("true"))
+			{
+				this.infogluePrincipals = RoleControllerProxy.getController().getInfoGluePrincipalsNotInRole(roleName, new Integer(iDisplayStartString), new Integer(iDisplayLengthString), sortProperty, sortDirection, this.sSearch);
+				Integer unassignedInfogluePrincipalsCount = RoleControllerProxy.getController().getInfoGluePrincipalsNotInRoleCount(roleName, this.sSearch);
+			
+				this.iTotalRecords = unassignedInfogluePrincipalsCount;
+				this.iTotalDisplayRecords = unassignedInfogluePrincipalsCount;
+			}
+			else if(filterAssignedGroupUsers != null && filterAssignedGroupUsers.equalsIgnoreCase("true"))
+			{
+				this.infogluePrincipals = GroupControllerProxy.getController().getInfoGluePrincipalsNotInGroup(groupName, new Integer(iDisplayStartString), new Integer(iDisplayLengthString), sortProperty, sortDirection, this.sSearch);
+				Integer unassignedInfogluePrincipalsCount = GroupControllerProxy.getController().getInfoGluePrincipalsNotInGroupCount(groupName, this.sSearch);
+
+				this.iTotalRecords = unassignedInfogluePrincipalsCount;
+				this.iTotalDisplayRecords = unassignedInfogluePrincipalsCount;
+			}
+			else
+			{
+				this.infogluePrincipals = UserControllerProxy.getController().getFilteredUsers(start, new Integer(iDisplayLengthString), sortProperty, sortDirection, null, false);
+				Integer totalRecords = UserControllerProxy.getController().getUserCount(this.sSearch);
+				this.iTotalRecords = totalRecords;
+				this.iTotalDisplayRecords = totalRecords;
+			}
+		}
+		else
+		{
+			String filterAssignedRoleUsers = getRequest().getParameter("filterAssignedRoleUsers");
+			String filterAssignedGroupUsers = getRequest().getParameter("filterAssignedGroupUsers");
+			if(filterAssignedRoleUsers != null && filterAssignedRoleUsers.equalsIgnoreCase("true"))
+			{
+				this.infogluePrincipals = RoleControllerProxy.getController().getInfoGluePrincipalsNotInRole(roleName, new Integer(iDisplayStartString), new Integer(iDisplayLengthString), sortProperty, sortDirection, this.sSearch);
+				Integer unassignedInfogluePrincipalsCount = RoleControllerProxy.getController().getInfoGluePrincipalsNotInRoleCount(roleName, this.sSearch);
+
+				this.iTotalRecords = unassignedInfogluePrincipalsCount;
+				this.iTotalDisplayRecords = unassignedInfogluePrincipalsCount;
+			}
+			else if(filterAssignedGroupUsers != null && filterAssignedGroupUsers.equalsIgnoreCase("true"))
+			{
+				this.infogluePrincipals = GroupControllerProxy.getController().getInfoGluePrincipalsNotInGroup(groupName, new Integer(iDisplayStartString), new Integer(iDisplayLengthString), sortProperty, sortDirection, this.sSearch);
+				Integer unassignedInfogluePrincipalsCount = GroupControllerProxy.getController().getInfoGluePrincipalsNotInGroupCount(groupName, this.sSearch);
+
+				this.iTotalRecords = unassignedInfogluePrincipalsCount;
+				this.iTotalDisplayRecords = unassignedInfogluePrincipalsCount;
+			}
+			else
+			{
+				this.infogluePrincipals = UserControllerProxy.getController().getFilteredUsers(new Integer(iDisplayStartString), new Integer(iDisplayLengthString), sortProperty, sortDirection, this.sSearch, false);
+	
+				this.iTotalRecords = UserControllerProxy.getController().getUserCount(this.sSearch);
+				this.iTotalDisplayRecords = UserControllerProxy.getController().getUserCount(this.sSearch);
+	
+				try
+				{
+					Timer t = new Timer();
+					t.setActive(false);
+					InfoGlueRole infoGlueRole = RoleControllerProxy.getController().getRole(this.sSearch);
+					t.printElapsedTime("getRole took");	
+					List rolePrincipals	= infoGlueRole.getAutorizationModule().getRoleUsers(this.sSearch);
+					t.printElapsedTime("getRole " + rolePrincipals.size() + " took");
+	
+					this.iTotalRecords = rolePrincipals.size();
+					this.iTotalDisplayRecords = rolePrincipals.size();
+	
+					if(rolePrincipals.size() > end)
+						rolePrincipals = rolePrincipals.subList(start, end);
+					else
+						rolePrincipals = rolePrincipals.subList(start, rolePrincipals.size());
+					
+					List newInfogluePrincipals = new ArrayList();
+					newInfogluePrincipals.addAll(this.infogluePrincipals);
+					newInfogluePrincipals.removeAll(rolePrincipals);
+					newInfogluePrincipals.addAll(rolePrincipals);
+		
+					this.infogluePrincipals = newInfogluePrincipals;
+					t.printElapsedTime("diffInfogluePrincipals " + this.infogluePrincipals.size() + " took");
+				}
+				catch (Exception e) 
+				{
+					Log.warn("Could not find a role by that name:" + e.getMessage());
+				}
+				
+				try
+				{
+					Timer t = new Timer();
+					t.setActive(false);
+					InfoGlueGroup infoGlueGroup = GroupControllerProxy.getController().getGroup(this.sSearch);
+					t.printElapsedTime("getGroup took");	
+					List groupPrincipals	= infoGlueGroup.getAutorizationModule().getGroupUsers(this.sSearch);
+					t.printElapsedTime("getGroup " + groupPrincipals.size() + " took");
+	
+					this.iTotalRecords = groupPrincipals.size();
+					this.iTotalDisplayRecords = groupPrincipals.size();
+	
+					if(groupPrincipals.size() > end)
+						groupPrincipals = groupPrincipals.subList(start, end);
+					else
+						groupPrincipals = groupPrincipals.subList(start, groupPrincipals.size());
+	
+					List newInfogluePrincipals = new ArrayList();
+					newInfogluePrincipals.addAll(this.infogluePrincipals);
+					newInfogluePrincipals.removeAll(groupPrincipals);
+					newInfogluePrincipals.addAll(groupPrincipals);
+		
+					this.infogluePrincipals = newInfogluePrincipals;
+					t.printElapsedTime("diffInfogluePrincipals " + this.infogluePrincipals.size() + " took");
+				}
+				catch (Exception e) 
+				{
+					Log.warn("Could not find a group by that name:" + e.getMessage());
+				}
+			}			
+		}
+		
+		return "successFiltered";
+	}
+
+	
+	public String doPopupProcessAndFilterAssignedForRole() throws Exception 
+	{
+		doProcessAndFilterAssignedForRole();
+		
+		return "successPopupFiltered"; 
+	}
+	
+	public String doProcessAndFilterAssignedForRole() throws Exception 
+	{
+		String sortColNumber = getRequest().getParameter("iSortCol_0");
+		String sortDirection = getRequest().getParameter("sSortDir_0");
+		if(sortDirection == null || sortDirection.equals(""))
+			sortDirection = "asc";
+		
+		String sortProperty = "userName";
+		if(sortColNumber != null && sortColNumber.equals("2"))
+			sortProperty = "firstName";
+		else if(sortColNumber != null && sortColNumber.equals("3"))
+			sortProperty = "lastName";
+		else if(sortColNumber != null && sortColNumber.equals("4"))
+			sortProperty = "source";
+		else if(sortColNumber != null && sortColNumber.equals("5"))
+			sortProperty = "isActive";
+
+		String iDisplayStartString = getRequest().getParameter("iDisplayStart");
+		String iDisplayLengthString = getRequest().getParameter("iDisplayLength");
+		if(iDisplayStartString == null)
+			iDisplayStartString = "0";
+		if(iDisplayLengthString == null)
+			iDisplayLengthString = "1000000";
+
 		int start = new Integer(iDisplayStartString);
 		int end = start + new Integer(iDisplayLengthString);
 		
-		logger.info("Getting principals:" + start + " to " + end + " from original list:" + this.infogluePrincipals.size());
-		if(this.infogluePrincipals.size() > end)
-			this.infogluePrincipals = this.infogluePrincipals.subList(start, end);
-		else
-			this.infogluePrincipals = this.infogluePrincipals.subList(start, this.infogluePrincipals.size());
+		if(sSearch == null || sSearch.equals(""))
+		{
 			
-		t.printElapsedTime("Getting subset of users took ");
-		
-	    return "successFiltered";
+			String filterAssignedRoleUsers = getRequest().getParameter("filterAssignedRoleUsers");
+			if(filterAssignedRoleUsers != null && filterAssignedRoleUsers.equalsIgnoreCase("true"))
+			{
+				InfoGlueRole infoGlueRole = RoleControllerProxy.getController().getRole(roleName);
+				
+				List allInfogluePrincipals = UserControllerProxy.getController().getAllUsers();
+				List assignedInfogluePrincipals	= infoGlueRole.getAutorizationModule().getRoleUsers(roleName);
+			
+				List unassignedInfogluePrincipals = new ArrayList();
+				unassignedInfogluePrincipals.addAll(allInfogluePrincipals);
+				unassignedInfogluePrincipals.removeAll(assignedInfogluePrincipals);
+			
+				this.infogluePrincipals	= unassignedInfogluePrincipals;
+			}
+			else
+			{
+				this.infogluePrincipals	= RoleControllerProxy.getController().getInfoGluePrincipals(roleName, new Integer(iDisplayStartString), new Integer(iDisplayLengthString), sortProperty, sortDirection, this.sSearch);
+				//this.infogluePrincipals	= infoGlueRole.getAutorizationModule().getRoleUsers(roleName);
+				Integer principalsCount	= RoleControllerProxy.getController().getInfoGluePrincipalsCount(roleName, this.sSearch);
+			
+				this.iTotalRecords = principalsCount;
+				this.iTotalDisplayRecords = principalsCount;
+			}
+		}
+		else
+		{
+			List assignedInfogluePrincipals	= RoleControllerProxy.getController().getInfoGluePrincipals(roleName, new Integer(iDisplayStartString), new Integer(iDisplayLengthString), sortProperty, sortDirection, this.sSearch);
+			
+			Integer assignedInfogluePrincipalsCount	= RoleControllerProxy.getController().getInfoGluePrincipalsCount(roleName, this.sSearch);
+			
+			this.iTotalRecords = assignedInfogluePrincipalsCount;
+			this.iTotalDisplayRecords = assignedInfogluePrincipalsCount;
+			
+			this.infogluePrincipals = assignedInfogluePrincipals;
+		}
+				
+	    return "successFilteredAssignedForRole";
 	}
 
+	public String doPopupProcessAndFilterAssignedForGroup() throws Exception 
+	{
+		doProcessAndFilterAssignedForGroup();
+		
+		return "successPopupFiltered"; 
+	}
+	
+	public String doProcessAndFilterAssignedForGroup() throws Exception 
+	{
+		String sortColNumber = getRequest().getParameter("iSortCol_0");
+		String sortDirection = getRequest().getParameter("sSortDir_0");
+		if(sortDirection == null || sortDirection.equals(""))
+			sortDirection = "asc";
+		
+		String sortProperty = "userName";
+		if(sortColNumber != null && sortColNumber.equals("2"))
+			sortProperty = "firstName";
+		else if(sortColNumber != null && sortColNumber.equals("3"))
+			sortProperty = "lastName";
+		else if(sortColNumber != null && sortColNumber.equals("4"))
+			sortProperty = "source";
+		else if(sortColNumber != null && sortColNumber.equals("5"))
+			sortProperty = "isActive";
+
+		String iDisplayStartString = getRequest().getParameter("iDisplayStart");
+		String iDisplayLengthString = getRequest().getParameter("iDisplayLength");
+		if(iDisplayStartString == null)
+			iDisplayStartString = "0";
+		if(iDisplayLengthString == null)
+			iDisplayLengthString = "1000000";
+
+		int start = new Integer(iDisplayStartString);
+		int end = start + new Integer(iDisplayLengthString);
+		
+		//InfoGlueGroup infoGlueGroup = GroupControllerProxy.getController().getGroup(groupName);
+		
+		if(sSearch == null || sSearch.equals(""))
+		{
+			String filterAssignedGroupUsers = getRequest().getParameter("filterAssignedGroupUsers");
+			if(filterAssignedGroupUsers != null && filterAssignedGroupUsers.equalsIgnoreCase("true"))
+			{
+				List unassignedInfogluePrincipals = GroupControllerProxy.getController().getInfoGluePrincipalsNotInGroup(groupName, new Integer(iDisplayStartString), new Integer(iDisplayLengthString), sortProperty, sortDirection, this.sSearch);
+				Integer unassignedInfogluePrincipalsCount = GroupControllerProxy.getController().getInfoGluePrincipalsNotInGroupCount(groupName, this.sSearch);
+
+				this.iTotalRecords = unassignedInfogluePrincipalsCount;
+				this.iTotalDisplayRecords = unassignedInfogluePrincipalsCount;
+				
+				this.infogluePrincipals = unassignedInfogluePrincipals;
+			}
+			else
+			{
+				this.infogluePrincipals	= GroupControllerProxy.getController().getInfoGluePrincipals(groupName, new Integer(iDisplayStartString), new Integer(iDisplayLengthString), sortProperty, sortDirection, this.sSearch);
+				//this.infogluePrincipals	= infoGlueGroup.getAutorizationModule().getGroupUsers(groupName);
+				Integer principalsCount	= GroupControllerProxy.getController().getInfoGluePrincipalsCount(groupName, this.sSearch);
+
+				this.iTotalRecords = principalsCount;
+				this.iTotalDisplayRecords = principalsCount;
+
+				//this.infogluePrincipals	= infoGlueGroup.getAutorizationModule().getGroupUsers(groupName);
+			}
+		}
+		else
+		{
+			List assignedInfogluePrincipals	= GroupControllerProxy.getController().getInfoGluePrincipals(groupName, new Integer(iDisplayStartString), new Integer(iDisplayLengthString), sortProperty, sortDirection, this.sSearch);
+			Integer assignedInfogluePrincipalsCount	= GroupControllerProxy.getController().getInfoGluePrincipalsCount(groupName, this.sSearch);
+
+			this.iTotalRecords = assignedInfogluePrincipalsCount;
+			this.iTotalDisplayRecords = assignedInfogluePrincipalsCount;
+			
+			this.infogluePrincipals = assignedInfogluePrincipals;
+		}
+		
+		
+	    return "successFilteredAssignedForGroup";
+	}
+	
 	public String doUserListForPopup() throws Exception 
 	{
 		this.infogluePrincipals = UserControllerProxy.getController().getAllUsers();
@@ -192,10 +414,9 @@ public class ViewListSystemUserAction extends InfoGlueAbstractAction
 		
 	    return "successPopup";
 	}
-	
+
 	public String doUserListForPopupV3() throws Exception 
 	{
-		System.out.println("222222222222222222");
 		/*
 		this.infogluePrincipals = UserControllerProxy.getController().getAllUsers();
 		Collections.sort(this.infogluePrincipals, new ReflectionComparator("firstName"));
@@ -213,7 +434,7 @@ public class ViewListSystemUserAction extends InfoGlueAbstractAction
 			if(!usersFirstNameChars.contains(infogluePrincipal.getName().charAt(0)))
 				usersFirstNameChars.add(infogluePrincipal.getName().charAt(0));
 			//else
-			//	System.out.println("Exists:" + infogluePrincipal.getName().charAt(0));
+			//	logger.info("Exists:" + infogluePrincipal.getName().charAt(0));
 		}
 		
 		Collections.sort(usersFirstNameChars);
@@ -245,6 +466,8 @@ public class ViewListSystemUserAction extends InfoGlueAbstractAction
 		
 		return subList;
 	}
+	
+	/*
 	public String doUserListSearch() throws Exception
 	{
 		String searchString 					= this.getRequest().getParameter("searchString");		
@@ -262,6 +485,7 @@ public class ViewListSystemUserAction extends InfoGlueAbstractAction
 		
 		return "none";
 	}
+	*/
 	
 	public List getRoles() throws Exception
 	{
@@ -394,6 +618,111 @@ public class ViewListSystemUserAction extends InfoGlueAbstractAction
 	{
 		this.sSearch = sSearch;
 	}
-	
 
+	public void setFormat(String format) 
+	{
+		this.format = format;
+	}
+
+	public String getFormat() 
+	{
+		return this.format;
+	}
+
+	public String getRoleName() 
+	{
+		return this.roleName;
+	}
+	
+	public void setRoleName(String roleName) throws Exception
+	{	
+		if(roleName != null)
+		{
+			byte[] bytes = Base64.decodeBase64(roleName);
+			String decodedRoleName = new String(bytes, "utf-8");
+			if(RoleControllerProxy.getController().roleExists(decodedRoleName))
+			{
+				roleName = decodedRoleName;
+			}
+			else
+			{
+				String fromEncoding = CmsPropertyHandler.getURIEncoding();
+				String toEncoding = "utf-8";
+				
+				String testRoleName = new String(roleName.getBytes(fromEncoding), toEncoding);
+				if(testRoleName.indexOf((char)65533) == -1)
+					roleName = testRoleName;
+			}
+		}
+		
+		this.roleName = roleName;
+	}
+	
+	
+	public String getGroupName() 
+	{
+		return this.groupName;
+	}
+	
+	public void setGroupName(String groupName) throws Exception
+	{	
+		if(groupName != null)
+		{
+			byte[] bytes = Base64.decodeBase64(groupName);
+			String decodedGroupName = new String(bytes, "utf-8");
+			if(GroupControllerProxy.getController().groupExists(decodedGroupName))
+			{
+				groupName = decodedGroupName;
+			}
+			else
+			{
+				String fromEncoding = CmsPropertyHandler.getURIEncoding();
+				String toEncoding = "utf-8";
+				
+				String testGroupName = new String(groupName.getBytes(fromEncoding), toEncoding);
+				if(testGroupName.indexOf((char)65533) == -1)
+					groupName = testGroupName;
+			}
+		}
+		
+		this.groupName = groupName;
+	}
+	
+	public String getRolesAndGroups(InfoGluePrincipal principal)
+	{
+		if((principal.getRoles() == null || principal.getRoles().size() == 1) && (principal.getGroups() == null || principal.getGroups().size() == 0))
+		{
+			try 
+			{
+				principal = UserControllerProxy.getController((Database)principal.getAutorizationModule().getTransactionObject()).getUser(principal.getName());
+			} 
+			catch (Exception e) 
+			{
+				//logger.error();
+			}
+		}
+		
+		StringBuilder sb = new StringBuilder("");
+		
+		sb.append("<b>Roles:</b> ");
+		int i = 0;
+		for(InfoGlueRole role : (List<InfoGlueRole>)principal.getRoles())
+		{
+			if(!role.getName().equals("anonymous") || sb.indexOf("anonymous") == -1)
+			{
+				sb.append((i > 0 ? ", " : "") + role.getDisplayName());
+				i++;
+			}
+		}
+		
+		sb.append("<br/><b>Groups:</b> ");
+		i = 0;
+		for(InfoGlueGroup group : (List<InfoGlueGroup>)principal.getGroups())
+		{
+			sb.append((i > 0 ? ", " : "") + group.getDisplayName());
+			i++;
+		}
+		
+		return sb.toString();
+	}
 }

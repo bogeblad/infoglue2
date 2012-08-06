@@ -24,11 +24,11 @@
 package org.infoglue.cms.applications.managementtool.actions;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
-import org.infoglue.cms.applications.common.actions.SubscriptionsAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentTypeDefinitionController;
 import org.infoglue.cms.controllers.kernel.impl.simple.GroupControllerProxy;
 import org.infoglue.cms.controllers.kernel.impl.simple.RoleControllerProxy;
@@ -37,7 +37,6 @@ import org.infoglue.cms.controllers.kernel.impl.simple.UserPropertiesController;
 import org.infoglue.cms.entities.management.ContentTypeDefinitionVO;
 import org.infoglue.cms.entities.management.SystemUserVO;
 import org.infoglue.cms.exception.ConstraintException;
-import org.infoglue.cms.security.InfoGluePrincipal;
 import org.infoglue.cms.util.ConstraintExceptionBuffer;
 
 
@@ -56,7 +55,6 @@ public class CreateSystemUserAction extends InfoGlueAbstractAction
 	
 	private ConstraintExceptionBuffer ceb;
 	private SystemUserVO systemUserVO;
-	private InfoGluePrincipal infoGluePrincipal;
 
 	private List availableRoles = new ArrayList();
 	private List availableGroups = new ArrayList();
@@ -93,25 +91,71 @@ public class CreateSystemUserAction extends InfoGlueAbstractAction
 
 	public String doExecute() throws Exception 
 	{
-		ceb = this.systemUserVO.validate();
-    	ceb.throwIfNotEmpty();		
-		
-		String[] roles = getRequest().getParameterValues("roleName");
-		String[] groups = getRequest().getParameterValues("groupName");
-		String[] contentTypeDefinitionIds = getRequest().getParameterValues("contentTypeDefinitionId");
-
-		logger.info("roles:" + roles);
-		logger.info("groups:" + groups);
-		logger.info("contentTypeDefinitionIds:" + contentTypeDefinitionIds);
-
-		this.infoGluePrincipal = UserControllerProxy.getController().createUser(this.systemUserVO);
-		if(roles != null && groups != null)
+	/*	
+		for(int i=40000; i<100000; i++)
 		{
-			UserControllerProxy.getController().updateUser(systemUserVO, roles, groups);
-		}
+			try
+	    	{
+				SystemUserVO systemUserVO2 = new SystemUserVO();
+				systemUserVO2.setEmail("mattias.bogeblad" + i + "@gmail.com");
+				systemUserVO2.setFirstName("Auto" + i);
+				systemUserVO2.setLastName("User" + i);
+				systemUserVO2.setIsActive(true);
+				systemUserVO2.setModifiedDateTime(new Date());
+				systemUserVO2.setPassword("password" + i + "");
+				systemUserVO2.setSource("Infoglue autogen");
+				systemUserVO2.setUserName("autouser" + i);
+				
+	        	String[] roles = new String[]{"cmsUser", "administrators"};
+				String[] groups = new String[]{"A111", "Avd fšr analys och utvŠrdering", "X219"};
+				String[] contentTypeDefinitionIds = null;
 		
-		if(contentTypeDefinitionIds != null && contentTypeDefinitionIds.length > 0 && !contentTypeDefinitionIds[0].equals(""))
-			UserPropertiesController.getController().updateContentTypeDefinitions(this.getUserName(), contentTypeDefinitionIds);
+				UserControllerProxy.getController().createUser(systemUserVO2);
+				if(roles != null || groups != null)
+				{
+					UserControllerProxy.getController().updateUser(systemUserVO2, roles, groups);
+				}
+				if(i % 100 == 0)
+					System.out.print(".");
+			}
+			catch(ConstraintException e) 
+		    {
+				e.printStackTrace();
+				break;
+		    }
+		}
+		*/
+    	try
+    	{
+    		ceb = this.systemUserVO.validate();
+        	ceb.throwIfNotEmpty();		
+
+        	String[] roles = getRequest().getParameterValues("roleName");
+			String[] groups = getRequest().getParameterValues("groupName");
+			String[] contentTypeDefinitionIds = getRequest().getParameterValues("contentTypeDefinitionId");
+	
+			logger.info("roles:" + roles);
+			logger.info("groups:" + groups);
+			logger.info("contentTypeDefinitionIds:" + contentTypeDefinitionIds);
+	
+			UserControllerProxy.getController().createUser(this.systemUserVO);
+			if(roles != null || groups != null)
+			{
+				UserControllerProxy.getController().updateUser(systemUserVO, roles, groups);
+			}
+			
+			if(contentTypeDefinitionIds != null && contentTypeDefinitionIds.length > 0 && !contentTypeDefinitionIds[0].equals(""))
+				UserPropertiesController.getController().updateContentTypeDefinitions(this.getUserName(), contentTypeDefinitionIds);
+		}
+		catch(ConstraintException e) 
+	    {
+			this.availableRoles 				= RoleControllerProxy.getController().getAvailableRoles(this.getInfoGluePrincipal(), "Role.ManageUsers");
+			this.availableGroups 				= GroupControllerProxy.getController().getAvailableGroups(this.getInfoGluePrincipal(), "Group.ManageUsers");
+			this.contentTypeDefinitionVOList 	= ContentTypeDefinitionController.getController().getContentTypeDefinitionVOList(ContentTypeDefinitionVO.EXTRANET_USER_PROPERTIES);
+	
+			e.setResult(INPUT);
+			throw e;
+	    }
 
 		return "success";
 	}
@@ -142,7 +186,7 @@ public class CreateSystemUserAction extends InfoGlueAbstractAction
 		return "successSaveAndExitV3";
 	}
 
-	public void setuserName(String userName)
+	public void setUserName(String userName)
 	{
 		this.systemUserVO.setUserName(userName);	
 	}
@@ -182,6 +226,26 @@ public class CreateSystemUserAction extends InfoGlueAbstractAction
     	this.systemUserVO.setEmail(email);
     }
     
+    public String getSource()
+    {
+    	return this.systemUserVO.getSource();
+    }
+    
+    public void setSource(String source)
+    {
+    	this.systemUserVO.setSource(source);
+    }
+
+    public Boolean getIsActive()
+    {
+    	return this.systemUserVO.getIsActive();
+    }
+    
+    public void setIsActive(Boolean isActive)
+    {
+    	this.systemUserVO.setIsActive(isActive);
+    }
+
     public java.lang.String getPassword()
     {
     	return this.systemUserVO.getPassword();

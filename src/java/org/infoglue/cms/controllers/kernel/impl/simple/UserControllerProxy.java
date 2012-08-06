@@ -87,6 +87,7 @@ public class UserControllerProxy extends BaseController
 				authorizationModule = (AuthorizationModule)Class.forName(InfoGlueAuthenticationFilter.authorizerClass).newInstance();
 				logger.info("authorizationModule:" + authorizationModule);
 				authorizationModule.setExtraProperties(InfoGlueAuthenticationFilter.extraProperties);
+				
 				if(!initializedImportClass && InfoGlueAuthenticationFilter.extraProperties.containsKey("importClass"))
 				{
 					logger.info("Found import class:" + InfoGlueAuthenticationFilter.extraProperties.get("importClass"));
@@ -154,19 +155,13 @@ public class UserControllerProxy extends BaseController
     	List cachedUsers = (List)CacheController.getCachedObjectFromAdvancedCache("principalCache", "allPrincipals");
 		if(cachedUsers != null && cachedUsers.size() > 0)
 			return cachedUsers;
-    	
+
     	List users = new ArrayList();
-    	Timer t = new Timer();
-    	if(!logger.isInfoEnabled())
-    		t.setActive(false);
-    	
 		users = getAuthorizationModule().getUsers();
-		t.printElapsedTime("Getting all users...");
 		
 		Collections.sort(users, new ReflectionComparator("displayName"));
-
+		
 		CacheController.cacheObjectInAdvancedCache("principalCache", "allPrincipals", users);
-		t.printElapsedTime("Sorting all users...");
 		
     	return users;
     }
@@ -174,25 +169,22 @@ public class UserControllerProxy extends BaseController
 	/**
 	 * This method returns a list of all sought for users
 	 */
-	
-    public List getFilteredUsers(String firstName, String lastName, String userName, String email, String[] roleNames) throws Exception
+	/*
+    public List<InfoGluePrincipal> getFilteredUsers(String firstName, String lastName, String userName, String email, String[] roleNames) throws Exception
     {
-    	List users = new ArrayList();
-    	
-		users = getAuthorizationModule().getFilteredUsers(firstName, lastName, userName, email, roleNames);
+    	List<InfoGluePrincipal> users = getAuthorizationModule().getFilteredUsers(firstName, lastName, userName, email, roleNames);
     	
     	return users;
     }
+    */
     
 	/**
 	 * This method returns a list of all sought for users
 	 */
 	
-    public List getFilteredUsers(String searchString) throws Exception
+    public List<InfoGluePrincipal> getFilteredUsers(Integer offset, Integer limit, String sortProperty, String direction, String searchString, boolean populateRolesAndGroups) throws Exception
     {
-    	List users = new ArrayList();
-    	
-		users = getAuthorizationModule().getFilteredUsers(searchString);
+    	List<InfoGluePrincipal> users = getAuthorizationModule().getFilteredUsers(offset, limit, sortProperty, direction, searchString, populateRolesAndGroups);
     	
     	return users;
     }
@@ -307,6 +299,21 @@ public class UserControllerProxy extends BaseController
 	public void deleteUser(String userName) throws ConstraintException, SystemException, Exception
 	{
 		getAuthorizationModule().deleteInfoGluePrincipal(userName);
+	}
+	
+	public Integer getRoleCount(String searchString) throws ConstraintException, SystemException, Exception
+	{
+		return getAuthorizationModule().getRoleCount(searchString);
+	}
+
+	public Integer getGroupCount(String searchString) throws ConstraintException, SystemException, Exception
+	{
+		return getAuthorizationModule().getGroupCount(searchString);
+	}
+	
+	public Integer getUserCount(String searchString) throws ConstraintException, SystemException, Exception
+	{
+		return getAuthorizationModule().getUserCount(searchString);
 	}
 	
 	public BaseEntityVO getNewVO()

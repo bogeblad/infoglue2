@@ -22,16 +22,19 @@
  */
 
 package org.infoglue.cms.applications.managementtool.actions;
+import org.apache.commons.codec.binary.Base64;
+import org.apache.log4j.Logger;
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.GroupControllerProxy;
-import org.infoglue.cms.controllers.kernel.impl.simple.RoleControllerProxy;
 
 /**
  * @author Mattias Bogeblad
  */
 
 public class DeleteGroupAction extends InfoGlueAbstractAction
-{
+{    
+	private final static Logger logger = Logger.getLogger(DeleteGroupAction.class.getName());
+
 	private static final long serialVersionUID = 1L;
 	
 	private String groupName;
@@ -50,9 +53,23 @@ public class DeleteGroupAction extends InfoGlueAbstractAction
 		return "successV3";
 	}
 
-	public void setGroupName(String string)
+	public void setGroupName(String groupName) throws Exception
 	{
-	    groupName = string;
+		logger.info("groupName:" + groupName);
+		byte[] bytes = Base64.decodeBase64(groupName);
+		String decodedGroupName = new String(bytes, "utf-8");
+		logger.info("decodedGroupName:" + decodedGroupName);
+		if(GroupControllerProxy.getController().groupExists(decodedGroupName))
+		{
+			groupName = decodedGroupName;
+		}
+		else
+		{
+			logger.info("No match on base64-based groupName:" + groupName);
+		}
+		logger.info("groupName2:" + groupName);
+		
+	    this.groupName = groupName;
 	}
 
 }

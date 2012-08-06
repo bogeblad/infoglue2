@@ -23,21 +23,18 @@
 
 package org.infoglue.cms.applications.managementtool.actions;
 
-import java.net.URLDecoder;
-import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
+import org.apache.commons.codec.binary.Base64;
 import org.apache.log4j.Logger;
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentTypeDefinitionController;
 import org.infoglue.cms.controllers.kernel.impl.simple.RoleControllerProxy;
 import org.infoglue.cms.controllers.kernel.impl.simple.RolePropertiesController;
-import org.infoglue.cms.controllers.kernel.impl.simple.UserControllerProxy;
 import org.infoglue.cms.entities.management.ContentTypeDefinitionVO;
 import org.infoglue.cms.security.InfoGlueRole;
 import org.infoglue.cms.util.CmsPropertyHandler;
-import org.infoglue.cms.util.sorters.ReflectionComparator;
 
 public class ViewRoleAction extends InfoGlueAbstractAction
 {
@@ -48,9 +45,6 @@ public class ViewRoleAction extends InfoGlueAbstractAction
 	private String roleName;
 	private boolean supportsUpdate = true;
 	private InfoGlueRole infoGlueRole;
-	private List infoGluePrincipals = new ArrayList();
-	private List assignedInfoGluePrincipals;
-	private List unassignedInfoGluePrincipals;
 	private List contentTypeDefinitionVOList;
 	private List assignedContentTypeDefinitionVOList;    
 	
@@ -62,20 +56,9 @@ public class ViewRoleAction extends InfoGlueAbstractAction
 
     protected void initialize(String roleName) throws Exception
     {
-		//this.supportsUpdate				= RoleControllerProxy.getController().getSupportUpdate();
 		this.infoGlueRole				= RoleControllerProxy.getController().getRole(roleName);
 		this.supportsUpdate				= this.infoGlueRole.getAutorizationModule().getSupportUpdate();
-		this.assignedInfoGluePrincipals	= this.infoGlueRole.getAutorizationModule().getRoleUsers(roleName);
-		if(this.supportsUpdate) //Only fetch if the user can edit.
-		{
-			this.infoGluePrincipals		= this.infoGlueRole.getAutorizationModule().getUsers();
 			
-			List newInfogluePrincipals = new ArrayList();
-			newInfogluePrincipals.addAll(this.infoGluePrincipals);
-			newInfogluePrincipals.removeAll(assignedInfoGluePrincipals);
-			this.unassignedInfoGluePrincipals = newInfogluePrincipals;
-		}
-		
 		this.contentTypeDefinitionVOList 			= ContentTypeDefinitionController.getController().getContentTypeDefinitionVOList(ContentTypeDefinitionVO.EXTRANET_ROLE_PROPERTIES);
 		this.assignedContentTypeDefinitionVOList 	= RolePropertiesController.getController().getContentTypeDefinitionVOList(roleName);  
     } 
@@ -103,20 +86,32 @@ public class ViewRoleAction extends InfoGlueAbstractAction
 	{	
 		if(roleName != null)
 		{
-			String fromEncoding = CmsPropertyHandler.getURIEncoding();
-			String toEncoding = "utf-8";
-			
 			logger.info("roleName:" + roleName);
-			String testRoleName = new String(roleName.getBytes(fromEncoding), toEncoding);
-			if(logger.isInfoEnabled())
+			byte[] bytes = Base64.decodeBase64(roleName);
+			String decodedRoleName = new String(bytes, "utf-8");
+			logger.info("decodedRoleName:" + decodedRoleName);
+			if(RoleControllerProxy.getController().roleExists(decodedRoleName))
 			{
-				for(int i=0; i<roleName.length(); i++)
-					logger.info("c:" + roleName.charAt(i) + "=" + (int)roleName.charAt(i));
+				roleName = decodedRoleName;
 			}
-			if(testRoleName.indexOf((char)65533) == -1)
-				roleName = testRoleName;
-			
-			logger.info("roleName after:" + roleName);
+			else
+			{
+				logger.info("No match on base64-based rolename:" + roleName);
+				String fromEncoding = CmsPropertyHandler.getURIEncoding();
+				String toEncoding = "utf-8";
+				
+				logger.info("roleName:" + roleName);
+				String testRoleName = new String(roleName.getBytes(fromEncoding), toEncoding);
+				if(logger.isInfoEnabled())
+				{
+					for(int i=0; i<roleName.length(); i++)
+						logger.info("c:" + roleName.charAt(i) + "=" + (int)roleName.charAt(i));
+				}
+				if(testRoleName.indexOf((char)65533) == -1)
+					roleName = testRoleName;
+				
+				logger.info("roleName after:" + roleName);
+			}
 		}
 		
 		this.roleName = roleName;
@@ -126,25 +121,23 @@ public class ViewRoleAction extends InfoGlueAbstractAction
     {
         return this.infoGlueRole.getDescription();
     }
-        
-  	public List getAllInfoGluePrincipals() throws Exception
-	{
-		return this.infoGluePrincipals;
-	}	
-	
-	public List getAssignedInfoGluePrincipals() throws Exception
-	{
-	    Collections.sort(this.assignedInfoGluePrincipals, new ReflectionComparator("name"));
 
-	    return this.assignedInfoGluePrincipals;
-	}
+    public String getSource()
+    {
+        return this.infoGlueRole.getSource();
+    }
 
-	public List getUnAssignedInfoGluePrincipals() throws Exception
-	{
-		return this.unassignedInfoGluePrincipals;
-	}
+    public Boolean getIsActive()
+    {
+        return this.infoGlueRole.getIsActive();
+    }
 
-	public List getAssignedContentTypeDefinitionVOList()
+    public Date getModifiedDateTime()
+    {
+        return infoGlueRole.getModifiedDateTime();
+    }
+
+    public List getAssignedContentTypeDefinitionVOList()
 	{
 		return assignedContentTypeDefinitionVOList;
 	}

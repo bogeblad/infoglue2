@@ -23,25 +23,33 @@
 
 package org.infoglue.cms.controllers.kernel.impl.simple;
 
-import java.security.MessageDigest;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.exolab.castor.jdo.Database;
 import org.exolab.castor.jdo.OQLQuery;
+import org.exolab.castor.jdo.PersistenceException;
 import org.exolab.castor.jdo.QueryResults;
+import org.exolab.castor.mapping.AccessMode;
 import org.infoglue.cms.entities.kernel.BaseEntityVO;
 import org.infoglue.cms.entities.management.Group;
 import org.infoglue.cms.entities.management.Role;
+import org.infoglue.cms.entities.management.RoleVO;
 import org.infoglue.cms.entities.management.SystemUser;
 import org.infoglue.cms.entities.management.SystemUserVO;
-import org.infoglue.cms.entities.management.impl.simple.SmallSystemUserImpl;
+import org.infoglue.cms.entities.management.TableCount;
+import org.infoglue.cms.entities.management.impl.simple.SystemUserGroupImpl;
 import org.infoglue.cms.entities.management.impl.simple.SystemUserImpl;
+import org.infoglue.cms.entities.management.impl.simple.SystemUserRoleImpl;
 import org.infoglue.cms.exception.Bug;
 import org.infoglue.cms.exception.ConstraintException;
 import org.infoglue.cms.exception.SystemException;
@@ -49,6 +57,7 @@ import org.infoglue.cms.util.CmsPropertyHandler;
 import org.infoglue.cms.util.ConstraintExceptionBuffer;
 import org.infoglue.cms.util.PasswordGenerator;
 import org.infoglue.cms.util.mail.MailServiceFactory;
+import org.infoglue.deliver.util.CacheController;
 
 /**
  * SystemUserController.java
@@ -117,7 +126,7 @@ public class SystemUserController extends BaseController
 		
         try
         {										
-        	OQLQuery oql = db.getOQLQuery("SELECT u FROM org.infoglue.cms.entities.management.impl.simple.SmallSystemUserImpl u WHERE u.userName = $1");
+        	OQLQuery oql = db.getOQLQuery("SELECT u FROM org.infoglue.cms.entities.management.impl.simple.SystemUserImpl u WHERE u.userName = $1");
         	oql.bind(userName);
         	
         	QueryResults results = oql.execute(Database.ReadOnly);
@@ -181,7 +190,7 @@ public class SystemUserController extends BaseController
 		
         try
         {										
-        	OQLQuery oql = db.getOQLQuery( "SELECT u FROM org.infoglue.cms.entities.management.impl.simple.SmallSystemUserImpl u WHERE u.userName = $1");
+        	OQLQuery oql = db.getOQLQuery( "SELECT u FROM org.infoglue.cms.entities.management.impl.simple.SystemUserImpl u WHERE u.userName = $1");
         	oql.bind(userName);
         	
         	QueryResults results = oql.execute(Database.ReadOnly);
@@ -206,7 +215,7 @@ public class SystemUserController extends BaseController
 	/**
 	 * 	Get the SystemUser with the userName
 	 */
-	 
+	 /*
 	public SystemUser getSystemUserWithName(String userName, Database db)  throws SystemException, Bug
 	{
 		SystemUser systemUser = null;
@@ -234,9 +243,20 @@ public class SystemUserController extends BaseController
         }    
 
 		return systemUser;		
+	}*/
+
+
+	/**
+	 * 	Get the SystemUser with the userName
+	 */
+	 
+	public SystemUserImpl getSystemUserWithName(String userName, Database db)  throws SystemException, Bug, Exception
+	{
+		SystemUserImpl systemUser = (SystemUserImpl)db.load(org.infoglue.cms.entities.management.impl.simple.SystemUserImpl.class, userName);
+    	//logger.warn("found one systemUser:" + systemUser.getFirstName());
+    	
+		return systemUser;		
 	}
-
-
 
 	public SystemUserVO getSystemUserVO(String userName, String password)  throws SystemException, Bug
 	{
@@ -267,7 +287,7 @@ public class SystemUserController extends BaseController
 	{
 		SystemUserVO systemUserVO = null;
 
-		OQLQuery oql = db.getOQLQuery( "SELECT u FROM org.infoglue.cms.entities.management.impl.simple.SmallSystemUserImpl u WHERE u.userName = $1 AND u.password = $2");
+		OQLQuery oql = db.getOQLQuery( "SELECT u FROM org.infoglue.cms.entities.management.impl.simple.SystemUserImpl u WHERE u.userName = $1 AND u.password = $2");
 		oql.bind(userName);
 		oql.bind(password);
     	
@@ -310,12 +330,12 @@ public class SystemUserController extends BaseController
 	
     public List getSystemUserVOList() throws SystemException, Bug
     {
-        return getAllVOObjects(SmallSystemUserImpl.class, "userName");
+        return getAllVOObjects(SystemUserImpl.class, "userName");
     }
 
     public List getSystemUserVOList(Database db) throws SystemException, Bug
     {
-        return getAllVOObjects(SmallSystemUserImpl.class, "userName", db);
+        return getAllVOObjects(SystemUserImpl.class, "userName", db);
     }
 
     public List getSystemUserList(Database db) throws SystemException, Bug
@@ -323,6 +343,30 @@ public class SystemUserController extends BaseController
         return getAllObjects(SystemUserImpl.class, "userName", db);
     }
     
+	public List getFilteredSystemUserVOList(Integer offset, Integer limit, String sortProperty, String direction, String searchString) throws SystemException, Bug
+	{
+		List filteredList = new ArrayList();
+		
+		Database db = CastorDatabaseService.getDatabase();
+
+		try 
+		{
+			beginTransaction(db);
+								
+			filteredList = getFilteredSystemUserList(offset, limit, sortProperty, direction, searchString, db);
+			
+			commitTransaction(db);
+		} 
+		catch (Exception e) 
+		{
+			logger.info("An error occurred so we should not complete the transaction:" + e);
+			rollbackTransaction(db);
+			throw new SystemException("An error occurred so we should not complete the transaction:" + e, e);
+		}
+		
+		return toVOList(filteredList);
+	}
+
 	public List<SystemUserVO> getSystemUserVOListWithPassword(String password, Database db) throws SystemException, Bug, Exception
 	{
 		List<SystemUserVO> filteredVOList = new ArrayList<SystemUserVO>();
@@ -343,61 +387,128 @@ public class SystemUserController extends BaseController
 
 		return filteredVOList;
 	}
-	
-	public List getFilteredSystemUserVOList(String searchString) throws SystemException, Bug
+
+	public List getFilteredSystemUserList(Integer offset, Integer limit, String sortProperty, String direction, String searchString, Database db) throws SystemException, Bug, Exception
 	{
 		List filteredList = new ArrayList();
 		
-		Database db = CastorDatabaseService.getDatabase();
-
-		try 
-		{
-			beginTransaction(db);
-								
-			filteredList = getFilteredSystemUserList(searchString, db);
-			
-			commitTransaction(db);
-		} 
-		catch (Exception e) 
-		{
-			logger.info("An error occurred so we should not complete the transaction:" + e);
-			rollbackTransaction(db);
-			throw new SystemException("An error occurred so we should not complete the transaction:" + e, e);
-		}
+		if(sortProperty == null || sortProperty.equals(""))
+			sortProperty = "userName";
+		if(direction == null || direction.equals(""))
+			direction = "ASC";
 		
-		return toVOList(filteredList);
-	}
-
-	public List getFilteredSystemUserList(String searchString, Database db) throws SystemException, Bug, Exception
-	{
-		List filteredList = new ArrayList();
-		
-		OQLQuery oql = db.getOQLQuery( "SELECT u FROM org.infoglue.cms.entities.management.impl.simple.SystemUserImpl u ORDER BY u.userName");
-    	
-		QueryResults results = oql.execute(Database.ReadOnly);
-		
-		while (results.hasMore()) 
+		OQLQuery oql = null;
+		if(searchString != null && !searchString.equals(""))
 		{
-			SystemUser extranetUser = (SystemUser)results.next();
-			boolean include = false;
-			if(searchString == null || searchString.equals(""))
+			if(CmsPropertyHandler.getDatabaseEngine().equalsIgnoreCase("sql-server"))
 			{
-				include = true;
+				if(offset != null || limit != null)
+				{
+					String oqlString = "CALL SQL With cmSystemUserCust AS ( SELECT userName,password,firstName,lastName,email,source,isActive,modifiedDateTime, ROW_NUMBER() OVER (order by " + sortProperty + " " + direction + ") as RowNumber FROM cmSystemUser WHERE firstName LIKE $1 OR lastName LIKE $1 OR userName LIKE $1 OR email LIKE $1 OR source LIKE $1) select userName,password,firstName,lastName,email,source,isActive,modifiedDateTime from cmSystemUserCust Where RowNumber > " + offset + " and RowNumber <= " + (offset + limit) + " AS org.infoglue.cms.entities.management.impl.simple.SystemUserImpl";
+					oql = db.getOQLQuery(oqlString);
+					oql.bind("%" + searchString + "%");
+				}
+				else
+				{
+					String oqlBase = "SELECT u FROM org.infoglue.cms.entities.management.impl.simple.SystemUserImpl u";
+					String orderStatement = " ORDER BY u." + sortProperty + " " + direction;
+					oql = db.getOQLQuery( oqlBase + orderStatement);
+				}
+			}
+			else if(CmsPropertyHandler.getDatabaseEngine().equalsIgnoreCase("oracle"))
+			{
+				if(offset != null || limit != null)
+				{
+					String oqlString = "CALL SQL SELECT userName,password,firstName,lastName,email,source,isActive,modifiedDateTime FROM ( SELECT su.userName,su.password,su.firstName,su.lastName,su.email,su.source,su.isActive,su.modifiedDateTime, ROWNUM rnum FROM ( SELECT userName,password,firstName,lastName,email,source,isActive,modifiedDateTime FROM cmSystemUser WHERE firstName LIKE $1 OR lastName LIKE $1 OR userName LIKE $1 OR email LIKE $1 OR source LIKE $1 ORDER BY " + sortProperty + " " + direction + ", userName ) su  WHERE ROWNUM <= " + (offset + limit) + " ) WHERE rnum > " + offset + " AS org.infoglue.cms.entities.management.impl.simple.SystemUserImpl";
+					oql = db.getOQLQuery(oqlString);
+					oql.bind("%" + searchString + "%");
+				}
+				else
+				{
+					String oqlBase = "SELECT u FROM org.infoglue.cms.entities.management.impl.simple.SystemUserImpl u";
+					String orderStatement = " ORDER BY u." + sortProperty + " " + direction;
+					oql = db.getOQLQuery( oqlBase + orderStatement);
+				}
 			}
 			else
 			{
-				if(extranetUser.getFirstName().toLowerCase().indexOf(searchString.toLowerCase()) > -1)
-					include = true;
-				else if(extranetUser.getLastName().toLowerCase().indexOf(searchString.toLowerCase()) > -1)
-					include = true;
-				else if(extranetUser.getUserName().toLowerCase().indexOf(searchString.toLowerCase()) > -1)
-					include = true;
-				else if(extranetUser.getEmail().toLowerCase().indexOf(searchString.toLowerCase()) > -1)
-					include = true;
+				String oqlBase = "SELECT u FROM org.infoglue.cms.entities.management.impl.simple.SystemUserImpl u";
+				String searchQuery = " WHERE u.firstName LIKE $1 OR u.lastName LIKE $1 OR u.userName LIKE $1 OR u.email LIKE $1 OR u.source LIKE $1";
+				String orderStatement = " ORDER BY u." + sortProperty + " " + direction;
+				String pagination = " LIMIT $2 OFFSET $3";
+				
+				if(offset != null || limit != null)
+				{
+					String oqlString = oqlBase + searchQuery + orderStatement + pagination;
+					
+					oql = db.getOQLQuery(oqlString);
+					oql.bind("%" + searchString + "%");
+					oql.bind(limit);
+					oql.bind(offset);
+				}
+				else
+				{
+					oql = db.getOQLQuery( oqlBase + searchQuery + orderStatement);
+					oql.bind("%" + searchString + "%");				
+				}
 			}
-			
-			if(include)
-				filteredList.add(extranetUser);
+		}
+		else
+		{
+			if(CmsPropertyHandler.getDatabaseEngine().equalsIgnoreCase("sql-server"))
+			{
+				if(offset != null || limit != null)
+				{
+					String oqlString = "CALL SQL With cmSystemUserCust AS ( SELECT userName,password,firstName,lastName,email,source,isActive,modifiedDateTime, ROW_NUMBER() OVER (order by " + sortProperty + " " + direction + ") as RowNumber  FROM cmSystemUser ) select userName,password,firstName,lastName,email,source,isActive,modifiedDateTime from cmSystemUserCust Where RowNumber > " + offset + " and RowNumber <= " + (offset + limit) + " AS org.infoglue.cms.entities.management.impl.simple.SystemUserImpl";
+					oql = db.getOQLQuery(oqlString);
+				}
+				else
+				{
+					String oqlBase = "SELECT u FROM org.infoglue.cms.entities.management.impl.simple.SystemUserImpl u";
+					String orderStatement = " ORDER BY u." + sortProperty + " " + direction;
+					oql = db.getOQLQuery( oqlBase + orderStatement);
+				}
+			}
+			else if(CmsPropertyHandler.getDatabaseEngine().equalsIgnoreCase("oracle"))
+			{
+				if(offset != null || limit != null)
+				{
+					String oqlString = "CALL SQL SELECT userName,password,firstName,lastName,email,source,isActive,modifiedDateTime FROM ( SELECT su.userName,su.password,su.firstName,su.lastName,su.email,su.source,su.isActive,su.modifiedDateTime, ROWNUM rnum FROM ( SELECT userName,password,firstName,lastName,email,source,isActive,modifiedDateTime FROM cmSystemUser ORDER BY " + sortProperty + " " + direction + ", userName ) su  WHERE ROWNUM <= " + (offset + limit) + " ) WHERE rnum > " + offset + " AS org.infoglue.cms.entities.management.impl.simple.SystemUserImpl";
+					oql = db.getOQLQuery(oqlString);
+				}
+				else
+				{
+					String oqlBase = "SELECT u FROM org.infoglue.cms.entities.management.impl.simple.SystemUserImpl u";
+					String orderStatement = " ORDER BY u." + sortProperty + " " + direction;
+					oql = db.getOQLQuery( oqlBase + orderStatement);
+				}
+			}
+			else
+			{
+				String oqlBase = "SELECT u FROM org.infoglue.cms.entities.management.impl.simple.SystemUserImpl u";
+				String orderStatement = " ORDER BY u." + sortProperty + " " + direction;
+				String pagination = " LIMIT $1 OFFSET $2";
+				
+				if(offset != null || limit != null)
+				{
+					String oqlString = oqlBase + orderStatement + pagination;
+					oql = db.getOQLQuery(oqlString);
+					oql.bind(limit);
+					oql.bind(offset);
+				}
+				else
+				{
+					oql = db.getOQLQuery( oqlBase + orderStatement);
+				}
+			}
+		}
+		
+		QueryResults results = oql.execute(Database.ReadOnly);
+
+		while (results.hasMore()) 
+		{
+			SystemUser extranetUser = (SystemUser)results.next();
+			filteredList.add(extranetUser);
 		}
 		
 		results.close();
@@ -405,88 +516,281 @@ public class SystemUserController extends BaseController
 
 		return filteredList;
 	}
-
-	public List getFilteredSystemUserVOList(String firstName, String lastName, String userName, String email, String[] roleNames) throws SystemException, Bug
+	
+	public List getFilteredSystemUserList(Integer offset, Integer limit, String sortProperty, String direction, String searchString, String roleName, String groupName, Database db) throws SystemException, Bug, Exception
 	{
 		List filteredList = new ArrayList();
 		
-		Database db = CastorDatabaseService.getDatabase();
+		if(sortProperty == null || sortProperty.equals(""))
+			sortProperty = "userName";
+		if(direction == null || direction.equals(""))
+			direction = "ASC";
+		
+		String connectionTableName = "cmSystemUserRole";
+		if(roleName == null)
+			connectionTableName = "cmSystemUserGroup";
 
-		try 
+		String foreignKey = "roleName";
+		String foreignKeyValue = roleName;
+		if(roleName == null)
 		{
-			beginTransaction(db);
-								
-			filteredList = getFilteredSystemUserList(firstName, lastName, userName, email, roleNames, db);
-			
-			commitTransaction(db);
-		} 
-		catch (Exception e) 
+			foreignKey = "groupName";
+			foreignKeyValue = groupName;
+		}
+
+		//getCastorCategory().setLevel(Level.DEBUG);
+		//getCastorJDOCategory().setLevel(Level.DEBUG);
+		
+		OQLQuery oql = null;
+		if(searchString != null && !searchString.equals(""))
 		{
-			logger.info("An error occurred so we should not complete the transaction:" + e);
-			rollbackTransaction(db);
-			throw new SystemException("An error occurred so we should not complete the transaction:" + e, e);
+			if(CmsPropertyHandler.getDatabaseEngine().equalsIgnoreCase("sql-server"))
+			{
+				if(offset != null || limit != null)
+				{
+					String oqlString = "CALL SQL With cmSystemUserCust AS ( SELECT userName,password,firstName,lastName,email,source,isActive,modifiedDateTime, ROW_NUMBER() OVER (order by " + sortProperty + " " + direction + ") as RowNumber  FROM cmSystemUser su where su.userName IN (select userName from " + connectionTableName + " where " + foreignKey + " = $1) AND (firstName LIKE $2 OR lastName LIKE $2 OR userName LIKE $2 OR email LIKE $2 OR source LIKE $2)) select userName,password,firstName,lastName,email,source,isActive,modifiedDateTime from cmSystemUserCust Where RowNumber > " + offset + " and RowNumber <= " + (offset + limit) + " AS org.infoglue.cms.entities.management.impl.simple.SystemUserImpl";
+					oql = db.getOQLQuery(oqlString);
+					oql.bind(foreignKeyValue);
+					oql.bind("%" + searchString + "%");
+				}
+				else
+				{
+					String oqlString = "CALL SQL With cmSystemUserCust AS ( SELECT userName,password,firstName,lastName,email,source,isActive,modifiedDateTime, ROW_NUMBER() OVER (order by " + sortProperty + " " + direction + ") as RowNumber  FROM cmSystemUser su where su.userName IN (select userName from " + connectionTableName + " where " + foreignKey + " = $1) AND (firstName LIKE $2 OR lastName LIKE $2 OR userName LIKE $2 OR email LIKE $2 OR source LIKE $2)) select userName,password,firstName,lastName,email,source,isActive,modifiedDateTime from cmSystemUserCust AS org.infoglue.cms.entities.management.impl.simple.SystemUserImpl";
+					oql = db.getOQLQuery(oqlString);
+					oql.bind(foreignKeyValue);
+					oql.bind("%" + searchString + "%");
+				}
+			}
+			else if(CmsPropertyHandler.getDatabaseEngine().equalsIgnoreCase("oracle"))
+			{
+				if(offset != null || limit != null)
+				{
+					String oqlString = "CALL SQL SELECT userName,password,firstName,lastName,email,source,isActive,modifiedDateTime FROM ( SELECT su.userName,su.password,su.firstName,su.lastName,su.email,su.source,su.isActive,su.modifiedDateTime, ROWNUM rnum FROM ( SELECT userName,password,firstName,lastName,email,source,isActive,modifiedDateTime FROM cmSystemUser su where userName IN (SELECT userName from " + connectionTableName + " where " + foreignKey + " = $1) AND (firstName LIKE $2 OR lastName LIKE $2 OR userName LIKE $2 OR email LIKE $2 OR source LIKE $2) ORDER BY " + sortProperty + " " + direction + ") su  WHERE ROWNUM <= " + (offset + limit) + " ) WHERE rnum > " + offset + " AS org.infoglue.cms.entities.management.impl.simple.SystemUserImpl";
+					oql = db.getOQLQuery(oqlString);
+					oql.bind(foreignKeyValue);
+					oql.bind("%" + searchString + "%");
+				}
+				else
+				{
+					String oqlString = "CALL SQL SELECT userName,password,firstName,lastName,email,source,isActive,modifiedDateTime FROM ( SELECT su.userName,su.password,su.firstName,su.lastName,su.email,su.source,su.isActive,su.modifiedDateTime, ROWNUM rnum FROM ( SELECT userName,password,firstName,lastName,email,source,isActive,modifiedDateTime FROM cmSystemUser su where userName IN (SELECT userName from " + connectionTableName + " where " + foreignKey + " = $1) AND (firstName LIKE $2 OR lastName LIKE $2 OR userName LIKE $2 OR email LIKE $2 OR source LIKE $2) ORDER BY " + sortProperty + " " + direction + ") su ) AS org.infoglue.cms.entities.management.impl.simple.SystemUserImpl";
+					oql = db.getOQLQuery( oqlString);
+					oql.bind(foreignKeyValue);
+				}
+			}
+			else
+			{
+				if(offset != null || limit != null)
+				{					
+					String oqlString = "CALL SQL select userName,password,firstName,lastName,email,source,isActive,modifiedDateTime from (select su.* from " + connectionTableName + " sur, cmSystemUser su where sur.userName = su.userName AND sur." + foreignKey + " = $1 AND (su.firstName LIKE $2 OR su.lastName LIKE $2 OR su.userName LIKE $2 OR su.email LIKE $2 OR su.source LIKE $2) ORDER BY su." + sortProperty + " " + direction + " limit " + offset + "," + limit + ") pagedSystemUser AS org.infoglue.cms.entities.management.impl.simple.SystemUserImpl";
+					oql = db.getOQLQuery(oqlString);
+					oql.bind(foreignKeyValue);
+					oql.bind("%" + searchString + "%");
+				}
+				else
+				{
+					String oqlString = "CALL SQL select userName,password,firstName,lastName,email,source,isActive,modifiedDateTime from (select su.* from " + connectionTableName + " sur, cmSystemUser su where sur.userName = su.userName AND sur." + foreignKey + " = $1 AND (su.firstName LIKE $2 OR su.lastName LIKE $2 OR su.userName LIKE $2 OR su.email LIKE $2 OR su.source LIKE $2) ORDER BY su." + sortProperty + " " + direction + ") pagedSystemUser AS org.infoglue.cms.entities.management.impl.simple.SystemUserImpl";
+					oql = db.getOQLQuery(oqlString);
+					oql.bind(foreignKeyValue);
+					oql.bind("%" + searchString + "%");				
+				}
+			}
+		}
+		else
+		{
+			if(CmsPropertyHandler.getDatabaseEngine().equalsIgnoreCase("sql-server"))
+			{
+				if(offset != null || limit != null)
+				{
+					String oqlString = "CALL SQL With cmSystemUserCust AS ( SELECT userName,password,firstName,lastName,email,source,isActive,modifiedDateTime, ROW_NUMBER() OVER (order by " + sortProperty + " " + direction + ") as RowNumber  FROM cmSystemUser su where su.userName IN (select userName from " + connectionTableName + " where " + foreignKey + " = $1)) select userName,password,firstName,lastName,email,source,isActive,modifiedDateTime from cmSystemUserCust Where RowNumber > " + offset + " and RowNumber <= " + (offset + limit) + " AS org.infoglue.cms.entities.management.impl.simple.SystemUserImpl";
+					oql = db.getOQLQuery(oqlString);
+					oql.bind(foreignKeyValue);
+				}
+				else
+				{
+					String oqlString = "CALL SQL With cmSystemUserCust AS ( SELECT userName,password,firstName,lastName,email,source,isActive,modifiedDateTime, ROW_NUMBER() OVER (order by " + sortProperty + " " + direction + ") as RowNumber  FROM cmSystemUser su where su.userName IN (select userName from " + connectionTableName + " where " + foreignKey + " = $1)) select userName,password,firstName,lastName,email,source,isActive,modifiedDateTime from cmSystemUserCust AS org.infoglue.cms.entities.management.impl.simple.SystemUserImpl";
+					oql = db.getOQLQuery(oqlString);
+					oql.bind(foreignKeyValue);
+				}
+			}
+			else if(CmsPropertyHandler.getDatabaseEngine().equalsIgnoreCase("oracle"))
+			{
+				if(offset != null || limit != null)
+				{
+					String oqlString = "CALL SQL SELECT userName,password,firstName,lastName,email,source,isActive,modifiedDateTime FROM ( SELECT su.userName,su.password,su.firstName,su.lastName,su.email,su.source,su.isActive,su.modifiedDateTime, ROWNUM rnum FROM ( SELECT userName,password,firstName,lastName,email,source,isActive,modifiedDateTime FROM cmSystemUser su where userName IN (SELECT userName from " + connectionTableName + " where " + foreignKey + " = $1) ORDER BY " + sortProperty + " " + direction + ") su  WHERE ROWNUM <= " + (offset + limit) + " ) WHERE rnum > " + offset + " AS org.infoglue.cms.entities.management.impl.simple.SystemUserImpl";
+					oql = db.getOQLQuery(oqlString);
+					oql.bind(foreignKeyValue);
+				}
+				else
+				{
+					String oqlString = "CALL SQL SELECT userName,password,firstName,lastName,email,source,isActive,modifiedDateTime FROM ( SELECT su.userName,su.password,su.firstName,su.lastName,su.email,su.source,su.isActive,su.modifiedDateTime, ROWNUM rnum FROM ( SELECT userName,password,firstName,lastName,email,source,isActive,modifiedDateTime FROM cmSystemUser su where userName IN (SELECT userName from " + connectionTableName + " where " + foreignKey + " = $1) ORDER BY " + sortProperty + " " + direction + ") su ) AS org.infoglue.cms.entities.management.impl.simple.SystemUserImpl";
+					oql = db.getOQLQuery(oqlString);
+					oql.bind(foreignKeyValue);
+				}
+			}
+			else
+			{
+				if(offset != null || limit != null)
+				{
+					String oqlString = "CALL SQL select userName,password,firstName,lastName,email,source,isActive,modifiedDateTime from (select su.* from " + connectionTableName + " sur, cmSystemUser su where sur.userName = su.userName AND sur." + foreignKey + " = $1 ORDER BY su." + sortProperty + " " + direction + " limit " + offset + "," + limit + ") pagedSystemUser AS org.infoglue.cms.entities.management.impl.simple.SystemUserImpl";
+					oql = db.getOQLQuery(oqlString);
+					oql.bind(foreignKeyValue);
+				}
+				else
+				{
+					String oqlString = "CALL SQL select userName,password,firstName,lastName,email,source,isActive,modifiedDateTime from (select su.* from " + connectionTableName + " sur, cmSystemUser su where sur.userName = su.userName AND sur." + foreignKey + " = $1 ORDER BY su." + sortProperty + " " + direction + ") pagedSystemUser AS org.infoglue.cms.entities.management.impl.simple.SystemUserImpl";
+					oql = db.getOQLQuery(oqlString);
+					oql.bind(foreignKeyValue);						
+				}
+			}
 		}
 		
-		return toVOList(filteredList);
-	}
+		QueryResults results = oql.execute(Database.ReadOnly);
 
-	public List getFilteredSystemUserList(String firstName, String lastName, String userName, String email, String[] roleNames, Database db) throws SystemException, Bug, Exception
+		while (results.hasMore()) 
+		{
+			SystemUser extranetUser = (SystemUser)results.next();
+			filteredList.add(extranetUser.getValueObject());
+		}
+		
+		results.close();
+		oql.close();
+
+		return filteredList;
+	}
+	
+	public List getFilteredSystemUserListInvertedOnRoleOrGroup(Integer offset, Integer limit, String sortProperty, String direction, String searchString, String roleName, String groupName, Database db) throws SystemException, Bug, Exception
 	{
 		List filteredList = new ArrayList();
 		
-		OQLQuery oql = db.getOQLQuery( "SELECT u FROM org.infoglue.cms.entities.management.impl.simple.SystemUserImpl u ORDER BY u.userName");
-    	
+		if(sortProperty == null || sortProperty.equals(""))
+			sortProperty = "userName";
+		if(direction == null || direction.equals(""))
+			direction = "ASC";
+		
+		String connectionTableName = "cmSystemUserRole";
+		if(roleName == null)
+			connectionTableName = "cmSystemUserGroup";
+
+		String foreignKey = "roleName";
+		String foreignKeyValue = roleName;
+		if(roleName == null)
+		{
+			foreignKey = "groupName";
+			foreignKeyValue = groupName;
+		}
+
+		//getCastorCategory().setLevel(Level.DEBUG);
+		//getCastorJDOCategory().setLevel(Level.DEBUG);
+		
+		OQLQuery oql = null;
+		if(searchString != null && !searchString.equals(""))
+		{
+			if(CmsPropertyHandler.getDatabaseEngine().equalsIgnoreCase("sql-server"))
+			{
+				if(offset != null || limit != null)
+				{
+					String oqlString = "CALL SQL With cmSystemUserCust AS ( SELECT userName,password,firstName,lastName,email,source,isActive,modifiedDateTime, ROW_NUMBER() OVER (order by " + sortProperty + " " + direction + ") as RowNumber  FROM cmSystemUser su where su.userName NOT IN (select userName from " + connectionTableName + " where " + foreignKey + " = $1) AND (firstName LIKE $2 OR lastName LIKE $2 OR userName LIKE $2 OR email LIKE $2 OR source LIKE $2)) select userName,password,firstName,lastName,email,source,isActive,modifiedDateTime from cmSystemUserCust Where RowNumber > " + offset + " and RowNumber <= " + (offset + limit) + " AS org.infoglue.cms.entities.management.impl.simple.SystemUserImpl";
+					oql = db.getOQLQuery(oqlString);
+					oql.bind(foreignKeyValue);
+					oql.bind("%" + searchString + "%");
+				}
+				else
+				{
+					String oqlString = "CALL SQL With cmSystemUserCust AS ( SELECT userName,password,firstName,lastName,email,source,isActive,modifiedDateTime, ROW_NUMBER() OVER (order by " + sortProperty + " " + direction + ") as RowNumber  FROM cmSystemUser su where su.userName NOT IN (select userName from " + connectionTableName + " where " + foreignKey + " = $1) AND (firstName LIKE $2 OR lastName LIKE $2 OR userName LIKE $2 OR email LIKE $2 OR source LIKE $2)) select userName,password,firstName,lastName,email,source,isActive,modifiedDateTime from cmSystemUserCust AS org.infoglue.cms.entities.management.impl.simple.SystemUserImpl";
+					oql = db.getOQLQuery(oqlString);
+					oql.bind(foreignKeyValue);
+					oql.bind("%" + searchString + "%");
+				}
+			}
+			else if(CmsPropertyHandler.getDatabaseEngine().equalsIgnoreCase("oracle"))
+			{
+				if(offset != null || limit != null)
+				{
+					String oqlString = "CALL SQL SELECT userName,password,firstName,lastName,email,source,isActive,modifiedDateTime FROM ( SELECT su.userName,su.password,su.firstName,su.lastName,su.email,su.source,su.isActive,su.modifiedDateTime, ROWNUM rnum FROM ( SELECT userName,password,firstName,lastName,email,source,isActive,modifiedDateTime FROM cmSystemUser su where userName NOT IN (SELECT userName from " + connectionTableName + " where " + foreignKey + " = $1) AND (firstName LIKE $2 OR lastName LIKE $2 OR userName LIKE $2 OR email LIKE $2 OR source LIKE $2) ORDER BY " + sortProperty + " " + direction + ") su  WHERE ROWNUM <= " + (offset + limit) + " ) WHERE rnum > " + offset + " AS org.infoglue.cms.entities.management.impl.simple.SystemUserImpl";
+					oql = db.getOQLQuery(oqlString);
+					oql.bind(foreignKeyValue);
+					oql.bind("%" + searchString + "%");
+				}
+				else
+				{
+					String oqlString = "CALL SQL SELECT userName,password,firstName,lastName,email,source,isActive,modifiedDateTime FROM ( SELECT su.userName,su.password,su.firstName,su.lastName,su.email,su.source,su.isActive,su.modifiedDateTime, ROWNUM rnum FROM ( SELECT userName,password,firstName,lastName,email,source,isActive,modifiedDateTime FROM cmSystemUser su where userName NOT IN (SELECT userName from " + connectionTableName + " where " + foreignKey + " = $1) AND (firstName LIKE $2 OR lastName LIKE $2 OR userName LIKE $2 OR email LIKE $2 OR source LIKE $2) ORDER BY " + sortProperty + " " + direction + ") su ) AS org.infoglue.cms.entities.management.impl.simple.SystemUserImpl";
+					oql = db.getOQLQuery( oqlString);
+					oql.bind(foreignKeyValue);
+				}
+			}
+			else
+			{
+				if(offset != null || limit != null)
+				{					
+					String oqlString = "CALL SQL select userName,password,firstName,lastName,email,source,isActive,modifiedDateTime from (select su.* from cmSystemUser su where su.userName NOT IN (SELECT userName from " + connectionTableName + " where " + foreignKey + " = $1) AND (su.firstName LIKE $2 OR su.lastName LIKE $2 OR su.userName LIKE $2 OR su.email LIKE $2 OR su.source LIKE $2) ORDER BY su." + sortProperty + " " + direction + " limit " + offset + "," + limit + ") pagedSystemUser AS org.infoglue.cms.entities.management.impl.simple.SystemUserImpl";
+					oql = db.getOQLQuery(oqlString);
+					oql.bind(foreignKeyValue);
+					oql.bind("%" + searchString + "%");
+				}
+				else
+				{
+					String oqlString = "CALL SQL select userName,password,firstName,lastName,email,source,isActive,modifiedDateTime from (select su.* from cmSystemUser su where su.userName NOT IN (SELECT userName from " + connectionTableName + " where " + foreignKey + " = $1) AND (su.firstName LIKE $2 OR su.lastName LIKE $2 OR su.userName LIKE $2 OR su.email LIKE $2 OR su.source LIKE $2) ORDER BY su." + sortProperty + " " + direction + ") pagedSystemUser AS org.infoglue.cms.entities.management.impl.simple.SystemUserImpl";
+					oql = db.getOQLQuery(oqlString);
+					oql.bind(foreignKeyValue);
+					oql.bind("%" + searchString + "%");				
+				}
+			}
+		}
+		else
+		{
+			if(CmsPropertyHandler.getDatabaseEngine().equalsIgnoreCase("sql-server"))
+			{
+				if(offset != null || limit != null)
+				{
+					String oqlString = "CALL SQL With cmSystemUserCust AS ( SELECT userName,password,firstName,lastName,email,source,isActive,modifiedDateTime, ROW_NUMBER() OVER (order by " + sortProperty + " " + direction + ") as RowNumber  FROM cmSystemUser su where su.userName NOT IN (select userName from " + connectionTableName + " where " + foreignKey + " = $1)) select userName,password,firstName,lastName,email,source,isActive,modifiedDateTime from cmSystemUserCust Where RowNumber > " + offset + " and RowNumber <= " + (offset + limit) + " AS org.infoglue.cms.entities.management.impl.simple.SystemUserImpl";
+					oql = db.getOQLQuery(oqlString);
+					oql.bind(foreignKeyValue);
+				}
+				else
+				{
+					String oqlString = "CALL SQL With cmSystemUserCust AS ( SELECT userName,password,firstName,lastName,email,source,isActive,modifiedDateTime, ROW_NUMBER() OVER (order by " + sortProperty + " " + direction + ") as RowNumber  FROM cmSystemUser su where su.userName NOT IN (select userName from " + connectionTableName + " where " + foreignKey + " = $1)) select userName,password,firstName,lastName,email,source,isActive,modifiedDateTime from cmSystemUserCust AS org.infoglue.cms.entities.management.impl.simple.SystemUserImpl";
+					oql = db.getOQLQuery(oqlString);
+					oql.bind(foreignKeyValue);
+				}
+			}
+			else if(CmsPropertyHandler.getDatabaseEngine().equalsIgnoreCase("oracle"))
+			{
+				if(offset != null || limit != null)
+				{
+					String oqlString = "CALL SQL SELECT userName,password,firstName,lastName,email,source,isActive,modifiedDateTime FROM ( SELECT su.userName,su.password,su.firstName,su.lastName,su.email,su.source,su.isActive,su.modifiedDateTime, ROWNUM rnum FROM ( SELECT userName,password,firstName,lastName,email,source,isActive,modifiedDateTime FROM cmSystemUser su where userName NOT IN (SELECT userName from " + connectionTableName + " where " + foreignKey + " = $1) ORDER BY " + sortProperty + " " + direction + ") su  WHERE ROWNUM <= " + (offset + limit) + " ) WHERE rnum > " + offset + " AS org.infoglue.cms.entities.management.impl.simple.SystemUserImpl";
+					oql = db.getOQLQuery(oqlString);
+					oql.bind(foreignKeyValue);
+				}
+				else
+				{
+					String oqlString = "CALL SQL SELECT userName,password,firstName,lastName,email,source,isActive,modifiedDateTime FROM ( SELECT su.userName,su.password,su.firstName,su.lastName,su.email,su.source,su.isActive,su.modifiedDateTime, ROWNUM rnum FROM ( SELECT userName,password,firstName,lastName,email,source,isActive,modifiedDateTime FROM cmSystemUser su where userName NOT IN (SELECT userName from " + connectionTableName + " where " + foreignKey + " = $1) ORDER BY " + sortProperty + " " + direction + ") su ) AS org.infoglue.cms.entities.management.impl.simple.SystemUserImpl";
+					oql = db.getOQLQuery(oqlString);
+					oql.bind(foreignKeyValue);
+				}
+			}
+			else
+			{
+				if(offset != null || limit != null)
+				{
+					String oqlString = "CALL SQL select userName,password,firstName,lastName,email,source,isActive,modifiedDateTime from (select su.* from cmSystemUser su where su.userName NOT IN (SELECT userName from " + connectionTableName + " where " + foreignKey + " = $1) ORDER BY su." + sortProperty + " " + direction + " limit " + offset + "," + limit + ") pagedSystemUser AS org.infoglue.cms.entities.management.impl.simple.SystemUserImpl";
+					oql = db.getOQLQuery(oqlString);
+					oql.bind(foreignKeyValue);
+				}
+				else
+				{
+					String oqlString = "CALL SQL select userName,password,firstName,lastName,email,source,isActive,modifiedDateTime from (select su.* from cmSystemUser su where su.userName NOT IN (SELECT userName from " + connectionTableName + " where " + foreignKey + " = $1) ORDER BY su." + sortProperty + " " + direction + ") pagedSystemUser AS org.infoglue.cms.entities.management.impl.simple.SystemUserImpl";
+					oql = db.getOQLQuery(oqlString);
+					oql.bind(foreignKeyValue);						
+				}
+			}
+		}
+		
 		QueryResults results = oql.execute(Database.ReadOnly);
 		
 		while (results.hasMore()) 
 		{
 			SystemUser extranetUser = (SystemUser)results.next();
-			boolean include = true;
-			
-			if(firstName != null && !firstName.equals("") && extranetUser.getFirstName().toLowerCase().indexOf(firstName.toLowerCase()) == -1)
-				include = false;
-			
-			if(lastName != null && !lastName.equals("") && extranetUser.getLastName().toLowerCase().indexOf(lastName.toLowerCase()) == -1)
-				include = false;
-			
-			if(userName != null && !userName.equals("") && extranetUser.getUserName().toLowerCase().indexOf(userName.toLowerCase()) == -1)
-				include = false;
-			
-			if(email != null && !email.equals("") && extranetUser.getEmail().toLowerCase().indexOf(email.toLowerCase()) == -1)
-				include = false;
-			
-			boolean hasRoles = true;
-			if(roleNames != null && roleNames.length > 0)
-			{	
-				for(int i=0; i < roleNames.length; i++)
-				{
-					String roleName = roleNames[i];
-					if(roleName != null && !roleName.equals(""))
-					{	
-						Collection roles = extranetUser.getRoles();
-						Iterator rolesIterator = roles.iterator();
-						boolean hasRole = false;
-						while(rolesIterator.hasNext())
-						{
-							Role role = (Role)rolesIterator.next();
-							if(role.getRoleName().equalsIgnoreCase(roleName))
-							{
-								hasRole = true;
-								break;
-							}
-						}
-						
-						if(!hasRole)
-						{
-							hasRoles = false;
-							break;
-						}
-					}
-				}					
-			}
-			
-			if(include && hasRoles)
-				filteredList.add(extranetUser);
+			filteredList.add(extranetUser.getValueObject());
 		}
 		
 		results.close();
@@ -495,6 +799,104 @@ public class SystemUserController extends BaseController
 		return filteredList;
 	}
 
+	public Integer getFilteredSystemUserCount(String roleName, String groupName, String searchString, Database db) throws SystemException, Bug, Exception
+	{
+		Integer count = 0;
+		
+		String connectionTableName = "cmSystemUserRole";
+		if(roleName == null)
+			connectionTableName = "cmSystemUserGroup";
+
+		String foreignKey = "roleName";
+		String foreignKeyValue = roleName;
+		if(roleName == null)
+		{
+			foreignKey = "groupName";
+			foreignKeyValue = groupName;
+		}
+
+		//getCastorCategory().setLevel(Level.DEBUG);
+		//getCastorJDOCategory().setLevel(Level.DEBUG);
+		
+		OQLQuery oql = null;
+		if(searchString != null && !searchString.equals(""))
+		{
+			String oqlString = "CALL SQL select count(su.userName) as count from " + connectionTableName + " sur, cmSystemUser su where sur.userName = su.userName AND sur." + foreignKey + " = $1  AND (su.firstName LIKE $2 OR su.lastName LIKE $2 OR su.userName LIKE $2 OR su.email LIKE $2 OR su.source LIKE $2) AS org.infoglue.cms.entities.management.TableCount";
+			oql = db.getOQLQuery(oqlString);
+			oql.bind(foreignKeyValue);
+			oql.bind("%" + searchString + "%");				
+		}
+		else
+		{
+			String oqlString = "CALL SQL select count(su.userName) as count from " + connectionTableName + " sur, cmSystemUser su where sur.userName = su.userName AND sur." + foreignKey + " = $1 AS org.infoglue.cms.entities.management.TableCount";
+			oql = db.getOQLQuery(oqlString);
+			oql.bind(foreignKeyValue);				
+		}
+		
+		QueryResults results = oql.execute(Database.ReadOnly);
+
+		while (results.hasMore()) 
+		{
+			TableCount tableCount = (TableCount)results.next();
+			count = tableCount.getCount();
+		}
+
+		results.close();
+		oql.close();
+
+		return count;
+	}
+	
+	public Integer getFilteredSystemUserCountInverted(String roleName, String groupName, String searchString, Database db) throws SystemException, Bug, Exception
+	{
+		Integer count = 0;
+		
+		String connectionTableName = "cmSystemUserRole";
+		if(roleName == null)
+			connectionTableName = "cmSystemUserGroup";
+
+		String foreignKey = "roleName";
+		String foreignKeyValue = roleName;
+		if(roleName == null)
+		{
+			foreignKey = "groupName";
+			foreignKeyValue = groupName;
+		}
+
+		//getCastorCategory().setLevel(Level.DEBUG);
+		//getCastorJDOCategory().setLevel(Level.DEBUG);
+		
+		OQLQuery oql = null;
+		if(searchString != null && !searchString.equals(""))
+		{
+			String oqlString = "CALL SQL select count(su.userName) as count from cmSystemUser su where su.userName NOT IN (SELECT userName from " + connectionTableName + " WHERE " + connectionTableName + "." + foreignKey + " = $1) AND (su.firstName LIKE $2 OR su.lastName LIKE $2 OR su.userName LIKE $2 OR su.email LIKE $2 OR su.source LIKE $2) AS org.infoglue.cms.entities.management.TableCount";
+			oql = db.getOQLQuery(oqlString);
+			oql.bind(foreignKeyValue);
+			oql.bind("%" + searchString + "%");				
+		}
+		else
+		{
+			String oqlString = "CALL SQL select count(su.userName) as count from cmSystemUser su where su.userName NOT IN (SELECT userName from " + connectionTableName + " WHERE " + connectionTableName + "." + foreignKey + " = $1) AS org.infoglue.cms.entities.management.TableCount";
+			oql = db.getOQLQuery(oqlString);
+			oql.bind(foreignKeyValue);				
+		}
+		
+		QueryResults results = oql.execute(Database.ReadOnly);
+
+		while (results.hasMore()) 
+		{
+			TableCount tableCount = (TableCount)results.next();
+			count = tableCount.getCount();
+		}
+
+		results.close();
+		oql.close();
+
+		return count;
+	}
+	
+
+	
 	/*
 	 * CREATE
 	 * 
@@ -513,7 +915,7 @@ public class SystemUserController extends BaseController
 			}
 			catch (Exception e) 
 			{
-				System.out.println("Error generating password:" + e.getMessage());
+				logger.error("Error generating password:" + e.getMessage());
 			}
 		}
     	
@@ -542,7 +944,7 @@ public class SystemUserController extends BaseController
 			}
 			catch (Exception e) 
 			{
-				System.out.println("Error generating password:" + e.getMessage());
+				logger.error("Error generating password:" + e.getMessage());
 			}
 		}
 
@@ -599,26 +1001,83 @@ public class SystemUserController extends BaseController
 	 
     public void delete(String userName, Database db) throws ConstraintException, SystemException, Exception
     {
-		SystemUser systemUser = getSystemUserWithName(userName, db);
-
-		Collection roles = systemUser.getRoles();
-		Iterator rolesIterator = roles.iterator();
-		while(rolesIterator.hasNext())
-		{
-			Role role = (Role)rolesIterator.next();
-			role.getSystemUsers().remove(systemUser);
-		}
-		
-		Collection groups = systemUser.getGroups();
-		Iterator groupsIterator = groups.iterator();
-		while(groupsIterator.hasNext())
-		{
-			Group group = (Group)groupsIterator.next();
-			group.getSystemUsers().remove(systemUser);
-		}
-		
-		db.remove(systemUser);
+    	deleteRoles(userName);
+    	deleteGroups(userName);
+    	deleteEntity(SystemUserImpl.class, userName, db);
     }        
+
+	/**
+	 * 	Delete all roles for a user
+	 * @throws Exception 
+	 */
+	 
+	public void deleteRoles(String userName/*, Database db*/) throws SystemException, Bug, Exception
+	{
+        Database db = CastorDatabaseService.getDatabase();
+
+        beginTransaction(db);
+
+        try
+        {
+        	OQLQuery oql = db.getOQLQuery( "SELECT sur FROM org.infoglue.cms.entities.management.impl.simple.SystemUserRoleImpl sur WHERE sur.userName = $1");
+        	oql.bind(userName);
+        	
+        	QueryResults results = oql.execute();
+    		while (results.hasMore()) 
+            {
+    			SystemUserRoleImpl sur = (SystemUserRoleImpl)results.nextElement();
+    			db.remove(sur);
+            }
+			
+    		results.close();
+    		oql.close();
+            commitTransaction(db);
+        }
+        catch(Exception e)
+        {
+        	e.printStackTrace();
+            logger.error("An error occurred so we should not completes the transaction:" + e, e);
+            rollbackTransaction(db);
+            throw new SystemException(e.getMessage());
+        }
+ 	}
+
+	/**
+	 * 	Delete all roles for a user
+	 * @throws Exception 
+	 */
+	 
+	public void deleteGroups(String userName) throws SystemException, Bug, Exception
+	{
+        Database db = CastorDatabaseService.getDatabase();
+
+        beginTransaction(db);
+
+        try
+        {
+        	OQLQuery oql = db.getOQLQuery( "SELECT sur FROM org.infoglue.cms.entities.management.impl.simple.SystemUserGroupImpl sur WHERE sur.userName = $1");
+        	oql.bind(userName);
+        	
+        	QueryResults results = oql.execute();
+    		while (results.hasMore()) 
+            {
+    			SystemUserGroupImpl sur = (SystemUserGroupImpl)results.nextElement();
+    			db.remove(sur);
+            }
+			
+    		results.close();
+    		oql.close();
+        
+    		commitTransaction(db);
+        }
+        catch(Exception e)
+        {
+        	e.printStackTrace();
+            logger.error("An error occurred so we should not completes the transaction:" + e, e);
+            rollbackTransaction(db);
+            throw new SystemException(e.getMessage());
+        }
+ 	}
 
 
     public SystemUserVO update(SystemUserVO systemUserVO) throws ConstraintException, SystemException
@@ -627,10 +1086,14 @@ public class SystemUserController extends BaseController
     }        
 
 
-    public SystemUserVO update(SystemUserVO systemUserVO, String[] roleNames, String[] groupNames) throws ConstraintException, SystemException
+    public SystemUserVO update(SystemUserVO systemUserVO, String[] roleNames, String[] groupNames) throws ConstraintException, SystemException, Exception
     {
+    	if(roleNames != null)
+    		deleteRoles(systemUserVO.getUserName());
+		if(groupNames != null)
+			deleteGroups(systemUserVO.getUserName());
+
         Database db = CastorDatabaseService.getDatabase();
-        ConstraintExceptionBuffer ceb = new ConstraintExceptionBuffer();
 
         SystemUser systemUser = null;
 
@@ -644,56 +1107,85 @@ public class SystemUserController extends BaseController
         }
         catch(ConstraintException ce)
         {
+        	ce.printStackTrace();
             logger.warn("An error occurred so we should not completes the transaction:" + ce, ce);
             rollbackTransaction(db);
             throw ce;
         }
         catch(Exception e)
         {
+        	e.printStackTrace();
             logger.error("An error occurred so we should not completes the transaction:" + e, e);
             rollbackTransaction(db);
             throw new SystemException(e.getMessage());
         }
-
+                
         return systemUser.getValueObject();
     }        
 
-    public SystemUser update(SystemUserVO systemUserVO, String[] roleNames, String[] groupNames, Database db) throws ConstraintException, SystemException
+    public SystemUser update(SystemUserVO systemUserVO, String[] roleNames, String[] groupNames, Database db) throws Bug, Exception
     {
         SystemUser systemUser = getSystemUserWithName(systemUserVO.getUserName(), db);
         
-        systemUserVO.setUserName(systemUser.getUserName());
-        
-		if(roleNames != null)
-		{
-			systemUser.getRoles().clear();
-			for (int i=0; i < roleNames.length; i++)
-            {
-            	Role role = RoleController.getController().getRoleWithName(roleNames[i], db);
-            	systemUser.getRoles().add(role);
-				role.getSystemUsers().add(systemUser);
-            }
-		}
-		
-		if(groupNames != null)
-		{
-			systemUser.getGroups().clear();
-			for (int i=0; i < groupNames.length; i++)
-            {
-			    Group group = GroupController.getController().getGroupWithName(groupNames[i], db);
-            	systemUser.getGroups().add(group);
-            	group.getSystemUsers().add(systemUser);
-            }
-		}
-		
+    	systemUserVO.setUserName(systemUser.getUserName());
 		systemUserVO.setPassword(systemUser.getPassword());
 		systemUser.setValueObject(systemUserVO);
+		
+		if(roleNames != null)
+		{
+            List<String> roleNamesList = Arrays.asList(roleNames);
+            Set<String> roleNamesSet = new HashSet<String>(roleNamesList);
 
+            for (String roleName : roleNamesSet)
+            {
+				try 
+				{
+					SystemUserRoleImpl userRole = new SystemUserRoleImpl();
+					userRole.setUserName(""+systemUserVO.getUserName());
+					userRole.setRoleName(roleName);
+				
+					db.create(userRole);
+				} 
+				catch (PersistenceException e) 
+				{
+					e.printStackTrace();
+				}
+            }
+		}
+
+    	if(groupNames != null)
+		{
+            List<String> groupNamesList = Arrays.asList(groupNames);
+            Set<String> groupNamesSet = new HashSet<String>(groupNamesList);
+
+			for (String groupName : groupNamesSet)
+            {
+				try 
+				{
+					SystemUserGroupImpl userGroup = new SystemUserGroupImpl();
+					userGroup.setUserName(""+systemUserVO.getUserName());
+					userGroup.setGroupName(groupName);
+				
+					db.create(userGroup);
+				} 
+				catch (PersistenceException e) 
+				{
+					e.printStackTrace();
+				}
+            }
+		}
+		
         return systemUser;
     }     
 
-    public SystemUserVO update(SystemUserVO systemUserVO, String oldPassword, String[] roleNames, String[] groupNames) throws ConstraintException, SystemException
+    public SystemUserVO update(SystemUserVO systemUserVO, String oldPassword, String[] roleNames, String[] groupNames) throws ConstraintException, SystemException, Exception
     {
+		if(roleNames != null)
+			deleteRoles(systemUserVO.getUserName());
+
+		if(groupNames != null)
+			deleteGroups(systemUserVO.getUserName());
+			
         Database db = CastorDatabaseService.getDatabase();
         ConstraintExceptionBuffer ceb = new ConstraintExceptionBuffer();
 
@@ -758,23 +1250,18 @@ public class SystemUserController extends BaseController
         
 		if(roleNames != null)
 		{
-	        systemUser.getRoles().clear();
 			for (int i=0; i < roleNames.length; i++)
             {
-            	Role role = RoleController.getController().getRoleWithName(roleNames[i], db);
-            	systemUser.getRoles().add(role);
-				role.getSystemUsers().add(systemUser);
-            }
+				RoleController.getController().addUser(roleNames[i], systemUser.getUserName(), db);
+            }			
 		}
 		
 		if(groupNames != null)
 		{
-			systemUser.getGroups().clear();
 			for (int i=0; i < groupNames.length; i++)
             {
-			    Group group = GroupController.getController().getGroupWithName(groupNames[i], db);
-            	systemUser.getGroups().add(group);
-            	group.getSystemUsers().add(systemUser);
+				System.out.println("Adding group:" + groupNames[i]);
+				GroupController.getController().addUser(groupNames[i], systemUser.getUserName(), db);
             }
 		}
 		
@@ -805,7 +1292,7 @@ public class SystemUserController extends BaseController
         }
     }        
 
-    public void updatePassword(String userName, Database db) throws ConstraintException, SystemException
+    public void updatePassword(String userName, Database db) throws ConstraintException, SystemException, Exception
     {
         SystemUser systemUser = getSystemUserWithName(userName, db);
         
@@ -822,7 +1309,7 @@ public class SystemUserController extends BaseController
 			}
 			catch (Exception e) 
 			{
-				System.out.println("Error generating password:" + e.getMessage());
+				logger.error("Error generating password:" + e.getMessage());
 			}
 		}
 
@@ -857,7 +1344,6 @@ public class SystemUserController extends BaseController
     public void updateAnonymousPassword(String userName) throws ConstraintException, SystemException
     {
         Database db = CastorDatabaseService.getDatabase();
-        ConstraintExceptionBuffer ceb = new ConstraintExceptionBuffer();
 
         beginTransaction(db);
 
@@ -875,7 +1361,7 @@ public class SystemUserController extends BaseController
         }
     }        
 
-    public void updateAnonymousPassword(String userName, Database db) throws ConstraintException, SystemException
+    public void updateAnonymousPassword(String userName, Database db) throws ConstraintException, SystemException, Exception
     {
         SystemUser systemUser = getSystemUserWithName(userName, db);
         String newPassword = "anonymous";
@@ -891,7 +1377,7 @@ public class SystemUserController extends BaseController
 			}
 			catch (Exception e) 
 			{
-				System.out.println("Error generating password:" + e.getMessage());
+				logger.error("Error generating password:" + e.getMessage());
 			}
 		}
 
@@ -946,7 +1432,7 @@ public class SystemUserController extends BaseController
 			}
 			catch (Exception e) 
 			{
-				System.out.println("Error generating password:" + e.getMessage());
+				logger.error("Error generating password:" + e.getMessage());
 			}
 		}
 

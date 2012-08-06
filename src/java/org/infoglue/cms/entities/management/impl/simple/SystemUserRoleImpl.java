@@ -21,45 +21,54 @@
  * ===============================================================================
  */
 
-package org.infoglue.cms.applications.managementtool.actions;
+package org.infoglue.cms.entities.management.impl.simple;
 
-import java.util.List;
+import org.infoglue.cms.entities.kernel.BaseEntityVO;
+import org.infoglue.cms.entities.kernel.IBaseEntity;
 
-import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
-import org.infoglue.cms.controllers.kernel.impl.simple.GroupControllerProxy;
-
-
-/**
- * @author Mattias Bogeblad
- * 
- *	Action class for usecase ViewListGroup
- * 
- */
-
-public class ViewListGroupAction extends InfoGlueAbstractAction 
+public class SystemUserRoleImpl implements IBaseEntity
 {
-	private static final long serialVersionUID = 1L;
-
-	private List groups;
-		
-	protected String doExecute() throws Exception 
-	{
-	    this.groups = GroupControllerProxy.getController().getAllGroups();
-
-	    return "success";
+	private String userName;
+	private String roleName;
+	      
+	/**
+	 * @return the userName
+	 */
+	public String getUserName() {
+		return userName;
+	}
+	/**
+	 * @param userName the userName to set
+	 */
+	public void setUserName(String userName) {
+		this.userName = userName;
+	}
+	/**
+	 * @return the groupName
+	 */
+	public String getRoleName() {
+		return roleName;
+	}
+	/**
+	 * @param roleName the roleName to set
+	 */
+	public void setRoleName(String roleName) {
+		this.roleName = roleName;
 	}
 	
-	public String doListManagableGroups() throws Exception 
-	{
-		this.groups = GroupControllerProxy.getController().getAvailableGroups(this.getInfoGluePrincipal(), "Group.ManageUsers");
-	    
-	    return "successV3";
-	}
-	
-	public List getGroups()
-	{
-		return this.groups;		
+	public Integer getId() {
+		return null;
 	}
 
-	
-}
+	public Object getIdAsObject() {
+		return this.userName + "_" + this.roleName;
+	}
+
+	public BaseEntityVO getVO() {
+		return null;
+	}
+
+	public void setVO(BaseEntityVO valueObject) {
+	}
+
+}        

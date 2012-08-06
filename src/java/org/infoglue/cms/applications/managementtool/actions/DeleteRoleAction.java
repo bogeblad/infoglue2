@@ -22,6 +22,8 @@
  */
 
 package org.infoglue.cms.applications.managementtool.actions;
+import org.apache.commons.codec.binary.Base64;
+import org.apache.log4j.Logger;
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.RoleControllerProxy;
 
@@ -31,6 +33,8 @@ import org.infoglue.cms.controllers.kernel.impl.simple.RoleControllerProxy;
 
 public class DeleteRoleAction extends InfoGlueAbstractAction
 {
+	private final static Logger logger = Logger.getLogger(DeleteRoleAction.class.getName());
+
 	private String roleName;
 	
 	protected String doExecute() throws Exception 
@@ -47,9 +51,22 @@ public class DeleteRoleAction extends InfoGlueAbstractAction
 		return "successV3";
 	}
 
-	public void setRoleName(String string)
+	public void setRoleName(String roleName) throws Exception
 	{
-		roleName = string;
+		logger.info("roleName:" + roleName);
+		byte[] bytes = Base64.decodeBase64(roleName);
+		String decodedName = new String(bytes, "utf-8");
+		logger.info("decodedName:" + decodedName);
+		if(RoleControllerProxy.getController().roleExists(decodedName))
+		{
+			roleName = decodedName;
+		}
+		else
+		{
+			logger.info("No match on base64-based roleName:" + roleName);
+		}
+		
+		this.roleName = roleName;
 	}
 
 }
