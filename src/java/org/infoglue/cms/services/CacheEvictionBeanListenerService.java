@@ -82,7 +82,7 @@ public class CacheEvictionBeanListenerService
 	
 	public void registerListener(String className, CacheEvictionBeanListener listener)
 	{
-		System.out.println("Registering:" + className + ":" + listener.getListenerID());
+		//System.out.println("Registering:" + className + ":" + listener.getListenerID());
 		List<CacheEvictionBeanListener> listeners = getListeners(className); 
 		if(this.listeners.containsKey(className))
 		{
