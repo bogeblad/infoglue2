@@ -44,7 +44,18 @@ import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
+import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.index.Term;
+import org.apache.lucene.queryParser.MultiFieldQueryParser;
+import org.apache.lucene.search.BooleanClause;
+import org.apache.lucene.search.IndexSearcher;
+import org.apache.lucene.search.Query;
+import org.apache.lucene.search.ScoreDoc;
+import org.apache.lucene.search.Sort;
+import org.apache.lucene.search.TopDocs;
+import org.apache.lucene.store.Directory;
+import org.apache.lucene.store.NIOFSDirectory;
+import org.apache.lucene.util.Version;
 import org.apache.poi.hwpf.HWPFDocument;
 import org.apache.poi.hwpf.extractor.WordExtractor;
 import org.apache.poi.poifs.filesystem.POIFSFileSystem;
@@ -84,6 +95,92 @@ public class LuceneController extends BaseController implements NotificationList
 	}
 	
 	private static List<NotificationMessage> qeuedMessages = new ArrayList<NotificationMessage>();
+	
+	private StandardAnalyzer getStandardAnalyzer() throws Exception
+	{
+		return new StandardAnalyzer(Version.LUCENE_34);
+	}
+	
+	public Directory getDirectory() throws Exception
+	{
+		String index = CmsPropertyHandler.getContextRootPath() + File.separator + "lucene" + File.separator + "index";
+    	File INDEX_DIR = new File(index);
+		Directory directory = new NIOFSDirectory(INDEX_DIR);
+		boolean indexExists = IndexReader.indexExists(directory);
+		if(!indexExists)
+		{
+			createIndex(directory);
+		}
+		
+		return directory;
+	}
+
+	private void createIndex(Directory directory) throws Exception
+	{
+		IndexWriterConfig config = new IndexWriterConfig(Version.LUCENE_34, getStandardAnalyzer());
+		IndexWriter indexWriter = new IndexWriter(directory, config);
+		indexWriter.deleteDocuments(new Term("initializer", "true"));
+		indexWriter.close();
+	}
+	
+	public IndexWriter getIndexWriter() throws Exception
+	{
+		Directory directory = getDirectory();
+		
+    	StandardAnalyzer analyzer = new StandardAnalyzer(Version.LUCENE_34);
+		IndexWriterConfig config = new IndexWriterConfig(Version.LUCENE_34, analyzer);
+
+		if(IndexWriter.isLocked(directory))
+		{
+			System.out.println("Directory is locked - leaving the messages in the qeuedMessages list...");
+			throw new Exception("Lock not granted");
+		}
+		else
+		{
+			return new IndexWriter(directory, config);
+		}
+	}
+
+	public IndexReader getIndexReader() throws Exception
+	{
+		return IndexReader.open(getDirectory(), true);
+	}
+
+	public IndexSearcher getIndexSearcher() throws Exception
+	{
+		IndexReader reader = IndexReader.open(getDirectory(), true);
+	    return new IndexSearcher(reader);
+	}
+	
+	private Boolean getIsIndexedLocked() throws Exception
+	{
+		Directory directory = getDirectory();
+		return IndexWriter.isLocked(directory);
+	}
+
+	private void unlockIndex() throws Exception
+	{
+		Directory directory = getDirectory();
+		IndexWriter.unlock(directory);
+	}
+
+	public List<Document> queryDocuments(String[] fields, BooleanClause.Occur[] flags, String[] queries, Sort sort, Integer numberOfHits) throws Exception 
+	{
+		IndexSearcher searcher = getIndexSearcher();
+		Query query = MultiFieldQueryParser.parse(Version.LUCENE_34, queries, fields, flags, getStandardAnalyzer());
+		logger.info("query:" + query);
+		//Query query = new QueryParser(Version.LUCENE_34, "contents", getStandardAnalyzer()).parse(text);
+		TopDocs hits = searcher.search(query, numberOfHits);
+		logger.info(hits.totalHits + " total matching documents for '" + queries + "'");
+		List<Document> docs = new ArrayList<Document>();
+		for(ScoreDoc scoreDoc : hits.scoreDocs)
+		{
+			org.apache.lucene.document.Document doc = searcher.doc(scoreDoc.doc);
+			docs.add(doc);
+		}
+		searcher.close();
+		return docs;
+	}
 	
 	public void notifyListeners()
 	{
@@ -126,7 +223,7 @@ public class LuceneController extends BaseController implements NotificationList
 				String index = CmsPropertyHandler.getContextRootPath() + File.separator + "lucene" + File.separator + "index";
 	
 		    	File INDEX_DIR = new File(index);
-		    	writer = new IndexWriter(INDEX_DIR, new StandardAnalyzer(new String[]{}));
+		    	writer = getIndexWriter();
 		    	writer.setMaxMergeDocs(500000);
 		    	if(logger.isInfoEnabled())
 					logger.info("Indexing to directory '" + INDEX_DIR + "'...");
@@ -262,18 +359,18 @@ public class LuceneController extends BaseController implements NotificationList
 		// Add the last modified date of the file a field named "modified".
 		// Use a field that is indexed (i.e. searchable), but don't tokenize
 		// the field into words.
-		doc.add(new Field("modified", DateTools.timeToString(new Date().getTime(), DateTools.Resolution.MINUTE), Field.Store.YES, Field.Index.UN_TOKENIZED));
-		doc.add(new Field("contentId", "" + contentVO.getContentId(), Field.Store.YES, Field.Index.UN_TOKENIZED));
-		doc.add(new Field("contentTypeDefinitionId", "" + contentVO.getContentTypeDefinitionId(), Field.Store.YES, Field.Index.UN_TOKENIZED));
-		doc.add(new Field("repositoryId", "" + contentVO.getRepositoryId(), Field.Store.YES, Field.Index.UN_TOKENIZED));
-		doc.add(new Field("lastModifier", "" + contentVO.getCreatorName(), Field.Store.YES, Field.Index.UN_TOKENIZED));
-		doc.add(new Field("isAsset", "true", Field.Store.YES, Field.Index.UN_TOKENIZED));
+		doc.add(new Field("modified", DateTools.timeToString(new Date().getTime(), DateTools.Resolution.MINUTE), Field.Store.YES, Field.Index.NOT_ANALYZED));
+		doc.add(new Field("contentId", "" + contentVO.getContentId(), Field.Store.YES, Field.Index.NOT_ANALYZED));
+		doc.add(new Field("contentTypeDefinitionId", "" + contentVO.getContentTypeDefinitionId(), Field.Store.YES, Field.Index.NOT_ANALYZED));
+		doc.add(new Field("repositoryId", "" + contentVO.getRepositoryId(), Field.Store.YES, Field.Index.NOT_ANALYZED));
+		doc.add(new Field("lastModifier", "" + contentVO.getCreatorName(), Field.Store.YES, Field.Index.NOT_ANALYZED));
+		doc.add(new Field("isAsset", "true", Field.Store.YES, Field.Index.NOT_ANALYZED));
 
 		// Add the uid as a field, so that index can be incrementally
 		// maintained.
 		// This field is not stored with document, it is indexed, but it is not
 		// tokenized prior to indexing.
-		doc.add(new Field("uid", "contentId_" + contentVO.getId(), Field.Store.NO, Field.Index.UN_TOKENIZED));
+		doc.add(new Field("uid", "contentId_" + contentVO.getId(), Field.Store.NO, Field.Index.NOT_ANALYZED));
 
 		// Add the tag-stripped contents as a Reader-valued Text field so it
 		// will
@@ -294,21 +391,21 @@ public class LuceneController extends BaseController implements NotificationList
 		// Add the last modified date of the file a field named "modified".
 		// Use a field that is indexed (i.e. searchable), but don't tokenize
 		// the field into words.
-		doc.add(new Field("modified", DateTools.timeToString(contentVersionVO.getModifiedDateTime().getTime(), DateTools.Resolution.MINUTE), Field.Store.YES, Field.Index.UN_TOKENIZED));
-		doc.add(new Field("contentVersionId", "" + contentVersionVO.getId(), Field.Store.YES, Field.Index.UN_TOKENIZED));
-		doc.add(new Field("contentId", "" + contentVersionVO.getContentId(), Field.Store.YES, Field.Index.UN_TOKENIZED));
-		doc.add(new Field("contentTypeDefinitionId", "" + contentVO.getContentTypeDefinitionId(), Field.Store.YES, Field.Index.UN_TOKENIZED));
-		doc.add(new Field("languageId", "" + contentVersionVO.getLanguageId(), Field.Store.YES, Field.Index.UN_TOKENIZED));
-		doc.add(new Field("repositoryId", "" + contentVO.getRepositoryId(), Field.Store.YES, Field.Index.UN_TOKENIZED));
-		doc.add(new Field("lastModifier", "" + contentVersionVO.getVersionModifier(), Field.Store.YES, Field.Index.UN_TOKENIZED));
-		doc.add(new Field("stateId", "" + contentVersionVO.getStateId(), Field.Store.YES, Field.Index.UN_TOKENIZED));
-		doc.add(new Field("isAsset", "false", Field.Store.YES, Field.Index.UN_TOKENIZED));
+		doc.add(new Field("modified", DateTools.timeToString(contentVersionVO.getModifiedDateTime().getTime(), DateTools.Resolution.MINUTE), Field.Store.YES, Field.Index.NOT_ANALYZED));
+		doc.add(new Field("contentVersionId", "" + contentVersionVO.getId(), Field.Store.YES, Field.Index.NOT_ANALYZED));
+		doc.add(new Field("contentId", "" + contentVersionVO.getContentId(), Field.Store.YES, Field.Index.NOT_ANALYZED));
+		doc.add(new Field("contentTypeDefinitionId", "" + contentVO.getContentTypeDefinitionId(), Field.Store.YES, Field.Index.NOT_ANALYZED));
+		doc.add(new Field("languageId", "" + contentVersionVO.getLanguageId(), Field.Store.YES, Field.Index.NOT_ANALYZED));
+		doc.add(new Field("repositoryId", "" + contentVO.getRepositoryId(), Field.Store.YES, Field.Index.NOT_ANALYZED));
+		doc.add(new Field("lastModifier", "" + contentVersionVO.getVersionModifier(), Field.Store.YES, Field.Index.NOT_ANALYZED));
+		doc.add(new Field("stateId", "" + contentVersionVO.getStateId(), Field.Store.YES, Field.Index.NOT_ANALYZED));
+		doc.add(new Field("isAsset", "false", Field.Store.YES, Field.Index.NOT_ANALYZED));
 
 		// Add the uid as a field, so that index can be incrementally
 		// maintained.
 		// This field is not stored with document, it is indexed, but it is not
 		// tokenized prior to indexing.
-		doc.add(new Field("uid", "contentVersionId_" + contentVersionVO.getId(), Field.Store.NO, Field.Index.UN_TOKENIZED));
+		doc.add(new Field("uid", "contentVersionId_" + contentVersionVO.getId(), Field.Store.NO, Field.Index.NOT_ANALYZED));
 
 		// Add the tag-stripped contents as a Reader-valued Text field so it
 		// will
@@ -331,22 +428,22 @@ public class LuceneController extends BaseController implements NotificationList
 		// Add the last modified date of the file a field named "modified".
 		// Use a field that is indexed (i.e. searchable), but don't tokenize
 		// the field into words.
-		doc.add(new Field("modified", DateTools.timeToString(contentVersionVO.getModifiedDateTime().getTime(), DateTools.Resolution.MINUTE), Field.Store.YES, Field.Index.UN_TOKENIZED));
-		doc.add(new Field("contentVersionId", "" + contentVersionVO.getId(), Field.Store.YES, Field.Index.UN_TOKENIZED));
-		doc.add(new Field("contentId", "" + contentVersionVO.getContentId(), Field.Store.YES, Field.Index.UN_TOKENIZED));
-		doc.add(new Field("contentTypeDefinitionId", "" + contentVO.getContentTypeDefinitionId(), Field.Store.YES, Field.Index.UN_TOKENIZED));
-		doc.add(new Field("languageId", "" + contentVersionVO.getLanguageId(), Field.Store.YES, Field.Index.UN_TOKENIZED));
-		doc.add(new Field("repositoryId", "" + contentVO.getRepositoryId(), Field.Store.YES, Field.Index.UN_TOKENIZED));
-		doc.add(new Field("lastModifier", "" + contentVersionVO.getVersionModifier(), Field.Store.YES, Field.Index.UN_TOKENIZED));
-		doc.add(new Field("stateId", "" + contentVersionVO.getStateId(), Field.Store.YES, Field.Index.UN_TOKENIZED));
-		doc.add(new Field("isAsset", "true", Field.Store.YES, Field.Index.UN_TOKENIZED));
+		doc.add(new Field("modified", DateTools.timeToString(contentVersionVO.getModifiedDateTime().getTime(), DateTools.Resolution.MINUTE), Field.Store.YES, Field.Index.NOT_ANALYZED));
+		doc.add(new Field("contentVersionId", "" + contentVersionVO.getId(), Field.Store.YES, Field.Index.NOT_ANALYZED));
+		doc.add(new Field("contentId", "" + contentVersionVO.getContentId(), Field.Store.YES, Field.Index.NOT_ANALYZED));
+		doc.add(new Field("contentTypeDefinitionId", "" + contentVO.getContentTypeDefinitionId(), Field.Store.YES, Field.Index.NOT_ANALYZED));
+		doc.add(new Field("languageId", "" + contentVersionVO.getLanguageId(), Field.Store.YES, Field.Index.NOT_ANALYZED));
+		doc.add(new Field("repositoryId", "" + contentVO.getRepositoryId(), Field.Store.YES, Field.Index.NOT_ANALYZED));
+		doc.add(new Field("lastModifier", "" + contentVersionVO.getVersionModifier(), Field.Store.YES, Field.Index.NOT_ANALYZED));
+		doc.add(new Field("stateId", "" + contentVersionVO.getStateId(), Field.Store.YES, Field.Index.NOT_ANALYZED));
+		doc.add(new Field("isAsset", "true", Field.Store.YES, Field.Index.NOT_ANALYZED));
 
 		// Add the uid as a field, so that index can be incrementally
 		// maintained.
 		// This field is not stored with document, it is indexed, but it is not
 		// tokenized prior to indexing.
-		doc.add(new Field("uid", "digitalAssetId_" + digitalAssetVO.getId(), Field.Store.NO, Field.Index.UN_TOKENIZED));
-		//doc.add(new Field("uid", "" + contentVersionVO.getId(), Field.Store.NO, Field.Index.UN_TOKENIZED));
+		doc.add(new Field("uid", "digitalAssetId_" + digitalAssetVO.getId(), Field.Store.NO, Field.Index.NOT_ANALYZED));
+		//doc.add(new Field("uid", "" + contentVersionVO.getId(), Field.Store.NO, Field.Index.NOT_ANALYZED));
 
 		// Add the tag-stripped contents as a Reader-valued Text field so it
 		// will
@@ -491,13 +588,13 @@ public class LuceneController extends BaseController implements NotificationList
 	    {
 			String index = CmsPropertyHandler.getContextRootPath() + File.separator + "lucene" + File.separator + "index";
 		    
-			boolean indexExists = IndexReader.indexExists(new File(index));
+			boolean indexExists = IndexReader.indexExists(getDirectory());
 			if(!indexExists)
 			{
 			    try 
 			    {
 			    	File INDEX_DIR = new File(index);
-			    	IndexWriter writer = new IndexWriter(INDEX_DIR, new StandardAnalyzer());
+			    	IndexWriter writer = getIndexWriter();
 			    	logger.info("Indexing to directory '" + INDEX_DIR + "'...");
 			    	writer.deleteDocuments(new Term("initializer", "true"));
 			    	logger.info("Optimizing...");
@@ -510,10 +607,10 @@ public class LuceneController extends BaseController implements NotificationList
 			    }
 			}
 			
-		    IndexReader reader = IndexReader.open(index);
+		    IndexReader reader = IndexReader.open(getDirectory());
 		    int maxDoc = reader.maxDoc();
 		    int numDoc = reader.numDocs();
-		    long lastModified = IndexReader.lastModified(index);
+		    long lastModified = IndexReader.lastModified(getDirectory());
 
 		    info.put("maxDoc", new Integer(maxDoc));
 		    info.put("numDoc", new Integer(numDoc));
@@ -531,17 +628,12 @@ public class LuceneController extends BaseController implements NotificationList
 
 	public void deleteIndex()
 	{
-		String index = CmsPropertyHandler.getContextRootPath() + File.separator + "lucene" + File.separator + "index";
 	    try 
 	    {
-	    	File INDEX_DIR = new File(index);
-	    	IndexWriter writer = new IndexWriter(INDEX_DIR, new StandardAnalyzer(), true);
-	    	logger.info("Indexing to directory '" + INDEX_DIR + "'...");
-	    	writer.deleteDocuments(new Term("initializer", "true"));
-	    	logger.info("Optimizing...");
-	    	writer.optimize();
-	    	writer.close();
-	    } 
+	    	IndexWriter writer = getIndexWriter();
+			writer.deleteAll();
+			writer.close();
+		} 
 	    catch (Exception e) 
 	    {
 	    	logger.error("Error creating index:" + e.getMessage(), e);

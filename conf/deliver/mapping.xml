@@ -51,35 +51,90 @@
     <field name="email" type="java.lang.String">
       <sql name="email" type="varchar" dirty="check" />
     </field>
-    <field name="roles" type="org.infoglue.cms.entities.management.impl.simple.RoleImpl" lazy="true" collection="collection">
-      <sql many-key="userName" many-table="cmSystemUserRole"/>
+    <field name="source" type="java.lang.String">
+      <sql name="source" type="varchar" dirty="check" />
     </field>
-    <field name="groups" type="org.infoglue.cms.entities.management.impl.simple.GroupImpl" lazy="true" collection="collection">
-      <sql many-key="userName" many-table="cmSystemUserGroup"/>
+    <field name="isActive" type="java.lang.Boolean">
+      <sql name="isActive" type="integer" dirty="check" />
+    </field>
+    <field name="modifiedDateTime" type="java.util.Date">
+      <sql name="modifiedDateTime" type="timestamp" dirty="check" />
     </field>
   </class>
 
-<!--  Mapping for SmallSystemUser  -->
-  <class name="org.infoglue.cms.entities.management.impl.simple.SmallSystemUserImpl" identity="userName">
-    <description>SystemUser</description>
-    <cache-type type="unlimited"/>
-    <map-to table="cmSystemUser"/>
-    <field name="userName" type="java.lang.String">
-      <sql name="userName" type="varchar" dirty="check" />
+  <!--  Mapping for Role  -->
+  <class name="org.infoglue.cms.entities.management.impl.simple.RoleImpl" identity="roleName">
+    <description>Role</description>
+    <cache-type type="unlimited" capacity="10000"/>
+    <map-to table="cmRole"/>
+    <field name="roleName" type="java.lang.String">
+      <sql name="roleName" type="varchar" dirty="check" />
     </field>
-    <field name="password" type="java.lang.String">
-      <sql name="password" type="varchar" dirty="check" />
+    <field name="description" type="java.lang.String">
+      <sql name="description" type="varchar" dirty="check" />
     </field>
-    <field name="firstName" type="java.lang.String">
-      <sql name="firstName" type="varchar" dirty="check" />
+    <field name="source" type="java.lang.String">
+      <sql name="source" type="varchar" dirty="check" />
     </field>
-    <field name="lastName" type="java.lang.String">
-      <sql name="lastName" type="varchar" dirty="check" />
+    <field name="isActive" type="java.lang.Boolean">
+      <sql name="isActive" type="integer" dirty="check" />
     </field>
-    <field name="email" type="java.lang.String">
-      <sql name="email" type="varchar" dirty="check" />
+    <field name="modifiedDateTime" type="java.util.Date">
+      <sql name="modifiedDateTime" type="timestamp" dirty="check" />
     </field>
   </class>
+  
+  <!--  Mapping for Group  -->
+  <class name="org.infoglue.cms.entities.management.impl.simple.GroupImpl" identity="groupName">
+    <description>Group</description>
+    <cache-type type="unlimited" capacity="10000"/>
+    <map-to table="cmGroup"/>
+    <field name="groupName" type="java.lang.String">
+      <sql name="groupName" type="varchar" dirty="check" />
+    </field>
+    <field name="description" type="java.lang.String">
+      <sql name="description" type="varchar" dirty="check" />
+    </field>
+    <field name="source" type="java.lang.String">
+      <sql name="source" type="varchar" dirty="check" />
+    </field>
+    <field name="groupType" type="java.lang.String">
+      <sql name="groupType" type="varchar" dirty="check" />
+    </field>
+    <field name="isActive" type="java.lang.Boolean">
+      <sql name="isActive" type="integer" dirty="check" />
+    </field>
+    <field name="modifiedDateTime" type="java.util.Date">
+      <sql name="modifiedDateTime" type="timestamp" dirty="check" />
+    </field>
+  </class>
+  
+  <!--  Mapping for SystemUserRole  -->
+  <class name="org.infoglue.cms.entities.management.impl.simple.SystemUserRoleImpl" identity="userName roleName">
+    <description>SystemUserRole</description>
+    <cache-type type="none"/>
+    <map-to table="cmSystemUserRole"/>
+    <field name="userName" type="java.lang.String">
+      <sql name="userName" type="varchar"/>
+    </field>
+    <field name="roleName" type="java.lang.String">
+      <sql name="roleName" type="varchar"/>
+    </field>
+  </class>
+
+  <!--  Mapping for SystemUserGroup  -->
+  <class name="org.infoglue.cms.entities.management.impl.simple.SystemUserGroupImpl" identity="userName groupName">
+    <description>SystemUserGroup</description>
+    <cache-type type="none"/>
+    <map-to table="cmSystemUserGroup"/>
+    <field name="userName" type="java.lang.String">
+      <sql name="userName" type="varchar"/>
+    </field>
+    <field name="groupName" type="java.lang.String">
+      <sql name="groupName" type="varchar"/>
+    </field>
+  </class>
+
   
 <!--  Mapping for UserProperties  -->
   <class name="org.infoglue.cms.entities.management.impl.simple.UserPropertiesImpl" identity="userPropertiesId" key-generator="IDENTITY">
@@ -123,63 +178,6 @@
     </field>
   </class>
 
-<!--  Mapping for Role  -->
-  <class name="org.infoglue.cms.entities.management.impl.simple.RoleImpl" identity="roleName">
-    <description>Role</description>
-    <cache-type type="unlimited" capacity="10000"/>
-    <map-to table="cmRole"/>
-    <field name="roleName" type="java.lang.String">
-      <sql name="roleName" type="varchar" dirty="check" />
-    </field>
-    <field name="description" type="java.lang.String">
-      <sql name="description" type="varchar" dirty="check" />
-    </field>
-    <field name="systemUsers" type="org.infoglue.cms.entities.management.impl.simple.SystemUserImpl" lazy="true" collection="collection">
-      <sql many-key="roleName" many-table="cmSystemUserRole"/>
-    </field>
-  </class>
-
-  <!--  Mapping for Group  -->
-  <class name="org.infoglue.cms.entities.management.impl.simple.GroupImpl" identity="groupName">
-    <description>Group</description>
-    <cache-type type="unlimited" capacity="10000"/>
-    <map-to table="cmGroup"/>
-    <field name="groupName" type="java.lang.String">
-      <sql name="groupName" type="varchar" dirty="check" />
-    </field>
-    <field name="description" type="java.lang.String">
-      <sql name="description" type="varchar" dirty="check" />
-    </field>
-    <field name="systemUsers" type="org.infoglue.cms.entities.management.impl.simple.SystemUserImpl" lazy="true" collection="collection">
-      <sql many-key="groupName" many-table="cmSystemUserGroup"/>
-    </field>
-  </class>
-
-<!--  Mapping for SmallRole  -->
-  <class name="org.infoglue.cms.entities.management.impl.simple.SmallRoleImpl" identity="roleName">
-    <description>SmallRole</description>
-    <cache-type type="unlimited"/>
-    <map-to table="cmRole"/>
-    <field name="roleName" type="java.lang.String">
-      <sql name="roleName" type="varchar" dirty="check" />
-    </field>
-    <field name="description" type="java.lang.String">
-      <sql name="description" type="varchar" dirty="check" />
-    </field>
-  </class>
-
-  <!--  Mapping for SmallGroup  -->
-  <class name="org.infoglue.cms.entities.management.impl.simple.SmallGroupImpl" identity="groupName">
-    <description>SmallGroup</description>
-    <cache-type type="unlimited"/>
-    <map-to table="cmGroup"/>
-    <field name="groupName" type="java.lang.String">
-      <sql name="groupName" type="varchar" dirty="check" />
-    </field>
-    <field name="description" type="java.lang.String">
-      <sql name="description" type="varchar" dirty="check" />
-    </field>
-  </class>
 
   <!--  Mapping for RoleProperties  -->
   <class name="org.infoglue.cms.entities.management.impl.simple.RolePropertiesImpl" identity="rolePropertiesId" key-generator="IDENTITY">

@@ -47,14 +47,19 @@ import org.apache.lucene.document.DateTools;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
+import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.queryParser.MultiFieldQueryParser;
 import org.apache.lucene.queryParser.QueryParser;
 import org.apache.lucene.search.BooleanClause;
-import org.apache.lucene.search.Hits;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.Searcher;
+import org.apache.lucene.search.Sort;
+import org.apache.lucene.search.SortField;
+import org.apache.lucene.store.Directory;
+import org.apache.lucene.store.NIOFSDirectory;
+import org.apache.lucene.util.Version;
 import org.apache.xerces.parsers.DOMParser;
 import org.exolab.castor.jdo.Database;
 import org.exolab.castor.jdo.OQLQuery;
@@ -67,6 +72,7 @@ import org.infoglue.cms.entities.content.DigitalAssetVO;
 import org.infoglue.cms.entities.content.impl.simple.MediumDigitalAssetImpl;
 import org.infoglue.cms.entities.content.impl.simple.SmallDigitalAssetImpl;
 import org.infoglue.cms.entities.kernel.BaseEntityVO;
+import org.infoglue.cms.entities.structure.SiteNodeVO;
 import org.infoglue.cms.exception.Bug;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.security.InfoGluePrincipal;
@@ -761,13 +767,13 @@ public class SearchController extends BaseController
 	    {
 			String index = CmsPropertyHandler.getContextRootPath() + File.separator + "lucene" + File.separator + "index";
 		    
-			boolean indexExists = IndexReader.indexExists(new File(index));
+			boolean indexExists = IndexReader.indexExists(LuceneController.getController().getDirectory());
 			if(!indexExists)
 			{
 			    try 
 			    {
 			    	File INDEX_DIR = new File(index);
-			    	IndexWriter writer = new IndexWriter(INDEX_DIR, new StandardAnalyzer());
+			    	IndexWriter writer = LuceneController.getController().getIndexWriter();
 			    	logger.info("Indexing to directory '" + INDEX_DIR + "'...");
 			    	writer.updateDocument(new Term("initializer", "true"), getDocument("initializer"));
 			    	logger.info("Optimizing...");
@@ -868,96 +874,107 @@ public class SearchController extends BaseController
 			BooleanClause.Occur[] flags = new BooleanClause.Occur[fieldNames.size()];
 			flags = (BooleanClause.Occur[])booleanList.toArray(flags);
 			
-		    IndexReader reader = IndexReader.open(index);
+			SortField sortField = new SortField("publishDateTime", SortField.LONG, true);
+			Sort sort = new Sort(sortField);
+			List<org.apache.lucene.document.Document> documents = LuceneController.getController().queryDocuments(fields, flags, queries, sort, maxRows);
 	
-		    Searcher searcher = new IndexSearcher(reader);
-		    Analyzer analyzer = new StandardAnalyzer(new String[]{});
-
-			Query query = MultiFieldQueryParser.parse(queries, fields, flags, analyzer);
-			logger.info("Searching for: " + query.toString());
-			//System.out.println("Searching for: " + query.toString());
-	
-			Hits hits = searcher.search(query);
-	
-			logger.info(hits.length() + " total matching documents");
-	
-			final int HITS_PER_PAGE = new Integer(maxRows);
-			for (int start = 0; start < hits.length(); start += HITS_PER_PAGE)
+			for(org.apache.lucene.document.Document doc : documents)
 			{
-				int end = Math.min(hits.length(), start + HITS_PER_PAGE);
-				for (int i = start; i < end; i++)
+				//org.apache.lucene.document.Document doc = hits.doc(i);
+				String contentVersionId = doc.get("contentVersionId");
+				String contentId = doc.get("contentId");
+				String siteNodeId = doc.get("siteNodeId");
+				//System.out.println("contentVersionId:" + contentVersionId);
+				if(logger.isInfoEnabled())
 				{
-					org.apache.lucene.document.Document doc = hits.doc(i);
-					String contentVersionId = doc.get("contentVersionId");
-					String contentId = doc.get("contentId");
 					logger.info("doc:" + doc);
 					logger.info("contentVersionId:" + contentVersionId);
 					logger.info("contentId:" + contentId);
-					
-					if(contentVersionId == null && contentId != null)
-					{
-						try
-						{
-							ContentVO cvo = ContentController.getContentController().getContentVOWithId(new Integer(contentId));
-							logger.info("cvo:" + cvo);
-
-							String path = doc.get("path");
-							if (path != null)
-							{
-								logger.info((i + 1) + ". " + path);
-								String title = doc.get("title");
-								if (title != null)
-								{
-									logger.info("   Title: " + doc.get("title"));
-								}
-							} 
-							else
-							{
-								logger.info((i + 1) + ". " + "No path for this document");
-							}
-						}
-						catch (Exception e) 
-						{
-							logger.error("ContentVersion with id:" + contentVersionId + " was not valid - skipping but how did the index become corrupt?");
-							deleteVersionFromIndex(contentVersionId);
-						}						
-					}
-					else
-					{
-						try
-						{
-							ContentVersionVO cvvo = ContentVersionController.getContentVersionController().getFullContentVersionVOWithId(new Integer(contentVersionId));
-							logger.info("cvvo:" + cvvo);
-							contentVersionVOList.add(cvvo);
-						
-							String path = doc.get("path");
-							if (path != null)
-							{
-								logger.info((i + 1) + ". " + path);
-								String title = doc.get("title");
-								if (title != null)
-								{
-									logger.info("   Title: " + doc.get("title"));
-								}
-							} 
-							else
-							{
-								logger.info((i + 1) + ". " + "No path for this document");
-							}
-						}
-						catch (Exception e) 
-						{
-							logger.error("ContentVersion with id:" + contentVersionId + " was not valid - skipping but how did the index become corrupt?");
-							deleteVersionFromIndex(contentVersionId);
-						}
-					}
+					logger.info("siteNodeId:" + siteNodeId);
 				}
-	
-				if (queries != null) // non-interactive
-					break;
+				
+				if(siteNodeId != null)
+				{
+					try
+					{
+						SiteNodeVO snVO = SiteNodeController.getController().getSiteNodeVOWithId(new Integer(siteNodeId));
+						if(snVO.getMetaInfoContentId() != null)
+						{
+							if(languageId == null)
+								languageId = LanguageController.getController().getMasterLanguage(snVO.getRepositoryId()).getId();
+							ContentVersionVO cvVO = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(snVO.getMetaInfoContentId(), languageId);
+							logger.info("cvvo:" + cvVO.getContentName() + "(" + cvVO.getContentId() + ")");
+							contentVersionVOList.add(cvVO);
+						}
+					}
+					catch (Exception e) 
+					{
+						logger.error("SiteNode with id:" + siteNodeId + " was not valid.");
+					}						
+				}
+				else if(contentVersionId == null && contentId != null)
+				{
+					try
+					{
+						ContentVO cvo = ContentController.getContentController().getContentVOWithId(new Integer(contentId));
+						logger.info("cvo:" + cvo);
+
+						String path = doc.get("path");
+						if (path != null)
+						{
+							logger.info("" + path);
+							String title = doc.get("title");
+							if (title != null)
+							{
+								logger.info("   Title: " + doc.get("title"));
+							}
+						} 
+						else
+						{
+							logger.info("No path for this document");
+						}
+					}
+					catch (Exception e) 
+					{
+						logger.error("ContentVersion with id:" + contentVersionId + " was not valid - skipping but how did the index become corrupt?");
+						deleteVersionFromIndex(contentVersionId);
+					}						
+				}
+				else
+				{
+					try
+					{
+						ContentVersionVO cvvo = ContentVersionController.getContentVersionController().getFullContentVersionVOWithId(new Integer(contentVersionId));
+						logger.info("cvvo:" + cvvo.getContentName() + "(" + cvvo.getContentId() + ")");
+						contentVersionVOList.add(cvvo);
+					
+						String path = doc.get("path");
+						if (path != null)
+						{
+							logger.info("" + path);
+							String title = doc.get("title");
+							if (title != null)
+							{
+								logger.info("   Title: " + doc.get("title"));
+							}
+						} 
+						else
+						{
+							logger.info("No path for this document");
+						}
+					}
+					catch (Exception e) 
+					{
+						logger.error("ContentVersion with id:" + contentVersionId + " was not valid - skipping but how did the index become corrupt?");
+						deleteVersionFromIndex(contentVersionId);
+					}
+				//}
+				}
+				
+				//if (queries != null) // non-interactive
+				//	break;
 			}
 			
-			reader.close();	
 	    } 
 	    catch (Exception e) 
 	    {
@@ -975,12 +992,16 @@ public class SearchController extends BaseController
 			String index = CmsPropertyHandler.getContextRootPath() + File.separator + "lucene" + File.separator + "index";
 
 	    	File INDEX_DIR = new File(index);
-	    	writer = new IndexWriter(INDEX_DIR, new StandardAnalyzer());
+
+			Directory directory = new NIOFSDirectory(INDEX_DIR);
+			
+	    	StandardAnalyzer analyzer = new StandardAnalyzer(Version.LUCENE_34);
+			IndexWriterConfig config = new IndexWriterConfig(Version.LUCENE_34, analyzer);
+
+	    	writer = new IndexWriter(directory, config);
 	    	logger.info("Indexing to directory '" + INDEX_DIR + "'...");
 	    	logger.info("Deleting contentVersionId:" + contentVersionId);
 		    writer.deleteDocuments(new Term("contentVersionId", "" + contentVersionId));
-		    logger.info("Optimizing...");
-	    	writer.optimize();
 	    	writer.close();	    	
 	    } 
 	    catch (Exception e) 
@@ -993,7 +1014,7 @@ public class SearchController extends BaseController
 	{
 		org.apache.lucene.document.Document doc = new org.apache.lucene.document.Document();
 
-		doc.add(new Field("modified", DateTools.timeToString(new Date().getTime(), DateTools.Resolution.MINUTE), Field.Store.YES, Field.Index.UN_TOKENIZED));
+		doc.add(new Field("modified", DateTools.timeToString(new Date().getTime(), DateTools.Resolution.MINUTE), Field.Store.YES, Field.Index.NOT_ANALYZED));
 		doc.add(new Field("contents", new StringReader(text)));
 
 		return doc;

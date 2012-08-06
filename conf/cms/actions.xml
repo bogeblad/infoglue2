@@ -1,4 +1,4 @@
-<!-- $Id: actions.xml,v 1.83.2.9 2012/03/25 20:43:45 mattias Exp $ -->
+<!-- $Id: actions.xml,v 1.83.2.10 2012/08/06 23:16:03 mattias Exp $ -->
 <actions>
 
 	<!-- MySettings -->
@@ -524,6 +524,8 @@
 		<view name="userSearch">/cms/managementtool/viewListSystemUserSearch.vm</view>
 		<view name="successFiltered">/cms/managementtool/v3/viewListSystemUserFiltered.vm</view>
 		<view name="successPopupFiltered">/cms/managementtool/v3/viewListSystemUserForPopupFiltered.vm</view>
+		<view name="successFilteredAssignedForRole">/cms/managementtool/v3/viewListSystemUserFilteredAssignedForRole.vm</view>
+		<view name="successFilteredAssignedForGroup">/cms/managementtool/v3/viewListSystemUserFilteredAssignedForGroup.vm</view>
 		<view name="error">/cms/managementtool/error.vm</view>
 	</action>
 	<action name="org.infoglue.cms.applications.managementtool.actions.ViewSystemUserAction" alias="ViewSystemUser">
@@ -624,6 +626,7 @@
 	<action name="org.infoglue.cms.applications.managementtool.actions.UpdateRoleAction" alias="UpdateRole">
 		<view name="input">/cms/managementtool/viewRole.vm</view>
 		<view name="success">ViewRole.action</view>
+		<view name="successRedirect">ExtendedRedirect.action?url=ViewRole.action?roleName=${encodedRoleName}</view>
 		<view name="saveAndExit">ViewListRole.action</view>
 		<view name="inputV3">/cms/managementtool/v3/viewRole.vm</view>
 		<view name="successV3">ViewRole!v3.action</view>
@@ -687,6 +690,7 @@
 	<action name="org.infoglue.cms.applications.managementtool.actions.UpdateGroupAction" alias="UpdateGroup">
 		<view name="input">/cms/managementtool/viewGroup.vm</view>
 		<view name="success">ViewGroup.action</view>
+		<view name="successRedirect">ExtendedRedirect.action?url=ViewGroup.action?groupName=${encodedGroupName}</view>
 		<view name="saveAndExit">ViewListGroup.action</view>
 		<view name="inputV3">/cms/managementtool/v3/viewGroup.vm</view>
 		<view name="successV3">ViewGroup!v3.action</view>
