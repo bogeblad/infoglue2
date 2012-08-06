@@ -17,7 +17,7 @@
 <!--
 	function showUsers()
 	{
-		openPopup('ViewListSystemUser!userListForPopup.action', 'Users', 'width=400,height=600,resizable=yes,scrollbars=yes');
+		openPopup('ViewListSystemUser!userListForPopupV3.action', 'Users', 'width=400,height=600,resizable=yes,scrollbars=yes');
 	}
 	
 	function selectUser(userName)
