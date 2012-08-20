@@ -133,6 +133,11 @@ public class SiteNodeController extends BaseController
 
     public static SiteNode getSiteNodeWithId(Integer siteNodeId, Database db, boolean readOnly) throws SystemException, Bug
     {
+    	return getSiteNodeWithId(siteNodeId, db, readOnly, true);
+    }
+    
+    public static SiteNode getSiteNodeWithId(Integer siteNodeId, Database db, boolean readOnly, boolean retry) throws SystemException, Bug
+    {
         SiteNode siteNode = null;
         try
         {
@@ -151,7 +156,8 @@ public class SiteNodeController extends BaseController
 			logger.warn("An error occurred when we tried to fetch the SiteNode. Reason:" + e.getMessage() + ". Retrying...");
 			try
 			{
-				siteNode = getSiteNodeWithId(siteNodeId, db, readOnly);
+				if(retry)
+					siteNode = getSiteNodeWithId(siteNodeId, db, readOnly, false);
 			}
 			catch(Exception e2)
 			{

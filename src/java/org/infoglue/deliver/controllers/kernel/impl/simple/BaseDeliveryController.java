@@ -59,6 +59,15 @@ public abstract class BaseDeliveryController
 	
 	protected Object getObjectWithId(Class arg, Integer id, Database db) throws SystemException, Bug
 	{
+		return getObjectWithId(arg, id, db, true);
+	}
+	
+	/**
+	 * This method fetches one object / entity within a transaction.
+	 **/
+	
+	protected Object getObjectWithId(Class arg, Integer id, Database db, boolean retry) throws SystemException, Bug
+	{
 		Object object = null;
 		try
 		{
@@ -70,7 +79,8 @@ public abstract class BaseDeliveryController
 			logger.warn("Error getting object. Message: " + e.getMessage() + ". Retrying...");
 			try
 			{
-				object = getObjectWithId(arg, id, db);
+				if(retry)
+					object = getObjectWithId(arg, id, db, false);
 			}
 			catch(Exception e2)
 			{
@@ -89,12 +99,21 @@ public abstract class BaseDeliveryController
 		return object;
 	}
 	
-	
+
 	/**
 	 * This method fetches one object in read only mode and returns it's value object.
 	 */
 	
 	protected BaseEntityVO getVOWithId(Class arg, Integer id, Database db) throws SystemException, Bug
+	{
+		return getVOWithId(arg, id, db, true);
+	}
+	
+	/**
+	 * This method fetches one object in read only mode and returns it's value object.
+	 */
+	
+	protected BaseEntityVO getVOWithId(Class arg, Integer id, Database db, boolean retry) throws SystemException, Bug
 	{
 		IBaseEntity vo = null;
 		try
@@ -107,7 +126,8 @@ public abstract class BaseDeliveryController
 			logger.warn("Error getting object. Message: " + e.getMessage() + ". Retrying...");
 			try
 			{
-				vo = (IBaseEntity)getVOWithId(arg, id, db);
+				if(retry)
+					vo = (IBaseEntity)getVOWithId(arg, id, db, false);
 			}
 			catch(Exception e2)
 			{

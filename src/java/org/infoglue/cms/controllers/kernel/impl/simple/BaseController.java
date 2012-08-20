@@ -562,6 +562,15 @@ public abstract class BaseController
 	
     protected static Object getObjectWithIdAsReadOnly(Class arg, Integer id, Database db) throws SystemException, Bug
     {
+    	return getObjectWithIdAsReadOnly(arg, id, db, true);
+    }
+    
+	/**
+	 * This method fetches one object / entity within a transaction.
+	 **/
+	
+    protected static Object getObjectWithIdAsReadOnly(Class arg, Integer id, Database db, boolean retry) throws SystemException, Bug
+    {
         Object object = null;
         try
         {
@@ -573,7 +582,8 @@ public abstract class BaseController
 			logger.warn("Error getting object. Message: " + e.getMessage() + ". Retrying...");
 			try
 			{
-				object = getObjectWithIdAsReadOnly(arg, id, db);
+				if(retry)
+					object = getObjectWithIdAsReadOnly(arg, id, db, false);
 			}
 			catch(Exception e2)
 			{

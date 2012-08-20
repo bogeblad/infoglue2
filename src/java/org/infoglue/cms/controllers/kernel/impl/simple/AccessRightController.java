@@ -369,8 +369,12 @@ public class AccessRightController extends BaseController
 		return accessRightList;		
 	}
 
-
 	public List getAccessRightListOnlyReadOnly(Integer interceptionPointId, String parameters, Database db) throws SystemException, Bug
+	{
+		return getAccessRightListOnlyReadOnly(interceptionPointId, parameters, db, true);
+	}
+	
+	public List getAccessRightListOnlyReadOnly(Integer interceptionPointId, String parameters, Database db, boolean retry) throws SystemException, Bug
 	{
 		List accessRightList = new ArrayList();
 		
@@ -409,7 +413,7 @@ public class AccessRightController extends BaseController
 			logger.warn("Error getting access rights. Message: " + e.getMessage() + ". Retrying...");
 			try
 			{
-				accessRightList = getAccessRightListOnlyReadOnly(interceptionPointId, parameters, db);
+				accessRightList = getAccessRightListOnlyReadOnly(interceptionPointId, parameters, db, false);
 			}
 			catch(Exception e2)
 			{
