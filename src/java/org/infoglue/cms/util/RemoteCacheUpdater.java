@@ -164,9 +164,6 @@ public class RemoteCacheUpdater implements NotificationListener
 	 */
 	public void updateRemoteCaches(Hashtable internalMessage, Hashtable publicMessage) throws Exception
 	{		
-		if((internalMessage == null && publicMessage == null) || (internalMessage.size() == 0 && publicMessage.size() == 0))
-			return;
-		
 		if(internalMessage != null && internalMessage.size() > 0)
 	    {
 			List internalUrls = CmsPropertyHandler.getInternalDeliveryUrls();
