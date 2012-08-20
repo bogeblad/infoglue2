@@ -131,6 +131,11 @@ public class AccessRightController extends BaseController
 		accessRightVOList = new ArrayList();
 		
 		InterceptionPointVO interceptionPointVO = InterceptionPointController.getController().getInterceptionPointVOWithName(interceptionPointName);
+		if(interceptionPointVO == null)
+		{
+			logger.info("interceptionPointName:" + interceptionPointName + " not found");
+			return new ArrayList();
+		}
 		
 		List accessRightList = this.getAccessRightListOnlyReadOnly(interceptionPointVO.getId(), parameters, db);
 		
@@ -364,8 +369,12 @@ public class AccessRightController extends BaseController
 		return accessRightList;		
 	}
 
-
 	public List getAccessRightListOnlyReadOnly(Integer interceptionPointId, String parameters, Database db) throws SystemException, Bug
+	{
+		return getAccessRightListOnlyReadOnly(interceptionPointId, parameters, db, true);
+	}
+	
+	public List getAccessRightListOnlyReadOnly(Integer interceptionPointId, String parameters, Database db, boolean retry) throws SystemException, Bug
 	{
 		List accessRightList = new ArrayList();
 		
@@ -404,7 +413,7 @@ public class AccessRightController extends BaseController
 			logger.warn("Error getting access rights. Message: " + e.getMessage() + ". Retrying...");
 			try
 			{
-				accessRightList = getAccessRightListOnlyReadOnly(interceptionPointId, parameters, db);
+				accessRightList = getAccessRightListOnlyReadOnly(interceptionPointId, parameters, db, false);
 			}
 			catch(Exception e2)
 			{
@@ -1199,25 +1208,19 @@ public class AccessRightController extends BaseController
 		   
 		Collection roles = infoGluePrincipal.getRoles();
 		Collection groups = infoGluePrincipal.getGroups();
-		
-		if(enableDebug)
-			debugInfo += "\n	roles:" + roles.size();
-
 		if(logger.isInfoEnabled())
 		{
 			logger.info("roles:" + roles.size());
 			logger.info("groups:" + groups.size());
 		}
-		
-		InterceptionPointVO interceptionPointVO = InterceptionPointController.getController().getInterceptionPointVOWithName(interceptionPointName, db);
 
-		if(enableDebug)
-			debugInfo += "\n	interceptionPointVO:" + interceptionPointVO;
-		
+		InterceptionPointVO interceptionPointVO = InterceptionPointController.getController().getInterceptionPointVOWithName(interceptionPointName, db);
 		if(interceptionPointVO == null)
 			return true;
-				
+
 		List accessRightList = this.getAccessRightListOnlyReadOnly(interceptionPointVO.getId(), extraParameters, db);
+		if(logger.isInfoEnabled())
+			logger.info("accessRightList:" + accessRightList.size());
 		//If no access rights are set for the content version we should assume it was not protected on version level.
 		if((interceptionPointName.equalsIgnoreCase("ContentVersion.Read") || 
 		   interceptionPointName.equalsIgnoreCase("ContentVersion.Write") || 
@@ -1246,9 +1249,7 @@ public class AccessRightController extends BaseController
 			while(approvedUsersIterator.hasNext())
 			{
 			    AccessRightUser accessRightUser = (AccessRightUser)approvedUsersIterator.next();
-				if(enableDebug)
-					debugInfo += "\n		accessRightUser:" + accessRightUser.getUserName();
-			    if(accessRightUser.getUserName().equals(infoGluePrincipal.getName()))
+				if(accessRightUser.getUserName().equals(infoGluePrincipal.getName()))
 			    {
 			        isPrincipalAuthorized = true;
 			    }
@@ -1265,7 +1266,13 @@ public class AccessRightController extends BaseController
 
 					if(logger.isInfoEnabled())
 					    logger.info("role:" + role.getName());
-					
+
+					if(!role.getIsActive())
+					{
+					    logger.warn("skipping checking for match on role:" + role.getName() + " as it was inactive.");
+						continue;
+					}
+
 					Iterator approvedRolesIterator = approvedRoles.iterator();
 					while(approvedRolesIterator.hasNext())
 					{
@@ -1308,12 +1315,14 @@ public class AccessRightController extends BaseController
 					while(groupsIterator.hasNext())
 					{
 					    InfoGlueGroup group = (InfoGlueGroup)groupsIterator.next();
-
 						if(enableDebug)
 							debugInfo += "\n		group:" + group.getName();
 
-					    if(logger.isInfoEnabled())
-					    	logger.info("" + group.getName() + " = " + accessRightGroup.getGroupName());
+						if(!group.getIsActive())
+						{
+						    logger.warn("skipping checking for match on group:" + group.getName() + " as it was inactive.");
+							continue;
+						}
 					    
 					    if(accessRightGroup.getGroupName().equals(group.getName()))
 					    {
@@ -1522,6 +1531,11 @@ public class AccessRightController extends BaseController
 				{
 					InfoGlueRole role = (InfoGlueRole)rolesIterator.next();
 					logger.info("role:" + role.getName());
+					if(!role.getIsActive())
+					{
+					    logger.warn("skipping checking for match on role:" + role.getName() + " as it was inactive.");
+						continue;
+					}
 					
 					Iterator approvedRolesIterator = approvedRoles.iterator();
 					while(approvedRolesIterator.hasNext())
@@ -1547,6 +1561,12 @@ public class AccessRightController extends BaseController
 					while(groupsIterator.hasNext())
 					{
 					    InfoGlueGroup group = (InfoGlueGroup)groupsIterator.next();
+					    if(!group.getIsActive())
+						{
+						    logger.warn("skipping checking for match on group:" + group.getName() + " as it was inactive.");
+							continue;
+						}
+
 					    if(accessRightGroup.getGroupName().equals(group.getName()))
 					    {
 					        principalHasGroup = true;
@@ -1806,6 +1826,96 @@ public class AccessRightController extends BaseController
 		}
 		
 		return accessRightRoleList;		
+	}
+
+	public List getAccessRightsRoles(String interceptionPointCategory, String parameters, Database db, boolean readOnly) throws SystemException, Bug
+	{
+	    List accessRightsRoles = new ArrayList();
+		
+		try
+		{
+			OQLQuery oql = null;
+			
+			if(parameters == null || parameters.length() == 0)
+			{
+				oql = db.getOQLQuery("SELECT aru FROM org.infoglue.cms.entities.management.impl.simple.AccessRightRoleImpl aru WHERE aru.accessRight.interceptionPoint.category = $1 AND (is_undefined(aru.accessRight.parameters) OR aru.accessRight.parameters = $2)");
+				oql.bind(interceptionPointCategory);
+				oql.bind(parameters);
+			}
+			else
+			{
+		    	oql = db.getOQLQuery("SELECT aru FROM org.infoglue.cms.entities.management.impl.simple.AccessRightRoleImpl aru WHERE aru.accessRight.interceptionPoint.category = $1 AND aru.accessRight.parameters = $2");
+				oql.bind(interceptionPointCategory);
+				oql.bind(parameters);
+			}
+			
+			QueryResults results = null;
+			
+			if(readOnly)
+				results = oql.execute(Database.ReadOnly);
+			else
+				results = oql.execute();
+				
+			while (results.hasMore()) 
+			{
+				AccessRightRole accessRightRole = (AccessRightRole)results.next();
+				accessRightsRoles.add(accessRightRole);
+			}
+			
+			results.close();
+			oql.close();
+		}
+		catch(Exception e)
+		{
+			throw new SystemException("An error occurred when we tried to fetch a list of Access rights. Reason:" + e.getMessage(), e);    
+		}
+		
+		return accessRightsRoles;		
+	}
+	
+	public List getAccessRightsGroups(String interceptionPointCategory, String parameters, Database db, boolean readOnly) throws SystemException, Bug
+	{
+	    List accessRightsGroups = new ArrayList();
+		
+		try
+		{
+			OQLQuery oql = null;
+			
+			if(parameters == null || parameters.length() == 0)
+			{
+				oql = db.getOQLQuery("SELECT aru FROM org.infoglue.cms.entities.management.impl.simple.AccessRightGroupImpl aru WHERE aru.accessRight.interceptionPoint.category = $1 AND (is_undefined(aru.accessRight.parameters) OR aru.accessRight.parameters = $2)");
+				oql.bind(interceptionPointCategory);
+				oql.bind(parameters);
+			}
+			else
+			{
+		    	oql = db.getOQLQuery("SELECT aru FROM org.infoglue.cms.entities.management.impl.simple.AccessRightGroupImpl aru WHERE aru.accessRight.interceptionPoint.category = $1 AND aru.accessRight.parameters = $2");
+				oql.bind(interceptionPointCategory);
+				oql.bind(parameters);
+			}
+			
+			QueryResults results = null;
+			
+			if(readOnly)
+				results = oql.execute(Database.ReadOnly);
+			else
+				results = oql.execute();
+				
+			while (results.hasMore()) 
+			{
+				AccessRightGroup accessRightGroup = (AccessRightGroup)results.next();
+				accessRightsGroups.add(accessRightGroup);
+			}
+			
+			results.close();
+			oql.close();
+		}
+		catch(Exception e)
+		{
+			throw new SystemException("An error occurred when we tried to fetch a list of Access rights. Reason:" + e.getMessage(), e);    
+		}
+		
+		return accessRightsGroups;		
 	}
 
 	public List getAccessRightGroupList(String groupName, Database db) throws SystemException, Bug

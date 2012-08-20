@@ -263,12 +263,24 @@ public class GroupPropertiesController extends BaseController
 		return groupPropertiesVOList;
 	}
 
+
 	/**
 	 * This method gets a list of groupProperties for a group
 	 * The result is a list of propertiesblobs - each propertyblob is a list of actual properties.
 	 */
 
 	public List getGroupPropertiesList(String groupName, Integer languageId, Database db, boolean readOnly) throws ConstraintException, SystemException, Exception
+	{
+		return getGroupPropertiesList(groupName, languageId, db, readOnly, true);
+	}
+	
+	
+	/**
+	 * This method gets a list of groupProperties for a group
+	 * The result is a list of propertiesblobs - each propertyblob is a list of actual properties.
+	 */
+
+	public List getGroupPropertiesList(String groupName, Integer languageId, Database db, boolean readOnly, boolean retry) throws ConstraintException, SystemException, Exception
 	{
 		List groupPropertiesList = new ArrayList();
 
@@ -315,7 +327,8 @@ public class GroupPropertiesController extends BaseController
 			logger.warn("Error getting groupPropertiesList. Message: " + e.getMessage() + ". Retrying...");
 			try
 			{
-				groupPropertiesList = getGroupPropertiesList(groupName, languageId, db, readOnly);
+				if(retry)
+					groupPropertiesList = getGroupPropertiesList(groupName, languageId, db, readOnly, false);
 			}
 			catch(Exception e2)
 			{

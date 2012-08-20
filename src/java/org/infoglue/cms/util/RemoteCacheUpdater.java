@@ -164,9 +164,6 @@ public class RemoteCacheUpdater implements NotificationListener
 	 */
 	public void updateRemoteCaches(Hashtable internalMessage, Hashtable publicMessage) throws Exception
 	{		
-		if((internalMessage == null && publicMessage == null) || (internalMessage.size() == 0 && publicMessage.size() == 0))
-			return;
-		
 		if(internalMessage != null && internalMessage.size() > 0)
 	    {
 			List internalUrls = CmsPropertyHandler.getInternalDeliveryUrls();
@@ -179,7 +176,7 @@ public class RemoteCacheUpdater implements NotificationListener
 				logger.info("Updating cache at " + address);
 				if(address.indexOf("@") > -1)
 				{
-					logger.error("Skipping updating cache at " + address + ". You probably have not defined the correct addresses in application settings.");
+					logger.warn("Skipping updating cache at " + address + ". You probably have not defined the correct addresses in application settings.");
 				}
 				else
 				{
@@ -207,7 +204,7 @@ public class RemoteCacheUpdater implements NotificationListener
 				logger.info("Updating cache at " + address);
 				if(address.indexOf("@") > -1)
 				{
-					logger.error("Skipping updating cache at " + address + ". You probably have not defined the correct live addresses in application settings.");
+					logger.warn("Skipping updating cache at " + address + ". You probably have not defined the correct live addresses in application settings.");
 				}
 				else
 				{

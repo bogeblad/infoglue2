@@ -57,11 +57,10 @@ import org.infoglue.cms.entities.management.impl.simple.RepositoryImpl;
 import org.infoglue.cms.entities.management.impl.simple.RepositoryLanguageImpl;
 import org.infoglue.cms.entities.management.impl.simple.RoleImpl;
 import org.infoglue.cms.entities.management.impl.simple.RolePropertiesImpl;
-import org.infoglue.cms.entities.management.impl.simple.SmallGroupImpl;
-import org.infoglue.cms.entities.management.impl.simple.SmallRoleImpl;
-import org.infoglue.cms.entities.management.impl.simple.SmallSystemUserImpl;
 import org.infoglue.cms.entities.management.impl.simple.SubscriptionFilterImpl;
+import org.infoglue.cms.entities.management.impl.simple.SystemUserGroupImpl;
 import org.infoglue.cms.entities.management.impl.simple.SystemUserImpl;
+import org.infoglue.cms.entities.management.impl.simple.SystemUserRoleImpl;
 import org.infoglue.cms.entities.management.impl.simple.TransactionHistoryImpl;
 import org.infoglue.cms.entities.management.impl.simple.UserPropertiesImpl;
 import org.infoglue.cms.entities.structure.SiteNode;
@@ -284,20 +283,33 @@ public class CmsJDOCallback implements CallbackInterceptor
 			}
 			else if(object.getClass().getName().equals(SystemUserImpl.class.getName()))
 			{
-				clearCache(SmallSystemUserImpl.class);
 				CacheController.clearCache("principalCache");
 				CacheController.clearCache("componentContentsCache");
 			}
 			else if(object.getClass().getName().equals(GroupImpl.class.getName()))
 			{
-				clearCache(SmallGroupImpl.class);
 				CacheController.clearCache("groupListCache");
 				CacheController.clearCache("groupVOListCache");
 				CacheController.clearCache("componentContentsCache");
 			}
 			else if(object.getClass().getName().equals(RoleImpl.class.getName()))
 			{
-				clearCache(SmallRoleImpl.class);
+				CacheController.clearCache("roleListCache");
+				CacheController.clearCache("roleVOListCache");
+				CacheController.clearCache("componentContentsCache");
+			}
+			else if(object.getClass().getName().equals(SystemUserGroupImpl.class.getName()))
+			{
+				//clearCache(SystemUserImpl.class);
+				//clearCache(GroupImpl.class);
+				CacheController.clearCache("groupListCache");
+				CacheController.clearCache("groupVOListCache");
+				CacheController.clearCache("componentContentsCache");
+			}
+			else if(object.getClass().getName().equals(SystemUserRoleImpl.class.getName()))
+			{
+				//clearCache(SystemUserImpl.class);
+				//clearCache(RoleImpl.class);
 				CacheController.clearCache("roleListCache");
 				CacheController.clearCache("roleVOListCache");
 				CacheController.clearCache("componentContentsCache");
@@ -458,20 +470,33 @@ public class CmsJDOCallback implements CallbackInterceptor
 			}
 			else if(object.getClass().getName().equals(SystemUserImpl.class.getName()))
 			{
-				clearCache(SmallSystemUserImpl.class);
 				CacheController.clearCache("principalCache");
 				CacheController.clearCache("componentContentsCache");
 			}
 			else if(object.getClass().getName().equals(GroupImpl.class.getName()))
 			{
-				clearCache(SmallGroupImpl.class);
 				CacheController.clearCache("groupListCache");
 				CacheController.clearCache("componentContentsCache");
 			}
 			else if(object.getClass().getName().equals(RoleImpl.class.getName()))
 			{
-				clearCache(SmallRoleImpl.class);
 				CacheController.clearCache("roleListCache");
+				CacheController.clearCache("componentContentsCache");
+			}
+			else if(object.getClass().getName().equals(SystemUserGroupImpl.class.getName()))
+			{
+				//clearCache(SystemUserImpl.class);
+				//clearCache(GroupImpl.class);
+				CacheController.clearCache("principalCache");
+				CacheController.clearCache("groupListCache");
+				CacheController.clearCache("componentContentsCache");
+			}
+			else if(object.getClass().getName().equals(SystemUserRoleImpl.class.getName()))
+			{
+				//clearCache(SystemUserImpl.class);
+				//clearCache(RoleImpl.class);
+				CacheController.clearCache("principalCache");
+				CacheController.clearCache("groupListCache");
 				CacheController.clearCache("componentContentsCache");
 			}
 			else if(object.getClass().getName().equals(UserPropertiesImpl.class.getName()))
@@ -668,19 +693,16 @@ public class CmsJDOCallback implements CallbackInterceptor
 			}
 			else if(object.getClass().getName().equals(SystemUserImpl.class.getName()))
 			{
-				clearCache(SmallSystemUserImpl.class);
 				CacheController.clearCache("principalCache");
 				CacheController.clearCache("componentContentsCache");
 			}
 			else if(object.getClass().getName().equals(GroupImpl.class.getName()))
 			{
-				clearCache(SmallGroupImpl.class);
 				CacheController.clearCache("groupListCache");
 				CacheController.clearCache("componentContentsCache");
 			}
 			else if(object.getClass().getName().equals(RoleImpl.class.getName()))
 			{
-				clearCache(SmallRoleImpl.class);
 				CacheController.clearCache("roleListCache");
 				CacheController.clearCache("componentContentsCache");
 			}

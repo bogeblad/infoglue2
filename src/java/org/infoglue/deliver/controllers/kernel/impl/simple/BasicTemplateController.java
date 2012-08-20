@@ -1,3 +1,4 @@
+
 /* ===============================================================================
  *
  * Part of the InfoGlue Content Management Platform (www.infoglue.org)
@@ -4882,6 +4883,80 @@ public class BasicTemplateController implements TemplateController
 		return getMatchingContents(contentTypeDefinitionNamesString, categoryConditionString, freeText, freeTextAttributeNames, fromDate, toDate, expireFromDate, expireToDate, versionModifier, maximumNumberOfItems, useLanguageFallback, cacheResult, cacheInterval, cacheName, cacheKey, repositoryIdList, languageId, skipLanguageCheck, null);
 	}
 
+	private List getMatchingContentsFromDatabase(String contentTypeDefinitionNamesString, String categoryConditionString, String freeText, List freeTextAttributeNames, Date fromDate, Date toDate, Date expireFromDate, Date expireToDate, String versionModifier, Integer maximumNumberOfItems, boolean useLanguageFallback, boolean cacheResult, int cacheInterval, String cacheName, String key, List<Integer> repositoryIdList, Integer localLanguageId, Boolean skipLanguageCheck, Integer startNodeId)
+	{
+		try
+		{
+		    List contentTypeDefinitionVOList = new ArrayList();
+		    String[] contentTypeDefinitionNames = contentTypeDefinitionNamesString.split(",");
+		    for(int i=0; i<contentTypeDefinitionNames.length; i++)
+		    {
+		        ContentTypeDefinitionVO contentTypeDefinitionVO = ContentTypeDefinitionController.getController().getContentTypeDefinitionVOWithName(contentTypeDefinitionNames[i], getDatabase());
+		        if(contentTypeDefinitionVO != null)
+		        	contentTypeDefinitionVOList.add(contentTypeDefinitionVO);
+		    }
+
+		    final CategoryConditions categoryConditions = CategoryConditions.parse(categoryConditionString);
+		    
+			final ExtendedSearchCriterias criterias = new ExtendedSearchCriterias(this.getOperatingMode().intValue());
+			criterias.setCategoryConditions(categoryConditions);
+			criterias.setLanguage(this.getLanguage(localLanguageId));
+			if(skipLanguageCheck != null)
+				criterias.setSkipLanguageCheck(skipLanguageCheck);
+			if(freeText != null && freeTextAttributeNames != null)
+				criterias.setFreetext(freeText, freeTextAttributeNames);
+			criterias.setContentTypeDefinitions(contentTypeDefinitionVOList);
+			criterias.setDates(fromDate, toDate);
+			criterias.setExpireDates(expireFromDate, expireToDate);
+			criterias.setMaximumNumberOfItems(maximumNumberOfItems);
+			if(versionModifier != null)
+				criterias.setVersionModifier(versionModifier);
+			if(repositoryIdList != null && repositoryIdList.size() > 0)
+				criterias.setRepositoryIdList(repositoryIdList);
+			
+			final Set set;
+			
+			if(cacheName.equals("newsListCache"))
+			{
+				set = ExtendedSearchController.getController().searchOrderByDate(criterias, getDatabase());	
+			}
+			else
+			{
+				set = ExtendedSearchController.getController().search(criterias, getDatabase());
+			}
+			
+			final List result = new ArrayList();
+			for(Iterator i = set.iterator(); i.hasNext(); ) 
+			{
+				final Content content = (Content) i.next();
+				//if(ContentDeliveryController.getContentDeliveryController().isValidContent(this.getDatabase(), content.getId(), localLanguageId, USE_LANGUAGE_FALLBACK, true, getPrincipal(), this.deliveryContext))
+				if(ContentDeliveryController.getContentDeliveryController().isValidContent(this.getDatabase(), content, localLanguageId, USE_LANGUAGE_FALLBACK, true, getPrincipal(), this.deliveryContext, false, false))
+				{
+					if(startNodeId != null)
+					{
+						if(hasNodeIdAsParent(content.getContentId(), startNodeId))
+						{
+							result.add(content.getValueObject());
+						}
+					}
+					else
+					{
+						result.add(content.getValueObject());
+					}
+				}
+			}
+
+			if(cacheResult)
+				CacheController.cacheObjectInAdvancedCache(cacheName, key, result, null, false);
+			return result;
+		}
+		catch(Exception e)
+		{
+			logger.warn("An error occurred trying to get Matching Contents for contentTypeDefinitionNamesString: " + contentTypeDefinitionNamesString + ":" + e.getMessage(), e);
+		}
+		return Collections.EMPTY_LIST;
+	}
+
 	/**
 	 * This method searches for all contents matching
 	 */
@@ -4898,9 +4973,6 @@ public class BasicTemplateController implements TemplateController
 		//TODO - add cache here
 		if(cacheName == null || cacheName.equals(""))
 			cacheName = "matchingContentsCache";
-
-		//if(cacheKey == null || cacheKey.equals(""))
-		//	cacheKey = "matchingContentsCache";
 
 		Integer localLanguageId = this.getLanguageId();
 		if(languageId != null)
@@ -5933,7 +6005,6 @@ public class BasicTemplateController implements TemplateController
 			SiteNodeVO siteNodeVO = (SiteNodeVO)i.next();
 			
 			this.getDeliveryContext().addUsedSiteNode("siteNode_" + siteNodeVO.getId());
-			
 			if(!hideUnauthorizedPages || getHasUserPageAccess(siteNodeVO.getId()))
 			{
 				try

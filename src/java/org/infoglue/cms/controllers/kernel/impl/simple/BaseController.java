@@ -26,12 +26,14 @@ package org.infoglue.cms.controllers.kernel.impl.simple;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import org.apache.log4j.Category;
 import org.apache.log4j.Logger;
 import org.exolab.castor.jdo.Database;
 import org.exolab.castor.jdo.LockNotGrantedException;
@@ -560,6 +562,15 @@ public abstract class BaseController
 	
     protected static Object getObjectWithIdAsReadOnly(Class arg, Integer id, Database db) throws SystemException, Bug
     {
+    	return getObjectWithIdAsReadOnly(arg, id, db, true);
+    }
+    
+	/**
+	 * This method fetches one object / entity within a transaction.
+	 **/
+	
+    protected static Object getObjectWithIdAsReadOnly(Class arg, Integer id, Database db, boolean retry) throws SystemException, Bug
+    {
         Object object = null;
         try
         {
@@ -571,7 +582,8 @@ public abstract class BaseController
 			logger.warn("Error getting object. Message: " + e.getMessage() + ". Retrying...");
 			try
 			{
-				object = getObjectWithIdAsReadOnly(arg, id, db);
+				if(retry)
+					object = getObjectWithIdAsReadOnly(arg, id, db, false);
 			}
 			catch(Exception e2)
 			{
@@ -1375,6 +1387,32 @@ public abstract class BaseController
         return tableCount;
 	}
 
+
+    public Category getCastorCategory()
+    {
+        Enumeration enumeration = Logger.getCurrentCategories();
+        while(enumeration.hasMoreElements())
+        {
+            Category category = (Category)enumeration.nextElement();
+            if(category.getName().equalsIgnoreCase("org.exolab.castor"))
+                return category;
+        }
+        
+        return null;
+    }
+
+    public Category getCastorJDOCategory()
+    {
+        Enumeration enumeration = Logger.getCurrentCategories();
+        while(enumeration.hasMoreElements())
+        {
+            Category category = (Category)enumeration.nextElement();
+            if(category.getName().equalsIgnoreCase("org.exolab.castor.jdo"))
+                return category;
+        }
+        
+        return null;
+    }
 
 	public abstract BaseEntityVO getNewVO();
 }
