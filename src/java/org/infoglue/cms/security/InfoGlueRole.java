@@ -24,9 +24,6 @@
 package org.infoglue.cms.security;
 
 import java.io.Serializable;
-import java.util.Date;
-
-import org.infoglue.cms.util.DateHelper;
 
 
 /**
@@ -42,9 +39,6 @@ public class InfoGlueRole implements Serializable
 	private final String name;
 	private final String displayName;
 	private final String description;
-	private final String source;
-	private final Boolean isActive;
-	private final Date modifiedDateTime;
 	private final AuthorizationModule autorizationModule;
 
 	public InfoGlueRole(String name, String description, AuthorizationModule autorizationModule)
@@ -52,9 +46,6 @@ public class InfoGlueRole implements Serializable
 		this.name = name;
 		this.displayName = name;
 		this.description = description;
-		this.source = "infoglue";
-		this.isActive = true;
-		this.modifiedDateTime = DateHelper.getSecondPreciseDate();
 		this.autorizationModule = autorizationModule;
 	}
 
@@ -63,20 +54,6 @@ public class InfoGlueRole implements Serializable
 		this.name = name;
 		this.displayName = displayName;
 		this.description = description;
-		this.source = "infoglue";
-		this.isActive = true;
-		this.modifiedDateTime = DateHelper.getSecondPreciseDate();
-		this.autorizationModule = autorizationModule;
-	}
-
-	public InfoGlueRole(String name, String displayName, String description, String source, Boolean isActive, Date modifiedDateTime, AuthorizationModule autorizationModule)
-	{
-		this.name = name;
-		this.displayName = displayName;
-		this.description = description;
-		this.source = source;
-		this.isActive = isActive;
-		this.modifiedDateTime = modifiedDateTime;
 		this.autorizationModule = autorizationModule;
 	}
 
@@ -95,21 +72,6 @@ public class InfoGlueRole implements Serializable
 		return description;
 	}
 	
-	public String getSource()
-	{
-		return source;
-	}
-		
-	public Boolean getIsActive()
-	{
-		return isActive;
-	}
-	
-	public Date getModifiedDateTime()
-	{
-		return modifiedDateTime;
-	}
-
 	public String toString()
 	{
 		return "InfoGlueRole: " + name;

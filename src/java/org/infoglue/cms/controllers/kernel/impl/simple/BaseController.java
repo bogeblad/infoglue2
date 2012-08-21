@@ -1388,31 +1388,5 @@ public abstract class BaseController
 	}
 
 
-    public Category getCastorCategory()
-    {
-        Enumeration enumeration = Logger.getCurrentCategories();
-        while(enumeration.hasMoreElements())
-        {
-            Category category = (Category)enumeration.nextElement();
-            if(category.getName().equalsIgnoreCase("org.exolab.castor"))
-                return category;
-        }
-        
-        return null;
-    }
-
-    public Category getCastorJDOCategory()
-    {
-        Enumeration enumeration = Logger.getCurrentCategories();
-        while(enumeration.hasMoreElements())
-        {
-            Category category = (Category)enumeration.nextElement();
-            if(category.getName().equalsIgnoreCase("org.exolab.castor.jdo"))
-                return category;
-        }
-        
-        return null;
-    }
-
 	public abstract BaseEntityVO getNewVO();
 }

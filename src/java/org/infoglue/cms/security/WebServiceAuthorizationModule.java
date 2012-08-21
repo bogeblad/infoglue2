@@ -23,15 +23,16 @@
 
 package org.infoglue.cms.security;
 
+import java.io.File;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-
-import javax.naming.NamingException;
 
 import org.apache.log4j.Logger;
 import org.dom4j.Document;
@@ -41,6 +42,7 @@ import org.infoglue.cms.entities.management.RoleVO;
 import org.infoglue.cms.entities.management.SystemUserVO;
 import org.infoglue.cms.exception.Bug;
 import org.infoglue.cms.exception.SystemException;
+import org.infoglue.cms.io.FileHelper;
 import org.infoglue.cms.util.CmsPropertyHandler;
 import org.infoglue.cms.util.dom.DOMBuilder;
 import org.infoglue.deliver.util.CacheController;
@@ -50,10 +52,10 @@ import org.infoglue.deliver.util.webservices.WebServiceHelper;
 /**
  * @author Mattias Bogeblad
  *
- * This authentication module authenticates an user against a webservice.
+ * This authentication module authenticates an user against the ordinary infoglue database.
  */
 
-public class WebServiceAuthorizationModule extends BasicAuthorizationModule implements AuthorizationModule, Serializable
+public class WebServiceAuthorizationModule implements AuthorizationModule, Serializable
 {
     private final static Logger logger = Logger.getLogger(WebServiceAuthorizationModule.class.getName());
     private final static DOMBuilder domHelper = new DOMBuilder();
@@ -600,7 +602,7 @@ public class WebServiceAuthorizationModule extends BasicAuthorizationModule impl
 		return users;
 	}
 
-	public List getFilteredUsers(Integer offset, Integer limit,	String sortProperty, String direction, String searchString, boolean populateRolesAndGroups) throws Exception 
+	public List getFilteredUsers(String searchString) throws Exception 
 	{
 		return getUsers();
 	}
@@ -836,23 +838,5 @@ public class WebServiceAuthorizationModule extends BasicAuthorizationModule impl
     {
     	return (getAuthorizedInfoGlueGroup(groupName) == null ? false : true);
     }
-
-	@Override
-	public Integer getRoleCount(String searchString) throws Exception 
-	{
-		return getRoles().size();
-	}
-
-	@Override
-	public Integer getGroupCount(String searchString) throws Exception 
-	{
-		return getGroups().size();
-	}
-
-	@Override
-	public Integer getUserCount(String searchString) throws Exception 
-	{
-		return getUsers().size();
-	}
 
 }

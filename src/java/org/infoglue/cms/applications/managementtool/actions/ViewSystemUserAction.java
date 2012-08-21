@@ -24,13 +24,13 @@
 package org.infoglue.cms.applications.managementtool.actions;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
-import org.apache.commons.codec.binary.Base64;
 import org.apache.log4j.Logger;
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentTypeDefinitionController;
+import org.infoglue.cms.controllers.kernel.impl.simple.GroupControllerProxy;
+import org.infoglue.cms.controllers.kernel.impl.simple.RoleControllerProxy;
 import org.infoglue.cms.controllers.kernel.impl.simple.UserControllerProxy;
 import org.infoglue.cms.controllers.kernel.impl.simple.UserPropertiesController;
 import org.infoglue.cms.entities.management.ContentTypeDefinitionVO;
@@ -124,45 +124,20 @@ public class ViewSystemUserAction extends InfoGlueAbstractAction
 	{
 		if(userName != null)
 		{
-			logger.info("userName:" + userName);
-			byte[] bytes = Base64.decodeBase64(userName);
-			String decodedUserName = new String(bytes, "utf-8");
-			logger.info("decodedUserName:" + decodedUserName);
-			boolean userExists = false;
-			try
-			{
-				userExists = UserControllerProxy.getController().userExists(decodedUserName);
-			}
-			catch (Exception e) 
-			{
-				logger.error("Error looking up user [" + decodedUserName + "]:" + e.getMessage());
-			}
+			String fromEncoding = CmsPropertyHandler.getURIEncoding();
+			String toEncoding = "utf-8";
 			
-			if(userExists)
+			logger.info("userName:" + userName);
+			String testUserName = new String(userName.getBytes(fromEncoding), toEncoding);
+			if(logger.isInfoEnabled())
 			{
-				userName = decodedUserName;
+				for(int i=0; i<userName.length(); i++)
+					logger.info("c:" + userName.charAt(i) + "=" + (int)userName.charAt(i));
 			}
-			else
-			{
-				logger.info("No match on base64-based userName:" + userName);
-				if(!UserControllerProxy.getController().userExists(userName))
-				{
-					String fromEncoding = CmsPropertyHandler.getURIEncoding();
-					String toEncoding = "utf-8";
-					
-					logger.info("userName:" + userName);
-					String testUserName = new String(userName.getBytes(fromEncoding), toEncoding);
-					if(logger.isInfoEnabled())
-					{
-						for(int i=0; i<userName.length(); i++)
-							logger.info("c:" + userName.charAt(i) + "=" + (int)userName.charAt(i));
-					}
-					if(testUserName.indexOf((char)65533) == -1)
-						userName = testUserName;
-					
-					logger.info("userName after:" + userName);
-				}
-			}
+			if(testUserName.indexOf((char)65533) == -1)
+				userName = testUserName;
+			
+			logger.info("userName after:" + userName);
 		}
 		
 		this.userName = userName;
@@ -183,21 +158,6 @@ public class ViewSystemUserAction extends InfoGlueAbstractAction
 		return infoGluePrincipal.getEmail();
 	}
 	
-    public String getSource()
-    {
-        return infoGluePrincipal.getSource();
-    }
-
-    public Boolean getIsActive()
-    {
-        return infoGluePrincipal.getIsActive();
-    }
-
-    public Date getModifiedDateTime()
-    {
-        return infoGluePrincipal.getModifiedDateTime();
-    }
-
 	public boolean getSupportsUpdate()
 	{
 		return this.supportsUpdate;

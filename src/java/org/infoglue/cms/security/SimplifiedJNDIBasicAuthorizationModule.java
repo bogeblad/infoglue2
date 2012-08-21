@@ -62,7 +62,7 @@ import org.infoglue.deliver.util.Timer;
  * This authentication module authenticates an user against the ordinary infoglue database.
  */
 
-public class SimplifiedJNDIBasicAuthorizationModule extends BasicAuthorizationModule implements AuthorizationModule, Serializable
+public class SimplifiedJNDIBasicAuthorizationModule implements AuthorizationModule, Serializable
 {
     private final static Logger logger = Logger.getLogger(SimplifiedJNDIBasicAuthorizationModule.class.getName());
 
@@ -1552,7 +1552,7 @@ public class SimplifiedJNDIBasicAuthorizationModule extends BasicAuthorizationMo
 		return users;
 	}
 
-	public List getFilteredUsers(Integer offset, Integer limit,	String sortProperty, String direction, String searchString, boolean populateRolesAndGroups) throws Exception 
+	public List getFilteredUsers(String searchString) throws Exception 
 	{
 		return getUsers();
 	}
@@ -2052,23 +2052,5 @@ public class SimplifiedJNDIBasicAuthorizationModule extends BasicAuthorizationMo
     {
     	return (getAuthorizedInfoGlueGroup(groupName) == null ? false : true);
     }
-
-	@Override
-	public Integer getRoleCount(String searchString) throws Exception 
-	{
-		return getRoles().size();
-	}
-
-	@Override
-	public Integer getGroupCount(String searchString) throws Exception 
-	{
-		return getGroups().size();
-	}
-
-	@Override
-	public Integer getUserCount(String searchString) throws Exception 
-	{
-		return getUsers().size();
-	}
 
 }

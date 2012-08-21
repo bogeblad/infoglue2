@@ -24,17 +24,20 @@
 package org.infoglue.cms.applications.managementtool.actions;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
-import org.apache.commons.codec.binary.Base64;
 import org.apache.log4j.Logger;
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
+import org.infoglue.cms.controllers.kernel.impl.simple.AccessRightController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentTypeDefinitionController;
 import org.infoglue.cms.controllers.kernel.impl.simple.GroupControllerProxy;
 import org.infoglue.cms.controllers.kernel.impl.simple.GroupPropertiesController;
+import org.infoglue.cms.controllers.kernel.impl.simple.UserControllerProxy;
 import org.infoglue.cms.entities.management.ContentTypeDefinitionVO;
 import org.infoglue.cms.security.InfoGlueGroup;
 import org.infoglue.cms.util.CmsPropertyHandler;
+import org.infoglue.cms.util.sorters.ReflectionComparator;
 
 public class ViewGroupAction extends InfoGlueAbstractAction
 {
@@ -45,6 +48,9 @@ public class ViewGroupAction extends InfoGlueAbstractAction
 	private String groupName;
 	private boolean supportsUpdate = true;
 	private InfoGlueGroup infoGlueGroup;
+	private List infoGluePrincipals = new ArrayList();
+	private List assignedInfoGluePrincipals;
+	private List unassignedInfoGluePrincipals;
 	private List contentTypeDefinitionVOList;
 	private List assignedContentTypeDefinitionVOList;    
 	
@@ -55,8 +61,19 @@ public class ViewGroupAction extends InfoGlueAbstractAction
 	 */
     protected void initialize(String groupName) throws Exception
     {
+		//this.supportsUpdate				= GroupControllerProxy.getController().getSupportUpdate();
 		this.infoGlueGroup				= GroupControllerProxy.getController().getGroup(groupName);
 		this.supportsUpdate 			= this.infoGlueGroup.getAutorizationModule().getSupportUpdate();
+		this.assignedInfoGluePrincipals	= this.infoGlueGroup.getAutorizationModule().getGroupUsers(groupName);
+		if(this.supportsUpdate) //Only fetch if the user can edit.
+		{
+			this.infoGluePrincipals			= this.infoGlueGroup.getAutorizationModule().getUsers();
+		
+			List newInfogluePrincipals = new ArrayList();
+			newInfogluePrincipals.addAll(this.infoGluePrincipals);
+			newInfogluePrincipals.removeAll(assignedInfoGluePrincipals);
+			this.unassignedInfoGluePrincipals = newInfogluePrincipals;
+		}
 		
 		this.contentTypeDefinitionVOList 			= ContentTypeDefinitionController.getController().getContentTypeDefinitionVOList(ContentTypeDefinitionVO.EXTRANET_GROUP_PROPERTIES);
 		this.assignedContentTypeDefinitionVOList 	= GroupPropertiesController.getController().getContentTypeDefinitionVOList(groupName);  
@@ -85,33 +102,20 @@ public class ViewGroupAction extends InfoGlueAbstractAction
 	{
 		if(groupName != null)
 		{
+			String fromEncoding = CmsPropertyHandler.getURIEncoding();
+			String toEncoding = "utf-8";
+			
 			logger.info("groupName:" + groupName);
-			byte[] bytes = Base64.decodeBase64(groupName);
-			String decodedGroupName = new String(bytes, "utf-8");
-			logger.info("decodedGroupName:" + decodedGroupName);
-			if(GroupControllerProxy.getController().groupExists(decodedGroupName))
+			String testGroupName = new String(groupName.getBytes(fromEncoding), toEncoding);
+			if(logger.isInfoEnabled())
 			{
-				groupName = decodedGroupName;
+				for(int i=0; i<groupName.length(); i++)
+					logger.info("c:" + groupName.charAt(i) + "=" + (int)groupName.charAt(i));
 			}
-			else
-			{
-				logger.info("No match on base64-based groupName:" + groupName);
-				
-				String fromEncoding = CmsPropertyHandler.getURIEncoding();
-				String toEncoding = "utf-8";
-				
-				logger.info("groupName:" + groupName);
-				String testGroupName = new String(groupName.getBytes(fromEncoding), toEncoding);
-				if(logger.isInfoEnabled())
-				{
-					for(int i=0; i<groupName.length(); i++)
-						logger.info("c:" + groupName.charAt(i) + "=" + (int)groupName.charAt(i));
-				}
-				if(testGroupName.indexOf((char)65533) == -1)
-					groupName = testGroupName;
-				
-				logger.info("groupName after:" + groupName);
-			}
+			if(testGroupName.indexOf((char)65533) == -1)
+				groupName = testGroupName;
+			
+			logger.info("groupName after:" + groupName);
 		}
 		
 		this.groupName = groupName;
@@ -121,26 +125,26 @@ public class ViewGroupAction extends InfoGlueAbstractAction
     {
         return this.infoGlueGroup.getDescription();
     }
+        
+  	public List getAllInfoGluePrincipals() throws Exception
+	{
+		return this.infoGluePrincipals;
+	}	
+	
+	public List getAssignedInfoGluePrincipals() throws Exception
+	{
+	    Collections.sort(this.assignedInfoGluePrincipals, new ReflectionComparator("name"));
 
-    public java.lang.String getSource()
-    {
-        return this.infoGlueGroup.getSource();
-    }
+		return this.assignedInfoGluePrincipals;
+	}
 
-    public java.lang.String getGroupType()
-    {
-        return this.infoGlueGroup.getGroupType();
-    }
-
-    public Boolean getIsActive()
-    {
-    	return this.infoGlueGroup.getIsActive();
-    }
-
-    public java.util.Date getModifiedDateTime()
-    {
-        return this.infoGlueGroup.getModifiedDateTime();
-    }
+	/**
+	 * Method which returns all the principals not assigned to the group.
+	 */
+	public List getUnAssignedInfoGluePrincipals() throws Exception
+	{
+		return this.unassignedInfoGluePrincipals;
+	}
 
 	public List getAssignedContentTypeDefinitionVOList()
 	{

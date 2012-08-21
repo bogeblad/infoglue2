@@ -29,6 +29,7 @@ import org.infoglue.cms.controllers.kernel.impl.simple.UserControllerProxy;
 import org.infoglue.cms.controllers.kernel.impl.simple.UserPropertiesController;
 import org.infoglue.cms.entities.management.RoleVO;
 import org.infoglue.cms.entities.management.SystemUserVO;
+import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.security.InfoGluePrincipal;
 import org.infoglue.cms.util.CmsPropertyHandler;
 import org.infoglue.cms.util.ConstraintExceptionBuffer;
@@ -69,15 +70,10 @@ public class UpdateSystemUserAction extends ViewSystemUserAction //WebworkAbstra
 	
 		String[] roles = getRequest().getParameterValues("roleName");
 		String[] groups = getRequest().getParameterValues("groupName");
-		if(roles == null)
-			roles = new String[]{};
-		if(groups == null)
-			groups = new String[]{};
-		
 		String[] contentTypeDefinitionIds = getRequest().getParameterValues("contentTypeDefinitionId");
 		
 		UserControllerProxy.getController().updateUser(this.systemUserVO, roles, groups);
-    	if(contentTypeDefinitionIds != null && contentTypeDefinitionIds.length > 0 && !contentTypeDefinitionIds[0].equals(""))
+		if(contentTypeDefinitionIds != null && contentTypeDefinitionIds.length > 0 && !contentTypeDefinitionIds[0].equals(""))
 			UserPropertiesController.getController().updateContentTypeDefinitions(this.getUserName(), contentTypeDefinitionIds);
 		
 		return "success";
@@ -163,31 +159,12 @@ public class UpdateSystemUserAction extends ViewSystemUserAction //WebworkAbstra
     	return this.systemUserVO.getEmail();
     }
 
+
     public void setEmail(java.lang.String email) throws Exception
     {
     	this.systemUserVO.setEmail(email);
     }
 
-    public String getSource()
-    {
-    	return this.systemUserVO.getSource();
-    }
-    
-    public void setSource(String source)
-    {
-    	this.systemUserVO.setSource(source);
-    }
-
-    public Boolean getIsActive()
-    {
-    	return this.systemUserVO.getIsActive();
-    }
-    
-    public void setIsActive(Boolean isActive)
-    {
-    	this.systemUserVO.setIsActive(isActive);
-    }
-    
     public java.lang.String getPassword()
     {
     	return this.systemUserVO.getPassword();

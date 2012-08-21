@@ -31,10 +31,13 @@ import org.infoglue.cms.controllers.kernel.impl.simple.AccessRightController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentTypeDefinitionController;
 import org.infoglue.cms.controllers.kernel.impl.simple.RoleControllerProxy;
 import org.infoglue.cms.controllers.kernel.impl.simple.RolePropertiesController;
+import org.infoglue.cms.controllers.kernel.impl.simple.SystemUserController;
 import org.infoglue.cms.controllers.kernel.impl.simple.UserControllerProxy;
+import org.infoglue.cms.controllers.kernel.impl.simple.UserPropertiesController;
 import org.infoglue.cms.entities.management.ContentTypeDefinitionVO;
 import org.infoglue.cms.entities.management.RoleVO;
 import org.infoglue.cms.exception.ConstraintException;
+import org.infoglue.cms.security.InfoGlueRole;
 import org.infoglue.cms.util.ConstraintExceptionBuffer;
 
 
@@ -53,6 +56,7 @@ public class CreateRoleAction extends InfoGlueAbstractAction
 	private static final long serialVersionUID = 1L;
 	
 	private RoleVO roleVO;
+	private InfoGlueRole infoGlueRole;
 	private List infoGluePrincipals = new ArrayList();
 	private List contentTypeDefinitionVOList;
 	private ConstraintExceptionBuffer ceb;
@@ -89,7 +93,7 @@ public class CreateRoleAction extends InfoGlueAbstractAction
 		String[] userNames = getRequest().getParameterValues("userName");
 		String[] contentTypeDefinitionIds = getRequest().getParameterValues("contentTypeDefinitionId");
 
-		RoleControllerProxy.getController().createRole(this.roleVO);
+		this.infoGlueRole = RoleControllerProxy.getController().createRole(this.roleVO);
 		if(userNames != null)
 		{
 			RoleControllerProxy.getController().updateRole(this.roleVO, userNames);
@@ -149,27 +153,7 @@ public class CreateRoleAction extends InfoGlueAbstractAction
 		return this.roleVO.getDescription();	
 	}
 
-    public String getSource()
-    {
-    	return this.roleVO.getSource();
-    }
-    
-    public void setSource(String source)
-    {
-    	this.roleVO.setSource(source);
-    }
-
-    public Boolean getIsActive()
-    {
-    	return this.roleVO.getIsActive();
-    }
-    
-    public void setIsActive(Boolean isActive)
-    {
-    	this.roleVO.setIsActive(isActive);
-    }
-
-    public List getInfoGluePrincipals()
+	public List getInfoGluePrincipals()
 	{
 		return infoGluePrincipals;
 	}

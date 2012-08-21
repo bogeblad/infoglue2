@@ -24,8 +24,9 @@
 package org.infoglue.cms.controllers.kernel.impl.simple;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.exolab.castor.jdo.Database;
@@ -34,9 +35,9 @@ import org.exolab.castor.jdo.QueryResults;
 import org.infoglue.cms.entities.kernel.BaseEntityVO;
 import org.infoglue.cms.entities.management.Group;
 import org.infoglue.cms.entities.management.GroupVO;
-import org.infoglue.cms.entities.management.SystemUserVO;
+import org.infoglue.cms.entities.management.SystemUser;
 import org.infoglue.cms.entities.management.impl.simple.GroupImpl;
-import org.infoglue.cms.entities.management.impl.simple.SystemUserGroupImpl;
+import org.infoglue.cms.entities.management.impl.simple.SmallGroupImpl;
 import org.infoglue.cms.exception.Bug;
 import org.infoglue.cms.exception.ConstraintException;
 import org.infoglue.cms.exception.SystemException;
@@ -47,7 +48,7 @@ import org.infoglue.deliver.util.CacheController;
  * GroupHelper.java
  * Created on 2002-aug-28 
  * @author Stefan Sik, ss@frovi.com 
- * @author Mattias Bogeblad
+ * 
  * This class is a helper class for the use case handle groups
  */
 public class GroupController extends BaseController
@@ -63,29 +64,49 @@ public class GroupController extends BaseController
 		return new GroupController();
 	}
 	
-	public Group getGroupWithId(String groupName, Database db) throws SystemException, Bug
+    public Group getGroupWithId(Integer groupId, Database db) throws SystemException, Bug
+    {
+		return (Group) getObjectWithId(GroupImpl.class, groupId, db);
+    }
+
+	public Group getGroupWithName(String groupName, Database db) throws SystemException, Bug
 	{
 		return (Group)getObjectWithId(GroupImpl.class, groupName, db);
 	}
+    
+    /*
+    public static List getGroupVOList(Database db) throws SystemException, Bug
+    {
+        return getAllVOObjects(GroupImpl.class, db);
+    }
+	*/
 	
     public GroupVO getGroupVOWithId(Integer groupId) throws SystemException, Bug
     {
-		return (GroupVO) getVOWithId(GroupImpl.class, groupId);
+		return (GroupVO) getVOWithId(SmallGroupImpl.class, groupId);
     }
 
 	public GroupVO getGroupVOWithId(String groupName) throws SystemException, Bug
 	{
-		return (GroupVO) getVOWithId(GroupImpl.class, groupName);
+		return (GroupVO) getVOWithId(SmallGroupImpl.class, groupName);
 	}
 
 	public GroupVO getGroupVOWithId(String groupName, Database db) throws SystemException, Bug
 	{
-		return (GroupVO) getVOWithId(GroupImpl.class, groupName, db);
+		return (GroupVO) getVOWithId(SmallGroupImpl.class, groupName, db);
 	}
+
+    // Simple, without db
+	/*
+    public static Group getGroupWithId(Integer groupId) throws SystemException, Bug
+    {
+		return (Group) getObjectWithId(GroupImpl.class, groupId);
+    }
+    */
     
     public List getGroupVOList() throws SystemException, Bug
     {
-        return getAllVOObjects(GroupImpl.class, "groupName");
+        return getAllVOObjects(SmallGroupImpl.class, "groupName");
     }
 
     public List getGroupVOList(Database db) throws SystemException, Bug
@@ -99,7 +120,7 @@ public class GroupController extends BaseController
 		}
 		else
 		{
-		    groupVOList = getAllVOObjects(GroupImpl.class, "groupName", db);
+		    groupVOList = getAllVOObjects(SmallGroupImpl.class, "groupName", db);
 			if(groupVOList != null)
 			    CacheController.cacheObject("groupVOListCache", cacheKey, groupVOList);
 		}
@@ -123,52 +144,57 @@ public class GroupController extends BaseController
         return group;
     }     
 
-    public void delete(GroupVO groupVO) throws ConstraintException, SystemException, Exception
+    public void delete(GroupVO groupVO) throws ConstraintException, SystemException
     {
-    	removeUsers(groupVO.getGroupName());
     	deleteEntity(GroupImpl.class, groupVO.getGroupName());
     }        
 
-	public void delete(String groupName) throws ConstraintException, SystemException, Exception
+	public void delete(String groupName) throws ConstraintException, SystemException
 	{
-    	removeUsers(groupName);
 		deleteEntity(GroupImpl.class, groupName);
 	}        
 
 	public void delete(String groupName, Database db) throws ConstraintException, SystemException, Exception
 	{
-    	removeUsers(groupName);
 		deleteEntity(GroupImpl.class, groupName, db);
 	}        
 
-	
 	// Get list of users accosiated with this group
-	public List<SystemUserVO> getGroupSystemUserVOList(Integer offset, Integer limit, String sortProperty, String direction, String searchString, String groupName, Database db)  throws SystemException, Bug
+	public List getGroupSystemUserVOList(String userName, Database db)  throws SystemException, Bug
 	{
-		List<SystemUserVO> systemUsersVOList = new ArrayList();
+		Collection systemUsers = null;
+		List systemUsersVO = new ArrayList();
+		Group group = null;
 		
 		try 
 		{
-			systemUsersVOList = SystemUserController.getController().getFilteredSystemUserList(offset, limit, sortProperty, direction, searchString, null, groupName, db);
+			group = getGroupWithName(userName, db);
+			systemUsers = group.getSystemUsers();		
+			
+			Iterator it = systemUsers.iterator();
+			while (it.hasNext())
+			{
+				SystemUser systemUser = (SystemUser) it.next();
+				systemUsersVO.add(systemUser.getValueObject());
+			}
 		}
 		catch( Exception e)		
 		{
 			throw new SystemException("An error occurred when we tried to fetch a list of users in this group. Reason:" + e.getMessage(), e);			
 		}
 		
-		return systemUsersVOList;		
+		return systemUsersVO;		
 	}
 
-	public List getGroupSystemUserVOList(Integer offset, Integer limit, String sortProperty, String direction, String searchString, String groupName)  throws SystemException, Bug
+	public List getGroupSystemUserVOList(String groupName)  throws SystemException, Bug
 	{
-		List<SystemUserVO> systemUsersVOList = new ArrayList();
-		
+		List systemUsersVO = null;
 		Database db = CastorDatabaseService.getDatabase();
 		try
 		{
 			beginTransaction(db);
 			
-			systemUsersVOList = getGroupSystemUserVOList(offset, limit, sortProperty, direction, searchString, groupName, db);
+			systemUsersVO = getGroupSystemUserVOList(groupName, db);
 			
 			commitTransaction(db);
 		}
@@ -177,128 +203,22 @@ public class GroupController extends BaseController
 			rollbackTransaction(db);
 			throw new SystemException("An error occurred when we tried to fetch a list of users in this group. Reason:" + e.getMessage(), e);			
 		}		
-		return systemUsersVOList;
-	}
-	
-	public Integer getGroupSystemUserCount(String groupName, String searchString, Database db)  throws SystemException, Bug
-	{
-		Integer count = 0;
-		
-		try 
-		{
-			count = SystemUserController.getController().getFilteredSystemUserCount(null, groupName, searchString, db);
-		}
-		catch( Exception e)		
-		{
-			throw new SystemException("An error occurred when we tried to fetch a list of users in this group. Reason:" + e.getMessage(), e);			
-		}
-		
-		return count;		
+		return systemUsersVO;
 	}
 
-	public Integer getGroupSystemUserCount(String groupName, String searchString)  throws SystemException, Bug
-	{
-		Integer count = 0;
-		
-		Database db = CastorDatabaseService.getDatabase();
-		try
-		{
-			beginTransaction(db);
-			
-			count = getGroupSystemUserCount(groupName, searchString, db);
-			
-			commitTransaction(db);
-		}
-		catch ( Exception e )
-		{
-			rollbackTransaction(db);
-			throw new SystemException("An error occurred when we tried to fetch a list of users in this group. Reason:" + e.getMessage(), e);			
-		}
-		
-		return count;
-	}
-	
-	// Get list of users accosiated with this group
-	public List<SystemUserVO> getGroupSystemUserVOListInverted(Integer offset, Integer limit, String sortProperty, String direction, String searchString, String groupName, Database db)  throws SystemException, Bug
-	{
-		List<SystemUserVO> systemUsersVOList = new ArrayList();
-		
-		try 
-		{
-			systemUsersVOList = SystemUserController.getController().getFilteredSystemUserListInvertedOnRoleOrGroup(offset, limit, sortProperty, direction, searchString, null, groupName, db);
-		}
-		catch( Exception e)		
-		{
-			throw new SystemException("An error occurred when we tried to fetch a list of users in this group. Reason:" + e.getMessage(), e);			
-		}
-		
-		return systemUsersVOList;		
-	}
-
-	public List<SystemUserVO> getGroupSystemUserVOListInverted(Integer offset, Integer limit, String sortProperty, String direction, String searchString, String groupName)  throws SystemException, Bug
-	{
-		List<SystemUserVO> systemUsersVOList = new ArrayList();
-		
-		Database db = CastorDatabaseService.getDatabase();
-		try
-		{
-			beginTransaction(db);
-			
-			systemUsersVOList = getGroupSystemUserVOListInverted(offset, limit, sortProperty, direction, searchString, groupName, db);
-			
-			commitTransaction(db);
-		}
-		catch ( Exception e )
-		{
-			rollbackTransaction(db);
-			throw new SystemException("An error occurred when we tried to fetch a list of users in this group. Reason:" + e.getMessage(), e);			
-		}		
-		return systemUsersVOList;
-	}
-	
-	public Integer getGroupSystemUserCountInverted(String groupName, String searchString, Database db)  throws SystemException, Bug
-	{
-		Integer count = 0;
-		
-		try 
-		{
-			count = SystemUserController.getController().getFilteredSystemUserCountInverted(null, groupName, searchString, db);
-		}
-		catch( Exception e)		
-		{
-			throw new SystemException("An error occurred when we tried to fetch a list of users in this group. Reason:" + e.getMessage(), e);			
-		}
-		
-		return count;		
-	}
-
-	public Integer getGroupSystemUserCountInverted(String groupName, String searchString)  throws SystemException, Bug
-	{
-		Integer count = 0;
-		
-		Database db = CastorDatabaseService.getDatabase();
-		try
-		{
-			beginTransaction(db);
-			
-			count = getGroupSystemUserCountInverted(groupName, searchString, db);
-			
-			commitTransaction(db);
-		}
-		catch ( Exception e )
-		{
-			rollbackTransaction(db);
-			throw new SystemException("An error occurred when we tried to fetch a list of users in this group. Reason:" + e.getMessage(), e);			
-		}
-		
-		return count;
-	}
-	
-    public GroupVO update(GroupVO groupVO, Set<String> userNamesSet) throws ConstraintException, SystemException, Exception
+    public GroupVO update(GroupVO groupVO) throws ConstraintException, SystemException
     {
-    	if(userNamesSet != null)
-    		removeUsers(groupVO.getGroupName());
-        
+    	return (GroupVO) updateEntity(GroupImpl.class, (BaseEntityVO) groupVO);
+    }        
+
+    public GroupVO update(GroupVO groupVO, Database db) throws ConstraintException, SystemException
+    {
+    	return (GroupVO) updateEntity(GroupImpl.class, (BaseEntityVO) groupVO, db);
+    }        
+
+
+    public GroupVO update(GroupVO groupVO, String[] systemUsers) throws ConstraintException, SystemException
+    {
         Database db = CastorDatabaseService.getDatabase();
         ConstraintExceptionBuffer ceb = new ConstraintExceptionBuffer();
 
@@ -309,7 +229,8 @@ public class GroupController extends BaseController
         try
         {
             //add validation here if needed
-			group = update(groupVO, userNamesSet, db);
+			
+            group = update(groupVO, systemUsers, db);
 
             //If any of the validations or setMethods reported an error, we throw them up now before create.
             ceb.throwIfNotEmpty();
@@ -332,18 +253,22 @@ public class GroupController extends BaseController
         return group.getValueObject();
     }        
 
-    public Group update(GroupVO groupVO, Set<String> userNamesSet, Database db) throws ConstraintException, SystemException, Exception
+    public Group update(GroupVO groupVO, String[] systemUsers, Database db) throws ConstraintException, SystemException
     {
-    	Group group = getGroupWithId(groupVO.getGroupName(), db);
-    	
-    	if(userNamesSet != null)
-    	{
-	        for (String userName : userNamesSet)
-	        {
-				addUser(groupVO.getGroupName(), userName, db);
-	        }
-    	}
-    	
+		Group group = getGroupWithName(groupVO.getGroupName(), db);
+		group.getSystemUsers().clear();
+		
+		if(systemUsers != null)
+		{
+			for (int i=0; i < systemUsers.length; i++)
+            {
+        		SystemUser systemUser = SystemUserController.getController().getSystemUserWithName(systemUsers[i], db);
+        		
+            	group.getSystemUsers().add(systemUser);
+				systemUser.getGroups().add(group);
+            }
+		}
+       	
         group.setValueObject(groupVO);
 
         return group;
@@ -366,6 +291,8 @@ public class GroupController extends BaseController
 		{
 			beginTransaction(db);
 			
+			//SystemUser systemUser = SystemUserController.getController().getSystemUserWithName(userName, db);
+			//groupVOList = toVOList(systemUser.getGroups());
 			groupVOList = getGroupVOList(userName, db);
 			
 			commitTransaction(db);
@@ -379,7 +306,24 @@ public class GroupController extends BaseController
 		return groupVOList;
 	}
 	
+	/**
+	 * This method gets a list of Groups for a particular systemUser.
+	 * @param systemUserId
+	 * @return
+	 * @throws SystemException
+	 * @throws Bug
+	 */
 	
+	public Collection getGroupList(String userName, Database db)  throws SystemException, Bug
+	{
+		Collection groupList = null;
+		
+		SystemUser systemUser = SystemUserController.getController().getSystemUserWithName(userName, db);
+		groupList = systemUser.getGroups();
+		
+		return groupList;
+	}
+
 	/**
 	 * 	Get the the groups for a user (very light)
 	 */
@@ -391,7 +335,7 @@ public class GroupController extends BaseController
         OQLQuery oql;
         try
         {										
-        	oql = db.getOQLQuery( "CALL SQL SELECT r.groupName, r.description, r.source, r.groupType, r.isActive, r.modifiedDateTime FROM cmGroup r, cmSystemUserGroup sur WHERE r.groupName = sur.groupName AND sur.userName = $1 AS org.infoglue.cms.entities.management.impl.simple.GroupImpl");
+        	oql = db.getOQLQuery( "CALL SQL SELECT r.groupName, r.description FROM cmGroup r, cmSystemUserGroup sur WHERE r.groupName = sur.groupName AND sur.userName = $1 AS org.infoglue.cms.entities.management.impl.simple.SmallGroupImpl");
         	oql.bind(userName);
         	
         	QueryResults results = oql.execute(Database.ReadOnly);
@@ -418,6 +362,8 @@ public class GroupController extends BaseController
         Database db = CastorDatabaseService.getDatabase();
         ConstraintExceptionBuffer ceb = new ConstraintExceptionBuffer();
 
+        Group group = null;
+
         beginTransaction(db);
 
         try
@@ -443,15 +389,16 @@ public class GroupController extends BaseController
         }
     }        
 
-    public void addUser(String groupName, String userName, Database db) throws ConstraintException, SystemException, Exception
+    public void addUser(String groupName, String userName, Database db) throws ConstraintException, SystemException
     {
-    	if(groupName != null && userName != null)
+		Group group = getGroupWithName(groupName, db);
+		
+		if(userName != null)
 		{
-    		SystemUserGroupImpl sug = new SystemUserGroupImpl();
-    		sug.setUserName(userName);
-    		sug.setGroupName(groupName);
+    		SystemUser systemUser = SystemUserController.getController().getSystemUserWithName(userName, db);
     		
-    		db.create(sug);
+        	group.getSystemUsers().add(systemUser);
+			systemUser.getGroups().add(group);
 		}
     }
 
@@ -485,51 +432,27 @@ public class GroupController extends BaseController
         }
     }        
 
-    public void removeUser(String groupName, String userName, Database db) throws ConstraintException, SystemException, Exception
+    public void removeUser(String groupName, String userName, Database db) throws ConstraintException, SystemException
     {
-    	OQLQuery oql = db.getOQLQuery( "SELECT sur FROM org.infoglue.cms.entities.management.impl.simple.SystemUserGroupImpl sur WHERE sur.groupName = $1 AND sur.userName = $2");
-    	oql.bind(groupName);
-    	oql.bind(userName);
-    	
-    	QueryResults results = oql.execute();
-		while (results.hasMore()) 
-        {
-			SystemUserGroupImpl sur = (SystemUserGroupImpl)results.nextElement();
-			db.remove(sur);
-        }
+		Group group = getGroupWithName(groupName, db);
 		
-		results.close();
-		oql.close();
-    }
-
-    public void removeUsers(String groupName) throws ConstraintException, SystemException, Exception
-    {
-    	Database db = CastorDatabaseService.getDatabase();
-        beginTransaction(db);
-        try
-        {
-        	OQLQuery oql = db.getOQLQuery( "SELECT sur FROM org.infoglue.cms.entities.management.impl.simple.SystemUserGroupImpl sur WHERE sur.groupName = $1");
-        	oql.bind(groupName);
-        	
-        	QueryResults results = oql.execute();
-    		while (results.hasMore()) 
-            {
-    			SystemUserGroupImpl sur = (SystemUserGroupImpl)results.nextElement();
-    			//System.out.println("Deleting " + sur.getUserName() + "/" + sur.getGroupName());
-    			db.remove(sur);
-            }
-    		
-    		results.close();
-    		oql.close();
-
-            commitTransaction(db);
-        }
-        catch(Exception e)
-        {
-            logger.error("An error occurred so we should not complete the transaction:" + e, e);
-            rollbackTransaction(db);
-            throw new SystemException(e.getMessage());
-        }
+		if(userName != null)
+		{
+			SystemUser systemUser = null;
+			Iterator systemUsersIterator = group.getSystemUsers().iterator();
+			while(systemUsersIterator.hasNext())
+			{
+				systemUser = (SystemUser)systemUsersIterator.next();
+	        	if(systemUser.getUserName().equals(userName))
+	        		break;
+			}
+			
+			if(systemUser != null)
+			{
+				group.getSystemUsers().remove(systemUser);
+				systemUser.getGroups().remove(group);
+			}
+		}
     }
 
 	/**
@@ -570,7 +493,7 @@ public class GroupController extends BaseController
 		
         try
         {										
-        	OQLQuery oql = db.getOQLQuery( "SELECT g FROM org.infoglue.cms.entities.management.impl.simple.GroupImpl g WHERE g.groupName = $1");
+        	OQLQuery oql = db.getOQLQuery( "SELECT g FROM org.infoglue.cms.entities.management.impl.simple.SmallGroupImpl g WHERE g.groupName = $1");
         	oql.bind(groupName);
         	
         	QueryResults results = oql.execute(Database.ReadOnly);

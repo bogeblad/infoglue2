@@ -25,16 +25,39 @@ package org.infoglue.cms.security;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Hashtable;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
 
+import javax.naming.Context;
+import javax.naming.NamingEnumeration;
+import javax.naming.NamingException;
+import javax.naming.directory.Attribute;
+import javax.naming.directory.Attributes;
+import javax.naming.directory.DirContext;
+import javax.naming.directory.InitialDirContext;
+import javax.naming.directory.SearchControls;
+import javax.naming.directory.SearchResult;
+
 import org.apache.log4j.Logger;
 import org.exolab.castor.jdo.Database;
+import org.infoglue.cms.controllers.kernel.impl.simple.CastorDatabaseService;
+import org.infoglue.cms.controllers.kernel.impl.simple.GroupController;
+import org.infoglue.cms.controllers.kernel.impl.simple.RoleController;
+import org.infoglue.cms.controllers.kernel.impl.simple.SystemUserController;
+import org.infoglue.cms.entities.kernel.BaseEntityVO;
+import org.infoglue.cms.entities.management.Group;
 import org.infoglue.cms.entities.management.GroupVO;
+import org.infoglue.cms.entities.management.Role;
 import org.infoglue.cms.entities.management.RoleVO;
+import org.infoglue.cms.entities.management.SystemUser;
 import org.infoglue.cms.entities.management.SystemUserVO;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.util.CmsPropertyHandler;
+import org.infoglue.cms.util.sorters.ReflectionComparator;
 
 /**
  * @author Mattias Bogeblad
@@ -42,13 +65,14 @@ import org.infoglue.cms.util.CmsPropertyHandler;
  * This authorization module works firstly against an JDBC source and second against the ordinary infoglue database.
  */
 
-public class CombinedJDBCBasicAuthorizationModule extends BasicAuthorizationModule implements AuthorizationModule, Serializable
+public class CombinedJDBCBasicAuthorizationModule implements AuthorizationModule, Serializable
 {
     private final static Logger logger = Logger.getLogger(CombinedJDBCBasicAuthorizationModule.class.getName());
 
 	protected Properties extraProperties = null;
 	private Database transactionObject 	= null;
 
+	private AuthorizationModule mainAuthorizationModule = null;
 	private AuthorizationModule authorizationModule = null;
 
 	private AuthorizationModule getMainAuthorizationModule() throws SystemException
@@ -60,6 +84,7 @@ public class CombinedJDBCBasicAuthorizationModule extends BasicAuthorizationModu
 			logger.info("authorizationModule:" + authorizationModule);
 			authorizationModule.setExtraProperties(this.extraProperties);
 			authorizationModule.setTransactionObject(this.getTransactionObject());
+			//logger.info("InfoGlueAuthenticationFilter.extraProperties:" + this.extraProperties);
     	}
     	catch(Exception e)
     	{
@@ -79,6 +104,7 @@ public class CombinedJDBCBasicAuthorizationModule extends BasicAuthorizationModu
 			logger.info("authorizationModule:" + authorizationModule);
 			authorizationModule.setExtraProperties(this.extraProperties);
 			authorizationModule.setTransactionObject(this.getTransactionObject());
+			//logger.info("InfoGlueAuthenticationFilter.extraProperties:" + this.extraProperties);
     	}
     	catch(Exception e)
     	{
@@ -157,6 +183,33 @@ public class CombinedJDBCBasicAuthorizationModule extends BasicAuthorizationModu
 	}
 
 	
+	/**
+	 * This method gets a users roles
+	 */
+
+	public List authorizeUser(String userName) throws Exception
+	{
+		List roles = new ArrayList();
+		
+		try
+		{
+			roles.addAll(getMainAuthorizationModule().authorizeUser(userName));
+		}		
+		catch(Exception e)
+		{
+		}
+
+		try
+		{
+			roles.addAll(getFallbackAuthorizationModule().authorizeUser(userName));
+		}		
+		catch(Exception e)
+		{
+		}
+
+		return roles;
+	}
+
 	
 	/**
 	 * This method gets a list of roles
@@ -239,13 +292,13 @@ public class CombinedJDBCBasicAuthorizationModule extends BasicAuthorizationModu
 		return users;
 	}
 	
-	public List getFilteredUsers(Integer offset, Integer limit,	String sortProperty, String direction, String searchString, boolean populateRolesAndGroups) throws Exception 
+	public List getFilteredUsers(String searchString) throws Exception 
 	{
 		List users = new ArrayList();
 		
 		try
 		{
-			users.addAll(getMainAuthorizationModule().getFilteredUsers(offset, limit, sortProperty, direction, searchString, populateRolesAndGroups));
+			users.addAll(getMainAuthorizationModule().getFilteredUsers(searchString));
 		}		
 		catch(Exception e)
 		{
@@ -253,7 +306,7 @@ public class CombinedJDBCBasicAuthorizationModule extends BasicAuthorizationModu
 
 		try
 		{
-			users.addAll(getFallbackAuthorizationModule().getFilteredUsers(offset, limit, sortProperty, direction, searchString, populateRolesAndGroups));
+			users.addAll(getFallbackAuthorizationModule().getFilteredUsers(searchString));
 		}		
 		catch(Exception e)
 		{
@@ -261,6 +314,7 @@ public class CombinedJDBCBasicAuthorizationModule extends BasicAuthorizationModu
 		
 		return users;
 	}
+
 
 	
 	public List getUsers(String roleName) throws Exception
@@ -487,5 +541,6 @@ public class CombinedJDBCBasicAuthorizationModule extends BasicAuthorizationModu
     {
         return this.transactionObject;
     }
+
 
 }

@@ -38,16 +38,20 @@ import java.util.Properties;
 import org.apache.log4j.Logger;
 import org.exolab.castor.jdo.Database;
 import org.infoglue.cms.controllers.kernel.impl.simple.BaseController;
+import org.infoglue.cms.controllers.kernel.impl.simple.CastorDatabaseService;
 import org.infoglue.cms.controllers.kernel.impl.simple.GroupController;
 import org.infoglue.cms.controllers.kernel.impl.simple.RoleController;
+import org.infoglue.cms.controllers.kernel.impl.simple.SystemUserController;
 import org.infoglue.cms.entities.kernel.BaseEntityVO;
 import org.infoglue.cms.entities.management.Group;
 import org.infoglue.cms.entities.management.GroupVO;
 import org.infoglue.cms.entities.management.Role;
 import org.infoglue.cms.entities.management.RoleVO;
+import org.infoglue.cms.entities.management.SystemUser;
 import org.infoglue.cms.entities.management.SystemUserVO;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.util.CmsPropertyHandler;
+import org.infoglue.deliver.util.Timer;
 
 /**
  * @author Mattias Bogeblad
@@ -55,7 +59,7 @@ import org.infoglue.cms.util.CmsPropertyHandler;
  * This authentication module authenticates an user against the ordinary infoglue database.
  */
 
-public class InfoGlueJDBCAuthorizationModule extends BasicAuthorizationModule implements AuthorizationModule, Serializable
+public class InfoGlueJDBCAuthorizationModule extends BaseController implements AuthorizationModule, Serializable
 {
     private final static Logger logger = Logger.getLogger(InfoGlueJDBCAuthorizationModule.class.getName());
 
@@ -395,33 +399,41 @@ public class InfoGlueJDBCAuthorizationModule extends BasicAuthorizationModule im
 		
 		if(transactionObject == null)
 		{
-			List<RoleVO> roleList = RoleController.getController().getRoleVOList(userName);
-			for(RoleVO role : roleList)
+			List roleVOList = RoleController.getController().getRoleVOList(userName);
+			Iterator roleVOListIterator = roleVOList.iterator();
+			while(roleVOListIterator.hasNext())
 			{
-				InfoGlueRole infoGlueRole = new InfoGlueRole(role.getRoleName(), role.getDescription(), this);
+				RoleVO roleVO = (RoleVO)roleVOListIterator.next();
+				InfoGlueRole infoGlueRole = new InfoGlueRole(roleVO.getRoleName(), roleVO.getDescription(), this);
 				roles.add(infoGlueRole);
 			}
 	
-			List<GroupVO> groupList = GroupController.getController().getGroupVOList(userName);
-			for(GroupVO group : groupList)
+			List groupVOList = GroupController.getController().getGroupVOList(userName);
+			Iterator groupVOListIterator = groupVOList.iterator();
+			while(groupVOListIterator.hasNext())
 			{
-				InfoGlueGroup infoGlueGroup = new InfoGlueGroup(group.getGroupName(), group.getGroupName(), group.getDescription(), group.getSource(), group.getGroupType(), group.getIsActive(), group.getModifiedDateTime(), this);
+			    GroupVO groupVO = (GroupVO)groupVOListIterator.next();
+				InfoGlueGroup infoGlueGroup = new InfoGlueGroup(groupVO.getGroupName(), groupVO.getDescription(), this);
 				groups.add(infoGlueGroup);
 			}
 		}
 		else
 		{
-			List<RoleVO> roleList = RoleController.getController().getRoleVOList(userName, transactionObject);
-			for(RoleVO role : roleList)
+			Collection roleList = RoleController.getController().getRoleList(userName, transactionObject);
+			Iterator roleListIterator = roleList.iterator();
+			while(roleListIterator.hasNext())
 			{
+				Role role = (Role)roleListIterator.next();
 				InfoGlueRole infoGlueRole = new InfoGlueRole(role.getRoleName(), role.getDescription(), this);
 				roles.add(infoGlueRole);
 			}
 	
-			List<GroupVO> groupList = GroupController.getController().getGroupVOList(userName, transactionObject);
-			for(GroupVO group : groupList)
+			Collection groupList = GroupController.getController().getGroupList(userName, transactionObject);
+			Iterator groupListIterator = groupList.iterator();
+			while(groupListIterator.hasNext())
 			{
-				InfoGlueGroup infoGlueGroup = new InfoGlueGroup(group.getGroupName(), group.getGroupName(), group.getDescription(), group.getSource(), group.getGroupType(), group.getIsActive(), group.getModifiedDateTime(), this);
+			    Group group = (Group)groupListIterator.next();
+				InfoGlueGroup infoGlueGroup = new InfoGlueGroup(group.getGroupName(), group.getDescription(), this);
 				groups.add(infoGlueGroup);
 			}
 		}
@@ -662,7 +674,7 @@ public class InfoGlueJDBCAuthorizationModule extends BasicAuthorizationModule im
 		return getUsers();
 	}
 	
-	public List getFilteredUsers(Integer offset, Integer limit,	String sortProperty, String direction, String searchString, boolean populateRolesAndGroups) throws Exception 
+	public List getFilteredUsers(String searchString) throws Exception 
 	{
 		return getUsers();
 	}
@@ -823,27 +835,10 @@ public class InfoGlueJDBCAuthorizationModule extends BasicAuthorizationModule im
         this.transactionObject = (Database)transactionObject; 
     }
 
-	@Override
-	public Integer getRoleCount(String searchString) throws Exception 
-	{
-		return getRoles().size();
-	}
-
-	@Override
-	public Integer getGroupCount(String searchString) throws Exception 
-	{
-		return getGroups().size();
-	}
-
-	@Override
-	public Integer getUserCount(String searchString) throws Exception 
-	{
-		return getUsers().size();
-	}
-
 	public BaseEntityVO getNewVO()
 	{
 		return null;
 	}
+
 
 }

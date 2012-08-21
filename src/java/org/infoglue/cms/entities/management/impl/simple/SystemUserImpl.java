@@ -23,6 +23,8 @@
 
 package org.infoglue.cms.entities.management.impl.simple;
 
+import java.util.ArrayList;
+
 import org.infoglue.cms.entities.kernel.BaseEntityVO;
 import org.infoglue.cms.entities.management.SystemUser;
 import org.infoglue.cms.entities.management.SystemUserVO;
@@ -30,6 +32,8 @@ import org.infoglue.cms.exception.ConstraintException;
 
 public class SystemUserImpl implements SystemUser
 {
+	private java.util.Collection roles = new ArrayList();
+	private java.util.Collection groups = new ArrayList();
     private SystemUserVO valueObject = new SystemUserVO();
      
     public SystemUserVO getValueObject()
@@ -121,34 +125,23 @@ public class SystemUserImpl implements SystemUser
         this.valueObject.setEmail(email);
     }
       
-    public String getSource()
+    public java.util.Collection getRoles()
     {
-    	return this.valueObject.getSource();
+        return this.roles;
+    }
+            
+    public void setRoles (java.util.Collection roles)
+    {
+        this.roles = roles;
     }
     
-    public void setSource(String source)
+    public java.util.Collection getGroups()
     {
-    	this.valueObject.setSource(source);
-    }
-
-    public Boolean getIsActive()
-    {
-    	return this.valueObject.getIsActive();
+        return groups;
     }
     
-    public void setIsActive(Boolean isActive)
+    public void setGroups(java.util.Collection groups)
     {
-    	this.valueObject.setIsActive(isActive);
+        this.groups = groups;
     }
-
-    public java.util.Date getModifiedDateTime()
-    {
-    	return this.valueObject.getModifiedDateTime();
-    }
-    
-    public void setModifiedDateTime(java.util.Date modifiedDateTime)
-    {
-    	this.valueObject.setModifiedDateTime(modifiedDateTime);
-    }
-
 }        

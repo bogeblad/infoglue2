@@ -275,6 +275,14 @@ public class FileHelper
 		
 		if(logger.isInfoEnabled())
 			logger.info("charEncoding:" + charEncoding);
+		/*
+		System.out.println("charEncoding: " + charEncoding);
+		System.out.println("COOL: " + "324324234 Mattias åäö ÅÄÖ");
+		System.out.println("NONE: " + new String(b).substring(0, 200));
+		System.out.println("ISO: " + new String(b, "ISO-8859-1").substring(0, 200));
+		System.out.println("UTF8: " + new String(b, "UTF-8").substring(0, 200));
+		return new String(b, charEncoding);
+		*/
 		
 		Timer t = null;
 		if(logger.isInfoEnabled())

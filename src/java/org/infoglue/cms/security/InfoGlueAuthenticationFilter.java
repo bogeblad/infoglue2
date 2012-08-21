@@ -338,7 +338,7 @@ public class InfoGlueAuthenticationFilter implements Filter
 				logger.info("Getting the principal from user name:" + authenticatedUserName);
 				
 				InfoGluePrincipal user = getAuthenticatedUser(authenticatedUserName);
-				if(user == null || !user.getIsActive() || (!user.getIsAdministrator() && !hasAuthorizedRole(user)))
+				if(user == null || (!user.getIsAdministrator() && !hasAuthorizedRole(user)))
 				{	
 					//throw new Exception("This user is not authorized to log in...");
 					httpServletResponse.sendRedirect("unauthorizedLogin.jsp");

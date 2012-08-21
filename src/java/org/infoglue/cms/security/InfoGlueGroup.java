@@ -24,9 +24,6 @@
 package org.infoglue.cms.security;
 
 import java.io.Serializable;
-import java.util.Date;
-
-import org.infoglue.cms.util.DateHelper;
 
 
 /**
@@ -42,10 +39,6 @@ public class InfoGlueGroup implements Serializable
 	private final String name;
 	private final String displayName;
 	private final String description;
-	private final String source;
-	private final String groupType;
-	private final Boolean isActive;
-	private final Date modifiedDateTime;
 	private final AuthorizationModule autorizationModule;
 	
 	public InfoGlueGroup(String name, String description, AuthorizationModule autorizationModule)
@@ -53,10 +46,6 @@ public class InfoGlueGroup implements Serializable
 		this.name = name;
 		this.displayName = name;
 		this.description = description;
-		this.source = "infoglue";
-		this.groupType = "";
-		this.isActive = true;
-		this.modifiedDateTime = DateHelper.getSecondPreciseDate();
 		this.autorizationModule = autorizationModule;
 	}
 
@@ -65,25 +54,9 @@ public class InfoGlueGroup implements Serializable
 		this.name = name;
 		this.displayName = displayName;
 		this.description = description;
-		this.source = "infoglue";
-		this.groupType = "";
-		this.isActive = true;
-		this.modifiedDateTime = DateHelper.getSecondPreciseDate();
 		this.autorizationModule = autorizationModule;
 	}
-
-	public InfoGlueGroup(String name, String displayName, String description, String source, String groupType, Boolean isActive, Date modifiedDateTime, AuthorizationModule autorizationModule)
-	{
-		this.name = name;
-		this.displayName = displayName;
-		this.description = description;
-		this.source = source;
-		this.groupType = groupType;
-		this.isActive = isActive;
-		this.modifiedDateTime = modifiedDateTime;
-		this.autorizationModule = autorizationModule;
-	}
-
+	
 	public String getName()
 	{
 		return name;
@@ -97,26 +70,6 @@ public class InfoGlueGroup implements Serializable
 	public String getDescription()
 	{
 		return description;
-	}
-	
-	public String getSource()
-	{
-		return source;
-	}
-	
-	public String getGroupType()
-	{
-		return groupType;
-	}
-	
-	public Boolean getIsActive()
-	{
-		return isActive;
-	}
-	
-	public Date getModifiedDateTime()
-	{
-		return modifiedDateTime;
 	}
 	
 	public String toString()

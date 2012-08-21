@@ -23,25 +23,16 @@
 
 package org.infoglue.cms.entities.management;
 
-import java.util.Date;
-
 import org.infoglue.cms.entities.kernel.BaseEntityVO;
 import org.infoglue.cms.entities.management.impl.simple.GroupImpl;
 import org.infoglue.cms.util.ConstraintExceptionBuffer;
-import org.infoglue.cms.util.DateHelper;
 import org.infoglue.cms.util.validators.ValidatorFactory;
 
 public class GroupVO  implements BaseEntityVO
 {
-	public static final String INFOGLUE = "Infoglue";
-
-	private String groupName;
-	private String description;
-	private String source = INFOGLUE;
-	private String groupType = "";
-	private Boolean isActive = true;
-    private Date modifiedDateTime = DateHelper.getSecondPreciseDate();
-	
+	private java.lang.String groupName;
+	private java.lang.String description;
+  
 	public String toString()
 	{  
 		return getGroupName();
@@ -74,46 +65,6 @@ public class GroupVO  implements BaseEntityVO
     public void setDescription(java.lang.String description)
     {
         this.description = description;
-    }
-    
-    public String getSource()
-    {
-    	return this.source;
-    }
-    
-    public void setSource(String source)
-    {
-    	this.source = source;
-    }
-
-    public String getGroupType()
-    {
-    	return this.groupType;
-    }
-    
-    public void setGroupType(String groupType)
-    {
-    	this.groupType = groupType;
-    }
-
-    public Boolean getIsActive()
-    {
-    	return this.isActive;
-    }
-    
-    public void setIsActive(Boolean isActive)
-    {
-    	this.isActive = isActive;
-    }
-
-    public java.util.Date getModifiedDateTime()
-    {
-    	return this.modifiedDateTime;
-    }
-    
-    public void setModifiedDateTime(java.util.Date modifiedDateTime)
-    {
-    	this.modifiedDateTime = modifiedDateTime;
     }
     
 	/**

@@ -28,7 +28,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import org.apache.commons.codec.binary.Base64;
 import org.apache.log4j.Logger;
 import org.infoglue.cms.applications.common.ImageButton;
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
@@ -160,38 +159,6 @@ public class ViewManagementToolToolBarAction extends InfoGlueAbstractAction
 
 	public void setRoleName(String roleName)
 	{
-		if(roleName != null)
-		{
-    		try
-    		{
-				logger.info("roleName:" + roleName);
-				byte[] bytes = Base64.decodeBase64(roleName);
-				String decodedRoleName = new String(bytes, "utf-8");
-				logger.info("decodedRoleName:" + decodedRoleName);
-				if(RoleControllerProxy.getController().roleExists(decodedRoleName))
-				{
-					roleName = decodedRoleName;
-				}
-				else
-				{
-					logger.info("No match on base64-based roleName:" + roleName);
-					
-					String fromEncoding = CmsPropertyHandler.getURIEncoding();
-					String toEncoding = "utf-8";
-					
-					logger.info("roleName:" + roleName);
-					String testRoleName = new String(roleName.getBytes(fromEncoding), toEncoding);
-					if(testRoleName.indexOf((char)65533) == -1)
-						roleName = testRoleName;
-					
-					logger.info("roleName after:" + roleName);
-				}
-    		}
-    		catch (Exception e) 
-    		{
-    			logger.warn("Problem reading role name:" + e.getMessage(), e);
-			}
-		}
 		this.roleName = roleName;
 	}
 
@@ -201,44 +168,7 @@ public class ViewManagementToolToolBarAction extends InfoGlueAbstractAction
     }
     public void setGroupName(String groupName)
     {
-    	if(groupName != null)
-		{
-    		try
-    		{
-				logger.info("groupName:" + groupName);
-				byte[] bytes = Base64.decodeBase64(groupName);
-				String decodedGroupName = new String(bytes, "utf-8");
-				logger.info("decodedGroupName:" + decodedGroupName);
-				if(GroupControllerProxy.getController().groupExists(decodedGroupName))
-				{
-					groupName = decodedGroupName;
-				}
-				else
-				{
-					logger.info("No match on base64-based groupName:" + groupName);
-					
-					String fromEncoding = CmsPropertyHandler.getURIEncoding();
-					String toEncoding = "utf-8";
-					
-					logger.info("groupName:" + groupName);
-					String testGroupName = new String(groupName.getBytes(fromEncoding), toEncoding);
-					if(logger.isInfoEnabled())
-					{
-						for(int i=0; i<groupName.length(); i++)
-							logger.info("c:" + groupName.charAt(i) + "=" + (int)groupName.charAt(i));
-					}
-					if(testGroupName.indexOf((char)65533) == -1)
-						groupName = testGroupName;
-					
-					logger.info("groupName after:" + groupName);
-				}
-    		}
-    		catch (Exception e) 
-    		{
-    			logger.warn("Problem reading group name:" + e.getMessage(), e);
-			}
-		}
-    	this.groupName = groupName;
+        this.groupName = groupName;
     }
 
 	public Integer getFunctionId()

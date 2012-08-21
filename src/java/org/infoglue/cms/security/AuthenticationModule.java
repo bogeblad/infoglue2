@@ -169,9 +169,6 @@ public abstract class AuthenticationModule
 		return authenticationModule;
 	}
 	
-	/**
-	 * This method takes a request object and matches the clients IP (or X-Forwarded IP if allowed) against the system defined IP:s.
-	 */
 	private static boolean fallBackToBasicBasedOnIP(HttpServletRequest request) 
 	{
 		Timer t = new Timer();
