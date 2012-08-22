@@ -579,11 +579,18 @@ public abstract class BaseController
         }
         catch(Exception e)
         {
-			logger.warn("Error getting object. Message: " + e.getMessage() + ". Retrying...");
 			try
 			{
 				if(retry)
+				{
+					logger.warn("Error getting object. Message: " + e.getMessage() + ". Retrying...");
 					object = getObjectWithIdAsReadOnly(arg, id, db, false);
+				}
+				else
+				{
+					logger.warn("Error getting object. Message: " + e.getMessage() + ". No retrying again.");
+					throw new SystemException("An error occurred when we tried to fetch the object " + arg.getName() + ". Reason:" + e.getMessage(), e);    
+				}
 			}
 			catch(Exception e2)
 			{
@@ -728,14 +735,6 @@ public abstract class BaseController
 	
     public static BaseEntityVO getVOWithId(Class arg, Integer id, Database db) throws SystemException, Bug
     {
-    	/*
-    	if(id == null)
-    	{
-    		System.out.println("Got null id... returning null");
-    		return null;
-    	}
-    	*/
-    	
         IBaseEntity vo = null;
         try
         {

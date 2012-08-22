@@ -324,11 +324,18 @@ public class GroupPropertiesController extends BaseController
 		}
 		catch(Exception e)
         {
-			logger.warn("Error getting groupPropertiesList. Message: " + e.getMessage() + ". Retrying...");
 			try
 			{
 				if(retry)
+				{
+					logger.warn("Error getting groupPropertiesList. Message: " + e.getMessage() + ". Retrying...");
 					groupPropertiesList = getGroupPropertiesList(groupName, languageId, db, readOnly, false);
+				}
+				else
+				{
+					logger.warn("Error getting groupPropertiesList. Message: " + e.getMessage() + ". Not retrying...");
+					throw e;
+				}
 			}
 			catch(Exception e2)
 			{
@@ -1027,7 +1034,8 @@ public class GroupPropertiesController extends BaseController
 		}
 		catch(Exception e)
 		{
-			logger.warn("An error getting related contents:" + e.getMessage(), e);
+			logger.warn("An error getting related contents:" + e.getMessage());
+			logger.info("An error getting related contents:" + e.getMessage(), e);
 		}
 		
 		return contents;
@@ -1103,7 +1111,8 @@ public class GroupPropertiesController extends BaseController
 		}
 		catch(Exception e)
 		{
-			logger.warn("An error getting related contents:" + e.getMessage(), e);
+			logger.warn("An error getting related pages:" + e.getMessage());
+			logger.info("An error getting related pages:" + e.getMessage(), e);
 		}
 		
 		return siteNodes;

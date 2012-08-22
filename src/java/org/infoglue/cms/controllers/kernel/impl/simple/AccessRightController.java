@@ -410,11 +410,18 @@ public class AccessRightController extends BaseController
 		}
 		catch(Exception e)
 		{
-			logger.warn("Error getting access rights. Message: " + e.getMessage() + ". Retrying...");
 			try
 			{
 				if(retry)
+				{
+					logger.warn("Error getting access rights. Message: " + e.getMessage() + ". Retrying...");
 					accessRightList = getAccessRightListOnlyReadOnly(interceptionPointId, parameters, db, false);
+				}
+				else
+				{
+					logger.warn("Error getting access rights. Message: " + e.getMessage() + ". Not retrying...");
+					throw new SystemException("An error occurred when we tried to fetch a list of Access rights. Reason:" + e.getMessage(), e);    
+				}
 			}
 			catch(Exception e2)
 			{

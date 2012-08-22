@@ -153,11 +153,18 @@ public class SiteNodeController extends BaseController
     	}
         catch(Exception e)
         {
-			logger.warn("An error occurred when we tried to fetch the SiteNode. Reason:" + e.getMessage() + ". Retrying...");
 			try
 			{
 				if(retry)
+				{
+					logger.warn("An error occurred when we tried to fetch the SiteNode. Reason:" + e.getMessage() + ". Retrying...");
 					siteNode = getSiteNodeWithId(siteNodeId, db, readOnly, false);
+				}
+				else
+				{
+					logger.warn("An error occurred when we tried to fetch the SiteNode. Reason:" + e.getMessage() + ". Not retrying...");
+		            throw new SystemException("An error occurred when we tried to fetch the SiteNode. Reason:" + e.getMessage(), e);    
+				}
 			}
 			catch(Exception e2)
 			{
