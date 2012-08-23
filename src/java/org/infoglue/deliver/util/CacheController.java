@@ -64,7 +64,10 @@ import org.infoglue.cms.entities.content.impl.simple.SmallContentVersionImpl;
 import org.infoglue.cms.entities.content.impl.simple.SmallDigitalAssetImpl;
 import org.infoglue.cms.entities.content.impl.simple.SmallestContentVersionImpl;
 import org.infoglue.cms.entities.content.impl.simple.SmallishContentImpl;
+import org.infoglue.cms.entities.management.impl.simple.AccessRightGroupImpl;
 import org.infoglue.cms.entities.management.impl.simple.AccessRightImpl;
+import org.infoglue.cms.entities.management.impl.simple.AccessRightRoleImpl;
+import org.infoglue.cms.entities.management.impl.simple.AccessRightUserImpl;
 import org.infoglue.cms.entities.management.impl.simple.AvailableServiceBindingImpl;
 import org.infoglue.cms.entities.management.impl.simple.CategoryImpl;
 import org.infoglue.cms.entities.management.impl.simple.ContentTypeDefinitionImpl;
@@ -1665,6 +1668,9 @@ public class CacheController extends Thread
 			clearCache(db, InterceptionPointImpl.class);
 			clearCache(db, InterceptorImpl.class);
 			clearCache(db, AccessRightImpl.class);
+			clearCache(db, AccessRightRoleImpl.class);
+			clearCache(db, AccessRightGroupImpl.class);
+			clearCache(db, AccessRightUserImpl.class);
 	
 			clearCache(db, RolePropertiesImpl.class);
 			clearCache(db, UserPropertiesImpl.class);
