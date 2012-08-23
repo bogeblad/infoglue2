@@ -164,6 +164,11 @@ public class AccessRightController extends BaseController
 
 	public List getAccessRightGroupVOList(Integer accessRightId) throws SystemException, Bug
 	{
+		return getAccessRightGroupVOList(accessRightId, true);
+	}
+
+	public List getAccessRightGroupVOList(Integer accessRightId, boolean retry) throws SystemException, Bug
+	{
 		List accessRightGroupVOList = new ArrayList();
 		
 		Database db = CastorDatabaseService.getDatabase();
@@ -182,14 +187,34 @@ public class AccessRightController extends BaseController
 		} 
 		catch (Exception e) 
 		{
-		    e.printStackTrace();
-			logger.info("An error occurred so we should not complete the transaction:" + e);
+		    logger.info("An error occurred so we should not complete the transaction:" + e);
 			rollbackTransaction(db);
-			throw new SystemException(e.getMessage());
+
+			try
+		    {
+				CacheController.clearCache(db, AccessRightImpl.class);
+				CacheController.clearCache(db, AccessRightRoleImpl.class);
+				CacheController.clearCache(db, AccessRightGroupImpl.class);
+				CacheController.clearCache(db, AccessRightUserImpl.class);
+
+				if(retry)
+				{
+					accessRightGroupVOList = getAccessRightGroupVOList(accessRightId, false);
+				}
+				else
+				{
+					throw new SystemException(e.getMessage());					
+				}
+		    }
+		    catch (Exception e2) 
+		    {
+		    	throw new SystemException(e2.getMessage());		
+			}
 		}
 		
 		return accessRightGroupVOList;	
 	}
+	
 	
 	public List getAccessRightVOList(Integer interceptionPointId, String parameters, String roleName) throws SystemException, Bug
 	{
