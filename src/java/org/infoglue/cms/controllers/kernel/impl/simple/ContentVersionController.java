@@ -35,6 +35,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.xerces.parsers.DOMParser;
 import org.exolab.castor.jdo.Database;
@@ -1005,25 +1006,32 @@ public class ContentVersionController extends BaseController
         beginTransaction(db);
 		try
         {
-		    ContentVersion contentVersion = this.getLatestActiveContentVersion(contentId, languageId, db);
-		    
+		    ContentVersionVO contentVersionVO = this.getLatestActiveContentVersionVO(contentId, languageId, db);
+	    	ContentVersion contentVersion = getContentVersionWithId(contentVersionVO.getId(), db);
+
 		    Collection digitalAssets = contentVersion.getDigitalAssets();
+		    logger.info("digitalAssets:" + digitalAssets.size());
 			Iterator assetIterator = digitalAssets.iterator();
 			while(assetIterator.hasNext())
 			{
 				DigitalAsset currentDigitalAsset = (DigitalAsset)assetIterator.next();
+				logger.info("currentDigitalAsset:" + currentDigitalAsset.getId() + "/" + currentDigitalAsset.getAssetKey());
 				if(currentDigitalAsset.getAssetKey().equals(assetKey))
 				{
 		            currentDigitalAsset.getContentVersions().remove(contentVersion);
+		            logger.info("versions:" + currentDigitalAsset.getContentVersions().size());
 					assetIterator.remove();
 		            if(currentDigitalAsset.getContentVersions().size() == 0)
-		            	db.remove(currentDigitalAsset);
-					break;
+		            {
+		            	logger.info("Removing asset");
+						db.remove(currentDigitalAsset);
+		            }
+		            break;
 				}
 			}
 			
 			commitTransaction(db);
-		}
+        }
         catch(Exception e)
         {
             logger.error("An error occurred so we should not complete the transaction:" + e);
