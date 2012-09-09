@@ -1386,6 +1386,65 @@ public abstract class BaseController
         return tableCount;
 	}
 
+	public static TableCount getTableCount(String tableName, String columnName) throws Exception
+	{
+		TableCount tableCount = null;
+		
+		Database db = CastorDatabaseService.getDatabase();
+
+        beginTransaction(db);
+
+        try
+        {
+        	OQLQuery oql = db.getOQLQuery("CALL SQL SELECT count(" + columnName + ") FROM " + tableName + " AS org.infoglue.cms.entities.management.TableCount");
+
+        	QueryResults results = oql.execute();
+    		if(results.hasMore()) 
+            {
+    			tableCount = (TableCount)results.next();
+    		}
+
+    		results.close();
+    		oql.close();
+        	
+            commitTransaction(db);
+        }
+        catch(Exception e)
+        {
+            logger.error("An error occurred so we should not complete the transaction:" + e);
+            logger.warn("An error occurred so we should not complete the transaction:" + e, e);
+            rollbackTransaction(db);
+            throw new SystemException(e.getMessage());
+        }
+
+        return tableCount;
+	}
+
+    public static Category getCastorCategory()
+    {
+        Enumeration enumeration = Logger.getCurrentCategories();
+        while(enumeration.hasMoreElements())
+        {
+            Category category = (Category)enumeration.nextElement();
+            if(category.getName().equalsIgnoreCase("org.exolab.castor"))
+                return category;
+        }
+        
+        return null;
+    }
+
+    public static Category getCastorJDOCategory()
+    {
+        Enumeration enumeration = Logger.getCurrentCategories();
+        while(enumeration.hasMoreElements())
+        {
+            Category category = (Category)enumeration.nextElement();
+            if(category.getName().equalsIgnoreCase("org.exolab.castor.jdo"))
+                return category;
+        }
+        
+        return null;
+    }
 
 	public abstract BaseEntityVO getNewVO();
 }

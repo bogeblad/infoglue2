@@ -69,48 +69,60 @@ public class ViewDiagnosticCenterAction extends InfoGlueAbstractAction
     	this.publicDeliverUrls = CmsPropertyHandler.getPublicDeliveryUrls();
     	
     	String tableName = "cmSiteNode";
+    	String columnName = "repositoryId";
     	if(CmsPropertyHandler.getUseShortTableNames().equalsIgnoreCase("true"))
     		tableName = "cmSiNo";
 
-    	TableCount tableCount = BaseController.getTableCount(tableName);
+    	TableCount tableCount = BaseController.getTableCount(tableName, columnName);
     	if(tableCount != null)
     		numberOfSiteNodes = tableCount.getCount();
 
     	tableName = "cmSiteNodeVersion";
+    	columnName = "siteNodeId";
     	if(CmsPropertyHandler.getUseShortTableNames().equalsIgnoreCase("true"))
+    	{
     		tableName = "cmSiNoVer";
+        	columnName = "siNoId";
+    	}
 
-    	tableCount = BaseController.getTableCount(tableName);
+    	tableCount = BaseController.getTableCount(tableName, columnName);
     	if(tableCount != null)
     		numberOfSiteNodeVersions = tableCount.getCount();
 
     	tableName = "cmContent";
+    	columnName = "repositoryId";
     	if(CmsPropertyHandler.getUseShortTableNames().equalsIgnoreCase("true"))
     		tableName = "cmCont";
 
-    	tableCount = BaseController.getTableCount(tableName);
+    	tableCount = BaseController.getTableCount(tableName, columnName);
     	if(tableCount != null)
     		numberOfContents = tableCount.getCount();
 
     	tableName = "cmContentVersion";
+    	columnName = "contentId";
     	if(CmsPropertyHandler.getUseShortTableNames().equalsIgnoreCase("true"))
+    	{
     		tableName = "cmContVer";
+        	columnName = "contId";
+    	}
 
-    	tableCount = BaseController.getTableCount(tableName);
+    	tableCount = BaseController.getTableCount(tableName, columnName);
     	if(tableCount != null)
     		numberOfContentVersions = tableCount.getCount();
 
     	tableName = "cmDigitalAsset";
+    	columnName = "assetFileSize";
     	if(CmsPropertyHandler.getUseShortTableNames().equalsIgnoreCase("true"))
     		tableName = "cmDigAsset";
     	
-    	tableCount = BaseController.getTableCount(tableName);
+    	tableCount = BaseController.getTableCount(tableName, columnName);
     	if(tableCount != null)
     		numberOfDigitalAssets = tableCount.getCount();
 
     	tableCount = DigitalAssetController.getNumberOfUnusedAssets();
     	if(tableCount != null)
     		numberOfUnusedDigitalAssets = tableCount.getCount();
+
     	
         return "success";
     }
