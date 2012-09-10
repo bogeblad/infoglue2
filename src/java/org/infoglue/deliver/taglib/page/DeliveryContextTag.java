@@ -26,6 +26,7 @@ package org.infoglue.deliver.taglib.page;
 import javax.servlet.jsp.JspException;
 
 import org.infoglue.deliver.taglib.TemplateControllerTag;
+import org.infoglue.deliver.util.DefeatCacheParameters;
 
 /**
  * Tag for setting parameters on the delivery context;
@@ -112,9 +113,9 @@ public class DeliveryContextTag extends TemplateControllerTag
 
     public void setDefeatCaches(final String defeatCachesVariable) throws JspException
     {
-        Boolean defeatCaches = (Boolean)evaluate("DeliverContextTag", "defeatCaches", defeatCachesVariable, Boolean.class);
-		if(defeatCaches != null)
-			getController().getDeliveryContext().setDefeatCaches(defeatCaches);
+    	DefeatCacheParameters defeatCacheParameters = (DefeatCacheParameters)evaluate("DeliverContextTag", "defeatCaches", defeatCachesVariable, DefeatCacheParameters.class);
+		if(defeatCacheParameters != null)
+			getController().getDeliveryContext().setDefeatCaches(defeatCacheParameters.getDefeatCache(), defeatCacheParameters.getEntities());
     }
 
 }

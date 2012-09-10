@@ -24,7 +24,6 @@
 package org.infoglue.deliver.applications.databeans;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -36,7 +35,6 @@ import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.jsp.JspException;
 
 import org.apache.log4j.Logger;
 import org.infoglue.cms.util.CmsPropertyHandler;
@@ -466,10 +464,10 @@ public class DeliveryContext implements UsageListener
 		this.evaluateFullPage = evaluateFullPage;
 	}
 
-    public void setDefeatCaches(boolean defeatCaches)
+    public void setDefeatCaches(boolean defeatCaches, Map<Class, List<Object>> entities)
     {
         this.defeatCaches = defeatCaches;
-        CacheController.setDefeatCaches(defeatCaches);
+        CacheController.setDefeatCaches(defeatCaches, entities);
     }
 
     public boolean getDefeatCaches()

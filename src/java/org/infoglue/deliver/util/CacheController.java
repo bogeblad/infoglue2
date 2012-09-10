@@ -184,32 +184,36 @@ public class CacheController extends Thread
         cem.set(cemValue);
     }
     
-
 	//Force defeatCaches-mode 
-    private static class ThreadLocalDefeatCacheMode extends ThreadLocal 
+    private static class ThreadLocalDefeatCacheMode extends ThreadLocal<DefeatCacheParameters> 
     {
-    	public Object initialValue() 
+    	public DefeatCacheParameters initialValue() 
         {
-        	return false;
+        	return new DefeatCacheParameters();
         }
     }
 
     private static ThreadLocalDefeatCacheMode defeatCaches = new ThreadLocalDefeatCacheMode();
 
-    public static Boolean getDefeatCaches() 
+    public static DefeatCacheParameters getDefeatCaches() 
     {
-        return (Boolean) defeatCaches.get();
+        return (DefeatCacheParameters) defeatCaches.get();
     }
-    public static void setDefeatCaches(Boolean defeatCachesValue) 
+    
+    public static void setDefeatCaches(boolean defeatCache, Map<Class, List<Object>> entities) 
     {
+    	DefeatCacheParameters defeatCachesValue = new DefeatCacheParameters();
+    	defeatCachesValue.setDefeatCache(defeatCache);
+    	defeatCachesValue.getEntities().putAll(entities);
+    	
     	if(logger.isInfoEnabled())
     		logger.info("Forcing defeatCaches...");
     	defeatCaches.set(defeatCachesValue);
-    	if(defeatCachesValue == true)
+    	if(defeatCache)
     	{
     		try 
     		{
-				clearCastorCaches();
+				clearCastorCaches(defeatCaches.get());
 			} 
     		catch (Exception e) 
     		{
@@ -300,7 +304,7 @@ public class CacheController extends Thread
 		if(cacheName == null || key == null)
 			return null;
 		
-		if(getDefeatCaches())
+		if(getDefeatCaches().getDefeatCache())
 			return null;
 		
 		//synchronized(caches)
@@ -611,7 +615,7 @@ public class CacheController extends Thread
 		if(cacheName == null || key == null || key.length() == 0)
 			return null;
 		
-		if(getDefeatCaches())
+		if(getDefeatCaches().getDefeatCache())
 			return null;
 		
 	    Object value = null;
@@ -717,7 +721,7 @@ public class CacheController extends Thread
 		if(cacheName == null || key == null)
 			return null;
 		
-		if(getDefeatCaches())
+		if(getDefeatCaches().getDefeatCache())
 			return null;
 
 	    //logger.info("getCachedObjectFromAdvancedCache start:" + cacheName + ":" + key + ":" + updateInterval);
@@ -1590,6 +1594,67 @@ public class CacheController extends Thread
         }  
 	}
 
+	public static synchronized void clearCastorCaches(DefeatCacheParameters dcp) throws Exception
+	{
+	    logger.info("Emptying the Castor Caches");
+	    
+		long wait = 0;
+		
+		while(!getForcedCacheEvictionMode() && RequestAnalyser.getRequestAnalyser().getApproximateNumberOfDatabaseQueries() > 0)
+		//while(!getForcedCacheEvictionMode() && RequestAnalyser.getRequestAnalyser().getNumberOfActiveRequests() > 0)
+		{
+	    	if(wait > 1000)
+			{
+				logger.warn("The clearCastorCaches method waited over " + ((wait * 10) / 1000) + " seconds but there seems to be " + RequestAnalyser.getRequestAnalyser().getApproximateNumberOfDatabaseQueries() + " queries blocking all the time. Continuing anyway.");
+				break;
+			}
+
+	        if(wait > 100)
+				setForcedCacheEvictionMode(true);
+
+			Thread.sleep(10);
+			wait++;
+	    }
+	    
+		Database db = CastorDatabaseService.getDatabase();
+		//CastorDatabaseService.setBlock(true);
+		
+		try
+		{		
+		    //db.getCacheManager().expireCache();
+			Map<Class,List<Object>> entities = dcp.getEntities();
+			Iterator<Class> keyIterator = entities.keySet().iterator();
+			while(keyIterator.hasNext())
+			{
+				Class clazz = keyIterator.next();
+				List<Object> ids = entities.get(clazz);
+				if(ids.size() > 0)
+				{
+					clearCache(clazz, ids.toArray(), true, db);
+					logger.info("Emptied clazz:" + clazz + " with ids:" + ids);
+				}
+				else
+				{
+					clearCache(db, clazz);
+					logger.info("Emptied clazz:" + clazz);
+				}
+			}
+		    //commitTransaction(db);
+
+			logger.info("Emptied the Castor Caches");
+		}
+		catch(Exception e)
+		{
+		    logger.error("Exception when tried empty the Castor Caches");
+		    rollbackTransaction(db);
+		}
+		finally
+		{
+			db.close();
+			//CastorDatabaseService.setBlock(false);
+		}
+	}
+	
 	public static synchronized void clearCastorCaches() throws Exception
 	{
 	    logger.info("Emptying the Castor Caches");
@@ -2780,4 +2845,3 @@ public class CacheController extends Thread
 
 
 }
-

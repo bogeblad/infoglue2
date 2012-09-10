@@ -23,9 +23,16 @@
 
 package org.infoglue.deliver.taglib.management;
 
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import javax.servlet.jsp.JspException;
 
-import org.infoglue.cms.entities.content.ContentVersionVO;
+import org.infoglue.cms.entities.management.impl.simple.GroupPropertiesImpl;
+import org.infoglue.cms.entities.management.impl.simple.RolePropertiesImpl;
+import org.infoglue.cms.entities.management.impl.simple.UserPropertiesImpl;
 import org.infoglue.cms.security.InfoGluePrincipal;
 import org.infoglue.deliver.taglib.TemplateControllerTag;
 
@@ -51,29 +58,37 @@ public class PrincipalPropertyTag extends TemplateControllerTag
     	
         //Here we store the defeat caches setting for later reset
         boolean previousDefeatCaches = getController().getDeliveryContext().getDefeatCaches();
-        getController().getDeliveryContext().setDefeatCaches(defeatCaches);
-
-	    if(userName != null && !userName.equals(""))
-	    {
-	        setResultAttribute(this.getController().getPrincipalPropertyValue(getController().getPrincipal(userName), attributeName, languageId));
-	    }
-	    else if(principal != null)
-	    {
-            setResultAttribute(getController().getPrincipalPropertyValue(principal, attributeName, languageId));
-	    }
-	    else
-	    {
-	    	setResultAttribute(getController().getPrincipalPropertyValue(attributeName, languageId));
-	    }
-
-        //Resetting the defeatcaches setting
-        getController().getDeliveryContext().setDefeatCaches(previousDefeatCaches);
-
-        languageId 		= null;
-        userName 		= null;
-        principal 		= null;
-	    defeatCaches 	= false;
-
+		try
+		{
+	        Map<Class, List<Object>> entities = new HashMap<Class, List<Object>>();
+	        entities.put(UserPropertiesImpl.class, Collections.EMPTY_LIST);
+	        entities.put(GroupPropertiesImpl.class, Collections.EMPTY_LIST);
+	        entities.put(RolePropertiesImpl.class, Collections.EMPTY_LIST);
+	        getController().getDeliveryContext().setDefeatCaches(defeatCaches, entities);
+	
+		    if(userName != null && !userName.equals(""))
+		    {
+		        setResultAttribute(this.getController().getPrincipalPropertyValue(getController().getPrincipal(userName), attributeName, languageId));
+		    }
+		    else if(principal != null)
+		    {
+	            setResultAttribute(getController().getPrincipalPropertyValue(principal, attributeName, languageId));
+		    }
+		    else
+		    {
+		    	setResultAttribute(getController().getPrincipalPropertyValue(attributeName, languageId));
+		    }
+		}
+		finally
+		{
+	        //Resetting the defeatcaches setting
+	        getController().getDeliveryContext().setDefeatCaches(previousDefeatCaches, new HashMap<Class, List<Object>>());
+	        languageId 		= null;
+	        userName 		= null;
+	        principal 		= null;
+		    defeatCaches 	= false;
+		}
+		
         return EVAL_PAGE;
     }
 
@@ -99,6 +114,6 @@ public class PrincipalPropertyTag extends TemplateControllerTag
     
     public void setDefeatCaches(final String defeatCaches) throws JspException
     {
-        this.defeatCaches = (Boolean)evaluate("contentAttribute", "defeatCaches", defeatCaches, Boolean.class);
+        this.defeatCaches = (Boolean)evaluate("principal", "defeatCaches", defeatCaches, Boolean.class);
     }
 }

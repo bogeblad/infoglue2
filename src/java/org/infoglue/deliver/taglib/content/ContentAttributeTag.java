@@ -23,11 +23,22 @@
 
 package org.infoglue.deliver.taglib.content;
 
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.jsp.JspException;
 
 import org.infoglue.cms.entities.content.ContentVersionVO;
+import org.infoglue.cms.entities.content.impl.simple.ContentImpl;
+import org.infoglue.cms.entities.content.impl.simple.ContentVersionImpl;
+import org.infoglue.cms.entities.content.impl.simple.FullContentVersionImpl;
+import org.infoglue.cms.entities.content.impl.simple.MediumContentImpl;
+import org.infoglue.cms.entities.content.impl.simple.SmallContentImpl;
+import org.infoglue.cms.entities.content.impl.simple.SmallContentVersionImpl;
+import org.infoglue.cms.entities.content.impl.simple.SmallestContentVersionImpl;
+import org.infoglue.cms.entities.content.impl.simple.SmallishContentImpl;
 import org.infoglue.cms.entities.management.LanguageVO;
 import org.infoglue.deliver.controllers.kernel.impl.simple.LanguageDeliveryController;
 import org.infoglue.deliver.taglib.component.ComponentLogicTag;
@@ -142,60 +153,74 @@ public class ContentAttributeTag extends ComponentLogicTag
 
         //Here we store the defeat caches setting for later reset
         boolean previousDefeatCaches = getController().getDeliveryContext().getDefeatCaches();
-        getController().getDeliveryContext().setDefeatCaches(defeatCaches);
-        
-        // Have to force a disable editon sight, not good with renderstuff
-        // when converting a attributeto a map.
-        // per.jonsson@it-huset.se
-        if ( mapKeyName != null )
+        try
         {
-            disableEditOnSight = true;
+	        //getController().getDeliveryContext().setDefeatCaches(defeatCaches);
+	        Map<Class, List<Object>> entities = new HashMap<Class, List<Object>>();
+	        entities.put(ContentImpl.class, Collections.EMPTY_LIST);
+	        entities.put(SmallContentImpl.class, Collections.EMPTY_LIST);
+	        entities.put(SmallishContentImpl.class, Collections.EMPTY_LIST);
+	        entities.put(MediumContentImpl.class, Collections.EMPTY_LIST);
+	        entities.put(ContentVersionImpl.class, Collections.EMPTY_LIST);
+	        entities.put(FullContentVersionImpl.class, Collections.EMPTY_LIST);
+	        entities.put(SmallContentVersionImpl.class, Collections.EMPTY_LIST);
+	        entities.put(SmallestContentVersionImpl.class, Collections.EMPTY_LIST);
+	        		
+	        getController().getDeliveryContext().setDefeatCaches(defeatCaches, entities);
+	        
+	        // Have to force a disable editon sight, not good with renderstuff
+	        // when converting a attributeto a map.
+	        // per.jonsson@it-huset.se
+	        if ( mapKeyName != null )
+	        {
+	            disableEditOnSight = true;
+	        }
+	        
+	        result = getContentAttributeValue(this.languageId);
+	        
+	        if((result == null || result.trim().equals("")) && useAttributeLanguageFallback)
+			{
+				try
+				{
+		            LanguageVO masteLanguageVO = LanguageDeliveryController.getLanguageDeliveryController().getMasterLanguageForSiteNode(this.getController().getDatabase(), this.getController().getSiteNodeId());
+				    result = getContentAttributeValue(masteLanguageVO.getLanguageId());
+				}
+				catch(Exception e)
+				{
+					throw new JspException("Error getting the master language for this sitenode:" + this.getController().getSiteNodeId());
+				}
+			}
+			
+	        if ( mapKeyName != null && result != null )
+	        {
+	            Map map = Support.convertTextToProperties( result.toString() );
+	            if ( map != null && !map.isEmpty() )
+	            {
+	                result = (String)map.get( mapKeyName );
+	            }
+	        }
+	        produceResult( result );
+	        //Resetting the full url to the previous state
+	        getController().getDeliveryContext().setUseFullUrl(previousSetting);
         }
-        
-        result = getContentAttributeValue(this.languageId);
-        
-        if((result == null || result.trim().equals("")) && useAttributeLanguageFallback)
-		{
-			try
-			{
-	            LanguageVO masteLanguageVO = LanguageDeliveryController.getLanguageDeliveryController().getMasterLanguageForSiteNode(this.getController().getDatabase(), this.getController().getSiteNodeId());
-			    result = getContentAttributeValue(masteLanguageVO.getLanguageId());
-			}
-			catch(Exception e)
-			{
-				throw new JspException("Error getting the master language for this sitenode:" + this.getController().getSiteNodeId());
-			}
-		}
-		
-        if ( mapKeyName != null && result != null )
+        finally
         {
-            Map map = Support.convertTextToProperties( result.toString() );
-            if ( map != null && !map.isEmpty() )
-            {
-                result = (String)map.get( mapKeyName );
-            }
+	        //Resetting the defeatcaches setting
+	        getController().getDeliveryContext().setDefeatCaches(previousDefeatCaches, new HashMap<Class, List<Object>>());
+	        contentVersionVO = null;
+		    contentId = null;
+			propertyName = null;
+		    attributeName = null;;
+		    mapKeyName = null;;
+		    disableEditOnSight = false;
+		    useInheritance = true;
+	    	useRepositoryInheritance = true;
+	        useStructureInheritance = true;
+		    useAttributeLanguageFallback = true;
+		    parse = false;
+		    fullBaseUrl	= false;
+		    languageId = null;
         }
-        produceResult( result );
-        //Resetting the full url to the previous state
-        getController().getDeliveryContext().setUseFullUrl(previousSetting);
-        
-        //Resetting the defeatcaches setting
-        getController().getDeliveryContext().setDefeatCaches(previousDefeatCaches);
-
-        contentVersionVO = null;
-	    contentId = null;
-		propertyName = null;
-	    attributeName = null;;
-	    mapKeyName = null;;
-	    disableEditOnSight = false;
-	    useInheritance = true;
-    	useRepositoryInheritance = true;
-        useStructureInheritance = true;
-	    useAttributeLanguageFallback = true;
-	    parse = false;
-	    fullBaseUrl	= false;
-	    languageId = null;
-	    defeatCaches = false;
 
         return EVAL_PAGE;
     }
