@@ -99,6 +99,7 @@
 			</td>
 		</tr>
 		#end
+		#*
 		<tr>
 			<td colspan="3">&nbsp;</td>
 		</tr>		
@@ -106,7 +107,6 @@
 			<th style="border-bottom: 1px solid #CCC;" align="left">Statistics</th>
 			<th colspan="2" style="border-bottom: 1px solid #CCC;" align="left">&nbsp;</th>
 		</tr>
-		#*
 		<tr><td>Number of siteNodes</td><td>$numberOfSiteNodes</td></tr>
 		<tr><td>Number of siteNodeVersions</td><td>$numberOfSiteNodeVersions</td></tr>
 		<tr><td>Number of contents</td><td>$numberOfContents</td></tr>
