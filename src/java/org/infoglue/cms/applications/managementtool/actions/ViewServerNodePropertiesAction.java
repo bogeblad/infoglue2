@@ -250,6 +250,7 @@ public class ViewServerNodePropertiesAction extends InfoGluePropertiesAbstractAc
 	    
 	    populate(ps, "maxRows");
 	    populate(ps, "maxNumberOfAssetInSearches");
+	    populate(ps, "gaCode");
 	    populate(ps, "componentBindningAssetBrowser");
 
 	    populate(ps, "defaultNumberOfYearsBeforeExpire");

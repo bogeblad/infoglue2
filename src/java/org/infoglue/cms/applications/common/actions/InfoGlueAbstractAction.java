@@ -568,6 +568,11 @@ public abstract class InfoGlueAbstractAction extends WebworkAbstractAction
 	    return CmsPropertyHandler.getAllowOverrideModifyer();
 	}
 
+	public String getGACode()
+	{
+		return CmsPropertyHandler.getGACode();
+	}
+
     public Locale getLocale()
     {
         return this.getSession().getLocale();
