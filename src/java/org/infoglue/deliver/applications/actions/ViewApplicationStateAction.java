@@ -372,6 +372,28 @@ public class ViewApplicationStateAction extends InfoGlueAbstractAction
     /**
      * This action allows clearing of the given cache manually.
      */
+    public String doClearStringPool() throws Exception
+    {
+    	String returnValue = handleAccess(this.getRequest());
+    	if(returnValue != null)
+    		return returnValue;
+        
+        CacheController.clearPooledString();
+        
+        //this.getHttpSession().invalidate();
+        if(this.returnAddress != null && !this.returnAddress.equals(""))
+        {
+            this.getResponse().sendRedirect(this.returnAddress);
+            
+            return NONE;
+        }
+ 
+        return "cleared";
+    }
+
+    /**
+     * This action allows clearing of the given cache manually.
+     */
     /*
     public String doFlushCache() throws Exception
     {
@@ -621,6 +643,7 @@ public class ViewApplicationStateAction extends InfoGlueAbstractAction
         CacheController.clearCastorCaches();
         CacheController.clearCaches(null, null, null);
         CacheController.clearFileCaches("pageCache");
+        CacheController.clearPooledString();
         //CacheController.resetSpecial();
         if(clearFileCache)
         	CacheController.clearFileCaches();

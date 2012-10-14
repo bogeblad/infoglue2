@@ -222,6 +222,30 @@ public class CacheController extends Thread
     	}
     }
 
+	private static StringPool stringPool = new StringPool(); 
+	public static String getPooledString(Integer type, Object id)
+	{
+		if(type == null || id == null)
+		{
+			logger.warn("Broken was returned from pool:" + type + ":" + id);
+			return "broken";
+		}
+		
+		return stringPool.getCanonicalVersion(type, id.toString());
+	}
+	public static Integer getPooledStringSize()
+	{
+		return stringPool.getPoolSize();
+	}
+	public static Integer getPooledStringHits()
+	{
+		return stringPool.getHits();
+	}
+	public static void clearPooledString()
+	{
+		stringPool.clearPool();
+	}
+	
 	public CacheController()
 	{
 		super();

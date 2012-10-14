@@ -102,6 +102,14 @@
     <td>Statistics</td>
     <td>Actions <a href="ViewApplicationState!clearCaches.action">Clear All</a></td>
   </tr>
+  <tr>
+    <td style="border-bottom: 1px solid #999999;" class="text" valign="top">String pool</td>
+    <td style="border-bottom: 1px solid #999999;" class="text" valign="top">$stringPoolSize</td>
+    <td style="border-bottom: 1px solid #999999;" class="text" valign="top">n/a</td>
+    <td style="border-bottom: 1px solid #999999;" class="text" valign="top">n/a</td>
+    <td style="border-bottom: 1px solid #999999;" class="text" valign="top">$stringPoolHits hits</td>
+    <td style="border-bottom: 1px solid #999999;" class="text" valign="top"><a href="ViewApplicationState!clearStringPool.action">Clear</a></td>
+  </tr>
   #foreach($cacheName in $sortedCaches)
       #set($cache = $caches.get($cacheName))
 	  #set($parsedData = $this.parseData($eventListeners.get("${cacheName}_cacheEntryEventListener").toString(), $eventListeners.get("${cacheName}_cacheMapAccessEventListener").toString()))
