@@ -997,6 +997,18 @@ public abstract class BaseController
 	}
 
 	/**
+	 * Executes a Query with no parameters
+	 *
+ 	 * @param query An OQL Query
+	 * @return A VO list of the query results
+	 * @throws SystemException If an error occurs
+	 */
+	protected static List executeQueryReadOnly(String query, Database db) throws SystemException
+	{
+		return executeQueryReadOnly(query, Collections.EMPTY_LIST, db);
+	}
+
+	/**
 	 * Executes a Query, also binds the provided parameters
 	 *
  	 * @param query An OQL Query
@@ -1055,6 +1067,38 @@ public abstract class BaseController
 		}
 	}
 
+	/**
+	 * Executes a Query, also binds the provided parameters
+	 *
+ 	 * @param query An OQL Query
+	 * @param params A List of paramters
+	 * @param db A transaction object
+	 * @return A VO list of the query results
+	 * @throws SystemException If an error occurs
+	 */
+	protected static List executeQueryReadOnly(String query, List params, Database db) throws SystemException
+	{
+	    try
+		{
+			List resultList = new ArrayList();
+			
+			OQLQuery oql = createQuery(db, query, params);
+			QueryResults results = oql.execute(Database.ReadOnly);
+			resultList = Collections.list(results);
+
+			results.close();
+			oql.close();
+
+			return resultList;
+		}
+		catch (Exception e)
+		{
+			logger.error("Error executing " + query, e);
+			throw new SystemException(e.getMessage(), e);
+		}
+	}
+
+	
 	
 	/**
 	 * Creates an OQLQuery for the provided Database and binds the parameters to it.
