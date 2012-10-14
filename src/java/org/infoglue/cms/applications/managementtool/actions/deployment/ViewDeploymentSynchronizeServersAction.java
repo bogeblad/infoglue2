@@ -123,57 +123,64 @@ public class ViewDeploymentSynchronizeServersAction extends InfoGlueAbstractActi
 	    	
 	    	if(synchronizeContentTypeDefinitions)
 	    	{
-		    	Object[] contentTypeDefinitionVOArray = (Object[])invokeOperation(targetEndpointAddress, "getContentTypeDefinitions", "contentTypeDefinition", null, new Class[]{ContentTypeDefinitionVO.class}, "infoglue", deploymentServerBean.getUser());
-		    	List remoteContentTypeDefinitionVOList = Arrays.asList(contentTypeDefinitionVOArray);
-			    Collections.sort(remoteContentTypeDefinitionVOList, new ReflectionComparator("name"));
-		
-		    	//logger.info("remoteContentTypeDefinitionVOList:" + remoteContentTypeDefinitionVOList.size());
-		    	if(this.synchronizationMethod.equalsIgnoreCase("pull"))
+		    	try
 		    	{
-			    	Iterator remoteContentTypeDefinitionVOListIterator = remoteContentTypeDefinitionVOList.iterator();
-			    	while(remoteContentTypeDefinitionVOListIterator.hasNext())
+		    		Object[] contentTypeDefinitionVOArray = (Object[])invokeOperation(targetEndpointAddress, "getContentTypeDefinitions", "contentTypeDefinition", null, new Class[]{ContentTypeDefinitionVO.class}, "infoglue", deploymentServerBean.getUser());
+			    	List remoteContentTypeDefinitionVOList = Arrays.asList(contentTypeDefinitionVOArray);
+				    Collections.sort(remoteContentTypeDefinitionVOList, new ReflectionComparator("name"));
+			
+			    	//logger.info("remoteContentTypeDefinitionVOList:" + remoteContentTypeDefinitionVOList.size());
+			    	if(this.synchronizationMethod.equalsIgnoreCase("pull"))
 			    	{
-			    		ContentTypeDefinitionVO remoteContentTypeDefinitionVO = (ContentTypeDefinitionVO)remoteContentTypeDefinitionVOListIterator.next();
-			    		//logger.info("remoteContentTypeDefinitionVO:" + remoteContentTypeDefinitionVO.getName());
-			    		ContentTypeDefinitionVO localContentTypeDefinitionVO = (ContentTypeDefinitionVO)ContentTypeDefinitionController.getController().getContentTypeDefinitionVOWithName(remoteContentTypeDefinitionVO.getName());
-			    		DeploymentCompareBean bean = new DeploymentCompareBean();
-			    		bean.setRemoteVersion(remoteContentTypeDefinitionVO);
-			    		if(localContentTypeDefinitionVO != null)
-			    		{
-			    			//logger.info("localContentTypeDefinitionVO:" + localContentTypeDefinitionVO.getName());
-			        		bean.setLocalVersion(localContentTypeDefinitionVO);    			
-			    		}
-			    		deviatingContentTypes.add(bean);
-			    	}
-		    	}
-		    	else
-		    	{
-		    		logger.info("Getting what content types are not the same from a push perspective...");
-		    		List localContentTypeDefinitionVOList = ContentTypeDefinitionController.getController().getContentTypeDefinitionVOList();
-		    		Iterator localContentTypeDefinitionVOListIterator = localContentTypeDefinitionVOList.iterator();
-			    	while(localContentTypeDefinitionVOListIterator.hasNext())
-			    	{
-			    		ContentTypeDefinitionVO localContentTypeDefinitionVO = (ContentTypeDefinitionVO)localContentTypeDefinitionVOListIterator.next();
-			    		Iterator remoteContentTypeDefinitionVOListIterator = remoteContentTypeDefinitionVOList.iterator();
-			    		ContentTypeDefinitionVO remoteContentTypeDefinitionVO = null;
+				    	Iterator remoteContentTypeDefinitionVOListIterator = remoteContentTypeDefinitionVOList.iterator();
 				    	while(remoteContentTypeDefinitionVOListIterator.hasNext())
 				    	{
-				    		ContentTypeDefinitionVO remoteContentTypeDefinitionVOCandidate = (ContentTypeDefinitionVO)remoteContentTypeDefinitionVOListIterator.next();
+				    		ContentTypeDefinitionVO remoteContentTypeDefinitionVO = (ContentTypeDefinitionVO)remoteContentTypeDefinitionVOListIterator.next();
 				    		//logger.info("remoteContentTypeDefinitionVO:" + remoteContentTypeDefinitionVO.getName());
-				    		if(remoteContentTypeDefinitionVOCandidate.getName().equals(localContentTypeDefinitionVO.getName()))
-				    			remoteContentTypeDefinitionVO = remoteContentTypeDefinitionVOCandidate;
-				    	}	
-				    	
-				    	DeploymentCompareBean bean = new DeploymentCompareBean();
-				    	bean.setLocalVersion(localContentTypeDefinitionVO); 
-				    	if(remoteContentTypeDefinitionVO != null)
-			    		{
-			    			//logger.info("localContentTypeDefinitionVO:" + localContentTypeDefinitionVO.getName());
+				    		ContentTypeDefinitionVO localContentTypeDefinitionVO = (ContentTypeDefinitionVO)ContentTypeDefinitionController.getController().getContentTypeDefinitionVOWithName(remoteContentTypeDefinitionVO.getName());
+				    		DeploymentCompareBean bean = new DeploymentCompareBean();
 				    		bean.setRemoteVersion(remoteContentTypeDefinitionVO);
+				    		if(localContentTypeDefinitionVO != null)
+				    		{
+				    			//logger.info("localContentTypeDefinitionVO:" + localContentTypeDefinitionVO.getName());
+				        		bean.setLocalVersion(localContentTypeDefinitionVO);    			
+				    		}
+				    		deviatingContentTypes.add(bean);
 				    	}
-			    		deviatingContentTypes.add(bean);
+			    	}
+			    	else
+			    	{
+			    		logger.info("Getting what content types are not the same from a push perspective...");
+			    		List localContentTypeDefinitionVOList = ContentTypeDefinitionController.getController().getContentTypeDefinitionVOList();
+			    		Iterator localContentTypeDefinitionVOListIterator = localContentTypeDefinitionVOList.iterator();
+				    	while(localContentTypeDefinitionVOListIterator.hasNext())
+				    	{
+				    		ContentTypeDefinitionVO localContentTypeDefinitionVO = (ContentTypeDefinitionVO)localContentTypeDefinitionVOListIterator.next();
+				    		Iterator remoteContentTypeDefinitionVOListIterator = remoteContentTypeDefinitionVOList.iterator();
+				    		ContentTypeDefinitionVO remoteContentTypeDefinitionVO = null;
+					    	while(remoteContentTypeDefinitionVOListIterator.hasNext())
+					    	{
+					    		ContentTypeDefinitionVO remoteContentTypeDefinitionVOCandidate = (ContentTypeDefinitionVO)remoteContentTypeDefinitionVOListIterator.next();
+					    		//logger.info("remoteContentTypeDefinitionVO:" + remoteContentTypeDefinitionVO.getName());
+					    		if(remoteContentTypeDefinitionVOCandidate.getName().equals(localContentTypeDefinitionVO.getName()))
+					    			remoteContentTypeDefinitionVO = remoteContentTypeDefinitionVOCandidate;
+					    	}	
+					    	
+					    	DeploymentCompareBean bean = new DeploymentCompareBean();
+					    	bean.setLocalVersion(localContentTypeDefinitionVO); 
+					    	if(remoteContentTypeDefinitionVO != null)
+				    		{
+				    			//logger.info("localContentTypeDefinitionVO:" + localContentTypeDefinitionVO.getName());
+					    		bean.setRemoteVersion(remoteContentTypeDefinitionVO);
+					    	}
+				    		deviatingContentTypes.add(bean);
+				    	}
 			    	}
 		    	}
+		    	catch (Exception e) 
+		    	{
+		    		logger.error("Unable to sync content versions:" + e.getMessage(), e);
+				}
 	    	}
 	    	
 	    	if(synchronizeCategories)
@@ -636,7 +643,7 @@ public class ViewDeploymentSynchronizeServersAction extends InfoGlueAbstractActi
 		    Collections.sort(remoteCategoryVOList, new ReflectionComparator("name"));
 		    //logger.info("remoteCategoryVOList:" + remoteCategoryVOList.size());
 	    	
-		    List<CategoryVO> allLocalCategories = CategoryController.getController().findAllActiveCategories();
+		    List<CategoryVO> allLocalCategories = CategoryController.getController().getAllActiveCategories();
 		    //logger.info("allLocalCategories:" + allLocalCategories.size());
 	    	
 		    Map handledRemoteCategoryPaths = new HashMap();
@@ -652,7 +659,7 @@ public class ViewDeploymentSynchronizeServersAction extends InfoGlueAbstractActi
 
 	    	Map requestMap = HttpUtilities.requestToHashtable(getRequest());
 	    	
-		    List<CategoryVO> allLocalCategories = CategoryController.getController().findAllActiveCategories();
+		    List<CategoryVO> allLocalCategories = CategoryController.getController().getAllActiveCategories();
 	    	input.put("categoryVOList", allLocalCategories);
 	    	input.put("requestMap", requestMap);
 	    	

@@ -92,7 +92,7 @@ public class ExportImportController extends BaseController
 			
 			List categories = new ArrayList();
 			if(includeCategories)
-				categories = CategoryController.getController().findAllActiveCategories();
+				categories = CategoryController.getController().getAllActiveCategories();
 			
 			InfoGlueExportImpl infoGlueExportImpl = new InfoGlueExportImpl();
 			
@@ -142,7 +142,7 @@ public class ExportImportController extends BaseController
 	public void exportContents(Integer contentId, Integer newParentContentId, Integer assetMaxSize, String onlyLatestVersions) throws SystemException, Bug, Exception 
 	{
 		Timer t = new Timer();
-		System.out.println("onlyLatestVersions:" + onlyLatestVersions);
+		logger.info("onlyLatestVersions:" + onlyLatestVersions);
 		File file = exportContents(contentId, assetMaxSize);
 		t.printElapsedTime("Exporting file of " + (file != null ? file.length() / 1000 + " KB" : " error size ") + " took:");
 		if(file != null)
@@ -179,7 +179,7 @@ public class ExportImportController extends BaseController
 			}
 			
 			List contentTypeDefinitions = ContentTypeDefinitionController.getController().getContentTypeDefinitionList(db);
-			List categories = CategoryController.getController().findAllActiveCategories();
+			List categories = CategoryController.getController().getAllActiveCategories();
 			
 			InfoGlueExportImpl infoGlueExportImpl = new InfoGlueExportImpl();
 			
