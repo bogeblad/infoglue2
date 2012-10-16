@@ -306,6 +306,22 @@
     </field>
   </class>
   
+  <!--  Mapping for SmallAccessRight  -->
+  <class name="org.infoglue.cms.entities.management.impl.simple.SmallAccessRightImpl" identity="accessRightId" key-generator="IDENTITY">
+    <description>AccessRight</description>
+    <cache-type type="none"/>
+    <map-to table="cmAccessRight"/>
+    <field name="accessRightId" type="java.lang.Integer">
+      <sql name="accessRightId" type="integer" dirty="check" />
+    </field>
+    <field name="parameters" type="java.lang.String">
+      <sql name="parameters" type="varchar" dirty="check" />
+    </field>
+    <field name="interceptionPointId" type="java.lang.Integer">
+      <sql name="interceptionPointId" type="integer" dirty="check" />
+    </field>
+  </class>
+  
   <class name="org.infoglue.cms.entities.management.impl.simple.AccessRightGroupImpl" identity="accessRightGroupId" key-generator="IDENTITY">
     <description>AccessRightGroup</description>
     <cache-type type="none" capacity="10000"/>
@@ -1539,6 +1555,25 @@
 		</field>		
 		<field name="category" type="org.infoglue.cms.entities.management.impl.simple.CategoryImpl">
 		  <sql name="categoryId"/>
+		</field>
+	</class>
+
+    <!--  Mapping for SmallContentCategory  -->
+	<class name="org.infoglue.cms.entities.content.impl.simple.SmallContentCategoryImpl" identity="contentCategoryId" key-generator="IDENTITY">
+		<description>SmallContentCategory</description>
+		<cache-type type="unlimited" capacity="10000"/>
+		<map-to table="cmContentCategory"/>
+		<field name="contentCategoryId" type="java.lang.Integer">
+			<sql name="contentCategoryId" type="integer" dirty="check" />
+		</field>
+		<field name="attributeName" type="java.lang.String">
+			<sql name="attributeName" type="varchar" dirty="check" />
+		</field>
+		<field name="contentVersionId" type="java.lang.Integer">
+			<sql name="contentVersionId" type="integer" dirty="check" />
+		</field>
+		<field name="categoryId" type="java.lang.Integer">
+		  <sql name="categoryId" type="integer" dirty="check"/>
 		</field>
 	</class>
 
