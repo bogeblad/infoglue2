@@ -195,7 +195,6 @@ public class ViewListSystemUserAction extends InfoGlueAbstractAction
 	
 	public String doUserListForPopupV3() throws Exception 
 	{
-		System.out.println("222222222222222222");
 		/*
 		this.infogluePrincipals = UserControllerProxy.getController().getAllUsers();
 		Collections.sort(this.infogluePrincipals, new ReflectionComparator("firstName"));
