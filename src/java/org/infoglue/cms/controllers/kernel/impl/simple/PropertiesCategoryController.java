@@ -20,7 +20,7 @@
  *
  * ===============================================================================
  *
- * $Id: PropertiesCategoryController.java,v 1.3 2006/03/06 18:11:08 mattias Exp $
+ * $Id: PropertiesCategoryController.java,v 1.3.4.1 2012/10/16 09:22:19 mattias Exp $
  */
 package org.infoglue.cms.controllers.kernel.impl.simple;
 
@@ -115,6 +115,22 @@ public class PropertiesCategoryController extends BaseController
 		params.add(entityName);
 		params.add(entityId);
 	    return executeQuery(findByPropertiesAttribute, params, db);
+	}
+
+	/**
+	 * Find a List of PropertiesCategories for the specific attribute and Properties Version.
+	 * @param	attribute The attribute name of the PropertiesCategory to find
+	 * @param	versionId The Properties Version id of the PropertiesCategory to find
+	 * @return	A list of PropertiesCategoryVO that have the provided properties version and attribute
+	 * @throws	SystemException If an error happens
+	 */
+	public List findByPropertiesAttributeReadOnly(String attribute, String entityName, Integer entityId, Database db) throws SystemException
+	{
+		List params = new ArrayList();
+		params.add(attribute);
+		params.add(entityName);
+		params.add(entityId);
+	    return executeQueryReadOnly(findByPropertiesAttribute, params, db);
 	}
 
 	/**

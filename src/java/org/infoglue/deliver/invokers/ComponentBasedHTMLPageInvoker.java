@@ -198,21 +198,21 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 
 	public void invokePage() throws SystemException, Exception
 	{
+		Timer t = new Timer();
+
 		String pageContent = "";
 		
 		NodeDeliveryController nodeDeliveryController = NodeDeliveryController.getNodeDeliveryController(this.getDeliveryContext());
 		
 		Integer repositoryId = nodeDeliveryController.getSiteNodeVO(getDatabase(), this.getDeliveryContext().getSiteNodeId()).getRepositoryId();
-
+		
 		String componentXML = getPageComponentsString(getDatabase(), this.getTemplateController(), this.getDeliveryContext().getSiteNodeId(), this.getDeliveryContext().getLanguageId(), this.getDeliveryContext().getContentId());
 		componentXML = appendPagePartTemplates(componentXML);
-		
+	
 		InfoGlueComponent baseComponent = null;
 		
    		if(componentXML != null && componentXML.length() != 0)
 		{
-   			Timer t = new Timer();
-			
    			List unsortedPageComponents = new ArrayList();
 			
    			
@@ -238,7 +238,7 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 				//System.out.println("pageComponents:" + pageComponents.size());
 
 				preProcessComponents(nodeDeliveryController, repositoryId, unsortedPageComponents, pageComponents);
-				
+
 				if(pageComponents.size() > 0)
 				{
 					baseComponent = (InfoGlueComponent)pageComponents.get(0);
@@ -297,8 +297,8 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 		{
 			InfoGlueComponent component = (InfoGlueComponent)unsortedPageComponentsIterator.next();
 
-			this.getTemplateController().setComponentLogic(new ComponentLogic(this.getTemplateController(), component));
-			this.getTemplateController().getDeliveryContext().getUsageListeners().add(this.getTemplateController().getComponentLogic().getComponentDeliveryContext());
+			//this.getTemplateController().setComponentLogic(new ComponentLogic(this.getTemplateController(), component));
+			//this.getTemplateController().getDeliveryContext().getUsageListeners().add(this.getTemplateController().getComponentLogic().getComponentDeliveryContext());
 			
 			int index = 0;
 			Iterator sortedPageComponentsIterator = sortedPageComponents.iterator();
@@ -306,8 +306,8 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 			{
 				InfoGlueComponent sortedComponent = (InfoGlueComponent)sortedPageComponentsIterator.next();
 
-				this.getTemplateController().setComponentLogic(new ComponentLogic(this.getTemplateController(), sortedComponent));
-				this.getTemplateController().getDeliveryContext().getUsageListeners().add(this.getTemplateController().getComponentLogic().getComponentDeliveryContext());
+				//this.getTemplateController().setComponentLogic(new ComponentLogic(this.getTemplateController(), sortedComponent));
+				//this.getTemplateController().getDeliveryContext().getUsageListeners().add(this.getTemplateController().getComponentLogic().getComponentDeliveryContext());
 
 				if(sortedComponent.getPreProcessingOrder().compareTo(component.getPreProcessingOrder()) < 0)
 					break;
@@ -324,7 +324,7 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 			InfoGlueComponent component = (InfoGlueComponent)sortedPageComponentsIterator.next();
 
 			this.getTemplateController().setComponentLogic(new ComponentLogic(this.getTemplateController(), component));
-			this.getTemplateController().getDeliveryContext().getUsageListeners().add(this.getTemplateController().getComponentLogic().getComponentDeliveryContext());
+			//this.getTemplateController().getDeliveryContext().getUsageListeners().add(this.getTemplateController().getComponentLogic().getComponentDeliveryContext());
 			
 			ContentVO metaInfoContentVO = nodeDeliveryController.getBoundContent(getDatabase(), this.getTemplateController().getPrincipal(), this.getDeliveryContext().getSiteNodeId(), this.getDeliveryContext().getLanguageId(), true, "Meta information", this.getDeliveryContext());
 			preProcessComponent(component, this.getTemplateController(), repositoryId, this.getDeliveryContext().getSiteNodeId(), this.getDeliveryContext().getLanguageId(), this.getDeliveryContext().getContentId(), metaInfoContentVO.getId());
@@ -448,7 +448,7 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 					Integer currentContentVersionId = (Integer)contentVersionIdIterator.next();
 			    	if(currentContentVersionId != null)
 			    	{
-						templateController.getDeliveryContext().addUsedContentVersion("contentVersion_" + currentContentVersionId);
+						templateController.getDeliveryContext().addUsedContentVersion(CacheController.getPooledString(2, currentContentVersionId));
 				    	//logger.info("\nThere was a cached page string and the meta info content version was " + contentVersionId);
 				    	templateController.getDeliveryContext().getUsedPageMetaInfoContentVersionIdSet().add(currentContentVersionId);
 				    	templateController.getDeliveryContext().getUsedPageComponentsMetaInfoContentVersionIdSet().add(currentContentVersionId);
@@ -478,8 +478,8 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 		if(templateController.getDeliveryContext().getUsedPageMetaInfoContentVersionIdSet().size() > 0)
 		{
 			ContentVersionVO contentVersionVO = ContentVersionController.getContentVersionController().getContentVersionVOWithId((Integer)templateController.getDeliveryContext().getUsedPageMetaInfoContentVersionIdSet().toArray()[0], templateController.getDatabase());
-			groups.add("contentVersion_" + contentVersionVO.getId());
-			groups.add("content_" + contentVersionVO.getContentId());
+			groups.add(CacheController.getPooledString(2, contentVersionVO.getId()));
+			groups.add(CacheController.getPooledString(1, contentVersionVO.getContentId()));
 		}
 		
 		if(groups.size() > 0)
@@ -1439,6 +1439,7 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 
 	private String renderComponent(InfoGlueComponent component, TemplateController templateController, Integer repositoryId, Integer siteNodeId, Integer languageId, Integer contentId, Integer metainfoContentId, int maxDepth, int currentDepth) throws Exception
 	{
+		Timer t = new Timer();
 		if(currentDepth > maxDepth)
 		{
 			logger.error("A page with to many levels (possibly infinite loop) was found on " + templateController.getOriginalFullURL());
@@ -1558,7 +1559,7 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 			{
 				templateController.getDeliveryContext().setDebugMode(true);
 			    String componentString = getComponentString(templateController, component.getContentId(), component); 
-			    
+
 				if(logger.isDebugEnabled())
 					logger.debug("componentString:" + componentString);
 
@@ -1608,7 +1609,7 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 					//TODO - add page cache disable or perhaps a error...
 					templateController.getDeliveryContext().setDisablePageCache(true);
 				}
-				
+
 				int offset = 0;
 				int slotStartIndex = componentString.indexOf("<ig:slot", offset);
 				int slotStopIndex = 0;
@@ -1817,7 +1818,7 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 		    }
 		    else
 		    {
-				templateController.getDeliveryContext().addUsedContent("content_" + contentId);
+				templateController.getDeliveryContext().addUsedContent(CacheController.getPooledString(1, contentId));
 				
 				try
 				{
@@ -2293,7 +2294,7 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 				    
 				    //logger.info("slotName:" + slotName + " should get connected with content_" + contentVO.getId());
 				    
-				    groups = new String[]{"content_" + contentVO.getId()};
+				    groups = new String[]{CacheController.getPooledString(1, contentVO.getId())};
 				    
 					InfoGlueComponent component = new InfoGlueComponent();
 					component.setPositionInSlot(new Integer(slotPosition));
@@ -2527,7 +2528,7 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 							//RequestAnalyser.getRequestAnalyser().registerComponentStatistics("DOM4J componentsElement:" + componentsElement, t.getElapsedTime());
 							//System.out.println("componentsElement:" + componentsElement);
 
-							//groups = new String[]{"content_" + contentVO.getId()};
+							//groups = new String[]{CacheController.getPooledString(1, contentVO.getId())};
 							
 							List tempChildComponents = new ArrayList();
 							List subComponents = getPageComponentsWithDOM4j(db, componentXML, componentsElement, slotId, templateController, component, childComponents);
@@ -2651,7 +2652,7 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 				    ContentVO contentVO = ContentDeliveryController.getContentDeliveryController().getContentVO(contentId, db);
 				    //logger.info("slotName:" + slotName + " should get connected with content_" + contentVO.getId());
 				    
-				    groups = new String[]{"content_" + contentVO.getId()};
+				    groups = new String[]{CacheController.getPooledString(1, contentVO.getId())};
 				    
 					InfoGlueComponent component = new InfoGlueComponent();
 					component.setPositionInSlot(new Integer(slotPosition));
@@ -2915,7 +2916,7 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 							//RequestAnalyser.getRequestAnalyser().registerComponentStatistics("XPP3 componentsElement:" + componentsElement, t.getElapsedTime());
 							//System.out.println("componentsElement:" + componentsElement);
 
-							//groups = new String[]{"content_" + contentVO.getId()};
+							//groups = new String[]{CacheController.getPooledString(1, contentVO.getId())};
 							
 							List tempChildComponents = new ArrayList();
 							List subComponents = getPageComponentsWithXPP3(db, componentXML, componentsElement, slotId, templateController, component, childComponents);

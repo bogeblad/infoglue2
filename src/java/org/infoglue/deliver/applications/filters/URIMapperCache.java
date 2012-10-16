@@ -24,6 +24,7 @@
 package org.infoglue.deliver.applications.filters;
 
 import org.infoglue.deliver.util.CacheController;
+import org.infoglue.deliver.util.NullObject;
 
 
 /**
@@ -61,6 +62,7 @@ public class URIMapperCache
         if (repositoryId == null || path == null)
             return null;
         String cacheKey = createCacheKey(repositoryId, path, upToIndex);
+        //System.out.println("Looking for key: " + cacheKey);
         return (Integer)CacheController.getCachedObject(CACHE_NAME, cacheKey);
     }
 
@@ -69,7 +71,8 @@ public class URIMapperCache
         if (repositoryId == null || path == null || siteNodeId == null)
             return false;
         String cacheKey = createCacheKey(repositoryId, path, upToIndex);
-        CacheController.cacheObject(CACHE_NAME, cacheKey, siteNodeId);
+        //System.out.println("Adding for key: " + cacheKey + " = " + siteNodeId);
+      	CacheController.cacheObject(CACHE_NAME, cacheKey, siteNodeId);
         return true;
     }
 

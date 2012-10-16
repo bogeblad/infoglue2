@@ -1156,7 +1156,17 @@ public class ViewApplicationStateAction extends InfoGlueAbstractAction
 		}
     	return data;
     }
-    
+
+    public Integer getStringPoolSize()
+    {
+    	return CacheController.getPooledStringSize();
+    }
+
+    public Integer getStringPoolHits()
+    {
+    	return CacheController.getPooledStringHits();
+    }
+
 	public void setClassName(String className) 
 	{
 		this.className = className;

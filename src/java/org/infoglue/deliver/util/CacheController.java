@@ -51,6 +51,7 @@ import org.exolab.castor.jdo.Database;
 import org.infoglue.cms.applications.common.VisualFormatter;
 import org.infoglue.cms.controllers.kernel.impl.simple.CastorDatabaseService;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentVersionController;
+import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeController;
 import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeVersionController;
 import org.infoglue.cms.entities.content.impl.simple.ContentCategoryImpl;
 import org.infoglue.cms.entities.content.impl.simple.ContentImpl;
@@ -99,6 +100,8 @@ import org.infoglue.cms.entities.management.impl.simple.SystemUserImpl;
 import org.infoglue.cms.entities.management.impl.simple.UserContentTypeDefinitionImpl;
 import org.infoglue.cms.entities.management.impl.simple.UserPropertiesImpl;
 import org.infoglue.cms.entities.publishing.impl.simple.PublicationImpl;
+import org.infoglue.cms.entities.structure.SiteNodeVO;
+import org.infoglue.cms.entities.structure.SiteNodeVersionVO;
 import org.infoglue.cms.entities.structure.impl.simple.QualifyerImpl;
 import org.infoglue.cms.entities.structure.impl.simple.ServiceBindingImpl;
 import org.infoglue.cms.entities.structure.impl.simple.SiteNodeImpl;
@@ -292,8 +295,7 @@ public class CacheController extends Thread
 
 		//synchronized(caches)
 		//{
-			if(!caches.containsKey(cacheName))
-				//caches.put(cacheName, Collections.synchronizedMap(new HashMap()));
+			if(caches.get(cacheName) == null)
 			    caches.put(cacheName, new HashMap());
 		//}
 			
@@ -360,14 +362,17 @@ public class CacheController extends Thread
         return null;
     }
 
-	public static void cacheObjectInAdvancedCacheWithGroupsAsSet(String cacheName, Object key, Object value, Set groupsAsList, boolean useGroups)
+	public static void cacheObjectInAdvancedCacheWithGroupsAsSet(String cacheName, Object key, Object value, Set<String> groupsAsList, boolean useGroups)
 	{
+		String[] groups = groupsAsList.toArray(new String[0]);
+		/*
 		Object[] o = groupsAsList.toArray();
 		String[] groups = new String[o.length];
 		for (int i=0; i<groups.length;i++)
 		{
 			groups[i] = o[i].toString();
 		}
+		*/
 		
 		cacheObjectInAdvancedCache(cacheName, key, value, groups, useGroups);
 	}
@@ -451,7 +456,9 @@ public class CacheController extends Thread
 				if(cacheName != null && cacheName.equalsIgnoreCase("childSiteNodesCache"))
 		    		cacheCapacity = "20000";
 				if(cacheName != null && cacheName.equalsIgnoreCase("siteNodeCache"))
-		    		cacheCapacity = "30000";
+		    		cacheCapacity = "50000";
+				if(cacheName != null && cacheName.equalsIgnoreCase("contentCache"))
+		    		cacheCapacity = "50000";
 				if(cacheName != null && cacheName.equalsIgnoreCase("latestSiteNodeVersionCache"))
 		    		cacheCapacity = "30000";
 					
@@ -541,12 +548,6 @@ public class CacheController extends Thread
 				useGroups = false;				
 			}
 			*/
-
-			//if(useGroups)
-			//	System.out.println("useGroups:" + useGroups + " for " + cacheName);
-			
-			//if(cacheName.startsWith("importTag"))
-			//	System.out.println("CacheKey:" + key.toString());
 						
 			//TODO
 			if(CmsPropertyHandler.getUseSynchronizationOnCaches())
@@ -717,6 +718,7 @@ public class CacheController extends Thread
 
 		    if(value == null && useFileCacheFallback && !stopUseFileCacheFallback)
 	    	{				 
+		    	Timer t = new Timer();
 	    		if(logger.isInfoEnabled())
 	    			logger.info("Getting cache content from file..");
 	    		value = getCachedContentFromFile(cacheName, key, fileCacheCharEncoding);
@@ -729,6 +731,7 @@ public class CacheController extends Thread
 					else
 						cacheObjectInAdvancedCache(cacheName, key, value);
 	    		}
+	    		RequestAnalyser.getRequestAnalyser().registerComponentStatistics("File cache", t.getElapsedTime());
 	    	}
 		//}
 	    
@@ -1093,6 +1096,10 @@ public class CacheController extends Thread
 					{	
 						clear = true;
 					}
+					if(cacheName.equalsIgnoreCase("categoriesCache") && entity.indexOf("Category") > 0)
+					{	
+						clear = true;
+					}
 					if(cacheName.equalsIgnoreCase("repositoryCache") && entity.indexOf("Repository") > 0)
 					{	
 						clear = true;
@@ -1246,15 +1253,18 @@ public class CacheController extends Thread
 					}
 					if(cacheName.equalsIgnoreCase("rootSiteNodeCache") && entity.indexOf("SiteNode") > 0)
 					{
-						clear = true;
+						if(CmsPropertyHandler.getOperatingMode().equals("0"))
+							clear = true;
 					}
 					if(cacheName.equalsIgnoreCase("siteNodeCache") && entity.indexOf("SiteNode") > 0)
 					{
 						clear = true;
+						selectiveCacheUpdate = true;
 					}
 					if(cacheName.equalsIgnoreCase("contentCache") && entity.indexOf("Content") > 0)
 					{
 						clear = true;
+						selectiveCacheUpdate = true;
 					}
 					if(cacheName.equalsIgnoreCase("childSiteNodesCache") && entity.indexOf("SiteNode") > 0)
 					{
@@ -1288,6 +1298,15 @@ public class CacheController extends Thread
 					if(cacheName.equalsIgnoreCase("relatedCategoriesCache") && (entity.indexOf("Group") > 0 || entity.indexOf("Role") > 0 || entity.indexOf("User") > 0))
 					{
 						clear = true;
+					}
+					if(cacheName.equalsIgnoreCase("categoryCache") && entity.indexOf("Category") > 0)
+					{
+						clear = true;
+					}
+					if(cacheName.equalsIgnoreCase("contentCategoryCache") && entity.indexOf("ContentVersion") > 0)
+					{
+						clear = true;
+						selectiveCacheUpdate = true;
 					}
 					if(cacheName.equalsIgnoreCase("redirectCache") && entity.indexOf("Redirect") > 0)
 					{
@@ -1429,7 +1448,8 @@ public class CacheController extends Thread
 							    	try
 							    	{
 								    	logger.info("BeforesiteNodeVersionVO...");
-								    	Integer siteNodeId = SiteNodeVersionController.getController().getSiteNodeVersionVOWithId(new Integer(entityId)).getSiteNodeId();
+								    	SiteNodeVersionVO snvVO = SiteNodeVersionController.getController().getSiteNodeVersionVOWithId(new Integer(entityId));
+								    	Integer siteNodeId = snvVO.getSiteNodeId();
 								    	if(siteNodeId != null)
 							    		{
 									    	logger.info("Before flushGroup2...");
@@ -1437,6 +1457,15 @@ public class CacheController extends Thread
 									    		clearFileCacheForGroup(cacheInstance, "siteNode_" + siteNodeId);
 							    			else
 							    				cacheInstance.flushGroup("siteNode_" + siteNodeId);
+
+							    			if(cacheName.equals("childSiteNodesCache"))
+							    			{
+										    	SiteNodeVO snVO = SiteNodeController.getController().getSiteNodeVOWithId(snvVO.getSiteNodeId());
+										    	if(snVO.getParentSiteNodeId() != null)
+										    		cacheInstance.flushGroup("siteNode_" + snVO.getParentSiteNodeId());
+										    	logger.info("Clearing for:" + snVO.getParentSiteNodeId());
+							    			}
+							    			
 									    	logger.info("After flushGroup2...");
 							    		}
 							    	}
@@ -1454,6 +1483,7 @@ public class CacheController extends Thread
 							    	}
 							    	else
 							    	{
+								    	cacheInstance.flushGroup("" + entityId);
 								    	cacheInstance.flushGroup("siteNode_" + entityId);
 								    	cacheInstance.flushGroup("selectiveCacheUpdateNonApplicable");
 							    	}
@@ -1509,6 +1539,7 @@ public class CacheController extends Thread
 							    	}
 							    	else
 							    	{
+								    	cacheInstance.flushGroup("" + entityId);
 								    	cacheInstance.flushGroup("content_" + entityId);
 								    	cacheInstance.flushGroup("selectiveCacheUpdateNonApplicable");
 							    	}
@@ -1569,7 +1600,7 @@ public class CacheController extends Thread
 				}
 			//}
 			
-    		if(!useSelectivePageCacheUpdate)
+    		if(!useSelectivePageCacheUpdate || entity.indexOf("AccessRight") > -1)
     		{
     			logger.info("Clearing all pageCaches");
     			CacheController.clearFileCaches("pageCache");
@@ -2103,7 +2134,7 @@ public class CacheController extends Thread
         {
         	if(notifications == null || notifications.size() == 0)
         	{
-        		//System.out.println("No notifications...");
+        		logger.info("No notifications...");
         		RequestAnalyser.getRequestAnalyser().setBlockRequests(false);
         		return;
         	}
@@ -2511,7 +2542,7 @@ public class CacheController extends Thread
 		            	}
 		            	else
 		            	{
-			            	//System.out.println("getting file anyway:" + updateInterval);
+			            	//logger.info("getting file anyway:" + updateInterval);
 			            	contents = FileHelper.getFileAsStringOpt(file, charEncoding);
 		            	}
 
@@ -2520,14 +2551,14 @@ public class CacheController extends Thread
 		            }
 		            else
 		            {
-		            	//System.out.println("Old file - skipping:" + ((now - updateDateTime) / 1000));
+		            	//logger.info("Old file - skipping:" + ((now - updateDateTime) / 1000));
 		            	if(logger.isInfoEnabled())
 		        			logger.info("Old file - skipping:" + ((now - updateDateTime) / 1000));
 		            }
 		        }
 	            else
 	            {
-	            	//System.out.println("getting file:" + file);
+	            	//logger.info("getting file:" + file);
 	            	if(cacheName.equals("pageCache") && compressPageCache != null && compressPageCache.equals("true"))
 	            	{
 	            		byte[] cachedCompressedData = FileHelper.getFileBytes(file);
@@ -2536,7 +2567,7 @@ public class CacheController extends Thread
 	            	}
 	            	else
 	            	{
-		            	//System.out.println("getting file anyway:" + updateInterval);
+		            	//logger.info("getting file anyway:" + updateInterval);
 		            	contents = FileHelper.getFileAsStringOpt(file, charEncoding);
 	            	}
 	            	//contents = FileHelper.getFileAsString(file, charEncoding);

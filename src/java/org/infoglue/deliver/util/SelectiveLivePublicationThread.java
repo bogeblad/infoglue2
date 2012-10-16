@@ -56,7 +56,10 @@ import org.infoglue.cms.entities.management.Language;
 import org.infoglue.cms.entities.management.Repository;
 import org.infoglue.cms.entities.management.RepositoryLanguage;
 import org.infoglue.cms.entities.management.impl.simple.AvailableServiceBindingImpl;
+import org.infoglue.cms.entities.management.impl.simple.CategoryImpl;
+import org.infoglue.cms.entities.management.impl.simple.ContentTypeDefinitionImpl;
 import org.infoglue.cms.entities.management.impl.simple.GroupImpl;
+import org.infoglue.cms.entities.management.impl.simple.RepositoryImpl;
 import org.infoglue.cms.entities.management.impl.simple.RoleImpl;
 import org.infoglue.cms.entities.management.impl.simple.SmallAvailableServiceBindingImpl;
 import org.infoglue.cms.entities.management.impl.simple.SmallGroupImpl;
@@ -164,7 +167,7 @@ public class SelectiveLivePublicationThread extends PublicationThread
 			{		
 				logger.info("setting block");
 		        RequestAnalyser.getRequestAnalyser().setBlockRequests(true);
-				
+		        
 				Iterator i = cacheEvictionBeans.iterator();
 				while(i.hasNext())
 				{
@@ -181,7 +184,7 @@ public class SelectiveLivePublicationThread extends PublicationThread
 					    String objectName = cacheEvictionBean.getObjectName();
 						String typeId = cacheEvictionBean.getTypeId();
 						
-					    logger.info("className:" + className + " objectId:" + objectId + " objectName: " + objectName + " typeId: " + typeId);
+					   	System.out.println("className:" + className + " objectId:" + objectId + " objectName: " + objectName + " typeId: " + typeId);
 		
 				        boolean isDependsClass = false;
 					    if(className != null && className.equalsIgnoreCase(PublicationDetailImpl.class.getName()))
@@ -572,6 +575,22 @@ public class SelectiveLivePublicationThread extends PublicationThread
 						        CacheController.clearCache(type, ids);
 						        CacheController.clearCache(type);
 						    	CacheController.clearCaches(className, objectId, null);
+						    	
+						    	System.out.println("Clearing content types and repos");
+						    	Class ctdClass = ContentTypeDefinitionImpl.class;
+						    	CacheController.clearCache("contentTypeDefinitionCache");
+								CacheController.clearCache(ctdClass);
+								CacheController.clearCaches(ctdClass.getName(), null, null);
+
+								Class repoClass = RepositoryImpl.class;
+								CacheController.clearCache("repositoryCache");
+								CacheController.clearCache(repoClass);
+								CacheController.clearCaches(repoClass.getName(), null, null);
+
+								Class categoryClass = CategoryImpl.class;
+								CacheController.clearCache("categoryCache");
+								CacheController.clearCache(categoryClass);
+								CacheController.clearCaches(categoryClass.getName(), null, null);
 							}
 						}
 				    }

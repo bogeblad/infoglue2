@@ -351,15 +351,19 @@ public class ContentTypeDefinitionController extends BaseController
 	{
 		String key = "" + name;
 		logger.info("key:" + key);
-		ContentTypeDefinitionVO contentTypeDefinitionVO = (ContentTypeDefinitionVO)CacheController.getCachedObject("contentTypeDefinitionCache", key);
-		if(contentTypeDefinitionVO != null)
+		ContentTypeDefinitionVO contentTypeDefinitionVO = null;
+		Object candidate = CacheController.getCachedObject("contentTypeDefinitionCache", key);
+		if(candidate != null)
 		{
+			if(candidate instanceof NullObject)
+				contentTypeDefinitionVO = null;
+			else
+				contentTypeDefinitionVO = (ContentTypeDefinitionVO)candidate;
+			
 			logger.info("There was an cached contentTypeDefinitionVO:" + contentTypeDefinitionVO);
 		}
 		else
 		{
-			logger.info("Refetching contentTypeDefinitionVO:" + contentTypeDefinitionVO);
-
 			try
 			{
 				OQLQuery oql = db.getOQLQuery("SELECT f FROM org.infoglue.cms.entities.management.impl.simple.ContentTypeDefinitionImpl f WHERE f.name = $1");
@@ -370,10 +374,13 @@ public class ContentTypeDefinitionController extends BaseController
 				{
 				    ContentTypeDefinition contentTypeDefinition = (ContentTypeDefinition)results.next();
 				    contentTypeDefinitionVO = contentTypeDefinition.getValueObject();
-
-				    CacheController.cacheObject("contentTypeDefinitionCache", key, contentTypeDefinitionVO);
 				}
-				
+
+				if(contentTypeDefinitionVO != null)
+				    CacheController.cacheObject("contentTypeDefinitionCache", key, contentTypeDefinitionVO);
+				else
+				    CacheController.cacheObject("contentTypeDefinitionCache", key, new NullObject());
+					
 				results.close();
 				oql.close();
 			}

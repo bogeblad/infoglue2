@@ -97,27 +97,57 @@ public class SiteNodeController extends BaseController
 	 * This method gets the siteNodeVO with the given id
 	 */
 	 
-    public SiteNodeVO getSiteNodeVOWithId(Integer siteNodeId) throws SystemException, Bug
+	public SiteNodeVO getSiteNodeVOWithId(Integer siteNodeId) throws SystemException
     {
-		return (SiteNodeVO) getVOWithId(SiteNodeImpl.class, siteNodeId);
-    }
+    	SiteNodeVO siteNodeVO = null;
+    	
+		Database db = CastorDatabaseService.getDatabase();
+        beginTransaction(db);
+		try
+        {	
+			siteNodeVO = getSiteNodeVOWithId(siteNodeId, db);
+			
+	    	commitTransaction(db);
+        }
+        catch(Exception e)
+        {
+            logger.error("An error occurred so we should not complete the transaction:" + e, e);
+            rollbackTransaction(db);
+            throw new SystemException(e.getMessage());
+        }      
+        
+        return siteNodeVO;
+    }        
 
 	/**
 	 * This method gets the siteNodeVO with the given id
 	 */
 	 
-    public static SiteNodeVO getSiteNodeVOWithId(Integer siteNodeId, Database db) throws SystemException, Bug
-    {
-		return (SiteNodeVO) getVOWithId(SiteNodeImpl.class, siteNodeId, db);
+	public SiteNodeVO getSiteNodeVOWithId(Integer siteNodeId, Database db) throws SystemException, Bug
+	{
+		String key = "" + siteNodeId;
+		SiteNodeVO siteNodeVO = (SiteNodeVO)CacheController.getCachedObjectFromAdvancedCache("siteNodeCache", key);
+		if(siteNodeVO != null)
+		{
+			//logger.info("There was an cached siteNodeVO:" + siteNodeVO);
+		}
+		else
+		{
+			siteNodeVO = (SiteNodeVO)getVOWithId(SmallSiteNodeImpl.class, siteNodeId, db);
+			CacheController.cacheObjectInAdvancedCache("siteNodeCache", key, siteNodeVO, new String[]{"" + siteNodeId}, true);
+		}
+		
+		//RequestAnalyser.getRequestAnalyser().registerComponentStatistics("getSmallestSiteNodeVOWithId", t.getElapsedTimeNanos() / 1000);
+		return siteNodeVO;
     }
 
     /**
 	 * This method gets the siteNodeVO with the given id
 	 */
 	 
-    public static SiteNodeVO getSmallSiteNodeVOWithId(Integer siteNodeId, Database db) throws SystemException, Bug
+    public SiteNodeVO getSmallSiteNodeVOWithId(Integer siteNodeId, Database db) throws SystemException, Bug, Exception
     {
-		return (SiteNodeVO) getVOWithId(SmallSiteNodeImpl.class, siteNodeId, db);
+		return getSiteNodeVOWithId(siteNodeId, db); //(SiteNodeVO) getVOWithId(SmallSiteNodeImpl.class, siteNodeId, db);
     }
 
 
@@ -596,7 +626,7 @@ public class SiteNodeController extends BaseController
 		results.close();
 		oql.close();
         
-		CacheController.cacheObjectInAdvancedCache("childSiteNodesCache", key, childrenVOList, new String[]{"siteNode_" + parentSiteNodeId}, true);
+		CacheController.cacheObjectInAdvancedCache("childSiteNodesCache", key, childrenVOList, new String[]{CacheController.getPooledString(3, parentSiteNodeId)}, true);
         
 		return childrenVOList;
 	} 
@@ -668,7 +698,7 @@ public class SiteNodeController extends BaseController
 
 				Integer siteNodeId = new Integer((String)argument.get("siteNodeId"));
 				logger.info("Getting the siteNode with Id:" + siteNodeId);
-				siteNodes.add(getSmallSiteNodeVOWithId(siteNodeId, db));
+				siteNodes.add(getController().getSiteNodeVOWithId(siteNodeId, db));
 			}
     	}
         
@@ -1215,6 +1245,27 @@ public class SiteNodeController extends BaseController
         
         return siteNodeVO;
     }       
+
+    public SiteNodeVO getSiteNodeVOWithMetaInfoContentId(Database db, Integer contentId) throws ConstraintException, SystemException, Exception
+    {
+		SiteNodeVO siteNodeVO = null;
+
+		OQLQuery oql = db.getOQLQuery("SELECT sn FROM org.infoglue.cms.entities.structure.impl.simple.SmallSiteNodeImpl sn WHERE sn.metaInfoContentId = $1 ORDER BY sn.siteNodeId");
+    	oql.bind(contentId);
+    	
+    	QueryResults results = oql.execute(Database.ReadOnly);
+		
+		if(results.hasMore()) 
+        {
+			SiteNode siteNode = (SiteNodeImpl)results.next();
+			siteNodeVO = siteNode.getValueObject();
+        }
+
+		results.close();
+		oql.close();
+
+		return siteNodeVO;
+    }
 
     public SiteNode getSiteNodeWithMetaInfoContentId(Database db, Integer contentId) throws ConstraintException, SystemException, Exception
     {

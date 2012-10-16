@@ -395,6 +395,8 @@ public class UpdateCacheAction extends InfoGlueAbstractAction
 		    {
 		    	logger.info("className:" + className);
 			    logger.info("objectId:" + objectId);
+			    System.out.println("className:" + className);
+			    System.out.println("objectId:" + objectId);
 			    
 			    Integer publicationId = -1;
 			    if(className.indexOf(PublicationImpl.class.getName()) > -1)
@@ -427,7 +429,10 @@ public class UpdateCacheAction extends InfoGlueAbstractAction
 			    typeId 	 	= this.getRequest().getParameter("typeId");
 			    objectId  	= this.getRequest().getParameter("objectId");
 			    objectName 	= this.getRequest().getParameter("objectName");
-			    
+			 
+			    System.out.println("className:" + className);
+			    System.out.println("objectId:" + objectId);
+
 			    Integer publicationId = -1;
 			    if(className.indexOf(PublicationImpl.class.getName()) > -1)
 			    	publicationId = Integer.parseInt(objectId);

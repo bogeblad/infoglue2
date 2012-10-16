@@ -63,6 +63,7 @@ import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.security.InfoGluePrincipal;
 import org.infoglue.cms.services.BaseService;
 import org.infoglue.cms.util.ConstraintExceptionBuffer;
+import org.infoglue.deliver.applications.databeans.DeliveryContext;
 import org.infoglue.deliver.util.CacheController;
 import org.infoglue.deliver.util.Timer;
 
@@ -105,6 +106,39 @@ public class ContentController extends BaseController
     	return (ContentVO) getVOWithId(SmallContentImpl.class, contentId, db);
     } 
 
+	public ContentVO getSmallContentVOWithIdDirectly(Integer contentId, Database db) throws SystemException, Bug
+    {
+    	return (ContentVO) getVOWithId(SmallContentImpl.class, contentId, db);
+    } 
+
+	/**
+	 * This method return a contentVO
+	 */
+	
+	public ContentVO getSmallContentVOWithId(Integer contentId, Database db, DeliveryContext deliveryContext) throws SystemException, Exception
+	{
+		if(contentId == null || contentId.intValue() < 1)
+			return null;
+
+		if(deliveryContext != null)
+			deliveryContext.addUsedContent(CacheController.getPooledString(1, contentId));
+
+		String key = "" + contentId;
+		ContentVO contentVO = (ContentVO)CacheController.getCachedObjectFromAdvancedCache("contentCache", key);
+		if(contentVO != null)
+		{
+			//logger.info("There was an cached contentVO:" + contentVO);
+		}
+		else
+		{
+			contentVO = getSmallContentVOWithIdDirectly(contentId, db);
+			if(contentVO != null)
+				CacheController.cacheObjectInAdvancedCache("contentCache", key, contentVO, new String[]{CacheController.getPooledString(1, contentId)}, true);
+		}
+		
+		return contentVO;
+	}
+	
 	public ContentVO getSmallContentVOWithId(Integer contentId, Database db) throws SystemException, Bug
     {
     	return (ContentVO) getVOWithId(SmallContentImpl.class, contentId, db);
@@ -1296,7 +1330,7 @@ public class ContentController extends BaseController
 		}
 		
 		if(childrenVOList != null)
-			CacheController.cacheObjectInAdvancedCache("childContentCache", key, childrenVOList, new String[]{"content_" + parentContentId}, true);
+			CacheController.cacheObjectInAdvancedCache("childContentCache", key, childrenVOList, new String[]{CacheController.getPooledString(1, parentContentId)}, true);
 
 		results.close();
 		oql.close();

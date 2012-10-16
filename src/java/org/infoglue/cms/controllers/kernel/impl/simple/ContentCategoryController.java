@@ -20,7 +20,7 @@
  *
  * ===============================================================================
  *
- * $Id: ContentCategoryController.java,v 1.22.2.1 2009/11/17 14:28:16 mattias Exp $
+ * $Id: ContentCategoryController.java,v 1.22.2.1.2.1 2012/10/16 09:22:19 mattias Exp $
  */
 package org.infoglue.cms.controllers.kernel.impl.simple;
 
@@ -45,6 +45,7 @@ import org.infoglue.cms.entities.management.impl.simple.CategoryImpl;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.security.InfoGluePrincipal;
 import org.infoglue.cms.util.ConstraintExceptionBuffer;
+import org.infoglue.deliver.util.CacheController;
 
 /**
  * The ContentCategoryController manages all actions related to persistence
@@ -71,6 +72,12 @@ public class ContentCategoryController extends BaseController
 			.append("WHERE c.attributeName = $1 ")
 			.append("AND c.contentVersion.contentVersionId = $2")
 			.append("ORDER BY c.category.name").toString();
+
+	private static final String findByContentVersionAttributeSmall = new StringBuffer("SELECT c ")
+	.append("FROM org.infoglue.cms.entities.content.impl.simple.SmallContentCategoryImpl c ")
+	.append("WHERE c.attributeName = $1 ")
+	.append("AND c.contentVersionId = $2")
+	.append("ORDER BY c.contentCategoryId").toString();
 
 	private static final String findByCategory = new StringBuffer("SELECT c ")
 			.append("FROM org.infoglue.cms.entities.content.impl.simple.ContentCategoryImpl c ")
@@ -119,7 +126,7 @@ public class ContentCategoryController extends BaseController
 
 		try
 		{
-		    List contentCategories = findByContentVersionAttribute(attribute, versionId, db, true);
+		    List contentCategories = findByContentVersionAttribute(attribute, versionId, db);
 			if(contentCategories != null)
 			    contentCategoryVOList = toVOList(contentCategories);
 			
@@ -136,6 +143,32 @@ public class ContentCategoryController extends BaseController
 		return contentCategoryVOList;
 	}
 
+	public List<ContentCategoryVO> findSmallByContentVersionAttributeReadOnly(String attribute, Integer versionId, Database db) throws SystemException
+	{	    
+		String key = "" + attribute + "_" + versionId;
+
+		List<ContentCategoryVO> contentCategories = (List<ContentCategoryVO>)CacheController.getCachedObjectFromAdvancedCache("contentCategoryCache", key);
+		if(contentCategories != null)
+		{
+			//logger.info("There was an cached contentVersionVO:" + contentVersionVO.getContentVersionId());
+		}
+		else
+		{
+		    List params = new ArrayList();
+			params.add(attribute);
+			params.add(versionId);
+			List contentCategoryList = executeQueryReadOnly(findByContentVersionAttributeSmall, params, db);
+			if(contentCategoryList != null)
+			{
+				contentCategories = toVOList(contentCategoryList);
+				CacheController.cacheObjectInAdvancedCache("contentCategoryCache", key, contentCategories, new String[]{CacheController.getPooledString(2, versionId)}, true);
+			}
+		}
+
+		return contentCategories;
+	}
+	
+
 	/**
 	 * Find a List of ContentCategories for the specific attribute and Content Version.
 	 * @param	attribute The attribute name of the ContentCategory to find
@@ -145,6 +178,32 @@ public class ContentCategoryController extends BaseController
 	 */
 	public List findByContentVersionAttribute(String attribute, Integer versionId, Database db, boolean readOnly) throws SystemException
 	{
+		return findByContentVersionAttribute(attribute, versionId, db);
+	}
+	
+	public List findByContentVersionAttribute(String attribute, Integer versionId, Database db) throws SystemException
+	{
+	    List contentCategoryList = new ArrayList();
+	    
+	    //TODO - kan optimeras mycket
+	    List contentCategories = findByContentVersionReadOnly(versionId, db);
+	    
+	    //t.printElapsedTime("contentCategories");
+		if(contentCategories != null)
+		{
+		    Iterator contentCategoriesIterator = contentCategories.iterator();
+		    while(contentCategoriesIterator.hasNext())
+		    {
+		        ContentCategory contentCategory = (ContentCategory)contentCategoriesIterator.next();
+		        if(contentCategory.getAttributeName().equals(attribute))
+		        {
+		            contentCategoryList.add(contentCategory);
+		        }
+		    }
+		}
+		return contentCategoryList;
+
+	    /*
 	    List contentCategoryList = new ArrayList();
 	    
 	    ContentVersion contentVersion = null;
@@ -168,6 +227,7 @@ public class ContentCategoryController extends BaseController
 		}
 
 		return contentCategoryList;
+		*/
 	}
 
 	/**
@@ -225,6 +285,19 @@ public class ContentCategoryController extends BaseController
 		List params = new ArrayList();
 		params.add(versionId);
 		return executeQuery(findByContentVersion, params, db);
+	}
+
+	/**
+	 * Find a List of ContentCategories for a Content Version.
+	 * @param	versionId The Content Version id of the ContentCategory to find
+	 * @return	A list of ContentCategoryVO that have the provided content version and attribute
+	 * @throws	SystemException If an error happens
+	 */
+	public List findByContentVersionReadOnly(Integer versionId, Database db) throws SystemException
+	{
+		List params = new ArrayList();
+		params.add(versionId);
+		return executeQueryReadOnly(findByContentVersion, params, db);
 	}
 
 	
@@ -285,7 +358,7 @@ public class ContentCategoryController extends BaseController
 
 		ContentCategory contentCategory = null;
 		
-		List existingContentCategories = ContentCategoryController.getController().findByContentVersionAttribute(c.getAttributeName(), contentVersion.getContentVersionId(), db, true);
+		List existingContentCategories = ContentCategoryController.getController().findByContentVersionAttribute(c.getAttributeName(), contentVersion.getContentVersionId(), db);
 		boolean exists = false;
 		Iterator existingContentCategoriesIterator = existingContentCategories.iterator();
 		while(existingContentCategoriesIterator.hasNext())
@@ -337,7 +410,7 @@ public class ContentCategoryController extends BaseController
 				Category category = (Category)getObjectWithId(CategoryImpl.class, categoryVO.getId(), db);
 				ContentVersion contentVersion = (ContentVersion)getObjectWithId(ContentVersionImpl.class, contentVersionVO.getId(), db);
 				
-				List existingContentCategories = ContentCategoryController.getController().findByContentVersionAttribute(attributeName, contentVersion.getContentVersionId(), db, true);
+				List existingContentCategories = ContentCategoryController.getController().findByContentVersionAttribute(attributeName, contentVersion.getContentVersionId(), db);
 				boolean exists = false;
 				Iterator existingContentCategoriesIterator = existingContentCategories.iterator();
 				while(existingContentCategoriesIterator.hasNext())
@@ -393,8 +466,7 @@ public class ContentCategoryController extends BaseController
 		{
 		    Category category = (Category)categoryListIterator.next();
 		    
-			List existingContentCategories = ContentCategoryController.getController().findByContentVersionAttribute(attributeName, contentVersion, db);
-			//List existingContentCategories = ContentCategoryController.getController().findByContentVersionAttribute(attributeName, contentVersion.getContentVersionId(), db, true);
+			List existingContentCategories = ContentCategoryController.getController().findByContentVersionAttribute(attributeName, contentVersion.getContentVersionId(), db);
 			boolean exists = false;
 			Iterator existingContentCategoriesIterator = existingContentCategories.iterator();
 			while(existingContentCategoriesIterator.hasNext())

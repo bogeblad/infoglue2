@@ -20,7 +20,7 @@
  *
  * ===============================================================================
  *
- * $Id: CategoryController.java,v 1.20 2008/07/03 11:49:04 mattias Exp $
+ * $Id: CategoryController.java,v 1.20.4.1 2012/10/16 09:22:19 mattias Exp $
  */
 package org.infoglue.cms.controllers.kernel.impl.simple;
 
@@ -29,16 +29,17 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.apache.log4j.Logger;
 import org.exolab.castor.jdo.Database;
 import org.infoglue.cms.entities.kernel.BaseEntityVO;
 import org.infoglue.cms.entities.management.Category;
 import org.infoglue.cms.entities.management.CategoryVO;
+import org.infoglue.cms.entities.management.ContentTypeDefinitionVO;
 import org.infoglue.cms.entities.management.impl.simple.CategoryImpl;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.security.InfoGluePrincipal;
+import org.infoglue.deliver.util.CacheController;
+import org.infoglue.deliver.util.Timer;
 
 
 /**
@@ -110,6 +111,18 @@ public class CategoryController extends BaseController
 	}
 
 	/**
+	 * Find a Category by it's identifier.
+	 *
+	 * @param	id The id of the Category to find
+	 * @return	The Category identified by the provided id
+	 * @throws	SystemException If an error happens
+	 */
+	public Category findByIdReadOnly(Integer id, Database db) throws SystemException
+	{
+		return (Category)getObjectWithIdAsReadOnly(CategoryImpl.class, id, db);
+	}
+
+	/**
 	 * Find a Category by it's name path.
 	 *
 	 * @param	path The path of the Category to find in the form /categoryName/categoryName/categoryName
@@ -146,22 +159,33 @@ public class CategoryController extends BaseController
 	 */
 	public CategoryVO findByPath(String path, Database db) throws SystemException
 	{
-	    CategoryVO categoryVO = null;
-	    
-	    String[] nodes = path.substring(1).split("/");
-        
-	    if(nodes.length > 0)
-	    {
-	        List rootCategories = findRootCategoryVOList(db);
-	        String name = nodes[0];
-	        categoryVO = getCategoryVOWithNameInList(rootCategories, name);
+		String key = "" + path;
+		
+		CategoryVO categoryVO = (CategoryVO)CacheController.getCachedObjectFromAdvancedCache("categoryCache", key);
+		if(categoryVO != null)
+		{
+			logger.info("There was an cached categoryVO:" + categoryVO);
+		}
+		else
+		{
+		    String[] nodes = path.substring(1).split("/");
 	        
-	        for(int i = 1; i < nodes.length; i++)
-	        {
-	            categoryVO = getCategoryVOWithNameInList(findByParent(categoryVO.getId(), db), nodes[i]);
+		    if(nodes.length > 0)
+		    {
+		        List rootCategories = findRootCategoryVOList(db);
+		        String name = nodes[0];
+		        categoryVO = getCategoryVOWithNameInList(rootCategories, name);
+		        
+		        for(int i = 1; i < nodes.length; i++)
+		        {
+		            categoryVO = getCategoryVOWithNameInList(findByParent(categoryVO.getId(), db), nodes[i]);
+			    }
 		    }
-	    }
-	    
+		    
+		    if(categoryVO != null)
+		    	CacheController.cacheObjectInAdvancedCache("categoryCache", key, categoryVO);
+		}
+		
 	    return categoryVO;
 	}
 
@@ -268,11 +292,50 @@ public class CategoryController extends BaseController
 	 * @return	A list of CategoryVOs that have the provided parentId
 	 * @throws	SystemException If an error happens
 	 */
-	public List findByParent(Integer parentId, Database db) throws SystemException
+	public List<CategoryVO> findByParent(Integer parentId, Database db) throws SystemException
 	{
 		List params = new ArrayList();
 		params.add(parentId);
-		return executeQuery(findByParent, params, db);
+		return toVOList(executeQueryReadOnly(findByParent, params, db));
+	}
+
+	/**
+	 * Find a List of active Categories by parent.
+	 *
+	 * @param	parentId The parent id of the Category to find
+	 * @return	A list of CategoryVOs that have the provided parentId
+	 * @throws	SystemException If an error happens
+	 */
+	public List<CategoryVO> getActiveCategoryVOListByParent(Integer parentId, Database db) throws SystemException
+	{
+		String categoriesKey = "childCategories_" + parentId + "_active";
+		List<CategoryVO> categories = (List<CategoryVO>)CacheController.getCachedObjectFromAdvancedCache("categoriesCache", categoriesKey);
+		if(categories != null)
+		{
+			logger.info("There was an cached categories:" + categories);
+		}
+		else
+		{
+			if(logger.isInfoEnabled())
+				logger.info("Querying for categories:" + categoriesKey);
+
+			List params = new ArrayList();
+			params.add(parentId);
+			params.add(Boolean.TRUE);
+			categories = toVOList(executeQueryReadOnly(findActiveByParent, params, db));
+			
+			if(categories != null && categories.size() > 0)
+			{
+				CacheController.cacheObjectInAdvancedCache("categoriesCache", categoriesKey, categories);
+			}
+			else
+			{
+				CacheController.cacheObjectInAdvancedCache("categoriesCache", categoriesKey, new ArrayList<CategoryVO>());
+			}
+
+		}
+		
+		return categories;
 	}
 
 	/**
@@ -284,10 +347,69 @@ public class CategoryController extends BaseController
 	 */
 	public List findActiveByParent(Integer parentId) throws SystemException
 	{
-		List params = new ArrayList();
-		params.add(parentId);
-		params.add(Boolean.TRUE);
-		return executeQuery(findActiveByParent, params);
+		String categoriesKey = "childCategories_" + parentId + "_active";
+		List categories = (List)CacheController.getCachedObjectFromAdvancedCache("categoriesCache", categoriesKey);
+		if(categories != null)
+		{
+			logger.info("There was an cached categories:" + categories);
+		}
+		else
+		{
+			if(logger.isInfoEnabled())
+				logger.info("Querying for categories:" + categoriesKey);
+		
+			List params = new ArrayList();
+			params.add(parentId);
+			params.add(Boolean.TRUE);
+			categories = executeQuery(findActiveByParent, params);
+			
+			if(categories != null && categories.size() > 0)
+			{
+				CacheController.cacheObjectInAdvancedCache("categoriesCache", categoriesKey, categories);
+			}
+			else
+			{
+				CacheController.cacheObjectInAdvancedCache("categoriesCache", categoriesKey, new ArrayList());
+			}
+		}
+		return categories;
+	}
+	
+	/**
+	 * Find a List of active Categories by parent.
+	 *
+	 * @param	parentId The parent id of the Category to find
+	 * @return	A list of CategoryVOs that have the provided parentId
+	 * @throws	SystemException If an error happens
+	 */
+	public List<CategoryVO> getActiveByParent(Integer parentId, Database db) throws SystemException
+	{
+		String categoriesKey = "childCategories_" + parentId + "_active";
+		List categories = (List)CacheController.getCachedObjectFromAdvancedCache("categoriesCache", categoriesKey);
+		if(categories != null)
+		{
+			logger.info("There was an cached categories:" + categories);
+		}
+		else
+		{
+			if(logger.isInfoEnabled())
+				logger.info("Querying for categories:" + categoriesKey);
+		
+			List params = new ArrayList();
+			params.add(parentId);
+			params.add(Boolean.TRUE);
+			categories = executeQueryReadOnly(findActiveByParent, params, db);
+			
+			if(categories != null && categories.size() > 0)
+			{
+				CacheController.cacheObjectInAdvancedCache("categoriesCache", categoriesKey, categories);
+			}
+			else
+			{
+				CacheController.cacheObjectInAdvancedCache("categoriesCache", categoriesKey, new ArrayList());
+			}
+		}
+		return categories;
 	}
 
 	/**
@@ -314,7 +436,7 @@ public class CategoryController extends BaseController
 	public CategoryVO findWithChildren(Integer id, Database db) throws SystemException
 	{
 		Category c = findById(id, db);
-		c.getValueObject().setChildren(toVOList(findByParent(c.getId(), db)));
+		c.getValueObject().setChildren(findByParent(c.getId(), db));
 		return c.getValueObject();
 	}
 
@@ -346,10 +468,30 @@ public class CategoryController extends BaseController
 	 * @return	A list of CategoryVOs that are at the root of the category tree
 	 * @throws	SystemException If an error happens
 	 */
-	public List findRootCategoryVOList(Database db) throws SystemException
+	public List<CategoryVO> findRootCategoryVOList(Database db) throws SystemException
 	{
-	    List categories = executeQuery(findRootCategories, db);
-		return (categories != null) ? toVOList(categories) : null;
+		String categoriesKey = "rootCategories";
+		List<CategoryVO> categories = (List)CacheController.getCachedObjectFromAdvancedCache("categoriesCache", categoriesKey);
+		if(categories != null)
+		{
+			logger.info("There was an cached categories:" + categories);
+		}
+		else
+		{
+			if(logger.isInfoEnabled())
+				logger.info("Querying for categories:" + categoriesKey);
+		
+			List categoryImpls = executeQueryReadOnly(findRootCategories, db);
+			if(categoryImpls != null)
+			{
+				categories = toVOList(categoryImpls);
+				CacheController.cacheObjectInAdvancedCache("categoriesCache", categoriesKey, categories);
+			}
+		}
+		return categories;
+
+	    //List categories = executeQueryReadOnly(findRootCategories, db);
+		//return (categories != null) ? toVOList(categories) : null;
 	}
 
 	/**
@@ -358,6 +500,7 @@ public class CategoryController extends BaseController
 	 * @return	A list of CategoryVOs starting at the root of the category tree
 	 * @throws	SystemException If an error happens
 	 */
+	/*
 	public List findAllActiveCategories() throws SystemException
 	{
 		List params = new ArrayList();
@@ -368,6 +511,43 @@ public class CategoryController extends BaseController
 			CategoryVO root = (CategoryVO) iter.next();
 			root.setChildren(findAllActiveChildren(root.getId()));
 		}
+		return roots;
+	}
+	*/
+	
+	/**
+	 * Find a list of all Categories in the system.
+	 *
+	 * @return	A list of CategoryVOs starting at the root of the category tree
+	 * @throws	SystemException If an error happens
+	 */
+	public List<CategoryVO> getAllActiveCategories() throws SystemException
+	{
+		List<CategoryVO> roots = new ArrayList<CategoryVO>();
+		
+		Database db = CastorDatabaseService.getDatabase();
+        beginTransaction(db);
+
+        try
+        {
+    		List params = new ArrayList();
+    		params.add(Boolean.TRUE);
+    		roots = toVOList(executeQueryReadOnly(findActiveRootCategories, params, db));
+    		for (Iterator iter = roots.iterator(); iter.hasNext();)
+    		{
+    			CategoryVO root = (CategoryVO) iter.next();
+    			root.setChildren(getAllActiveChildren(root.getId(), db));
+    		}
+
+            rollbackTransaction(db);
+        }
+        catch(Exception e)
+        {
+            logger.error("An error occurred so we should not complete the transaction:" + e);
+            logger.warn("An error occurred so we should not complete the transaction:" + e, e);
+            rollbackTransaction(db);
+            throw new SystemException(e.getMessage());
+        }
 		return roots;
 	}
 
@@ -393,6 +573,47 @@ public class CategoryController extends BaseController
 			
 			root.setChildren(findAllActiveChildren(root.getId(), includePaths));
 		}
+		return roots;
+	}
+
+	/**
+	 * Find a list of all Categories in the system.
+	 *
+	 * @return	A list of CategoryVOs starting at the root of the category tree
+	 * @throws	SystemException If an error happens
+	 */
+	public List<CategoryVO> getAllActiveCategories(boolean includePaths) throws SystemException
+	{
+		List<CategoryVO> roots = new ArrayList<CategoryVO>();
+		
+		Database db = CastorDatabaseService.getDatabase();
+        beginTransaction(db);
+
+        try
+        {
+    		List params = new ArrayList();
+    		params.add(Boolean.TRUE);
+    		roots = executeQueryReadOnly(findActiveRootCategories, params, db);
+    		for (Iterator iter = roots.iterator(); iter.hasNext();)
+    		{
+    			CategoryVO root = (CategoryVO) iter.next();
+    			if(includePaths)
+    			{
+    				String categoryPath = this.getCategoryPath(root.getCategoryId(), db);
+    				root.setCategoryPath(categoryPath);
+    			}
+    			root.setChildren(getAllActiveChildren(root.getId(), includePaths, db));
+    		}
+
+            rollbackTransaction(db);
+        }
+        catch(Exception e)
+        {
+            logger.error("An error occurred so we should not complete the transaction:" + e);
+            logger.warn("An error occurred so we should not complete the transaction:" + e, e);
+            rollbackTransaction(db);
+            throw new SystemException(e.getMessage());
+        }
 		return roots;
 	}
 	
@@ -431,8 +652,66 @@ public class CategoryController extends BaseController
 	 *
 	 * @return A list of children nodes, with thier children populated
 	 */
+	public List<CategoryVO> getActiveChildrenCategoryVOList(Integer parentId) throws SystemException
+	{
+    	List<CategoryVO> children = new ArrayList<CategoryVO>();
+
+    	Database db = CastorDatabaseService.getDatabase();
+        beginTransaction(db);
+
+        try
+        {
+        	children = getActiveChildrenCategoryVOList(parentId, db);
+            
+            rollbackTransaction(db);
+        }
+        catch(Exception e)
+        {
+            logger.error("An error occurred so we should not complete the transaction:" + e);
+            logger.warn("An error occurred so we should not complete the transaction:" + e, e);
+            rollbackTransaction(db);
+            throw new SystemException(e.getMessage());
+        }
+    	
+		return children;
+	}
+
+	/**
+	 * Finds all children for a given parent id, recursively until no children are found.
+	 *
+	 * @return A list of children nodes, with thier children populated
+	 */
+	public List<CategoryVO> getActiveChildrenCategoryVOList(Integer parentId, Database db) throws SystemException
+	{
+		Timer t = new Timer();
+
+		List<CategoryVO> children = getActiveCategoryVOListByParent(parentId, db);
+		for (Iterator iter = children.iterator(); iter.hasNext();)
+		{
+			CategoryVO child = (CategoryVO) iter.next();
+			child.setChildren(getActiveChildrenCategoryVOList(child.getId(), db));
+		}
+		/*
+		List children = findActiveByParent(parentId);
+		for (Iterator iter = children.iterator(); iter.hasNext();)
+		{
+			CategoryVO child = (CategoryVO) iter.next();
+			child.setChildren(findAllActiveChildren(child.getId()));
+		}
+		*/
+		return children;
+	}
+
+	
+	
+	/**
+	 * Finds all children for a given parent id, recursively until no children are found.
+	 *
+	 * @return A list of children nodes, with thier children populated
+	 */
 	public List findAllActiveChildren(Integer parentId) throws SystemException
 	{
+		Timer t = new Timer();
 		List children = findActiveByParent(parentId);
 		for (Iterator iter = children.iterator(); iter.hasNext();)
 		{
@@ -441,7 +720,24 @@ public class CategoryController extends BaseController
 		}
 		return children;
 	}
-	
+
+	/**
+	 * Finds all children for a given parent id, recursively until no children are found.
+	 *
+	 * @return A list of children nodes, with thier children populated
+	 */
+	public List<CategoryVO> getAllActiveChildren(Integer parentId, Database db) throws SystemException
+	{
+		Timer t = new Timer();
+		List<CategoryVO> children = getActiveCategoryVOListByParent(parentId, db);
+		for (Iterator iter = children.iterator(); iter.hasNext();)
+		{
+			CategoryVO child = (CategoryVO) iter.next();
+			child.setChildren(getAllActiveChildren(child.getId(), db));
+		}
+		return children;
+	}
+
 	/**
 	 * Finds all children for a given parent id, recursively until no children are found.
 	 *
@@ -459,6 +755,27 @@ public class CategoryController extends BaseController
 				child.setCategoryPath(categoryPath);
 			}
 			child.setChildren(findAllActiveChildren(child.getId()));
+		}
+		return children;
+	}
+
+	/**
+	 * Finds all children for a given parent id, recursively until no children are found.
+	 *
+	 * @return A list of children nodes, with thier children populated
+	 */
+	public List<CategoryVO> getAllActiveChildren(Integer parentId, boolean includePaths, Database db) throws SystemException
+	{
+		List children = getActiveByParent(parentId, db);
+		for (Iterator iter = children.iterator(); iter.hasNext();)
+		{
+			CategoryVO child = (CategoryVO) iter.next();
+			if(includePaths)
+			{
+				String categoryPath = CategoryController.getController().getCategoryPath(child.getCategoryId(), db);
+				child.setCategoryPath(categoryPath);
+			}
+			child.setChildren(getAllActiveChildren(child.getId(), db));
 		}
 		return children;
 	}

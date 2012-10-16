@@ -47,6 +47,7 @@ import org.infoglue.cms.security.InfoGluePrincipal;
 import org.infoglue.cms.util.ConstraintExceptionBuffer;
 import org.infoglue.cms.util.sorters.ReflectionComparator;
 import org.infoglue.deliver.util.CacheController;
+import org.infoglue.deliver.util.NullObject;
 import org.infoglue.deliver.util.Timer;
 
 public class RepositoryController extends BaseController
@@ -208,7 +209,20 @@ public class RepositoryController extends BaseController
 	
     public RepositoryVO getRepositoryVOWithId(Integer repositoryId, Database db) throws ConstraintException, SystemException, Bug
     {
-		return  (RepositoryVO) getVOWithId(RepositoryImpl.class, repositoryId, db);        
+		String key = "" + repositoryId;
+		RepositoryVO repositoryVO = (RepositoryVO)CacheController.getCachedObject("repositoryCache", key);
+		if(repositoryVO != null)
+		{
+			//logger.info("There was an cached authorization:" + repositoryVO);
+		}
+		else
+		{
+			repositoryVO = (RepositoryVO) getVOWithId(RepositoryImpl.class, repositoryId, db);        
+		
+			CacheController.cacheObject("repositoryCache", key, repositoryVO);
+		}
+		
+		return repositoryVO;
     }
     
 	/**
@@ -258,30 +272,49 @@ public class RepositoryController extends BaseController
 	{
 		RepositoryVO repositoryVO = null;
 		
-		try
+		String key = "" + name;
+		logger.info("key:" + key);
+		Object cachedRepoCandidate = CacheController.getCachedObject("repositoryCache", key);
+		if(cachedRepoCandidate != null)
 		{
-			OQLQuery oql = db.getOQLQuery("SELECT f FROM org.infoglue.cms.entities.management.impl.simple.RepositoryImpl f WHERE f.name = $1");
-			oql.bind(name);
-			
-			QueryResults results = oql.execute(Database.ReadOnly);
-			this.logger.info("Fetching entity in read/write mode" + name);
-
-			if (results.hasMore()) 
-			{
-				Repository repository = (Repository)results.next();
-				repositoryVO = repository.getValueObject();
-			}
-			
-			results.close();
-			oql.close();
+			logger.info("There was an cached authorization:" + cachedRepoCandidate);
+			if(cachedRepoCandidate instanceof NullObject)
+				repositoryVO = null;
+			else
+				repositoryVO = (RepositoryVO)cachedRepoCandidate;
 		}
-		catch(Exception e)
+		else
 		{
-			throw new SystemException("An error occurred when we tried to fetch a named repository. Reason:" + e.getMessage(), e);    
+			try
+			{
+				OQLQuery oql = db.getOQLQuery("SELECT f FROM org.infoglue.cms.entities.management.impl.simple.RepositoryImpl f WHERE f.name = $1");
+				oql.bind(name);
+				
+				QueryResults results = oql.execute(Database.ReadOnly);
+	
+				if (results.hasMore()) 
+				{
+					Repository repository = (Repository)results.next();
+					repositoryVO = repository.getValueObject();
+					CacheController.cacheObject("repositoryCache", key, repositoryVO);
+				}
+				else
+				{
+					CacheController.cacheObject("repositoryCache", key, new NullObject());
+				}
+				
+				results.close();
+				oql.close();
+			}
+			catch(Exception e)
+			{
+				throw new SystemException("An error occurred when we tried to fetch a named repository. Reason:" + e.getMessage(), e);    
+			}
 		}
 		
 		return repositoryVO;		
 	}
+
 
 	/**
 	 * Returns the Repository with the given name fetched within a given transaction.

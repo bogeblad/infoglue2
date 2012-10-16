@@ -168,6 +168,8 @@ public class ViewPageAction extends InfoGlueAbstractAction
          
     public String doExecute() throws Exception
     {
+    	Timer t = new Timer();
+    	
         if(isRecacheCall)
         {
 	        //logger.warn("ThreadId:" + Thread.currentThread().getName());
@@ -227,7 +229,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
 
     	long start 			= System.currentTimeMillis();
     	long elapsedTime 	= 0;
-    	    	
+
     	DatabaseWrapper dbWrapper = new DatabaseWrapper(CastorDatabaseService.getDatabase());
     	
 		beginTransaction(dbWrapper.getDatabase());
@@ -336,7 +338,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
 	                return NONE;
 	            }
 	        }
-	
+
 	        if(logger.isInfoEnabled())
 	        	logger.info("handled portal action: " + isUserRedirected);
 	        
@@ -358,7 +360,6 @@ public class ViewPageAction extends InfoGlueAbstractAction
 				deliveryContext.setUseFullUrl(Boolean.parseBoolean(CmsPropertyHandler.getUseDNSNameInURI()));
 				
 				SiteNodeTypeDefinitionVO siteNodeTypeDefinitionVO = getSiteNodeTypeDefinition(this.siteNodeId, dbWrapper.getDatabase());
-								
 			    try
 			    {
 			        String invokerClassName = siteNodeTypeDefinitionVO.getInvokerClassName();
@@ -378,7 +379,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
 			    	deliveryContext = null;
 			    }
 			}
-			
+
 	        //StatisticsService.getStatisticsService().registerRequest(getRequest(), getResponse(), pagePath, elapsedTime);
 			//logger.info("Registered request in statistics service");
 		}
@@ -475,7 +476,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
 			{
 				logger.error("Problem clearing:" + e.getMessage(), e);
 			}
-			
+
 			if(logger.isInfoEnabled())
 				logger.info("After closing transaction");
 
@@ -1072,7 +1073,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
 		{
 			if(getSiteNodeId() != null)
 			{
-				SiteNodeVO siteNodeVO = SiteNodeController.getSmallSiteNodeVOWithId(getSiteNodeId(), db);
+				SiteNodeVO siteNodeVO = SiteNodeController.getController().getSiteNodeVOWithId(getSiteNodeId(), db);
 				repositoryId = siteNodeVO.getRepositoryId();
 			}
 		}
@@ -1406,11 +1407,11 @@ public class ViewPageAction extends InfoGlueAbstractAction
 			    if(alternativePrincipal == null)
 			        alternativePrincipal = loginWithRequestArguments();
 
-			    if(protectedSiteNodeVersionId != null && alternativePrincipal != null && AccessRightController.getController().getIsPrincipalAuthorized((InfoGluePrincipal)alternativePrincipal, "SiteNodeVersion.Read", protectedSiteNodeVersionId.toString()))
+			    if(protectedSiteNodeVersionId != null && alternativePrincipal != null && AccessRightController.getController().getIsPrincipalAuthorized(db, (InfoGluePrincipal)alternativePrincipal, "SiteNodeVersion.Read", protectedSiteNodeVersionId.toString()))
 			    {
 			        logger.info("The user " + alternativePrincipal.getName() + " was approved.");
 			    }
-				else if(protectedSiteNodeVersionId != null && !AccessRightController.getController().getIsPrincipalAuthorized((InfoGluePrincipal)principal, "SiteNodeVersion.Read", protectedSiteNodeVersionId.toString()) &&  !AccessRightController.getController().getIsPrincipalAuthorized((InfoGluePrincipal)this.getAnonymousPrincipal(), "SiteNodeVersion.Read", protectedSiteNodeVersionId.toString()))
+				else if(protectedSiteNodeVersionId != null && !AccessRightController.getController().getIsPrincipalAuthorized(db, (InfoGluePrincipal)principal, "SiteNodeVersion.Read", protectedSiteNodeVersionId.toString()) &&  !AccessRightController.getController().getIsPrincipalAuthorized((InfoGluePrincipal)this.getAnonymousPrincipal(), "SiteNodeVersion.Read", protectedSiteNodeVersionId.toString()))
 				{
 					if(logger.isInfoEnabled())
 					{
@@ -1418,9 +1419,9 @@ public class ViewPageAction extends InfoGlueAbstractAction
 						logger.info("protectedSiteNodeVersionId:" + protectedSiteNodeVersionId);
 						logger.info("this.getAnonymousPrincipal():" + this.getAnonymousPrincipal());
 						
-						logger.info("Principal access: " + !AccessRightController.getController().getIsPrincipalAuthorized((InfoGluePrincipal)principal, "SiteNodeVersion.Read", protectedSiteNodeVersionId.toString()));
-						logger.info("Principal access: " + !AccessRightController.getController().getIsPrincipalAuthorized((InfoGluePrincipal)principal, "SiteNodeVersion.Read", protectedSiteNodeVersionId.toString()));
-						logger.info("Anonymous access: " + !AccessRightController.getController().getIsPrincipalAuthorized((InfoGluePrincipal)this.getAnonymousPrincipal(), "SiteNodeVersion.Read", protectedSiteNodeVersionId.toString()));
+						logger.info("Principal access: " + !AccessRightController.getController().getIsPrincipalAuthorized(db, (InfoGluePrincipal)principal, "SiteNodeVersion.Read", protectedSiteNodeVersionId.toString()));
+						logger.info("Principal access: " + !AccessRightController.getController().getIsPrincipalAuthorized(db, (InfoGluePrincipal)principal, "SiteNodeVersion.Read", protectedSiteNodeVersionId.toString()));
+						logger.info("Anonymous access: " + !AccessRightController.getController().getIsPrincipalAuthorized(db, (InfoGluePrincipal)this.getAnonymousPrincipal(), "SiteNodeVersion.Read", protectedSiteNodeVersionId.toString()));
 					}
 					
 					if(this.referer == null)
@@ -1818,7 +1819,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
 		}
 		else
 		{
-			SiteNodeVO siteNodeVO = SiteNodeController.getSmallSiteNodeVOWithId(getSiteNodeId(), db);
+			SiteNodeVO siteNodeVO = SiteNodeController.getController().getSiteNodeVOWithId(getSiteNodeId(), db);
 
 			if(siteNodeVO == null)
 			    throw new SystemException("There was no page with this id.");

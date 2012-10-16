@@ -80,6 +80,7 @@ import org.infoglue.cms.controllers.kernel.impl.simple.RepositoryController;
 import org.infoglue.cms.controllers.kernel.impl.simple.RoleControllerProxy;
 import org.infoglue.cms.controllers.kernel.impl.simple.RolePropertiesController;
 import org.infoglue.cms.controllers.kernel.impl.simple.SearchController;
+import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeController;
 import org.infoglue.cms.controllers.kernel.impl.simple.UserControllerProxy;
 import org.infoglue.cms.controllers.kernel.impl.simple.WorkflowController;
 import org.infoglue.cms.entities.content.Content;
@@ -1632,7 +1633,7 @@ public class BasicTemplateController implements TemplateController
     {
 		List assignedCategories = new ArrayList();
 		
-		this.deliveryContext.addUsedContent("content_" + contentId);
+		this.deliveryContext.addUsedContent(CacheController.getPooledString(1, contentId));
 		
 		try
 		{
@@ -1807,7 +1808,7 @@ public class BasicTemplateController implements TemplateController
 	{
 		String attributeValue = "";
 		
-		this.deliveryContext.addUsedContent("content_" + contentId);
+		this.deliveryContext.addUsedContent(CacheController.getPooledString(1, contentId));
 		
 		try
 		{
@@ -1858,7 +1859,7 @@ public class BasicTemplateController implements TemplateController
 	{
 		String attributeValue = "";
 		
-		this.deliveryContext.addUsedContent("content_" + contentId);
+		this.deliveryContext.addUsedContent(CacheController.getPooledString(1, contentId));
 		
 		try
 		{
@@ -1885,7 +1886,7 @@ public class BasicTemplateController implements TemplateController
 	{
 		String attributeValue = "";
 		
-		this.deliveryContext.addUsedContent("content_" + contentId);
+		this.deliveryContext.addUsedContent(CacheController.getPooledString(1, contentId));
 
 		try
 		{
@@ -1911,7 +1912,7 @@ public class BasicTemplateController implements TemplateController
 	{
 		String attributeValue = "";
 		
-		this.deliveryContext.addUsedContent("content_" + contentId);
+		this.deliveryContext.addUsedContent(CacheController.getPooledString(1, contentId));
 
 		try
 		{
@@ -1939,7 +1940,7 @@ public class BasicTemplateController implements TemplateController
 	{
 		String attributeValue = "";
 		
-		this.deliveryContext.addUsedContent("content_" + contentId);
+		this.deliveryContext.addUsedContent(CacheController.getPooledString(1, contentId));
 		
 		try
 		{
@@ -3314,8 +3315,9 @@ public class BasicTemplateController implements TemplateController
 					
 					try
 					{
-						SiteNodeVO siteNodeVO = this.nodeDeliveryController.getSiteNode(getDatabase(), new Integer(id)).getValueObject();
-						if(this.nodeDeliveryController.isValidSiteNode(getDatabase(), siteNodeVO.getId()))
+						//SiteNodeVO siteNodeVO = this.nodeDeliveryController.getSiteNodeVO(getDatabase(), new Integer(id));
+						SiteNodeVO siteNodeVO = SiteNodeController.getController().getSiteNodeVOWithId(new Integer(id), getDatabase());
+						if(this.nodeDeliveryController.isValidSiteNode(siteNodeVO, getDatabase()))
 						{
 							WebPage webPage = new WebPage();						
 							webPage.setSiteNodeId(siteNodeVO.getSiteNodeId());
@@ -4887,6 +4889,8 @@ public class BasicTemplateController implements TemplateController
 	{
 		try
 		{
+			Timer t = new Timer();
+			
 		    List contentTypeDefinitionVOList = new ArrayList();
 		    String[] contentTypeDefinitionNames = contentTypeDefinitionNamesString.split(",");
 		    for(int i=0; i<contentTypeDefinitionNames.length; i++)
@@ -4896,7 +4900,7 @@ public class BasicTemplateController implements TemplateController
 		        	contentTypeDefinitionVOList.add(contentTypeDefinitionVO);
 		    }
 
-		    final CategoryConditions categoryConditions = CategoryConditions.parse(categoryConditionString);
+		    final CategoryConditions categoryConditions = CategoryConditions.parse(categoryConditionString, getDatabase());
 		    
 			final ExtendedSearchCriterias criterias = new ExtendedSearchCriterias(this.getOperatingMode().intValue());
 			criterias.setCategoryConditions(categoryConditions);
@@ -5006,8 +5010,8 @@ public class BasicTemplateController implements TemplateController
 			        	contentTypeDefinitionVOList.add(contentTypeDefinitionVO);
 			    }
 	
-			    final CategoryConditions categoryConditions = CategoryConditions.parse(categoryConditionString);
-			    
+			    final CategoryConditions categoryConditions = CategoryConditions.parse(categoryConditionString, getDatabase());
+
 				final ExtendedSearchCriterias criterias = new ExtendedSearchCriterias(this.getOperatingMode().intValue());
 				criterias.setCategoryConditions(categoryConditions);
 				criterias.setLanguage(this.getLanguage(localLanguageId));
@@ -5025,7 +5029,7 @@ public class BasicTemplateController implements TemplateController
 					criterias.setRepositoryIdList(repositoryIdList);
 				
 				final Set set = ExtendedSearchController.getController().search(criterias, getDatabase());
-				
+				t.printElapsedTime("AAAAAAAAAAAAAAAAAAAAAA search returning :" + set.size());
 				final List result = new ArrayList();
 				for(Iterator i = set.iterator(); i.hasNext(); ) 
 				{
@@ -6004,7 +6008,7 @@ public class BasicTemplateController implements TemplateController
 		{
 			SiteNodeVO siteNodeVO = (SiteNodeVO)i.next();
 			
-			this.getDeliveryContext().addUsedSiteNode("siteNode_" + siteNodeVO.getId());
+			this.getDeliveryContext().addUsedSiteNode(CacheController.getPooledString(3, siteNodeVO.getId()));
 			if(!hideUnauthorizedPages || getHasUserPageAccess(siteNodeVO.getId()))
 			{
 				try
@@ -6048,6 +6052,16 @@ public class BasicTemplateController implements TemplateController
 	    return getChildPages(siteNodeId, escapeHTML, false);
 	}
 
+	/**
+	 * The method returns a list of WebPage-objects that is the children of the given 
+	 * siteNode. The method is great for navigation-purposes on a structured site. 
+	 */
+	
+	public List getChildPages(Integer siteNodeId, boolean escapeHTML, boolean hideUnauthorizedPages, boolean showDeleted)
+	{
+		return getChildPages(siteNodeId, escapeHTML, hideUnauthorizedPages);
+	}
+	
 	/**
 	 * The method returns a list of WebPage-objects that is the children of the given 
 	 * siteNode. The method is great for navigation-purposes on a structured site. 

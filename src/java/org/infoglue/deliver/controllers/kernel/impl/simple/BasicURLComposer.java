@@ -354,7 +354,7 @@ public class BasicURLComposer extends URLComposer
 
         try
 		{
-	        SiteNodeVO siteNodeVO = SiteNodeController.getController().getSmallSiteNodeVOWithId(siteNodeId, db);
+        	SiteNodeVO siteNodeVO = SiteNodeController.getController().getSiteNodeVOWithId(siteNodeId, db);
 	
 	        String deriveProtocolWhenUsingProtocolRedirects = RepositoryDeliveryController.getRepositoryDeliveryController().getExtraPropertyValue(siteNodeVO.getRepositoryId(), "deriveProtocolWhenUsingProtocolRedirects");
 			if(deriveProtocolWhenUsingProtocolRedirects == null || deriveProtocolWhenUsingProtocolRedirects.equals("") || !deriveProtocolWhenUsingProtocolRedirects.equals("true") || !deriveProtocolWhenUsingProtocolRedirects.equals("false"))
@@ -373,12 +373,12 @@ public class BasicURLComposer extends URLComposer
 		    	{
 					Principal anonymousPrincipal = getAnonymousPrincipal();
 					isAnonymousAccepted = AccessRightController.getController().getIsPrincipalAuthorized(db, (InfoGluePrincipal)anonymousPrincipal, "SiteNodeVersion.Read", protectedSiteNodeVersionId.toString());
-					//System.out.println("anonymousPrincipal has access:" + isAnonymousAccepted);
+					//logger.info("anonymousPrincipal has access:" + isAnonymousAccepted);
 		    	}
 		    	
 		    	if(protectedSiteNodeVersionId != null && !isAnonymousAccepted)
 				{
-		    		//System.out.println("anonymousPrincipal has no access - switching to secure line");
+		    		//logger.info("anonymousPrincipal has no access - switching to secure line");
 					if(originalFullURL.indexOf(unprotectedProtocolName + "://") > -1)
 					{	
 						useDNSNameInUrls = "true";
@@ -644,11 +644,19 @@ public class BasicURLComposer extends URLComposer
 	
 	            String arguments = "siteNodeId=" + siteNodeId + getRequestArgumentDelimiter() + "languageId=" + languageId + getRequestArgumentDelimiter() + "contentId=" + contentId;
 
-	            SiteNode siteNode = SiteNodeController.getSiteNodeWithId(siteNodeId, db, true);
+	            //SiteNode siteNode = SiteNodeController.getSiteNodeWithId(siteNodeId, db, true);
+	            SiteNodeVO siteNode = SiteNodeController.getController().getSiteNodeVOWithId(siteNodeId, db);
 	    		String dnsName = CmsPropertyHandler.getWebServerAddress();
+	    		if(siteNode != null)
+	    		{
+	    			RepositoryVO repositoryVO = RepositoryController.getController().getRepositoryVOWithId(siteNode.getRepositoryId(), db);
+		    		if(siteNode != null && repositoryVO.getDnsName() != null && !repositoryVO.getDnsName().equals(""))
+		    			dnsName = repositoryVO.getDnsName();
+	    		}
+	    		/*
 	    		if(siteNode != null && siteNode.getRepository().getDnsName() != null && !siteNode.getRepository().getDnsName().equals(""))
 	    			dnsName = siteNode.getRepository().getDnsName();
-
+				*/
 	        	String operatingMode = CmsPropertyHandler.getOperatingMode();
 			    String keyword = "";
 			    if(operatingMode.equalsIgnoreCase("0"))

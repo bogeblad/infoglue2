@@ -351,7 +351,7 @@ public class LanguageDeliveryController extends BaseDeliveryController
 	 */
 	public LanguageVO getMasterLanguageForSiteNode(Database db, Integer siteNodeId) throws SystemException, Exception
 	{ 
-		SiteNodeVO smallestSiteNodeVO = SiteNodeController.getSmallSiteNodeVOWithId(siteNodeId, db);
+		SiteNodeVO smallestSiteNodeVO = SiteNodeController.getController().getSiteNodeVOWithId(siteNodeId, db);
 		return getMasterLanguageForRepository(smallestSiteNodeVO.getRepositoryId(), db);
 	}
 
@@ -649,13 +649,13 @@ public class LanguageDeliveryController extends BaseDeliveryController
 			}
 		}
 
-    	StringBuilder groupKey1 = new StringBuilder("repository_").append(siteNode.getValueObject().getRepositoryId());
-    	StringBuilder groupKey2 = new StringBuilder("siteNode_").append(siteNodeId);
+    	String groupKey1 = "repository_" + siteNode.getValueObject().getRepositoryId();
+    	String groupKey2 = CacheController.getPooledString(3, siteNodeId);
     	
 		if(language != null)
-			CacheController.cacheObjectInAdvancedCache("siteNodeLanguageCache", key, language, new String[]{groupKey1.toString(), groupKey2.toString()}, true);
+			CacheController.cacheObjectInAdvancedCache("siteNodeLanguageCache", key, language, new String[]{groupKey1, groupKey2}, true);
 		else
-			CacheController.cacheObjectInAdvancedCache("siteNodeLanguageCache", key, new NullObject(), new String[]{groupKey1.toString(), groupKey2.toString()}, true);
+			CacheController.cacheObjectInAdvancedCache("siteNodeLanguageCache", key, new NullObject(), new String[]{groupKey1, groupKey2}, true);
 		
 		logger.info("Returning language: " + language);
 		
@@ -699,7 +699,7 @@ public class LanguageDeliveryController extends BaseDeliveryController
 		}
 
     	StringBuilder groupKey1 = new StringBuilder("repository_").append(repository.getId());
-    	StringBuilder groupKey2 = new StringBuilder("siteNode_").append(siteNodeId);
+    	String groupKey2 = CacheController.getPooledString(3, siteNodeId);
     	
 		if(language != null)
 			CacheController.cacheObjectInAdvancedCache("siteNodeLanguageCache", key, language.getValueObject(), new String[]{groupKey1.toString(), groupKey2.toString()}, true);
@@ -764,13 +764,13 @@ public class LanguageDeliveryController extends BaseDeliveryController
 			}
 		}
 		
-    	StringBuilder groupKey1 = new StringBuilder("repository_").append(siteNode.getValueObject().getRepositoryId());
-    	StringBuilder groupKey2 = new StringBuilder("siteNode_").append(siteNodeId);
+    	String groupKey1 = new StringBuilder("repository_").append(siteNode.getValueObject().getRepositoryId()).toString();
+    	String groupKey2 = CacheController.getPooledString(3, siteNodeId);
 
 		if(language != null)
-			CacheController.cacheObjectInAdvancedCache("siteNodeLanguageCache", key, language, new String[]{groupKey1.toString(), groupKey2.toString()}, true);
+			CacheController.cacheObjectInAdvancedCache("siteNodeLanguageCache", key, language, new String[]{groupKey1, groupKey2}, true);
 		else
-			CacheController.cacheObjectInAdvancedCache("siteNodeLanguageCache", key, new NullObject(), new String[]{groupKey1.toString(), groupKey2.toString()}, true);
+			CacheController.cacheObjectInAdvancedCache("siteNodeLanguageCache", key, new NullObject(), new String[]{groupKey1, groupKey2}, true);
 
 		logger.info("Returning language: " + language);
 
@@ -801,7 +801,7 @@ public class LanguageDeliveryController extends BaseDeliveryController
 			}
 		}
     	StringBuilder groupKey1 = new StringBuilder("repository_").append(repository.getId());
-    	StringBuilder groupKey2 = new StringBuilder("siteNode_").append(siteNodeId);
+    	String groupKey2 = CacheController.getPooledString(3, siteNodeId);
 
 		if(language != null)
 			CacheController.cacheObjectInAdvancedCache("siteNodeLanguageCache", key, language.getValueObject(), new String[]{groupKey1.toString(), groupKey2.toString()}, true);
@@ -854,10 +854,10 @@ public class LanguageDeliveryController extends BaseDeliveryController
 
 		if(languageVOList != null)
 		{
-	    	StringBuilder groupKey1 = new StringBuilder("repository_").append(siteNode.getValueObject().getRepositoryId());
-	    	StringBuilder groupKey2 = new StringBuilder("siteNode_").append(siteNodeId);
+	    	String groupKey1 = new StringBuilder("repository_").append(siteNode.getValueObject().getRepositoryId()).toString();
+	    	String groupKey2 = CacheController.getPooledString(3, siteNodeId);
 
-			CacheController.cacheObjectInAdvancedCache("siteNodeLanguageCache", key, languageVOList, new String[]{groupKey1.toString(), groupKey2.toString()}, true);
+			CacheController.cacheObjectInAdvancedCache("siteNodeLanguageCache", key, languageVOList, new String[]{groupKey1, groupKey2}, true);
 			//CacheController.cacheObject("siteNodeLanguageCache", key, languageVOList);
 		}
 
@@ -885,7 +885,7 @@ public class LanguageDeliveryController extends BaseDeliveryController
 		if(languageVOList != null)
 		{
 	    	StringBuilder groupKey1 = new StringBuilder("repository_").append(repository.getId());
-	    	StringBuilder groupKey2 = new StringBuilder("siteNode_").append(siteNodeId);
+	    	String groupKey2 = CacheController.getPooledString(3, siteNodeId);
 
 			CacheController.cacheObjectInAdvancedCache("siteNodeLanguageCache", key, languageVOList, new String[]{groupKey1.toString(), groupKey2.toString()}, true);
 			//CacheController.cacheObject("siteNodeLanguageCache", key, languageVOList);
