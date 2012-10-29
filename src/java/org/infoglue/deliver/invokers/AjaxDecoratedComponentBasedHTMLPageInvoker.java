@@ -117,7 +117,7 @@ public class AjaxDecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHT
 		String componentXML = getPageComponentsString(getDatabase(), this.getTemplateController(), this.getDeliveryContext().getSiteNodeId(), this.getDeliveryContext().getLanguageId(), this.getDeliveryContext().getContentId());
 		//logger.info("componentXML:" + componentXML);
 		
-		componentXML = appendPagePartTemplates(componentXML);
+		componentXML = appendPagePartTemplates(componentXML, this.getDeliveryContext().getSiteNodeId());
 		
 		timer.printElapsedTime("After getPageComponentsString");
 		
@@ -910,7 +910,7 @@ public class AjaxDecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHT
 
 		if(!templateController.getDeliveryContext().getShowSimple())
 	    {
-		    boolean hasAccess = AccessRightController.getController().getIsPrincipalAuthorized(templateController.getDatabase(), principal, "StructureTool.Palette", false, true);
+		    boolean hasAccess = AccessRightController.getController().getIsPrincipalAuthorized(templateController.getDatabase(), principal, "StructureTool.Palette", false, true, true);
 		    if(!hasAccess || templateController.getRequestParameter("skipToolbar") != null && templateController.getRequestParameter("skipToolbar").equalsIgnoreCase("true"))
 		        return "";
 	    }
@@ -1870,7 +1870,7 @@ public class AjaxDecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHT
 			
 			if(entityClass.equalsIgnoreCase("Content"))
 			{
-				ContentVO contentVO = ContentDeliveryController.getContentDeliveryController().getContentVO(new Integer(entityId), getDatabase());
+				ContentVO contentVO = ContentDeliveryController.getContentDeliveryController().getContentVO(getDatabase(), new Integer(entityId), getDeliveryContext());
 				ComponentBinding componentBinding = new ComponentBinding();
 				componentBinding.setId(new Integer(id));
 				componentBinding.setComponentId(componentId);

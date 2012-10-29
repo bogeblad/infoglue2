@@ -25,8 +25,13 @@ package org.infoglue.deliver.util;
 
 //import org.exolab.castor.jdo.CacheManager;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.StringReader;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -36,6 +41,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -43,16 +49,22 @@ import java.util.concurrent.atomic.AtomicInteger;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.apache.pluto.portalImpl.services.ServiceManager;
 import org.apache.pluto.portalImpl.services.portletentityregistry.PortletEntityRegistry;
 import org.exolab.castor.jdo.CacheManager;
 import org.exolab.castor.jdo.Database;
 import org.infoglue.cms.applications.common.VisualFormatter;
+import org.infoglue.cms.controllers.kernel.impl.simple.AccessRightController;
 import org.infoglue.cms.controllers.kernel.impl.simple.CastorDatabaseService;
+import org.infoglue.cms.controllers.kernel.impl.simple.ContentController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentVersionController;
+import org.infoglue.cms.controllers.kernel.impl.simple.InterceptionPointController;
 import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeController;
 import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeVersionController;
+import org.infoglue.cms.entities.content.ContentVO;
+import org.infoglue.cms.entities.content.ContentVersionVO;
 import org.infoglue.cms.entities.content.impl.simple.ContentCategoryImpl;
 import org.infoglue.cms.entities.content.impl.simple.ContentImpl;
 import org.infoglue.cms.entities.content.impl.simple.ContentRelationImpl;
@@ -65,6 +77,8 @@ import org.infoglue.cms.entities.content.impl.simple.SmallContentVersionImpl;
 import org.infoglue.cms.entities.content.impl.simple.SmallDigitalAssetImpl;
 import org.infoglue.cms.entities.content.impl.simple.SmallestContentVersionImpl;
 import org.infoglue.cms.entities.content.impl.simple.SmallishContentImpl;
+import org.infoglue.cms.entities.management.AccessRightVO;
+import org.infoglue.cms.entities.management.InterceptionPointVO;
 import org.infoglue.cms.entities.management.impl.simple.AccessRightGroupImpl;
 import org.infoglue.cms.entities.management.impl.simple.AccessRightImpl;
 import org.infoglue.cms.entities.management.impl.simple.AccessRightRoleImpl;
@@ -120,11 +134,18 @@ import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.io.FileHelper;
 import org.infoglue.cms.security.InfoGlueAuthenticationFilter;
 import org.infoglue.cms.util.CmsPropertyHandler;
+import org.infoglue.cms.util.sorters.CacheComparator;
 import org.infoglue.cms.util.workflow.InfoGlueJDBCPropertySet;
 import org.infoglue.deliver.applications.actions.InfoGlueComponent;
 import org.infoglue.deliver.applications.databeans.CacheEvictionBean;
 import org.infoglue.deliver.applications.databeans.DatabaseWrapper;
+import org.infoglue.deliver.controllers.kernel.impl.simple.ContentDeliveryController;
+import org.infoglue.deliver.invokers.PageInvoker;
 import org.infoglue.deliver.portal.ServletConfigContainer;
+import org.xmlpull.v1.builder.XmlDocument;
+import org.xmlpull.v1.builder.XmlElement;
+import org.xmlpull.v1.builder.XmlInfosetBuilder;
+import org.xmlpull.v1.builder.xpath.Xb1XPath;
 
 import com.opensymphony.oscache.base.AbstractCacheAdministrator;
 import com.opensymphony.oscache.base.CacheEntry;
@@ -225,6 +246,30 @@ public class CacheController extends Thread
     	}
     }
 
+	//Store extra info 
+    private static class ThreadLocalNotificationExtraInformation extends ThreadLocal<Map<String,Map>> 
+    {
+    	public Map<String,Map> initialValue() 
+        {
+        	return new HashMap<String,Map>();
+        }
+    }
+
+    private static ThreadLocalNotificationExtraInformation extraInfo = new ThreadLocalNotificationExtraInformation();
+
+    public static Map<String, Map> getExtraInfo(String entityClassName, String entityId) 
+    {
+    	Map<String, Map> allExtra = (Map<String, Map>) extraInfo.get();
+        return allExtra.get(entityClassName + "_" + entityId);
+    }
+    
+    public static void setExtraInfo(String entityClassName, String entityId, Map extraInfoMap) 
+    {
+    	//System.out.println("Adding extraInfoMap:" + extraInfoMap + " TO " + entityClassName + "_" + entityId);
+    	Map<String, Map> allExtra = (Map<String, Map>) extraInfo.get();
+    	allExtra.put(entityClassName + "_" + entityId, extraInfoMap);
+    }
+
 	private static StringPool stringPool = new StringPool(); 
 	public static String getPooledString(Integer type, Object id)
 	{
@@ -252,6 +297,58 @@ public class CacheController extends Thread
 	public CacheController()
 	{
 		super();
+	}
+
+	public static synchronized void preCacheCMSEntities() throws Exception 
+	{
+		List<SiteNodeVO> snVOList = SiteNodeController.getController().getSiteNodeVOList(false, 0, 10000);
+		logger.error("snVOList:" + snVOList.size() + " fetched and precached");
+
+		List<ContentVO> cList = ContentController.getContentController().getContentVOList(30000);
+		logger.error("cList:" + cList.size() + " fetched and precached");
+
+		/*
+		List<SiteNodeVO> snVOList = SiteNodeController.getController().getSiteNodeVOList(false, 0, 10000);
+		logger.info("snVOList:" + snVOList.size() + " fetched and precached");
+
+		List<SiteNodeVersionVO> snvVOList = SiteNodeController.getController().getSiteNodeVersionVOList(false, 0, 10000);
+		logger.info("snvVOList:" + snvVOList.size() + " fetched and precached");
+
+		List<ContentVO> cList = ContentController.getContentController().getContentVOList(false, 10000);
+		logger.info("cList:" + cList.size() + " fetched and precached");
+		
+		List<ContentVersionVO> cvList = ContentVersionController.getContentVersionController().getContentVersionVOList(null, false, 0);
+		logger.info("cvList:" + cvList.size() + " fetched and precached");
+		*/
+	}
+
+	public static synchronized void preCacheDeliverEntities() throws Exception 
+	{
+		List<SiteNodeVO> snVOList = SiteNodeController.getController().getSiteNodeVOList(false, new Integer(CmsPropertyHandler.getOperatingMode()), 30000);
+		logger.error("snVOList:" + snVOList.size() + " fetched and precached");
+
+		List<ContentVO> cList = ContentController.getContentController().getContentVOList(10000);
+		logger.error("cList:" + cList.size() + " fetched and precached");
+
+		FileInputStream fis = new FileInputStream(CmsPropertyHandler.getDigitalAssetPath() + File.separator + "startupCache.txt");
+        ObjectInputStream ois = new ObjectInputStream(fis);
+        Map<Integer,Integer> mostUsedContentId = (Map<Integer,Integer>) ois.readObject();
+        ois.close();
+        
+		/*
+		List<SiteNodeVO> snVOList = SiteNodeController.getController().getSiteNodeVOList(false, 0, 100000);
+		logger.info("snVOList:" + snVOList.size() + " fetched and precached");
+
+		List<SiteNodeVersionVO> snvVOList = SiteNodeController.getController().getSiteNodeVersionVOList(false, 0, 100000);
+		logger.info("snvVOList:" + snvVOList.size() + " fetched and precached");
+
+		List<ContentVO> cList = ContentController.getContentController().getContentVOList(false, 100000);
+		logger.info("cList:" + cList.size() + " fetched and precached");
+		
+
+		List<ContentVersionVO> cvList = ContentVersionController.getContentVersionController().getContentVersionVOList(null, false, 0, 100000);
+		logger.info("cvList:" + cvList.size() + " fetched and precached");
+		*/
 	}
 
 	public void setCacheExpireInterval(int cacheExpireInterval)
@@ -396,7 +493,14 @@ public class CacheController extends Thread
 	{
 		if(cacheName == null || key == null || value == null || key.toString().length() == 0)
 			return;
-
+		
+		/*
+		if(cacheName.equalsIgnoreCase("pageCacheExtra"))
+			System.out.println("key pageCacheExtra: " + key);
+		if(cacheName.equalsIgnoreCase("pageCache"))
+			System.out.println("key pageCache: " + key);
+		*/
+		
 		if(logger.isInfoEnabled() && cacheName.equalsIgnoreCase("pageCacheExtra"))
 		{			
 			logger.info("cacheName: " + cacheName);
@@ -430,9 +534,9 @@ public class CacheController extends Thread
 		    	//else if(cacheName != null && cacheName.startsWith("contentAttributeCache"))
 		    	//	cacheCapacity = "1000";
 		    	if(cacheName != null && cacheName.startsWith("pageCache"))
-		    		cacheCapacity = "2000";
+		    		cacheCapacity = "5000";
 		    	if(cacheName != null && cacheName.startsWith("pageCacheExtra"))
-		    		cacheCapacity = "4000";
+		    		cacheCapacity = "10000";
 				if(cacheName != null && cacheName.equalsIgnoreCase("encodedStringsCache"))
 					cacheCapacity = "2000";
 				if(cacheName != null && cacheName.equalsIgnoreCase("importTagResultCache"))
@@ -506,7 +610,7 @@ public class CacheController extends Thread
 			//if(cacheName.startsWith("contentAttribute")/* || cacheName.startsWith("contentVersionIdCache")*/)
 			//	useGroups = false;
 
-			boolean containsSelectiveCacheUpdateNonApplicable = false;
+			//boolean containsSelectiveCacheUpdateNonApplicable = false;
 			if(groups != null)
 			{
 				List<String> groupCandidateListStandard = new ArrayList<String>();
@@ -738,6 +842,232 @@ public class CacheController extends Thread
 		return value;
 	}
 
+	public static Object getCachedObjectFromAdvancedCache(String cacheName, String key, boolean useFileCacheFallback, String fileCacheCharEncoding, boolean cacheFileResultInMemory, Object o, Method m, Object[] args, PageInvoker pageInvoker) throws Exception
+	{
+		if(cacheName == null || key == null || key.length() == 0)
+			return null;
+		
+	    Object value = null;
+	    
+    	String pageKey = key;
+    	if(CmsPropertyHandler.getUseHashCodeInCaches())
+    		pageKey = "" + key.hashCode();
+
+	    GeneralCacheAdministrator cacheAdministrator = (GeneralCacheAdministrator)caches.get(cacheName);
+	    if(cacheAdministrator == null)
+	    {
+	    	Map cacheSettings = (Map)getCachedObject("serverNodePropertiesCacheSettings", "cacheSettings");
+	    	if(cacheSettings == null)
+	    	{
+	    		cacheSettings = CmsPropertyHandler.getCacheSettings();
+	    		cacheObject("serverNodePropertiesCacheSettings", "cacheSettings", cacheSettings);
+	    	}
+	    	
+	    	String cacheCapacity = "2000";
+	    	String cacheCapacityProperty = (String)cacheSettings.get("CACHE_CAPACITY_" + cacheName);
+	    	if(cacheCapacityProperty != null && !cacheCapacityProperty.equals(""))
+	    		cacheCapacity = cacheCapacityProperty;
+	    		
+			if(cacheCapacity != null && !cacheCapacity.equals(""))
+	    	{
+				Properties p = new Properties();
+		    	
+				p.setProperty(AbstractCacheAdministrator.CACHE_ALGORITHM_KEY, "com.opensymphony.oscache.base.algorithm.ImprovedLRUCache");
+				p.setProperty(AbstractCacheAdministrator.CACHE_CAPACITY_KEY, cacheCapacity);
+				cacheAdministrator = new GeneralCacheAdministrator(p);
+			}
+			else
+			{
+				cacheAdministrator = new GeneralCacheAdministrator();
+			}
+	        
+	        CacheEntryEventListenerImpl cacheEntryEventListener = new ExtendedCacheEntryEventListenerImpl();
+	        CacheMapAccessEventListenerImpl cacheMapAccessEventListener = new CacheMapAccessEventListenerImpl(); 
+	        
+	        cacheAdministrator.getCache().addCacheEventListener(cacheEntryEventListener, CacheEntryEventListener.class);
+	        cacheAdministrator.getCache().addCacheEventListener(cacheMapAccessEventListener, CacheMapAccessEventListener.class);
+	        caches.put(cacheName, cacheAdministrator);
+	        eventListeners.put(cacheName + "_cacheEntryEventListener", cacheEntryEventListener);
+	        eventListeners.put(cacheName + "_cacheMapAccessEventListener", cacheMapAccessEventListener);
+	    }
+	    
+	    
+	    if(cacheAdministrator != null)
+	    {		    	
+		    try 
+		    {
+		    	value = (cacheAdministrator == null) ? null : cacheAdministrator.getFromCache(pageKey, CacheEntry.INDEFINITE_EXPIRY);
+		    	//System.out.println("SUCCESS hit pageCache on url:" + pageInvoker.getTemplateController().getOriginalFullURL());
+		    } 
+		    catch (NeedsRefreshException nre) 
+		    {
+		    	//System.out.println("Missed pageCache on url:" + pageInvoker.getTemplateController().getOriginalFullURL());
+		    	//logger.info("Nothing in cache - lets redo it...");
+		    	//logger.info("Old content:" + nre.getCacheContent());
+		    	boolean isUpdated = false;
+		    	try 
+		    	{
+					String result = (String)m.invoke(o, args);
+					//logger.info("result:" + result);
+					value = result;
+					if(result != null)
+					{
+				    	isUpdated = cacheNewResult(pageInvoker, cacheAdministrator, pageKey, result);
+					}
+					//logger.info("result:" + result);
+				} 
+		    	catch (Throwable t) 
+		    	{
+		    		logger.error("Error when trying to render page: " + t.getMessage());
+					throw new Exception(t.getMessage(), t);
+				}
+
+		    	try
+		    	{
+		    		if(!isUpdated)
+		    		{
+		    			cacheAdministrator.cancelUpdate(pageKey);
+		    		}
+		    	}
+		    	catch (Exception e) 
+		    	{
+		    		logger.error("SŒ Error:" + e.getMessage());
+				}
+			}
+	    }
+	    
+	    if(value instanceof byte[])
+	    	value = compressionHelper.decompress((byte[])value);
+	    
+	    if(value == null && useFileCacheFallback)
+    	{
+	    	Timer t = new Timer();
+	    	logger.info("Falling back to filecache");
+    		value = getCachedContentFromFile(cacheName, key, fileCacheCharEncoding);
+    		if(value != null && cacheFileResultInMemory)
+    		{
+    	    	logger.info("Got cached content from file as it did not exist in memory...:" + value.toString().length());
+    			if(logger.isInfoEnabled())
+        			logger.info("Got cached content from file as it did not exist in memory...:" + value.toString().length());
+				cacheObjectInAdvancedCache(cacheName, pageKey, value);
+    		}
+    		RequestAnalyser.getRequestAnalyser().registerComponentStatistics("File cache", t.getElapsedTime());
+    	}
+	    
+		return value;
+	}
+
+	private static boolean cacheNewResult(PageInvoker pageInvoker, GeneralCacheAdministrator cacheAdministrator, String pageKey, String value) 
+	{
+		boolean isCached = false;
+		
+		String pageCacheExtraName = "pageCacheExtra";
+		
+		if(!pageInvoker.getTemplateController().getIsPageCacheDisabled() && !pageInvoker.getDeliveryContext().getDisablePageCache()) //Caching page if not disabled
+		{
+			Integer newPageCacheTimeout = pageInvoker.getDeliveryContext().getPageCacheTimeout();
+			if(newPageCacheTimeout == null)
+				newPageCacheTimeout = pageInvoker.getTemplateController().getPageCacheTimeout();
+			
+			//String[] allUsedEntitiesCopy = pageInvoker.getDeliveryContext().getAllUsedEntities().clone();
+			Set<String> allUsedEntitiesSet = pageInvoker.getDeliveryContext().getAllUsedEntitiesAsSet();
+			//String[] allUsedEntitiesCopy = allUsedEntitiesSet.toArray(new String[0]);
+			//System.out.println("allUsedEntitiesSet:" + allUsedEntitiesSet.size());
+			Object extraData = pageInvoker.getDeliveryContext().getExtraData();
+			List<String> allUsedEntitiesFilteredCopy = new ArrayList<String>();
+			for(String s : allUsedEntitiesSet)
+			{
+				if(s.startsWith("content_") && s.indexOf("_", 8) > -1)
+					allUsedEntitiesFilteredCopy.add(s);
+				else if(s.startsWith("siteNode_"))
+					allUsedEntitiesFilteredCopy.add(s);
+				else if(s.startsWith("selectiveCacheUpdateNonApplicable"))
+					allUsedEntitiesFilteredCopy.add(s);
+			}
+			//System.out.println("allUsedEntitiesFilteredCopy:" + allUsedEntitiesFilteredCopy.size());
+			String[] allUsedEntitiesCopy = allUsedEntitiesFilteredCopy.toArray(new String[0]);
+			
+			String compressPageCache = CmsPropertyHandler.getCompressPageCache();
+		    if(compressPageCache != null && compressPageCache.equalsIgnoreCase("true"))
+			{
+				long startCompression = System.currentTimeMillis();
+				byte[] compressedData = compressionHelper.compress(value);		
+			    //logger.info("Compressing page for pageCache took " + (System.currentTimeMillis() - startCompression) + " with a compressionFactor of " + (this.pageString.length() / compressedData.length));
+				if(pageInvoker.getTemplateController().getOperatingMode().intValue() == 3 && !CmsPropertyHandler.getLivePublicationThreadClass().equalsIgnoreCase("org.infoglue.deliver.util.SelectiveLivePublicationThread"))
+				{
+					cacheAdministrator.putInCache(pageKey, compressedData, allUsedEntitiesCopy);
+					isCached = true;
+					//CacheController.cacheObjectInAdvancedCache(pageCacheExtraName, pageKey, extraData, allUsedEntitiesCopy, false);
+					//CacheController.cacheObjectInAdvancedCache(pageCacheExtraName, pageKey + "_pageCacheTimeout", newPageCacheTimeout, allUsedEntitiesCopy, false);    
+				}
+				else
+				{
+					//logger.info("cacheAdministrator:" + cacheAdministrator);
+					//logger.info("pageKey:" + pageKey);
+					//logger.info("compressedData:" + compressedData);
+					//logger.info("allUsedEntitiesCopy:" + allUsedEntitiesCopy);
+
+					cacheAdministrator.putInCache(pageKey, compressedData, allUsedEntitiesCopy);
+					isCached = true;
+
+					/*
+					if(pageInvoker.getTemplateController().getHttpServletRequest().getParameter("listMostUsed") != null)
+					{
+						System.out.println("These contents were used before:" + ContentDeliveryController.mostUsedContentIds.size());
+						Map<Integer,Integer> contentIds = ContentDeliveryController.mostUsedContentIds;
+						for(Integer contentId : contentIds.keySet())
+						{
+							if(contentIds.get(contentId) > 3)
+								System.out.println("" + contentId + ":" + contentIds.get(contentId));
+						}
+					}
+					*/
+					if(pageInvoker.getTemplateController().getHttpServletRequest().getParameter("listEntities") != null)
+					{
+						List<String> debug = Arrays.asList(allUsedEntitiesCopy);
+						Collections.sort(debug);
+						for(String s : debug)
+						{
+							System.out.println("s:" + s);
+						}
+					}
+					
+					CacheController.cacheObjectInAdvancedCache(pageCacheExtraName, pageKey, extraData, allUsedEntitiesCopy, true);
+					CacheController.cacheObjectInAdvancedCache(pageCacheExtraName, pageKey + "_pageCacheTimeout", newPageCacheTimeout, allUsedEntitiesCopy, true);    
+					CacheController.cacheObjectInAdvancedCache(pageCacheExtraName, pageKey + "_entities", allUsedEntitiesCopy, null, false);    
+					CacheController.cacheObjectInAdvancedCache(pageCacheExtraName, pageKey + "_metaInfoContentId", pageInvoker.getTemplateController().getMetaInformationContentId(), null, false);    
+				}
+			}
+		    else
+		    {
+		        if(pageInvoker.getTemplateController().getOperatingMode().intValue() == 3 && !CmsPropertyHandler.getLivePublicationThreadClass().equalsIgnoreCase("org.infoglue.deliver.util.SelectiveLivePublicationThread"))
+		        {
+		        	cacheAdministrator.putInCache(pageKey, value, allUsedEntitiesCopy);
+					isCached = true;
+		        	CacheController.cacheObjectInAdvancedCache(pageCacheExtraName, pageKey, extraData, allUsedEntitiesCopy, false);
+		        	CacheController.cacheObjectInAdvancedCache(pageCacheExtraName, pageKey + "_pageCacheTimeout", newPageCacheTimeout, allUsedEntitiesCopy, false);    
+					CacheController.cacheObjectInAdvancedCache(pageCacheExtraName, pageKey + "_entities", allUsedEntitiesCopy, null, false);    
+					CacheController.cacheObjectInAdvancedCache(pageCacheExtraName, pageKey + "_metaInfoContentId", pageInvoker.getTemplateController().getMetaInformationContentId(), null, false);    
+		        }
+		    	else
+		    	{
+		    		cacheAdministrator.putInCache(pageKey, value, allUsedEntitiesCopy);
+					isCached = true;
+		    		CacheController.cacheObjectInAdvancedCache(pageCacheExtraName, pageKey, extraData, allUsedEntitiesCopy, true);
+		    		CacheController.cacheObjectInAdvancedCache(pageCacheExtraName, pageKey + "_pageCacheTimeout", newPageCacheTimeout, allUsedEntitiesCopy, true);    
+					CacheController.cacheObjectInAdvancedCache(pageCacheExtraName, pageKey + "_entities", allUsedEntitiesCopy, null, false);    
+					CacheController.cacheObjectInAdvancedCache(pageCacheExtraName, pageKey + "_metaInfoContentId", pageInvoker.getTemplateController().getMetaInformationContentId(), null, false);    
+		    	}
+		    }
+		}
+		else
+		{
+			if(logger.isInfoEnabled())
+				logger.info("Page caching was disabled for the page " + pageInvoker.getDeliveryContext().getSiteNodeId() + " with pageKey " + pageInvoker.getDeliveryContext().getPageKey() + " - modifying the logic to enable page caching would boast performance.");
+		}
+		return isCached;
+	}
+	
 	public static Object getCachedObjectFromAdvancedCache(String cacheName, String key, int updateInterval)
 	{
 		return getCachedObjectFromAdvancedCache(cacheName, key, updateInterval, false, "UTF-8", false);
@@ -845,10 +1175,67 @@ public class CacheController extends Thread
 				clearCache(cacheName);
 		}
 	}
+	
+	public static void clearUserAccessCache(String accessRightKey)
+	{
+		if(caches.containsKey("userAccessCache"))
+		{
+		    Object object = caches.get("userAccessCache");
+		    
+			Map cacheInstance = (Map)object;
+			synchronized(cacheInstance)
+			{
+				for(Object personalCache : cacheInstance.values())
+				{
+					//System.out.println("personalCache:" + personalCache);
+					if(personalCache instanceof Map)
+					{
+						//System.out.println("personalCache contains:" + ((Map)personalCache).containsKey(accessRightKey));
+						//((Map) personalCache).remove(accessRightKey);
+						((Map) personalCache).put(accessRightKey, -1);
+						//System.out.println("personalCache contains after:" + ((Map)personalCache).containsKey(accessRightKey));
+					}
+				}
+			}
+
+		    logger.info("clearCache stop...");
+		}
+	}
+	
+	public static int getCacheSize(String cacheName)
+	{
+		int cacheSize = 0;
+		synchronized(caches) 
+		{
+			if(caches.containsKey(cacheName))
+			{
+			    Object object = caches.get(cacheName);
+			    if(object instanceof Map)
+				{
+					Map cacheInstance = (Map)object;
+					synchronized(cacheInstance) 
+					{
+						cacheSize = cacheInstance.size();
+					}
+				}
+				else
+				{
+				    GeneralCacheAdministrator cacheInstance = (GeneralCacheAdministrator)object;
+					synchronized(cacheInstance)
+					{
+						cacheSize = cacheInstance.getCache().getSize();
+					}
+				}
+			}
+		}
+		return cacheSize;
+	}
+	
 
 	public static void clearCache(String cacheName)
 	{
 		logger.info("Clearing the cache called " + cacheName);
+		
 		synchronized(caches) 
 		{
 			if(caches.containsKey(cacheName))
@@ -873,6 +1260,39 @@ public class CacheController extends Thread
 		    	caches.remove(cacheName);
 			    eventListeners.remove(cacheName + "_cacheEntryEventListener");
 			    eventListeners.remove(cacheName + "_cacheMapAccessEventListener");
+	
+			    logger.info("clearCache stop...");
+			}
+		}
+	}
+
+	public static void flushCache(String cacheName)
+	{
+		logger.info("Flushing the cache called " + cacheName);
+		synchronized(caches) 
+		{
+			if(caches.containsKey(cacheName))
+			{
+			    Object object = caches.get(cacheName);
+			    if(object instanceof Map)
+				{
+					Map cacheInstance = (Map)object;
+					synchronized(cacheInstance) 
+					{
+						cacheInstance.clear();
+					}
+				}
+				else
+				{
+				    GeneralCacheAdministrator cacheInstance = (GeneralCacheAdministrator)object;
+					synchronized(cacheInstance)
+					{
+						cacheInstance.flushAll();
+					}
+				}
+		    	//caches.remove(cacheName);
+			    //eventListeners.remove(cacheName + "_cacheEntryEventListener");
+			    //eventListeners.remove(cacheName + "_cacheMapAccessEventListener");
 	
 			    logger.info("clearCache stop...");
 			}
@@ -913,6 +1333,9 @@ public class CacheController extends Thread
 	 */
 	public static void clearCacheForGroup(String cacheName, String group)
 	{
+		if(cacheName.indexOf("pageCache") > -1)
+			Thread.dumpStack();
+
 		synchronized(caches) 
 		{
 			if(caches.containsKey(cacheName))
@@ -948,6 +1371,8 @@ public class CacheController extends Thread
 	 */
 	public static void clearFileCacheForGroup(GeneralCacheAdministrator cacheInstance, String groupName) throws Exception
 	{
+		Thread.dumpStack();
+
 		//logger.info("Cache entry set:" + cacheInstance.getCache().cacheMap.entrySet());
 		
         Set groupEntries = cacheInstance.getCache().cacheMap.getGroup(groupName);
@@ -974,20 +1399,25 @@ public class CacheController extends Thread
             }
         }
 	}
-
 	public static void clearCaches(String entity, String entityId, String[] cachesToSkip) throws Exception
 	{	
-		clearCaches(entity, entityId, cachesToSkip, false);
+		clearCaches(entity, entityId, null, cachesToSkip, false);
+	}
+
+	public static void clearCaches(String entity, String entityId, String extraInformation, String[] cachesToSkip) throws Exception
+	{	
+		clearCaches(entity, entityId, extraInformation, cachesToSkip, false);
 	}
 	
-	public static void clearCaches(String entity, String entityId, String[] cachesToSkip, boolean forceClear) throws Exception
+	public static void clearCaches(String entity, String entityId, String extraInformation, String[] cachesToSkip, boolean forceClear) throws Exception
 	{	
 		Timer t = new Timer();
+		t.setActive(false);
 		
 		long wait = 0;
-		//while(RequestAnalyser.getRequestAnalyser().getNumberOfCurrentRequests() > 0)
-		while(!forceClear &&  !getForcedCacheEvictionMode() && RequestAnalyser.getRequestAnalyser().getNumberOfActiveRequests() > 0)
-	    {
+		//while(true && !getForcedCacheEvictionMode())
+		while(!forceClear && !getForcedCacheEvictionMode() && RequestAnalyser.getRequestAnalyser().getNumberOfActiveRequests() > 0)
+		{
 	        //logger.warn("Number of requests: " + RequestAnalyser.getRequestAnalyser().getNumberOfCurrentRequests() + " was more than 0 - lets wait a bit.");
 	        if(wait > 1000)
 			{
@@ -999,10 +1429,10 @@ public class CacheController extends Thread
 	        if(wait > 100)
 				setForcedCacheEvictionMode(true);
 
-	        Thread.sleep(10);
+			Thread.sleep(10);
 			wait++;
 	    }
-		
+
 	    logger.info("clearCaches start in " + CmsPropertyHandler.getContextRootPath());
 		if(entity == null)
 		{	
@@ -1064,6 +1494,7 @@ public class CacheController extends Thread
 	    }
 		else
 		{
+			t.printElapsedTime("1");
 			logger.info("Clearing some caches");
 			logger.info("entity:" + entity);
 
@@ -1074,12 +1505,27 @@ public class CacheController extends Thread
 		        
 		    String operatingMode = CmsPropertyHandler.getOperatingMode();
 
+		    TreeMap<String, Object> orderedCaches = new TreeMap<String,Object>(new CacheComparator());
+		    orderedCaches.putAll(caches);
+		    
+		    /*
+		    for (String key : orderedCaches.keySet()) 
+			{
+				System.out.println("key:" + key);
+			}
+			*/
+			t.printElapsedTime("2");
+
 			//synchronized(caches)
 		    //{
-				for (Iterator i = caches.entrySet().iterator(); i.hasNext(); ) 
+	    		//for (Iterator i = caches.entrySet().iterator(); i.hasNext(); ) 
+		    	for (Iterator i = orderedCaches.entrySet().iterator(); i.hasNext(); ) 
 				{
+					t.printElapsedTime("3.1");
+
 					Map.Entry e = (Map.Entry) i.next();
 					logger.info("e:" + e.getKey());
+
 					boolean clear = false;
 					boolean selectiveCacheUpdate = false;
 					String cacheName = e.getKey().toString();
@@ -1342,7 +1788,7 @@ public class CacheController extends Thread
 					{
 						clear = true;						
 					}
-					
+
 					if(logger.isInfoEnabled())
 						logger.info("clear:" + clear);
 
@@ -1351,13 +1797,6 @@ public class CacheController extends Thread
 						if(logger.isInfoEnabled())
 						    logger.info("clearing:" + e.getKey());
 
-						if(logger.isInfoEnabled())
-						{
-							logger.info("cacheName:" + cacheName);
-							logger.info("entity:" + entity);
-							logger.info("clearing:" + e.getKey());
-						}
-						
 						Object object = e.getValue();
 						
 						if(object instanceof Map)
@@ -1365,8 +1804,13 @@ public class CacheController extends Thread
 							Map cacheInstance = (Map)e.getValue();
 						    synchronized(cacheInstance)
 						    {
-						    	//logger.error("clearing ordinary map:" + e.getKey() + " (" + cacheInstance.size() + ")");
-						    	cacheInstance.clear();
+						    	if(!(cacheName.equals("userAccessCache") && cacheInstance.size() < 100))
+						    	{
+						    		logger.error("clearing ordinary map:" + e.getKey() + " (" + cacheInstance.size() + ")");
+						    		cacheInstance.clear();
+						    	}
+						    	else
+						    		logger.warn("skipping clearing this as it seems stupid");
 						    }
 						}
 						else
@@ -1384,6 +1828,7 @@ public class CacheController extends Thread
 							    	logger.info("clearing:" + e.getKey());
 							    }
 							    */
+						    	//System.out.println("entity:" + entity);
 								if(entity.indexOf("pageCache") == 0)
 							    {
 									if(entity.indexOf("pageCache:") == 0)
@@ -1401,8 +1846,8 @@ public class CacheController extends Thread
 								    	}
 									}
 									else
-									{
-										logger.error("clearing " + e.getKey() + " selectiveCacheUpdateNonApplicable");
+								    {
+								    	logger.error("clearing " + e.getKey() + " selectiveCacheUpdateNonApplicable");
 								    	if(cacheName.equals("pageCacheExtra"))
 								    	{
 								    		clearFileCacheForGroup(cacheInstance, "selectiveCacheUpdateNonApplicable");
@@ -1411,8 +1856,9 @@ public class CacheController extends Thread
 								    	{
 									    	cacheInstance.flushGroup("selectiveCacheUpdateNonApplicable");							    		
 								    	}
-									}
+								    }
 							    }
+
 								if(selectiveCacheUpdate && entity.indexOf("Repository") > 0 && useSelectivePageCacheUpdate)
 							    {
 							    	logger.info("clearing " + e.getKey() + " with group " + "repository_" + entityId);
@@ -1429,6 +1875,10 @@ public class CacheController extends Thread
 							    }
 							    else if(selectiveCacheUpdate && entity.indexOf("SiteNodeVersion") > 0)
 							    {
+							    	//System.out.println("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
+							    	//Thread.dumpStack();
+							    	//Hur lšser vi detta bra?
+							    	/*
 							    	logger.info("Getting eventListeners...");
 							        Object cacheEntryEventListener = eventListeners.get(e.getKey() + "_cacheEntryEventListener");
 						    		Object cacheMapAccessEventListener = eventListeners.get(e.getKey() + "_cacheMapAccessEventListener");
@@ -1466,16 +1916,21 @@ public class CacheController extends Thread
 										    	logger.info("Clearing for:" + snVO.getParentSiteNodeId());
 							    			}
 							    			
-									    	logger.info("After flushGroup2...");
+							    			logger.info("After flushGroup2...");
 							    		}
 							    	}
 							    	catch(SystemException se)
 							    	{
 							    		logger.warn("Missing siteNode version: " + se.getMessage(), se);
 							    	}
+							    	*/
 							    }
 							    else if(selectiveCacheUpdate && (entity.indexOf("SiteNode") > 0 && entity.indexOf("SiteNodeTypeDefinition") == -1) && useSelectivePageCacheUpdate)
 							    {
+							    	//System.out.println("Entity: " + entity);
+							    	//System.out.println("Flushing " + "siteNode_" + entityId);
+							    	//System.out.println("Flushing " + "selectiveCacheUpdateNonApplicable");
+
 							    	if(cacheName.equals("pageCacheExtra"))
 							    	{
 							    		clearFileCacheForGroup(cacheInstance, "siteNode_" + entityId);
@@ -1487,62 +1942,374 @@ public class CacheController extends Thread
 								    	cacheInstance.flushGroup("siteNode_" + entityId);
 								    	cacheInstance.flushGroup("selectiveCacheUpdateNonApplicable");
 							    	}
+
 							    	logger.info("clearing " + e.getKey() + " with group " + "siteNode_" + entityId);
 								}
 							    else if(selectiveCacheUpdate && entity.indexOf("ContentVersion") > 0 && useSelectivePageCacheUpdate)
 							    {
 							    	logger.info("Getting eventListeners...");
-							        Object cacheEntryEventListener = eventListeners.get(e.getKey() + "_cacheEntryEventListener");
-						    		Object cacheMapAccessEventListener = eventListeners.get(e.getKey() + "_cacheMapAccessEventListener");
+							        //Object cacheEntryEventListener = eventListeners.get(e.getKey() + "_cacheEntryEventListener");
+						    		//Object cacheMapAccessEventListener = eventListeners.get(e.getKey() + "_cacheMapAccessEventListener");
 
+							    	//System.out.println("entity:" + entity);
+							    	
+							    	//System.out.println("Before flushGroup:" +cacheName);
 							    	logger.info("Before flushGroup...");
-
 							    	if(cacheName.equals("pageCacheExtra"))
 							    	{
-							    		clearFileCacheForGroup(cacheInstance, "contentVersion_" + entityId);
-							    		clearFileCacheForGroup(cacheInstance, "selectiveCacheUpdateNonApplicable");
+							    		//clearFileCacheForGroup(cacheInstance, "contentVersion_" + entityId);
+							    		//clearFileCacheForGroup(cacheInstance, "selectiveCacheUpdateNonApplicable");
+							    	}
+							    	else if(cacheName.equals("pageCache"))
+							    	{
+							    		//cacheInstance.flushGroup("contentVersion_" + entityId);
+							    		//cacheInstance.flushGroup("selectiveCacheUpdateNonApplicable");
 							    	}
 							    	else
 							    	{
 							    		cacheInstance.flushGroup("contentVersion_" + entityId);
 							    		cacheInstance.flushGroup("selectiveCacheUpdateNonApplicable");
+								    	logger.error("clearing " + e.getKey() + " with selectiveCacheUpdateNonApplicable");
 							    	}
 							    	logger.info("clearing " + e.getKey() + " with group " + "contentVersion_" + entityId);
+									
+							    	//String[] changedAttributes = new String[]{"Title","NavigationTitle"}; 
 							    	
 							    	try
 							    	{
 								    	logger.info("Before contentVersionVO...");
+								    	//System.out.println("cacheName:" + cacheName);
+								    	//System.out.println("entity:" + entity);
+								    	//System.out.println("entityId:" + entityId);
 								    	Integer contentId = ContentVersionController.getContentVersionController().getContentIdForContentVersion(new Integer(entityId));
-								    	if(contentId != null)
-							    		{
-									    	logger.info("Before flushGroup2...");
-									    	if(cacheName.equals("pageCacheExtra"))
-									    		clearFileCacheForGroup(cacheInstance, "content_" + contentId);
-									    	else
-									    		cacheInstance.flushGroup("content_" + contentId);
 
+										t.printElapsedTime("3.5");
+										if(contentId != null)
+							    		{
+								    		List<String> changes = Collections.EMPTY_LIST;
+								    		//System.out.println("extraInformation:" + extraInformation);
+								    		if(extraInformation != null && extraInformation.length() > 0)
+								    			changes = new ArrayList<String>(Arrays.asList(StringUtils.split(extraInformation, ",")));
+
+									    	ContentVO contentVO = ContentController.getContentController().getContentVOWithId(contentId);
+
+								    		logger.info("Before flushGroup2...");
+									    	if(cacheName.equals("pageCacheExtra"))
+									    	{
+										    	if(contentVO.getIsProtected().intValue() == ContentVO.YES.intValue())
+										    	{
+										    		List<InterceptionPointVO> interceptionPointVOList = InterceptionPointController.getController().getInterceptionPointVOList("Content");
+										    		for(InterceptionPointVO interceptionPointVO : interceptionPointVOList)
+										    		{
+										    			if(interceptionPointVO.getName().endsWith(".Read"))
+										    			{
+													    	String acKey = "" + interceptionPointVO.getId() + "_" + entityId;
+											    			CacheController.clearUserAccessCache(acKey);						    			
+										    			}
+										    		}
+										    	}
+
+									    		clearFileCacheForGroup(cacheInstance, "selectiveCacheUpdateNonApplicable_contentTypeDefinitionId_" + contentVO.getContentTypeDefinitionId());
+
+									    		if((changes == null || changes.size() == 0) && CmsPropertyHandler.getOperatingMode().equals("3"))
+									    		{
+									    			ContentVersionVO oldContentVersionVO = ContentVersionController.getContentVersionController().getContentVersionVOWithId(new Integer(entityId));
+										    		ContentVersionVO newContentVersionVO = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(contentId, oldContentVersionVO.getLanguageId(), new Integer(CmsPropertyHandler.getOperatingMode()));
+										    		if(newContentVersionVO.getId().equals(oldContentVersionVO.getId()))
+										    		{
+										    			oldContentVersionVO = null;
+										    			//System.out.println("SHIT - same version allready - must find other");
+											    		List<ContentVersionVO> contentVersionVOList = ContentVersionController.getContentVersionController().getContentVersionVOList(new Integer(contentId));
+												    	for(ContentVersionVO cvVO : contentVersionVOList)
+												    	{
+												    		//System.out.println("cvVO:" + cvVO.getId() + ":" + cvVO.getLanguageId());
+												    		if(!cvVO.getId().equals(newContentVersionVO.getId()) && cvVO.getStateId().equals(new Integer(CmsPropertyHandler.getOperatingMode())) && cvVO.getLanguageId().equals(newContentVersionVO.getLanguageId()) && cvVO.getIsActive() && (oldContentVersionVO == null || oldContentVersionVO.getId() < cvVO.getId()))
+												    			oldContentVersionVO = cvVO;
+												    	}
+										    		}
+										    		
+										    		//System.out.println("Now we should have current and previous version:" + newContentVersionVO + " / " + oldContentVersionVO);
+										    		if(newContentVersionVO != null && oldContentVersionVO != null)
+										    			changes = ContentVersionController.getContentVersionController().getChangedAttributeNames(newContentVersionVO, oldContentVersionVO);
+									    		}
+									    		
+									    		//System.out.println("changes:" + changes);
+									    		for(String changedAttributeName : changes)
+									    		{
+									    			if(changedAttributeName.indexOf("ComponentStructure") > -1)
+									    			{
+									    				//Map allreadyFlushedEntries....
+									    				Set<String> groupEntries = (Set<String>)cacheInstance.getCache().cacheMap.getGroup("content_" + contentId + "_ComponentStructureDependency");
+									    				//System.out.println("groupEntries:" + groupEntries);
+									    				if(groupEntries != null)
+									    				{
+										    				for(String key : groupEntries)
+										    				{
+										    					//System.out.println("key 1:" + key);
+										    					String[] usedEntities = (String[])cacheInstance.getFromCache(key + "_entities");
+										    					Integer currentPageMetaInfoContentId = (Integer)cacheInstance.getFromCache(key + "_metaInfoContentId");
+										    					//System.out.println("usedEntities 1:" + usedEntities);
+										    					
+												    			ContentVersionVO newContentVersionVO = ContentVersionController.getContentVersionController().getContentVersionVOWithId(new Integer(entityId));
+												    			//System.out.println("BBBBBBBBBBBBBBBBBBBBBB:" + newContentVersionVO.getModifiedDateTime().getTime());
+												    			String newComponentStructure = ContentVersionController.getContentVersionController().getAttributeValue(newContentVersionVO, "ComponentStructure", false);
+	
+												    			for(String usedEntity : usedEntities)
+										    					{
+										    						//System.out.println("usedEntity:" + usedEntity);
+										    						if(usedEntity.startsWith("content_" + contentId + "_ComponentStructure("))
+										    						{
+										    							//System.out.println("Match - now lets parse: " + usedEntity);
+										    							String arguments = usedEntity.substring(usedEntity.indexOf("(") + 1, usedEntity.indexOf(")"));
+										    							Integer oldComponentPropertyHash = new Integer(usedEntity.substring(usedEntity.indexOf("=") + 1));
+										    							String[] args = arguments.split(",");
+										    							Integer componentId = new Integer(args[0]);
+										    							String propertyName = args[1];
+										    							Integer siteNodeId = new Integer(args[2]);
+										    							Integer languageId = new Integer(args[3]);
+										    							//System.out.println("componentId:" + componentId);
+										    							//System.out.println("propertyName:" + propertyName);
+										    							//System.out.println("siteNodeId:" + siteNodeId);
+										    							//System.out.println("languageId:" + languageId);
+																		
+														    			int newComponentPropertyHash = getPropertyAsStringHashCode(newComponentStructure, componentId, propertyName, siteNodeId, languageId);
+														    			//System.out.println("oldComponentPropertyHash:" + oldComponentPropertyHash);
+														    			//System.out.println("newComponentPropertyHash:" + newComponentPropertyHash);
+														    			if(oldComponentPropertyHash.intValue() != newComponentPropertyHash)
+														    			{
+														    				//System.out.println("Yes - clearing - must have changed something important:" + usedEntity);
+														    				clearFileCacheForGroup(cacheInstance, usedEntity);
+														    			}
+														    			else
+														    			{
+														    				//System.out.println("Flushing content_" + currentPageMetaInfoContentId + "_ComponentStructure just to catch page itself");
+															    			//cacheInstance.flushGroup("content_" + currentPageMetaInfoContentId + "_ComponentStructure");
+														    				//System.out.println("Flushing content_" + contentId + "_ComponentStructure just to catch page itself");
+															    			cacheInstance.flushGroup("content_" + contentId + "_ComponentStructure");
+														    			}
+														    			
+										    						}
+										    						else if(usedEntity.startsWith("content_" + contentId + "_ComponentStructure:"))
+										    						{
+										    							//System.out.println("Match - now lets parse component order etc: " + usedEntity);
+										    							String xPath = usedEntity.substring(usedEntity.indexOf(":") + 1, usedEntity.lastIndexOf("="));
+										    							Integer oldComponentPropertyHash = new Integer(usedEntity.substring(usedEntity.lastIndexOf("=") + 1));
+										    							//System.out.println("xPath:" + xPath);
+										    							
+										    							int newComponentPropertyHash = getComponentsAsStringHashCode(newComponentStructure, xPath);
+										    							//System.out.println("oldComponentPropertyHash:" + oldComponentPropertyHash);
+										    							//System.out.println("newComponentPropertyHash:" + newComponentPropertyHash);
+														    			if(oldComponentPropertyHash.intValue() != newComponentPropertyHash)
+														    			{
+														    				//System.out.println("Yes - clearing - must have changed order or added/subtracted components:" + usedEntity);
+														    				clearFileCacheForGroup(cacheInstance, usedEntity);
+														    			}
+										    						}
+										    					}
+										    				}
+									    				}
+									    			}
+									    			else
+									    			{
+										    			clearFileCacheForGroup(cacheInstance, "content_" + contentId + "_" + changedAttributeName);
+										    			//System.out.println("Cleared for " + "content_" + contentId + "_" + changedAttributeName);
+									    			}
+									    		}	
+													
+									    		//clearFileCacheForGroup(cacheInstance, "content_" + contentId);
+									    	}
+									    	else if(cacheName.equals("pageCache"))
+									    	{
+									    		cacheInstance.flushGroup("selectiveCacheUpdateNonApplicable_contentTypeDefinitionId_" + contentVO.getContentTypeDefinitionId());
+
+									    		if((changes == null || changes.size() == 0) && CmsPropertyHandler.getOperatingMode().equals("3"))
+									    		{
+									    			ContentVersionVO oldContentVersionVO = ContentVersionController.getContentVersionController().getContentVersionVOWithId(new Integer(entityId));
+										    		ContentVersionVO newContentVersionVO = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(contentId, oldContentVersionVO.getLanguageId(), new Integer(CmsPropertyHandler.getOperatingMode()));
+										    		if(newContentVersionVO.getId().equals(oldContentVersionVO.getId()))
+										    		{
+										    			oldContentVersionVO = null;
+										    			//System.out.println("SHIT - same version allready - must find other");
+											    		List<ContentVersionVO> contentVersionVOList = ContentVersionController.getContentVersionController().getContentVersionVOList(new Integer(contentId));
+												    	for(ContentVersionVO cvVO : contentVersionVOList)
+												    	{
+												    		//System.out.println("cvVO:" + cvVO.getId() + ":" + cvVO.getLanguageId());
+												    		if(!cvVO.getId().equals(newContentVersionVO.getId()) && cvVO.getStateId().equals(new Integer(CmsPropertyHandler.getOperatingMode())) && cvVO.getLanguageId().equals(newContentVersionVO.getLanguageId()) && cvVO.getIsActive() && (oldContentVersionVO == null || oldContentVersionVO.getId() < cvVO.getId()))
+												    			oldContentVersionVO = cvVO;
+												    	}
+										    		}
+										    		
+										    		//System.out.println("Now we should have current and previous version:" + newContentVersionVO + " / " + oldContentVersionVO);
+										    		if(newContentVersionVO != null && oldContentVersionVO != null)
+										    			changes = ContentVersionController.getContentVersionController().getChangedAttributeNames(newContentVersionVO, oldContentVersionVO);
+									    		}
+
+									    		//System.out.println("changes:" + changes);
+									    		for(String changedAttributeName : changes)
+									    		{
+									    			if(changedAttributeName.indexOf("ComponentStructure") > -1 && cacheName.equals("pageCache"))
+									    			{
+									    				//Map allreadyFlushedEntries....
+									    				GeneralCacheAdministrator pageCacheExtraInstance = (GeneralCacheAdministrator)caches.get("pageCacheExtra");
+									    				Set<String> groupEntries = (Set<String>)cacheInstance.getCache().cacheMap.getGroup("content_" + contentId + "_ComponentStructureDependency");
+									    				//System.out.println("groupEntries:" + groupEntries);
+									    				if(groupEntries != null)
+									    				{
+															for(String key : groupEntries)
+										    				{
+																logger.info("key 2:" + key);
+										    					String[] usedEntities = (String[])pageCacheExtraInstance.getFromCache(key + "_entities");
+										    					Integer currentPageMetaInfoContentId = (Integer)pageCacheExtraInstance.getFromCache(key + "_metaInfoContentId");
+										    					//System.out.println("usedEntities 2:" + usedEntities);
+												    			ContentVersionVO newContentVersionVO = ContentVersionController.getContentVersionController().getContentVersionVOWithId(new Integer(entityId));
+												    			//System.out.println("BBBBBBBBBBBBBBBBBBBBBB:" + newContentVersionVO.getModifiedDateTime().getTime());
+												    			String newComponentStructure = ContentVersionController.getContentVersionController().getAttributeValue(newContentVersionVO, "ComponentStructure", false);
+	
+										    					for(String usedEntity : usedEntities)
+										    					{
+										    						//System.out.println("usedEntity:" + usedEntity);
+										    						if(usedEntity.startsWith("content_" + contentId + "_ComponentStructure("))
+										    						{
+										    							//System.out.println("Match - now lets parse: " + usedEntity);
+										    							String arguments = usedEntity.substring(usedEntity.indexOf("(") + 1, usedEntity.indexOf(")"));
+										    							Integer oldComponentPropertyHash = new Integer(usedEntity.substring(usedEntity.indexOf("=") + 1));
+										    							String[] args = arguments.split(",");
+										    							Integer componentId = new Integer(args[0]);
+										    							String propertyName = args[1];
+										    							Integer siteNodeId = new Integer(args[2]);
+										    							Integer languageId = new Integer(args[3]);
+										    							//System.out.println("componentId:" + componentId);
+										    							//System.out.println("propertyName:" + propertyName);
+										    							//System.out.println("siteNodeId:" + siteNodeId);
+										    							//System.out.println("languageId:" + languageId);
+																		
+														    			int newComponentPropertyHash = getPropertyAsStringHashCode(newComponentStructure, componentId, propertyName, siteNodeId, languageId);
+														    			//System.out.println("oldComponentPropertyHash:" + oldComponentPropertyHash);
+														    			//System.out.println("newComponentPropertyHash:" + newComponentPropertyHash);
+														    			if(oldComponentPropertyHash.intValue() != newComponentPropertyHash)
+														    			{
+														    				//System.out.println("Yes - clearing - must have changed something important:" + usedEntity);
+															    			cacheInstance.flushGroup(usedEntity);
+														    				//clearFileCacheForGroup(cacheInstance, usedEntity);
+														    			}
+														    			else
+														    			{
+														    				//System.out.println("Flushing content_" + currentPageMetaInfoContentId + "_ComponentStructure just to catch page itself");
+															    			//cacheInstance.flushGroup("content_" + currentPageMetaInfoContentId + "_ComponentStructure");
+														    				//System.out.println("Flushing content_" + contentId + "_ComponentStructure just to catch page itself");
+															    			cacheInstance.flushGroup("content_" + contentId + "_ComponentStructure");
+														    			}
+														    			
+										    						}
+										    						else if(usedEntity.startsWith("content_" + contentId + "_ComponentStructure:"))
+										    						{
+										    							//System.out.println("Match - now lets parse component order etc: " + usedEntity);
+										    							String xPath = usedEntity.substring(usedEntity.indexOf(":") + 1, usedEntity.lastIndexOf("="));
+										    							Integer oldComponentPropertyHash = new Integer(usedEntity.substring(usedEntity.lastIndexOf("=") + 1));
+										    							//System.out.println("xPath:" + xPath);
+										    							
+										    							int newComponentPropertyHash = getComponentsAsStringHashCode(newComponentStructure, xPath);
+										    							//System.out.println("oldComponentPropertyHash:" + oldComponentPropertyHash);
+										    							//System.out.println("newComponentPropertyHash:" + newComponentPropertyHash);
+														    			if(oldComponentPropertyHash.intValue() != newComponentPropertyHash)
+														    			{
+														    				//System.out.println("Yes - clearing - must have changed order or added/subtracted components:" + usedEntity);
+															    			cacheInstance.flushGroup(usedEntity);
+														    			}
+										    						}
+	
+										    					}
+																t.printElapsedTime("3.9");
+										    				}
+									    				}
+									    			}
+									    			else
+									    			{
+										    			cacheInstance.flushGroup("content_" + contentId + "_" + changedAttributeName);
+										    			//System.out.println("Cleared for " + "content_" + contentId + "_" + changedAttributeName);
+									    			}
+									    		}	
+									    		//cacheInstance.flushGroup("content_" + contentId);
+									    	}
+									    	else
+									    	{
+									    		cacheInstance.flushGroup("selectiveCacheUpdateNonApplicable_contentTypeDefinitionId_" + contentVO.getContentTypeDefinitionId());
+									    		//System.out.println("Cleared for " + "content_" + contentId + " on cache " + cacheName);
+									    		cacheInstance.flushGroup("content_" + contentId);
+									    	}
+									    	
+									    	t.printElapsedTime("3.10");
 									    	logger.info("After flushGroup2...");
 							    		}
 							    	}
 							    	catch(SystemException se)
 							    	{
+							    		se.printStackTrace();
 							    		logger.info("Missing content version: " + se.getMessage());
 							    	}
-
+							    	catch(Exception ex)
+							    	{
+							    		ex.printStackTrace();
+							    	}
 							    }
 							    else if(selectiveCacheUpdate && (entity.indexOf("Content") > 0 && entity.indexOf("ContentTypeDefinition") == -1) && useSelectivePageCacheUpdate)
 							    {
+							    	//System.out.println("Content entity was called and needs to be fixed:" + entity);
+							    	
+							    	//String[] changedAttributes = new String[]{"Title","NavigationTitle"}; 
+							    	ContentVO contentVO = ContentController.getContentController().getContentVOWithId(new Integer(entityId));
+							    	
 							    	if(cacheName.equals("pageCacheExtra"))
 							    	{
 							    		clearFileCacheForGroup(cacheInstance, "content_" + entityId);
-							    		clearFileCacheForGroup(cacheInstance, "selectiveCacheUpdateNonApplicable");
+							    		//clearFileCacheForGroup(cacheInstance, "selectiveCacheUpdateNonApplicable");
+							    		try
+								    	{
+								    		//cacheInstance.flushGroup("selectiveCacheUpdateNonApplicable_contentTypeDefinitionId_" + contentVO.getContentTypeDefinitionId());
+								    		clearFileCacheForGroup(cacheInstance, "selectiveCacheUpdateNonApplicable_contentTypeDefinitionId_" + contentVO.getContentTypeDefinitionId());
+								    	}
+								    	catch (Exception e2) 
+								    	{
+								    		logger.warn("Could not find content type to clear pages based on: " + e2.getMessage(), e2);
+										}
+							    	}
+							    	else if(cacheName.equals("pageCache"))
+							    	{
+								    	cacheInstance.flushGroup("" + entityId);
+								    	cacheInstance.flushGroup("content_" + entityId);
+							    		try
+								    	{
+								    		cacheInstance.flushGroup("selectiveCacheUpdateNonApplicable_contentTypeDefinitionId_" + contentVO.getContentTypeDefinitionId());
+								    	}
+								    	catch (Exception e2) 
+								    	{
+								    		logger.warn("Could not find content type to clear pages based on: " + e2.getMessage(), e2);
+										}
 							    	}
 							    	else
 							    	{
 								    	cacheInstance.flushGroup("" + entityId);
 								    	cacheInstance.flushGroup("content_" + entityId);
+								    	logger.error("clearing " + e.getKey() + " with selectiveCacheUpdateNonApplicable");
 								    	cacheInstance.flushGroup("selectiveCacheUpdateNonApplicable");
 							    	}
+							    	
+						    		//System.out.println("****************************************************************");
+							    	if(contentVO.getIsProtected().intValue() == ContentVO.YES.intValue())
+							    	{
+							    		List<InterceptionPointVO> interceptionPointVOList = InterceptionPointController.getController().getInterceptionPointVOList("Content");
+							    		for(InterceptionPointVO interceptionPointVO : interceptionPointVOList)
+							    		{
+							    			if(interceptionPointVO.getName().endsWith(".Read"))
+							    			{
+										    	String acKey = "" + interceptionPointVO.getId() + "_" + entityId;
+										    	//System.out.println("Clearing access rights for:" + acKey);
+								    			CacheController.clearUserAccessCache(acKey);						    			
+							    			}
+							    		}
+							    	}
+							    	//System.out.println("************************END************************************");
+
 							    	logger.info("clearing " + e.getKey() + " with group " + "content_" + entityId);
 								}
 							    else if(selectiveCacheUpdate && entity.indexOf("Publication") > 0 && useSelectivePageCacheUpdate && (operatingMode != null && operatingMode.equalsIgnoreCase("3")) && CmsPropertyHandler.getLivePublicationThreadClass().equalsIgnoreCase("org.infoglue.deliver.util.SelectiveLivePublicationThread"))
@@ -1562,7 +2329,7 @@ public class CacheController extends Thread
 											Integer contentId = ContentVersionController.getContentVersionController().getContentIdForContentVersion(publicationDetailVO.getEntityId());
 
 									    	cacheInstance.flushGroup("content_" + contentId);
-									    	cacheInstance.flushGroup("contentVersion_" + publicationDetailVO.getEntityId().toString());
+									    	cacheInstance.flushGroup(CacheController.getPooledString(2, publicationDetailVO.getEntityId().toString()));
 									    	cacheInstance.flushGroup("selectiveCacheUpdateNonApplicable");
 									    	logger.info("clearing " + e.getKey() + " with group " + "content_" + contentId);
 									    	logger.info("clearing " + e.getKey() + " with group " + "content_" + contentId);
@@ -1576,8 +2343,73 @@ public class CacheController extends Thread
 									}
 									*/
 								}
+							    else if(entity.equals("org.infoglue.cms.entities.management.impl.simple.AccessRightImpl"))
+							    {
+							    	//System.out.println("This was an access right update - do we handle it:" + cacheName);
+							    	if(!CmsPropertyHandler.getOperatingMode().equalsIgnoreCase("3"))
+							    	{
+								    	try
+								    	{
+									    	AccessRightVO acVO = AccessRightController.getController().getAccessRightVOWithId(new Integer(entityId));
+									    	InterceptionPointVO icpVO = InterceptionPointController.getController().getInterceptionPointVOWithId(acVO.getInterceptionPointId());
+									    	//System.out.println("icpVO:" + icpVO.getName());
+									    	if(icpVO.getName().indexOf("Content.") > -1)
+									    	{
+									    		//System.out.println("Was a content access... let's clear caches for that content.");
+									    		String idAsString = acVO.getParameters();
+									    		if(idAsString != null && !idAsString.equals(""))
+									    			clearCaches("org.infoglue.cms.entities.content.impl.simple.ContentImpl", idAsString, null, cachesToSkip, forceClear);
+									    	}
+									    	else if(icpVO.getName().indexOf("ContentVersion.") > -1)
+									    	{
+									    		//System.out.println("Was a contentversion access... let's clear caches for that content.");
+									    		String idAsString = acVO.getParameters();
+									    		if(idAsString != null && !idAsString.equals(""))
+									    			clearCaches("org.infoglue.cms.entities.content.impl.simple.ContentVersionImpl", idAsString, null, cachesToSkip, forceClear);								    		
+									    	}
+										    else if(icpVO.getName().indexOf("SiteNode.") > -1)
+										    {
+										    	//System.out.println("Was a sitenode access... let's clear caches for that content.");
+									    		String idAsString = acVO.getParameters();
+									    		if(idAsString != null && !idAsString.equals(""))
+									    			clearCaches("org.infoglue.cms.entities.structure.impl.simple.SiteNodeImpl", idAsString, null, cachesToSkip, forceClear);								    											    	
+										    }
+											else if(icpVO.getName().indexOf("SiteNodeVersion.") > -1)
+											{
+												//System.out.println("Was a sitenode version access... let's clear caches for that content.");
+									    		String idAsString = acVO.getParameters();
+									    		if(idAsString != null && !idAsString.equals(""))
+									    			clearCaches("org.infoglue.cms.entities.structure.impl.simple.SiteNodeVersionImpl", idAsString, null, cachesToSkip, forceClear);								    											    	
+											}
+											else
+											{
+												//System.out.println("****************************");
+												//System.out.println("* WHAT TO DO WITH IN CACHECONTROLLER: " + icpVO.getName() + " *");
+												//System.out.println("****************************");
+											}
+								    	}
+								    	catch(Exception e2)
+								    	{
+								    		logger.error("Error handling access right update: " + e2.getMessage(), e2);
+								    	}
+							    	}
+							    	else
+							    		logger.info("Skipping it as this is live mode..");
+							    }
+							    else if(selectiveCacheUpdate && (entity.indexOf("ServiceBinding") > 0 || entity.indexOf("Qualifyer") > 0))
+							    {
+							    	logger.info("Ignoring this kind of notification... never used anymore:" + cacheName);
+							    }
+							    else if(entity.indexOf("AccessRightImpl") > -1)
+							    {
+							    	logger.info("Ignoring handling of entity:" + entity);
+							    }
 							    else
 							    {
+							    	logger.info("WHOOOAAAAAAAAAA.. clearing all... on " + cacheName + ":" + entity);
+							    	//System.out.println("selectiveCacheUpdate:" + selectiveCacheUpdate);
+							    	//System.out.println("entity:" + entity);
+							    	//System.out.println("cacheName:" + cacheName);
 							    	//logger.info("Flushing all:" + cacheName);
 							    	cacheInstance.flushAll();
 							    	eventListeners.remove(cacheName + "_cacheEntryEventListener");
@@ -1602,7 +2434,7 @@ public class CacheController extends Thread
 			
     		if(!useSelectivePageCacheUpdate || entity.indexOf("AccessRight") > -1)
     		{
-    			logger.info("Clearing all pageCaches");
+    			logger.error("Clearing all pageCaches");
     			CacheController.clearFileCaches("pageCache");
     		}
 
@@ -2262,7 +3094,7 @@ public class CacheController extends Thread
 			
 			if(size > 0)
 			{
-				logger.info("Starting selective publication thread [" + pt.getClass().getName() + "]");
+				System.out.println("Starting selective publication thread [" + pt.getClass().getName() + "]");
 		    	pt.setPriority(Thread.MIN_PRIORITY);
 		    	pt.start();
 		    	startedThread = true;
@@ -2898,5 +3730,68 @@ public class CacheController extends Thread
 		}
 	}
 
+	public static int getPropertyAsStringHashCode(String inheritedPageComponentsXML, Integer componentId, String propertyName, Integer siteNodeId, Integer languageId) throws Exception
+	{
+		Map property = null;
+		
+        XmlInfosetBuilder builder = XmlInfosetBuilder.newInstance();
+        XmlDocument doc = builder.parseReader(new StringReader( inheritedPageComponentsXML ) );
+        
+		String propertyXPath = "//component[@id=" + componentId + "]/properties/property[@name='" + propertyName + "']";
+		
+		Xb1XPath xpathObject = new Xb1XPath( propertyXPath );
+
+        List anl = xpathObject.selectNodes( doc );
+
+		//If not found on the same component id - let's check them all and use the first we find.
+		if(anl == null || anl.size() == 0)
+		{
+			String globalPropertyXPath = "(//component/properties/property[@name='" + propertyName + "'])[1]";
+			
+			Xb1XPath globalXpathObject = new Xb1XPath( globalPropertyXPath );
+	        anl = globalXpathObject.selectNodes( doc );
+		}			
+
+		StringBuilder sb = new StringBuilder();
+		
+		Iterator anlIterator = anl.iterator();
+		while(anlIterator.hasNext())
+		{
+			XmlElement infosetItem = (XmlElement)anlIterator.next();
+			String propertyXML = builder.serializeToString(infosetItem);
+			//System.out.println("propertyXML:" + propertyXML);
+			
+			sb.append(propertyXML);
+		}
+		//System.out.println("propertyXML HASH:" + sb.toString().hashCode());
+		
+		return sb.toString().hashCode();
+	}
+	
+	public static int getComponentsAsStringHashCode(String inheritedPageComponentsXML, String componentXPath) throws Exception
+	{
+        XmlInfosetBuilder builder = XmlInfosetBuilder.newInstance();
+        XmlDocument doc = builder.parseReader(new StringReader( inheritedPageComponentsXML ) );
+
+		Xb1XPath xpathObject = new Xb1XPath( componentXPath );
+
+        //This keeps track of the cached inherited components.
+        StringBuilder sb = new StringBuilder();
+        
+        List componentNodeList = xpathObject.selectNodes( doc.getDocumentElement() );
+		Iterator componentNodeListIterator = componentNodeList.iterator();
+		while(componentNodeListIterator.hasNext())
+		{
+			XmlElement child 	= (XmlElement)componentNodeListIterator.next();
+			
+			String componentString = builder.serializeToString(child).trim();
+			sb.append(componentString);
+			//System.out.println("componentString:" + componentString);
+			
+		}
+		//System.out.println("propertyXML HASH:" + sb.toString().hashCode());
+		
+		return sb.toString().hashCode();
+	}
 
 }

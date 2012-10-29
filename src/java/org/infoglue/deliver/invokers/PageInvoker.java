@@ -113,7 +113,7 @@ public abstract class PageInvoker
 	 * Makes it possible to have an alternative to the ordinary delivery optimized class.
 	 */
 	
-	public abstract PageInvoker getDecoratedPageInvoker(TemplateController templateController) throws SystemException;
+	public abstract PageInvoker getDecoratedPageInvoker(TemplateController templateController, DeliveryContext deliveryContext) throws SystemException;
 	
 	/**
 	 * The default initializer for PageInvokers. 
@@ -172,7 +172,7 @@ public abstract class PageInvoker
 		
 		if(logger.isInfoEnabled())
 			logger.info("languageVO:" + languageVO);
-		
+
 		if(languageVO == null)
 			throw new SystemException("There was no such active language for the page with languageId:" + this.getTemplateController().getLanguageId());
 		
@@ -189,17 +189,27 @@ public abstract class PageInvoker
 		{
 			Map cachedExtraData = null;
 
-			Integer pageCacheTimeout = (Integer)CacheController.getCachedObjectFromAdvancedCache("pageCacheExtra", this.getDeliveryContext().getPageKey() + "_pageCacheTimeout");;
+			Integer pageCacheTimeout = (Integer)CacheController.getCachedObjectFromAdvancedCache("pageCacheExtra", this.getDeliveryContext().getPageKey() + "_pageCacheTimeout");
 			if(pageCacheTimeout == null)
 				pageCacheTimeout = this.getTemplateController().getPageCacheTimeout();
 			
-			//if(compressPageCache != null && compressPageCache.equalsIgnoreCase("true"))
-			//{
 				if(pageCacheTimeout == null)
 				{
 				    //cachedCompressedData = (byte[])CacheController.getCachedObjectFromAdvancedCache(pageCacheName, this.getDeliveryContext().getPageKey());
-					this.pageString = (String)CacheController.getCachedObjectFromAdvancedCache(pageCacheName, this.getDeliveryContext().getPageKey(), true, "utf-8", false);
+					Class[] argsClasses = new Class[2];
+					argsClasses[0] = String.class;
+					argsClasses[1] = String.class;
+					
+					Object[] args = new Object[]{pageCacheName, pageCacheExtraName};
+					
+					this.pageString = (String)CacheController.getCachedObjectFromAdvancedCache(pageCacheName, this.getDeliveryContext().getPageKey(), true, "utf-8", true, this, this.getClass().getMethod("invokeAndDecoratePage", argsClasses), args, this);
 				    cachedExtraData = (Map)CacheController.getCachedObjectFromAdvancedCache(pageCacheExtraName, this.getDeliveryContext().getPageKey());
+				    /*
+				    String[] cachedEntities = (String[])CacheController.getCachedObjectFromAdvancedCache(pageCacheExtraName, this.getDeliveryContext().getPageKey() + "_entities");
+				    for(String s : cachedEntities)
+					{
+						System.out.println("l:" + s);
+					}*/
 				}
 				else
 				{
@@ -210,29 +220,10 @@ public abstract class PageInvoker
 				
 			    if(cachedExtraData != null)
 			    	this.getDeliveryContext().populateExtraData(cachedExtraData);
-			//}
+			    	
+			//String invokeAndDecoratePage();
 			/*
-			else
-			/
-			{
-				if(pageCacheTimeout == null)
-				{
-					//this.pageString = (String)CacheController.getCachedObjectFromAdvancedCache(pageCacheName, this.getDeliveryContext().getPageKey());
-					this.pageString = (String)CacheController.getCachedObjectFromAdvancedCache(pageCacheName, this.getDeliveryContext().getPageKey(), true, "utf-8", false);
-					cachedExtraData = (Map)CacheController.getCachedObjectFromAdvancedCache(pageCacheExtraName, this.getDeliveryContext().getPageKey());
-				}
-				else
-				{
-					//this.pageString = (String)CacheController.getCachedObjectFromAdvancedCache(pageCacheName, this.getDeliveryContext().getPageKey(), pageCacheTimeout.intValue());
-					this.pageString = (String)CacheController.getCachedObjectFromAdvancedCache(pageCacheName, this.getDeliveryContext().getPageKey(), pageCacheTimeout.intValue(), true, "utf-8", false);
-					cachedExtraData = (Map)CacheController.getCachedObjectFromAdvancedCache(pageCacheExtraName, this.getDeliveryContext().getPageKey(), pageCacheTimeout.intValue());
-				}
-			    if(cachedExtraData != null)
-			    	this.getDeliveryContext().populateExtraData(cachedExtraData);					
-			}
-			*/
-
-			if(this.pageString == null)
+		    if(this.pageString == null)
 			{
 				invokePage();
 				this.pageString = getPageString();
@@ -312,6 +303,7 @@ public abstract class PageInvoker
 				if(logger.isInfoEnabled())
 					logger.info("There was a cached copy..."); // + pageString);
 			}
+		*/
 			
 			//Caching the pagePath
 			this.getDeliveryContext().setPagePath((String)CacheController.getCachedObject("pagePathCache", this.getDeliveryContext().getPageKey()));
@@ -365,9 +357,9 @@ public abstract class PageInvoker
 	    	getResponse().setDateHeader ("Expires", 0);
 		}
 			
-		//System.out.println("pageString before:" + pageString);
+		//logger.info("pageString before:" + pageString);
 		//pageString = decorateHeadAndPageWithVarsFromComponents(pageString);
-		//System.out.println("pageString after:" + pageString);
+		//logger.info("pageString after:" + pageString);
 		
 		try
 		{
@@ -498,6 +490,27 @@ public abstract class PageInvoker
 		}
 	}
 
+	public String invokeAndDecoratePage(String pageCacheName, String pageCacheExtraName) throws SystemException, Exception, Bug 
+	{
+		if(this.pageString == null)
+		{
+			invokePage();
+			this.pageString = getPageString();
+
+			//TEST
+			getLastModifiedDateTime();
+			//END TEST
+			
+			this.pageString = decorateHeadAndPageWithVarsFromComponents(pageString);
+		}
+		else
+		{
+			if(logger.isInfoEnabled())
+				logger.info("There was a cached copy..."); // + pageString);
+		}
+		return this.pageString;
+	}
+
 	private void getLastModifiedDateTime() throws Bug
 	{
 		if(CmsPropertyHandler.getSetDerivedLastModifiedInLive().equalsIgnoreCase("false"))
@@ -524,7 +537,8 @@ public abstract class PageInvoker
 		    			{
 		    				processed++;
 		    				Integer contentVersionId = new Integer(versionId);
-			    			SmallestContentVersionVO contentVersion = ContentVersionController.getContentVersionController().getSmallestContentVersionVOWithId(contentVersionId, getDatabase());
+			    			//SmallestContentVersionVO contentVersion = ContentVersionController.getContentVersionController().getSmallestContentVersionVOWithId(contentVersionId, getDatabase());
+		    				ContentVersionVO contentVersion = ContentVersionController.getContentVersionController().getSmallContentVersionVOWithId(contentVersionId, getDatabase());
 			    			if(lastModifiedDateTime == null || contentVersion.getModifiedDateTime().after(lastModifiedDateTime))
 			    			{
 			    				lastModifiedDateTime = contentVersion.getModifiedDateTime();

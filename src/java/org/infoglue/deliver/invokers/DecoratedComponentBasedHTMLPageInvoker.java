@@ -121,7 +121,7 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 		String componentXML = getPageComponentsString(getDatabase(), this.getTemplateController(), this.getDeliveryContext().getSiteNodeId(), this.getDeliveryContext().getLanguageId(), this.getDeliveryContext().getContentId());
 		//logger.info("componentXML:" + componentXML);
 		
-		componentXML = appendPagePartTemplates(componentXML);
+		componentXML = appendPagePartTemplates(componentXML, this.getDeliveryContext().getSiteNodeId());
 		
 		timer.printElapsedTime("After getPageComponentsString");
 		
@@ -1026,7 +1026,7 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 		{
 			ComponentProperty componentProperty = (ComponentProperty)componentPropertiesIterator.next();
 		
-			boolean hasAccessToProperty = AccessRightController.getController().getIsPrincipalAuthorized(templateController.getDatabase(), principal, "ComponentPropertyEditor.EditProperty", "" + componentContentId + "_" + componentProperty.getName());
+			boolean hasAccessToProperty = AccessRightController.getController().getIsPrincipalAuthorized(templateController.getDatabase(), principal, "ComponentPropertyEditor.EditProperty", "" + componentContentId + "_" + componentProperty.getName(), true);
 			boolean isFirstAdvancedProperty = false;
 			if(componentProperty.getName().equalsIgnoreCase("CacheResult"))
 			{
@@ -1055,7 +1055,7 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 					sb.append("		</tr>");
 				}
 				
-				boolean hasAccessToAdvancedProperties = AccessRightController.getController().getIsPrincipalAuthorized(templateController.getDatabase(), principal, "ComponentPropertyEditor.EditAdvancedProperties", true, false);
+				boolean hasAccessToAdvancedProperties = AccessRightController.getController().getIsPrincipalAuthorized(templateController.getDatabase(), principal, "ComponentPropertyEditor.EditAdvancedProperties", true, false, true);
 				if(hasAccessToAdvancedProperties)
 				{
 					sb.append("		<tr class=\"igtr\">");
@@ -2040,7 +2040,7 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 
 		if(!templateController.getDeliveryContext().getShowSimple())
 	    {
-		    boolean hasAccess = AccessRightController.getController().getIsPrincipalAuthorized(templateController.getDatabase(), principal, "StructureTool.Palette", false, true);
+		    boolean hasAccess = AccessRightController.getController().getIsPrincipalAuthorized(templateController.getDatabase(), principal, "StructureTool.Palette", false, true, false);
 		    if(!hasAccess || templateController.getRequestParameter("skipToolbar") != null && templateController.getRequestParameter("skipToolbar").equalsIgnoreCase("true"))
 		        return "";
 	    }
@@ -3197,7 +3197,7 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 			
 			if(entityClass.equalsIgnoreCase("Content"))
 			{
-				ContentVO contentVO = ContentDeliveryController.getContentDeliveryController().getContentVO(new Integer(entityId), getDatabase());
+				ContentVO contentVO = ContentDeliveryController.getContentDeliveryController().getContentVO(getDatabase(), new Integer(entityId), getDeliveryContext());
 				ComponentBinding componentBinding = new ComponentBinding();
 				componentBinding.setId(new Integer(id));
 				componentBinding.setComponentId(componentId);
