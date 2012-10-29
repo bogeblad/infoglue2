@@ -20,7 +20,7 @@
  *
  * ===============================================================================
  *
- * $Id: CategoryController.java,v 1.20.4.1 2012/10/16 09:22:19 mattias Exp $
+ * $Id: CategoryController.java,v 1.20.4.2 2012/10/29 15:35:13 mattias Exp $
  */
 package org.infoglue.cms.controllers.kernel.impl.simple;
 
@@ -711,6 +711,8 @@ public class CategoryController extends BaseController
 	 */
 	public List findAllActiveChildren(Integer parentId) throws SystemException
 	{
+		return getActiveChildrenCategoryVOList(parentId);
+		/*
 		Timer t = new Timer();
 		List children = findActiveByParent(parentId);
 		for (Iterator iter = children.iterator(); iter.hasNext();)
@@ -719,6 +721,7 @@ public class CategoryController extends BaseController
 			child.setChildren(findAllActiveChildren(child.getId()));
 		}
 		return children;
+		*/
 	}
 
 	/**

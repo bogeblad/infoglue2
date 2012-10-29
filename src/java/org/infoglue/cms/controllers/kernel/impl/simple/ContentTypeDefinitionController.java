@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -112,7 +113,18 @@ public class ContentTypeDefinitionController extends BaseController
 
     public ContentTypeDefinitionVO getContentTypeDefinitionVOWithId(Integer contentTypeDefinitionId, Database db) throws SystemException, Bug
     {
-		return (ContentTypeDefinitionVO) getVOWithId(ContentTypeDefinitionImpl.class, contentTypeDefinitionId, db);
+		String key = "" + contentTypeDefinitionId;
+		ContentTypeDefinitionVO cachedContentTypeDefinitionVO = (ContentTypeDefinitionVO)CacheController.getCachedObject("contentTypeDefinitionCache", key);
+		if(cachedContentTypeDefinitionVO != null)
+		{
+			return cachedContentTypeDefinitionVO;
+		}
+
+		cachedContentTypeDefinitionVO = (ContentTypeDefinitionVO) getVOWithId(ContentTypeDefinitionImpl.class, contentTypeDefinitionId, db);
+
+		CacheController.cacheObject("contentTypeDefinitionCache", key, cachedContentTypeDefinitionVO);
+
+		return cachedContentTypeDefinitionVO;
     }
 
 	/*
@@ -416,9 +428,9 @@ public class ContentTypeDefinitionController extends BaseController
 		return contentTypeDefinitionVOList;
 	}
 
-	public List getContentTypeDefinitionVOList(Integer type, Database db)  throws SystemException, Bug
+	public List<ContentTypeDefinitionVO> getContentTypeDefinitionVOList(Integer type, Database db)  throws SystemException, Bug
 	{
-		ArrayList contentTypeDefinitionVOList = new ArrayList();
+		ArrayList<ContentTypeDefinitionVO> contentTypeDefinitionVOList = new ArrayList<ContentTypeDefinitionVO>();
 		try
 		{
 			OQLQuery oql = db.getOQLQuery("SELECT f FROM org.infoglue.cms.entities.management.impl.simple.ContentTypeDefinitionImpl f WHERE f.type = $1");
@@ -674,6 +686,52 @@ public class ContentTypeDefinitionController extends BaseController
 	public List getContentTypeAttributes(String schemaValue)
 	{
 		return getContentTypeAttributes(schemaValue, false, null, null, null);
+	}
+	
+	
+	/**
+	 * This method returns the attributes in the content type definition for generation.
+	 */
+
+	public List<ContentTypeAttribute> getContentTypeAttributes(ContentTypeDefinitionVO contentTypeDefinitionVO, Boolean includeInherited)
+	{
+		List<ContentTypeAttribute> attributes = new ArrayList<ContentTypeAttribute>();
+		attributes.addAll(getContentTypeAttributes(contentTypeDefinitionVO.getSchemaValue(), false, null, null, null));
+		
+		return attributes;
+	}
+
+	/**
+	 * This method returns the attributes in the content type definition divided into tabs as defined in the content type for generation.
+	 */
+
+	public Map<ContentTypeAttribute,List<ContentTypeAttribute>> getTabbedContentTypeAttributes(ContentTypeDefinitionVO contentTypeDefinitionVO, Boolean includeInherited)
+	{
+		Map<ContentTypeAttribute,List<ContentTypeAttribute>> tabbedAttributes = new LinkedHashMap<ContentTypeAttribute,List<ContentTypeAttribute>>();
+		
+		ContentTypeAttribute currentTab = new ContentTypeAttribute();
+		currentTab.setName("default");
+		List<ContentTypeAttribute> currentAttributes = new ArrayList<ContentTypeAttribute>();
+		
+		List<ContentTypeAttribute> attributes = getContentTypeAttributes(contentTypeDefinitionVO, includeInherited);
+		for(ContentTypeAttribute attribute : attributes)
+		{
+			if(!attribute.getInputType().equalsIgnoreCase("tab"))
+			{
+				currentAttributes.add(attribute);
+			}
+			else
+			{
+				if(currentAttributes.size() > 0 && currentTab.getName().equals("default"))
+					tabbedAttributes.put(currentTab, currentAttributes);
+				
+				currentTab = attribute;
+				currentAttributes = new ArrayList<ContentTypeAttribute>();
+				tabbedAttributes.put(currentTab, currentAttributes);
+			}
+		}
+		//logger.info("tabbedAttributes: " + tabbedAttributes.size());		
+		return tabbedAttributes;
 	}
 	
 	/**

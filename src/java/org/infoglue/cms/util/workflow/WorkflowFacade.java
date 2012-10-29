@@ -73,7 +73,7 @@ import com.opensymphony.workflow.spi.WorkflowEntry;
  * the Workflow interface.  The idea is to encapsulate the interactions with OSWorkflow and eliminate the
  * need to pass a Workflow reference and the workflow ID all over the place when extracting data from OSWorkflow
  * @author <a href="mailto:jedprentice@gmail.com">Jed Prentice</a>
- * @version $Revision: 1.41 $ $Date: 2009/01/19 11:59:50 $
+ * @version $Revision: 1.41.4.1 $ $Date: 2012/10/29 15:37:25 $
  */
 public class WorkflowFacade
 {
@@ -593,6 +593,25 @@ public class WorkflowFacade
 	 * @return a list of WorkflowVOs representing all active workflows
 	 * @throws SystemException if an error occurs finding the active workflows
 	 */
+	public List<WorkflowVO> getActiveWorkflows(Integer maxNumberOfWorkflows) throws SystemException
+	{
+		List<WorkflowVO> workflowVOs = new ArrayList<WorkflowVO>();
+
+		List<WorkflowVO> activeWorkflows = findActiveWorkflows();
+		//logger.info("activeWorkflows:" + activeWorkflows.size());
+		if(maxNumberOfWorkflows != null && activeWorkflows.size() > maxNumberOfWorkflows)
+			activeWorkflows = activeWorkflows.subList(0, maxNumberOfWorkflows);
+		Iterator activeWorkflowsIterator = activeWorkflows.iterator();
+		while (activeWorkflowsIterator.hasNext())
+		{
+			setWorkflowIdAndDescriptor(((Long)activeWorkflowsIterator.next()).longValue());
+			//logger.info("workflowId:" + workflowId);
+			workflowVOs.add(createWorkflowVO());
+		}
+
+		return workflowVOs;
+	}
+	/*
 	public List getActiveWorkflows() throws SystemException
 	{
 		List workflowVOs = new ArrayList();
@@ -608,6 +627,7 @@ public class WorkflowFacade
 
 		return workflowVOs;
 	}
+	*/
 	
 	/**
 	 * Returns a list of workflows owned by the specified principal. If the principal is
@@ -617,7 +637,7 @@ public class WorkflowFacade
 	 * @return the workflows owned by the specified principal.
 	 */
 	
-	public List getMyActiveWorkflows(final InfoGluePrincipal principal) throws SystemException
+	public List getMyActiveWorkflows(final InfoGluePrincipal principal, Integer maxNumberOfWorkflows) throws SystemException
 	{		
 		String key = "myWorkflows_" + principal.getName();
 		List workflows = (List)CacheController.getCachedObject("myActiveWorkflows", key);
@@ -626,7 +646,7 @@ public class WorkflowFacade
 		{
 				if(principal.getIsAdministrator())
 				{
-					workflows = getActiveWorkflows();
+					workflows = getActiveWorkflows(maxNumberOfWorkflows);
 				}
 				
 				Collection owners = OwnerFactory.createAll(principal);
@@ -643,7 +663,7 @@ public class WorkflowFacade
 				}				
 				
 				final Set workflowVOs = new HashSet();
-				workflowVOs.addAll(createWorkflowsForOwner(expressions));
+				workflowVOs.addAll(createWorkflowsForOwner(expressions, maxNumberOfWorkflows));
 	
 				/*
 				final Set workflowVOs = new HashSet();
@@ -688,12 +708,14 @@ public class WorkflowFacade
 	 * @return the value objects.
 	 * @throws SystemException if an error occurs when creating the value objects.
 	 */
-	private final Set createWorkflowsForOwner(final Expression[] expressions) throws SystemException
+	private final Set createWorkflowsForOwner(final Expression[] expressions, Integer maxNumberOfWorkflows) throws SystemException
 	{
 		try
 		{
 			final Set workflowVOs = new HashSet(); 
 			List workflows = findWorkflows(expressions);
+			if(maxNumberOfWorkflows != null && workflows.size() > maxNumberOfWorkflows)
+				workflows = workflows.subList(0, maxNumberOfWorkflows);
 			Iterator workflowsIterator = workflows.iterator();
 			while (workflowsIterator.hasNext())
 			{
