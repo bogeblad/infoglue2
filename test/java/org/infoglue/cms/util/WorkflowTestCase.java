@@ -20,7 +20,7 @@
  *
  * ===============================================================================
  *
- * $Id: WorkflowTestCase.java,v 1.9 2006/03/06 16:54:41 mattias Exp $
+ * $Id: WorkflowTestCase.java,v 1.9.4.1 2012/10/29 15:22:13 mattias Exp $
  */
 package org.infoglue.cms.util;
 
@@ -201,7 +201,7 @@ public abstract class WorkflowTestCase extends InfoGlueTestCase
 	 */
 	protected WorkflowVO findCurrentWorkflow() throws Exception
 	{
-		return findWorkflow(controller.getCurrentWorkflowVOList(getUserPrincipal()));
+		return findWorkflow(controller.getCurrentWorkflowVOList(getUserPrincipal(), 20));
 	}
 
 	/**

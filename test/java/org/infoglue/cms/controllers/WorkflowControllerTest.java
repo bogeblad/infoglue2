@@ -20,7 +20,7 @@
  *
  * ===============================================================================
  *
- * $Id: WorkflowControllerTest.java,v 1.3 2006/03/06 16:54:01 mattias Exp $
+ * $Id: WorkflowControllerTest.java,v 1.3.4.1 2012/10/29 15:22:13 mattias Exp $
  */
 package org.infoglue.cms.controllers;
 
@@ -33,7 +33,7 @@ import org.infoglue.cms.workflow.NewsWorkflowTestCase;
 
 /**
  * @author <a href=mailto:jedprentice@gmail.com>Jed Prentice</a>
- * @version $Revision: 1.3 $ $Date: 2006/03/06 16:54:01 $
+ * @version $Revision: 1.3.4.1 $ $Date: 2012/10/29 15:22:13 $
  */
 public class WorkflowControllerTest extends NewsWorkflowTestCase
 {
@@ -60,7 +60,7 @@ public class WorkflowControllerTest extends NewsWorkflowTestCase
 
 	public void testGetCurrentWorkflowVOList() throws Exception
 	{
-		List workflows = WorkflowController.getController().getCurrentWorkflowVOList(getUserPrincipal());
+		List workflows = WorkflowController.getController().getCurrentWorkflowVOList(getUserPrincipal(),20);
 		assertFalse("There should be at least one active workflow", workflows.isEmpty());
 		assertNotNull("Current workflow should be in the list", findCurrentWorkflow());
 	}
