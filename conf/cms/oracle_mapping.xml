@@ -591,6 +591,51 @@
     
   </class>
 
+<!--  Mapping for SmallestSiteNode  -->
+  <class name="org.infoglue.cms.entities.structure.impl.simple.SmallestSiteNodeImpl" identity="siteNodeId" key-generator="SEQUENCE">
+    <description>SmallestSiteNode</description>
+    <cache-type type="none"/>
+    <map-to table="cmSiNo"/>
+    <field name="siteNodeId" type="java.lang.Integer">
+      <sql name="SiNoId" type="integer" dirty="check" />
+    </field>
+    <field name="name" type="java.lang.String">
+      <sql name="name" type="varchar" dirty="check" />
+    </field>
+    <field name="publishDateTime" type="java.util.Date">
+      <sql name="publishDateTime" type="timestamp" dirty="ignore" />
+    </field>
+    <field name="expireDateTime" type="java.util.Date">
+      <sql name="expireDateTime" type="timestamp" dirty="ignore" />
+    </field>
+    <field name="isBranch" type="java.lang.Boolean">
+      <sql name="isBranch" type="integer" dirty="check" />
+    </field>
+    <field name="parentSiteNodeId" type="java.lang.Integer">
+      <sql name="parentSiteNodeId" type="integer" dirty="check" />
+    </field>
+    <field name="metaInfoContentId" type="java.lang.Integer">
+      <sql name="metaInfoContentId" type="integer" dirty="check" />
+    </field>
+    <field name="repositoryId" type="java.lang.Integer">
+      <sql name="repositoryId" type="integer" dirty="check" />
+    </field>
+    <field name="siteNodeTypeDefinitionId" type="java.lang.Integer">
+      <sql name="siteNodeTypeDefinitionId" type="integer" dirty="check" />
+	</field>
+    <field name="creator" type="java.lang.String">
+      <sql name="creator" type="varchar" dirty="check" />
+    </field>
+    <field name="childCount" type="java.lang.Integer">
+      <sql name="childCount" type="integer" dirty="check" />
+    </field>
+    <field name="stateId" type="java.lang.Integer">
+      <sql name="stateId" type="integer" dirty="check" />
+    </field>
+    <field name="isProtected" type="java.lang.Integer">
+      <sql name="isProtected" type="integer" dirty="check" />
+    </field>
+  </class>
 
 <!--  Mapping for ServiceBinding  -->
   <class name="org.infoglue.cms.entities.structure.impl.simple.ServiceBindingImpl" identity="serviceBindingId" key-generator="SEQUENCE">
@@ -999,6 +1044,52 @@
     </field>
   </class>
 
+<!--  Mapping for SmallishContent  -->
+  <class name="org.infoglue.cms.entities.content.impl.simple.SmallStateContentImpl" identity="contentId" key-generator="IDENTITY">
+    <description>SmallStateContent</description>
+    <cache-type type="none"/>
+    <map-to table="cmCont"/>
+    <field name="contentId" type="java.lang.Integer">
+      <sql name="ContId" type="integer" dirty="check" />
+    </field>
+    <field name="name" type="java.lang.String">
+      <sql name="name" type="varchar" dirty="check" />
+    </field>
+	<field name="publishDateTime" type="java.util.Date">
+	  <sql name="publishDateTime" type="timestamp" dirty="ignore" />
+	</field>
+	<field name="expireDateTime" type="java.util.Date">
+	  <sql name="expireDateTime" type="timestamp" dirty="ignore" />
+	</field>
+	<field name="isBranch" type="java.lang.Boolean">
+	  <sql name="isBranch" type="integer" dirty="check" />
+	</field>
+	<field name="isProtected" type="java.lang.Integer">
+	  <sql name="isProtected" type="integer" dirty="check" />
+	</field>
+    <field name="isDeleted" type="java.lang.Boolean">
+      <sql name="isDeleted" type="integer" dirty="check" />
+    </field>
+    <field name="creator" type="java.lang.String">
+      <sql name="creator" type="varchar" dirty="check" />
+    </field>
+	<field name="contentTypeDefinitionId" type="java.lang.Integer">
+      <sql name="contentTypeDefId" type="integer"/>
+    </field>
+    <field name="repositoryId" type="java.lang.Integer">
+      <sql name="repositoryId" type="integer"/>
+    </field>
+    <field name="parentContentId" type="java.lang.Integer">
+      <sql name="parentContId" type="integer"/>
+    </field>
+    <field name="stateId" type="java.lang.Integer">
+      <sql name="stateId" type="integer"/>
+    </field>
+    <field name="childCount" type="java.lang.Integer">
+      <sql name="childCount" type="integer"/>
+    </field>
+  </class>
+  
   <!--  Mapping for MediumContent  -->
   <class name="org.infoglue.cms.entities.content.impl.simple.MediumContentImpl" identity="contentId" key-generator="SEQUENCE">
     <description>MediumContent</description>

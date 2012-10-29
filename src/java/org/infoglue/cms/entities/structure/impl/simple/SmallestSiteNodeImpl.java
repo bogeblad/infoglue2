@@ -129,6 +129,16 @@ public class SmallestSiteNodeImpl extends SiteNodeImpl
         this.valueObject.setMetaInfoContentId(metaInfoContentId);
     }
 
+    public Integer getRepositoryId()
+    {
+        return this.valueObject.getRepositoryId();
+    }
+    
+    public void setRepositoryId(Integer repositoryId)
+    {
+        this.valueObject.setRepositoryId(repositoryId);
+    }
+
     public Integer getSiteNodeTypeDefinitionId()
     {
         return this.valueObject.getSiteNodeTypeDefinitionId();
@@ -159,34 +169,37 @@ public class SmallestSiteNodeImpl extends SiteNodeImpl
         this.valueObject.setChildCount(childCount);
     }
 
-    public Integer getSortOrder()
+    public Integer getStateId()
     {
-        return this.valueObject.getSortOrder();
+        return this.valueObject.getStateId();
     }
             
-    public void setSortOrder(Integer sortOrder)
+    public void setStateId(Integer stateId)
     {
-        this.valueObject.setSortOrder(sortOrder);
+    	if(stateId != null && stateId > -1)
+    		this.valueObject.setStateId(stateId);
     }
 
-    public Boolean getIsHidden()
-    {
-        return this.valueObject.getIsHidden();
-    }
-            
-    public void setIsHidden(Boolean isHidden)
-    {
-        this.valueObject.setIsHidden(isHidden);
-    }
-
-	public void setParentContentId(Integer parentSiteNodeId)
+	public void setParentSiteNodeId(Integer parentSiteNodeId)
 	{
-		this.valueObject.setParentSiteNodeId(parentSiteNodeId);
+    	if(parentSiteNodeId != null && parentSiteNodeId > -1)
+    		this.valueObject.setParentSiteNodeId(parentSiteNodeId);
 	}
 
 	public Integer getParentSiteNodeId()
 	{
 		return this.valueObject.getParentSiteNodeId();
 	}
+
+    public Integer getIsProtected()
+    {
+        return this.valueObject.getIsProtected();
+    }
+            
+    public void setIsProtected(Integer isProtected)
+    {
+    	if(isProtected != null && isProtected > -1)
+    		this.valueObject.setIsProtected(isProtected);
+    }
 
 }        

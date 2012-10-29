@@ -46,7 +46,9 @@ public class SiteNodeVO implements BaseEntityVO
     private java.lang.Boolean isBranch		= new Boolean(false);             
   	private java.lang.Integer repositoryId 	= null;    
   	private java.lang.Integer siteNodeTypeDefinitionId = null;  
-  	private Integer childCount;
+  	private Integer childCount		= null;
+  	private Integer stateId			= null;
+  	private Integer isProtected 	= null;
   	
   	private String creatorName;
 	private Integer metaInfoContentId 	= new Integer(-1);
@@ -231,5 +233,24 @@ public class SiteNodeVO implements BaseEntityVO
 		this.parentSiteNodeId = parentSiteNodeId;
 	}
 
+    public Integer getStateId()
+    {
+        return stateId;
+    }
+            
+    public void setStateId(Integer stateId)
+    {
+        this.stateId = stateId;
+    }
+
+    public Integer getIsProtected()
+    {
+        return this.isProtected;
+    }
+            
+    public void setIsProtected(Integer isProtected)
+    {
+        this.isProtected = isProtected;
+    }
 }
         
