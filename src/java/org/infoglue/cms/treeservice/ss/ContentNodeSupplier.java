@@ -83,7 +83,14 @@ public class ContentNodeSupplier extends BaseNodeSupplier
 			Timer t = new Timer();
 			if(repositoryId != null && repositoryId.intValue() > 0)
 			{
-				vo = ContentControllerProxy.getController().getRootContentVO(repositoryId, infogluePrincipal.getName());
+				try
+				{
+					vo = ContentControllerProxy.getController().getRootContentVO(repositoryId, infogluePrincipal.getName());
+				}
+				catch (Exception e) 
+				{
+					logger.warn("Not a valid repository");
+				}
 				BaseNode rootNode =  new ContentNodeImpl();
 				rootNode.setChildren(true);
 				rootNode.setId(vo.getId());
@@ -122,11 +129,13 @@ public class ContentNodeSupplier extends BaseNodeSupplier
 		cacheLeafs = new ArrayList();
 		
 		Timer t = new Timer();
+		if(!logger.isInfoEnabled())
+			t.setActive(false);
 
 		List children = null;
 		try
 		{
-			children = ContentController.getContentController().getContentChildrenVOList(parentNode);
+			children = ContentController.getContentController().getContentChildrenVOList(parentNode, this.languageVOList, allowedContentTypeIds, false);
 		}
 		catch (ConstraintException e)
 		{
@@ -152,22 +161,29 @@ public class ContentNodeSupplier extends BaseNodeSupplier
 					ContentVO contentVO = (ContentVO) iterator.next();
 					if(contentVO.getContentTypeDefinitionId() != null && !contentVO.getIsBranch().booleanValue())
 					{
-						ContentTypeDefinitionVO contentTypeDefinitionVO = ContentTypeDefinitionController.getController().getContentTypeDefinitionVOWithId(contentVO.getContentTypeDefinitionId());
-						boolean exists = false;
-						for(int i=0; i<allowedContentTypeIds.length; i++)
+						try
 						{
-						    String allowedId = allowedContentTypeIds[i];
-						    
-						    if(allowedId.equalsIgnoreCase(contentTypeDefinitionVO.getId().toString()))
+							ContentTypeDefinitionVO contentTypeDefinitionVO = ContentTypeDefinitionController.getController().getContentTypeDefinitionVOWithId(contentVO.getContentTypeDefinitionId());
+							boolean exists = false;
+							for(int i=0; i<allowedContentTypeIds.length; i++)
 							{
-						        exists = true;
-						        break;
+							    String allowedId = allowedContentTypeIds[i];
+							    
+							    if(allowedId.equalsIgnoreCase(contentTypeDefinitionVO.getId().toString()))
+								{
+							        exists = true;
+							        break;
+								}
+							}
+	
+							if(exists)
+							{
+							    filteredList.add(contentVO);
 							}
 						}
-
-						if(exists)
+						catch (Exception e) 
 						{
-						    filteredList.add(contentVO);
+							logger.warn("The content " + contentVO.getName() + " (" + contentVO.getId() + " ) points to a removed content type perhaps: " + e.getMessage());
 						}
 					}
 					else
@@ -213,6 +229,7 @@ public class ContentNodeSupplier extends BaseNodeSupplier
 					logger.warn("Problem getting access to meta info:" + e.getMessage(), e);
 				}
 			}
+			t.printElapsedTime("Access right took");
 			
 			if(hasUserContentAccess)
 			{
@@ -227,6 +244,11 @@ public class ContentNodeSupplier extends BaseNodeSupplier
 				if(vo.getIsProtected().intValue() == ContentVO.YES.intValue())
 					node.getParameters().put("isProtected", "true");
 				
+				if(vo.getStateId() != null && vo.getStateId() < ContentVersionVO.PUBLISHED_STATE)
+					node.getParameters().put("stateId", "" + vo.getStateId());
+				t.printElapsedTime("Getting state took");
+				
+				/*
 				try
 				{
 					Iterator languageVOListIterator = languageVOList.iterator();
@@ -245,6 +267,7 @@ public class ContentNodeSupplier extends BaseNodeSupplier
 				{
 					logger.warn("A problem when fecthing latest master content version: " + e.getMessage(), e);
 				}
+				*/
 				
 				if (vo.getIsBranch().booleanValue())
 				{
