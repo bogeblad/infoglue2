@@ -28,9 +28,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
+import org.exolab.castor.jdo.Database;
 import org.infoglue.cms.applications.common.ImageButton;
 import org.infoglue.cms.applications.common.VisualFormatter;
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
+import org.infoglue.cms.controllers.kernel.impl.simple.CastorDatabaseService;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentVersionController;
 import org.infoglue.cms.controllers.kernel.impl.simple.LanguageController;
 import org.infoglue.cms.controllers.kernel.impl.simple.RepositoryController;
@@ -42,7 +44,9 @@ import org.infoglue.cms.entities.management.RepositoryVO;
 import org.infoglue.cms.entities.structure.SiteNodeVO;
 import org.infoglue.cms.entities.structure.SiteNodeVersion;
 import org.infoglue.cms.entities.structure.SiteNodeVersionVO;
+import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.util.CmsPropertyHandler;
+import org.infoglue.deliver.util.CacheController;
 
 /**
  * This class implements the action class for the framed page in the siteNode tool.
@@ -236,16 +240,16 @@ public class ViewStructureToolToolBarAction extends InfoGlueAbstractAction
 	 * This method checks if there are published versions available for the siteNodeVersion.
 	 */
 	
-	private boolean hasPublishedVersion()
+	private boolean hasPublishedVersion(Database db)
 	{
 		boolean hasPublishedVersion = false;
 		
 		try
 		{
-			SiteNodeVersionVO siteNodeVersion = SiteNodeVersionController.getLatestPublishedSiteNodeVersionVO(this.siteNodeId);
+			SiteNodeVersionVO siteNodeVersion = SiteNodeVersionController.getLatestPublishedSiteNodeVersionVO(this.siteNodeId, db);
 			if(siteNodeVersion != null)
 			{
-				SiteNodeVO siteNodeVO = SiteNodeController.getController().getSiteNodeVOWithId(siteNodeVersion.getSiteNodeId());
+				SiteNodeVO siteNodeVO = SiteNodeController.getController().getSiteNodeVOWithId(siteNodeVersion.getSiteNodeId(), db);
 				hasPublishedVersion = true;
 				lastPublishedSiteNodeVersionId = siteNodeVersion.getId();
 				this.repositoryId = siteNodeVO.getRepositoryId();
@@ -272,9 +276,30 @@ public class ViewStructureToolToolBarAction extends InfoGlueAbstractAction
 		return hasPublishedVersion;
 	}
 	
-	
 
 	private List getBranchSiteNodeButtons() throws Exception
+	{
+		List buttons = null;
+		Database db = CastorDatabaseService.getDatabase();
+
+		try 
+		{
+			beginTransaction(db);
+			
+			buttons = getBranchSiteNodeButtons(db);
+			
+			commitTransaction(db);
+		} 
+		catch (Exception e) 
+		{
+			logger.error("An error occurred getting branch buttons:" + e.getMessage(), e);
+			rollbackTransaction(db);
+			throw new SystemException(e.getMessage());
+		}
+		return buttons;
+	}
+
+	private List getBranchSiteNodeButtons(Database db) throws Exception
 	{
 		List buttons = new ArrayList();
 		buttons.add(new ImageButton(this.getCMSBaseUrl() + "/CreateSiteNode!input.action?isBranch=true&parentSiteNodeId=" + this.siteNodeId + "&repositoryId=" + this.repositoryId, getLocalizedString(getSession().getLocale(), "images.structuretool.buttons.newSiteNode"), "New SiteNode"));	
@@ -286,7 +311,7 @@ public class ViewStructureToolToolBarAction extends InfoGlueAbstractAction
 		//buttons.add(getMoveButton());	
 		//buttons.add(getMoveMultipleButton());	
 
-		if(!hasPublishedVersion())
+		if(!hasPublishedVersion(db))
 		    buttons.add(new ImageButton(this.getCMSBaseUrl() + "/Confirm.action?header=tool.structuretool.deleteSiteNode.header&yesDestination=" + URLEncoder.encode(URLEncoder.encode("DeleteSiteNode.action?siteNodeId=" + this.siteNodeId + "&repositoryId=" + this.repositoryId + "&changeTypeId=4", "UTF-8"), "UTF-8") + "&noDestination=" + URLEncoder.encode(URLEncoder.encode("ViewSiteNode.action?title=SiteNode&siteNodeId=" + this.siteNodeId + "&repositoryId=" + this.repositoryId, "UTF-8"), "UTF-8") + "&message=tool.structuretool.deleteSiteNode.message", getLocalizedString(getSession().getLocale(), "images.structuretool.buttons.deleteSiteNode"), "Delete SiteNode"));
 		
 		//String serviceBindingIdString = this.serviceBindingId == null ? "" : this.serviceBindingId.toString();
@@ -298,9 +323,9 @@ public class ViewStructureToolToolBarAction extends InfoGlueAbstractAction
 		else if(this.siteNodeVersionVO != null)
 			buttons.add(new ImageButton(true, "javascript:openPopupWithOptionalParameter('ViewAndCreateContentForServiceBinding.action?siteNodeId=" + this.siteNodeId + "&repositoryId=" + this.repositoryId + "&siteNodeVersionId=" + this.siteNodeVersionVO.getId() + "', 'PageProperties', 'width=750,height=700,resizable=no,status=yes,scrollbars=yes', '" + getLocalizedString(getSession().getLocale(), "tool.structuretool.changeSiteNodeStateToWorkingQuestion") + "', 'changeStateToWorking=true');", getLocalizedString(getSession().getLocale(), "images.structuretool.buttons.editSiteNodeProperties"), "Edit siteNode properties"));
 
-		buttons.add(getPreviewButtons());
+		buttons.add(getPreviewButtons(db));
 		
-		if(hasPublishedVersion())
+		if(hasPublishedVersion(db))
 		{
 		    ImageButton unpublishButton = new ImageButton(this.getCMSBaseUrl() + "/UnpublishSiteNodeVersion!input.action?siteNodeId=" + this.siteNodeId + "&siteNodeVersionId=" + this.siteNodeVersionId, getLocalizedString(getSession().getLocale(), "images.structuretool.buttons.unpublishVersion"), "tool.contenttool.unpublishVersion.header");
 		    ImageButton unpublishAllButton = new ImageButton(this.getCMSBaseUrl() + "/UnpublishSiteNodeVersion!inputChooseSiteNodes.action?siteNodeId=" + this.siteNodeId + "&siteNodeVersionId=" + this.siteNodeVersionId, getLocalizedString(getSession().getLocale(), "images.structuretool.buttons.unpublishAllVersion"), "tool.contenttool.unpublishAllVersion.header");
@@ -310,13 +335,13 @@ public class ViewStructureToolToolBarAction extends InfoGlueAbstractAction
 		}
 		
 		ImageButton coverButton = new ImageButton(this.getCMSBaseUrl() + "/ViewSiteNode.action?siteNodeId=" + this.siteNodeId + "&repositoryId=" + this.repositoryId + "&stay=true", getLocalizedString(getSession().getLocale(), "images.structuretool.buttons.siteNodeCover"), "SiteNode Cover");	
-		coverButton.getSubButtons().add(getSimplePageComponentsButton());
+		coverButton.getSubButtons().add(getSimplePageComponentsButton(db));
 		buttons.add(coverButton);	
 
 		if(!isReadOnly())
 		{
-		    ImageButton pageComponentsButton = getViewPageComponentsButton();
-		    pageComponentsButton.getSubButtons().add(getSimplePageComponentsButton());
+		    ImageButton pageComponentsButton = getViewPageComponentsButton(db);
+		    pageComponentsButton.getSubButtons().add(getSimplePageComponentsButton(db));
 		    buttons.add(pageComponentsButton);	
 		}
 		
@@ -339,9 +364,9 @@ public class ViewStructureToolToolBarAction extends InfoGlueAbstractAction
 		return buttons;
 	}
 
-	private ImageButton getPreviewButtons() throws Exception
+	private ImageButton getPreviewButtons(Database db) throws Exception
 	{
-		RepositoryVO repositoryVO = RepositoryController.getController().getRepositoryVOWithId(this.repositoryId);
+		RepositoryVO repositoryVO = RepositoryController.getController().getRepositoryVOWithId(this.repositoryId, db);
 		
 		String dnsName = repositoryVO.getDnsName();
 
@@ -369,8 +394,31 @@ public class ViewStructureToolToolBarAction extends InfoGlueAbstractAction
 		
 		return imageButton;
 	}
-	
+
 	private List getSiteNodeButtons() throws Exception
+	{
+		List buttons = null;
+		Database db = CastorDatabaseService.getDatabase();
+
+		try 
+		{
+			beginTransaction(db);
+			
+			buttons = getSiteNodeButtons(db);
+			
+			commitTransaction(db);
+		} 
+		catch (Exception e) 
+		{
+			logger.error("An error occurred getting branch buttons:" + e.getMessage(), e);
+			rollbackTransaction(db);
+			throw new SystemException(e.getMessage());
+		}
+		return buttons;
+
+	}
+	
+	private List getSiteNodeButtons(Database db) throws Exception
 	{
 		List buttons = new ArrayList();
 		buttons.add(new ImageButton("Confirm.action?header=Delete%20siteNode&yesDestination=" + URLEncoder.encode(URLEncoder.encode("DeleteSiteNode.action?siteNodeId=" + this.siteNodeId + "&repositoryId=" + this.repositoryId + "&changeTypeId=4", "UTF-8"), "UTF-8") + "&noDestination=" + URLEncoder.encode(URLEncoder.encode("ViewSiteNode.action?title=SiteNode&siteNodeId=" + this.siteNodeId + "&repositoryId=" + this.repositoryId, "UTF-8"), "UTF-8") + "&message=" + URLEncoder.encode("Do you really want to delete the siteNode " + this.name + " and all its children", "UTF-8"), getLocalizedString(getSession().getLocale(), "images.structuretool.buttons.deleteSiteNode"), "Delete SiteNode"));
@@ -401,12 +449,12 @@ public class ViewStructureToolToolBarAction extends InfoGlueAbstractAction
 		return new ImageButton(true, "javascript:openPopup('MoveMultipleSiteNodes!input.action?siteNodeId=" + this.siteNodeId + "&repositoryId=" + this.repositoryId + "', 'MoveMultipleSiteNodes', 'width=400,height=640,resizable=no');", getLocalizedString(getSession().getLocale(), "images.structuretool.buttons.moveMultipleSiteNodes"), "tool.structuretool.moveMultipleSiteNodes.header");	
 	}
 
-	private ImageButton getViewPageComponentsButton() throws Exception
+	private ImageButton getViewPageComponentsButton(Database db) throws Exception
 	{
 		try
 		{
 		    boolean isMetaInfoInWorkingState = false;
-			LanguageVO masterLanguageVO = LanguageController.getController().getMasterLanguage(this.repositoryId);
+			LanguageVO masterLanguageVO = LanguageController.getController().getMasterLanguage(this.repositoryId, db);
 			Integer languageId = masterLanguageVO.getLanguageId();
 			
 			/*
@@ -422,10 +470,10 @@ public class ViewStructureToolToolBarAction extends InfoGlueAbstractAction
 				}
 			}
 			*/
-			SiteNodeVO siteNodeVO = SiteNodeController.getController().getSiteNodeVOWithId(siteNodeId);
+			SiteNodeVO siteNodeVO = SiteNodeController.getController().getSiteNodeVOWithId(siteNodeId, db);
 			if(siteNodeVO.getMetaInfoContentId() != null && siteNodeVO.getMetaInfoContentId().intValue() != -1)
 			{
-				ContentVersionVO contentVersionVO = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(siteNodeVO.getMetaInfoContentId(), languageId);
+				ContentVersionVO contentVersionVO = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(siteNodeVO.getMetaInfoContentId(), languageId, db);
 				if(contentVersionVO.getStateId().equals(ContentVersionVO.WORKING_STATE))
 					isMetaInfoInWorkingState = true;
 			}	
@@ -443,12 +491,12 @@ public class ViewStructureToolToolBarAction extends InfoGlueAbstractAction
 		}
 	}
 
-	private ImageButton getSimplePageComponentsButton() throws Exception
+	private ImageButton getSimplePageComponentsButton(Database db) throws Exception
 	{
 		try
 		{
 		    boolean isMetaInfoInWorkingState = false;
-			LanguageVO masterLanguageVO = LanguageController.getController().getMasterLanguage(this.repositoryId);
+			LanguageVO masterLanguageVO = LanguageController.getController().getMasterLanguage(this.repositoryId, db);
 			Integer languageId = masterLanguageVO.getLanguageId();
 
 			/*
@@ -465,10 +513,10 @@ public class ViewStructureToolToolBarAction extends InfoGlueAbstractAction
 			}	
 			*/
 			
-			SiteNodeVO siteNodeVO = SiteNodeController.getController().getSiteNodeVOWithId(siteNodeId);
+			SiteNodeVO siteNodeVO = SiteNodeController.getController().getSiteNodeVOWithId(siteNodeId, db);
 			if(siteNodeVO.getMetaInfoContentId() != null && siteNodeVO.getMetaInfoContentId().intValue() != -1)
 			{
-				ContentVersionVO contentVersionVO = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(siteNodeVO.getMetaInfoContentId(), languageId);
+				ContentVersionVO contentVersionVO = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(siteNodeVO.getMetaInfoContentId(), languageId, db);
 				if(contentVersionVO.getStateId().equals(ContentVersionVO.WORKING_STATE))
 					isMetaInfoInWorkingState = true;
 			}
