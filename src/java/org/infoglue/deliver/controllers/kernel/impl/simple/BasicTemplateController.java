@@ -1743,9 +1743,9 @@ public class BasicTemplateController implements TemplateController
 	 * parameter requires a bindingName which refers to the AvailableServiceBinding.name-attribute. 
 	 */
 	 
-	public String getContentAttributeWithReturningId(Integer contentId, Integer languageId, String attributeName, boolean clean, Set contentVersionId) 
+	public String getContentAttributeWithReturningId(Integer contentId, Integer languageId, String attributeName, boolean clean, Set contentVersionId, Set<String> usedContentEntities) 
 	{
-	    return getContentAttribute(contentId, languageId, attributeName, contentVersionId);
+	    return getContentAttribute(contentId, languageId, attributeName, contentVersionId, usedContentEntities);
 	}
 
 	/**
@@ -1887,6 +1887,7 @@ public class BasicTemplateController implements TemplateController
 		String attributeValue = "";
 		
 		this.deliveryContext.addUsedContent(CacheController.getPooledString(1, contentId));
+		this.deliveryContext.addUsedContent(CacheController.getPooledString(1, contentId) + "_" + attributeName);
 
 		try
 		{
@@ -1936,11 +1937,13 @@ public class BasicTemplateController implements TemplateController
 	 * parameter requires a bindingName which refers to the AvailableServiceBinding.name-attribute. 
 	 */
 	 
-	public String getContentAttribute(Integer contentId, Integer languageId, String attributeName, Set contentVersionId) 
+	public String getContentAttribute(Integer contentId, Integer languageId, String attributeName, Set contentVersionId, Set<String> usedContentEntities) 
 	{
 		String attributeValue = "";
 		
 		this.deliveryContext.addUsedContent(CacheController.getPooledString(1, contentId));
+		if(!attributeName.equals("ComponentStructure") || contentId == getMetaInformationContentId())
+			this.deliveryContext.addUsedContent(CacheController.getPooledString(1, contentId) + "_" + attributeName);
 		
 		try
 		{
@@ -3934,10 +3937,10 @@ public class BasicTemplateController implements TemplateController
 
             ContentVersionVO contentVersionVO = cdc.getContentVersionVO(getDatabase(), this.siteNodeId, contentId,this.languageId, USE_LANGUAGE_FALLBACK, this.deliveryContext, this.infoGluePrincipal );
             
-            Integer contentTypeDefinitionId = cdc.getContentVO(contentId, getDatabase() ).getContentTypeDefinitionId();
+            Integer contentTypeDefinitionId = cdc.getContentVO(getDatabase(), contentId, deliveryContext ).getContentTypeDefinitionId();
           
-            ContentTypeDefinitionVO contentTypeDefinitionVO = ctdc.getContentTypeDefinitionVOWithId( contentTypeDefinitionId );
-            Iterator attrIterator = ctdc.getContentTypeAttributes(contentTypeDefinitionVO.getSchemaValue() ).iterator();
+            ContentTypeDefinitionVO contentTypeDefinitionVO = ctdc.getContentTypeDefinitionVOWithId( contentTypeDefinitionId, getDatabase());
+            Iterator attrIterator = ctdc.getContentTypeAttributes(contentTypeDefinitionVO, true).iterator();
             
             String aText = text.replaceAll( "[^\\w]", "" );
             aText = aText.substring( 0, ( aText.length() < 8 ? aText.length() : 8 ) ).toLowerCase();
@@ -4885,12 +4888,40 @@ public class BasicTemplateController implements TemplateController
 		return getMatchingContents(contentTypeDefinitionNamesString, categoryConditionString, freeText, freeTextAttributeNames, fromDate, toDate, expireFromDate, expireToDate, versionModifier, maximumNumberOfItems, useLanguageFallback, cacheResult, cacheInterval, cacheName, cacheKey, repositoryIdList, languageId, skipLanguageCheck, null);
 	}
 
+	/**
+	 * This method searches for all contents matching
+	 */
+
 	private List getMatchingContentsFromDatabase(String contentTypeDefinitionNamesString, String categoryConditionString, String freeText, List freeTextAttributeNames, Date fromDate, Date toDate, Date expireFromDate, Date expireToDate, String versionModifier, Integer maximumNumberOfItems, boolean useLanguageFallback, boolean cacheResult, int cacheInterval, String cacheName, String key, List<Integer> repositoryIdList, Integer localLanguageId, Boolean skipLanguageCheck, Integer startNodeId)
 	{
+		Timer t = new Timer();
+		
+		if(contentTypeDefinitionNamesString != null && !contentTypeDefinitionNamesString.equals(""))
+		{
+			try
+			{
+				logger.info("contentTypeDefinitionNamesString:" + contentTypeDefinitionNamesString);
+				String[] contentTypeDefinitionNames = contentTypeDefinitionNamesString.split(",");
+				for(String contentTypeDefinitionName : contentTypeDefinitionNames)
+				{
+					ContentTypeDefinitionVO contentTypeDefinitionVO = ContentTypeDefinitionController.getController().getContentTypeDefinitionVOWithName(contentTypeDefinitionName, getDatabase());
+					if(contentTypeDefinitionVO != null)
+					{
+						logger.info("Do not throw page cache on this if it's not a content of type:" + contentTypeDefinitionVO.getName());
+						deliveryContext.addUsedContent("selectiveCacheUpdateNonApplicable_contentTypeDefinitionId_" + contentTypeDefinitionVO.getId());
+					}
+				}
+			}
+			catch (Exception e) 
+			{
+				logger.error("Could not set correct selectiveCacheUpdateNonApplicable-type: " + e.getMessage());
+			}
+		}
+		else
+			deliveryContext.addUsedContent("selectiveCacheUpdateNonApplicable");
+			
 		try
 		{
-			Timer t = new Timer();
-			
 		    List contentTypeDefinitionVOList = new ArrayList();
 		    String[] contentTypeDefinitionNames = contentTypeDefinitionNamesString.split(",");
 		    for(int i=0; i<contentTypeDefinitionNames.length; i++)
@@ -4899,8 +4930,8 @@ public class BasicTemplateController implements TemplateController
 		        if(contentTypeDefinitionVO != null)
 		        	contentTypeDefinitionVOList.add(contentTypeDefinitionVO);
 		    }
-
-		    final CategoryConditions categoryConditions = CategoryConditions.parse(categoryConditionString, getDatabase());
+			
+			final CategoryConditions categoryConditions = CategoryConditions.parse(categoryConditionString, getDatabase());
 		    
 			final ExtendedSearchCriterias criterias = new ExtendedSearchCriterias(this.getOperatingMode().intValue());
 			criterias.setCategoryConditions(categoryConditions);
@@ -4969,7 +5000,29 @@ public class BasicTemplateController implements TemplateController
 	{
 		Timer t = new Timer();
 
-		deliveryContext.addUsedContent("selectiveCacheUpdateNonApplicable");
+		if(contentTypeDefinitionNamesString != null && !contentTypeDefinitionNamesString.equals(""))
+		{
+			try
+			{
+				logger.info("contentTypeDefinitionNamesString:" + contentTypeDefinitionNamesString);
+				String[] contentTypeDefinitionNames = contentTypeDefinitionNamesString.split(",");
+				for(String contentTypeDefinitionName : contentTypeDefinitionNames)
+				{
+					ContentTypeDefinitionVO contentTypeDefinitionVO = ContentTypeDefinitionController.getController().getContentTypeDefinitionVOWithName(contentTypeDefinitionName, getDatabase());
+					if(contentTypeDefinitionVO != null)
+					{
+						logger.info("Do not throw page cache on this if it's not a content of type:" + contentTypeDefinitionVO.getName());
+						deliveryContext.addUsedContent("selectiveCacheUpdateNonApplicable_contentTypeDefinitionId_" + contentTypeDefinitionVO.getId());
+					}
+				}
+			}
+			catch (Exception e) 
+			{
+				logger.error("Could not set correct selectiveCacheUpdateNonApplicable-type: " + e.getMessage());
+			}
+		}
+		else
+			deliveryContext.addUsedContent("selectiveCacheUpdateNonApplicable");
 		
 		if((freeText != null && !freeText.equals("")) || (freeTextAttributeNames != null && freeTextAttributeNames.size() > 0) || fromDate != null || toDate != null || expireFromDate != null || expireToDate != null || (versionModifier != null && !versionModifier.equals("")) || !deliveryContext.getOperatingMode().equals(CmsPropertyHandler.getOperatingMode()))
 			cacheResult = false;
@@ -5007,7 +5060,11 @@ public class BasicTemplateController implements TemplateController
 			    {
 			        ContentTypeDefinitionVO contentTypeDefinitionVO = ContentTypeDefinitionController.getController().getContentTypeDefinitionVOWithName(contentTypeDefinitionNames[i], getDatabase());
 			        if(contentTypeDefinitionVO != null)
+			        {
 			        	contentTypeDefinitionVOList.add(contentTypeDefinitionVO);
+			        	logger.info("Do not throw page cache on this if it's not a content of type:" + contentTypeDefinitionVO.getName());
+						deliveryContext.addUsedContent("selectiveCacheUpdateNonApplicable_contentTypeDefinitionId_" + contentTypeDefinitionVO.getId());
+			        }
 			    }
 	
 			    final CategoryConditions categoryConditions = CategoryConditions.parse(categoryConditionString, getDatabase());
@@ -5035,7 +5092,7 @@ public class BasicTemplateController implements TemplateController
 				{
 					final Content content = (Content) i.next();
 					//if(ContentDeliveryController.getContentDeliveryController().isValidContent(this.getDatabase(), content.getId(), localLanguageId, USE_LANGUAGE_FALLBACK, true, getPrincipal(), this.deliveryContext))
-					if(ContentDeliveryController.getContentDeliveryController().isValidContent(this.getDatabase(), content, localLanguageId, USE_LANGUAGE_FALLBACK, true, getPrincipal(), this.deliveryContext, false, false))
+						if(ContentDeliveryController.getContentDeliveryController().isValidContent(this.getDatabase(), content.getValueObject(), localLanguageId, USE_LANGUAGE_FALLBACK, true, getPrincipal(), this.deliveryContext, false, false))
 					{
 						if(startNodeId != null)
 						{
@@ -5083,7 +5140,7 @@ public class BasicTemplateController implements TemplateController
 			}
 			else
 			{
-				ContentVO currentNodeVO = ContentDeliveryController.getContentDeliveryController().getContentVO(currentNodeId, getDatabase());
+				ContentVO currentNodeVO = ContentDeliveryController.getContentDeliveryController().getContentVO(getDatabase(), currentNodeId, null);
 				if(currentNodeVO != null)
 				{
 					Integer parentNodeId = currentNodeVO.getParentContentId();
@@ -6017,8 +6074,18 @@ public class BasicTemplateController implements TemplateController
 					webPage.setSiteNodeId(siteNodeVO.getSiteNodeId());
 					webPage.setLanguageId(this.languageId);
 					webPage.setContentId(null);
-					webPage.setNavigationTitle(this.nodeDeliveryController.getPageNavigationTitle(getDatabase(), this.getPrincipal(), siteNodeVO.getSiteNodeId(), this.languageId, null, META_INFO_BINDING_NAME, NAV_TITLE_ATTRIBUTE_NAME, USE_LANGUAGE_FALLBACK, this.deliveryContext, escapeHTML));
-					webPage.setMetaInfoContentId(this.nodeDeliveryController.getMetaInfoContentId(getDatabase(), this.getPrincipal(), siteNodeVO.getSiteNodeId(), META_INFO_BINDING_NAME, USE_INHERITANCE, this.deliveryContext));
+					webPage.setNavigationTitle(this.nodeDeliveryController.getPageNavigationTitle(getDatabase(), this.getPrincipal(), siteNodeVO.getSiteNodeId(), this.languageId, siteNodeVO.getMetaInfoContentId(), META_INFO_BINDING_NAME, NAV_TITLE_ATTRIBUTE_NAME, USE_LANGUAGE_FALLBACK, this.deliveryContext, escapeHTML));
+					if(siteNodeVO.getMetaInfoContentId() != null)
+					{
+						if(deliveryContext != null)
+							deliveryContext.addUsedContent(CacheController.getPooledString(1, siteNodeVO.getMetaInfoContentId()));
+						webPage.setMetaInfoContentId(siteNodeVO.getMetaInfoContentId());
+					}
+					else
+					{
+						System.out.println("IT CAN REALLY HAPPEN.....");
+						webPage.setMetaInfoContentId(this.nodeDeliveryController.getMetaInfoContentId(getDatabase(), this.getPrincipal(), siteNodeVO.getSiteNodeId(), META_INFO_BINDING_NAME, USE_INHERITANCE, this.deliveryContext));
+					}
 					webPage.setUrl(this.nodeDeliveryController.getPageUrl(getDatabase(), this.getPrincipal(), siteNodeVO.getSiteNodeId(), this.languageId, null, this.deliveryContext));
 					childPages.add(webPage);
 				}
