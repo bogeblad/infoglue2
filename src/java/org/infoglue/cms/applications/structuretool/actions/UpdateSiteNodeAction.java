@@ -111,6 +111,10 @@ public class UpdateSiteNodeAction extends ViewSiteNodeAction //WebworkAbstractAc
 		    args.put("globalKey", "infoglue");
 		    PropertySet ps = PropertySetManager.getInstance("jdbc", args);
 
+	    	String oldDisabledLanguages = "" + ps.getString("siteNode_" + getSiteNodeId() + "_disabledLanguages");
+	    	String oldEnabledLanguages = "" + ps.getString("siteNode_" + getSiteNodeId() + "_enabledLanguages");
+	    	boolean changed = false;
+	    	
 	    	String[] values = getRequest().getParameterValues("disabledLanguageId");
 	    	String valueString = "";
 	    	if(values != null)
@@ -123,6 +127,8 @@ public class UpdateSiteNodeAction extends ViewSiteNodeAction //WebworkAbstractAc
 		    	}
 	    	}
 	    	ps.setString("siteNode_" + getSiteNodeId() + "_disabledLanguages", valueString);
+	    	if(!valueString.equals(oldDisabledLanguages))
+	    		changed = true;
 
 	    	values = getRequest().getParameterValues("enabledLanguageId");
 	    	valueString = "";
@@ -136,10 +142,15 @@ public class UpdateSiteNodeAction extends ViewSiteNodeAction //WebworkAbstractAc
 		    	}
 	    	}
 	    	ps.setString("siteNode_" + getSiteNodeId() + "_enabledLanguages", valueString);
+	    	if(!valueString.equals(oldEnabledLanguages))
+	    		changed = true;
 
-			NotificationMessage notificationMessage = new NotificationMessage("UpdateSiteNodeAction", "ServerNodeProperties", this.getInfoGluePrincipal().getName(), NotificationMessage.SYSTEM, "0", "ServerNodeProperties");
-			ChangeNotificationController.getInstance().addNotificationMessage(notificationMessage);
-			//RemoteCacheUpdater.getSystemNotificationMessages().add(notificationMessage);
+	    	if(changed)
+	    	{
+				NotificationMessage notificationMessage = new NotificationMessage("UpdateSiteNodeAction", "ServerNodeProperties", this.getInfoGluePrincipal().getName(), NotificationMessage.SYSTEM, "0", "ServerNodeProperties");
+				ChangeNotificationController.getInstance().addNotificationMessage(notificationMessage);
+				//RemoteCacheUpdater.getSystemNotificationMessages().add(notificationMessage);
+	    	}
 
 	    	//}
 		//catch(Exception e)
