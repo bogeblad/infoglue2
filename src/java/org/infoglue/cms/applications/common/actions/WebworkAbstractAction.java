@@ -377,7 +377,7 @@ public abstract class WebworkAbstractAction implements Action, ServletRequestAwa
 			} 
 			catch(Bug e) 
 			{
-				logger.error("Bug " + e);
+				logger.error("Bug " + e.getMessage(), e);
 				setError(e, e.getCause());
 				result = ERROR;
 			} 
@@ -395,7 +395,7 @@ public abstract class WebworkAbstractAction implements Action, ServletRequestAwa
 			} 
 			catch(Throwable e) 
 			{
-				logger.error("Throwable " + e);
+				logger.error("Throwable " + e.getMessage(), e);
 				final Bug bug = new Bug("Uncaught exception!", e);
 				setError(bug, bug.getCause());
 				result = ERROR;

@@ -79,7 +79,7 @@ public abstract class SimpleXmlServiceAction extends InfoGlueAbstractAction
 
     private static final String protectedPropertyFragments = "password,administrator,authorizer,authenticator,masterserver,slaveserver,log";
     
-    protected static final String SERVICEREVISION = "$Revision: 1.24.2.1 $"; 
+    protected static final String SERVICEREVISION = "$Revision: 1.24.2.1.2.1 $"; 
 	protected static String ENCODING = "UTF-8";
     protected static String TYPE_FOLDER = "Folder";
     protected static String TYPE_ITEM = "Item";
@@ -479,9 +479,16 @@ public abstract class SimpleXmlServiceAction extends InfoGlueAbstractAction
 		        //TODO - this was a quickfix only
 		        if(!useTemplate && sup.getClass().getName().indexOf("Content") > -1)
 		        {
-		            ContentTypeDefinitionVO contentTypeDefinitionVO = contentController.getContentTypeDefinition(theNode.getId());
-		        	if(contentTypeDefinitionVO != null)
-		        	    elm.addAttribute("contentTypeId","" + contentTypeDefinitionVO.getContentTypeDefinitionId());
+		        	try
+		        	{
+			            ContentTypeDefinitionVO contentTypeDefinitionVO = contentController.getContentTypeDefinition(theNode.getId());
+			        	if(contentTypeDefinitionVO != null)
+			        	    elm.addAttribute("contentTypeId","" + contentTypeDefinitionVO.getContentTypeDefinitionId());
+		        	}
+		        	catch (Exception e) 
+		        	{
+						logger.error("The content " + theNode.getTitle() + " (" + theNode.getId() + " ) points to a removed content type perhaps: " + e.getMessage());
+					}
 		        }
 		    }
 			
