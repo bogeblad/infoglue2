@@ -48,6 +48,7 @@ import org.infoglue.cms.util.ConstraintExceptionBuffer;
 import org.infoglue.cms.util.sorters.ReflectionComparator;
 import org.infoglue.deliver.util.CacheController;
 import org.infoglue.deliver.util.NullObject;
+import org.infoglue.deliver.util.RequestAnalyser;
 import org.infoglue.deliver.util.Timer;
 
 public class RepositoryController extends BaseController
@@ -69,6 +70,14 @@ public class RepositoryController extends BaseController
         ent.setValueObject(vo);
         ent = (Repository) createEntity(ent);
         return ent.getValueObject();
+    }     
+
+    public Repository create(RepositoryVO vo, Database db) throws ConstraintException, SystemException, Exception
+    {
+        Repository ent = new RepositoryImpl();
+        ent.setValueObject(vo);
+        ent = (Repository) createEntity(ent, db);
+        return ent;
     }     
 
 	/**
@@ -475,6 +484,8 @@ public class RepositoryController extends BaseController
     
 	public boolean getIsAccessApproved(Integer repositoryId, InfoGluePrincipal infoGluePrincipal, boolean isBindingDialog, boolean allowIfWriteAccess) throws SystemException
 	{
+		Timer t = new Timer();
+		
 		logger.info("getIsAccessApproved for " + repositoryId + " AND " + infoGluePrincipal + " AND " + isBindingDialog);
 		boolean hasAccess = false;
     	
@@ -499,6 +510,8 @@ public class RepositoryController extends BaseController
 			rollbackTransaction(db);
 			throw new SystemException(e.getMessage());
 		}
+		RequestAnalyser.getRequestAnalyser().registerComponentStatistics("Reading access rights for Repository.Read", t.getElapsedTime());
+		//t.printElapsedTime("Reading access rights for:" + repositoryId);
 		
 		return hasAccess;
 	}	
