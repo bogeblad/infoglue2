@@ -71,6 +71,7 @@ import org.infoglue.cms.util.css.CSSHelper;
 import org.infoglue.cms.util.dom.DOMBuilder;
 import org.infoglue.deliver.applications.databeans.DeliveryContext;
 import org.infoglue.deliver.controllers.kernel.impl.simple.NodeDeliveryController;
+import org.infoglue.deliver.util.Timer;
 import org.w3c.dom.NodeList;
 
 import com.opensymphony.module.propertyset.PropertySet;
@@ -1404,20 +1405,24 @@ public class ViewContentVersionAction extends InfoGlueAbstractAction
 	 */
 	public List getAvailableCategories(Integer categoryId)
 	{
+		Timer t = new Timer();
+		List categories = Collections.EMPTY_LIST;
 		try
 		{	
 		    String protectCategories = CmsPropertyHandler.getProtectCategories();
 		    if(protectCategories != null && protectCategories.equalsIgnoreCase("true"))
-		        return categoryController.getAuthorizedActiveChildren(categoryId, this.getInfoGluePrincipal());
+		    	categories = categoryController.getAuthorizedActiveChildren(categoryId, this.getInfoGluePrincipal());
 			else
-			    return categoryController.findAllActiveChildren(categoryId);
+			    categories = categoryController.getActiveChildrenCategoryVOList(categoryId);
 		}
 		catch(Exception e)
 		{
 			logger.warn("We could not fetch the list of categories: " + e.getMessage(), e);
 		}
-
-		return Collections.EMPTY_LIST;
+		
+		//t.printElapsedTime("All available cats");
+		
+		return categories;
 	}
 
 	/**

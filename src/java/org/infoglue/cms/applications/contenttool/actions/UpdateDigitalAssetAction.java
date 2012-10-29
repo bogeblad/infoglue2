@@ -136,7 +136,8 @@ public class UpdateDigitalAssetAction extends ViewDigitalAssetAction
 			
 			this.digitalAssetKey = new String(this.digitalAssetKey.getBytes(fromEncoding), toEncoding);
 
-			DigitalAssetVO digitalAssetVO = ContentVersionController.getContentVersionController().checkStateAndChangeIfNeeded(contentVersionId, digitalAssetId, getInfoGluePrincipal());
+			List<Integer> newContentVersionIdList = new ArrayList<Integer>();
+			DigitalAssetVO digitalAssetVO = ContentVersionController.getContentVersionController().checkStateAndChangeIfNeeded(contentVersionId, digitalAssetId, getInfoGluePrincipal(), newContentVersionIdList);
     	    //DigitalAssetVO digitalAssetVO = DigitalAssetController.getDigitalAssetVOWithId(this.digitalAssetId);
     	    digitalAssetVO.setAssetKey(this.digitalAssetKey);
 
