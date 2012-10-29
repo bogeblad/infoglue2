@@ -110,6 +110,8 @@ public final class CmsContextListener implements ServletContextListener
 					cacheController.start();
 			}
 
+			new Thread(new Runnable() { public void run() {try {CacheController.preCacheCMSEntities();} catch (Exception e) {}}}).start();
+
 			System.out.println("Starting deliver instance monitoring");
 			LiveInstanceMonitor.getInstance();
 
