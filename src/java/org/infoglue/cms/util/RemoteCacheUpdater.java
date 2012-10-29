@@ -227,7 +227,6 @@ public class RemoteCacheUpdater implements NotificationListener
 				}
 			}
 	    }
-
 	}
 	
 
