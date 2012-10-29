@@ -391,18 +391,19 @@ public class UpdateCacheAction extends InfoGlueAbstractAction
 		    String typeId 	 	= this.getRequest().getParameter(i + ".typeId");
 		    String objectId  	= this.getRequest().getParameter(i + ".objectId");
 		    String objectName 	= this.getRequest().getParameter(i + ".objectName");
+		    //A very special parameter only used in working environments. Notifies what has changes more precisly
+		    String changedAttributeNames = this.getRequest().getParameter(i + ".changedAttributeNames");
+		    //System.out.println("changedAttributeNames:" + changedAttributeNames);
+		    
 		    while(className != null && !className.equals(""))
 		    {
 		    	logger.info("className:" + className);
 			    logger.info("objectId:" + objectId);
-			    System.out.println("className:" + className);
-			    System.out.println("objectId:" + objectId);
-			    
 			    Integer publicationId = -1;
 			    if(className.indexOf(PublicationImpl.class.getName()) > -1)
 			    	publicationId = Integer.parseInt(objectId);
 			    	
-		    	CacheEvictionBean cacheEvictionBean = new CacheEvictionBean(publicationId, userName, timestamp, className, typeId, objectId, objectName);
+		    	CacheEvictionBean cacheEvictionBean = new CacheEvictionBean(publicationId, userName, timestamp, className, typeId, objectId, objectName, changedAttributeNames);
 		    	newNotificationList.add(cacheEvictionBean);
 		    	/*
 		    	synchronized(CacheController.notifications)
@@ -419,6 +420,10 @@ public class UpdateCacheAction extends InfoGlueAbstractAction
 			    typeId 	 	= this.getRequest().getParameter(i + ".typeId");
 			    objectId  	= this.getRequest().getParameter(i + ".objectId");
 			    objectName 	= this.getRequest().getParameter(i + ".objectName");
+
+			    //A very special parameter only used in working environments. Notifies what has changes more precisly
+			    changedAttributeNames = this.getRequest().getParameter(i + ".changedAttributeNames");
+			    //System.out.println("changedAttributeNames:" + changedAttributeNames);
 		    }
 		    
 		    if(i == 0)
@@ -430,14 +435,15 @@ public class UpdateCacheAction extends InfoGlueAbstractAction
 			    objectId  	= this.getRequest().getParameter("objectId");
 			    objectName 	= this.getRequest().getParameter("objectName");
 			 
-			    System.out.println("className:" + className);
-			    System.out.println("objectId:" + objectId);
+			    //A very special parameter only used in working environments. Notifies what has changes more precisly
+			    changedAttributeNames = this.getRequest().getParameter(i + ".changedAttributeNames");
+			    //System.out.println("changedAttributeNames:" + changedAttributeNames);
 
 			    Integer publicationId = -1;
 			    if(className.indexOf(PublicationImpl.class.getName()) > -1)
 			    	publicationId = Integer.parseInt(objectId);
 
-			    CacheEvictionBean cacheEvictionBean = new CacheEvictionBean(publicationId, userName, timestamp, className, typeId, objectId, objectName);
+			    CacheEvictionBean cacheEvictionBean = new CacheEvictionBean(publicationId, userName, timestamp, className, typeId, objectId, objectName, changedAttributeNames);
 			    newNotificationList.add(cacheEvictionBean);
 			    /*
 			    synchronized(CacheController.notifications)
