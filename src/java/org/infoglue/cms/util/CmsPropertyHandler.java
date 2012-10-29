@@ -186,7 +186,7 @@ public class CmsPropertyHandler
 		    try
 		    {
 		    	propertySet = PropertySetManager.getInstance("jdbc", args);
-		    	logger.info("propertySet: " + propertySet);
+		    	//logger.info("propertySet: " + propertySet);
 		    }
 		    catch(Exception e)
 		    {
@@ -777,7 +777,7 @@ public class CmsPropertyHandler
 	
 	public static String getLivePublicationThreadClass() 
 	{
-		return getServerNodeProperty("livePublicationThreadClass", true, "org.infoglue.deliver.util.PublicationThread");
+		return getServerNodeProperty("livePublicationThreadClass", true, "org.infoglue.deliver.util.SelectiveLivePublicationThread");
 	}
 
 	public static String getPublicationThreadDelay()
@@ -1093,7 +1093,7 @@ public class CmsPropertyHandler
 			boolean newUseHashCodeInCaches = false;
 			try
 			{
-				newUseHashCodeInCaches = Boolean.parseBoolean(getServerNodeProperty("useHashCodeInCaches", true, "true", true));
+				newUseHashCodeInCaches = Boolean.parseBoolean(getServerNodeProperty("useHashCodeInCaches", true, "false", true));
 			}
 			catch(Exception e)
 			{
