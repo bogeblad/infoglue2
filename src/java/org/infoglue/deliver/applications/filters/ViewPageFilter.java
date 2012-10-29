@@ -33,6 +33,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 import java.util.StringTokenizer;
 
 import javax.servlet.Filter;
@@ -63,6 +64,7 @@ import org.infoglue.deliver.controllers.kernel.impl.simple.NodeDeliveryControlle
 import org.infoglue.deliver.controllers.kernel.impl.simple.RepositoryDeliveryController;
 import org.infoglue.deliver.util.CacheController;
 import org.infoglue.deliver.util.RequestAnalyser;
+import org.infoglue.deliver.util.Timer;
 
 /**
  *
@@ -110,23 +112,14 @@ public class ViewPageFilter implements Filter
 
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException 
     {       
+        Timer t = new Timer();
+
         long end, start = System.currentTimeMillis();
         HttpServletRequest httpRequest = (HttpServletRequest) servletRequest;
         HttpServletResponse httpResponse = (HttpServletResponse) servletResponse;
 
-        /*
-        if(RequestAnalyser.getBlockRequests() && 
-           httpRequest.getRequestURI().indexOf("UpdateCache") == -1 && 
-           httpRequest.getRequestURI().indexOf("ViewApplicationState") == -1)
-        {
-            logger.info("Maximum number of clients reached in ViewPageFilter. Responding with an error.");
-            httpResponse.setContentType("text/html; charset=UTF-8");
-     		httpRequest.setAttribute("responseCode", "503");
-     		httpRequest.getRequestDispatcher("/ErrorPage!busy.action").forward(httpRequest, httpResponse);
-
-            return;
-        }
-        */
+        if(httpRequest.getParameter("igEncodingTest") != null && !httpRequest.getParameter("igEncodingTest").equals(""))
+        	logger.warn("httpRequest:" + httpRequest.getParameter("name"));
         
         String enableNiceURI = CmsPropertyHandler.getEnableNiceURI();
         if (enableNiceURI == null)
@@ -171,14 +164,6 @@ public class ViewPageFilter implements Filter
         	
 	        if (enableNiceURI.equalsIgnoreCase("true") && !uriMatcher.matches(requestURI)) 
 	        {
-	            /*
-	        	synchronized(RequestAnalyser.getCurrentRequests())
-	        	{
-	        	    httpRequest.setAttribute("startTime", new Long(start));
-	        	    RequestAnalyser.getCurrentRequests().add(httpRequest);
-	        	}
-	        	*/
-	        	
 	            while(CmsPropertyHandler.getActuallyBlockOnBlockRequests() && RequestAnalyser.getRequestAnalyser().getBlockRequests())
 	            {
 	            	if(logger.isInfoEnabled())
@@ -190,7 +175,7 @@ public class ViewPageFilter implements Filter
 
 	            HttpSession httpSession = httpRequest.getSession(true);
 	
-	            List repositoryVOList = null;
+	            Set<RepositoryVO> repositoryVOList = null;
 	            Integer languageId = null;
 	
 	            Database db = CastorDatabaseService.getDatabase();
@@ -200,9 +185,11 @@ public class ViewPageFilter implements Filter
 	            try
 	            {
 	                repositoryVOList = getRepositoryId(httpRequest, db);
+	                if(logger.isInfoEnabled())
 	                logger.info("repositoryVOList:" + repositoryVOList.size());
 	                
-	                languageId = getLanguageId(httpRequest, httpSession, repositoryVOList, db);
+	            	languageId = getLanguageId(httpRequest, httpSession, repositoryVOList, requestURI, db);
+	                //languageId = getLanguageId(httpRequest, httpSession, repositoryVOList, db);
 	            
 		            Integer siteNodeId = null;
 	                if(languageId != null)
@@ -258,7 +245,9 @@ public class ViewPageFilter implements Filter
 		                    RepositoryVO repositoryVO = (RepositoryVO)repositorVOListIterator.next();
 		                    logger.info("Getting node from:" + repositoryVO.getName());
 		                    //TODO
-		                    siteNodeId = NodeDeliveryController.getSiteNodeIdFromPath(db, infoGluePrincipal, repositoryVO, nodeNames, attributeName, languageId, DeliveryContext.getDeliveryContext());
+		                    DeliveryContext deliveryContext = DeliveryContext.getDeliveryContext();
+	                    	siteNodeId = NodeDeliveryController.getSiteNodeIdFromPath(db, infoGluePrincipal, repositoryVO, nodeNames, attributeName, deliveryContext, httpSession, languageId);
+		                    //siteNodeId = NodeDeliveryController.getSiteNodeIdFromPath(db, infoGluePrincipal, repositoryVO, nodeNames, attributeName, languageId, DeliveryContext.getDeliveryContext());
 		                    if(siteNodeId != null)
 		                        break;
 		                }
@@ -281,7 +270,7 @@ public class ViewPageFilter implements Filter
 	        			extraInformation += "UserAgent: " + httpRequest.getHeader("User-Agent") + "\n";
 	        			extraInformation += "User IP: " + httpRequest.getRemoteAddr();
 	        			
-	        			logger.warn("Could not map URI " + requestURI + " against any page on this website." + "\n" + extraInformation);
+	        			logger.info("Could not map URI " + requestURI + " against any page on this website." + "\n" + extraInformation);
 	                    throw new ServletException("Could not map URI " + requestURI + " against any page on this website.");	                    	
 	                }
 	                else
@@ -358,6 +347,9 @@ public class ViewPageFilter implements Filter
 	        else
 	            logger.error("Error and response was committed:" + e.getMessage(), e);
 	    }
+        
+        if(httpRequest.getRequestURL().indexOf("digitalAssets") == -1)
+        	RequestAnalyser.getRequestAnalyser().registerComponentStatistics("ViewPageFilter", t.getElapsedTime());
     }
 
     public void destroy() 
@@ -373,7 +365,7 @@ public class ViewPageFilter implements Filter
         }
     }
 
-    private List getRepositoryId(HttpServletRequest request, Database db) throws ServletException, SystemException, Exception 
+    private Set<RepositoryVO> getRepositoryId(HttpServletRequest request, Database db) throws ServletException, SystemException, Exception 
     {
         /*
         if (session.getAttribute(FilterConstants.REPOSITORY_ID) != null) 
@@ -391,15 +383,15 @@ public class ViewPageFilter implements Filter
         logger.info("repositoryName:" + repositoryName);
 
         String repCacheKey = "" + serverName + "_" + portNumber + "_" + repositoryName;
-        List repositoryVOList = (List)CacheController.getCachedObject(uriCache.CACHE_NAME, repCacheKey);
+        Set<RepositoryVO> repositoryVOList = (Set<RepositoryVO>)CacheController.getCachedObject(uriCache.CACHE_NAME, repCacheKey);
         if (repositoryVOList != null) 
         {
             logger.info("Using cached repositoryVOList");
             return repositoryVOList;
         }
 
-        
-        List repositories = RepositoryDeliveryController.getRepositoryDeliveryController().getRepositoryVOListFromServerName(db, serverName, portNumber, repositoryName);
+        Set<RepositoryVO> repositories = RepositoryDeliveryController.getRepositoryDeliveryController().getRepositoryVOListFromServerName(db, serverName, portNumber, repositoryName);
+        if(logger.isInfoEnabled())
         logger.info("repositories:" + repositories);
                 
 
@@ -433,7 +425,7 @@ public class ViewPageFilter implements Filter
         return repositories;
     }
 
-    private Integer getLanguageId(HttpServletRequest request, HttpSession session, List repositoryVOList, Database db) throws ServletException, Exception 
+    private Integer getLanguageId(HttpServletRequest request, HttpSession session, Set<RepositoryVO> repositoryVOList, String requestURI, Database db) throws ServletException, Exception 
     {
         Integer languageId = null;
         if (request.getParameter("languageId") != null) 
@@ -457,7 +449,7 @@ public class ViewPageFilter implements Filter
 
         Integer repositoryId = null;
         if(repositoryVOList != null && repositoryVOList.size() > 0)
-            repositoryId = ((RepositoryVO)repositoryVOList.get(0)).getId();
+            repositoryId = ((RepositoryVO)repositoryVOList.toArray()[0]).getId();
         
         logger.info("Looking for languageId for repository " + repositoryId);
         Locale requestLocale = request.getLocale();

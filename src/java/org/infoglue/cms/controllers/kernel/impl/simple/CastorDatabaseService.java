@@ -63,6 +63,8 @@ public class CastorDatabaseService //extends DatabaseService
     {
         try
         {
+        	//Thread.dumpStack();
+            //System.out.println("Getting new databaseobject....");
             logger.info("Getting new databaseobject....");
             return getJDO().getDatabase();
         }

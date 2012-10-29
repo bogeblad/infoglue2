@@ -112,6 +112,53 @@ public class SiteNodeVersionController extends BaseController
     	deleteEntity(SiteNodeVersionImpl.class, siteNodeVersionVO.getSiteNodeVersionId());
     }        
 
+	/**
+	 * This method creates a new siteNodeVersion for the siteNode sent in.
+	 */
+	
+	public List<SiteNodeVersionVO> getSiteNodeVersionVOList(Integer siteNodeId) throws SystemException, Bug
+	{
+		List<SiteNodeVersionVO> siteNodeVersionVOList = new ArrayList<SiteNodeVersionVO>();
+		
+		Database db = CastorDatabaseService.getDatabase();
+        
+        beginTransaction(db);
+        try
+        {
+        	siteNodeVersionVOList = getSiteNodeVersionVOList(db, siteNodeId);
+            
+        	commitTransaction(db);
+        }
+        catch(Exception e)
+        {
+            logger.error("An error occurred so we should not completes the transaction:" + e, e);
+            throw new SystemException(e.getMessage());
+        }
+    	
+		return siteNodeVersionVOList;		
+	}
+
+	public List<SiteNodeVersionVO> getSiteNodeVersionVOList(Database db, Integer siteNodeId) throws SystemException, Bug, Exception
+    {
+		List<SiteNodeVersionVO> siteNodeVersionVOList = new ArrayList<SiteNodeVersionVO>();
+		
+	    OQLQuery oql = db.getOQLQuery( "SELECT snv FROM org.infoglue.cms.entities.structure.impl.simple.SmallSiteNodeVersionImpl snv WHERE snv.siteNodeId = $1 ORDER BY snv.siteNodeVersionId desc");
+		oql.bind(siteNodeId);
+		
+		QueryResults results = oql.execute(Database.ReadOnly);
+		
+		while(results.hasMore()) 
+	    {
+	    	SiteNodeVersion siteNodeVersion = (SiteNodeVersion)results.next();
+	    	siteNodeVersionVOList.add(siteNodeVersion.getValueObject());
+	    }
+
+		results.close();
+		oql.close();
+
+		return siteNodeVersionVOList;
+    }
+
     /**
      * This method removes the siteNodeVersion and also all associated bindings.
      * @param siteNodeVersion
@@ -365,6 +412,27 @@ public class SiteNodeVersionController extends BaseController
 		oql.bind(siteNodeId);
 		oql.bind(new Boolean(true));
 		
+		QueryResults results = oql.execute();
+		
+		if (results.hasMore()) 
+	    {
+	    	siteNodeVersion = (SiteNodeVersion)results.next();
+        }
+
+		results.close();
+		oql.close();
+
+		return siteNodeVersion;
+    }
+
+	public SiteNodeVersion getLatestActiveSiteNodeVersionReadOnly(Database db, Integer siteNodeId) throws SystemException, Bug, Exception
+    {
+	    SiteNodeVersion siteNodeVersion = null;
+	    
+	    OQLQuery oql = db.getOQLQuery( "SELECT cv FROM org.infoglue.cms.entities.structure.impl.simple.SiteNodeVersionImpl cv WHERE cv.owningSiteNode.siteNodeId = $1 AND cv.isActive = $2 ORDER BY cv.siteNodeVersionId desc");
+		oql.bind(siteNodeId);
+		oql.bind(new Boolean(true));
+		
 		QueryResults results = oql.execute(Database.ReadOnly);
 		
 		if (results.hasMore()) 
@@ -487,7 +555,7 @@ public class SiteNodeVersionController extends BaseController
 	 * This is a method used to get the latest site node version of a sitenode within a given transaction.
 	 */
 
-	public SiteNodeVersion getLatestSiteNodeVersion(Database db, Integer siteNodeId, boolean readOnly) throws SystemException, Bug
+	public SiteNodeVersion getLatestSiteNodeVersion(Database db, Integer siteNodeId, boolean ReadOnly) throws SystemException, Bug
 	{
 		ConstraintExceptionBuffer ceb = new ConstraintExceptionBuffer();
 
@@ -499,7 +567,7 @@ public class SiteNodeVersionController extends BaseController
 			oql.bind(siteNodeId);
         	
 			QueryResults results = null;
-			if(readOnly)
+			if(ReadOnly)
 			    results = oql.execute(Database.ReadOnly);
 			else
 			{
@@ -575,6 +643,48 @@ public class SiteNodeVersionController extends BaseController
     	return returnVO;
     }        
 
+    public SiteNodeVersion updateStateId(SiteNodeVersion siteNodeVersion, Integer stateId, String versionComment, InfoGluePrincipal infoGluePrincipal, Database db) throws ConstraintException, SystemException, Exception
+    {
+    	if(siteNodeVersion.getStateId().equals(stateId))
+    	{
+    		siteNodeVersion.setVersionComment(versionComment);
+    		siteNodeVersion.setVersionModifier(infoGluePrincipal.getName());
+    		return siteNodeVersion;
+    	}
+    	
+    	//Here we just updates the state if it's a publish-state-change.
+    	if(stateId.intValue() == 2)
+    	{    		
+    		siteNodeVersion.setStateId(stateId);
+    		siteNodeVersion.setVersionComment(versionComment);
+    		siteNodeVersion.setVersionModifier(infoGluePrincipal.getName());
+    	}
+
+    	//Here we create a new version if it was a state-change back to working
+    	if(stateId.intValue() == 0)
+    	{
+    		SiteNodeVersionVO siteNodeVersionVO = new SiteNodeVersionVO();
+    		siteNodeVersionVO.setContentType(siteNodeVersion.getContentType());
+    		siteNodeVersionVO.setDisableEditOnSight(siteNodeVersion.getDisableEditOnSight());
+    		siteNodeVersionVO.setDisableForceIdentityCheck(siteNodeVersion.getDisableForceIdentityCheck());
+    		siteNodeVersionVO.setForceProtocolChange(siteNodeVersion.getForceProtocolChange());
+    		siteNodeVersionVO.setDisableLanguages(siteNodeVersion.getDisableLanguages());
+    		siteNodeVersionVO.setDisablePageCache(siteNodeVersion.getDisablePageCache());
+    		siteNodeVersionVO.setIsActive(siteNodeVersion.getIsActive());
+    		siteNodeVersionVO.setIsCheckedOut(siteNodeVersion.getIsCheckedOut());
+    		siteNodeVersionVO.setIsProtected(siteNodeVersion.getIsProtected());
+    		siteNodeVersionVO.setPageCacheKey(siteNodeVersion.getPageCacheKey());
+    		siteNodeVersionVO.setPageCacheTimeout(siteNodeVersion.getPageCacheTimeout());
+    		siteNodeVersionVO.setVersionModifier(infoGluePrincipal.getName());
+    		siteNodeVersionVO.setVersionNumber(siteNodeVersion.getVersionNumber() + 1);
+    		siteNodeVersionVO.setStateId(stateId);
+			siteNodeVersionVO.setVersionComment(versionComment);
+			
+			siteNodeVersion = create(siteNodeVersion.getValueObject().getSiteNodeId(), infoGluePrincipal, siteNodeVersionVO, db);
+    	}
+    	
+    	return siteNodeVersion;
+    }        
 
 	public static void deleteVersionsForSiteNodeWithId(Integer siteNodeId) throws ConstraintException, SystemException, Bug
     {
@@ -745,7 +855,7 @@ public class SiteNodeVersionController extends BaseController
 	 * siteNodeTypeDefinition sent in
 	 */
 	
-	public static Collection getServiceBindningList(Integer siteNodeVersionId, Database db, boolean readOnly) throws ConstraintException, SystemException, Exception
+	public static Collection getServiceBindningList(Integer siteNodeVersionId, Database db, boolean ReadOnly) throws ConstraintException, SystemException, Exception
 	{
     	Collection serviceBindings = new ArrayList();
     		
@@ -754,7 +864,7 @@ public class SiteNodeVersionController extends BaseController
 
 		
     	QueryResults results = null;
-		if(readOnly)
+		if(ReadOnly)
 			results = oql.execute(Database.ReadOnly);
 		else
 			results = oql.execute();
@@ -918,6 +1028,29 @@ public class SiteNodeVersionController extends BaseController
 		return siteNodeVersionVO;
     }
 
+	public SiteNodeVersionVO getPreviousActiveSiteNodeVersionVO(Integer siteNodeId, Integer siteNodeVersionId) throws SystemException, Bug
+    {
+    	Database db = CastorDatabaseService.getDatabase();
+
+    	SiteNodeVersionVO siteNodeVersionVO = null;
+
+        beginTransaction(db);
+
+        try
+        {           
+        	siteNodeVersionVO = getPreviousActiveSiteNodeVersionVO(siteNodeId, siteNodeVersionId, db);
+
+			commitTransaction(db);
+        }
+        catch(Exception e)
+        {
+            logger.error("An error occurred so we should not completes the transaction:" + e, e);
+            rollbackTransaction(db);
+            throw new SystemException(e.getMessage());
+        }
+    	
+		return siteNodeVersionVO;
+    }
 
 	/**
 	 * This method returns the version previous to the one sent in.
@@ -975,6 +1108,59 @@ public class SiteNodeVersionController extends BaseController
     }
 
 	
+	public SiteNodeVersionVO getPreviousActiveSiteNodeVersionVO(Integer siteNodeId, Integer siteNodeVersionId, Integer stateId) throws SystemException, Bug
+    {
+    	Database db = CastorDatabaseService.getDatabase();
+
+    	SiteNodeVersionVO siteNodeVersionVO = null;
+
+        beginTransaction(db);
+
+        try
+        {           
+        	siteNodeVersionVO = getPreviousActiveSiteNodeVersionVO(siteNodeId, siteNodeVersionId, stateId, db);
+
+			commitTransaction(db);
+        }
+        catch(Exception e)
+        {
+            logger.error("An error occurred so we should not completes the transaction:" + e, e);
+            rollbackTransaction(db);
+            throw new SystemException(e.getMessage());
+        }
+    	
+		return siteNodeVersionVO;
+    }
+	
+	/**
+	 * This method returns the version previous to the one sent in.
+	 */
+	
+	public SiteNodeVersionVO getPreviousActiveSiteNodeVersionVO(Integer siteNodeId, Integer siteNodeVersionId, Integer stateId, Database db) throws SystemException, Bug, Exception
+    {
+    	SiteNodeVersionVO siteNodeVersionVO = null;
+
+    	OQLQuery oql = db.getOQLQuery( "SELECT cv FROM org.infoglue.cms.entities.structure.impl.simple.SmallSiteNodeVersionImpl cv WHERE cv.siteNodeId = $1 AND cv.isActive = $2 AND cv.stateId >= $3 AND cv.siteNodeVersionId < $4 ORDER BY cv.siteNodeVersionId desc");
+    	oql.bind(siteNodeId);
+    	oql.bind(new Boolean(true));
+    	oql.bind(stateId);
+    	oql.bind(siteNodeVersionId);
+
+    	QueryResults results = oql.execute(Database.ReadOnly);
+		
+		if (results.hasMore()) 
+        {
+        	SiteNodeVersion siteNodeVersion = (SiteNodeVersion)results.next();
+        	logger.info("found one:" + siteNodeVersion.getValueObject());
+        	siteNodeVersionVO = siteNodeVersion.getValueObject();
+        }
+    	
+		results.close();
+		oql.close();
+
+		return siteNodeVersionVO;
+    }
+
 	/**
 	 * Recursive methods to get all siteNodeVersions of a given state
 	 * under the specified parent siteNode including the given siteNode.
@@ -1089,12 +1275,12 @@ public class SiteNodeVersionController extends BaseController
         }
 	}
 
-	private void getSiteNodeAndAffectedItemsRecursive(SiteNodeVO siteNodeVO, Integer stateId, List checkedSiteNodes, List checkedContents, Database db, Set siteNodeVersionVOList, Set contentVersionVOList, boolean includeMetaInfo, InfoGluePrincipal principal) throws ConstraintException, SystemException, Exception
+	private void getSiteNodeAndAffectedItemsRecursive(SiteNodeVO siteNodeVO, Integer stateId, List checkedSiteNodes, List checkedContents, Database db, Set<SiteNodeVersionVO> siteNodeVersionVOList, Set<ContentVersionVO> contentVersionVOList, boolean includeMetaInfo, InfoGluePrincipal principal) throws ConstraintException, SystemException, Exception
 	{
 		getSiteNodeAndAffectedItemsRecursive(siteNodeVO, stateId, checkedSiteNodes, checkedContents, db, siteNodeVersionVOList, contentVersionVOList, includeMetaInfo, true, principal);
 	}
 	
-	private void getSiteNodeAndAffectedItemsRecursive(SiteNodeVO siteNodeVO, Integer stateId, List checkedSiteNodes, List checkedContents, Database db, Set siteNodeVersionVOList, Set contentVersionVOList, boolean includeMetaInfo, boolean recurseSiteNodes, InfoGluePrincipal principal) throws ConstraintException, SystemException, Exception
+	private void getSiteNodeAndAffectedItemsRecursive(SiteNodeVO siteNodeVO, Integer stateId, List checkedSiteNodes, List checkedContents, Database db, Set<SiteNodeVersionVO> siteNodeVersionVOList, Set<ContentVersionVO> contentVersionVOList, boolean includeMetaInfo, boolean recurseSiteNodes, InfoGluePrincipal principal) throws ConstraintException, SystemException, Exception
 	{
 	    checkedSiteNodes.add(siteNodeVO.getId());
         
@@ -1301,45 +1487,60 @@ public class SiteNodeVersionController extends BaseController
         List languages = LanguageController.getController().getLanguageList(siteNodeVersion.getOwningSiteNode().getRepository().getId(), db);
 		Language masterLanguage = LanguageController.getController().getMasterLanguage(db, siteNodeVersion.getOwningSiteNode().getRepository().getId());
 		
-		Integer metaInfoAvailableServiceBindingId = null;
-		Integer serviceBindingId = null;
-		AvailableServiceBindingVO availableServiceBindingVO = AvailableServiceBindingController.getController().getAvailableServiceBindingVOWithName("Meta information", db);
-		if(availableServiceBindingVO != null)
-			metaInfoAvailableServiceBindingId = availableServiceBindingVO.getAvailableServiceBindingId();
-		
-		Collection serviceBindings = siteNodeVersion.getServiceBindings();
-		Iterator serviceBindingIterator = serviceBindings.iterator();
-		while(serviceBindingIterator.hasNext())
+		if(siteNodeVersion.getOwningSiteNode().getMetaInfoContentId() != null)
 		{
-			ServiceBinding serviceBinding = (ServiceBinding)serviceBindingIterator.next();
-			if(serviceBinding.getAvailableServiceBinding().getId().intValue() == metaInfoAvailableServiceBindingId.intValue())
+			Iterator languageIterator = languages.iterator();
+			while(languageIterator.hasNext())
 			{
-				serviceBindingId = serviceBinding.getId();
-				break;
+				Language language = (Language)languageIterator.next();
+				ContentVersion contentVersion = ContentVersionController.getContentVersionController().getLatestActiveContentVersion(siteNodeVersion.getOwningSiteNode().getMetaInfoContentId(), language.getId(), db);
+				if(contentVersion != null)
+				    contentVersions.add(contentVersion);
 			}
 		}
-
-		if(serviceBindingId != null)
+		else
 		{
-			List boundContents = ContentController.getBoundContents(serviceBindingId); 
-			if(boundContents.size() > 0)
+			Integer metaInfoAvailableServiceBindingId = null;
+			Integer serviceBindingId = null;
+			AvailableServiceBindingVO availableServiceBindingVO = AvailableServiceBindingController.getController().getAvailableServiceBindingVOWithName("Meta information", db);
+			if(availableServiceBindingVO != null)
+				metaInfoAvailableServiceBindingId = availableServiceBindingVO.getAvailableServiceBindingId();
+			
+			Collection serviceBindings = siteNodeVersion.getServiceBindings();
+			Iterator serviceBindingIterator = serviceBindings.iterator();
+			while(serviceBindingIterator.hasNext())
 			{
-				ContentVO contentVO = (ContentVO)boundContents.get(0);
-				
-				Iterator languageIterator = languages.iterator();
-				while(languageIterator.hasNext())
+				ServiceBinding serviceBinding = (ServiceBinding)serviceBindingIterator.next();
+				if(serviceBinding.getAvailableServiceBinding().getId().intValue() == metaInfoAvailableServiceBindingId.intValue())
 				{
-					Language language = (Language)languageIterator.next();
-					ContentVersion contentVersion = ContentVersionController.getContentVersionController().getLatestActiveContentVersion(contentVO.getId(), language.getId(), db);
+					serviceBindingId = serviceBinding.getId();
+					break;
+				}
+			}
+	
+			if(serviceBindingId != null)
+			{
+				List boundContents = ContentController.getBoundContents(serviceBindingId); 
+				if(boundContents.size() > 0)
+				{
+					ContentVO contentVO = (ContentVO)boundContents.get(0);
 					
-					if(contentVersion != null)
-					    contentVersions.add(contentVersion);
+					Iterator languageIterator = languages.iterator();
+					while(languageIterator.hasNext())
+					{
+						Language language = (Language)languageIterator.next();
+						ContentVersion contentVersion = ContentVersionController.getContentVersionController().getLatestActiveContentVersion(contentVO.getId(), language.getId(), db);
+						
+						if(contentVersion != null)
+						    contentVersions.add(contentVersion);
+					}
 				}
 			}
 		}
 		
 		return contentVersions;
     }
+
 
 	
 	/**

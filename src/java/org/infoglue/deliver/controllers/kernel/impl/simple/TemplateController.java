@@ -451,7 +451,7 @@ public interface TemplateController
      */
 
 	public String getContentAttributeWithReturningId(Integer contentId, 
-	        Integer languageId, String attributeName, boolean clean, Set contentVersionId);
+	        Integer languageId, String attributeName, boolean clean, Set contentVersionId, Set<String> usedContentEntities);
 
     /**
      * This method deliveres a String with the content-attribute asked for if it exists in the content

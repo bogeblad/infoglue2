@@ -383,7 +383,7 @@ public class NodeDeliveryController extends BaseDeliveryController
 	 * This method returns the SiteNodeVO that is sent in.
 	 */
 	
-	public SiteNodeVO getSiteNodeVO(Database db, Integer siteNodeId) throws SystemException
+	public SiteNodeVO getSiteNodeVO(Database db, Integer siteNodeId) throws SystemException, Exception
 	{
 		if(siteNodeId == null || siteNodeId.intValue() < 1)
 			return null;
@@ -391,7 +391,9 @@ public class NodeDeliveryController extends BaseDeliveryController
 		if(deliveryContext != null)
 			deliveryContext.addUsedSiteNode(CacheController.getPooledString(3, siteNodeId));
 
-		return SiteNodeController.getController().getSiteNodeVOWithId(siteNodeId, db);
+		SiteNodeVO siteNodeVO = SiteNodeController.getController().getSiteNodeVOWithId(siteNodeId, db);
+
+		return siteNodeVO;
 	}
 
 	/**
@@ -589,7 +591,7 @@ public class NodeDeliveryController extends BaseDeliveryController
 	 * This method returns the SiteNodeVO that is the parent to the one sent in.
 	 */
 	
-	public SiteNodeVO getParentSiteNode(Database db, Integer siteNodeId) throws SystemException
+	public SiteNodeVO getParentSiteNode(Database db, Integer siteNodeId) throws SystemException, Exception
 	{
 		String key = "" + siteNodeId;
 		
@@ -615,8 +617,7 @@ public class NodeDeliveryController extends BaseDeliveryController
 			//SiteNode parentSiteNode = siteNode.getParentSiteNode();
             if(siteNode.getParentSiteNodeId() != null)		
             {
-            	parentSiteNodeVO = SiteNodeController.getController().getSiteNodeVOWithId(siteNode.getParentSiteNodeId(), db);
-                //parentSiteNodeVO = parentSiteNode.getValueObject();
+                parentSiteNodeVO = getSiteNodeVO(db, siteNode.getParentSiteNodeId());
             	CacheController.cacheObject("parentSiteNodeCache", key, parentSiteNodeVO);
     		}
             else
@@ -632,7 +633,7 @@ public class NodeDeliveryController extends BaseDeliveryController
 	 * This method returns the SiteNodeVO that is the parent to the one sent in.
 	 */
 	
-	public SiteNodeVO getParentSiteNodeForPageCache(Database db, Integer siteNodeId) throws SystemException
+	public SiteNodeVO getParentSiteNodeForPageCache(Database db, Integer siteNodeId) throws SystemException, Exception
 	{
 		if(siteNodeId != null && this.deliveryContext != null)
 			this.deliveryContext.addUsedSiteNode(CacheController.getPooledString(3, siteNodeId));
@@ -1281,6 +1282,8 @@ public class NodeDeliveryController extends BaseDeliveryController
 			}
 			else
 			{
+				boundContentVOList = new ArrayList();
+				
 				if(availableServiceBindingName.equalsIgnoreCase("Meta information"))
 					logger.warn("Entering the old logic - bad for performance - why is siteNode with id:" + siteNodeId + " not getting it's metaInfoContentId:" + metaInfoContentId);
 
@@ -1803,7 +1806,8 @@ public class NodeDeliveryController extends BaseDeliveryController
         
         if(attributeName.equals("SiteNode.name"))
         {
-            SiteNode siteNode = this.getSiteNode(db, siteNodeId);
+            SiteNodeVO siteNode = this.getSiteNodeVO(db, siteNodeId);
+            //SiteNode siteNode = this.getSiteNode(db, siteNodeId);
             pathPart = siteNode.getName();
         }
         else
@@ -1921,7 +1925,7 @@ public class NodeDeliveryController extends BaseDeliveryController
     }
     */
     
-    public static Integer getSiteNodeIdFromPath(InfoGluePrincipal infogluePrincipal, RepositoryVO repositoryVO, String[] path, String attributeName, Integer languageId, DeliveryContext deliveryContext) throws SystemException, Exception
+    public static Integer getSiteNodeIdFromPath(InfoGluePrincipal infogluePrincipal, RepositoryVO repositoryVO, String[] path, String attributeName, DeliveryContext deliveryContext, HttpSession session, Integer languageId) throws SystemException, Exception
     {
         Integer siteNodeId = null;
         Database db = CastorDatabaseService.getDatabase();
@@ -1930,7 +1934,7 @@ public class NodeDeliveryController extends BaseDeliveryController
 
 		try
 		{
-			siteNodeId = getSiteNodeIdFromPath(db, infogluePrincipal, repositoryVO, path, attributeName, languageId, deliveryContext);
+			siteNodeId = getSiteNodeIdFromPath(db, infogluePrincipal, repositoryVO, path, attributeName, deliveryContext, session, languageId);
 	        commitTransaction(db);
 	    }
 		catch(Exception e)
@@ -1948,172 +1952,10 @@ public class NodeDeliveryController extends BaseDeliveryController
 	    return siteNodeId;
 
 			
-		/*
-        Integer siteNodeId = null;
-
-        Database db = CastorDatabaseService.getDatabase();
-		
-		beginTransaction(db);
-
-		try
-		{
-	        URIMapperCache uriCache = URIMapperCache.getInstance();
-	
-	        int numberOfPaths = path.length;
-	        while (numberOfPaths >= 0) 
-	        {
-	        	//logger.info("Looking for cached nodeName at index "+idx);
-	            siteNodeId = uriCache.getCachedSiteNodeId(repositoryVO.getId(), path, numberOfPaths);
-
-	            if (siteNodeId != null)
-	                break;
-
-	            numberOfPaths = numberOfPaths - 1;
-	        }
-	        
-	        String repositoryPath = null;
-	    	
-	    	if(!CmsPropertyHandler.getOperatingMode().equals("3"))
-	    	{
-		    	int workingPathStartIndex = repositoryVO.getDnsName().indexOf("workingPath=");
-		    	if(workingPathStartIndex != -1)
-		    	{
-		    		int workingPathEndIndex = repositoryVO.getDnsName().indexOf(",", workingPathStartIndex);
-		    		if(workingPathEndIndex > -1)
-			    		repositoryPath = repositoryVO.getDnsName().substring(workingPathStartIndex + 12, workingPathEndIndex);
-		    		else
-		    			repositoryPath = repositoryVO.getDnsName().substring(workingPathStartIndex + 12);
-		    	}
-	    	}
-
-	    	if(repositoryPath == null)
-	    	{
-	        	int pathStartIndex = repositoryVO.getDnsName().indexOf("path=");
-	        	if(pathStartIndex != -1)
-	        	{
-	        		int pathEndIndex = repositoryVO.getDnsName().indexOf(",", pathStartIndex);
-		    		if(pathEndIndex > -1)
-			    		repositoryPath = repositoryVO.getDnsName().substring(pathStartIndex + 5, pathEndIndex);
-		    		else
-		    			repositoryPath = repositoryVO.getDnsName().substring(pathStartIndex + 5);
-	        	}
-	    	}
-	    	
-			if(logger.isInfoEnabled())
-			{
-		    	logger.info("repositoryPath:" + repositoryPath);    	
-		    	logger.info("path:" + path.length);    	
-			}
-			
-	    	if(repositoryPath != null && path.length <= 0)
-	    	{
-	    		if(logger.isInfoEnabled())
-	    			logger.info("There was a repository path:" + repositoryPath + " but the path.length was " + path.length + " so this repository should be excluded.");
-	    		return null;
-	    	}
-
-	    	if(repositoryPath != null && path.length > 0)
-	    	{
-	    		String[] repositoryPaths = repositoryPath.split("/");
-	    		for(int i=0; i<repositoryPaths.length; i++)
-	    		{
-	    			String repositoryPathPart = repositoryPaths[i];
-	    			String pathPart = path[i];
-	    			if(logger.isInfoEnabled())
-	    			{
-	    				logger.info("repositoryPathPart:" + repositoryPathPart);
-	    				logger.info("pathPart:" + pathPart);
-	    			}
-	    			
-	    			if(!repositoryPathPart.equalsIgnoreCase(pathPart))
-	    			{
-	    				if(logger.isInfoEnabled())
-	    	    			logger.info("Could not match the repository paths so this repository should be excluded.");
-	    				return null;
-	    			}
-	    		}
-	    	}
-	    	
-	    	if(repositoryPath != null && path.length > 0)
-	    	{
-	    		String[] repositoryPaths = repositoryPath.split("/");
-	    		String[] newPath = path;
-	    		
-	    		if(logger.isInfoEnabled())
-	    		{
-	    			logger.info("repositoryPaths:" + repositoryPaths.length); 
-		    		logger.info("newPath:" + newPath.length); 
-	    		}
-	    		
-	    		for(int repPathIndex = 0; repPathIndex < repositoryPaths.length; repPathIndex++)
-	    		{
-	    			String repPath = repositoryPaths[repPathIndex];
-    	    		if(logger.isInfoEnabled())
-    	    			logger.info("repPath:" + repPath);
-	    	    	if(path.length > repPathIndex)
-	    	    	{
-	    	    		if(logger.isInfoEnabled())
-	    	    			logger.info("path:" + path[repPathIndex]);
-	    		    	if(path[repPathIndex].equals(repPath))
-	    		    	{
-	    		    		String[] tempNewPath = new String[newPath.length - 1];
-	    		    		for(int i=1; i<newPath.length; i++)
-	    		    			tempNewPath[i-1] = newPath[i];
-	    		    		
-	    		    		newPath = tempNewPath;
-	    		    	}    	    		
-	    	    	}
-	    		}
-	    		path = newPath;
-	    	}
-	    	
-	    	if(logger.isInfoEnabled())
-	    	{
-			   	logger.info("new path:" + path.length);
-		        logger.info("numberOfPaths = "+numberOfPaths);
-	    	}
-	    
-	        for (int i = numberOfPaths;i < path.length; i++) 
-	        {
-	            if (i < 0) 
-	            {
-	  	    		if(logger.isInfoEnabled())
-		    	        logger.info("Getting root node");
-	                siteNodeId = NodeDeliveryController.getNodeDeliveryController(null, null, null).getSiteNodeId(db, infogluePrincipal, repositoryVO.getId(), null, attributeName, null, languageId, deliveryContext);
-	            } 
-	            else 
-	            {
-	  	    		if(logger.isInfoEnabled())
-		    	        logger.info("Getting normal");
-	                siteNodeId = NodeDeliveryController.getNodeDeliveryController(null, null, null).getSiteNodeId(db, infogluePrincipal, repositoryVO.getId(), path[i], attributeName, siteNodeId, languageId, deliveryContext);
-	            }
-
-	            if (siteNodeId != null)
-	                uriCache.addCachedSiteNodeId(repositoryVO.getId(), path, i+1, siteNodeId);
-	        }
-
-	        commitTransaction(db);
-	    }
-		catch(Exception e)
-		{
-			logger.error("An error occurred so we should not complete the transaction:" + e, e);
-			rollbackTransaction(db);
-			throw new SystemException(e.getMessage());
-		}
-		finally
-		{
-			rollbackTransaction(db);
-			closeDatabase(db);
-		}
-		
-        return siteNodeId;
-        */
     }
     
-    public static Integer getSiteNodeIdFromPath(Database db, InfoGluePrincipal infogluePrincipal, RepositoryVO repositoryVO, String[] path, String attributeName, Integer languageId, DeliveryContext deliveryContext) throws SystemException, Exception
+    public static Integer getSiteNodeIdFromPath(Database db, InfoGluePrincipal infogluePrincipal, RepositoryVO repositoryVO, String[] path, String attributeName, DeliveryContext deliveryContext, HttpSession session, Integer languageId) throws SystemException, Exception
     {
-    	Timer t = new Timer();
-    	
         Integer siteNodeId = null;
 
         URIMapperCache uriCache = URIMapperCache.getInstance();
@@ -2123,17 +1965,8 @@ public class NodeDeliveryController extends BaseDeliveryController
         {
         	//logger.info("Looking for cached nodeName at index "+idx);
             siteNodeId = uriCache.getCachedSiteNodeId(repositoryVO.getId(), path, numberOfPaths);
-            //System.out.println("siteNodeId:" + siteNodeId);
             if (siteNodeId != null)
-            {
-            	/*
-            	if(siteNodeId > 0)
-            		return siteNodeId;
-        		else
-        			return null;
-            	*/
             	break;
-            }
 
             numberOfPaths = numberOfPaths - 1;
         }
@@ -2185,6 +2018,12 @@ public class NodeDeliveryController extends BaseDeliveryController
     		for(int i=0; i<repositoryPaths.length; i++)
     		{
     			String repositoryPathPart = repositoryPaths[i];
+    			if(path.length <= i)
+    			{
+    				logger.error("Could not match the repository paths so this repository should be excluded.");
+    				return null;
+    			}
+    			
     			String pathPart = path[i];
     			if(logger.isInfoEnabled())
     			{
@@ -2327,10 +2166,16 @@ public class NodeDeliveryController extends BaseDeliveryController
 
         String key = "" + repositoryId;
 		logger.info("key in getRootSiteNode:" + key);
-		siteNodeVO = (SiteNodeVO)CacheController.getCachedObject("rootSiteNodeCache", key);
-		if(siteNodeVO != null)
+		Object siteNodeVOCandidate = CacheController.getCachedObject("rootSiteNodeCache", key);
+		if(siteNodeVOCandidate != null || siteNodeVOCandidate instanceof NullObject)
 		{
-		    logger.info("There was an cached master root siteNode:" + siteNodeVO.getName());
+			if(siteNodeVOCandidate instanceof SiteNodeVO)
+			{
+				logger.info("There was an cached master root siteNode:" + ((SiteNodeVO)siteNodeVOCandidate).getName());
+				return (SiteNodeVO)siteNodeVOCandidate;
+			}
+			else
+				return null;
 		}
 		else
 		{
@@ -2339,7 +2184,7 @@ public class NodeDeliveryController extends BaseDeliveryController
 				repositoryId = RepositoryDeliveryController.getRepositoryDeliveryController().getMasterRepository(db).getRepositoryId();
 				logger.info("Fetched name of master repository as none were given:" + repositoryId);
 			}
-			System.out.println("Getting root siteNode");
+			
 	        logger.info("Fetching the root siteNode for the repository " + repositoryId);
 			//OQLQuery oql = db.getOQLQuery( "SELECT c FROM org.infoglue.cms.entities.structure.impl.simple.SiteNodeImpl c WHERE is_undefined(c.parentSiteNode) AND c.repository = $1");
 			OQLQuery oql = db.getOQLQuery( "SELECT c FROM org.infoglue.cms.entities.structure.impl.simple.SmallSiteNodeImpl c WHERE is_undefined(c.parentSiteNode) AND c.repositoryId = $1");
@@ -2359,20 +2204,138 @@ public class NodeDeliveryController extends BaseDeliveryController
 
 			if(logger.isInfoEnabled())
 				logger.info("siteNodeVO:" + siteNodeVO);
-
-			CacheController.cacheObject("rootSiteNodeCache", key, siteNodeVO);
+			
+			if(siteNodeVO != null)
+				CacheController.cacheObject("rootSiteNodeCache", key, siteNodeVO);
+			else
+				CacheController.cacheObject("rootSiteNodeCache", key, new NullObject());
 		}
 
         return siteNodeVO;	
 	}
 
 
-	
 	/**
 	 * This method returns the list of siteNodeVO which is children to this one.
 	 */
 	
 	public List getChildSiteNodes(Database db, Integer siteNodeId) throws SystemException, Exception
+	{
+		//logger.warn("getChildSiteNodes:" + siteNodeId);
+
+    	if(siteNodeId == null)
+		{
+			return null;
+		}
+    	
+        String key = "" + siteNodeId + "_" + false;
+        logger.info("key in getChildSiteNodes:" + key);
+		List siteNodeVOList = (List)CacheController.getCachedObjectFromAdvancedCache("childSiteNodesCache", key);
+
+		if(siteNodeVOList == null)
+		{
+			SiteNodeVO parentSiteNodeVO = getSiteNodeVO(db, siteNodeId);
+			if(parentSiteNodeVO != null && parentSiteNodeVO.getChildCount() != null && parentSiteNodeVO.getChildCount() == 0)
+			{
+				//logger.info("Skipping node as it has no children...");
+				return new ArrayList();
+			}
+		}
+
+		
+		if(siteNodeVOList != null)
+		{
+			logger.info("There was a cached list of child sitenodes:" + siteNodeVOList.size());
+		}
+		else
+		{
+	   		//logger.info("Querying for children to siteNode " + siteNodeId);
+	   		Timer t = new Timer();
+	   		
+	        siteNodeVOList = new ArrayList();
+		    
+	        StringBuffer SQL = new StringBuffer();
+	    	if(CmsPropertyHandler.getUseShortTableNames() != null && CmsPropertyHandler.getUseShortTableNames().equalsIgnoreCase("true"))
+	    	{
+		   		SQL.append("CALL SQL select sn.siNoId, sn.name, sn.publishDateTime, sn.expireDateTime, sn.isBranch, sn.parentSiNoId, sn.metaInfoContentId, sn.repositoryId, sn.siNoTypeDefId, sn.creator, (select count(*) from cmSiNo sn2 where sn2.parentSiNoId = sn.siNoId) AS childCount, snv.stateId, snv.isProtected from cmSiNo sn, cmSiNoVer snv ");
+		   		SQL.append("where ");
+		   		SQL.append("sn.parentSiNoId = $1 ");
+		   		SQL.append("AND snv.siNoId = sn.siNoId ");
+		   		SQL.append("AND snv.siNoVerId = ( ");
+		   		SQL.append("	select max(siNoVerId) from cmSiNoVer snv2 ");
+		   		SQL.append("	WHERE ");
+		   		SQL.append("	snv2.siNoId = snv.siNoId AND ");
+		   		SQL.append("	snv2.isActive = $2 AND snv2.stateId >= $3 ");
+		   		SQL.append("	) ");
+		   		SQL.append("order by snv.sortOrder ASC, sn.name ASC, sn.siNoId DESC AS org.infoglue.cms.entities.structure.impl.simple.SmallestSiteNodeImpl");
+	    	}
+	    	else
+	    	{
+		   		SQL.append("CALL SQL select sn.siteNodeId, sn.name, sn.publishDateTime, sn.expireDateTime, sn.isBranch, sn.parentSiteNodeId, sn.metaInfoContentId, sn.repositoryId, sn.siteNodeTypeDefinitionId, sn.creator, (select count(*) from cmSiteNode sn2 where sn2.parentSiteNodeId = sn.siteNodeId) AS childCount, snv.stateId, snv.isProtected from cmSiteNode sn, cmSiteNodeVersion snv ");
+		   		SQL.append("where ");
+		   		SQL.append("sn.parentSiteNodeId = $1 ");
+		   		SQL.append("AND snv.siteNodeId = sn.siteNodeId ");
+		   		SQL.append("AND snv.siteNodeVersionId = ( ");
+		   		SQL.append("	select max(siteNodeVersionId) from cmSiteNodeVersion snv2 ");
+		   		SQL.append("	WHERE ");	
+		   		SQL.append("	snv2.siteNodeId = snv.siteNodeId AND ");
+		   		SQL.append("	snv2.isActive = $2 AND snv2.stateId >= $3 ");
+		   		SQL.append("	) ");
+		   		SQL.append("order by snv.sortOrder ASC, sn.name ASC, sn.siteNodeId DESC AS org.infoglue.cms.entities.structure.impl.simple.SmallestSiteNodeImpl");    		
+	    	}
+
+	    	//logger.info("SQL:" + SQL);
+	    	//logger.info("siteNodeId:" + siteNodeId);
+	    	OQLQuery oql = db.getOQLQuery(SQL.toString());
+			oql.bind(siteNodeId);
+			oql.bind(true);
+			oql.bind(getOperatingMode());
+	    	
+	    	QueryResults results = oql.execute(Database.ReadOnly);
+	    	//RequestAnalyser.getRequestAnalyser().registerComponentStatistics("getChildSiteNodes part 1", t.getElapsedTime());
+	    	
+			while (results.hasMore()) 
+	        {
+	        	SiteNode siteNode = (SiteNode)results.next();
+				if(isValidSiteNode(siteNode, db))
+	        	{
+	        		siteNodeVOList.add(siteNode.getValueObject());
+				}
+	    	}
+	    	//RequestAnalyser.getRequestAnalyser().registerComponentStatistics("getChildSiteNodes part 2", t.getElapsedTime());
+
+			results.close();
+			oql.close();
+			
+	        /*
+	        OQLQuery oql = db.getOQLQuery( "SELECT s FROM org.infoglue.cms.entities.structure.impl.simple.SmallSiteNodeImpl s WHERE s.parentSiteNode.siteNodeId = $1 ORDER BY s.siteNodeId");
+			oql.bind(siteNodeId);
+	        */
+	        /*
+		    SiteNode siteNode = getSiteNode(db, siteNodeId);
+	        
+			Iterator childrenIterator = siteNode.getChildSiteNodes().iterator();
+			while (childrenIterator.hasNext()) 
+	        {
+	        	SiteNode childSiteNode = (SiteNode)childrenIterator.next();
+				
+	        	if(isValidSiteNode(childSiteNode, db))
+	        	    siteNodeVOList.add(childSiteNode.getValueObject());
+			}
+	        */
+	        
+			CacheController.cacheObjectInAdvancedCache("childSiteNodesCache", key, siteNodeVOList, new String[] {CacheController.getPooledString(3, siteNodeId)}, true);
+		}
+				
+		return siteNodeVOList;	
+	}
+
+	
+	/**
+	 * This method returns the list of siteNodeVO which is children to this one.
+	 */
+	
+	public List getChildSiteNodesOld(Database db, Integer siteNodeId) throws SystemException, Exception
 	{
 		//logger.warn("getChildSiteNodes:" + siteNodeId);
 

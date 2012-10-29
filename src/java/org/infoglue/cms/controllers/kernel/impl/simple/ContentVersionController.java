@@ -35,6 +35,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.xerces.parsers.DOMParser;
@@ -64,7 +65,10 @@ import org.infoglue.cms.entities.management.RegistryVO;
 import org.infoglue.cms.entities.management.impl.simple.LanguageImpl;
 import org.infoglue.cms.entities.publishing.PublicationVO;
 import org.infoglue.cms.entities.structure.SiteNode;
+import org.infoglue.cms.entities.structure.SiteNodeVO;
 import org.infoglue.cms.entities.structure.SiteNodeVersion;
+import org.infoglue.cms.entities.structure.SiteNodeVersionVO;
+import org.infoglue.cms.entities.structure.impl.simple.SiteNodeVersionImpl;
 import org.infoglue.cms.entities.workflow.EventVO;
 import org.infoglue.cms.exception.Bug;
 import org.infoglue.cms.exception.ConstraintException;
@@ -74,6 +78,7 @@ import org.infoglue.cms.util.CmsPropertyHandler;
 import org.infoglue.cms.util.ConstraintExceptionBuffer;
 import org.infoglue.cms.util.DateHelper;
 import org.infoglue.deliver.util.CacheController;
+import org.infoglue.deliver.util.Timer;
 import org.w3c.dom.CDATASection;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
@@ -139,6 +144,11 @@ public class ContentVersionController extends BaseController
 		return (ContentVersionVO) getVOWithId(ContentVersionImpl.class, contentVersionId);
     }
 
+    public ContentVersionVO getFullContentVersionVOWithId(Integer contentVersionId, Database db) throws SystemException, Bug
+    {
+		return (ContentVersionVO) getVOWithId(ContentVersionImpl.class, contentVersionId, db);
+    }
+
     public ContentVersionVO getContentVersionVOWithId(Integer contentVersionId) throws SystemException, Bug
     {
 		return (ContentVersionVO) getVOWithId(SmallContentVersionImpl.class, contentVersionId);
@@ -162,6 +172,24 @@ public class ContentVersionController extends BaseController
     public SmallestContentVersionVO getSmallestContentVersionVOWithId(Integer contentVersionId, Database db) throws SystemException, Bug
     {
 		return (SmallestContentVersionVO) getVOWithId(SmallestContentVersionImpl.class, contentVersionId, db);
+    }
+
+    /**
+	 * This method gets the siteNodeVO with the given id
+	 */
+	 
+    public ContentVersionVO getSmallContentVersionVOWithId(Integer contentVersionId, Database db) throws SystemException, Bug
+    {
+    	String key = "" + contentVersionId;
+		ContentVersionVO contentVersionVO = (ContentVersionVO)CacheController.getCachedObjectFromAdvancedCache("contentVersionCache", key);
+		if(contentVersionVO == null)
+		{
+			contentVersionVO = (ContentVersionVO)getVOWithId(SmallContentVersionImpl.class, contentVersionId, db);
+			if(contentVersionVO != null)
+				CacheController.cacheObjectInAdvancedCache("contentVersionCache", key, contentVersionVO);
+		}
+		
+		return contentVersionVO;
     }
 
     public List getContentVersionVOList() throws SystemException, Bug
@@ -502,6 +530,34 @@ public class ContentVersionController extends BaseController
 	 * This method returns the latest active content version.
 	 */
     
+   	public ContentVersionVO getLatestActiveContentVersionVO(Integer contentId, Integer languageId, Integer stateId) throws SystemException, Bug
+    {
+    	Database db = CastorDatabaseService.getDatabase();
+    	ContentVersionVO contentVersionVO = null;
+
+        beginTransaction(db);
+
+        try
+        {
+        	contentVersionVO = getLatestActiveContentVersionVO(contentId, languageId, stateId, db);
+            
+            rollbackTransaction(db);
+        }
+        catch(Exception e)
+        {
+            logger.error("An error occurred so we should not complete the transaction:" + e);
+            logger.warn("An error occurred so we should not complete the transaction:" + e, e);
+            rollbackTransaction(db);
+            throw new SystemException(e.getMessage());
+        }
+    	
+		return contentVersionVO;
+    }
+
+   	/**
+	 * This method returns the latest active content version.
+	 */
+    
 	public ContentVersionVO getLatestActiveContentVersionVO(Integer contentId, Integer languageId, Integer stateId, Database db) throws SystemException, Bug, Exception
 	{
     	ContentVersionVO contentVersionVO = null;
@@ -521,15 +577,96 @@ public class ContentVersionController extends BaseController
     
 	public ContentVersionVO getLatestActiveContentVersionVO(Integer contentId, Integer languageId, Database db) throws SystemException, Bug, Exception
 	{
-    	ContentVersionVO contentVersionVO = null;
+		String contentVersionKey = "contentVersionVO_" + contentId + "_" + languageId + "_active";
+		ContentVersionVO contentVersionVO = (ContentVersionVO)CacheController.getCachedObjectFromAdvancedCache("contentVersionCache", contentVersionKey);
+		if(contentVersionVO != null)
+		{
+			//logger.info("There was an cached contentVersionVO:" + contentVersionVO.getContentVersionId());
+		}
+		else
+		{
+			if(logger.isInfoEnabled())
+				logger.info("Querying for contentVersionVO:" + contentVersionKey);
 
-       	ContentVersion contentVersion = getLatestActiveContentVersionReadOnly(contentId, languageId, db);
-            
-        if(contentVersion != null)
-            contentVersionVO = contentVersion.getValueObject();
-    	
+			//ContentVersionVO contentVersionVO = null;
+	
+	        OQLQuery oql = db.getOQLQuery( "SELECT cv FROM org.infoglue.cms.entities.content.impl.simple.SmallContentVersionImpl cv WHERE cv.contentId = $1 AND cv.languageId = $2 AND cv.isActive = $3 ORDER BY cv.contentVersionId desc");
+	    	oql.bind(contentId);
+	    	oql.bind(languageId);
+			oql.bind(true);
+	    	
+	    	QueryResults results = oql.execute(Database.ReadOnly);
+			
+			if (results.hasMore()) 
+	        {
+				ContentVersion contentVersion = (ContentVersion)results.next();
+				contentVersionVO = contentVersion.getValueObject();
+				
+				if(contentVersionVO != null)
+				{
+					CacheController.cacheObjectInAdvancedCache("contentVersionCache", contentVersionKey, contentVersionVO, new String[]{CacheController.getPooledString(2, contentVersionVO.getId()), CacheController.getPooledString(1, contentVersionVO.getContentId())}, true);
+				}
+	        }
+			
+			results.close();
+			oql.close();
+		}
+
 		return contentVersionVO;
+	}
+
+   	/**
+	 * This method returns the latest active content version.
+	 */
+    
+   	public List<ContentVersionVO> getContentVersionVOList(Integer contentId) throws SystemException, Bug
+    {
+    	Database db = CastorDatabaseService.getDatabase();
+    	List<ContentVersionVO> contentVersionVOList = new ArrayList<ContentVersionVO>();
+
+        beginTransaction(db);
+
+        try
+        {
+        	contentVersionVOList = getContentVersionVOList(contentId, db);
+            
+            rollbackTransaction(db);
+        }
+        catch(Exception e)
+        {
+            logger.error("An error occurred so we should not complete the transaction:" + e);
+            logger.warn("An error occurred so we should not complete the transaction:" + e, e);
+            rollbackTransaction(db);
+            throw new SystemException(e.getMessage());
+        }
+    	
+		return contentVersionVOList;
     }
+   	
+   	/**
+	 * This method returns the latest active content version.
+	 */
+    
+	public List<ContentVersionVO> getContentVersionVOList(Integer contentId, Database db) throws SystemException, Bug, Exception
+	{
+		List<ContentVersionVO> contentVersionVOList = new ArrayList<ContentVersionVO>();
+
+        OQLQuery oql = db.getOQLQuery( "SELECT cv FROM org.infoglue.cms.entities.content.impl.simple.SmallContentVersionImpl cv WHERE cv.contentId = $1 AND cv.isActive = $2 ORDER BY cv.contentVersionId desc");
+    	oql.bind(contentId);
+		oql.bind(true);
+    	
+    	QueryResults results = oql.execute(Database.ReadOnly);
+		while (results.hasMore()) 
+        {
+			ContentVersion contentVersion = (ContentVersion)results.next();
+			contentVersionVOList.add(contentVersion.getValueObject());
+        }
+		
+		results.close();
+		oql.close();
+
+		return contentVersionVOList;
+	}
 
    	/**
 	 * This method returns the latest active content version.
@@ -1010,22 +1147,17 @@ public class ContentVersionController extends BaseController
 	    	ContentVersion contentVersion = getContentVersionWithId(contentVersionVO.getId(), db);
 
 		    Collection digitalAssets = contentVersion.getDigitalAssets();
-		    logger.info("digitalAssets:" + digitalAssets.size());
 			Iterator assetIterator = digitalAssets.iterator();
 			while(assetIterator.hasNext())
 			{
 				DigitalAsset currentDigitalAsset = (DigitalAsset)assetIterator.next();
-				logger.info("currentDigitalAsset:" + currentDigitalAsset.getId() + "/" + currentDigitalAsset.getAssetKey());
 				if(currentDigitalAsset.getAssetKey().equals(assetKey))
 				{
 		            currentDigitalAsset.getContentVersions().remove(contentVersion);
-		            logger.info("versions:" + currentDigitalAsset.getContentVersions().size());
 					assetIterator.remove();
 		            if(currentDigitalAsset.getContentVersions().size() == 0)
-		            {
-		            	logger.info("Removing asset");
 						db.remove(currentDigitalAsset);
-		            }
+
 		            break;
 				}
 			}
@@ -1095,6 +1227,12 @@ public class ContentVersionController extends BaseController
 	
     public ContentVersionVO update(Integer contentId, Integer languageId, ContentVersionVO contentVersionVO, InfoGluePrincipal principal) throws ConstraintException, SystemException
     {
+    	return update(contentId, languageId, contentVersionVO, principal, false);
+    }
+    
+    public ContentVersionVO update(Integer contentId, Integer languageId, ContentVersionVO contentVersionVO, InfoGluePrincipal principal, boolean skipValidate) throws ConstraintException, SystemException
+    {
+    	Timer t = new Timer();
         ContentVersionVO updatedContentVersionVO;
 		
         Database db = CastorDatabaseService.getDatabase();
@@ -1103,9 +1241,11 @@ public class ContentVersionController extends BaseController
         
         try
         {     
-            Content content = ContentController.getContentController().getContentWithId(contentId, db);
-            ContentTypeDefinition contentTypeDefinition = content.getContentTypeDefinition();
-            ConstraintExceptionBuffer ceb = contentVersionVO.validateAdvanced(contentTypeDefinition.getValueObject());
+        	ContentVO contentVO = ContentController.getContentController().getContentVOWithId(contentId, db);
+        	ContentTypeDefinitionVO contentTypeDefinitionVO = ContentTypeDefinitionController.getController().getContentTypeDefinitionVOWithId(contentVO.getContentTypeDefinitionId(), db);
+        	ConstraintExceptionBuffer ceb = contentVersionVO.validateAdvanced(contentTypeDefinitionVO);
+            logger.info("Skipping validate:" + skipValidate);
+        	if(!skipValidate)
             ceb.throwIfNotEmpty();
             
             ContentVersion contentVersion = null;
@@ -1127,21 +1267,32 @@ public class ContentVersionController extends BaseController
 				}
 				else
 				{
+		    	    List<String> changedAttributes = getChangedAttributeNames(oldContentVersionVO, contentVersionVO);
+		    	    Map extraInfoMap = new HashMap();
+		    	    String csList = StringUtils.join(changedAttributes.toArray(), ",");
+		    	    //logger.info("csList:" + csList);
+		    	    extraInfoMap.put("changedAttributeNames", csList);
+		    		CacheController.setExtraInfo(ContentVersionImpl.class.getName(), contentVersionVO.getId().toString(), extraInfoMap);
 					contentVersion = ContentVersionController.getContentVersionController().getContentVersionWithId(contentVersionVO.getId(), db);
 					//contentVersionVO.setModifiedDateTime(DateHelper.getSecondPreciseDate());
 					contentVersion.setValueObject(contentVersionVO);
 				}
 	    	}
 
-		    if(principal != null && contentTypeDefinition.getName().equalsIgnoreCase("Meta info"))
+		    if(principal != null && contentTypeDefinitionVO.getName().equalsIgnoreCase("Meta info"))
 		    {
-		    	SiteNode siteNode = SiteNodeController.getController().getSiteNodeWithMetaInfoContentId(db, contentId);
-				if(siteNode.getMetaInfoContentId() != null && siteNode.getMetaInfoContentId().equals(contentId))
+	    	    SiteNodeVO siteNodeVO = SiteNodeController.getController().getSiteNodeVOWithMetaInfoContentId(db, contentId);
+		    	//SiteNode siteNode = SiteNodeController.getController().getSiteNodeWithMetaInfoContentId(db, contentId);
+				if(siteNodeVO.getMetaInfoContentId() != null && siteNodeVO.getMetaInfoContentId().equals(contentId))
 				{
-			    	SiteNodeVersion latestSiteNodeVersion = SiteNodeVersionController.getController().getLatestSiteNodeVersion(db, siteNode.getId(), false);
-			    	latestSiteNodeVersion.setVersionModifier(contentVersionVO.getVersionModifier());
-			    	latestSiteNodeVersion.setModifiedDateTime(DateHelper.getSecondPreciseDate());
-					SiteNodeVersionControllerProxy.getSiteNodeVersionControllerProxy().acUpdate(principal, latestSiteNodeVersion.getValueObject(), db);
+			    	SiteNodeVersionVO latestSiteNodeVersionVO = SiteNodeVersionController.getController().getLatestSiteNodeVersionVO(db, siteNodeVO.getId());
+			    	latestSiteNodeVersionVO.setVersionModifier(contentVersionVO.getVersionModifier());
+			    	latestSiteNodeVersionVO.setModifiedDateTime(DateHelper.getSecondPreciseDate());
+					SiteNodeVersionControllerProxy.getSiteNodeVersionControllerProxy().acUpdate(principal, latestSiteNodeVersionVO, db);
+
+					Map extraInfoMap = new HashMap();
+				    extraInfoMap.put("skipSiteNodeVersionUpdate", true);
+					CacheController.setExtraInfo(SiteNodeVersionImpl.class.getName(), latestSiteNodeVersionVO.getId().toString(), extraInfoMap);
 				}
 			}
 
@@ -1164,6 +1315,7 @@ public class ContentVersionController extends BaseController
             rollbackTransaction(db);
             throw new SystemException(e.getMessage());
         }
+        t.printElapsedTime("Updating cv took");
         
     	return updatedContentVersionVO; //(ContentVersionVO) updateEntity(ContentVersionImpl.class, realContentVersionVO);
     }        
@@ -1553,7 +1705,6 @@ public class ContentVersionController extends BaseController
 			{
 			    DigitalAsset digitalAsset = (DigitalAsset)digitalAssetsIterator.next();
 			    logger.info("Make copy of reference to digitalAssets " + digitalAsset.getAssetKey());
-			    //System.out.println("Make copy of reference to digitalAssets " + digitalAsset.getAssetKey());
 			    if(excludedAssetId == null || !digitalAsset.getId().equals(excludedAssetId))
 			    {
 			    	newContentVersion.getDigitalAssets().add(digitalAsset);
@@ -1696,11 +1847,67 @@ public class ContentVersionController extends BaseController
 
 
 	/**
+	 * Returns an attribute value from the ContentVersionVO
+	 *
+	 * @param contentVersionVO The version on which to find the value
+	 * @param attributeName THe name of the attribute whose value is wanted
+	 * @param escapeHTML A boolean indicating if the result should be escaped
+	 * @return The String vlaue of the attribute, or blank if it doe snot exist.
+	 */
+	public List<String> getChangedAttributeNames(ContentVersionVO contentVersionVO1, ContentVersionVO contentVersionVO2)
+	{
+		List<String> changes = new ArrayList<String>();
+		try{
+		String xml = contentVersionVO1.getVersionValue();
+
+		int attributesStartTagIndex = xml.indexOf("<attributes>");
+		int attributesStopTagIndex = xml.indexOf("</attributes>");
+		
+		String attributes = xml.substring(attributesStartTagIndex+12, attributesStopTagIndex);
+		
+		//logger.info("attributes1:" + attributes);
+		
+		int startTagIndex = attributes.indexOf("<");
+		while(startTagIndex > -1)
+		{
+			String attributeName = attributes.substring(startTagIndex + 1, attributes.indexOf(">",startTagIndex+1));
+			int endTagEndIndex = attributes.indexOf("</" + attributeName + ">", startTagIndex);
+			
+			//logger.info("attributeName:" + attributeName);
+			
+			String value1 = getAttributeValue(contentVersionVO1, attributeName, false);
+			String value2 = getAttributeValue(contentVersionVO2, attributeName, false);
+			
+			//logger.info("value1:" + value1);
+			//logger.info("value2:" + value2);
+			if(!value1.equals(value2))
+				changes.add(attributeName);
+			
+			startTagIndex = attributes.indexOf("<", endTagEndIndex + 1);
+		}
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+		return changes;
+	}
+
+	/**
 	 * This method fetches a value from the xml that is the contentVersions Value. If the 
 	 * contentVersioVO is null the contentVersion has not been created yet and no values are present.
 	 */
 	 
 	public void updateAttributeValue(Integer contentVersionId, String attributeName, String attributeValue, InfoGluePrincipal infogluePrincipal) throws SystemException, Bug
+	{
+		updateAttributeValue(contentVersionId, attributeName, attributeValue, infogluePrincipal, false);
+	}
+	 
+	/**
+	 * This method fetches a value from the xml that is the contentVersions Value. If the 
+	 * contentVersioVO is null the contentVersion has not been created yet and no values are present.
+	 */
+	 
+	public void updateAttributeValue(Integer contentVersionId, String attributeName, String attributeValue, InfoGluePrincipal infogluePrincipal, boolean skipValidate) throws SystemException, Bug
 	{
 		ContentVersionVO contentVersionVO = getContentVersionVOWithId(contentVersionId);
 		
@@ -1708,9 +1915,6 @@ public class ContentVersionController extends BaseController
 		{
 			try
 			{
-				logger.info("attributeName:"  + attributeName);
-				logger.info("versionValue:"   + contentVersionVO.getVersionValue());
-				logger.info("attributeValue:" + attributeValue);
 				InputSource inputSource = new InputSource(new StringReader(contentVersionVO.getVersionValue()));
 				
 				DOMParser parser = new DOMParser();
@@ -1756,7 +1960,7 @@ public class ContentVersionController extends BaseController
 				logger.info("sb:" + sb);
 				contentVersionVO.setVersionValue(sb.toString());
 				contentVersionVO.setVersionModifier(infogluePrincipal.getName());
-				update(contentVersionVO.getContentId(), contentVersionVO.getLanguageId(), contentVersionVO, infogluePrincipal);
+				update(contentVersionVO.getContentId(), contentVersionVO.getLanguageId(), contentVersionVO, infogluePrincipal, skipValidate);
 			}
 			catch(Exception e)
 			{
@@ -2072,6 +2276,51 @@ public class ContentVersionController extends BaseController
 	 * @throws SystemException 
 	 */
 	
+	public List<SmallestContentVersionVO> getSmallestContentVersionVOList(Integer contentId) throws SystemException 
+	{
+		Database db = CastorDatabaseService.getDatabase();
+    	
+    	List<SmallestContentVersionVO> contentVersionsIdList = new ArrayList();
+
+        beginTransaction(db);
+
+        try
+        {
+            OQLQuery oql = db.getOQLQuery("SELECT cv FROM org.infoglue.cms.entities.content.impl.simple.SmallestContentVersionImpl cv WHERE cv.contentId = $1 ORDER BY cv.contentVersionId desc");
+        	oql.bind(contentId);
+        	
+        	QueryResults results = oql.execute(Database.ReadOnly);
+			
+        	while (results.hasMore())
+            {
+				SmallestContentVersionImpl version = (SmallestContentVersionImpl)results.next();
+				contentVersionsIdList.add(version.getValueObject());
+            }
+            
+			results.close();
+			oql.close();
+
+			commitTransaction(db);
+        }
+        catch(Exception e)
+        {
+            logger.error("An error occurred so we should not complete the transaction:" + e);
+            logger.warn("An error occurred so we should not complete the transaction:" + e, e);
+            rollbackTransaction(db);
+            throw new SystemException(e.getMessage());
+        }
+        
+		return contentVersionsIdList;
+	}
+
+	/**
+	 * This method are here to return all content versions that are x number of versions behind the current active version. This is for cleanup purposes.
+	 * 
+	 * @param numberOfVersionsToKeep
+	 * @return
+	 * @throws SystemException 
+	 */
+	
 	public List<SmallestContentVersionVO> getSmallestContentVersionVOList(Integer languageId, int numberOfVersionsToKeep, boolean keepOnlyOldPublishedVersions, long minimumTimeBetweenVersionsDuringClean) throws SystemException 
 	{
 		logger.info("numberOfVersionsToKeep:" + numberOfVersionsToKeep);
@@ -2192,50 +2441,6 @@ public class ContentVersionController extends BaseController
 		return contentVersionsIdList;
 	}
 	
-	/**
-	 * This method are here to return all content versions that are x number of versions behind the current active version. This is for cleanup purposes.
-	 * 
-	 * @param numberOfVersionsToKeep
-	 * @return
-	 * @throws SystemException 
-	 */
-	
-	public List<SmallestContentVersionVO> getSmallestContentVersionVOList(Integer contentId) throws SystemException 
-	{
-		Database db = CastorDatabaseService.getDatabase();
-    	
-    	List<SmallestContentVersionVO> contentVersionsIdList = new ArrayList();
-
-        beginTransaction(db);
-
-        try
-        {
-            OQLQuery oql = db.getOQLQuery("SELECT cv FROM org.infoglue.cms.entities.content.impl.simple.SmallestContentVersionImpl cv WHERE cv.contentId = $1 ORDER BY cv.contentVersionId desc");
-        	oql.bind(contentId);
-        	
-        	QueryResults results = oql.execute(Database.ReadOnly);
-			
-        	while (results.hasMore())
-            {
-				SmallestContentVersionImpl version = (SmallestContentVersionImpl)results.next();
-				contentVersionsIdList.add(version.getValueObject());
-            }
-            
-			results.close();
-			oql.close();
-
-			commitTransaction(db);
-        }
-        catch(Exception e)
-        {
-            logger.error("An error occurred so we should not complete the transaction:" + e);
-            logger.warn("An error occurred so we should not complete the transaction:" + e, e);
-            rollbackTransaction(db);
-            throw new SystemException(e.getMessage());
-        }
-        
-		return contentVersionsIdList;
-	}
 
 	/**
 	 * This method are here to return all content versions that have somewhat heavy digitalAssets
@@ -2517,7 +2722,7 @@ public class ContentVersionController extends BaseController
 	/**
 	 * This method deletes the relation to a digital asset - not the asset itself.
 	 */
-	public DigitalAssetVO checkStateAndChangeIfNeeded(Integer contentVersionId, Integer digitalAssetId, InfoGluePrincipal principal) throws SystemException, Bug
+	public DigitalAssetVO checkStateAndChangeIfNeeded(Integer contentVersionId, Integer digitalAssetId, InfoGluePrincipal principal, List<Integer> newContentVersionIdList) throws SystemException, Bug
     {
 		DigitalAssetVO resultingDigitalAssetVO = null;
 			
@@ -2533,6 +2738,7 @@ public class ContentVersionController extends BaseController
 			{
 				List events = new ArrayList();
 				contentVersion = ContentStateController.changeState(contentVersionVO.getId(), ContentVersionVO.WORKING_STATE, "new working version", false, null, principal, contentVersionVO.getContentId(), db, events);
+				newContentVersionIdList.add(contentVersion.getId());
 				digitalAssetVO = DigitalAssetController.getController().getLatestDigitalAssetVO(contentVersion.getId(), digitalAssetVO.getAssetKey(), db);
 			}
     	    

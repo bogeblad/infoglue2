@@ -26,10 +26,12 @@ package org.infoglue.deliver.controllers.kernel.impl.simple;
 import java.io.ByteArrayInputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 import java.util.StringTokenizer;
 
 import org.apache.log4j.Logger;
@@ -41,6 +43,7 @@ import org.infoglue.cms.entities.management.Repository;
 import org.infoglue.cms.entities.management.RepositoryVO;
 import org.infoglue.cms.exception.Bug;
 import org.infoglue.cms.exception.SystemException;
+import org.infoglue.cms.util.CmsPropertyHandler;
 import org.infoglue.deliver.util.CacheController;
 import org.infoglue.deliver.util.NullObject;
 
@@ -100,9 +103,9 @@ public class RepositoryDeliveryController extends BaseDeliveryController
         return repositoryVO;	
 	}
 
-	public List getRepositoryVOListFromServerName(String serverName, String portNumber, String repositoryName) throws SystemException, Exception
+	public Set<RepositoryVO> getRepositoryVOListFromServerName(String serverName, String portNumber, String repositoryName) throws SystemException, Exception
     {
-	    List repositories = new ArrayList();
+	    Set<RepositoryVO> repositories = new HashSet<RepositoryVO>();
 	    
 	    Database db = CastorDatabaseService.getDatabase();
 	    
@@ -133,16 +136,16 @@ public class RepositoryDeliveryController extends BaseDeliveryController
 	    return repositories;
     }
 	
-	public List getRepositoryVOListFromServerName(Database db, String serverName, String portNumber, String repositoryName) throws SystemException, Exception
+	public Set<RepositoryVO> getRepositoryVOListFromServerName(Database db, String serverName, String portNumber, String repositoryName) throws SystemException, Exception
     {
-	    List repositories = new ArrayList();
+	    Set<RepositoryVO> repositories = new HashSet<RepositoryVO>();
 	    
 	    List cachedRepositories = (List)CacheController.getCachedObject("masterRepository", "allDNSRepositories");
 		if(cachedRepositories == null)
 		{
 		    cachedRepositories = new ArrayList();
 		    
-	        OQLQuery oql = db.getOQLQuery( "SELECT r FROM org.infoglue.cms.entities.management.impl.simple.RepositoryImpl r WHERE is_defined(r.dnsName)");
+	        OQLQuery oql = db.getOQLQuery( "SELECT r FROM org.infoglue.cms.entities.management.impl.simple.RepositoryImpl r WHERE is_defined(r.dnsName) ORDER BY r.repositoryId");
 	        QueryResults results = oql.execute(Database.ReadOnly);
 		
 	        while (results.hasMore()) 
@@ -169,6 +172,34 @@ public class RepositoryDeliveryController extends BaseDeliveryController
             {
             	logger.info("dnsNames[i]:" + dnsNames[i]);
                 String dnsName = dnsNames[i];
+                
+                if(dnsName.indexOf("undefined") > -1)
+                	continue;
+                
+                int index = dnsName.indexOf("working=,");
+                int indexMode = dnsName.indexOf("working=");
+                if(CmsPropertyHandler.getOperatingMode().equals("2"))
+                {    
+                	index = dnsName.indexOf("preview=,");
+                	indexMode = dnsName.indexOf("preview=");
+                }
+                else if(CmsPropertyHandler.getOperatingMode().equals("3"))
+                {
+                	index = dnsName.indexOf("live=,");
+                	indexMode = dnsName.indexOf("live=");
+                }
+
+                boolean noHostName = (indexMode == -1);
+                
+                if(logger.isInfoEnabled())
+                	logger.info("" + index + ":" + indexMode + ":" + noHostName + ":" + dnsName + " for operationMode:" + CmsPropertyHandler.getOperatingMode());
+            	if(/*!noHostName && */index == -1 && indexMode == -1 && dnsName.indexOf("=") > -1)
+            	{
+        			if(logger.isInfoEnabled())
+            			logger.info("Skipping this name [" + dnsName + "] as it was not a dnsName targeted toward this mode.");
+            		continue;
+            	}
+                
             	int protocolIndex = dnsName.indexOf("://");
                 if(protocolIndex > -1)
                     dnsName = dnsName.substring(protocolIndex + 3);
@@ -178,8 +209,19 @@ public class RepositoryDeliveryController extends BaseDeliveryController
                     dnsName = dnsName.substring(0, portIndex);
 
                 logger.info("Matching only server name - removed protocol if there:" + dnsName);
+                if(logger.isInfoEnabled())
+                	logger.info("dnsName:" + dnsName + ", serverName:" + serverName + ", repositoryName:" + repositoryName);
                 
-            	if((dnsName.indexOf(":") == -1 && dnsName.indexOf(serverName) == 0) || dnsName.indexOf(serverName + ":" + portNumber) == 0)
+                if(logger.isInfoEnabled())
+                {
+	                logger.info("dnsName.indexOf(':'):" + dnsName.indexOf(":"));
+	                logger.info("dnsName.indexOf(serverName) == 0:" + dnsName.indexOf(serverName));
+	                logger.info("dnsName.indexOf(serverName + ':' + portNumber):" + dnsName.indexOf(serverName + ":" + portNumber));
+	                logger.info("index:" + index);
+	                logger.info("indexMode:" + indexMode);
+                }
+                
+            	if((dnsName.indexOf(":") == -1 && dnsName.indexOf(serverName) == 0) || dnsName.indexOf(serverName + ":" + portNumber) == 0 || index > -1 || indexMode == -1)
                 {
             	    if(repositoryName != null && repositoryName.length() > 0)
             	    {

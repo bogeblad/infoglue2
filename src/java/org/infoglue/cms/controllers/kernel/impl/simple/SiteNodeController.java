@@ -1,3 +1,4 @@
+
 /* ===============================================================================
  *
  * Part of the InfoGlue Content Management Platform (www.infoglue.org)
@@ -69,6 +70,7 @@ import org.infoglue.cms.util.DateHelper;
 import org.infoglue.cms.util.XMLHelper;
 import org.infoglue.deliver.util.CacheController;
 import org.infoglue.deliver.util.RequestAnalyser;
+import org.infoglue.deliver.util.Timer;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -123,23 +125,92 @@ public class SiteNodeController extends BaseController
 	 * This method gets the siteNodeVO with the given id
 	 */
 	 
-	public SiteNodeVO getSiteNodeVOWithId(Integer siteNodeId, Database db) throws SystemException, Bug
+	public SiteNodeVO getSiteNodeVOWithId(Integer siteNodeId, Database db) throws SystemException, Bug, Exception
 	{
 		String key = "" + siteNodeId;
 		SiteNodeVO siteNodeVO = (SiteNodeVO)CacheController.getCachedObjectFromAdvancedCache("siteNodeCache", key);
 		if(siteNodeVO != null)
 		{
+			if(siteNodeVO.getChildCount() == null)
+				logger.error("Fail: a siteNodeVO was read the old way...");
 			//logger.info("There was an cached siteNodeVO:" + siteNodeVO);
 		}
 		else
 		{
-			siteNodeVO = (SiteNodeVO)getVOWithId(SmallSiteNodeImpl.class, siteNodeId, db);
-			CacheController.cacheObjectInAdvancedCache("siteNodeCache", key, siteNodeVO, new String[]{"" + siteNodeId}, true);
+	   		StringBuffer SQL = new StringBuffer();
+	    
+	   		Timer t = new Timer();
+
+	    	if(CmsPropertyHandler.getUseShortTableNames() != null && CmsPropertyHandler.getUseShortTableNames().equalsIgnoreCase("true"))
+	    	{
+		   		SQL.append("CALL SQL select sn.siNoId, sn.name, sn.publishDateTime, sn.expireDateTime, sn.isBranch, sn.parentSiNoId, sn.metaInfoContentId, sn.repositoryId, sn.siNoTypeDefId, sn.creator, (select count(*) from cmSiNo sn2 where sn2.parentSiNoId = sn.siNoId) AS childCount, snv.stateId, snv.isProtected from cmSiNo sn, cmSiNoVer snv ");
+		   		SQL.append("where ");
+		   		SQL.append("sn.siNoId = $1 ");
+		   		SQL.append("AND snv.siNoId = sn.siNoId ");
+		   		SQL.append("AND snv.siNoVerId = ( ");
+		   		SQL.append("	select max(siNoVerId) from cmSiNoVer snv2 ");
+		   		SQL.append("	WHERE ");
+		   		SQL.append("	snv2.siNoId = snv.siNoId AND ");
+		   		SQL.append("	snv2.isActive = $2 AND snv2.stateId >= $3 ");
+		   		SQL.append("	) ");
+		   		SQL.append("order by sn.siNoId DESC AS org.infoglue.cms.entities.structure.impl.simple.SmallestSiteNodeImpl");
+	    	}
+	    	else
+	    	{
+		   		SQL.append("CALL SQL select sn.siteNodeId, sn.name, sn.publishDateTime, sn.expireDateTime, sn.isBranch, sn.parentSiteNodeId, sn.metaInfoContentId, sn.repositoryId, sn.siteNodeTypeDefinitionId, sn.creator, (select count(*) from cmSiteNode sn2 where sn2.parentSiteNodeId = sn.siteNodeId) AS childCount, snv.stateId, snv.isProtected from cmSiteNode sn, cmSiteNodeVersion snv ");
+		   		SQL.append("where ");
+		   		SQL.append("sn.siteNodeId = $1 ");
+		   		SQL.append("AND snv.siteNodeId = sn.siteNodeId ");
+		   		SQL.append("AND snv.siteNodeVersionId = ( ");
+		   		SQL.append("	select max(siteNodeVersionId) from cmSiteNodeVersion snv2 ");
+		   		SQL.append("	WHERE ");
+		   		SQL.append("	snv2.siteNodeId = snv.siteNodeId AND ");
+		   		SQL.append("	snv2.isActive = $2 AND snv2.stateId >= $3 ");
+		   		SQL.append("	) ");
+		   		SQL.append("order by sn.siteNodeId DESC AS org.infoglue.cms.entities.structure.impl.simple.SmallestSiteNodeImpl");    		
 		}
 		
-		//RequestAnalyser.getRequestAnalyser().registerComponentStatistics("getSmallestSiteNodeVOWithId", t.getElapsedTimeNanos() / 1000);
-		return siteNodeVO;
+	    	//logger.info("SQL:" + SQL);
+	    	//logger.info("parentSiteNodeId:" + parentSiteNodeId);
+	    	//logger.info("showDeletedItems:" + showDeletedItems);
+	    	OQLQuery oql = db.getOQLQuery(SQL.toString());
+			oql.bind(siteNodeId);
+			oql.bind(true);
+			oql.bind(new Integer(CmsPropertyHandler.getOperatingMode()));
+
+	   		/*
+	   		if(CmsPropertyHandler.getUseShortTableNames() != null && CmsPropertyHandler.getUseShortTableNames().equalsIgnoreCase("true"))
+	    	{
+		   		SQL.append("CALL SQL select sn.siNoId, sn.name, sn.publishDateTime, sn.expireDateTime, sn.isBranch, sn.isDeleted, sn.parentSiNoId, sn.metaInfoContentId, sn.repositoryId, sn.siNoTypeDefId, sn.creator, (select count(*) from cmSiNo sn2 where sn2.parentSiNoId = sn.siNoId) AS childCount, 1 AS sortOrder, 0 AS isHidden, -1 AS stateId, -1 AS isProtected from cmSiNo sn ");
+		   		SQL.append("where sn.siNoId = $1 AS org.infoglue.cms.entities.structure.impl.simple.SmallestSiteNodeImpl");    		
+	    	}
+	    	else
+	    	{
+		   		SQL.append("CALL SQL select sn.siteNodeId, sn.name, sn.publishDateTime, sn.expireDateTime, sn.isBranch, sn.isDeleted, sn.parentSiteNodeId, sn.metaInfoContentId, sn.repositoryId, sn.siteNodeTypeDefinitionId, sn.creator, (select count(*) from cmSiteNode sn2 where sn2.parentSiteNodeId = sn.siteNodeId) AS childCount, 1 AS sortOrder, 0 AS isHidden, -1 AS stateId, -1 AS isProtected from cmSiteNode sn ");
+		   		SQL.append("where sn.siteNodeId = $1 AS org.infoglue.cms.entities.structure.impl.simple.SmallestSiteNodeImpl");    		
     }
+	    	OQLQuery oql = db.getOQLQuery(SQL.toString());
+			oql.bind(siteNodeId);
+	    	*/
+	
+			QueryResults results = oql.execute(Database.ReadOnly);
+			//t.printElapsedTime("Executed query.....");
+			if (results.hasMore()) 
+			{
+				SiteNode siteNode = (SiteNode)results.next();
+				siteNodeVO = siteNode.getValueObject();			
+	
+				String siteNodeCacheKey = "" + siteNode.getValueObject().getId();
+				CacheController.cacheObjectInAdvancedCache("siteNodeCache", siteNodeCacheKey, siteNode.getValueObject());
+			}
+			
+			results.close();
+			oql.close();
+			RequestAnalyser.getRequestAnalyser().registerComponentStatistics("getSmallestSiteNodeVOWithId", t.getElapsedTime());
+		}
+		
+		return siteNodeVO;
+	}
 
     /**
 	 * This method gets the siteNodeVO with the given id
@@ -325,7 +396,7 @@ public class SiteNodeController extends BaseController
 	{
 		boolean isDeletable = true;
 		
-		SiteNodeVersion latestSiteNodeVersion = SiteNodeVersionController.getController().getLatestActiveSiteNodeVersion(db, siteNode.getId());
+		SiteNodeVersion latestSiteNodeVersion = SiteNodeVersionController.getController().getLatestActiveSiteNodeVersionReadOnly(db, siteNode.getId());
 		if(latestSiteNodeVersion != null && latestSiteNodeVersion.getIsProtected().equals(SiteNodeVersionVO.YES))
 		{
 			boolean hasAccess = AccessRightController.getController().getIsPrincipalAuthorized(db, infogluePrincipal, "SiteNodeVersion.DeleteSiteNode", "" + latestSiteNodeVersion.getId());
@@ -631,6 +702,332 @@ public class SiteNodeController extends BaseController
 		return childrenVOList;
 	} 
     
+    	/**
+	 * This method returns a list of the children a siteNode has.
+	 */
+   	
+	public List<SiteNodeVersionVO> getSiteNodeVersionVOList(boolean showDeletedItems, Integer stateId, Integer limit) throws Exception
+	{
+		List<SiteNodeVersionVO> childrenVOList = new ArrayList<SiteNodeVersionVO>();
+        
+        Database db = CastorDatabaseService.getDatabase();
+
+	    beginTransaction(db);
+
+        try
+        {
+        	childrenVOList = getSiteNodeVersionVOList(stateId, limit, db);            
+            commitTransaction(db);
+        }
+        catch(Exception e)
+        {
+            logger.error("An error occurred so we should not complete the transaction:" + e);
+            logger.warn("An error occurred so we should not complete the transaction:" + e, e);
+            rollbackTransaction(db);
+            throw new SystemException(e.getMessage());
+        }
+        
+        return childrenVOList;
+	}
+	
+	/**
+	 * This method returns a list of the children a siteNode has.
+	 */
+   	
+	public List<SiteNodeVersionVO> getSiteNodeVersionVOList(Integer stateId, Integer limit, Database db) throws Exception
+	{
+		List<SiteNodeVersionVO> childrenVOList = new ArrayList<SiteNodeVersionVO>();
+		
+   		Timer t = new Timer();
+
+   		StringBuffer SQL = new StringBuffer();
+    	if(CmsPropertyHandler.getUseShortTableNames() != null && CmsPropertyHandler.getUseShortTableNames().equalsIgnoreCase("true"))
+    	{
+	   		SQL.append("CALL SQL select snv.siNoVerId, snv.stateId, snv.verNumber, snv.modifiedDateTime, snv.verComment, snv.isCheckedOut, snv.isActive, snv.isProtected, snv.disablePageCache, snv.disableEditOnSight, snv.disableLanguages, snv.contentType, snv.pageCacheKey, snv.pageCacheTimeout, snv.disableForceIDCheck, snv.forceProtocolChange, snv.siNoId, snv.versionModifier, snv.sortOrder, snv.isHidden, snv.stateId, snv.isProtected from cmSiNo sn, cmSiNoVer snv ");
+	   		SQL.append("where ");
+	   		SQL.append("snv.siNoId = sn.siNoId ");
+	   		SQL.append("AND snv.siNoVerId = ( ");
+	   		SQL.append("	select max(siNoVerId) from cmSiNoVer snv2 ");
+	   		SQL.append("	WHERE ");
+	   		SQL.append("	snv2.siNoId = snv.siNoId AND ");
+	   		SQL.append("	snv2.isActive = $1 AND snv2.stateId >= $2 ");
+	   		SQL.append("	) ");
+	   		SQL.append("order by sn.siNoId DESC LIMIT $3 AS org.infoglue.cms.entities.structure.impl.simple.SmallSiteNodeVersionImpl");    		
+    	}
+    	else
+    	{
+	   		SQL.append("CALL SQL select snv.siteNodeVersionId, snv.stateId, snv.versionNumber, snv.modifiedDateTime, snv.versionComment, snv.isCheckedOut, snv.isActive, snv.isProtected, snv.disablePageCache, snv.disableEditOnSight, snv.disableLanguages, snv.contentType, snv.pageCacheKey, snv.pageCacheTimeout, snv.disableForceIDCheck, snv.forceProtocolChange, snv.siteNodeId, snv.versionModifier, snv.sortOrder, snv.isHidden snv.stateId, snv.isProtected from cmSiteNode sn, cmSiteNodeVersion snv ");
+	   		SQL.append("where ");
+	   		SQL.append("snv.siteNodeId = sn.siteNodeId ");
+	   		SQL.append("AND snv.siteNodeVersionId = ( ");
+	   		SQL.append("	select max(siteNodeVersionId) from cmSiteNodeVersion snv2 ");
+	   		SQL.append("	WHERE ");
+	   		SQL.append("	snv2.siteNodeId = snv.siteNodeId AND ");
+	   		SQL.append("	snv2.isActive = $1 AND snv2.stateId >= $2 ");
+	   		SQL.append("	) ");
+	   		SQL.append("order by sn.siteNodeId DESC LIMIT $3 AS org.infoglue.cms.entities.structure.impl.simple.SmallSiteNodeVersionImpl");    		
+    	}
+
+    	//logger.info("SQL:" + SQL);
+    	//logger.info("parentSiteNodeId:" + parentSiteNodeId);
+    	//logger.info("showDeletedItems:" + showDeletedItems);
+    	OQLQuery oql = db.getOQLQuery(SQL.toString());
+		oql.bind(true);
+		oql.bind(stateId);
+		oql.bind(limit);
+
+		QueryResults results = oql.execute(Database.ReadOnly);
+		t.printElapsedTime("Executed query.....");
+		while (results.hasMore()) 
+		{
+			SiteNodeVersion siteNodeVersion = (SiteNodeVersion)results.next();
+			childrenVOList.add(siteNodeVersion.getValueObject());
+		
+			String key = "" + siteNodeVersion.getValueObject().getSiteNodeId();
+			String groupKey1 = CacheController.getPooledString(4, siteNodeVersion.getId());
+			String groupKey2 = CacheController.getPooledString(3, siteNodeVersion.getValueObject().getSiteNodeId());
+
+			CacheController.cacheObjectInAdvancedCache("latestSiteNodeVersionCache", key, siteNodeVersion.getValueObject(), new String[]{groupKey1.toString(), groupKey2.toString()}, true);
+		}
+		
+		results.close();
+		oql.close();
+
+   		t.printElapsedTime("getSiteNodeVersionVOList " + childrenVOList.size() + " took");
+   		
+		return childrenVOList;
+	}
+	
+	/**
+	 * This method returns a list of the children a siteNode has.
+	 */
+   	
+	public List<SiteNodeVO> getSiteNodeVOList(boolean showDeletedItems, Integer stateId, Integer limit) throws Exception
+	{
+		List<SiteNodeVO> childrenVOList = new ArrayList<SiteNodeVO>();
+        
+        Database db = CastorDatabaseService.getDatabase();
+
+	    beginTransaction(db);
+
+        try
+        {
+        	childrenVOList = getSiteNodeVOList(stateId, limit, db);            
+            commitTransaction(db);
+        }
+        catch(Exception e)
+        {
+        	e.printStackTrace();
+            logger.error("An error occurred so we should not complete the transaction:" + e);
+            logger.warn("An error occurred so we should not complete the transaction:" + e, e);
+            rollbackTransaction(db);
+            throw new SystemException(e.getMessage());
+        }
+        
+        return childrenVOList;
+	}
+	
+	
+	/**
+	 * This method returns a list of the children a siteNode has.
+	 */
+   	
+	public List<SiteNodeVO> getSiteNodeVOList(Integer stateId, Integer limit, Database db) throws Exception
+	{
+		List<SiteNodeVO> childrenVOList = new ArrayList<SiteNodeVO>();
+
+   		Timer t = new Timer();
+
+   		StringBuffer SQL = new StringBuffer();
+    	if(CmsPropertyHandler.getUseShortTableNames() != null && CmsPropertyHandler.getUseShortTableNames().equalsIgnoreCase("true"))
+    	{
+	   		SQL.append("CALL SQL select sn.siNoId, sn.name, sn.publishDateTime, sn.expireDateTime, sn.isBranch, sn.parentSiNoId, sn.metaInfoContentId, sn.repositoryId, sn.siNoTypeDefId, sn.creator, (select count(*) from cmSiNo sn2 where sn2.parentSiNoId = sn.siNoId) AS childCount, snv.stateId, snv.isProtected from cmSiNo sn, cmSiNoVer snv ");
+	   		SQL.append("where ");
+	   		SQL.append("snv.siNoId = sn.siNoId ");
+	   		SQL.append("AND snv.siNoVerId = ( ");
+	   		SQL.append("	select max(siNoVerId) from cmSiNoVer snv2 ");
+	   		SQL.append("	WHERE ");
+	   		SQL.append("	snv2.siNoId = snv.siNoId AND ");
+	   		SQL.append("	snv2.isActive = $1 AND snv2.stateId >= $2 ");
+	   		SQL.append("	) ");
+	   		SQL.append("order by sn.parentSiNoId, snv.sortOrder ASC, sn.name ASC, sn.siNoId DESC LIMIT $3 AS org.infoglue.cms.entities.structure.impl.simple.SmallestSiteNodeImpl");
+    	}
+    	else
+    	{
+	   		SQL.append("CALL SQL select sn.siteNodeId, sn.name, sn.publishDateTime, sn.expireDateTime, sn.isBranch, sn.parentSiteNodeId, sn.metaInfoContentId, sn.repositoryId, sn.siteNodeTypeDefinitionId, sn.creator, (select count(*) from cmSiteNode sn2 where sn2.parentSiteNodeId = sn.siteNodeId) AS childCount, snv.stateId, snv.isProtected from cmSiteNode sn, cmSiteNodeVersion snv ");
+	   		SQL.append("where ");
+	   		SQL.append("snv.siteNodeId = sn.siteNodeId ");
+	   		SQL.append("AND snv.siteNodeVersionId = ( ");
+	   		SQL.append("	select max(siteNodeVersionId) from cmSiteNodeVersion snv2 ");
+	   		SQL.append("	WHERE ");
+	   		SQL.append("	snv2.siteNodeId = snv.siteNodeId AND ");
+	   		SQL.append("	snv2.isActive = $1 AND snv2.stateId >= $2 ");
+	   		SQL.append("	) ");
+	   		SQL.append("order by sn.parentSiteNodeId, snv.sortOrder ASC, sn.name ASC, sn.siteNodeId DESC LIMIT $3 AS org.infoglue.cms.entities.structure.impl.simple.SmallestSiteNodeImpl");    		
+    	}
+
+    	//logger.info("SQL:" + SQL);
+    	//logger.info("parentSiteNodeId:" + parentSiteNodeId);
+    	//logger.info("showDeletedItems:" + showDeletedItems);
+    	OQLQuery oql = db.getOQLQuery(SQL.toString());
+		oql.bind(true);
+		oql.bind(stateId);
+		oql.bind(limit);
+
+		QueryResults results = oql.execute(Database.ReadOnly);
+		//t.printElapsedTime("Executed query.....");
+		
+		int lastBegunParentSiteNodeId = -1;
+		while (results.hasMore()) 
+		{
+			SiteNode siteNode = (SiteNode)results.next();
+			childrenVOList.add(siteNode.getValueObject());
+			
+			if(siteNode.getValueObject().getParentSiteNodeId() !=null && lastBegunParentSiteNodeId != siteNode.getValueObject().getParentSiteNodeId())
+				lastBegunParentSiteNodeId = siteNode.getValueObject().getParentSiteNodeId();
+			
+			String key = "" + siteNode.getValueObject().getParentSiteNodeId();
+			List<SiteNodeVO> siteNodeChildrenVOList = (List<SiteNodeVO>)CacheController.getCachedObjectFromAdvancedCache("childSiteNodesCache", key);
+	   		if(siteNodeChildrenVOList == null)
+			{
+		   		siteNodeChildrenVOList = new ArrayList<SiteNodeVO>();
+				CacheController.cacheObjectInAdvancedCache("childSiteNodesCache", key, siteNodeChildrenVOList, new String[] {CacheController.getPooledString(3, siteNode.getValueObject().getParentSiteNodeId())}, true);
+			}
+			siteNodeChildrenVOList.add(siteNode.getValueObject());
+
+			String siteNodeCacheKey = "" + siteNode.getValueObject().getId();
+			CacheController.cacheObjectInAdvancedCache("siteNodeCache", siteNodeCacheKey, siteNode.getValueObject());
+		}
+		
+		logger.info("Clearing last node as we are probably not done with all it's children");
+		CacheController.clearCacheForGroup("childSiteNodesCache", CacheController.getPooledString(3, lastBegunParentSiteNodeId));
+		CacheController.clearCache("siteNodeCache", CacheController.getPooledString(3, lastBegunParentSiteNodeId));
+		
+		results.close();
+		oql.close();
+
+   		t.printElapsedTime("getSiteNodeVOList " + childrenVOList.size() + " took");
+   		
+		return childrenVOList;
+	}
+	
+	
+	/**
+	 * This method returns a list of the children a siteNode has.
+	 */
+   	
+	public List getSiteNodeChildren(Integer parentSiteNodeId) throws ConstraintException, SystemException
+	{
+		Database db = CastorDatabaseService.getDatabase();
+		ConstraintExceptionBuffer ceb = new ConstraintExceptionBuffer();
+
+		List childrenVOList = null;
+
+		beginTransaction(db);
+
+		try
+		{
+			SiteNode siteNode = getSiteNodeWithId(parentSiteNodeId, db);
+			Collection children = siteNode.getChildSiteNodes();
+			childrenVOList = SiteNodeController.toVOList(children);
+        	
+			//If any of the validations or setMethods reported an error, we throw them up now before create.
+			ceb.throwIfNotEmpty();
+            
+			commitTransaction(db);
+		}
+		catch(ConstraintException ce)
+		{
+			logger.warn("An error occurred so we should not complete the transaction:" + ce, ce);
+			rollbackTransaction(db);
+			throw ce;
+		}
+		catch(Exception e)
+		{
+			logger.error("An error occurred so we should not complete the transaction: " + e.getMessage());
+			logger.warn("An error occurred so we should not complete the transaction: " + e.getMessage(), e);
+			rollbackTransaction(db);
+			throw new SystemException(e.getMessage());
+		}
+        
+		return childrenVOList;
+	} 
+	
+    
+	/**
+	 * This method returns a list of the children a siteNode has.
+	 */
+   	
+	public List<SiteNodeVO> getChildSiteNodeVOList(Integer parentSiteNodeId, boolean showDeletedItems, Database db) throws Exception
+	{
+   		String key = "" + parentSiteNodeId + "_" + showDeletedItems;
+		if(logger.isInfoEnabled())
+			logger.info("key:" + key);
+		
+		List<SiteNodeVO> childrenVOList = (List<SiteNodeVO>)CacheController.getCachedObjectFromAdvancedCache("childSiteNodesCache", key);
+		if(childrenVOList != null)
+		{
+			if(logger.isInfoEnabled())
+				logger.info("There was an cached cachedChildSiteNodeVOList:" + childrenVOList.size());
+			return childrenVOList;
+		}
+		
+		childrenVOList = new ArrayList<SiteNodeVO>();
+		
+   		Timer t = new Timer();
+   		StringBuffer SQL = new StringBuffer();
+    	if(CmsPropertyHandler.getUseShortTableNames() != null && CmsPropertyHandler.getUseShortTableNames().equalsIgnoreCase("true"))
+    	{
+	   		SQL.append("CALL SQL select sn.siNoId, sn.name, sn.publishDateTime, sn.expireDateTime, sn.isBranch, sn.parentSiNoId, sn.metaInfoContentId, sn.repositoryId, sn.siNoTypeDefId, sn.creator, (select count(*) from cmSiNo sn2 where sn2.parentSiNoId = sn.siNoId) AS childCount, snv.stateId, snv.isProtected from cmSiNo sn, cmSiNoVer snv ");
+	   		SQL.append("where ");
+	   		SQL.append("sn.parentSiNoId = $1 ");
+	   		SQL.append("AND snv.siNoId = sn.siNoId ");
+	   		SQL.append("AND snv.siNoVerId = ( ");
+	   		SQL.append("	select max(siNoVerId) from cmSiNoVer snv2 ");
+	   		SQL.append("	WHERE ");
+	   		SQL.append("	snv2.siNoId = snv.siNoId AND ");
+	   		SQL.append("	snv2.isActive = $2 AND snv2.stateId >= $3 ");
+	   		SQL.append("	) ");
+	   		SQL.append("order by snv.sortOrder ASC, sn.name ASC, sn.siNoId DESC AS org.infoglue.cms.entities.structure.impl.simple.SmallestSiteNodeImpl");
+    	}
+    	else
+    	{
+	   		SQL.append("CALL SQL select sn.siteNodeId, sn.name, sn.publishDateTime, sn.expireDateTime, sn.isBranch, sn.parentSiteNodeId, sn.metaInfoContentId, sn.repositoryId, sn.siteNodeTypeDefinitionId, sn.creator, (select count(*) from cmSiteNode sn2 where sn2.parentSiteNodeId = sn.siteNodeId) AS childCount, snv.stateId, snv.isProtected from cmSiteNode sn, cmSiteNodeVersion snv ");
+	   		SQL.append("where ");
+	   		SQL.append("sn.parentSiteNodeId = $1 ");
+	   		SQL.append("AND snv.siteNodeId = sn.siteNodeId ");
+	   		SQL.append("AND snv.siteNodeVersionId = ( ");
+	   		SQL.append("	select max(siteNodeVersionId) from cmSiteNodeVersion snv2 ");
+	   		SQL.append("	WHERE ");
+	   		SQL.append("	snv2.siteNodeId = snv.siteNodeId AND ");
+	   		SQL.append("	snv2.isActive = $2 AND snv2.stateId >= $3 ");
+	   		SQL.append("	) ");
+	   		SQL.append("order by snv.sortOrder ASC, sn.name ASC, sn.siteNodeId DESC AS org.infoglue.cms.entities.structure.impl.simple.SmallestSiteNodeImpl");    		
+    	}
+
+    	//logger.info("SQL:" + SQL);
+    	//logger.info("parentSiteNodeId:" + parentSiteNodeId);
+    	//logger.info("showDeletedItems:" + showDeletedItems);
+    	OQLQuery oql = db.getOQLQuery(SQL.toString());
+		oql.bind(parentSiteNodeId);
+		oql.bind(true);
+		oql.bind(0);
+
+		QueryResults results = oql.execute(Database.ReadOnly);
+		while (results.hasMore()) 
+		{
+			SiteNode siteNode = (SiteNode)results.next();
+			//logger.info("Name:" + siteNode.getName() + ":" + siteNode.getValueObject().getStateId() + ":" + siteNode.getValueObject().getIsProtected() + ":" + siteNode.getValueObject().getIsProtected());
+			childrenVOList.add(siteNode.getValueObject());
+		}
+		
+		results.close();
+		oql.close();
+        
+		CacheController.cacheObjectInAdvancedCache("childSiteNodesCache", key, childrenVOList, new String[]{CacheController.getPooledString(3, parentSiteNodeId)}, true);
+        
+		return childrenVOList;
+	} 
     /**
 	 * This method is sort of a sql-query-like method where you can send in arguments in form of a list
 	 * of things that should match. The input is a Hashmap with a method and a List of HashMaps.
@@ -673,7 +1070,7 @@ public class SiteNodeController extends BaseController
 	 * of things that should match. The input is a Hashmap with a method and a List of HashMaps.
 	 */
 	
-    public static List getSiteNodeVOList(HashMap argumentHashMap, Database db) throws SystemException, Bug
+    public List getSiteNodeVOList(HashMap argumentHashMap, Database db) throws SystemException, Bug, Exception
     {
     	List siteNodes = null;
     	
@@ -698,7 +1095,7 @@ public class SiteNodeController extends BaseController
 
 				Integer siteNodeId = new Integer((String)argument.get("siteNodeId"));
 				logger.info("Getting the siteNode with Id:" + siteNodeId);
-				siteNodes.add(getController().getSiteNodeVOWithId(siteNodeId, db));
+				siteNodes.add(getSiteNodeVOWithId(siteNodeId, db));
 			}
     	}
         
@@ -731,6 +1128,8 @@ public class SiteNodeController extends BaseController
 			
     		if(siteNodeVO != null)
     			CacheController.cacheObject("repositoryRootNodesCache", key, siteNodeVO);
+    		else
+    			logger.error("repositoryId:" + repositoryId + " had no root");
 
 			commitTransaction(db);
         }
@@ -958,6 +1357,31 @@ public class SiteNodeController extends BaseController
 		OQLQuery oql = db.getOQLQuery("SELECT sn FROM org.infoglue.cms.entities.structure.impl.simple.SiteNodeImpl sn WHERE sn.repository.repositoryId = $1 ORDER BY sn.siteNodeId");
     	oql.bind(repositoryId);
     	
+    	QueryResults results = oql.execute();
+		
+		while(results.hasMore()) 
+        {
+        	SiteNode siteNode = (SiteNodeImpl)results.next();
+        	siteNodes.add(siteNode);
+        }
+		
+		results.close();
+		oql.close();
+
+		return siteNodes;    	
+    }
+
+	/**
+	 * This method returns a list of all siteNodes in a repository.
+	 */
+
+	public List getRepositorySiteNodesReadOnly(Integer repositoryId, Database db) throws SystemException, Exception
+    {
+		List siteNodes = new ArrayList();
+		
+		OQLQuery oql = db.getOQLQuery("SELECT sn FROM org.infoglue.cms.entities.structure.impl.simple.SiteNodeImpl sn WHERE sn.repository.repositoryId = $1");
+    	oql.bind(repositoryId);
+    	
     	QueryResults results = oql.execute(Database.ReadOnly);
 		
 		while(results.hasMore()) 
@@ -971,7 +1395,7 @@ public class SiteNodeController extends BaseController
 
 		return siteNodes;    	
     }
-	
+		
 	/**
 	 * This method creates a meta info content for the new sitenode.
 	 * 
@@ -1217,6 +1641,53 @@ public class SiteNodeController extends BaseController
 		return siteNodes;
     }
 
+
+    public List getSiteNodeVOListWithMetaInfoContentId() throws ConstraintException, SystemException
+    {
+		List siteNodeVOList = new ArrayList();
+
+		Database db = CastorDatabaseService.getDatabase();
+        ConstraintExceptionBuffer ceb = new ConstraintExceptionBuffer();
+
+        beginTransaction(db);
+
+        try
+        {
+            List siteNodes = getSiteNodeVOListWithMetaInfoContentId(db);
+            siteNodeVOList = toVOList(siteNodes);
+            
+            commitTransaction(db);
+        }
+        catch(Exception e)
+        {
+            logger.error("An error occurred so we should not complete the transaction:" + e, e);
+            rollbackTransaction(db);
+            throw new SystemException(e.getMessage());
+        }
+        
+        return siteNodeVOList;
+    }       
+
+    public List getSiteNodeVOListWithMetaInfoContentId(Database db) throws ConstraintException, SystemException, Exception
+    {
+		List siteNodes = new ArrayList();
+
+		OQLQuery oql = db.getOQLQuery("SELECT sn FROM org.infoglue.cms.entities.structure.impl.simple.SmallSiteNodeImpl sn WHERE sn.metaInfoContentId > $1 ORDER BY sn.siteNodeId");
+    	oql.bind(new Integer(0));
+    	
+    	QueryResults results = oql.execute();
+		
+		while(results.hasMore()) 
+        {
+        	SiteNode siteNode = (SiteNode)results.next();
+        	siteNodes.add(siteNode);
+        }
+
+		results.close();
+		oql.close();
+
+		return siteNodes;
+    }
 
     public SiteNodeVO getSiteNodeVOWithMetaInfoContentId(Integer contentId) throws ConstraintException, SystemException
     {
