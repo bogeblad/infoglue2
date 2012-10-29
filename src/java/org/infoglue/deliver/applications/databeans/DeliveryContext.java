@@ -389,6 +389,17 @@ public class DeliveryContext implements UsageListener
         return groups;
     }
     
+    public Set<String> getAllUsedEntitiesAsSet()
+    {
+    	Set<String> set = new HashSet<String>();
+    	set.addAll(this.usedContents);
+    	set.addAll(this.usedContentVersions);
+    	set.addAll(this.usedSiteNodes);
+    	set.addAll(this.usedSiteNodeVersions);
+        
+        return set;
+    }
+    
     public List getUsageListeners()
     {
         return usageListeners;
@@ -594,17 +605,16 @@ public class DeliveryContext implements UsageListener
 	{
 		if(this.operatingMode == null)
 		{
-			//System.out.println("No local operating mode. Using global:" + CmsPropertyHandler.getOperatingMode());
+			//logger.info("No local operating mode. Using global:" + CmsPropertyHandler.getOperatingMode());
 			this.operatingMode = CmsPropertyHandler.getOperatingMode();
 		}
 		
-		//System.out.println("Returning " + this.operatingMode);
+		//logger.info("Returning " + this.operatingMode);
 		return this.operatingMode;
 	}
 
 	public void setOperatingMode(String operatingMode)
 	{
-		//System.out.println("Setting local " + operatingMode);
 		this.operatingMode = operatingMode;
 	}
 
