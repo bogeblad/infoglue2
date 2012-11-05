@@ -4,6 +4,25 @@
 
 #beginContentTool("tool.contenttool.searchHeader" "tool.contenttool.searchHeader" "" "0" "0" "0")
 
+<script type="text/javascript">
+<!--
+	function showUsers()
+	{
+		openPopup('ViewListSystemUser!userListForPopup.action', 'Users', 'width=800,height=600,resizable=yes,scrollbars=yes');
+	}
+	
+	function selectUser(userName)
+	{
+		document.getElementById("name").value = userName;
+	}
+
+	function selectMyself()
+	{
+		document.getElementById("userName").value = "$infoGluePrincipal.name";
+	}
+-->	
+</script>
+	
 <div class="fullymarginalized">
 
 <form method="POST" name="editForm" action="SearchContent.action">
@@ -11,16 +30,34 @@
 <tr>
 	<td colspan="7">	
 		<p>
+			$ui.getString("tool.contenttool.chooseRepositoryLabel")<br>
+			<select class="dropbox" name="repositoryIdToSearch" multiple="true" size="5">
+				#foreach ($repositoryVO in $repositories)
+					<option value="$repositoryVO.id" #checkSelected("$repositoryVO.id" "$repositoryId")>$repositoryVO.name</option>
+			    #end
+			</select>
+		</p>
+		<p>
+			$ui.getString("tool.contenttool.contentTypeFilter.label")<br>
+			<select class="dropbox" name="contentTypeDefinitionId" multiple="true" size="5">
+				#foreach ($contentTypeDefinition in $contentTypeDefinitions)
+					<option value="$contentTypeDefinition.id" #checkSelected("$contentTypeDefinition.id" "$contentTypeDefinitionId")>$contentTypeDefinition.name</option>
+			    #end
+			</select>
+		</p>
+		<p>
 			#editTextField3($ui.getString("tool.contenttool.searchString.label") "tool.contenttool.searchString.label" "searchString" $searchString "30" "normaltextfield") 
 		</p>
 		<p>
-			#selectBox("tool.contenttool.modifierFilter.label" "name" $name $principals "tool.contenttool.filterShowAll.label")
+			<input type="textfield" id="name" name="name" value=""/>
+			<a href="javascript:showUsers();"><img src="images/spyglassIcon.gif" width="16" height="16" border="0"/></a>
+			<a href="javascript:selectMyself();"><img src="images/user18.gif" width="16" height="16" border="0"/></a>
+		</p>
+		<p>
+			#editDateFieldCustom("tool.contenttool.versionModifiedDateTime" "modifiedDateTime" $!modifiedDateTime "30" "date" "ViewCalendar.action?date=&formPath=document.editForm.modifiedDateTimeStart" "$dateReadonly")
 		</p>
 		<p>
 			#selectBox("tool.contenttool.languageFilter.label" "languageId" $languageId $availableLanguages "tool.contenttool.filterShowAll.label")
-		</p>
-		<p>
-			#selectBox("tool.contenttool.contentTypeFilter.label" "contentTypeDefinitionId" $contentTypeDefinitionId $contentTypeDefinitions "tool.contenttool.filterShowAll.label")
 		</p>
 		#if($allowCaseSensitive)
 		<p>
@@ -47,14 +84,6 @@
 				-->				
 				<option value="2" #checkSelected("2" $stateId)>$ui.getString("tool.contenttool.state.publish")</option>
 				<option value="3" #checkSelected("3" $stateId)>$ui.getString("tool.contenttool.state.published")</option>
-			</select>
-		</p>
-		<p>
-			$ui.getString("tool.contenttool.chooseRepositoryLabel")<br>
-			<select class="dropbox" name="repositoryIdToSearch" multiple="true" size="10">
-				#foreach ($repositoryVO in $repositories)
-					<option value="$repositoryVO.id" #checkSelected("$repositoryVO.id" "$repositoryId")>$repositoryVO.name</option>
-			    #end
 			</select>
 		</p>
 	</td>

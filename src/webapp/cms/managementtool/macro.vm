@@ -1488,6 +1488,10 @@
 ## DATE INPUTS												   *
 ##**************************************************************
 
+#macro(editDateFieldCustom $fieldNameKey $fieldName $fieldValue $length $className $url $readOnly)
+  #editDateField4($ui.getString("${fieldNameKey}") $fieldNameKey $fieldName $fieldValue $length $className $url $readOnly)
+#end
+
 #macro(editDateField $fieldNameKey $fieldName $fieldValue $length $className $url $readOnly)
   #editDateField4($ui.getString("entity.${fieldNameKey}.label") $fieldNameKey $fieldName $fieldValue $length $className $url $readOnly)
 #end

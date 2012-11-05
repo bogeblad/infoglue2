@@ -17,7 +17,7 @@
 <!--
 	function showUsers()
 	{
-		openPopup('ViewListSystemUser!userListForPopup.action', 'Users', 'width=400,height=600,resizable=yes,scrollbars=yes');
+		openPopup('ViewListSystemUser!userListForPopup.action', 'Users', 'width=800,height=600,resizable=yes,scrollbars=yes');
 	}
 	
 	function selectUser(userName)
@@ -204,6 +204,7 @@
 Rights saved...
 </p>
 #end
+#if($stateChanged)<span style="color:red">You must publish the page for these access rights to be active live</span>#end
 
 <table border="0" width="95%" cellpadding="0" cellspacing="0">
 	<tr class="darkgreen">

@@ -4,7 +4,7 @@
 	"iTotalDisplayRecords": $totalDisplayRecords, 
 	"aaData": [ 
 		#foreach($principal in $infogluePrincipals)
-		#if($velocityCount > 1),#end["<a class='user' href='ViewSystemUser.action?userName=$principal.name'>$principal.name</a>","$principal.firstName","$principal.lastName"]
+		#if($velocityCount > 1),#end["<a class='user' href='ViewSystemUser.action?userName=$principal.name'>$principal.name</a>","$principal.firstName","$principal.lastName","<b>Roles:</b> #foreach($role in $principal.roles) $role.displayName,#end<br/> <b>Groups:</b> #if($principal.groups.size() > 5) $principal.groups.size() Groups #else #foreach($group in $principal.groups) $group.displayName,#end #end"]
 		#end
 	] 
 }

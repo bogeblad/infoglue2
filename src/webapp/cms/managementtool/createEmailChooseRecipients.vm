@@ -38,6 +38,7 @@ function toggleBlock(id)
 #end
 </div>
 
+#*
 <div id="usersTitle"> 
 	<div><span style="font-size: 12px; font-weight: bold;">$ui.getString("tool.managementtool.users.title")</span>&nbsp;<a href="javascript:toggleBlock('users');"><img src="images/downArrow.gif" border="0"></a></div>
 
@@ -53,5 +54,6 @@ function toggleBlock(id)
 	</form>
 	</div>
 </div>
+*#
 
 #endManagementTool()
