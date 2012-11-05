@@ -31,9 +31,12 @@ import java.util.List;
 import javax.servlet.ServletOutputStream;
 
 import org.apache.log4j.Logger;
+import org.exolab.castor.jdo.Database;
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
+import org.infoglue.cms.controllers.kernel.impl.simple.CastorDatabaseService;
 import org.infoglue.cms.controllers.kernel.impl.simple.RoleControllerProxy;
 import org.infoglue.cms.controllers.kernel.impl.simple.UserControllerProxy;
+import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.security.InfoGluePrincipal;
 import org.infoglue.cms.util.sorters.ReflectionComparator;
 import org.infoglue.deliver.util.Timer;
@@ -74,6 +77,7 @@ public class ViewListSystemUserAction extends InfoGlueAbstractAction
 
 	protected String doExecute() throws Exception 
 	{
+		/*
 		this.filterRoleNames = this.getRequest().getParameterValues("filterRoleName");
 		if(filterFirstName == null && filterLastName == null && filterUserName == null && filterEmail == null && (filterRoleNames == null || filterRoleNames.length == 0 || (filterRoleNames.length == 1 && filterRoleNames[0].equals(""))))
 		{
@@ -90,10 +94,13 @@ public class ViewListSystemUserAction extends InfoGlueAbstractAction
 		{
 			this.infogluePrincipals = UserControllerProxy.getController().getFilteredUsers(this.filterFirstName, this.filterLastName, this.filterUserName, this.filterEmail, filterRoleNames);
 		}
-		
-		if(this.infogluePrincipals.size() > 100)
-			this.infogluePrincipals = this.infogluePrincipals.subList(0, 100);
+		if(this.infogluePrincipals.size() > 20)
+			this.infogluePrincipals = this.infogluePrincipals.subList(0, 20);
+		*/
 
+		this.infogluePrincipals = new ArrayList();
+
+		
 	    return "success";
 	}
 
@@ -145,10 +152,25 @@ public class ViewListSystemUserAction extends InfoGlueAbstractAction
 		if(sortDirection == null || sortDirection.equals(""))
 			sortDirection = "asc";
 		
-		if(sSearch == null || sSearch.equals(""))
-			this.infogluePrincipals = UserControllerProxy.getController().getAllUsers();
-		else
-			this.infogluePrincipals = UserControllerProxy.getController().getFilteredUsers(this.sSearch);
+		Database db = CastorDatabaseService.getDatabase();
+
+		try 
+		{
+			beginTransaction(db);
+								
+			if(sSearch == null || sSearch.equals(""))
+				this.infogluePrincipals = new ArrayList(); //UserControllerProxy.getController(db).getAllUsers();
+			else
+				this.infogluePrincipals = UserControllerProxy.getController(db).getFilteredUsers(this.sSearch);
+			
+			commitTransaction(db);
+		} 
+		catch (Exception e) 
+		{
+			logger.info("An error occurred so we should not complete the transaction:" + e);
+			rollbackTransaction(db);
+			throw new SystemException("An error occurred so we should not complete the transaction:" + e, e);
+		}
 
 		String sortProperty = "name";
 		if(sortColNumber != null && sortColNumber.equals("1"))
@@ -187,8 +209,8 @@ public class ViewListSystemUserAction extends InfoGlueAbstractAction
 
 	public String doUserListForPopup() throws Exception 
 	{
-		this.infogluePrincipals = UserControllerProxy.getController().getAllUsers();
-		Collections.sort(this.infogluePrincipals, new ReflectionComparator("firstName"));
+		this.infogluePrincipals = new ArrayList(); //UserControllerProxy.getController().getAllUsers();
+		//Collections.sort(this.infogluePrincipals, new ReflectionComparator("firstName"));
 		
 	    return "successPopup";
 	}

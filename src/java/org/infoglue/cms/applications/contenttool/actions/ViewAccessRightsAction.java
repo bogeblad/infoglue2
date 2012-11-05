@@ -78,6 +78,7 @@ public class ViewAccessRightsAction extends InfoGlueAbstractAction
 	private String colorScheme;
 	private String saved = "false";
 	private Boolean closeOnLoad = false;
+	private Boolean stateChanged = false;
 
 	private List interceptionPointVOList = new ArrayList();
 	private List roleList = null;
@@ -478,6 +479,16 @@ public class ViewAccessRightsAction extends InfoGlueAbstractAction
 	public Boolean getCloseOnLoad()
 	{
 		return closeOnLoad;
+	}
+
+	public Boolean getStateChanged()
+	{
+		return this.stateChanged;
+	}
+
+	public void setStateChanged(Boolean stateChanged)
+	{
+		this.stateChanged = stateChanged;
 	}
 
 	public void setCloseOnLoad(Boolean closeOnLoad)

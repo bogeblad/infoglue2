@@ -47,6 +47,7 @@ public class ViewRoleAction extends InfoGlueAbstractAction
 
 	private String roleName;
 	private boolean supportsUpdate = true;
+	private Integer availableSystemUserCount = 0;
 	private InfoGlueRole infoGlueRole;
 	private List infoGluePrincipals = new ArrayList();
 	private List assignedInfoGluePrincipals;
@@ -62,18 +63,24 @@ public class ViewRoleAction extends InfoGlueAbstractAction
 
     protected void initialize(String roleName) throws Exception
     {
-		//this.supportsUpdate				= RoleControllerProxy.getController().getSupportUpdate();
-		this.infoGlueRole				= RoleControllerProxy.getController().getRole(roleName);
+    	this.infoGlueRole				= RoleControllerProxy.getController().getRole(roleName);
 		this.supportsUpdate				= this.infoGlueRole.getAutorizationModule().getSupportUpdate();
-		this.assignedInfoGluePrincipals	= this.infoGlueRole.getAutorizationModule().getRoleUsers(roleName);
-		if(this.supportsUpdate) //Only fetch if the user can edit.
+		this.availableSystemUserCount 	= UserControllerProxy.getTableCount("cmSystemUser", "userName").getCount();
+		if(this.supportsUpdate)
 		{
-			this.infoGluePrincipals		= this.infoGlueRole.getAutorizationModule().getUsers();
-			
-			List newInfogluePrincipals = new ArrayList();
-			newInfogluePrincipals.addAll(this.infoGluePrincipals);
-			newInfogluePrincipals.removeAll(assignedInfoGluePrincipals);
-			this.unassignedInfoGluePrincipals = newInfogluePrincipals;
+			this.assignedInfoGluePrincipals	= this.infoGlueRole.getAutorizationModule().getRoleUsers(roleName);
+			if(availableSystemUserCount < 5000)
+			{
+				this.infoGluePrincipals			= this.infoGlueRole.getAutorizationModule().getUsers();
+				//this.supportsUpdate				= RoleControllerProxy.getController().getSupportUpdate();
+				if(this.supportsUpdate) //Only fetch if the user can edit.
+				{
+					List newInfogluePrincipals = new ArrayList();
+					newInfogluePrincipals.addAll(this.infoGluePrincipals);
+					newInfogluePrincipals.removeAll(assignedInfoGluePrincipals);
+					this.unassignedInfoGluePrincipals = newInfogluePrincipals;
+				}
+			}
 		}
 		
 		this.contentTypeDefinitionVOList 			= ContentTypeDefinitionController.getController().getContentTypeDefinitionVOList(ContentTypeDefinitionVO.EXTRANET_ROLE_PROPERTIES);
@@ -167,5 +174,10 @@ public class ViewRoleAction extends InfoGlueAbstractAction
 	public boolean getSupportsUpdate()
 	{
 		return this.supportsUpdate;
+	}
+
+	public Integer getAvailableSystemUserCount()
+	{
+		return this.availableSystemUserCount;
 	}
 }

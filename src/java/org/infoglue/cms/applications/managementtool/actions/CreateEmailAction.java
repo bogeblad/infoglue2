@@ -43,7 +43,7 @@ public class CreateEmailAction extends InfoGlueAbstractAction
 
 	private static final long serialVersionUID = 1L;
 	
-	private List users = null;
+	//private List users = null;
 	private List roles = null;
 	private List groups = null;
 	
@@ -102,7 +102,7 @@ public class CreateEmailAction extends InfoGlueAbstractAction
    
     public String doInputChooseRecipients() throws Exception
     {    	
-    	users 	= UserControllerProxy.getController().getAllUsers();
+    	//users 	= UserControllerProxy.getController().getAllUsers();
     	roles 	= RoleControllerProxy.getController().getAllRoles();
     	groups 	= GroupControllerProxy.getController().getAllGroups();
     	
@@ -242,7 +242,7 @@ public class CreateEmailAction extends InfoGlueAbstractAction
     public String doInputChooseRecipientsV3() throws Exception
     {
     	extraText 	= getRequest().getParameter("extraText");    	
-    	users 		= UserControllerProxy.getController().getAllUsers();
+    	//users 		= UserControllerProxy.getController().getAllUsers();
     	roles 		= RoleControllerProxy.getController().getAllRoles();
     	groups 		= GroupControllerProxy.getController().getAllGroups();
     	
@@ -264,7 +264,7 @@ public class CreateEmailAction extends InfoGlueAbstractAction
     	{    		
     		errorMessage = "You must select at least one recipient.";
     		
-    		users 	= UserControllerProxy.getController().getAllUsers();
+    		//users 	= UserControllerProxy.getController().getAllUsers();
         	roles 	= RoleControllerProxy.getController().getAllRoles();
         	groups 	= GroupControllerProxy.getController().getAllGroups();
     		
@@ -344,10 +344,12 @@ public class CreateEmailAction extends InfoGlueAbstractAction
 		return roles;
 	}
 
+	/*
 	public List getUsers() 
 	{
 		return users;
 	}
+	*/
 
 	public String getUsersAddresses()
 	{

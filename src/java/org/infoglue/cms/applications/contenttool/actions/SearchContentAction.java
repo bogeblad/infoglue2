@@ -179,7 +179,7 @@ public class SearchContentAction extends InfoGlueAbstractAction
 			allowCaseSensitive = false;
 		}
 
-	    this.principals = UserControllerProxy.getController().getAllUsers();
+	    this.principals = new ArrayList(); //UserControllerProxy.getController().getAllUsers();
 	    this.availableLanguages = LanguageController.getController().getLanguageVOList(this.repositoryId);
 	    this.contentTypeDefinitions = ContentTypeDefinitionController.getController().getContentTypeDefinitionVOList();
 		this.repositories = RepositoryController.getController().getAuthorizedRepositoryVOList(this.getInfoGluePrincipal(), false);
@@ -347,7 +347,7 @@ public class SearchContentAction extends InfoGlueAbstractAction
 			allowCaseSensitive = false;
 		}
 
-	    this.principals = UserControllerProxy.getController().getAllUsers();
+	    this.principals = new ArrayList(); //UserControllerProxy.getController().getAllUsers();
 	    this.availableLanguages = LanguageController.getController().getLanguageVOList(this.repositoryId);
 	    this.contentTypeDefinitions = ContentTypeDefinitionController.getController().getContentTypeDefinitionVOList();
 		this.repositories = RepositoryController.getController().getAuthorizedRepositoryVOList(this.getInfoGluePrincipal(), false);
@@ -452,11 +452,13 @@ public class SearchContentAction extends InfoGlueAbstractAction
 		return repositories;
 	}
 
+	/*
     public List getPrincipals()
     {
         return principals;
     }
- 
+ 	*/
+	
    /* 
     public String[] getContentVersionId()
     {

@@ -47,6 +47,7 @@ public class ViewGroupAction extends InfoGlueAbstractAction
 
 	private String groupName;
 	private boolean supportsUpdate = true;
+	private Integer availableSystemUserCount = 0;
 	private InfoGlueGroup infoGlueGroup;
 	private List infoGluePrincipals = new ArrayList();
 	private List assignedInfoGluePrincipals;
@@ -64,15 +65,20 @@ public class ViewGroupAction extends InfoGlueAbstractAction
 		//this.supportsUpdate				= GroupControllerProxy.getController().getSupportUpdate();
 		this.infoGlueGroup				= GroupControllerProxy.getController().getGroup(groupName);
 		this.supportsUpdate 			= this.infoGlueGroup.getAutorizationModule().getSupportUpdate();
-		this.assignedInfoGluePrincipals	= this.infoGlueGroup.getAutorizationModule().getGroupUsers(groupName);
+		this.availableSystemUserCount 	= UserControllerProxy.getTableCount("cmSystemUser", "userName").getCount();
+
 		if(this.supportsUpdate) //Only fetch if the user can edit.
 		{
-			this.infoGluePrincipals			= this.infoGlueGroup.getAutorizationModule().getUsers();
-		
-			List newInfogluePrincipals = new ArrayList();
-			newInfogluePrincipals.addAll(this.infoGluePrincipals);
-			newInfogluePrincipals.removeAll(assignedInfoGluePrincipals);
-			this.unassignedInfoGluePrincipals = newInfogluePrincipals;
+			this.assignedInfoGluePrincipals	= this.infoGlueGroup.getAutorizationModule().getGroupUsers(groupName);
+			if(availableSystemUserCount < 5000)
+			{
+				this.infoGluePrincipals			= this.infoGlueGroup.getAutorizationModule().getUsers();
+			
+				List newInfogluePrincipals = new ArrayList();
+				newInfogluePrincipals.addAll(this.infoGluePrincipals);
+				newInfogluePrincipals.removeAll(assignedInfoGluePrincipals);
+				this.unassignedInfoGluePrincipals = newInfogluePrincipals;
+			}
 		}
 		
 		this.contentTypeDefinitionVOList 			= ContentTypeDefinitionController.getController().getContentTypeDefinitionVOList(ContentTypeDefinitionVO.EXTRANET_GROUP_PROPERTIES);
@@ -170,4 +176,10 @@ public class ViewGroupAction extends InfoGlueAbstractAction
 	{
 		return this.supportsUpdate;
 	}
+	
+	public Integer getAvailableSystemUserCount()
+	{
+		return this.availableSystemUserCount;
+	}
+
 }
