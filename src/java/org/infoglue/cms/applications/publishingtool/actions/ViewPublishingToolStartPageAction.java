@@ -25,12 +25,14 @@ package org.infoglue.cms.applications.publishingtool.actions;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.AccessRightController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentVersionController;
+import org.infoglue.cms.controllers.kernel.impl.simple.EventController;
 import org.infoglue.cms.controllers.kernel.impl.simple.InterceptionPointController;
 import org.infoglue.cms.controllers.kernel.impl.simple.PublicationController;
 import org.infoglue.cms.controllers.kernel.impl.simple.RepositoryController;
@@ -44,6 +46,7 @@ import org.infoglue.cms.entities.publishing.PublicationDetailVO;
 import org.infoglue.cms.entities.publishing.PublicationVO;
 import org.infoglue.cms.entities.structure.SiteNodeVO;
 import org.infoglue.cms.entities.structure.SiteNodeVersionVO;
+import org.infoglue.cms.entities.workflow.EventVO;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.util.ChangeNotificationController;
 import org.infoglue.cms.util.DateHelper;
@@ -64,10 +67,14 @@ public class ViewPublishingToolStartPageAction extends InfoGlueAbstractAction
 	private static final long serialVersionUID = 1L;
 
     private List repositories;
+    private Map<Integer,List<EventVO>> repoEvents = null;
     
     public String doExecute() throws Exception
     {
     	this.repositories = RepositoryController.getController().getAuthorizedRepositoryVOList(this.getInfoGluePrincipal(), false);
+    	
+    	this.repoEvents = EventController.getPublicationRepositoryEvents();
+    	System.out.println("repoEvents:" + repoEvents.size());
     	
         return "success";
     }
@@ -255,9 +262,16 @@ public class ViewPublishingToolStartPageAction extends InfoGlueAbstractAction
     /**
      * Returns the events up for publishing.
      */
-    public List getPublicationEvents(Integer repositoryId, String filter) throws SystemException, Exception
+    public List<EventVO> getPublicationEvents(Integer repositoryId, String filter) throws SystemException, Exception
     {
-    	List events = PublicationController.getPublicationEvents(repositoryId, getInfoGluePrincipal(), filter, false);
+    	List<EventVO> events = new ArrayList<EventVO>();
+    	if(repoEvents != null)
+    	{
+    		events = this.repoEvents.get(repositoryId);
+    		if(events == null)
+    			events = new ArrayList<EventVO>();
+    	}
+    	//List events = PublicationController.getPublicationEvents(repositoryId, getInfoGluePrincipal(), filter, false);
 
     	return events;
     }
