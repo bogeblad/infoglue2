@@ -25,6 +25,7 @@ package org.infoglue.cms.applications.workflowtool.util;
 import java.io.UnsupportedEncodingException;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Properties;
@@ -144,6 +145,8 @@ public class InfogluePropertySet implements PropertySet {
 	 */
 	public String getAsString(final String key)
 	{
+		System.out.println("getAsString key:" + key);
+
 		if(!exists(key) || getAsActualType(key) == null)
 		{
 			return null;
@@ -183,6 +186,8 @@ public class InfogluePropertySet implements PropertySet {
 	 */
 	public boolean exists(String key) throws PropertyException 
 	{ 
+		System.out.println("exists key:" + key);
+
 		return delegate.exists(key); 
 	}
 
@@ -303,6 +308,8 @@ public class InfogluePropertySet implements PropertySet {
 	 */
 	public String getString(String key) throws PropertyException 
 	{
+		System.out.println("getString key:" + key + ":" + delegate.getString(key));
+
 		return delegate.getString(key); 
 	}
 
@@ -319,6 +326,7 @@ public class InfogluePropertySet implements PropertySet {
 	 */
 	public int getType(String key) throws PropertyException 
 	{ 
+		System.out.println("Key:" + key + "=" + delegate.getType(key));
 		return delegate.getType(key); 
 	}
 
@@ -335,6 +343,8 @@ public class InfogluePropertySet implements PropertySet {
 	 */
 	public void init(Map config, Map args) 
 	{ 
+		System.out.println("config:" + config);
+		System.out.println("args:" + args);
 		delegate.init(config, args); 
 	}
 

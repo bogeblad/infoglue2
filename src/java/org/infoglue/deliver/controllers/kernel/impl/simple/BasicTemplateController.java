@@ -3515,14 +3515,14 @@ public class BasicTemplateController implements TemplateController
 	 * This method gets a List of pages referencing the given content.
 	 */
 
-	public List getReferencingPages(Integer contentId, int maxRows, Boolean excludeCurrentPage)
+	public List<SiteNodeVO> getReferencingPages(Integer contentId, int maxRows, Boolean excludeCurrentPage)
 	{
 		String cacheKey = "content_" + contentId + "_" + maxRows + "_" + excludeCurrentPage;
 		
 		if(logger.isInfoEnabled())
 			logger.info("cacheKey:" + cacheKey);
 		
-		List referencingPages = (List)CacheController.getCachedObject("referencingPagesCache", cacheKey);
+		List<SiteNodeVO> referencingPages = (List<SiteNodeVO>)CacheController.getCachedObject("referencingPagesCache", cacheKey);
 		if(referencingPages != null)
 		{
 			if(logger.isInfoEnabled())
@@ -3530,21 +3530,18 @@ public class BasicTemplateController implements TemplateController
 		}
 		else
 		{
-			referencingPages = new ArrayList();
+			referencingPages = new ArrayList<SiteNodeVO>();
 			try
 			{
-				List referencingObjects = RegistryController.getController().getReferencingObjectsForContent(contentId, maxRows, this.getDatabase());
+				Timer t = new Timer();
+				Set<SiteNodeVO> referencingSiteNodeVOList = RegistryController.getController().getReferencingSiteNodesForContent(contentId, maxRows, this.getDatabase());
+				//List referencingObjects = RegistryController.getController().getReferencingObjectsForContent(contentId, maxRows, this.getDatabase());
+				t.printElapsedTime("referencingObjects took");
 				
-				Iterator referencingObjectsIterator = referencingObjects.iterator();
-				while(referencingObjectsIterator.hasNext())
+				for(SiteNodeVO siteNode : referencingSiteNodeVOList)
 				{
-					ReferenceBean referenceBean = (ReferenceBean)referencingObjectsIterator.next();
-					Object pageCandidate = referenceBean.getReferencingCompletingObject();
-					if(pageCandidate instanceof SiteNodeVO)
-					{
-						if(!excludeCurrentPage || !((SiteNodeVO)pageCandidate).getId().equals(getSiteNodeId()))
-							referencingPages.add(pageCandidate);
-					}
+					if(!excludeCurrentPage || !(siteNode).getId().equals(getSiteNodeId()))
+						referencingPages.add(siteNode);
 				}
 				
 				if(referencingPages != null)
@@ -5086,7 +5083,7 @@ public class BasicTemplateController implements TemplateController
 					criterias.setRepositoryIdList(repositoryIdList);
 				
 				final Set set = ExtendedSearchController.getController().search(criterias, getDatabase());
-				t.printElapsedTime("AAAAAAAAAAAAAAAAAAAAAA search returning :" + set.size());
+				//t.printElapsedTime("AAAAAAAAAAAAAAAAAAAAAA search returning :" + set.size());
 				final List result = new ArrayList();
 				for(Iterator i = set.iterator(); i.hasNext(); ) 
 				{

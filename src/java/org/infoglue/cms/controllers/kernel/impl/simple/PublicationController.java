@@ -1388,11 +1388,14 @@ public class PublicationController extends BaseController
 		String recipients = "";
 	    
 		List users = new ArrayList();
+		
+		/*
 		if(recipientFilter.equalsIgnoreCase("all"))
     	{
     		users = UserControllerProxy.getController(db).getAllUsers();
     	}
-    	else if(recipientFilter.equalsIgnoreCase("groupBased"))
+    	else */
+		if(recipientFilter.equalsIgnoreCase("groupBased"))
     	{
     		Iterator groupsIterator = principal.getGroups().iterator();
     		

@@ -1899,7 +1899,7 @@ public class ContentVersionController extends BaseController
 	 
 	public void updateAttributeValue(Integer contentVersionId, String attributeName, String attributeValue, InfoGluePrincipal infogluePrincipal) throws SystemException, Bug
 	{
-		updateAttributeValue(contentVersionId, attributeName, attributeValue, infogluePrincipal, false);
+		updateAttributeValue(contentVersionId, attributeName, attributeValue, infogluePrincipal, true);
 	}
 	 
 	/**

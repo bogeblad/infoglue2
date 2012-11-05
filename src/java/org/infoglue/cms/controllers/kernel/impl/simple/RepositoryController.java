@@ -405,21 +405,38 @@ public class RepositoryController extends BaseController
 	public List getAuthorizedRepositoryVOList(InfoGluePrincipal infoGluePrincipal, boolean isBindingDialog, boolean allowIfWriteAccess) throws ConstraintException, SystemException, Bug
 	{    	
 		List accessableRepositories = new ArrayList();
+		//Timer t = new Timer();
     	
-		List allRepositories = this.getRepositoryVOList();
-		Iterator i = allRepositories.iterator();
-		while(i.hasNext())
+		Database db = CastorDatabaseService.getDatabase();
+		
+		try 
 		{
-			RepositoryVO repositoryVO = (RepositoryVO)i.next();
-			if(getIsAccessApproved(repositoryVO.getRepositoryId(), infoGluePrincipal, isBindingDialog, allowIfWriteAccess))
+			beginTransaction(db);
+		
+			List allRepositories = this.getRepositoryVOList();
+			//t.printElapsedTime("allRepositories took");
+			
+			Iterator i = allRepositories.iterator();
+			while(i.hasNext())
 			{
-				accessableRepositories.add(repositoryVO);
+				RepositoryVO repositoryVO = (RepositoryVO)i.next();
+				if(getIsAccessApproved(db, repositoryVO.getRepositoryId(), infoGluePrincipal, isBindingDialog, allowIfWriteAccess))
+				{
+					//t.printElapsedTime("getIsAccessApproved took");
+					accessableRepositories.add(repositoryVO);
+				}
 			}
-		}
-    	
-		Collections.sort(accessableRepositories, new ReflectionComparator("name"));
+	    	
+			Collections.sort(accessableRepositories, new ReflectionComparator("name"));
 
-		return accessableRepositories;
+			commitTransaction(db);
+		}
+		catch ( Exception e)		
+		{
+			throw new SystemException("An error occurred when we tried to fetch a list of roles in the repository. Reason:" + e.getMessage(), e);			
+		}
+		
+		return accessableRepositories;	
 	}
 
 
@@ -495,12 +512,7 @@ public class RepositoryController extends BaseController
 
 		try
 		{ 
-		    if(isBindingDialog)
-		        hasAccess = (AccessRightController.getController().getIsPrincipalAuthorized(db, infoGluePrincipal, "Repository.Read", repositoryId.toString()) || AccessRightController.getController().getIsPrincipalAuthorized(db, infoGluePrincipal, "Repository.ReadForBinding", repositoryId.toString()));
-		    else if(allowIfWriteAccess)
-		        hasAccess = (AccessRightController.getController().getIsPrincipalAuthorized(db, infoGluePrincipal, "Repository.Read", repositoryId.toString()) || AccessRightController.getController().getIsPrincipalAuthorized(db, infoGluePrincipal, "Repository.Write", repositoryId.toString())); 
-		    else
-		        hasAccess = AccessRightController.getController().getIsPrincipalAuthorized(db, infoGluePrincipal, "Repository.Read", repositoryId.toString()); 
+		    hasAccess = getIsAccessApproved(db, repositoryId, infoGluePrincipal, isBindingDialog, allowIfWriteAccess);
 		    	
 			commitTransaction(db);
 		}
@@ -516,6 +528,24 @@ public class RepositoryController extends BaseController
 		return hasAccess;
 	}	
     
+	/**
+	 * This method returns true if the user should have access to the repository sent in.
+	 */
+    
+	public boolean getIsAccessApproved(Database db, Integer repositoryId, InfoGluePrincipal infoGluePrincipal, boolean isBindingDialog, boolean allowIfWriteAccess) throws SystemException
+	{
+		boolean hasAccess = false;
+    	
+	    if(isBindingDialog)
+	        hasAccess = (AccessRightController.getController().getIsPrincipalAuthorized(db, infoGluePrincipal, "Repository.Read", repositoryId.toString()) || AccessRightController.getController().getIsPrincipalAuthorized(db, infoGluePrincipal, "Repository.ReadForBinding", repositoryId.toString()));
+	    else if(allowIfWriteAccess)
+	        hasAccess = (AccessRightController.getController().getIsPrincipalAuthorized(db, infoGluePrincipal, "Repository.Read", repositoryId.toString()) || AccessRightController.getController().getIsPrincipalAuthorized(db, infoGluePrincipal, "Repository.Write", repositoryId.toString())); 
+	    else
+	        hasAccess = AccessRightController.getController().getIsPrincipalAuthorized(db, infoGluePrincipal, "Repository.Read", repositoryId.toString()); 
+		
+		return hasAccess;
+	}	
+
 	
 	/**
 	 * This is a method that gives the user back an newly initialized ValueObject for this entity that the controller

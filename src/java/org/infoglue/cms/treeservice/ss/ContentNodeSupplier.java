@@ -146,7 +146,7 @@ public class ContentNodeSupplier extends BaseNodeSupplier
 			logger.warn("Error getting Content Children", e);
 		}
 		
-		if(logger.isDebugEnabled())
+		//if(logger.isDebugEnabled())
 			t.printElapsedTime("got children");
 		
 		//Filter list on content type names if set such is stated
@@ -200,13 +200,15 @@ public class ContentNodeSupplier extends BaseNodeSupplier
 		    logger.warn("Error filtering Content Children", e);
 		}
 		
-		if(logger.isDebugEnabled())
+		//if(logger.isDebugEnabled())
 			t.printElapsedTime("Done filtering children");
 				
 		//Sort the tree nodes if setup to do so
 		String sortProperty = CmsPropertyHandler.getContentTreeSort();
 		if(sortProperty != null)
 			Collections.sort(children, new ReflectionComparator(sortProperty));
+		
+		t.printElapsedTime("Sorting done");
 		
 		Iterator i = children.iterator();
 		while(i.hasNext())
@@ -218,6 +220,8 @@ public class ContentNodeSupplier extends BaseNodeSupplier
 			if(useAccessRightsOnContentTreeString != null && useAccessRightsOnContentTreeString.equalsIgnoreCase("true"))
 				hasUserContentAccess = getHasUserContentAccess(this.infogluePrincipal, vo.getId());
 
+			t.printElapsedTime("hasUserContentAccess");
+			
 			if(vo.getName().equals("Meta info folder"))
 			{
 				try
@@ -237,8 +241,8 @@ public class ContentNodeSupplier extends BaseNodeSupplier
 				node.setId(vo.getId());
 				node.setTitle(vo.getName());
 				
-				String disableCustomIcons = CmsPropertyHandler.getDisableCustomIcons();
-				if(disableCustomIcons == null || !disableCustomIcons.equals("true"))
+				//String disableCustomIcons = CmsPropertyHandler.getDisableCustomIcons();
+				//if(disableCustomIcons == null || !disableCustomIcons.equals("true"))
 					node.getParameters().put("contentTypeDefinitionId", vo.getContentTypeDefinitionId());
 				
 				if(vo.getIsProtected().intValue() == ContentVO.YES.intValue())
@@ -273,7 +277,8 @@ public class ContentNodeSupplier extends BaseNodeSupplier
 				{
 					node.setContainer(true);
 					node.setChildren((vo.getChildCount().intValue() > 0));
-					
+					t.printElapsedTime("childCount");
+
 					ret.add(node);
 				}
 				else if(showLeafs)
@@ -285,8 +290,8 @@ public class ContentNodeSupplier extends BaseNodeSupplier
 			}			
 		}
 
-		if(logger.isDebugEnabled())
-			t.printElapsedTime("Done sorting children");
+		//if(logger.isDebugEnabled())
+			t.printElapsedTime("Done getting children");
 		
 		return ret;
 	}

@@ -145,7 +145,7 @@ public class AccessRightController extends BaseController
 		
 		StringBuilder sb = new StringBuilder();
 		sb.append("CALL SQL select ar.accessRightId, ar.parameters, ar.interceptionPointId from cmAccessRight ar where ");
-		sb.append("ar.interceptionPointId in (select interceptionPointId from cmInterceptionPoint where name like 'ComponentEditor.%' OR name = 'Component.Select' OR name = 'ComponentPropertyEditor.EditProperty' OR name like '%.Read' AND name NOT LIKE 'SiteNodeVersion.Read') AND ");
+		sb.append("ar.interceptionPointId in (select interceptionPointId from cmInterceptionPoint where name like 'ComponentEditor.%' OR name LIKE 'Component.%' OR name = 'ComponentPropertyEditor.EditProperty' OR name like '%.Read' AND name NOT LIKE 'SiteNodeVersion.Read') AND ");
 		sb.append("(ar.accessRightId IN (select accessRightId from cmAccessRightUser where userName = '" + principal.getName() + "') OR ");
 		sb.append("(ar.accessRightId NOT IN (select accessRightId from cmAccessRightRole where ar.accessRightId = accessRightId) OR ");
 		sb.append("(  ar.accessRightId IN ");
@@ -251,6 +251,8 @@ public class AccessRightController extends BaseController
 	
 	public List getAccessRightVOList(String interceptionPointName, String parameters, Database db) throws SystemException, Bug
 	{
+		Timer t = new Timer();
+		
 		String key = "" + interceptionPointName + "_" + parameters;
 		List accessRightVOList = (List)CacheController.getCachedObject("authorizationCache", key);
 		if(accessRightVOList != null)
@@ -263,16 +265,21 @@ public class AccessRightController extends BaseController
 			
 		accessRightVOList = new ArrayList();
 		
-		InterceptionPointVO interceptionPointVO = InterceptionPointController.getController().getInterceptionPointVOWithName(interceptionPointName);
+		InterceptionPointVO interceptionPointVO = InterceptionPointController.getController().getInterceptionPointVOWithName(interceptionPointName, db);
 		if(interceptionPointVO == null)
 		{
 			logger.info("interceptionPointName:" + interceptionPointName + " not found");
 			return new ArrayList();
 		}
-		logger.error("Reading the hard way 1");
+		t.printElapsedTime("1.0");
+		
+		System.out.println("WTF.....");
+		//Thread.dumpStack();
+		logger.error("Reading the hard way:" + interceptionPointName + ":" + parameters);
 		
 		List accessRightList = this.getAccessRightListOnlyReadOnly(interceptionPointVO.getId(), parameters, db);
-		
+		t.printElapsedTime("1.1");
+
 		Iterator accessRightListIterator = accessRightList.iterator();
 		while(accessRightListIterator.hasNext())
 		{
@@ -290,6 +297,8 @@ public class AccessRightController extends BaseController
 		    accessRightVOList.add(vo);
 		}
 		
+		t.printElapsedTime("1.3");
+
 		if(accessRightVOList != null)
 			CacheController.cacheObject("authorizationCache", key, accessRightVOList);
 		
@@ -1831,15 +1840,17 @@ public class AccessRightController extends BaseController
 			return true;
 		}
 		
-		//ComponentEditor.%' OR name = 'Component.Select' OR name = 'ComponentPropertyEditor.EditProperty' OR name like '%.Read' AND name NOT LIKE 'SiteNodeVersion.Read
-		if((interceptionPointName.indexOf("ComponentEditor.") > -1 || interceptionPointName.indexOf("Component.Select") > -1 || interceptionPointName.indexOf("ComponentPropertyEditor.EditProperty") > -1 || interceptionPointName.indexOf(".Read") > -1) && interceptionPointName.indexOf("SiteNodeVersion.Read") == -1)
+		//ComponentEditor.%' OR name = 'Component.Select' OR name = 'Component.Edit' OR name = 'ComponentPropertyEditor.EditProperty' OR name like '%.Read' AND name NOT LIKE 'SiteNodeVersion.Read
+		if((interceptionPointName.indexOf("ComponentEditor.") > -1 || interceptionPointName.indexOf("Component.") > -1 || interceptionPointName.indexOf("ComponentPropertyEditor.EditProperty") > -1 || interceptionPointName.indexOf(".Read") > -1) && interceptionPointName.indexOf("SiteNodeVersion.Read") == -1)
 		{
 			//Map<String,Integer> userAccessRightsMap = (Map<String,Integer>)CacheController.getCachedObjectFromAdvancedCache("personalAuthorizationCache", "authorizationMap_" + infoGluePrincipal.getName());
 			Map<String,Integer> userAccessRightsMap = (Map<String,Integer>)CacheController.getCachedObject("userAccessCache", "authorizationMap_" + infoGluePrincipal.getName());
 			//Map<String,Integer> userAccessRightsMap = principalAccessRights.get("" + infoGluePrincipal.getName());
 			if(userAccessRightsMap != null)
 			{
-				String acKey = "" + interceptionPointVO.getId() + "_" + extraParameters;
+				String acKey = "" + interceptionPointVO.getId();
+				if(extraParameters != null && !extraParameters.equals(""))
+					acKey = "" + interceptionPointVO.getId() + "_" + extraParameters;
 				//logger.info("Checking access on: " + acKey);
 				
 				Integer hasAccess = userAccessRightsMap.get(acKey);
@@ -2358,7 +2369,7 @@ public class AccessRightController extends BaseController
 			return true;
 			
 		//if(interceptionPointName.indexOf(".Read") > -1 && interceptionPointName.indexOf("SiteNodeVersion.Read") == -1)
-		if((interceptionPointName.indexOf("ComponentEditor.") > -1 || interceptionPointName.indexOf("Component.Select") > -1 || interceptionPointName.indexOf("ComponentPropertyEditor.EditProperty") > -1 || interceptionPointName.indexOf(".Read") > -1) && interceptionPointName.indexOf("SiteNodeVersion.Read") == -1)
+		if((interceptionPointName.indexOf("ComponentEditor.") > -1 || interceptionPointName.indexOf("Component.") > -1 || interceptionPointName.indexOf("ComponentPropertyEditor.EditProperty") > -1 || interceptionPointName.indexOf(".Read") > -1) && interceptionPointName.indexOf("SiteNodeVersion.Read") == -1)
 		{
 			Map<String,Integer> userAccessRightsMap = (Map<String,Integer>)CacheController.getCachedObject("userAccessCache", "authorizationMap_" + infoGluePrincipal.getName());
 			//Map<String,Integer> userAccessRightsMap = (Map<String,Integer>)CacheController.getCachedObjectFromAdvancedCache("personalAuthorizationCache", "authorizationMap_" + infoGluePrincipal.getName());

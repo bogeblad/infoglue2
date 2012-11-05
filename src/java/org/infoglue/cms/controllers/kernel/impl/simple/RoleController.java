@@ -42,6 +42,7 @@ import org.infoglue.cms.entities.management.RoleVO;
 import org.infoglue.cms.entities.management.SystemUser;
 import org.infoglue.cms.entities.management.impl.simple.RoleImpl;
 import org.infoglue.cms.entities.management.impl.simple.SmallRoleImpl;
+import org.infoglue.cms.entities.management.impl.simple.SystemUserRoleImpl;
 import org.infoglue.cms.exception.Bug;
 import org.infoglue.cms.exception.ConstraintException;
 import org.infoglue.cms.exception.SystemException;
@@ -76,7 +77,12 @@ public class RoleController extends BaseController
 	{
 		return (Role)getObjectWithId(RoleImpl.class, roleName, db);
 	}
-    
+
+	public SmallRoleImpl getSmallRoleWithName(String roleName, Database db) throws SystemException, Bug
+	{
+		return (SmallRoleImpl)getObjectWithId(SmallRoleImpl.class, roleName, db);
+	}
+
     /*
     public static List getRoleVOList(Database db) throws SystemException, Bug
     {
@@ -241,27 +247,34 @@ public class RoleController extends BaseController
         return role.getValueObject();
     }        
 
-    public Role update(RoleVO roleVO, String[] systemUsers, Database db) throws ConstraintException, SystemException
+    public SmallRoleImpl update(RoleVO roleVO, String[] systemUsers, Database db) throws ConstraintException, SystemException, Exception
     {
-        Role role = getRoleWithName(roleVO.getRoleName(), db);
-		role.getSystemUsers().clear();
-		
-		if(systemUsers != null)
-		{
-			for (int i=0; i < systemUsers.length; i++)
-            {
-        		SystemUser systemUser = SystemUserController.getController().getSystemUserWithName(systemUsers[i], db);
-        		
-            	role.getSystemUsers().add(systemUser);
-				systemUser.getRoles().add(role);
-            }
-		}
-       	
-        role.setValueObject(roleVO);
+        SmallRoleImpl smallRole = getSmallRoleWithName(roleVO.getRoleName(), db);
 
-        return role;
+		Integer systemUserCount = UserControllerProxy.getTableCount("cmSystemUser", "userName").getCount();
+		if(systemUsers != null && systemUsers.length == 0 && systemUserCount < 5000)
+		{
+			Role role = getRoleWithName(roleVO.getRoleName(), db);
+			role.getSystemUsers().clear();
+
+			if(systemUsers != null)
+			{
+				for (int i=0; i < systemUsers.length; i++)
+	            {
+					SystemUser systemUser = SystemUserController.getController().getSystemUserWithName(systemUsers[i], db);
+	        		
+	            	role.getSystemUsers().add(systemUser);
+					systemUser.getRoles().add(role);
+	            }
+			}
+		}
+
+		smallRole.setValueObject(roleVO);
+
+        return smallRole;
     }        
 
+    
     
 	/**
 	 * This method gets a list of Roles for a particular systemUser.
@@ -377,6 +390,18 @@ public class RoleController extends BaseController
         }
     }        
 
+    public void addUser(String roleName, String userName, Database db) throws ConstraintException, SystemException, Exception
+    {
+    	if(userName != null)
+		{
+    		SystemUserRoleImpl sur = new SystemUserRoleImpl();
+    		sur.setUserName(userName);
+    		sur.setRoleName(roleName);
+    		
+    		db.create(sur);
+		}
+    }
+    /*
     public void addUser(String roleName, String userName, Database db) throws ConstraintException, SystemException
     {
 		Role role = getRoleWithName(roleName, db);
@@ -389,6 +414,7 @@ public class RoleController extends BaseController
 			systemUser.getRoles().add(role);
 		}
     }
+    */
     
 	/**
 	 * 	Get if the Role with the roleName exists

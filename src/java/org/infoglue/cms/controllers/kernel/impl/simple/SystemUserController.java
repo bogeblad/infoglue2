@@ -25,15 +25,19 @@ package org.infoglue.cms.controllers.kernel.impl.simple;
 
 import java.security.MessageDigest;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.log4j.Logger;
 import org.exolab.castor.jdo.Database;
 import org.exolab.castor.jdo.OQLQuery;
+import org.exolab.castor.jdo.PersistenceException;
 import org.exolab.castor.jdo.QueryResults;
 import org.infoglue.cms.entities.kernel.BaseEntityVO;
 import org.infoglue.cms.entities.management.Group;
@@ -41,7 +45,9 @@ import org.infoglue.cms.entities.management.Role;
 import org.infoglue.cms.entities.management.SystemUser;
 import org.infoglue.cms.entities.management.SystemUserVO;
 import org.infoglue.cms.entities.management.impl.simple.SmallSystemUserImpl;
+import org.infoglue.cms.entities.management.impl.simple.SystemUserGroupImpl;
 import org.infoglue.cms.entities.management.impl.simple.SystemUserImpl;
+import org.infoglue.cms.entities.management.impl.simple.SystemUserRoleImpl;
 import org.infoglue.cms.exception.Bug;
 import org.infoglue.cms.exception.ConstraintException;
 import org.infoglue.cms.exception.SystemException;
@@ -307,7 +313,7 @@ public class SystemUserController extends BaseController
 
 		return systemUser;		
 	}	
-	
+	/*
     public List getSystemUserVOList() throws SystemException, Bug
     {
         return getAllVOObjects(SmallSystemUserImpl.class, "userName");
@@ -322,12 +328,53 @@ public class SystemUserController extends BaseController
     {
         return getAllObjects(SystemUserImpl.class, "userName", db);
     }
-    
+    */
+	
+	public List getSystemUserList(Database db) throws SystemException, Bug, Exception
+	{
+		List<SystemUser> filteredVOList = new ArrayList<SystemUser>();
+		
+		OQLQuery oql = db.getOQLQuery( "SELECT u FROM org.infoglue.cms.entities.management.impl.simple.SystemUserImpl u ORDER BY u.userName");
+    	//oql.bind(1000);
+    	
+		QueryResults results = oql.execute(Database.ReadOnly);
+		
+		while (results.hasMore()) 
+		{
+			SystemUser extranetUser = (SystemUser)results.next();
+			filteredVOList.add(extranetUser);
+		}
+		
+		results.close();
+		oql.close();
+
+		return filteredVOList;
+	}
+
+	public List<SystemUserVO> getSystemUserVOList(Database db) throws SystemException, Bug, Exception
+	{
+		List<SystemUserVO> userList = new ArrayList<SystemUserVO>();
+		
+		OQLQuery oql = db.getOQLQuery("SELECT u FROM org.infoglue.cms.entities.management.impl.simple.SmallSystemUserImpl u ORDER BY u.userName ASC");
+		
+		QueryResults results = oql.execute(Database.ReadOnly);
+
+		while (results.hasMore()) 
+		{
+			SystemUser extranetUser = (SystemUser)results.next();
+			userList.add(extranetUser.getValueObject());
+		}
+		
+		results.close();
+		oql.close();
+
+		return userList;
+	}
 	public List<SystemUserVO> getSystemUserVOListWithPassword(String password, Database db) throws SystemException, Bug, Exception
 	{
 		List<SystemUserVO> filteredVOList = new ArrayList<SystemUserVO>();
 		
-		OQLQuery oql = db.getOQLQuery( "SELECT u FROM org.infoglue.cms.entities.management.impl.simple.SystemUserImpl u WHERE u.password = $1 ORDER BY u.userName");
+		OQLQuery oql = db.getOQLQuery( "SELECT u FROM org.infoglue.cms.entities.management.impl.simple.SmallSystemUserImpl u WHERE u.password = $1 ORDER BY u.userName");
     	oql.bind(password);
     	
 		QueryResults results = oql.execute(Database.ReadOnly);
@@ -344,9 +391,9 @@ public class SystemUserController extends BaseController
 		return filteredVOList;
 	}
 	
-	public List getFilteredSystemUserVOList(String searchString) throws SystemException, Bug
+	public List<SystemUserVO> getFilteredSystemUserVOList(String searchString) throws SystemException, Bug
 	{
-		List filteredList = new ArrayList();
+		List<SystemUserVO> filteredList = new ArrayList<SystemUserVO>();
 		
 		Database db = CastorDatabaseService.getDatabase();
 
@@ -354,7 +401,7 @@ public class SystemUserController extends BaseController
 		{
 			beginTransaction(db);
 								
-			filteredList = getFilteredSystemUserList(searchString, db);
+			filteredList = getFilteredSystemUserVOList(searchString, db);
 			
 			commitTransaction(db);
 		} 
@@ -365,10 +412,62 @@ public class SystemUserController extends BaseController
 			throw new SystemException("An error occurred so we should not complete the transaction:" + e, e);
 		}
 		
-		return toVOList(filteredList);
+		return filteredList;
 	}
 
 	public List getFilteredSystemUserList(String searchString, Database db) throws SystemException, Bug, Exception
+	{
+		List filteredList = new ArrayList();
+		
+		OQLQuery oql = null;
+		String oqlBase = "SELECT u FROM org.infoglue.cms.entities.management.impl.simple.SystemUserImpl u WHERE firstName LIKE $1 OR lastName LIKE $2 OR userName LIKE $3 OR email LIKE $4 ORDER BY u.userName ASC";
+		oql = db.getOQLQuery(oqlBase);
+		oql.bind("%" + searchString + "%");
+		oql.bind("%" + searchString + "%");
+		oql.bind("%" + searchString + "%");
+		oql.bind("%" + searchString + "%");
+		
+		QueryResults results = oql.execute(Database.ReadOnly);
+
+		while (results.hasMore()) 
+		{
+			SystemUser extranetUser = (SystemUser)results.next();
+			filteredList.add(extranetUser);
+		}
+		
+		results.close();
+		oql.close();
+
+		return filteredList;
+	}
+
+	public List<SystemUserVO> getFilteredSystemUserVOList(String searchString, Database db) throws SystemException, Bug, Exception
+	{
+		List<SystemUserVO> filteredList = new ArrayList<SystemUserVO>();
+		
+		OQLQuery oql = null;
+		String oqlBase = "SELECT u FROM org.infoglue.cms.entities.management.impl.simple.SmallSystemUserImpl u WHERE firstName LIKE $1 OR lastName LIKE $2 OR userName LIKE $3 OR email LIKE $4 ORDER BY u.userName ASC";
+		oql = db.getOQLQuery(oqlBase);
+		oql.bind("%" + searchString + "%");
+		oql.bind("%" + searchString + "%");
+		oql.bind("%" + searchString + "%");
+		oql.bind("%" + searchString + "%");
+		
+		QueryResults results = oql.execute(Database.ReadOnly);
+
+		while (results.hasMore()) 
+		{
+			SystemUser extranetUser = (SystemUser)results.next();
+			filteredList.add(extranetUser.getValueObject());
+		}
+		
+		results.close();
+		oql.close();
+
+		return filteredList;
+	}
+
+	public List getFilteredSystemUserListOld(String searchString, Database db) throws SystemException, Bug, Exception
 	{
 		List filteredList = new ArrayList();
 		
@@ -560,20 +659,12 @@ public class SystemUserController extends BaseController
     public void delete(String userName) throws ConstraintException, SystemException
     {
 		Database db = CastorDatabaseService.getDatabase();
-		ConstraintExceptionBuffer ceb = new ConstraintExceptionBuffer();
-
-		SystemUser systemUser = null;
 
 		beginTransaction(db);
 
 		try
 		{
-			//add validation here if needed
-			
 		    delete(userName, db);
-			
-			//If any of the validations or setMethods reported an error, we throw them up now before create.
-			ceb.throwIfNotEmpty();
             
 			commitTransaction(db);
 		}
@@ -599,38 +690,159 @@ public class SystemUserController extends BaseController
 	 
     public void delete(String userName, Database db) throws ConstraintException, SystemException, Exception
     {
-		SystemUser systemUser = getSystemUserWithName(userName, db);
-
-		Collection roles = systemUser.getRoles();
-		Iterator rolesIterator = roles.iterator();
-		while(rolesIterator.hasNext())
-		{
-			Role role = (Role)rolesIterator.next();
-			role.getSystemUsers().remove(systemUser);
-		}
-		
-		Collection groups = systemUser.getGroups();
-		Iterator groupsIterator = groups.iterator();
-		while(groupsIterator.hasNext())
-		{
-			Group group = (Group)groupsIterator.next();
-			group.getSystemUsers().remove(systemUser);
-		}
-		
-		db.remove(systemUser);
+    	deleteRoles(userName, db);
+    	deleteGroups(userName, db);
+    	deleteEntity(SmallSystemUserImpl.class, userName, db);
     }        
 
+    
+	/**
+	 * 	Delete all roles for a user
+	 * @throws Exception 
+	 */
+	 
+	public void deleteRoles(String userName) throws SystemException, Bug, Exception
+	{
+        Database db = CastorDatabaseService.getDatabase();
 
+        beginTransaction(db);
+
+        try
+        {
+        	deleteRoles(userName, db);
+        	
+            commitTransaction(db);
+        }
+        catch(Exception e)
+        {
+        	e.printStackTrace();
+            logger.error("An error occurred so we should not completes the transaction:" + e, e);
+            rollbackTransaction(db);
+            throw new SystemException(e.getMessage());
+        }
+ 	}
+	
+	public List<String> deleteRolesAndReturnExisting(String userName, String[] rolesToKeepArray, Database db) throws SystemException, Bug, Exception
+	{
+		List<String> keptRoles = new ArrayList<String>();
+		List<String> rolesToKeep = Arrays.asList(rolesToKeepArray);
+			
+    	OQLQuery oql = db.getOQLQuery( "SELECT sur FROM org.infoglue.cms.entities.management.impl.simple.SystemUserRoleImpl sur WHERE sur.userName = $1");
+    	oql.bind(userName);
+    	
+    	QueryResults results = oql.execute();
+		while (results.hasMore()) 
+        {
+			SystemUserRoleImpl sur = (SystemUserRoleImpl)results.nextElement();
+			if(!rolesToKeep.contains(sur.getRoleName()))
+				db.remove(sur);
+			else
+				keptRoles.add(sur.getRoleName());
+        }
+		
+		results.close();
+		oql.close();
+		
+		return keptRoles;
+ 	}
+
+	public void deleteRoles(String userName, Database db) throws SystemException, Bug, Exception
+	{
+    	OQLQuery oql = db.getOQLQuery( "SELECT sur FROM org.infoglue.cms.entities.management.impl.simple.SystemUserRoleImpl sur WHERE sur.userName = $1");
+    	oql.bind(userName);
+    	
+    	QueryResults results = oql.execute();
+		while (results.hasMore()) 
+        {
+			SystemUserRoleImpl sur = (SystemUserRoleImpl)results.nextElement();
+			db.remove(sur);
+        }
+		
+		results.close();
+		oql.close();
+ 	}
+
+	/**
+	 * 	Delete all roles for a user
+	 * @throws Exception 
+	 */
+	 
+	public void deleteGroups(String userName) throws SystemException, Bug, Exception
+	{
+        Database db = CastorDatabaseService.getDatabase();
+
+        beginTransaction(db);
+
+        try
+        {
+        	deleteGroups(userName, db);
+        
+    		commitTransaction(db);
+        }
+        catch(Exception e)
+        {
+        	e.printStackTrace();
+            logger.error("An error occurred so we should not completes the transaction:" + e, e);
+            rollbackTransaction(db);
+            throw new SystemException(e.getMessage());
+        }
+ 	}
+   
+	
+	public List<String> deleteGroupsAndReturnExisting(String userName, String[] groupsToKeepArray, Database db) throws SystemException, Bug, Exception
+	{
+		List<String> keptGroups = new ArrayList<String>();
+		List<String> groupsToKeep = Arrays.asList(groupsToKeepArray);
+			
+    	OQLQuery oql = db.getOQLQuery( "SELECT sur FROM org.infoglue.cms.entities.management.impl.simple.SystemUserGroupImpl sur WHERE sur.userName = $1");
+    	oql.bind(userName);
+    	
+    	QueryResults results = oql.execute();
+		while (results.hasMore()) 
+        {
+			SystemUserGroupImpl sur = (SystemUserGroupImpl)results.nextElement();
+			if(!groupsToKeep.contains(sur.getGroupName()))
+				db.remove(sur);
+			else
+				keptGroups.add(sur.getGroupName());
+        }
+		
+		results.close();
+		oql.close();
+		
+		return keptGroups;
+ 	}
+	/**
+	 * 	Delete all roles for a user
+	 * @throws Exception 
+	 */
+	 
+	public void deleteGroups(String userName, Database db) throws SystemException, Bug, Exception
+	{
+    	OQLQuery oql = db.getOQLQuery( "SELECT sur FROM org.infoglue.cms.entities.management.impl.simple.SystemUserGroupImpl sur WHERE sur.userName = $1");
+    	oql.bind(userName);
+    	
+    	QueryResults results = oql.execute();
+		while (results.hasMore()) 
+        {
+			SystemUserGroupImpl sur = (SystemUserGroupImpl)results.nextElement();
+			db.remove(sur);
+        }
+		
+		results.close();
+		oql.close();
+    }
+	
+	
     public SystemUserVO update(SystemUserVO systemUserVO) throws ConstraintException, SystemException
     {
     	return (SystemUserVO) updateEntity(SystemUserImpl.class, (BaseEntityVO) systemUserVO);
     }        
 
 
-    public SystemUserVO update(SystemUserVO systemUserVO, String[] roleNames, String[] groupNames) throws ConstraintException, SystemException
+    public SystemUserVO update(SystemUserVO systemUserVO, String[] roleNames, String[] groupNames) throws ConstraintException, SystemException, Exception
     {
         Database db = CastorDatabaseService.getDatabase();
-        ConstraintExceptionBuffer ceb = new ConstraintExceptionBuffer();
 
         SystemUser systemUser = null;
 
@@ -638,64 +850,105 @@ public class SystemUserController extends BaseController
 
         try
         {
-            systemUser = update(systemUserVO, roleNames, groupNames, db);
+       		systemUser = update(systemUserVO, roleNames, groupNames, db);
             
             commitTransaction(db);
         }
         catch(ConstraintException ce)
         {
+        	ce.printStackTrace();
             logger.warn("An error occurred so we should not completes the transaction:" + ce, ce);
             rollbackTransaction(db);
             throw ce;
         }
         catch(Exception e)
         {
+        	e.printStackTrace();
             logger.error("An error occurred so we should not completes the transaction:" + e, e);
             rollbackTransaction(db);
             throw new SystemException(e.getMessage());
         }
-
+                
         return systemUser.getValueObject();
     }        
 
-    public SystemUser update(SystemUserVO systemUserVO, String[] roleNames, String[] groupNames, Database db) throws ConstraintException, SystemException
+    public SystemUser update(SystemUserVO systemUserVO, String[] roleNames, String[] groupNames, Database db) throws Bug, Exception
     {
-        SystemUser systemUser = getSystemUserWithName(systemUserVO.getUserName(), db);
-        
-        systemUserVO.setUserName(systemUser.getUserName());
-        
-		if(roleNames != null)
-		{
-			systemUser.getRoles().clear();
-			for (int i=0; i < roleNames.length; i++)
-            {
-            	Role role = RoleController.getController().getRoleWithName(roleNames[i], db);
-            	systemUser.getRoles().add(role);
-				role.getSystemUsers().add(systemUser);
-            }
-		}
-		
+    	if(roleNames != null)
+    	{
+    		List<String> roleNamesList = new ArrayList<String>();
+    		roleNamesList.addAll(Arrays.asList(roleNames));
+    		System.out.println("roleNamesList:" + roleNamesList.size());
+    		List<String> keptRoleNamesList = deleteRolesAndReturnExisting(systemUserVO.getUserName(), roleNames, db);
+    		System.out.println("keptRoleNamesList:" + keptRoleNamesList.size());
+    		roleNamesList.removeAll(keptRoleNamesList);
+    		roleNames = roleNamesList.toArray(new String[roleNamesList.size()]);
+    		System.out.println("roleNames:" + roleNames.length);
+    	}
 		if(groupNames != null)
 		{
-			systemUser.getGroups().clear();
-			for (int i=0; i < groupNames.length; i++)
+    		List<String> groupNamesList = new ArrayList<String>();
+    		groupNamesList.addAll(Arrays.asList(groupNames));
+    		System.out.println("groupNamesList:" + groupNamesList.size());
+    		List<String> keptGroupNamesList = deleteGroupsAndReturnExisting(systemUserVO.getUserName(), groupNames, db);
+    		System.out.println("keptGroupNamesList:" + keptGroupNamesList.size());
+    		groupNamesList.removeAll(keptGroupNamesList);
+    		groupNames = groupNamesList.toArray(new String[groupNamesList.size()]);
+    		System.out.println("groupNames:" + groupNames.length);
+		}
+		
+		System.out.println("roleNames:" + roleNames.length);
+		System.out.println("groupNames:" + groupNames.length);
+		
+        SystemUser systemUser = getSystemUserWithName(systemUserVO.getUserName(), db);
+        
+    	systemUserVO.setUserName(systemUser.getUserName());
+		systemUserVO.setPassword(systemUser.getPassword());
+		systemUser.setValueObject(systemUserVO);
+		
+		if(roleNames != null)
+		{
+            List<String> roleNamesList = Arrays.asList(roleNames);
+            Set<String> roleNamesSet = new HashSet<String>(roleNamesList);
+
+            for (String roleName : roleNamesSet)
             {
-			    Group group = GroupController.getController().getGroupWithName(groupNames[i], db);
-            	systemUser.getGroups().add(group);
-            	group.getSystemUsers().add(systemUser);
+				try 
+				{
+					RoleController.getController().addUser(roleName, systemUser.getUserName(), db);
+				} 
+				catch (PersistenceException e) 
+				{
+					e.printStackTrace();
+				}
+            }
+		}
+
+    	if(groupNames != null)
+		{
+            List<String> groupNamesList = Arrays.asList(groupNames);
+            Set<String> groupNamesSet = new HashSet<String>(groupNamesList);
+
+			for (String groupName : groupNamesSet)
+            {
+				try 
+				{
+					GroupController.getController().addUser(groupName, systemUser.getUserName(), db);
+				} 
+				catch (PersistenceException e) 
+				{
+					e.printStackTrace();
+				}
             }
 		}
 		
-		systemUserVO.setPassword(systemUser.getPassword());
-		systemUser.setValueObject(systemUserVO);
-
         return systemUser;
     }     
+
 
     public SystemUserVO update(SystemUserVO systemUserVO, String oldPassword, String[] roleNames, String[] groupNames) throws ConstraintException, SystemException
     {
         Database db = CastorDatabaseService.getDatabase();
-        ConstraintExceptionBuffer ceb = new ConstraintExceptionBuffer();
 
         SystemUser systemUser = null;
 
@@ -725,6 +978,32 @@ public class SystemUserController extends BaseController
 
     public SystemUser update(SystemUserVO systemUserVO, String oldPassword, String[] roleNames, String[] groupNames, Database db) throws ConstraintException, SystemException, Exception
     {
+    	if(roleNames != null)
+    	{
+    		List<String> roleNamesList = new ArrayList<String>();
+    		roleNamesList.addAll(Arrays.asList(roleNames));
+    		System.out.println("roleNamesList:" + roleNamesList.size());
+    		List<String> keptRoleNamesList = deleteRolesAndReturnExisting(systemUserVO.getUserName(), roleNames, db);
+    		System.out.println("keptRoleNamesList:" + keptRoleNamesList.size());
+    		roleNamesList.removeAll(keptRoleNamesList);
+    		roleNames = roleNamesList.toArray(new String[roleNamesList.size()]);
+    		System.out.println("roleNames:" + roleNames.length);
+    	}
+		if(groupNames != null)
+		{
+    		List<String> groupNamesList = new ArrayList<String>();
+    		groupNamesList.addAll(Arrays.asList(groupNames));
+    		System.out.println("groupNamesList:" + groupNamesList.size());
+    		List<String> keptGroupNamesList = deleteGroupsAndReturnExisting(systemUserVO.getUserName(), groupNames, db);
+    		System.out.println("keptGroupNamesList:" + keptGroupNamesList.size());
+    		groupNamesList.removeAll(keptGroupNamesList);
+    		groupNames = groupNamesList.toArray(new String[groupNamesList.size()]);
+    		System.out.println("groupNames:" + groupNames.length);
+		}
+		
+		System.out.println("roleNames:" + roleNames.length);
+		System.out.println("groupNames:" + groupNames.length);
+		
     	logger.info("systemUserVO:" + systemUserVO.getUserName());
     	logger.info("oldPassword:" + oldPassword);
     	logger.info("newPassword:" + systemUserVO.getPassword());
@@ -758,23 +1037,18 @@ public class SystemUserController extends BaseController
         
 		if(roleNames != null)
 		{
-	        systemUser.getRoles().clear();
 			for (int i=0; i < roleNames.length; i++)
             {
-            	Role role = RoleController.getController().getRoleWithName(roleNames[i], db);
-            	systemUser.getRoles().add(role);
-				role.getSystemUsers().add(systemUser);
-            }
+				RoleController.getController().addUser(roleNames[i], systemUser.getUserName(), db);
+            }			
 		}
 		
 		if(groupNames != null)
 		{
-			systemUser.getGroups().clear();
 			for (int i=0; i < groupNames.length; i++)
             {
-			    Group group = GroupController.getController().getGroupWithName(groupNames[i], db);
-            	systemUser.getGroups().add(group);
-            	group.getSystemUsers().add(systemUser);
+				System.out.println("Adding group:" + groupNames[i]);
+				GroupController.getController().addUser(groupNames[i], systemUser.getUserName(), db);
             }
 		}
 		

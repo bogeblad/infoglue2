@@ -366,7 +366,8 @@ public class ContentControllerProxy extends ContentController
 					protectedContentId = contentVO.getId();
 				else if(contentVO.getIsProtected().intValue() == INHERITED.intValue())
 				{
-					ContentVO parentContentVO = ContentController.getParentContent(contentId);
+					//ContentVO parentContentVO = ContentController.getParentContent(contentId);
+					ContentVO parentContentVO = ContentController.getParentContent(contentVO);
 					if(parentContentVO != null)
 						protectedContentId = getProtectedContentId(parentContentVO.getId()); 
 				}
@@ -433,7 +434,8 @@ public class ContentControllerProxy extends ContentController
 					isContentProtected = true;
 				else if(contentVO.getIsProtected().intValue() == INHERITED.intValue())
 				{
-					ContentVO parentContentVO = ContentController.getParentContent(contentId);
+					//ContentVO parentContentVO = ContentController.getParentContent(contentId);
+					ContentVO parentContentVO = ContentController.getParentContent(contentVO);
 					if(parentContentVO != null)
 						isContentProtected = getIsContentProtected(parentContentVO.getId()); 
 				}

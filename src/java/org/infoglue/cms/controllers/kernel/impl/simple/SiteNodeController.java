@@ -29,9 +29,11 @@ import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.exolab.castor.jdo.Database;
@@ -45,6 +47,8 @@ import org.infoglue.cms.entities.content.impl.simple.ContentImpl;
 import org.infoglue.cms.entities.kernel.BaseEntityVO;
 import org.infoglue.cms.entities.management.Language;
 import org.infoglue.cms.entities.management.LanguageVO;
+import org.infoglue.cms.entities.management.Registry;
+import org.infoglue.cms.entities.management.RegistryVO;
 import org.infoglue.cms.entities.management.Repository;
 import org.infoglue.cms.entities.management.ServiceDefinition;
 import org.infoglue.cms.entities.management.ServiceDefinitionVO;
@@ -125,6 +129,21 @@ public class SiteNodeController extends BaseController
 	 * This method gets the siteNodeVO with the given id
 	 */
 	 
+	public SiteNodeVO getSiteNodeVOWithIdIfInCache(Integer siteNodeId, Database db) throws SystemException, Bug, Exception
+	{
+		String key = "" + siteNodeId;
+		SiteNodeVO siteNodeVO = (SiteNodeVO)CacheController.getCachedObjectFromAdvancedCache("siteNodeCache", key);
+		if(siteNodeVO != null)
+		{
+			return siteNodeVO;
+		}
+		return null;
+	}
+	
+	/**
+	 * This method gets the siteNodeVO with the given id
+	 */
+	 
 	public SiteNodeVO getSiteNodeVOWithId(Integer siteNodeId, Database db) throws SystemException, Bug, Exception
 	{
 		String key = "" + siteNodeId;
@@ -168,7 +187,7 @@ public class SiteNodeController extends BaseController
 		   		SQL.append("	snv2.isActive = $2 AND snv2.stateId >= $3 ");
 		   		SQL.append("	) ");
 		   		SQL.append("order by sn.siteNodeId DESC AS org.infoglue.cms.entities.structure.impl.simple.SmallestSiteNodeImpl");    		
-		}
+	    	}
 		
 	    	//logger.info("SQL:" + SQL);
 	    	//logger.info("parentSiteNodeId:" + parentSiteNodeId);
@@ -177,21 +196,6 @@ public class SiteNodeController extends BaseController
 			oql.bind(siteNodeId);
 			oql.bind(true);
 			oql.bind(new Integer(CmsPropertyHandler.getOperatingMode()));
-
-	   		/*
-	   		if(CmsPropertyHandler.getUseShortTableNames() != null && CmsPropertyHandler.getUseShortTableNames().equalsIgnoreCase("true"))
-	    	{
-		   		SQL.append("CALL SQL select sn.siNoId, sn.name, sn.publishDateTime, sn.expireDateTime, sn.isBranch, sn.isDeleted, sn.parentSiNoId, sn.metaInfoContentId, sn.repositoryId, sn.siNoTypeDefId, sn.creator, (select count(*) from cmSiNo sn2 where sn2.parentSiNoId = sn.siNoId) AS childCount, 1 AS sortOrder, 0 AS isHidden, -1 AS stateId, -1 AS isProtected from cmSiNo sn ");
-		   		SQL.append("where sn.siNoId = $1 AS org.infoglue.cms.entities.structure.impl.simple.SmallestSiteNodeImpl");    		
-	    	}
-	    	else
-	    	{
-		   		SQL.append("CALL SQL select sn.siteNodeId, sn.name, sn.publishDateTime, sn.expireDateTime, sn.isBranch, sn.isDeleted, sn.parentSiteNodeId, sn.metaInfoContentId, sn.repositoryId, sn.siteNodeTypeDefinitionId, sn.creator, (select count(*) from cmSiteNode sn2 where sn2.parentSiteNodeId = sn.siteNodeId) AS childCount, 1 AS sortOrder, 0 AS isHidden, -1 AS stateId, -1 AS isProtected from cmSiteNode sn ");
-		   		SQL.append("where sn.siteNodeId = $1 AS org.infoglue.cms.entities.structure.impl.simple.SmallestSiteNodeImpl");    		
-    }
-	    	OQLQuery oql = db.getOQLQuery(SQL.toString());
-			oql.bind(siteNodeId);
-	    	*/
 	
 			QueryResults results = oql.execute(Database.ReadOnly);
 			//t.printElapsedTime("Executed query.....");
@@ -212,6 +216,92 @@ public class SiteNodeController extends BaseController
 		return siteNodeVO;
 	}
 
+	public Map<Integer,SiteNodeVO> getSiteNodeVOMap(Integer[] siteNodeIds, Database db) throws SystemException, Bug, Exception
+	{
+	    Timer t = new Timer();
+	    Map<Integer,SiteNodeVO> siteNodeVOMap = new HashMap<Integer,SiteNodeVO>();
+	    
+	    //System.out.println("siteNodeIds to fetch:" + siteNodeIds);
+
+	    List<Integer> uncachedSiteNodeIds = new ArrayList<Integer>();
+	    for(Integer siteNodeId : siteNodeIds)
+	    {
+	    	SiteNodeVO siteNodeVO = getSiteNodeVOWithIdIfInCache(siteNodeId,db);
+	    	if(siteNodeVO != null)
+	    	{
+	    		siteNodeVOMap.put(siteNodeId, siteNodeVO);
+	    	}
+	    	else
+	    		uncachedSiteNodeIds.add(siteNodeId);
+	    }
+	    siteNodeIds = uncachedSiteNodeIds.toArray(new Integer[uncachedSiteNodeIds.size()]);
+	    //System.out.println("siteNodeIds to really fetch:" + siteNodeIds);
+	    
+	    StringBuilder variables = new StringBuilder();
+	    for(int i=0; i<siteNodeIds.length; i++)
+	    	variables.append("$" + (i+3) + (i+1!=siteNodeIds.length ? "," : ""));
+		
+	    //System.out.println("siteNodeIds:" + siteNodeIds.length);
+	    //System.out.println("variables:" + variables);
+
+   		StringBuffer SQL = new StringBuffer();
+	    
+    	if(CmsPropertyHandler.getUseShortTableNames() != null && CmsPropertyHandler.getUseShortTableNames().equalsIgnoreCase("true"))
+    	{
+	   		SQL.append("CALL SQL select sn.siNoId, sn.name, sn.publishDateTime, sn.expireDateTime, sn.isBranch, sn.parentSiNoId, sn.metaInfoContentId, sn.repositoryId, sn.siNoTypeDefId, sn.creator, (select count(*) from cmSiNo sn2 where sn2.parentSiNoId = sn.siNoId) AS childCount, snv.stateId, snv.isProtected from cmSiNo sn, cmSiNoVer snv ");
+	   		SQL.append("where ");
+	   		SQL.append("snv.siNoId = sn.siNoId ");
+	   		SQL.append("AND snv.siNoVerId = ( ");
+	   		SQL.append("	select max(siNoVerId) from cmSiNoVer snv2 ");
+	   		SQL.append("	WHERE ");
+	   		SQL.append("	snv2.siNoId = snv.siNoId AND ");
+	   		SQL.append("	snv2.isActive = $1 AND snv2.stateId >= $2 ");
+	   		SQL.append("	) ");
+	   		SQL.append("AND sn.siNoId IN (" + variables + ") ");
+	   		SQL.append("order by sn.siNoId DESC AS org.infoglue.cms.entities.structure.impl.simple.SmallestSiteNodeImpl");
+    	}
+    	else
+    	{
+	   		SQL.append("CALL SQL select sn.siteNodeId, sn.name, sn.publishDateTime, sn.expireDateTime, sn.isBranch, sn.parentSiteNodeId, sn.metaInfoContentId, sn.repositoryId, sn.siteNodeTypeDefinitionId, sn.creator, (select count(*) from cmSiteNode sn2 where sn2.parentSiteNodeId = sn.siteNodeId) AS childCount, snv.stateId, snv.isProtected from cmSiteNode sn, cmSiteNodeVersion snv ");
+	   		SQL.append("where ");
+	   		SQL.append("snv.siteNodeId = sn.siteNodeId ");
+	   		SQL.append("AND snv.siteNodeVersionId = ( ");
+	   		SQL.append("	select max(siteNodeVersionId) from cmSiteNodeVersion snv2 ");
+	   		SQL.append("	WHERE ");
+	   		SQL.append("	snv2.siteNodeId = snv.siteNodeId AND ");
+	   		SQL.append("	snv2.isActive = $1 AND snv2.stateId >= $2 ");
+	   		SQL.append("	) ");
+	   		SQL.append("AND sn.siNoId IN (" + variables + ") ");
+	   		SQL.append("order by sn.siteNodeId DESC AS org.infoglue.cms.entities.structure.impl.simple.SmallestSiteNodeImpl");    		
+    	}
+	
+    	//System.out.println("SQL:" + SQL);
+    	//logger.info("SQL:" + SQL);
+    	//logger.info("parentSiteNodeId:" + parentSiteNodeId);
+    	//logger.info("showDeletedItems:" + showDeletedItems);
+    	OQLQuery oql = db.getOQLQuery(SQL.toString());
+		oql.bind(true);
+		oql.bind(new Integer(CmsPropertyHandler.getOperatingMode()));
+		for(Integer entityId : siteNodeIds)
+			oql.bind(entityId);
+
+		QueryResults results = oql.execute(Database.ReadOnly);
+		t.printElapsedTime("Executed query.....");
+		while (results.hasMore()) 
+		{
+			SiteNode siteNode = (SiteNode)results.next();
+			SiteNodeVO siteNodeVO = siteNode.getValueObject();			
+			siteNodeVOMap.put(siteNodeVO.getId(), siteNodeVO);
+		}
+		t.printElapsedTime("siteNodeVOMap populated:" + siteNodeVOMap.size());
+
+		results.close();
+		oql.close();
+				
+		return siteNodeVOMap;		
+	}
+
+	
     /**
 	 * This method gets the siteNodeVO with the given id
 	 */
@@ -743,7 +833,7 @@ public class SiteNodeController extends BaseController
    		StringBuffer SQL = new StringBuffer();
     	if(CmsPropertyHandler.getUseShortTableNames() != null && CmsPropertyHandler.getUseShortTableNames().equalsIgnoreCase("true"))
     	{
-	   		SQL.append("CALL SQL select snv.siNoVerId, snv.stateId, snv.verNumber, snv.modifiedDateTime, snv.verComment, snv.isCheckedOut, snv.isActive, snv.isProtected, snv.disablePageCache, snv.disableEditOnSight, snv.disableLanguages, snv.contentType, snv.pageCacheKey, snv.pageCacheTimeout, snv.disableForceIDCheck, snv.forceProtocolChange, snv.siNoId, snv.versionModifier, snv.sortOrder, snv.isHidden, snv.stateId, snv.isProtected from cmSiNo sn, cmSiNoVer snv ");
+	   		SQL.append("CALL SQL select * from (select snv.siNoVerId, snv.stateId, snv.verNumber, snv.modifiedDateTime, snv.verComment, snv.isCheckedOut, snv.isActive, snv.isProtected, snv.disablePageCache, snv.disableEditOnSight, snv.disableLanguages, snv.contentType, snv.pageCacheKey, snv.pageCacheTimeout, snv.disableForceIDCheck, snv.forceProtocolChange, snv.siNoId, snv.versionModifier, snv.stateId, snv.isProtected from cmSiNo sn, cmSiNoVer snv ");
 	   		SQL.append("where ");
 	   		SQL.append("snv.siNoId = sn.siNoId ");
 	   		SQL.append("AND snv.siNoVerId = ( ");
@@ -752,11 +842,11 @@ public class SiteNodeController extends BaseController
 	   		SQL.append("	snv2.siNoId = snv.siNoId AND ");
 	   		SQL.append("	snv2.isActive = $1 AND snv2.stateId >= $2 ");
 	   		SQL.append("	) ");
-	   		SQL.append("order by sn.siNoId DESC LIMIT $3 AS org.infoglue.cms.entities.structure.impl.simple.SmallSiteNodeVersionImpl");    		
+	   		SQL.append("order by sn.siNoId DESC) where ROWNUM <= $3 AS org.infoglue.cms.entities.structure.impl.simple.SmallSiteNodeVersionImpl");    		
     	}
     	else
     	{
-	   		SQL.append("CALL SQL select snv.siteNodeVersionId, snv.stateId, snv.versionNumber, snv.modifiedDateTime, snv.versionComment, snv.isCheckedOut, snv.isActive, snv.isProtected, snv.disablePageCache, snv.disableEditOnSight, snv.disableLanguages, snv.contentType, snv.pageCacheKey, snv.pageCacheTimeout, snv.disableForceIDCheck, snv.forceProtocolChange, snv.siteNodeId, snv.versionModifier, snv.sortOrder, snv.isHidden snv.stateId, snv.isProtected from cmSiteNode sn, cmSiteNodeVersion snv ");
+	   		SQL.append("CALL SQL select snv.siteNodeVersionId, snv.stateId, snv.versionNumber, snv.modifiedDateTime, snv.versionComment, snv.isCheckedOut, snv.isActive, snv.isProtected, snv.disablePageCache, snv.disableEditOnSight, snv.disableLanguages, snv.contentType, snv.pageCacheKey, snv.pageCacheTimeout, snv.disableForceIDCheck, snv.forceProtocolChange, snv.siteNodeId, snv.versionModifier, snv.stateId, snv.isProtected from cmSiteNode sn, cmSiteNodeVersion snv ");
 	   		SQL.append("where ");
 	   		SQL.append("snv.siteNodeId = sn.siteNodeId ");
 	   		SQL.append("AND snv.siteNodeVersionId = ( ");
@@ -839,9 +929,9 @@ public class SiteNodeController extends BaseController
    		Timer t = new Timer();
 
    		StringBuffer SQL = new StringBuffer();
-    	if(CmsPropertyHandler.getUseShortTableNames() != null && CmsPropertyHandler.getUseShortTableNames().equalsIgnoreCase("true"))
+   		if(CmsPropertyHandler.getUseShortTableNames() != null && CmsPropertyHandler.getUseShortTableNames().equalsIgnoreCase("true"))
     	{
-	   		SQL.append("CALL SQL select sn.siNoId, sn.name, sn.publishDateTime, sn.expireDateTime, sn.isBranch, sn.parentSiNoId, sn.metaInfoContentId, sn.repositoryId, sn.siNoTypeDefId, sn.creator, (select count(*) from cmSiNo sn2 where sn2.parentSiNoId = sn.siNoId) AS childCount, snv.stateId, snv.isProtected from cmSiNo sn, cmSiNoVer snv ");
+	   		SQL.append("CALL SQL select * from (select sn.siNoId, sn.name, sn.publishDateTime, sn.expireDateTime, sn.isBranch, sn.parentSiNoId, sn.metaInfoContentId, sn.repositoryId, sn.siNoTypeDefId, sn.creator, (select count(*) from cmSiNo sn2 where sn2.parentSiNoId = sn.siNoId) AS childCount, snv.stateId, snv.isProtected from cmSiNo sn, cmSiNoVer snv ");
 	   		SQL.append("where ");
 	   		SQL.append("snv.siNoId = sn.siNoId ");
 	   		SQL.append("AND snv.siNoVerId = ( ");
@@ -850,7 +940,7 @@ public class SiteNodeController extends BaseController
 	   		SQL.append("	snv2.siNoId = snv.siNoId AND ");
 	   		SQL.append("	snv2.isActive = $1 AND snv2.stateId >= $2 ");
 	   		SQL.append("	) ");
-	   		SQL.append("order by sn.parentSiNoId, snv.sortOrder ASC, sn.name ASC, sn.siNoId DESC LIMIT $3 AS org.infoglue.cms.entities.structure.impl.simple.SmallestSiteNodeImpl");
+	   		SQL.append("order by sn.parentSiNoId ASC, sn.name ASC, sn.siNoId DESC) where ROWNUM <= $3 AS org.infoglue.cms.entities.structure.impl.simple.SmallestSiteNodeImpl");
     	}
     	else
     	{
@@ -858,12 +948,12 @@ public class SiteNodeController extends BaseController
 	   		SQL.append("where ");
 	   		SQL.append("snv.siteNodeId = sn.siteNodeId ");
 	   		SQL.append("AND snv.siteNodeVersionId = ( ");
-	   		SQL.append("	select max(siteNodeVersionId) from cmSiteNodeVersion snv2 ");
+	   		SQL.append("	select max(siteNodeVersionId) from cmSiteNodeVersion snv3 ");
 	   		SQL.append("	WHERE ");
-	   		SQL.append("	snv2.siteNodeId = snv.siteNodeId AND ");
-	   		SQL.append("	snv2.isActive = $1 AND snv2.stateId >= $2 ");
+	   		SQL.append("	snv3.siteNodeId = snv.siteNodeId AND ");
+	   		SQL.append("	snv3.isActive = $1 AND snv3.stateId >= $2 ");
 	   		SQL.append("	) ");
-	   		SQL.append("order by sn.parentSiteNodeId, snv.sortOrder ASC, sn.name ASC, sn.siteNodeId DESC LIMIT $3 AS org.infoglue.cms.entities.structure.impl.simple.SmallestSiteNodeImpl");    		
+	   		SQL.append("order by sn.parentSiteNodeId ASC, sn.name ASC, sn.siteNodeId DESC LIMIT $3 AS org.infoglue.cms.entities.structure.impl.simple.SmallestSiteNodeImpl");    		
     	}
 
     	//logger.info("SQL:" + SQL);
@@ -958,9 +1048,9 @@ public class SiteNodeController extends BaseController
 	 * This method returns a list of the children a siteNode has.
 	 */
    	
-	public List<SiteNodeVO> getChildSiteNodeVOList(Integer parentSiteNodeId, boolean showDeletedItems, Database db) throws Exception
+	public List<SiteNodeVO> getChildSiteNodeVOList(Integer parentSiteNodeId, Database db) throws Exception
 	{
-   		String key = "" + parentSiteNodeId + "_" + showDeletedItems;
+   		String key = "" + parentSiteNodeId;
 		if(logger.isInfoEnabled())
 			logger.info("key:" + key);
 		
@@ -988,7 +1078,7 @@ public class SiteNodeController extends BaseController
 	   		SQL.append("	snv2.siNoId = snv.siNoId AND ");
 	   		SQL.append("	snv2.isActive = $2 AND snv2.stateId >= $3 ");
 	   		SQL.append("	) ");
-	   		SQL.append("order by snv.sortOrder ASC, sn.name ASC, sn.siNoId DESC AS org.infoglue.cms.entities.structure.impl.simple.SmallestSiteNodeImpl");
+	   		SQL.append("order by sn.name ASC, sn.siNoId DESC AS org.infoglue.cms.entities.structure.impl.simple.SmallestSiteNodeImpl");
     	}
     	else
     	{
@@ -1002,7 +1092,7 @@ public class SiteNodeController extends BaseController
 	   		SQL.append("	snv2.siteNodeId = snv.siteNodeId AND ");
 	   		SQL.append("	snv2.isActive = $2 AND snv2.stateId >= $3 ");
 	   		SQL.append("	) ");
-	   		SQL.append("order by snv.sortOrder ASC, sn.name ASC, sn.siteNodeId DESC AS org.infoglue.cms.entities.structure.impl.simple.SmallestSiteNodeImpl");    		
+	   		SQL.append("order by sn.name ASC, sn.siteNodeId DESC AS org.infoglue.cms.entities.structure.impl.simple.SmallestSiteNodeImpl");    		
     	}
 
     	//logger.info("SQL:" + SQL);

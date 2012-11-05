@@ -31,8 +31,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -50,12 +52,15 @@ import org.infoglue.cms.entities.management.FormEntryAssetVO;
 import org.infoglue.cms.entities.management.FormEntryVO;
 import org.infoglue.cms.entities.management.FormEntryValue;
 import org.infoglue.cms.entities.management.FormEntryValueVO;
+import org.infoglue.cms.entities.management.GeneralOQLResult;
 import org.infoglue.cms.entities.management.Repository;
 import org.infoglue.cms.entities.management.RepositoryVO;
 import org.infoglue.cms.entities.management.impl.simple.FormEntryAssetImpl;
 import org.infoglue.cms.entities.management.impl.simple.FormEntryImpl;
 import org.infoglue.cms.entities.management.impl.simple.FormEntryValueImpl;
 import org.infoglue.cms.entities.management.impl.simple.RepositoryImpl;
+import org.infoglue.cms.entities.management.impl.simple.SmallFormEntryImpl;
+import org.infoglue.cms.entities.management.impl.simple.SmallFormEntryValueImpl;
 import org.infoglue.cms.entities.structure.SiteNode;
 import org.infoglue.cms.entities.structure.SiteNodeVO;
 import org.infoglue.cms.exception.Bug;
@@ -181,8 +186,9 @@ public class FormEntryController extends BaseController
 		{
 			beginTransaction(db);
 
-			Collection formEntryList = getFormEntryList(formContentId, db);
-			formEntryVOList = toVOList(formEntryList);
+			formEntryVOList = getFormEntryVOList(formContentId, db);
+			//Collection formEntryList = getFormEntryList(formContentId, db);
+			//formEntryVOList = toVOList(formEntryList);
 				
 			commitTransaction(db);
 		} 
@@ -228,6 +234,129 @@ public class FormEntryController extends BaseController
 		}
 		
 		return formEntryValueVOList;	
+	}
+	
+	/**
+	 * Returns the RepositoryVO with the given name.
+	 * 
+	 * @param name
+	 * @return
+	 * @throws SystemException
+	 * @throws Bug
+	 */
+	
+	public Map<Integer,List> getFormEntryValuesMap(Integer formContentId) throws SystemException, Bug
+	{
+		Map<Integer,List> formEntryValuesMap = null;
+		
+		Database db = CastorDatabaseService.getDatabase();
+
+		try 
+		{
+			beginTransaction(db);
+
+			formEntryValuesMap = getFormEntryValuesMap(formContentId, db);
+				
+			commitTransaction(db);
+		} 
+		catch (Exception e) 
+		{
+			logger.info("An error occurred so we should not complete the transaction:" + e);
+			rollbackTransaction(db);
+			throw new SystemException(e.getMessage());
+		}
+		
+		return formEntryValuesMap;	
+	}
+
+	/**
+	 * Returns the RepositoryVO with the given name.
+	 * 
+	 * @param name
+	 * @return
+	 * @throws SystemException
+	 * @throws Bug
+	 */
+	
+	public Map<Integer,List> getFormEntryValuesMap(Integer formContentId, Database db) throws SystemException, Bug
+	{
+		Map<Integer,List> formEntryValuesMap = new HashMap<Integer,List>();
+				
+		try
+		{
+			//OQLQuery oql = db.getOQLQuery("SELECT fev FROM org.infoglue.cms.entities.management.impl.simple.SmallFormEntryValueImpl fev WHERE fev.formEntry.formContentId = $1 order by fev.formEntryValueId");
+			OQLQuery oql = db.getOQLQuery("CALL SQL SELECT fev.id, fev.name, fev.value, fev.formEntryId FROM cmFormEntryValue fev, cmFormEntry fe WHERE fev.formEntryId = fe.id AND fe.formContentId = $1 order by fev.id AS org.infoglue.cms.entities.management.impl.simple.SmallFormEntryValueImpl");
+			oql.bind(formContentId);
+			
+			QueryResults results = oql.execute(Database.ReadOnly);
+
+			while (results.hasMore()) 
+			{
+				SmallFormEntryValueImpl fev = (SmallFormEntryValueImpl)results.next();
+				List values = formEntryValuesMap.get(fev.getFormEntryId());
+				if(values == null)
+				{
+					values = new ArrayList();
+					formEntryValuesMap.put(fev.getFormEntryId(), values);
+				}
+				values.add(fev.getValueObject());
+			}
+			
+			//System.out.println("formEntryValuesMap:" + formEntryValuesMap);
+			results.close();
+			oql.close();
+		}
+		catch(Exception e)
+		{
+			throw new SystemException("An error occurred when we tried to fetch a list of form entries. Reason:" + e.getMessage(), e);    
+		}
+		
+		return formEntryValuesMap;	
+	}
+
+	/**
+	 * Returns the RepositoryVO with the given name.
+	 * 
+	 * @param name
+	 * @return
+	 * @throws SystemException
+	 * @throws Bug
+	 */
+	
+	public Map<Integer,List> getFormEntryAssetsMap(Integer formContentId, Database db) throws SystemException, Bug
+	{
+		Map<Integer,List> formEntryAssetsMap = new HashMap<Integer,List>();
+				
+		try
+		{
+			OQLQuery oql = db.getOQLQuery("SELECT fea FROM org.infoglue.cms.entities.management.impl.simple.FormEntryAssetImpl fea WHERE fea.formEntry.formContentId = $1 order by fea.formEntryAssetId");
+			//OQLQuery oql = db.getOQLQuery("CALL SQL SELECT fev.id, fev.name, fev.value, fev.formEntryId FROM cmFormEntryValue fev, cmFormEntry fe WHERE fev.formEntryId = fe.id AND fe.formContentId = $1 order by fev.id AS org.infoglue.cms.entities.management.impl.simple.SmallFormEntryValueImpl");
+			oql.bind(formContentId);
+			
+			QueryResults results = oql.execute(Database.ReadOnly);
+
+			while (results.hasMore()) 
+			{
+				FormEntryAssetImpl fea = (FormEntryAssetImpl)results.next();
+				List values = formEntryAssetsMap.get(fea.getFormEntry().getFormEntryId());
+				if(values == null)
+				{
+					values = new ArrayList();
+					formEntryAssetsMap.put(fea.getFormEntry().getFormEntryId(), values);
+				}
+				values.add(((FormEntryAssetImpl)results.next()).getValueObject());
+			}
+			
+			//System.out.println("formEntryAssetsMap:" + formEntryAssetsMap);
+			results.close();
+			oql.close();
+		}
+		catch(Exception e)
+		{
+			throw new SystemException("An error occurred when we tried to fetch a list of form entries. Reason:" + e.getMessage(), e);    
+		}
+		
+		return formEntryAssetsMap;	
 	}
 
 	/**
@@ -377,7 +506,44 @@ public class FormEntryController extends BaseController
 		
         return outputFile;
 	}
-	
+
+	/**
+	 * Returns the Repository with the given name fetched within a given transaction.
+	 * 
+	 * @param name
+	 * @param db
+	 * @return
+	 * @throws SystemException
+	 * @throws Bug
+	 */
+
+	public List<FormEntryVO> getFormEntryVOList(Integer formContentId, Database db) throws SystemException, Bug
+	{
+		List<FormEntryVO> formEntryList = new ArrayList<FormEntryVO>();
+		
+		try
+		{
+			OQLQuery oql = db.getOQLQuery("SELECT f FROM org.infoglue.cms.entities.management.impl.simple.SmallFormEntryImpl f WHERE f.formContentId = $1 order by formEntryId");
+			oql.bind(formContentId);
+			
+			QueryResults results = oql.execute();
+
+			while (results.hasMore()) 
+			{
+				formEntryList.add(((SmallFormEntryImpl)results.next()).getValueObject());
+			}
+			
+			results.close();
+			oql.close();
+		}
+		catch(Exception e)
+		{
+			throw new SystemException("An error occurred when we tried to fetch a list of form entries. Reason:" + e.getMessage(), e);    
+		}
+		
+		return formEntryList;		
+	}
+
 	/**
 	 * Returns the Repository with the given name fetched within a given transaction.
 	 * 
@@ -413,6 +579,117 @@ public class FormEntryController extends BaseController
 		}
 		
 		return formEntryList;		
+	}
+	
+	/**
+	 * Returns the Repository with the given name fetched within a given transaction.
+	 * 
+	 * @param name
+	 * @param db
+	 * @return
+	 * @throws SystemException
+	 * @throws Bug
+	 */
+
+	public List<String> getFormEntryValueNames(Integer formContentId, Database db) throws SystemException, Bug
+	{
+		List<String> formEntryValueNames = new ArrayList<String>();
+		
+		try
+		{
+			OQLQuery oql = db.getOQLQuery("CALL SQL select (select max(fev2.id) from cmFormEntryValue fev2 where fev2.name = fev.name) as id, fev.name as column1Value, '' as column2Value, '' as column3Value, '' as column4Value, '' as column5Value from cmFormEntry fe, cmFormEntryValue fev where fev.formEntryId = fe.id AND fe.formcontentid = $1 group by fev.name AS org.infoglue.cms.entities.management.GeneralOQLResult");
+			oql.bind(formContentId);
+			
+			QueryResults results = oql.execute(Database.ReadOnly);
+			while (results.hasMore()) 
+			{
+				GeneralOQLResult resultBean = (GeneralOQLResult)results.next();
+				formEntryValueNames.add(resultBean.getValue1());
+			}
+			
+			results.close();
+			oql.close();
+		}
+		catch(Exception e)
+		{
+			throw new SystemException("An error occurred when we tried to fetch a list of form entries. Reason:" + e.getMessage(), e);    
+		}
+		
+		return formEntryValueNames;		
+	}
+
+	/**
+	 * Returns the Repository with the given name fetched within a given transaction.
+	 * 
+	 * @param name
+	 * @param db
+	 * @return
+	 * @throws SystemException
+	 * @throws Bug
+	 */
+
+	public Map<Integer, String> getFormEntryNamedValueList(Integer formContentId, String name, Database db) throws SystemException, Bug
+	{
+		Map<Integer,String> formEntryValueNames = new HashMap<Integer,String>();
+		
+		try
+		{
+			OQLQuery oql = db.getOQLQuery("CALL SQL select fe.id as id, fev.value as column1Value, '' as column2Value, '' as column3Value, '' as column4Value, '' as column5Value from cmFormEntry fe, cmFormEntryValue fev where fev.formEntryId = fe.id AND fe.formContentId = $1 AND fev.name = $2 AS org.infoglue.cms.entities.management.GeneralOQLResult");
+			oql.bind(formContentId);
+			oql.bind(name);
+			QueryResults results = oql.execute(Database.ReadOnly);
+			while (results.hasMore()) 
+			{
+				GeneralOQLResult resultBean = (GeneralOQLResult)results.next();
+				formEntryValueNames.put(resultBean.getId(), resultBean.getValue1());
+			}
+			
+			results.close();
+			oql.close();
+		}
+		catch(Exception e)
+		{
+			throw new SystemException("An error occurred when we tried to fetch a list of form entries. Reason:" + e.getMessage(), e);    
+		}
+		
+		return formEntryValueNames;		
+	}
+
+	/**
+	 * Returns the Repository with the given name fetched within a given transaction.
+	 * 
+	 * @param name
+	 * @param db
+	 * @return
+	 * @throws SystemException
+	 * @throws Bug
+	 */
+
+	public Map<Integer,Integer> getFormEntryCountMap(Database db) throws SystemException, Bug
+	{
+		Map<Integer,Integer> formEntryCountMap = new HashMap<Integer,Integer>();
+		
+		try
+		{
+			OQLQuery oql = db.getOQLQuery("CALL SQL select formcontentid as id, count(*) as column1Value, '' as column2Value, '' as column3Value, '' as column4Value, '' as column5Value from cmFormEntry group by formContentId AS org.infoglue.cms.entities.management.GeneralOQLResult");
+			
+			QueryResults results = oql.execute();
+
+			while (results.hasMore()) 
+			{
+				GeneralOQLResult resultBean = (GeneralOQLResult)results.next();
+				formEntryCountMap.put(resultBean.getId(), new Integer(resultBean.getValue1()));
+			}
+			
+			results.close();
+			oql.close();
+		}
+		catch(Exception e)
+		{
+			throw new SystemException("An error occurred when we tried to fetch a list of form entries. Reason:" + e.getMessage(), e);    
+		}
+		
+		return formEntryCountMap;		
 	}
 
     public FormEntryVO create(FormEntryVO redirectVO) throws ConstraintException, SystemException

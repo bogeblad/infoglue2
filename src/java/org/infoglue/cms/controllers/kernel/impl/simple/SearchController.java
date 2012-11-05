@@ -29,6 +29,7 @@ import java.io.StringReader;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
@@ -202,6 +203,257 @@ public class SearchController extends BaseController
    	
    	private List<ContentVersionVO> getContentVersionVOListFromCastor(Integer[] repositoryId, String searchString, int maxRows, String userName, Integer languageId, Integer[] contentTypeDefinitionId, Integer caseSensitive, Integer stateId, boolean searchAssets) throws SystemException, Bug
    	{
+   		if(contentTypeDefinitionId == null || contentTypeDefinitionId.length == 0)
+   		{
+   			contentTypeDefinitionId = new Integer[]{ContentTypeDefinitionController.getController().getContentTypeDefinitionVOWithName("Meta info").getId()};
+   		}
+   		
+   		List<ContentVersionVO> matchingContents = new ArrayList<ContentVersionVO>();
+
+		Calendar cal = Calendar.getInstance();
+		cal.set(Calendar.MONTH, -3);
+		
+		ConstraintExceptionBuffer ceb = new ConstraintExceptionBuffer();
+		Database db = CastorDatabaseService.getDatabase();
+		try
+		{
+			beginTransaction(db);
+			
+			/*
+			String repositoryArgument = " AND (";
+			
+			int index = 3;
+			List repArguments = new ArrayList();
+			
+			for(int i=0; i<repositoryId.length; i++)
+			{
+				if(i > 0)
+					repositoryArgument += " OR ";
+				
+				repositoryArgument += "cv.owningContent.repository.repositoryId = $" + index;
+			    repArguments.add(repositoryId[i]);
+				index++;
+			}
+			repositoryArgument += ")";
+				
+			//int index = 4;
+			String extraArguments = "";
+			String inverse = "";
+			List arguments = new ArrayList();
+						
+			if(userName != null && !userName.equalsIgnoreCase(""))
+			{
+			    extraArguments += " AND cv.versionModifier = $" + index;
+			    arguments.add(userName);
+				index++;
+			}
+			if(languageId != null)
+			{
+			    extraArguments += " AND cv.language = $" + index;
+			    arguments.add(languageId);
+				index++;
+			}
+			if(contentTypeDefinitionId != null && contentTypeDefinitionId.length > 0 && contentTypeDefinitionId[0] != null)
+			{
+				extraArguments += " AND(";
+				for(int i=0; i<contentTypeDefinitionId.length; i++)
+				{
+					if(i==0)
+						extraArguments += " cv.owningContent.contentTypeDefinition = $" + index;
+					else
+						extraArguments += " OR cv.owningContent.contentTypeDefinition = $" + index;
+						
+					arguments.add(contentTypeDefinitionId[i]);
+					index++;
+				}
+				extraArguments += ")";
+			}
+			if(stateId != null)
+			{
+			    extraArguments += " AND cv.stateId = $" + index;
+			    arguments.add(stateId);
+				index++;
+			}
+			    
+			String sqlOld = "SELECT cv FROM org.infoglue.cms.entities.content.impl.simple.ContentVersionImpl cv WHERE cv.isActive = $1 AND cv.versionValue LIKE $2 " + repositoryArgument + extraArguments + " ORDER BY cv.owningContent asc, cv.language, cv.contentVersionId desc";
+			*/
+			
+			int shortIndex = 1;
+			List shortRepArguments = new ArrayList();
+			
+			StringBuilder sb = new StringBuilder();
+			
+			sb.append("CALL SQL select contVerId, stateId, modifiedDateTime, verComment, isCheckedOut, isActive, contId, languageId, versionModifier, verValue from ");
+			sb.append("(");
+			sb.append("  select * from ");
+			sb.append("  (");
+			sb.append("    select contVerId, stateId, modifiedDateTime, verComment, isCheckedOut, isActive, contId, languageId, versionModifier, verValue from cmContVer cv WHERE cv.contId IN");
+			sb.append("    (");
+			sb.append("                  select c3.contId");
+			sb.append("                  from cmCont c3");
+			sb.append("                  WHERE ");
+			
+			if(repositoryId.length > 0)
+			{
+				sb.append("              ( ");
+				for(int i=0; i<repositoryId.length; i++)
+				{
+					if(i > 0)
+						sb.append(" OR ");
+					
+					sb.append("c3.repositoryId = $" + shortIndex);
+					shortRepArguments.add(repositoryId[i]);
+					shortIndex++;
+				}
+				sb.append("              ) ");
+			}
+			
+			if(contentTypeDefinitionId != null && contentTypeDefinitionId.length > 0 && contentTypeDefinitionId[0] != null)
+			{
+				sb.append(" AND (");
+				for(int i=0; i<contentTypeDefinitionId.length; i++)
+				{
+					if(i==0)
+						sb.append(" c3.CONTENTTYPEDEFID = $" + shortIndex);
+					else
+						sb.append(" OR c3.CONTENTTYPEDEFID = $" + shortIndex);
+						
+					shortRepArguments.add(contentTypeDefinitionId[i]);
+					shortIndex++;
+				}
+				sb.append(")");
+			}
+			sb.append("    ) ");
+			
+			if(stateId != null)
+			{
+				sb.append("    AND cv.stateId = $" + shortIndex);
+				shortRepArguments.add(stateId);
+				shortIndex++;
+			}
+			
+			sb.append("    AND cv.isactive = 1");
+			//sb.append("    AND modifiedDateTime >= $" + shortIndex + " AND rownum<=5000");
+			//shortRepArguments.add(cal.getTime());
+			//shortIndex++;
+			
+			sb.append("  ) CVDYN ");
+			sb.append("  WHERE contVerId = ");
+			sb.append("  (    ");
+			sb.append("          select max(contVerId) ");
+			sb.append("          from cmContVer ");
+			sb.append("          WHERE ");
+			sb.append("          contId = CVDYN.contId AND");
+			sb.append("          isactive = 1");
+			sb.append("  )");
+			sb.append(")");
+
+			String freeTextCondition = ((searchString == null || searchString.equals("")) ? "" : " WHERE verValue LIKE $" + shortIndex + "");
+
+			sb.append(freeTextCondition + " ORDER BY contVerId AS org.infoglue.cms.entities.content.impl.simple.SmallContentVersionImpl");
+
+			String sql = sb.toString();
+			
+			System.out.println("sqlShort:" + sb.toString());
+			//System.out.println("sql:" + sql);
+			
+			//logger.info("sql:" + sql);
+			OQLQuery oql = db.getOQLQuery(sql);
+			Iterator shortRepArgumentsIterator = shortRepArguments.iterator();
+			while(shortRepArgumentsIterator.hasNext())
+			{
+				Object argument = (Object)shortRepArgumentsIterator.next();
+				System.out.println(argument);
+				oql.bind(argument);
+			}
+	        
+			oql.bind("%" + searchString + "%");
+			
+			QueryResults results = oql.execute(Database.ReadOnly);
+			
+			Integer previousContentId  = new Integer(-1);
+			Integer previousLanguageId = new Integer(-1);  	
+			int currentCount = 0;
+			while(results.hasMore() && currentCount < maxRows) 
+			{
+				ContentVersion contentVersion = (ContentVersion)results.next();
+				logger.info("Found a version matching " + searchString + ":" + contentVersion.getId() + "=" + contentVersion.getValueObject().getContentId());
+				if(contentVersion.getValueObject().getContentId().intValue() != previousContentId.intValue() || contentVersion.getValueObject().getLanguageId().intValue() != previousLanguageId.intValue())
+				{
+				    ContentVersionVO latestContentVersionVO = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(contentVersion.getValueObject().getContentId(), contentVersion.getValueObject().getLanguageId(), db);
+					if(latestContentVersionVO.getId().intValue() == contentVersion.getId().intValue() && (caseSensitive == null || contentVersion.getVersionValue().indexOf(searchString) > -1))
+					{
+						if(!searchAssets || (contentVersion.getDigitalAssets() != null && contentVersion.getDigitalAssets().size() > 0))
+						{
+						    matchingContents.add(latestContentVersionVO);
+						    previousContentId = contentVersion.getValueObject().getContentId();
+						    previousLanguageId = contentVersion.getValueObject().getLanguageId();
+						    currentCount++;
+						}
+					}
+				}
+			}
+
+			results.close();
+			oql.close();
+
+			if(searchAssets)
+			{
+				String assetSQL = "SELECT da FROM org.infoglue.cms.entities.content.impl.simple.SmallDigitalAssetImpl da WHERE (da.assetKey LIKE $1 OR da.assetFileName LIKE $2) ORDER BY da.digitalAssetId asc";
+				logger.info("assetSQL:" + assetSQL);
+				OQLQuery assetOQL = db.getOQLQuery(assetSQL);
+				assetOQL.bind("%" + searchString + "%");
+				assetOQL.bind("%" + searchString + "%");
+		        
+				QueryResults assetResults = assetOQL.execute(Database.ReadOnly);
+				
+				previousContentId  = new Integer(-1);
+				previousLanguageId = new Integer(-1);  	
+				currentCount = 0;
+				
+				while(assetResults.hasMore() && currentCount < maxRows) 
+				{
+					SmallDigitalAssetImpl smallAsset = (SmallDigitalAssetImpl)assetResults.next();
+					DigitalAsset asset = DigitalAssetController.getMediumDigitalAssetWithId(smallAsset.getId(), db);
+					logger.info("Found a asset matching " + searchString + ":" + asset.getId());
+					Collection versions = asset.getContentVersions();
+					Iterator versionsIterator = versions.iterator();
+					while(versionsIterator.hasNext())
+					{
+						ContentVersion contentVersion = (ContentVersion)versionsIterator.next();
+						if(contentVersion.getOwningContent().getId().intValue() != previousContentId.intValue() || contentVersion.getLanguage().getId().intValue() != previousLanguageId.intValue())
+						{
+						    ContentVersion latestContentVersion = ContentVersionController.getContentVersionController().getLatestActiveContentVersion(contentVersion.getOwningContent().getId(), contentVersion.getLanguage().getId(), db);
+							if(latestContentVersion.getId().intValue() == contentVersion.getId().intValue() && (caseSensitive == null || contentVersion.getVersionValue().indexOf(searchString) > -1))
+							{
+							    matchingContents.add(contentVersion.getValueObject());
+							    previousContentId = contentVersion.getOwningContent().getId();
+							    previousLanguageId = contentVersion.getLanguage().getId();
+							    currentCount++;
+							}
+						}						
+					}
+				}
+				
+				assetResults.close();
+				assetOQL.close();
+			}
+			
+			commitTransaction(db);
+		}
+		catch ( Exception e )
+		{
+			e.printStackTrace();
+			rollbackTransaction(db);
+			throw new SystemException("An error occurred when we tried to search. Reason:" + e.getMessage(), e);			
+		}
+		
+		return matchingContents;
+		
+   	}
+   	/*
+   	private List<ContentVersionVO> getContentVersionVOListFromCastor(Integer[] repositoryId, String searchString, int maxRows, String userName, Integer languageId, Integer[] contentTypeDefinitionId, Integer caseSensitive, Integer stateId, boolean searchAssets) throws SystemException, Bug
+   	{
 		List<ContentVersionVO> matchingContents = new ArrayList<ContentVersionVO>();
 
 		ConstraintExceptionBuffer ceb = new ConstraintExceptionBuffer();
@@ -364,6 +616,7 @@ public class SearchController extends BaseController
 		return matchingContents;
 		
    	}
+   	*/
    	
    	/**
    	 * Gets all content versions last changed by a certain user.

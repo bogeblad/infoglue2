@@ -334,6 +334,7 @@ public abstract class InfoglueWorkflowBase
 	 */
 	protected final String getPropertySetString(final String key)
 	{
+		System.out.println("getPropertySetString:" + key + "=" + propertySet.getString(key));
 		return propertySet.getString(key);
 	}
 	

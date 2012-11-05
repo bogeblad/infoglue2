@@ -740,15 +740,16 @@ public class LanguageDeliveryController extends BaseDeliveryController
 		
         LanguageVO language = null;
 
-    	SiteNode siteNode = (SiteNode)getObjectWithId(SiteNodeImpl.class, siteNodeId, db);
+        SiteNodeVO siteNode = ndc.getSiteNodeVO(db, siteNodeId);
+    	//SiteNode siteNode = (SiteNode)getObjectWithId(SiteNodeImpl.class, siteNodeId, db);
 
 		if(!getIsValidLanguage(db, ndc, siteNode, languageId))
 		    return null;		
     	
-		List repositoryLanguages = getAvailableLanguagesForRepository(db, siteNode.getValueObject().getRepositoryId());
+		List repositoryLanguages = getAvailableLanguagesForRepository(db, siteNode.getRepositoryId());
 
 		Iterator languageIterator = repositoryLanguages.iterator();
-		logger.info("languages on :" + siteNode.getId() + ":" + siteNode.getValueObject().getRepositoryId() + "=" + repositoryLanguages.size());
+		logger.info("languages on :" + siteNode.getId() + ":" + siteNode.getRepositoryId() + "=" + repositoryLanguages.size());
 		while(languageIterator.hasNext())
 		{
 			LanguageVO currentLanguage = (LanguageVO)languageIterator.next();
@@ -764,7 +765,7 @@ public class LanguageDeliveryController extends BaseDeliveryController
 			}
 		}
 		
-    	String groupKey1 = new StringBuilder("repository_").append(siteNode.getValueObject().getRepositoryId()).toString();
+    	String groupKey1 = new StringBuilder("repository_").append(siteNode.getRepositoryId()).toString();
     	String groupKey2 = CacheController.getPooledString(3, siteNodeId);
 
 		if(language != null)
@@ -953,6 +954,60 @@ public class LanguageDeliveryController extends BaseDeliveryController
 		return isValidLanguage;
 	}
 
+	
+	public boolean getIsValidLanguage(Database db, NodeDeliveryController ndc, SiteNodeVO siteNode, Integer languageId) throws Exception
+	{
+	    boolean isValidLanguage = true;
+	    									
+    	Integer siteNodeId = siteNode.getId();
+	    Integer disabledLanguagesSiteNodeVersionId = ndc.getDisabledLanguagesSiteNodeVersionId(db, siteNodeId);
+	    logger.info("disabledLanguagesSiteNodeVersionId:" + disabledLanguagesSiteNodeVersionId);
+
+	    if(disabledLanguagesSiteNodeVersionId != null)
+	    {
+	        SiteNodeVersionVO disabledLanguagesSiteNodeVersionVO = SiteNodeVersionController.getController().getSiteNodeVersionVOWithId(disabledLanguagesSiteNodeVersionId, db);
+	        
+	        String disabledLanguagesString = CmsPropertyHandler.getPropertySetValue("siteNode_" + disabledLanguagesSiteNodeVersionVO.getSiteNodeId() + "_disabledLanguages");
+		    logger.info("disabledLanguagesString:" + disabledLanguagesString);
+		    
+		    if(disabledLanguagesString != null && !disabledLanguagesString.equalsIgnoreCase(""))
+		    {
+		        String[] disabledLanguagesStringArray = disabledLanguagesString.split(",");
+		        for(int i=0; i<disabledLanguagesStringArray.length; i++)
+		        {
+		            logger.info("languageId.intValue():" + languageId.intValue());
+		            logger.info("disabledLanguagesStringArray:" + disabledLanguagesStringArray);
+				    if(languageId.intValue() == new Integer(disabledLanguagesStringArray[i]).intValue())
+		            {
+		                isValidLanguage = false;
+			            logger.info("isValidLanguage:" + isValidLanguage);
+		                break;
+		            }
+		        }
+		    }
+
+	        String enabledLanguagesString = CmsPropertyHandler.getPropertySetValue("siteNode_" + disabledLanguagesSiteNodeVersionVO.getSiteNodeId() + "_enabledLanguages");
+		    
+		    if(enabledLanguagesString != null && !enabledLanguagesString.equalsIgnoreCase(""))
+		    {
+		    	isValidLanguage = false;
+		    	
+		        String[] enabledLanguagesStringArray = enabledLanguagesString.split(",");
+		        for(int i=0; i<enabledLanguagesStringArray.length; i++)
+		        {
+		          if(languageId.intValue() == new Integer(enabledLanguagesStringArray[i]).intValue())
+		            {
+		                isValidLanguage = true;
+			            break;
+		            }
+		        }
+		    }
+
+		}
+	    logger.info("languageId:" + languageId + " was valid:" + isValidLanguage);
+		
+		return isValidLanguage;
+	}
 	
 	
 }

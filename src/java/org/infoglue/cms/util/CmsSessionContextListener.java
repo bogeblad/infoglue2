@@ -31,6 +31,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.servlet.http.HttpSession;
 import javax.servlet.http.HttpSessionEvent;
@@ -38,9 +39,11 @@ import javax.servlet.http.HttpSessionListener;
 
 import org.apache.log4j.Logger;
 import org.infoglue.cms.applications.databeans.SessionInfoBean;
+import org.infoglue.cms.controllers.kernel.impl.simple.UserControllerProxy;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.security.InfoGlueAuthenticationFilter;
 import org.infoglue.cms.security.InfoGluePrincipal;
+import org.infoglue.deliver.util.CacheController;
 
 /**
  * This class keeps track of all sessions created / removed so we can see 
@@ -143,4 +146,74 @@ public class CmsSessionContextListener implements HttpSessionListener
 		return stiList;
 	}
 
+	private static AtomicBoolean running = new AtomicBoolean(false);
+	
+	static public void reCacheSessionPrincipal() throws Exception
+	{
+		if(running.compareAndSet(false, true))
+		{
+			Thread.sleep(5000);
+			try
+			{
+				logger.info("reCacheSessionPrincipal......");
+				//A little strange solution to solve the fact that we get a lot of ConcurrentModificationExceptions - possible due to many session death.
+				int numberOfIterations = 0;
+				boolean isOk = false;
+				while(!isOk && numberOfIterations < 20)
+				{
+					Thread.sleep(50);
+					try
+					{
+						logger.info("Sessions:" + sessions.size());
+						synchronized(sessions)
+						{
+							Iterator iter = sessions.keySet().iterator();
+							while (iter.hasNext())
+							{
+								String s = (String) iter.next();
+								HttpSession sess = (HttpSession) sessions.get(s);
+								
+								try
+								{
+									InfoGluePrincipal principal = (InfoGluePrincipal)sess.getAttribute(InfoGlueAuthenticationFilter.INFOGLUE_FILTER_USER);
+									if(principal == null)
+										principal = (InfoGluePrincipal)sess.getAttribute("infogluePrincipal");
+									
+									if(principal != null)
+									{
+										CacheController.clearCache("principalCache");
+										CacheController.clearCache("authorizationCache");
+										CacheController.clearCache("personalAuthorizationCache");
+
+										InfoGluePrincipal newUser = UserControllerProxy.getController().getUser(principal.getName());
+										sess.setAttribute(InfoGlueAuthenticationFilter.INFOGLUE_FILTER_USER, newUser);
+									}
+								}
+								catch (Exception e) 
+								{
+									logger.info("A session was invalid allready:" + e.getMessage(), e);
+								}
+							}
+						}
+						isOk = true;
+					}
+					catch (ConcurrentModificationException e) 
+					{
+						if(logger.isInfoEnabled())
+							logger.info("Concurrency problem rereading session principal:" + e.getMessage(), e);
+					}
+					numberOfIterations++;
+				}
+				
+				if(!isOk && numberOfIterations == 20)
+					logger.warn("We could not finish the operation as to many concurrency errors occurred.");
+			}
+			finally
+			{
+				running.set(false);
+			}
+		
+		}
+		
+	}
 }

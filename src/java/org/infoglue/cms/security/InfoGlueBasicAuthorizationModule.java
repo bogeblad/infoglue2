@@ -59,6 +59,8 @@ import org.infoglue.deliver.util.Timer;
 
 public class InfoGlueBasicAuthorizationModule extends BaseController implements AuthorizationModule, Serializable
 {
+	private static final long serialVersionUID = 1L;
+
     private final static Logger logger = Logger.getLogger(InfoGlueBasicAuthorizationModule.class.getName());
 
 	private Properties extraProperties = null;
@@ -159,7 +161,7 @@ public class InfoGlueBasicAuthorizationModule extends BaseController implements 
 				{
 					beginTransaction(db);
 					
-					SystemUser systemUser = SystemUserController.getController().getReadOnlySystemUserWithName(userName, db);
+					SystemUserVO systemUser = SystemUserController.getController().getReadOnlySystemUserVOWithName(userName, db);
 					if(logger.isInfoEnabled())
 						t.printElapsedTime("systemUser AAA took:");
 					//setDebug(Level.DEBUG, "org.exolab.castor.jdo");
@@ -237,7 +239,7 @@ public class InfoGlueBasicAuthorizationModule extends BaseController implements 
 			}
 			else
 			{
-			    SystemUser systemUser = SystemUserController.getController().getReadOnlySystemUserWithName(userName, transactionObject);
+			    SystemUserVO systemUser = SystemUserController.getController().getReadOnlySystemUserVOWithName(userName, transactionObject);
 			    if(logger.isInfoEnabled())
 			    	t.printElapsedTime("systemUser BBB took:");
 			    
@@ -539,34 +541,33 @@ public class InfoGlueBasicAuthorizationModule extends BaseController implements 
 			{
 				beginTransaction(db);
 				
-				List systemUsers = SystemUserController.getController().getSystemUserList(db);
-				Iterator systemUserListIterator = systemUsers.iterator();
-				while(systemUserListIterator.hasNext())
+				List<SystemUserVO> systemUserVOList = SystemUserController.getController().getSystemUserVOList(db);
+				Iterator systemUserVOListIterator = systemUserVOList.iterator();
+				while(systemUserVOListIterator.hasNext())
 				{
-					SystemUser systemUser = (SystemUser)systemUserListIterator.next();
-		
+					SystemUserVO systemUserVO = (SystemUserVO)systemUserVOListIterator.next();
+					
 					List roles = new ArrayList();
-					Collection roleList = systemUser.getRoles();
-					Iterator roleListIterator = roleList.iterator();
-					while(roleListIterator.hasNext())
+					Collection roleVOList = RoleController.getController().getRoleVOList(systemUserVO.getUserName());
+					Iterator roleVOListIterator = roleVOList.iterator();
+					while(roleVOListIterator.hasNext())
 					{
-						Role role = (Role)roleListIterator.next();
-						InfoGlueRole infoGlueRole = new InfoGlueRole(role.getRoleName(), role.getDescription(), this);
+						RoleVO roleVO = (RoleVO)roleVOListIterator.next();
+						InfoGlueRole infoGlueRole = new InfoGlueRole(roleVO.getRoleName(), roleVO.getDescription(), this);
 						roles.add(infoGlueRole);
 					}
 					
 					List groups = new ArrayList();
-					Collection groupList = systemUser.getGroups();
-					Iterator groupListIterator = groupList.iterator();
-					while(groupListIterator.hasNext())
+					Collection groupVOList = GroupController.getController().getGroupVOList(systemUserVO.getUserName());
+					Iterator groupVOListIterator = groupVOList.iterator();
+					while(groupVOListIterator.hasNext())
 					{
-					    Group group = (Group)groupListIterator.next();
-						InfoGlueGroup infoGlueGroup = new InfoGlueGroup(group.getGroupName(), group.getDescription(), this);
+					    GroupVO groupVO = (GroupVO)groupVOListIterator.next();
+						InfoGlueGroup infoGlueGroup = new InfoGlueGroup(groupVO.getGroupName(), groupVO.getDescription(), this);
 						groups.add(infoGlueGroup);
 					}
 					
-					InfoGluePrincipal infoGluePrincipal = new InfoGluePrincipal(systemUser.getUserName(), systemUser.getFirstName(), systemUser.getLastName(), systemUser.getEmail(), roles, groups, false, this);
-					
+					InfoGluePrincipal infoGluePrincipal = new InfoGluePrincipal(systemUserVO.getUserName(), systemUserVO.getFirstName(), systemUserVO.getLastName(), systemUserVO.getEmail(), roles, groups, false, this);
 					users.add(infoGluePrincipal);
 				}
 				
@@ -581,36 +582,37 @@ public class InfoGlueBasicAuthorizationModule extends BaseController implements 
 		}
 		else
 		{
-			List systemUsers = SystemUserController.getController().getSystemUserList(transactionObject);
-			Iterator systemUserListIterator = systemUsers.iterator();
-			while(systemUserListIterator.hasNext())
+			List<SystemUserVO> systemUserVOList = SystemUserController.getController().getSystemUserVOList(transactionObject);
+			
+			Iterator systemUserVOListIterator = systemUserVOList.iterator();
+			while(systemUserVOListIterator.hasNext())
 			{
-				SystemUser systemUser = (SystemUser)systemUserListIterator.next();
-	
+				SystemUserVO systemUser = (SystemUserVO)systemUserVOListIterator.next();
+				
 				List roles = new ArrayList();
-				Collection roleList = systemUser.getRoles();
+				Collection roleList = RoleController.getController().getRoleVOList(systemUser.getUserName(), transactionObject);
 				Iterator roleListIterator = roleList.iterator();
 				while(roleListIterator.hasNext())
 				{
-					Role role = (Role)roleListIterator.next();
+					RoleVO role = (RoleVO)roleListIterator.next();
 					InfoGlueRole infoGlueRole = new InfoGlueRole(role.getRoleName(), role.getDescription(), this);
 					roles.add(infoGlueRole);
 				}
 				
 				List groups = new ArrayList();
-				Collection groupList = systemUser.getGroups();
+				Collection groupList = GroupController.getController().getGroupVOList(systemUser.getUserName(), transactionObject);
 				Iterator groupListIterator = groupList.iterator();
 				while(groupListIterator.hasNext())
 				{
-				    Group group = (Group)groupListIterator.next();
+				    GroupVO group = (GroupVO)groupListIterator.next();
 					InfoGlueGroup infoGlueGroup = new InfoGlueGroup(group.getGroupName(), group.getDescription(), this);
 					groups.add(infoGlueGroup);
 				}
 				
 				InfoGluePrincipal infoGluePrincipal = new InfoGluePrincipal(systemUser.getUserName(), systemUser.getFirstName(), systemUser.getLastName(), systemUser.getEmail(), roles, groups, false, this);
-				
 				users.add(infoGluePrincipal);
 			}
+			System.out.println("Returning:" + users.size());
 		}
 		
 		return users;
@@ -661,21 +663,21 @@ public class InfoGlueBasicAuthorizationModule extends BaseController implements 
 				SystemUser systemUser = (SystemUser)systemUserListIterator.next();
 				
 				List roles = new ArrayList();
-				Collection roleList = RoleController.getController().getRoleList(systemUser.getUserName(), transactionObject);
+				Collection roleList = RoleController.getController().getRoleVOList(systemUser.getUserName(), transactionObject);
 				Iterator roleListIterator = roleList.iterator();
 				while(roleListIterator.hasNext())
 				{
-					Role role = (Role)roleListIterator.next();
+					RoleVO role = (RoleVO)roleListIterator.next();
 					InfoGlueRole infoGlueRole = new InfoGlueRole(role.getRoleName(), role.getDescription(), this);
 					roles.add(infoGlueRole);
 				}
 				
 				List groups = new ArrayList();
-				Collection groupList = GroupController.getController().getGroupList(systemUser.getUserName(), transactionObject);
+				Collection groupList = GroupController.getController().getGroupVOList(systemUser.getUserName(), transactionObject);
 				Iterator groupListIterator = groupList.iterator();
 				while(groupListIterator.hasNext())
 				{
-				    Group group = (Group)groupListIterator.next();
+				    GroupVO group = (GroupVO)groupListIterator.next();
 					InfoGlueGroup infoGlueGroup = new InfoGlueGroup(group.getGroupName(), group.getDescription(), this);
 					groups.add(infoGlueGroup);
 				}
@@ -726,37 +728,42 @@ public class InfoGlueBasicAuthorizationModule extends BaseController implements 
 		}
 		else
 		{
-			List systemUserList = SystemUserController.getController().getFilteredSystemUserList(searchString, transactionObject);
+			List<SystemUserVO> systemUserList = SystemUserController.getController().getFilteredSystemUserVOList(searchString, transactionObject);
 			Iterator systemUserListIterator = systemUserList.iterator();
 			while(systemUserListIterator.hasNext())
 			{
-				SystemUser systemUser = (SystemUser)systemUserListIterator.next();
+				SystemUserVO systemUser = (SystemUserVO)systemUserListIterator.next();
 				
 				List roles = new ArrayList();
-				Collection roleList = RoleController.getController().getRoleList(systemUser.getUserName(), transactionObject);
+				//Collection roleList = systemUser.getRoles(); //RoleController.getController().getRoleList(systemUser.getUserName(), transactionObject);
+				Collection roleList = RoleController.getController().getRoleVOList(systemUser.getUserName(), transactionObject);
 				Iterator roleListIterator = roleList.iterator();
 				while(roleListIterator.hasNext())
 				{
-					Role role = (Role)roleListIterator.next();
+					RoleVO role = (RoleVO)roleListIterator.next();
 					InfoGlueRole infoGlueRole = new InfoGlueRole(role.getRoleName(), role.getDescription(), this);
 					roles.add(infoGlueRole);
 				}
-				
+			
 				List groups = new ArrayList();
-				Collection groupList = GroupController.getController().getGroupList(systemUser.getUserName(), transactionObject);
+				//Collection groupList = systemUser.getGroups(); //GroupController.getController().getGroupList(systemUser.getUserName(), transactionObject);
+				Collection groupList = GroupController.getController().getGroupVOList(systemUser.getUserName(), transactionObject);
 				Iterator groupListIterator = groupList.iterator();
 				while(groupListIterator.hasNext())
 				{
-				    Group group = (Group)groupListIterator.next();
+				    GroupVO group = (GroupVO)groupListIterator.next();
 					InfoGlueGroup infoGlueGroup = new InfoGlueGroup(group.getGroupName(), group.getDescription(), this);
 					groups.add(infoGlueGroup);
 				}
+			
 				
 				InfoGluePrincipal infoGluePrincipal = new InfoGluePrincipal(systemUser.getUserName(), systemUser.getFirstName(), systemUser.getLastName(), systemUser.getEmail(), roles, groups, false, this);
 				users.add(infoGluePrincipal);
 			}
 		}
 		
+		System.out.println("Returning:" + users.size());
+
 		return users;
 	}
 	

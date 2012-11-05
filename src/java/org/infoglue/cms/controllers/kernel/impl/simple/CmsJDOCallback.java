@@ -65,7 +65,9 @@ import org.infoglue.cms.entities.management.impl.simple.SmallGroupImpl;
 import org.infoglue.cms.entities.management.impl.simple.SmallRoleImpl;
 import org.infoglue.cms.entities.management.impl.simple.SmallSystemUserImpl;
 import org.infoglue.cms.entities.management.impl.simple.SubscriptionFilterImpl;
+import org.infoglue.cms.entities.management.impl.simple.SystemUserGroupImpl;
 import org.infoglue.cms.entities.management.impl.simple.SystemUserImpl;
+import org.infoglue.cms.entities.management.impl.simple.SystemUserRoleImpl;
 import org.infoglue.cms.entities.management.impl.simple.TransactionHistoryImpl;
 import org.infoglue.cms.entities.management.impl.simple.UserPropertiesImpl;
 import org.infoglue.cms.entities.structure.SiteNode;
@@ -78,6 +80,7 @@ import org.infoglue.cms.entities.workflow.impl.simple.WorkflowDefinitionImpl;
 import org.infoglue.cms.exception.Bug;
 import org.infoglue.cms.security.InfoGluePrincipal;
 import org.infoglue.cms.util.ChangeNotificationController;
+import org.infoglue.cms.util.CmsSessionContextListener;
 import org.infoglue.cms.util.NotificationMessage;
 import org.infoglue.cms.util.RemoteCacheUpdater;
 import org.infoglue.deliver.util.CacheController;
@@ -102,7 +105,14 @@ public class CmsJDOCallback implements CallbackInterceptor
 
     public Class loaded(Object object, short accessMode) throws Exception
     {
-		//logger.error("Loaded " + object.getClass().getName() + " accessMode:" + accessMode);
+    	/*
+    	if(object.getClass().getName().indexOf("SystemUserImpl") > -1)
+    	{
+    		logger.error("Loaded " + object.getClass().getName() + " accessMode:" + accessMode);
+    		Thread.dumpStack();
+    	}
+    	*/
+    	
     	//if(accessMode == 1)
     	//	logger.error("Loaded " + object.getClass().getName() + " accessMode:" + accessMode);
     
@@ -337,6 +347,40 @@ public class CmsJDOCallback implements CallbackInterceptor
 				CacheController.clearCache("componentContentsCache");
 			    CacheController.clearCache("principalPropertyValueCache");
 			}
+			else if(object.getClass().getName().equals(SystemUserGroupImpl.class.getName()))
+			{
+				//clearCache(SystemUserImpl.class);
+				//clearCache(GroupImpl.class);
+				CacheController.clearCache("groupListCache");
+				CacheController.clearCache("groupVOListCache");
+				CacheController.clearCache("componentContentsCache");
+
+				CacheController.clearCache("principalCache");
+				CacheController.clearCache("principalPropertyValueCache");
+				CacheController.clearCache("rolePropertiesCache");
+				CacheController.clearCache("groupPropertiesCache");
+				CacheController.clearCache("authorizationCache");
+				CacheController.clearCache("personalAuthorizationCache");
+
+				new Thread(new Runnable() { public void run() {try {CmsSessionContextListener.reCacheSessionPrincipal();} catch (Exception e) {}}}).start();
+			}
+			else if(object.getClass().getName().equals(SystemUserRoleImpl.class.getName()))
+			{
+				//clearCache(SystemUserImpl.class);
+				//clearCache(RoleImpl.class);
+				CacheController.clearCache("roleListCache");
+				CacheController.clearCache("roleVOListCache");
+				CacheController.clearCache("componentContentsCache");
+
+				CacheController.clearCache("principalCache");
+				CacheController.clearCache("principalPropertyValueCache");
+				CacheController.clearCache("rolePropertiesCache");
+				CacheController.clearCache("groupPropertiesCache");
+				CacheController.clearCache("authorizationCache");
+				CacheController.clearCache("personalAuthorizationCache");
+			
+				new Thread(new Runnable() { public void run() {try {CmsSessionContextListener.reCacheSessionPrincipal();} catch (Exception e) {}}}).start();
+			}
 			else if(object.getClass().getName().equals(UserPropertiesImpl.class.getName()))
 			{
 			    CacheController.clearCache("principalPropertyValueCache");
@@ -529,6 +573,40 @@ public class CmsJDOCallback implements CallbackInterceptor
 			    CacheController.clearCache("principalPropertyValueCache");
 				CacheController.clearCache("authorizationCache");
 				CacheController.clearCache("personalAuthorizationCache");
+			}
+			else if(object.getClass().getName().equals(SystemUserGroupImpl.class.getName()))
+			{
+				//clearCache(SystemUserImpl.class);
+				//clearCache(GroupImpl.class);
+				CacheController.clearCache("principalCache");
+				CacheController.clearCache("groupListCache");
+				CacheController.clearCache("componentContentsCache");
+				
+				CacheController.clearCache("principalPropertyValueCache");
+				CacheController.clearCache("rolePropertiesCache");
+				CacheController.clearCache("groupPropertiesCache");
+				CacheController.clearCache("authorizationCache");
+				CacheController.clearCache("personalAuthorizationCache");
+				
+				new Thread(new Runnable() { public void run() {try {CmsSessionContextListener.reCacheSessionPrincipal();} catch (Exception e) {}}}).start();
+			}
+			else if(object.getClass().getName().equals(SystemUserRoleImpl.class.getName()))
+			{
+				//clearCache(SystemUserImpl.class);
+				//clearCache(RoleImpl.class);
+				CacheController.clearCache("principalCache");
+				CacheController.clearCache("groupListCache");
+				CacheController.clearCache("componentContentsCache");
+
+				CacheController.clearCache("principalPropertyValueCache");
+				CacheController.clearCache("rolePropertiesCache");
+				CacheController.clearCache("groupPropertiesCache");
+				CacheController.clearCache("authorizationCache");
+				CacheController.clearCache("personalAuthorizationCache");
+				CacheController.clearCache("authorizationCache");
+				CacheController.clearCache("personalAuthorizationCache");
+				
+				new Thread(new Runnable() { public void run() {try {CmsSessionContextListener.reCacheSessionPrincipal();} catch (Exception e) {}}}).start();
 			}
 			else if(object.getClass().getName().equals(UserPropertiesImpl.class.getName()))
 			{
@@ -761,6 +839,26 @@ public class CmsJDOCallback implements CallbackInterceptor
 			    CacheController.clearCache("principalPropertyValueCache");
 				CacheController.clearCache("authorizationCache");
 				CacheController.clearCache("personalAuthorizationCache");
+			}
+			else if(object.getClass().getName().equals(SystemUserGroupImpl.class.getName()))
+			{
+				CacheController.clearCache("principalCache");
+				CacheController.clearCache("principalPropertyValueCache");
+				CacheController.clearCache("rolePropertiesCache");
+				CacheController.clearCache("groupPropertiesCache");
+				CacheController.clearCache("authorizationCache");
+				CacheController.clearCache("personalAuthorizationCache");
+				new Thread(new Runnable() { public void run() {try {CmsSessionContextListener.reCacheSessionPrincipal();} catch (Exception e) {}}}).start();
+			}
+			else if(object.getClass().getName().equals(SystemUserRoleImpl.class.getName()))
+			{
+				CacheController.clearCache("principalCache");
+				CacheController.clearCache("principalPropertyValueCache");
+				CacheController.clearCache("rolePropertiesCache");
+				CacheController.clearCache("groupPropertiesCache");
+				CacheController.clearCache("authorizationCache");
+				CacheController.clearCache("personalAuthorizationCache");
+				new Thread(new Runnable() { public void run() {try {CmsSessionContextListener.reCacheSessionPrincipal();} catch (Exception e) {}}}).start();
 			}
 			else if(object.getClass().getName().equals(UserPropertiesImpl.class.getName()))
 			{

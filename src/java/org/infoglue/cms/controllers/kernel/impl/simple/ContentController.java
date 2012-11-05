@@ -592,6 +592,36 @@ public class ContentController extends BaseController
 	 * This method returns the value-object of the parent of a specific content. 
 	 */
 	
+    public static ContentVO getParentContent(ContentVO contentVO) throws SystemException, Bug
+    {
+    	if(contentVO.getParentContentId() == null)
+    		return null;
+
+        Database db = CastorDatabaseService.getDatabase();
+		ContentVO parentContentVO = null;
+		
+        beginTransaction(db);
+
+        try
+        {
+			parentContentVO = getContentController().getContentVOWithId(contentVO.getParentContentId(), db);
+            
+            commitTransaction(db);
+        }
+        catch(Exception e)
+        {
+			logger.error("An error occurred so we should not complete the transaction:" + e.getMessage());
+			logger.warn("An error occurred so we should not complete the transaction:" + e.getMessage(), e);
+            rollbackTransaction(db);
+            throw new SystemException(e.getMessage());
+        }
+
+        return parentContentVO;    	
+    }
+	
+	/**
+	 * This method returns the value-object of the parent of a specific content. 
+	 */
     public static ContentVO getParentContent(Integer contentId) throws SystemException, Bug
     {
         Database db = CastorDatabaseService.getDatabase();
@@ -601,10 +631,13 @@ public class ContentController extends BaseController
 
         try
         {
-			Content content = (Content) getObjectWithId(ContentImpl.class, contentId, db);
-			Content parent = content.getParentContent();
-			if(parent != null)
-				parentContentVO = parent.getValueObject();
+        	//Content content = (Content) getObjectWithId(ContentImpl.class, contentId, db);
+			//Content parent = content.getParentContent();
+
+        	ContentVO content = getContentController().getContentVOWithId(contentId, db);
+
+			if(content != null && content.getParentContentId() != null)
+				parentContentVO = getContentController().getContentVOWithId(content.getParentContentId(), db);
             
             commitTransaction(db);
         }
@@ -959,7 +992,7 @@ public class ContentController extends BaseController
 	{
 		List<ContentVO> childrenVOList = new ArrayList<ContentVO>();
 		
-		OQLQuery oql = db.getOQLQuery( "SELECT c FROM org.infoglue.cms.entities.content.impl.simple.SmallContentImpl c ORDER BY c.contentId DESC LIMIT $2");
+		OQLQuery oql = db.getOQLQuery( "SELECT c FROM org.infoglue.cms.entities.content.impl.simple.SmallContentImpl c ORDER BY c.contentId DESC LIMIT $1");
 		oql.bind(limit);
 
 		QueryResults results = oql.execute(Database.ReadOnly);
@@ -1317,14 +1350,15 @@ public class ContentController extends BaseController
         }
         catch(ConstraintException ce)
         {
-            logger.warn("An error occurred so we should not complete the transaction:" + ce, ce);
+        	logger.warn("An error occurred so we should not complete the transaction in getContentChildrenVOList:" + ce, ce);
             rollbackTransaction(db);
             throw ce;
         }
         catch(Exception e)
         {
-			logger.error("An error occurred so we should not complete the transaction:" + e.getMessage());
-			logger.warn("An error occurred so we should not complete the transaction:" + e.getMessage(), e);
+        	e.printStackTrace();
+			logger.error("An error occurred so we should not complete the transaction in getContentChildrenVOList:" + e.getMessage());
+			logger.warn("An error occurred so we should not complete the transaction in getContentChildrenVOList:" + e.getMessage(), e);
             rollbackTransaction(db);
             throw new SystemException(e.getMessage());
         }
@@ -1418,7 +1452,7 @@ public class ContentController extends BaseController
         	{
         		if(i > 0)
         			contentTypeINClause += ",";
-        		contentTypeINClause += "$" + (i+3);
+        		contentTypeINClause += "$" + (i+2);
         	}
         	contentTypeINClause += "))";
     	}
@@ -1427,11 +1461,11 @@ public class ContentController extends BaseController
 
     	if(CmsPropertyHandler.getUseShortTableNames().equalsIgnoreCase("true"))
     	{
-	    	sb.append("CALL SQL select c.contentId, c.name, c.publishDateTime, c.expireDateTime, c.isBranch, c.isProtected, ");
+	    	sb.append("CALL SQL select c.contId, c.name, c.publishDateTime, c.expireDateTime, c.isBranch, c.isProtected, ");
 	    	sb.append("c.creator, c.contentTypeDefId, c.repositoryId, c.parentContId, ");
 	    	sb.append("(");
-	    	sb.append("  select stateId from cmContVer cv2 where  ");
-			sb.append("  cv2.contentId = c.contentId ");
+	    	sb.append("  select min(stateId) from cmContVer cv2 where  ");
+			sb.append("  cv2.contId = c.contId ");
 			if(languageVOList.size() > 0)
 			{
 				sb.append("AND  (    ");
@@ -1443,20 +1477,19 @@ public class ContentController extends BaseController
 		        		sb.append(" OR ");
 		    			
 		    		sb.append("  cv2.ContVerId in ");
-		        	sb.append("  (select max(ContVerId) from cmContVer where contentId = c.contentId AND isActive = 1 AND languageId = " + language.getLanguageId() + ")");
+		        	sb.append("  (select max(ContVerId) from cmContVer where contId = c.contId AND isActive = 1 AND languageId = " + language.getLanguageId() + ")");
 		        	index++;
 		    	}
 		
 				sb.append(" )");
 			}
 			
-			sb.append("  group by cv2.contentId order by cv2.ContVerId desc");
 			sb.append(") ");
 			sb.append("AS stateId, ");
-	    	sb.append("(select count(contentId) from cmCont where parentContentId = c.contentId) AS childCount ");
+	    	sb.append("(select count(contId) from cmCont where parentContId = c.contId) AS childCount ");
 	    	sb.append("from ");
 	    	sb.append("cmCont c ");
-	    	sb.append("WHERE parentContentId = $1 " + contentTypeINClause + " group by c.contentId ORDER BY c.contentId asc AS org.infoglue.cms.entities.content.impl.simple.SmallStateContentImpl ");
+	    	sb.append("WHERE parentContId = $1 " + contentTypeINClause + " ORDER BY c.contId asc AS org.infoglue.cms.entities.content.impl.simple.SmallStateContentImpl ");
     	}
     	else
     	{

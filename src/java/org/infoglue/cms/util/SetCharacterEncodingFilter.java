@@ -110,12 +110,18 @@ public class SetCharacterEncodingFilter implements Filter
 		            
 	                if(languageId != null && !languageId.equals(""))
 	                {
-		                LanguageVO languageVO = LanguageController.getController().getLanguageVOWithId(new Integer(languageId));
-	
-			            if(logger.isInfoEnabled())
-			            	logger.info("encoding decorated:" + languageVO.getCharset());
-	
-			            request.setCharacterEncoding(languageVO.getCharset());
+	                	try
+	                	{
+			                LanguageVO languageVO = LanguageController.getController().getLanguageVOWithId(new Integer(languageId));
+		
+				            if(logger.isInfoEnabled())
+				            	logger.info("encoding decorated:" + languageVO.getCharset());
+		
+				            request.setCharacterEncoding(languageVO.getCharset());
+	                	}
+	                	catch (Exception e) {
+	                		logger.warn("Could not set char encoding to the language in the url:" + e.getMessage());
+						}
 	                }
 	            }
             }

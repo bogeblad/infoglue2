@@ -69,6 +69,7 @@ import org.infoglue.cms.security.InfoGluePrincipal;
 import org.infoglue.cms.util.ChangeNotificationController;
 import org.infoglue.cms.util.CmsPropertyHandler;
 import org.infoglue.cms.util.XMLNotificationWriter;
+import org.infoglue.deliver.util.Timer;
 
 import com.frovi.ss.Tree.BaseNode;
 import com.frovi.ss.Tree.INodeSupplier;
@@ -79,7 +80,7 @@ public abstract class SimpleXmlServiceAction extends InfoGlueAbstractAction
 
     private static final String protectedPropertyFragments = "password,administrator,authorizer,authenticator,masterserver,slaveserver,log";
     
-    protected static final String SERVICEREVISION = "$Revision: 1.24.2.1.2.1 $"; 
+    protected static final String SERVICEREVISION = "$Revision: 1.24.2.1.2.2 $"; 
 	protected static String ENCODING = "UTF-8";
     protected static String TYPE_FOLDER = "Folder";
     protected static String TYPE_ITEM = "Item";
@@ -311,6 +312,10 @@ public abstract class SimpleXmlServiceAction extends InfoGlueAbstractAction
     public String doExecute() throws Exception
     {
         if (useTemplate) return "success";
+     
+        Timer t = new Timer();
+        if(!logger.isInfoEnabled())
+			t.setActive(false);
         
         Document doc = DocumentHelper.createDocument();
         Element root = doc.addElement("tree");
@@ -346,6 +351,7 @@ public abstract class SimpleXmlServiceAction extends InfoGlueAbstractAction
     	        	.addAttribute("type", TYPE_REPOSITORY);
     	    }
     	    out(getFormattedDocument(doc));
+    	    t.printElapsedTime("End 3");
     		return null;
     	}
     	
@@ -386,6 +392,7 @@ public abstract class SimpleXmlServiceAction extends InfoGlueAbstractAction
 	        	elm.addAttribute("stateId", (String)node.getParameters().get("stateId"));
 
     	    out(getFormattedDocument(doc));
+    	    t.printElapsedTime("End 2");
     		return null;
     	}
     	
@@ -393,19 +400,22 @@ public abstract class SimpleXmlServiceAction extends InfoGlueAbstractAction
     	{
 			Collection containerNodes = sup.getChildContainerNodes(parent);
 			Collection childNodes = sup.getChildLeafNodes(parent);
-			
+    	    t.printElapsedTime("1.1");
+
 			ContentController contentController = ContentController.getContentController();
 			ContentVersionController contentVersionController = ContentVersionController.getContentVersionController();
 
 			Iterator it = containerNodes.iterator();
 			while (it.hasNext())
 			{
+	    	    t.printElapsedTime("1.2");
 				BaseNode theNode = (BaseNode) it.next();
 				if (theNode.isContainer() && sup.hasChildren())
 				{
 					theNode.setChildren(sup.hasChildren(theNode.getId()));
 				}
-				
+	    	    t.printElapsedTime("1.3");
+
 				// String src = theNode.hasChildren() ? action + "?repositoryId=" + repositoryId + urlArgSeparator + "parent=" + theNode.getId(): "";
 				String src = action + "?repositoryId=" + repositoryId + urlArgSeparator + "parent=" + theNode.getId();
 				if(createAction && src.length() >0) src += urlArgSeparator + "createAction=true";
@@ -475,24 +485,34 @@ public abstract class SimpleXmlServiceAction extends InfoGlueAbstractAction
 			            elm.addAttribute("activeVersionModifier", "" + activeVersion.getVersionModifier());
 			        }
 		        }
-		        
+	    	    t.printElapsedTime("1.4");
+
 		        //TODO - this was a quickfix only
 		        if(!useTemplate && sup.getClass().getName().indexOf("Content") > -1)
 		        {
-		        	try
+		        	if(theNode.getParameters().containsKey("contentTypeDefinitionId"))
+			        	elm.addAttribute("contentTypeId", "" + theNode.getParameters().get("contentTypeDefinitionId"));
+		        	else
 		        	{
-			            ContentTypeDefinitionVO contentTypeDefinitionVO = contentController.getContentTypeDefinition(theNode.getId());
-			        	if(contentTypeDefinitionVO != null)
-			        	    elm.addAttribute("contentTypeId","" + contentTypeDefinitionVO.getContentTypeDefinitionId());
+			        	try
+			        	{
+				            ContentTypeDefinitionVO contentTypeDefinitionVO = contentController.getContentTypeDefinition(theNode.getId());
+				        	if(contentTypeDefinitionVO != null)
+				        	    elm.addAttribute("contentTypeId","" + contentTypeDefinitionVO.getContentTypeDefinitionId());
+			        	}
+			        	catch (Exception e) 
+			        	{
+							logger.error("The content " + theNode.getTitle() + " (" + theNode.getId() + " ) points to a removed content type perhaps: " + e.getMessage());
+						}
 		        	}
-		        	catch (Exception e) 
-		        	{
-						logger.error("The content " + theNode.getTitle() + " (" + theNode.getId() + " ) points to a removed content type perhaps: " + e.getMessage());
-					}
+		    	    t.printElapsedTime("1.5");
 		        }
 		    }
 			
+    	    t.printElapsedTime("1.6");
+
     	    out(getFormattedDocument(doc));
+    	    t.printElapsedTime("End 1");
     		return null;
     	}
     	

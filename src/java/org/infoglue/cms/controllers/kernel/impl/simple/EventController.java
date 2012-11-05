@@ -24,8 +24,11 @@
 package org.infoglue.cms.controllers.kernel.impl.simple;
 
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.exolab.castor.jdo.Database;
@@ -235,6 +238,65 @@ public class EventController extends BaseController
 	{
 		return getPublicationEventVOListForRepository(repositoryId, null, null, false);
 	}
+
+	/**
+	 * Returns a list of events with either publish or unpublish-state currently available for the repository stated.
+	 */
+	
+	public static Map<Integer,List<EventVO>> getPublicationRepositoryEvents() throws SystemException, Bug
+	{
+		Map<Integer,List<EventVO>> repoEvents = new HashMap<Integer,List<EventVO>>();
+		
+		boolean hasBrokenItems = false;
+		
+		Database db = CastorDatabaseService.getDatabase();
+        beginTransaction(db);
+		try
+        {
+			Calendar cal = Calendar.getInstance();
+			cal.set(Calendar.MONTH, -12);
+			
+            OQLQuery oql = db.getOQLQuery( "SELECT e FROM org.infoglue.cms.entities.workflow.impl.simple.EventImpl e WHERE (e.typeId = $1 OR e.typeId = $2) AND e.creationDateTime > $3 ORDER BY e.eventId desc LIMIT $4");
+        	oql.bind(EventVO.PUBLISH);
+        	oql.bind(EventVO.UNPUBLISH_LATEST);
+        	oql.bind(cal.getTime());
+        	oql.bind(1000);
+        	
+        	//logger.info("Fetching entity in read/write mode" + repositoryId);
+        	QueryResults results = oql.execute(Database.ReadOnly);
+        	
+			while (results.hasMore()) 
+            {
+            	Event event = (Event)results.next();
+            	if(event.getRepository() != null)
+            	{
+	             	List<EventVO> events = repoEvents.get(event.getRepository().getId());
+	             	if(events == null)
+	             	{
+	             		events = new ArrayList<EventVO>();
+	             		repoEvents.put(event.getRepository().getId(), events);
+	             	}
+	             	events.add(event.getValueObject());
+            	}
+            	else
+            		System.out.println("Skipping event as it does not belong to a repo...:" + event.getId());
+            }
+            
+			results.close();
+			oql.close();
+
+            commitTransaction(db);
+        }
+        catch(Exception e)
+        {
+        	logger.error("An error occurred so we should not completes the transaction:" + e, e);
+            rollbackTransaction(db);
+            throw new SystemException(e.getMessage());
+        }
+
+        return repoEvents;	
+	}
+
 	
 	/**
 	 * Returns a list of events with either publish or unpublish-state currently available for the repository stated.

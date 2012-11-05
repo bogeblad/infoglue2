@@ -35,9 +35,12 @@ import org.exolab.castor.jdo.QueryResults;
 import org.infoglue.cms.entities.kernel.BaseEntityVO;
 import org.infoglue.cms.entities.management.Group;
 import org.infoglue.cms.entities.management.GroupVO;
+import org.infoglue.cms.entities.management.Role;
 import org.infoglue.cms.entities.management.SystemUser;
 import org.infoglue.cms.entities.management.impl.simple.GroupImpl;
 import org.infoglue.cms.entities.management.impl.simple.SmallGroupImpl;
+import org.infoglue.cms.entities.management.impl.simple.SmallRoleImpl;
+import org.infoglue.cms.entities.management.impl.simple.SystemUserGroupImpl;
 import org.infoglue.cms.exception.Bug;
 import org.infoglue.cms.exception.ConstraintException;
 import org.infoglue.cms.exception.SystemException;
@@ -73,7 +76,12 @@ public class GroupController extends BaseController
 	{
 		return (Group)getObjectWithId(GroupImpl.class, groupName, db);
 	}
-    
+
+	public SmallGroupImpl getSmallGroupWithName(String groupName, Database db) throws SystemException, Bug
+	{
+		return (SmallGroupImpl)getObjectWithId(SmallGroupImpl.class, groupName, db);
+	}
+
     /*
     public static List getGroupVOList(Database db) throws SystemException, Bug
     {
@@ -253,10 +261,37 @@ public class GroupController extends BaseController
         return group.getValueObject();
     }        
 
-    public Group update(GroupVO groupVO, String[] systemUsers, Database db) throws ConstraintException, SystemException
+    public Group update(GroupVO groupVO, String[] systemUsers, Database db) throws ConstraintException, SystemException, Exception
     {
+        SmallGroupImpl smallGroup = getSmallGroupWithName(groupVO.getGroupName(), db);
+
+		Integer systemUserCount = UserControllerProxy.getTableCount("cmSystemUser", "userName").getCount();
+		if(systemUsers != null && systemUsers.length == 0 && systemUserCount < 5000)
+		{
+			Group role = getGroupWithName(groupVO.getGroupName(), db);
+			role.getSystemUsers().clear();
+
+			if(systemUsers != null)
+			{
+				for (int i=0; i < systemUsers.length; i++)
+	            {
+					SystemUser systemUser = SystemUserController.getController().getSystemUserWithName(systemUsers[i], db);
+	        		
+	            	role.getSystemUsers().add(systemUser);
+					systemUser.getGroups().add(role);
+	            }
+			}
+		}
+
+		smallGroup.setValueObject(groupVO);
+
+        return smallGroup;
+        /*
 		Group group = getGroupWithName(groupVO.getGroupName(), db);
-		group.getSystemUsers().clear();
+
+		Integer systemUserCount = UserControllerProxy.getTableCount("cmSystemUser", "userName").getCount();
+		if(systemUsers != null && systemUsers.length == 0 && systemUserCount < 5000)
+			group.getSystemUsers().clear();
 		
 		if(systemUsers != null)
 		{
@@ -272,6 +307,7 @@ public class GroupController extends BaseController
         group.setValueObject(groupVO);
 
         return group;
+    	*/
     }        
 	
 	/**
@@ -389,16 +425,15 @@ public class GroupController extends BaseController
         }
     }        
 
-    public void addUser(String groupName, String userName, Database db) throws ConstraintException, SystemException
+    public void addUser(String groupName, String userName, Database db) throws ConstraintException, SystemException, Exception
     {
-		Group group = getGroupWithName(groupName, db);
-		
-		if(userName != null)
+    	if(groupName != null && userName != null)
 		{
-    		SystemUser systemUser = SystemUserController.getController().getSystemUserWithName(userName, db);
+    		SystemUserGroupImpl sug = new SystemUserGroupImpl();
+    		sug.setUserName(userName);
+    		sug.setGroupName(groupName);
     		
-        	group.getSystemUsers().add(systemUser);
-			systemUser.getGroups().add(group);
+    		db.create(sug);
 		}
     }
 
@@ -432,27 +467,51 @@ public class GroupController extends BaseController
         }
     }        
 
-    public void removeUser(String groupName, String userName, Database db) throws ConstraintException, SystemException
+    public void removeUser(String groupName, String userName, Database db) throws ConstraintException, SystemException, Exception
     {
-		Group group = getGroupWithName(groupName, db);
+    	OQLQuery oql = db.getOQLQuery( "SELECT sur FROM org.infoglue.cms.entities.management.impl.simple.SystemUserGroupImpl sur WHERE sur.groupName = $1 AND sur.userName = $2");
+    	oql.bind(groupName);
+    	oql.bind(userName);
+    	
+    	QueryResults results = oql.execute();
+		while (results.hasMore()) 
+        {
+			SystemUserGroupImpl sur = (SystemUserGroupImpl)results.nextElement();
+			db.remove(sur);
+        }
 		
-		if(userName != null)
-		{
-			SystemUser systemUser = null;
-			Iterator systemUsersIterator = group.getSystemUsers().iterator();
-			while(systemUsersIterator.hasNext())
-			{
-				systemUser = (SystemUser)systemUsersIterator.next();
-	        	if(systemUser.getUserName().equals(userName))
-	        		break;
-			}
-			
-			if(systemUser != null)
-			{
-				group.getSystemUsers().remove(systemUser);
-				systemUser.getGroups().remove(group);
-			}
-		}
+		results.close();
+		oql.close();
+    }
+
+    public void removeUsers(String groupName) throws ConstraintException, SystemException, Exception
+    {
+    	Database db = CastorDatabaseService.getDatabase();
+        beginTransaction(db);
+        try
+        {
+        	OQLQuery oql = db.getOQLQuery( "SELECT sur FROM org.infoglue.cms.entities.management.impl.simple.SystemUserGroupImpl sur WHERE sur.groupName = $1");
+        	oql.bind(groupName);
+        	
+        	QueryResults results = oql.execute();
+    		while (results.hasMore()) 
+            {
+    			SystemUserGroupImpl sur = (SystemUserGroupImpl)results.nextElement();
+    			//System.out.println("Deleting " + sur.getUserName() + "/" + sur.getGroupName());
+    			db.remove(sur);
+            }
+    		
+    		results.close();
+    		oql.close();
+
+            commitTransaction(db);
+        }
+        catch(Exception e)
+        {
+            logger.error("An error occurred so we should not complete the transaction:" + e, e);
+            rollbackTransaction(db);
+            throw new SystemException(e.getMessage());
+        }
     }
 
 	/**

@@ -802,14 +802,15 @@ public class ViewPageAction extends InfoGlueAbstractAction
 
 				//deliveryContext.setDisablePageCache(true);
 				
-				SiteNode siteNode = nodeDeliveryController.getSiteNode(dbWrapper.getDatabase(), this.siteNodeId);
+				SiteNodeVO siteNode = nodeDeliveryController.getSiteNodeVO(dbWrapper.getDatabase(), this.siteNodeId);
 				if(siteNode == null)
 				    throw new SystemException("There was no page with this id.");
 
-				if(siteNode.getSiteNodeTypeDefinition() == null)
+				if(siteNode.getSiteNodeTypeDefinitionId() == null)
 				    throw new SystemException("There was no SiteNodeTypeDefinition defined for the site node " + siteNode.getName() + "[" + siteNode.getId() + "].");
 
-				String invokerClassName = siteNode.getSiteNodeTypeDefinition().getInvokerClassName();
+				SiteNodeTypeDefinitionVO siteNodeTypeDefinitionVO = getSiteNodeTypeDefinition(this.siteNodeId, dbWrapper.getDatabase());
+				String invokerClassName = siteNodeTypeDefinitionVO.getInvokerClassName();
 				
 				if(invokerClassName == null || invokerClassName.equals(""))
 				{

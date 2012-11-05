@@ -2228,7 +2228,7 @@ public class NodeDeliveryController extends BaseDeliveryController
 			return null;
 		}
     	
-        String key = "" + siteNodeId + "_" + false;
+        String key = "" + siteNodeId;
         logger.info("key in getChildSiteNodes:" + key);
 		List siteNodeVOList = (List)CacheController.getCachedObjectFromAdvancedCache("childSiteNodesCache", key);
 
@@ -2267,7 +2267,7 @@ public class NodeDeliveryController extends BaseDeliveryController
 		   		SQL.append("	snv2.siNoId = snv.siNoId AND ");
 		   		SQL.append("	snv2.isActive = $2 AND snv2.stateId >= $3 ");
 		   		SQL.append("	) ");
-		   		SQL.append("order by snv.sortOrder ASC, sn.name ASC, sn.siNoId DESC AS org.infoglue.cms.entities.structure.impl.simple.SmallestSiteNodeImpl");
+		   		SQL.append("order by sn.name ASC, sn.siNoId DESC AS org.infoglue.cms.entities.structure.impl.simple.SmallestSiteNodeImpl");
 	    	}
 	    	else
 	    	{
@@ -2281,7 +2281,7 @@ public class NodeDeliveryController extends BaseDeliveryController
 		   		SQL.append("	snv2.siteNodeId = snv.siteNodeId AND ");
 		   		SQL.append("	snv2.isActive = $2 AND snv2.stateId >= $3 ");
 		   		SQL.append("	) ");
-		   		SQL.append("order by snv.sortOrder ASC, sn.name ASC, sn.siteNodeId DESC AS org.infoglue.cms.entities.structure.impl.simple.SmallestSiteNodeImpl");    		
+		   		SQL.append("order by sn.name ASC, sn.siteNodeId DESC AS org.infoglue.cms.entities.structure.impl.simple.SmallestSiteNodeImpl");    		
 	    	}
 
 	    	//logger.info("SQL:" + SQL);
@@ -2306,23 +2306,6 @@ public class NodeDeliveryController extends BaseDeliveryController
 
 			results.close();
 			oql.close();
-			
-	        /*
-	        OQLQuery oql = db.getOQLQuery( "SELECT s FROM org.infoglue.cms.entities.structure.impl.simple.SmallSiteNodeImpl s WHERE s.parentSiteNode.siteNodeId = $1 ORDER BY s.siteNodeId");
-			oql.bind(siteNodeId);
-	        */
-	        /*
-		    SiteNode siteNode = getSiteNode(db, siteNodeId);
-	        
-			Iterator childrenIterator = siteNode.getChildSiteNodes().iterator();
-			while (childrenIterator.hasNext()) 
-	        {
-	        	SiteNode childSiteNode = (SiteNode)childrenIterator.next();
-				
-	        	if(isValidSiteNode(childSiteNode, db))
-	        	    siteNodeVOList.add(childSiteNode.getValueObject());
-			}
-	        */
 	        
 			CacheController.cacheObjectInAdvancedCache("childSiteNodesCache", key, siteNodeVOList, new String[] {CacheController.getPooledString(3, siteNodeId)}, true);
 		}
@@ -2330,6 +2313,106 @@ public class NodeDeliveryController extends BaseDeliveryController
 		return siteNodeVOList;	
 	}
 
+	/**
+	 * This method returns the list of siteNodeVO which is children to this one and has a given node name.
+	 */
+	
+	public List getChildSiteNodeWithName(Database db, Integer siteNodeId, String name) throws SystemException, Exception
+	{
+		//logger.warn("getChildSiteNodes:" + siteNodeId);
+
+    	if(siteNodeId == null)
+		{
+			return null;
+		}
+    	
+        String key = "" + siteNodeId + "_" + name;
+        logger.info("key in getChildSiteNodes:" + key);
+		List siteNodeVOList = (List)CacheController.getCachedObjectFromAdvancedCache("childSiteNodesCache", key);
+
+		if(siteNodeVOList == null)
+		{
+			SiteNodeVO parentSiteNodeVO = getSiteNodeVO(db, siteNodeId);
+			if(parentSiteNodeVO != null && parentSiteNodeVO.getChildCount() != null && parentSiteNodeVO.getChildCount() == 0)
+			{
+				//logger.info("Skipping node as it has no children...");
+				return new ArrayList();
+			}
+		}
+
+		
+		if(siteNodeVOList != null)
+		{
+			logger.info("There was a cached list of child sitenodes:" + siteNodeVOList.size());
+		}
+		else
+		{
+	   		//logger.info("Querying for children to siteNode " + siteNodeId);
+	   		Timer t = new Timer();
+	   		
+	        siteNodeVOList = new ArrayList();
+		    
+	        StringBuffer SQL = new StringBuffer();
+	    	if(CmsPropertyHandler.getUseShortTableNames() != null && CmsPropertyHandler.getUseShortTableNames().equalsIgnoreCase("true"))
+	    	{
+		   		SQL.append("CALL SQL select sn.siNoId, sn.name, sn.publishDateTime, sn.expireDateTime, sn.isBranch, sn.parentSiNoId, sn.metaInfoContentId, sn.repositoryId, sn.siNoTypeDefId, sn.creator, (select count(*) from cmSiNo sn2 where sn2.parentSiNoId = sn.siNoId) AS childCount, snv.stateId, snv.isProtected from cmSiNo sn, cmSiNoVer snv ");
+		   		SQL.append("where ");
+		   		SQL.append("sn.parentSiNoId = $1 ");
+		   		SQL.append("AND snv.siNoId = sn.siNoId ");
+		   		SQL.append("AND snv.siNoVerId = ( ");
+		   		SQL.append("	select max(siNoVerId) from cmSiNoVer snv2 ");
+		   		SQL.append("	WHERE ");
+		   		SQL.append("	snv2.siNoId = snv.siNoId AND ");
+		   		SQL.append("	snv2.isActive = $2 AND snv2.stateId >= $3 ");
+		   		SQL.append("	) ");
+		   		SQL.append("AND sn.name = $4 ");
+		   		SQL.append("order by sn.name ASC, sn.siNoId DESC AS org.infoglue.cms.entities.structure.impl.simple.SmallestSiteNodeImpl");
+	    	}
+	    	else
+	    	{
+		   		SQL.append("CALL SQL select sn.siteNodeId, sn.name, sn.publishDateTime, sn.expireDateTime, sn.isBranch, sn.parentSiteNodeId, sn.metaInfoContentId, sn.repositoryId, sn.siteNodeTypeDefinitionId, sn.creator, (select count(*) from cmSiteNode sn2 where sn2.parentSiteNodeId = sn.siteNodeId) AS childCount, snv.stateId, snv.isProtected from cmSiteNode sn, cmSiteNodeVersion snv ");
+		   		SQL.append("where ");
+		   		SQL.append("sn.parentSiteNodeId = $1 ");
+		   		SQL.append("AND snv.siteNodeId = sn.siteNodeId ");
+		   		SQL.append("AND snv.siteNodeVersionId = ( ");
+		   		SQL.append("	select max(siteNodeVersionId) from cmSiteNodeVersion snv2 ");
+		   		SQL.append("	WHERE ");	
+		   		SQL.append("	snv2.siteNodeId = snv.siteNodeId AND ");
+		   		SQL.append("	snv2.isActive = $2 AND snv2.stateId >= $3 ");
+		   		SQL.append("	) ");
+		   		SQL.append("AND sn.name = $4 ");
+		   		SQL.append("order by sn.name ASC, sn.siteNodeId DESC AS org.infoglue.cms.entities.structure.impl.simple.SmallestSiteNodeImpl");    		
+	    	}
+
+	    	//logger.info("SQL:" + SQL);
+	    	//logger.info("siteNodeId:" + siteNodeId);
+	    	OQLQuery oql = db.getOQLQuery(SQL.toString());
+			oql.bind(siteNodeId);
+			oql.bind(true);
+			oql.bind(getOperatingMode());
+			oql.bind(name);
+	    	
+	    	QueryResults results = oql.execute(Database.ReadOnly);
+	    	//RequestAnalyser.getRequestAnalyser().registerComponentStatistics("getChildSiteNodes part 1", t.getElapsedTime());
+	    	
+			while (results.hasMore()) 
+	        {
+	        	SiteNode siteNode = (SiteNode)results.next();
+				if(isValidSiteNode(siteNode, db))
+	        	{
+	        		siteNodeVOList.add(siteNode.getValueObject());
+				}
+	    	}
+	    	//RequestAnalyser.getRequestAnalyser().registerComponentStatistics("getChildSiteNodes part 2", t.getElapsedTime());
+
+			results.close();
+			oql.close();
+	        
+			CacheController.cacheObjectInAdvancedCache("childSiteNodesCache", key, siteNodeVOList, new String[] {CacheController.getPooledString(3, siteNodeId)}, true);
+		}
+				
+		return siteNodeVOList;	
+	}
 	
 	/**
 	 * This method returns the list of siteNodeVO which is children to this one.
