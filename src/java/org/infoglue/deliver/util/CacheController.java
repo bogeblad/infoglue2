@@ -110,7 +110,9 @@ import org.infoglue.cms.entities.management.impl.simple.SmallGroupImpl;
 import org.infoglue.cms.entities.management.impl.simple.SmallRoleImpl;
 import org.infoglue.cms.entities.management.impl.simple.SmallSystemUserImpl;
 import org.infoglue.cms.entities.management.impl.simple.SubscriptionImpl;
+import org.infoglue.cms.entities.management.impl.simple.SystemUserGroupImpl;
 import org.infoglue.cms.entities.management.impl.simple.SystemUserImpl;
+import org.infoglue.cms.entities.management.impl.simple.SystemUserRoleImpl;
 import org.infoglue.cms.entities.management.impl.simple.UserContentTypeDefinitionImpl;
 import org.infoglue.cms.entities.management.impl.simple.UserPropertiesImpl;
 import org.infoglue.cms.entities.publishing.impl.simple.PublicationImpl;
@@ -2252,7 +2254,7 @@ public class CacheController extends Thread
 							    		ex.printStackTrace();
 							    	}
 							    }
-							    else if(selectiveCacheUpdate && (entity.indexOf("Content") > 0 && entity.indexOf("ContentTypeDefinition") == -1) && useSelectivePageCacheUpdate)
+							    else if(selectiveCacheUpdate && (entity.indexOf("Content") > 0 && entity.indexOf("ContentTypeDefinition") == -1 && entity.indexOf("ContentCategory") == -1) && useSelectivePageCacheUpdate)
 							    {
 							    	//System.out.println("Content entity was called and needs to be fixed:" + entity);
 							    	
@@ -2592,6 +2594,8 @@ public class CacheController extends Thread
 			clearCache(db, GroupImpl.class);
 			clearCache(db, SmallRoleImpl.class);
 			clearCache(db, SmallGroupImpl.class);
+			clearCache(db, SystemUserRoleImpl.class);
+			clearCache(db, SystemUserGroupImpl.class);
 			clearCache(db, ServiceDefinitionImpl.class);
 			clearCache(db, SiteNodeTypeDefinitionImpl.class);
 			clearCache(db, SystemUserImpl.class);

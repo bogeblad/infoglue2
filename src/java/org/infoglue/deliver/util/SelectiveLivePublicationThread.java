@@ -74,7 +74,9 @@ import org.infoglue.cms.entities.management.impl.simple.SmallAvailableServiceBin
 import org.infoglue.cms.entities.management.impl.simple.SmallGroupImpl;
 import org.infoglue.cms.entities.management.impl.simple.SmallRoleImpl;
 import org.infoglue.cms.entities.management.impl.simple.SmallSystemUserImpl;
+import org.infoglue.cms.entities.management.impl.simple.SystemUserGroupImpl;
 import org.infoglue.cms.entities.management.impl.simple.SystemUserImpl;
+import org.infoglue.cms.entities.management.impl.simple.SystemUserRoleImpl;
 import org.infoglue.cms.entities.publishing.PublicationDetailVO;
 import org.infoglue.cms.entities.publishing.PublicationVO;
 import org.infoglue.cms.entities.publishing.impl.simple.PublicationDetailImpl;
@@ -294,7 +296,9 @@ public class SelectiveLivePublicationThread extends PublicationThread
 						    		className.equalsIgnoreCase(GroupImpl.class.getName()) ||
 						    		className.equalsIgnoreCase(SmallSystemUserImpl.class.getName()) || 
 						    		className.equalsIgnoreCase(SmallRoleImpl.class.getName()) || 
-						    		className.equalsIgnoreCase(SmallGroupImpl.class.getName()))
+						    		className.equalsIgnoreCase(SmallGroupImpl.class.getName()) || 
+						    		className.equalsIgnoreCase(SystemUserRoleImpl.class.getName()) || 
+						    		className.equalsIgnoreCase(SystemUserGroupImpl.class.getName()))
 						    {
 						        Object[] ids = {objectId};
 						        CacheController.clearCache(type, ids);
@@ -486,6 +490,11 @@ public class SelectiveLivePublicationThread extends PublicationThread
 											SiteNodeVersionVO siteNodeVersionVO = SiteNodeVersionController.getController().getSiteNodeVersionVOWithId(publicationDetailVO.getEntityId());
 											//logger.info("siteNodeVersionVO:" + siteNodeVersionVO.getId());
 											Integer siteNodeId = siteNodeVersionVO.getSiteNodeId();
+											
+											CacheController.clearCache("pageCacheLatestSiteNodeVersions", "" + siteNodeId);
+											String versionKey = "" + siteNodeId + "_" + CmsPropertyHandler.getOperatingMode() + "_siteNodeVersionVO";		
+										    CacheController.clearCache("latestSiteNodeVersionCache", versionKey);
+											
 										    logger.info("We also clear the meta info content..");
 
 										    SiteNodeVO previousSiteNodeVO = SiteNodeController.getController().getSiteNodeVOWithId(siteNodeId);
@@ -504,7 +513,7 @@ public class SelectiveLivePublicationThread extends PublicationThread
 										    logger.info("We clear all small siteNodes as well " + siteNodeId);
 											CacheController.clearCache(SiteNodeImpl.class, new Integer[]{siteNodeId});
 											CacheController.clearCache(SmallSiteNodeImpl.class, new Integer[]{siteNodeId});
-											CacheController.clearCache(SmallSiteNodeVersionImpl.class, new Integer[]{new Integer(objectId)});		
+											CacheController.clearCache(SmallSiteNodeVersionImpl.class, new Integer[]{new Integer(publicationDetailVO.getEntityId())});		
 
 											logger.info("We clear all contents as well " + previousSiteNodeVO.getMetaInfoContentId());
 											Class metaInfoContentExtra = ContentImpl.class;
@@ -580,6 +589,17 @@ public class SelectiveLivePublicationThread extends PublicationThread
 												}
 											}
 
+											//Handling access rights...
+											if(siteNodeVersionVO.getIsProtected().intValue() != SiteNodeVersionVO.INHERITED || (previousSiteNodeVersionVO != null && previousSiteNodeVersionVO.getIsProtected().intValue() != SiteNodeVersionVO.INHERITED))
+											{
+										        CacheController.clearCache(AccessRightImpl.class);
+										        CacheController.clearCache(AccessRightRoleImpl.class);
+										        CacheController.clearCache(AccessRightGroupImpl.class);
+										        CacheController.clearCache(AccessRightUserImpl.class);
+
+									    		CacheController.clearCache("personalAuthorizationCache");
+											}
+											
 											logger.info("Handling parents....");
 											
 											SiteNodeVO siteNodeVOAfter = SiteNodeController.getController().getSiteNodeVOWithId(siteNodeId);

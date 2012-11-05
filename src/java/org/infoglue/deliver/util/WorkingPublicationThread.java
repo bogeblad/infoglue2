@@ -60,7 +60,9 @@ import org.infoglue.cms.entities.management.impl.simple.SmallAvailableServiceBin
 import org.infoglue.cms.entities.management.impl.simple.SmallGroupImpl;
 import org.infoglue.cms.entities.management.impl.simple.SmallRoleImpl;
 import org.infoglue.cms.entities.management.impl.simple.SmallSystemUserImpl;
+import org.infoglue.cms.entities.management.impl.simple.SystemUserGroupImpl;
 import org.infoglue.cms.entities.management.impl.simple.SystemUserImpl;
+import org.infoglue.cms.entities.management.impl.simple.SystemUserRoleImpl;
 import org.infoglue.cms.entities.publishing.impl.simple.PublicationDetailImpl;
 import org.infoglue.cms.entities.structure.impl.simple.SiteNodeImpl;
 import org.infoglue.cms.entities.structure.impl.simple.SiteNodeVersionImpl;
@@ -258,15 +260,24 @@ public class WorkingPublicationThread extends Thread
 						    		className.equalsIgnoreCase(GroupImpl.class.getName()) || 
 						    		className.equalsIgnoreCase(SmallSystemUserImpl.class.getName()) || 
 						    		className.equalsIgnoreCase(SmallRoleImpl.class.getName()) || 
-						    		className.equalsIgnoreCase(SmallGroupImpl.class.getName()))
+						    		className.equalsIgnoreCase(SmallGroupImpl.class.getName()) || 
+						    		className.equalsIgnoreCase(SystemUserRoleImpl.class.getName()) || 
+						    		className.equalsIgnoreCase(SystemUserGroupImpl.class.getName()))
 						    {
 						        Object[] ids = {objectId};
 						        CacheController.clearCache(type, ids);
 							}
 						    else if(!isDependsClass)
 						    {
-						        Object[] ids = {new Integer(objectId)};
-							    CacheController.clearCache(type, ids);
+						    	try
+						    	{
+							        Object[] ids = {new Integer(objectId)};
+								    CacheController.clearCache(type, ids);
+						    	}
+						    	catch (Exception e) 
+						    	{
+						    		logger.warn("Problem clearing cache for type:" + type + " AND ID:" + objectId);
+								}
 						    }
 			
 							//If it's an contentVersion we should delete all images it might have generated from attributes.
