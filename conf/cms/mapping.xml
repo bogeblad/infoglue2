@@ -181,6 +181,32 @@
     </field>
   </class>
 
+  <!--  Mapping for SystemUserRole  -->
+  <class name="org.infoglue.cms.entities.management.impl.simple.SystemUserRoleImpl" identity="userName roleName">
+    <description>SystemUserRole</description>
+    <cache-type type="none"/>
+    <map-to table="cmSystemUserRole"/>
+    <field name="userName" type="java.lang.String">
+      <sql name="userName" type="varchar"/>
+    </field>
+    <field name="roleName" type="java.lang.String">
+      <sql name="roleName" type="varchar"/>
+    </field>
+  </class>
+
+  <!--  Mapping for SystemUserGroup  -->
+  <class name="org.infoglue.cms.entities.management.impl.simple.SystemUserGroupImpl" identity="userName groupName">
+    <description>SystemUserGroup</description>
+    <cache-type type="none"/>
+    <map-to table="cmSystemUserGroup"/>
+    <field name="userName" type="java.lang.String">
+      <sql name="userName" type="varchar"/>
+    </field>
+    <field name="groupName" type="java.lang.String">
+      <sql name="groupName" type="varchar"/>
+    </field>
+  </class>
+  
   <!--  Mapping for RoleProperties  -->
   <class name="org.infoglue.cms.entities.management.impl.simple.RolePropertiesImpl" identity="rolePropertiesId" key-generator="IDENTITY">
     <description>RoleProperties</description>
@@ -1711,12 +1737,37 @@
 	    <field name="userAgent" type="java.lang.String">
 	      	<sql name="userAgent" type="varchar" dirty="check" />
 	    </field>
-		<field name="formEntryValues" type="org.infoglue.cms.entities.management.impl.simple.FormEntryValueImpl" collection="collection">
+		<field name="formEntryValues" type="org.infoglue.cms.entities.management.impl.simple.FormEntryValueImpl" collection="collection" lazy="true">
 		  <sql many-key="formEntryId"/>
 		</field>
-		<field name="formEntryAssets" type="org.infoglue.cms.entities.management.impl.simple.FormEntryAssetImpl" collection="collection">
+		<field name="formEntryAssets" type="org.infoglue.cms.entities.management.impl.simple.FormEntryAssetImpl" collection="collection" lazy="true">
 		  <sql many-key="formEntryId"/>
 		</field>
+  	</class>
+
+	<!--  Mapping for FormEntry  -->
+  	<class name="org.infoglue.cms.entities.management.impl.simple.SmallFormEntryImpl" identity="formEntryId" key-generator="IDENTITY">
+    	<description>FormEntry</description>
+    	<cache-type type="none"/>
+	    <map-to table="cmFormEntry"/>
+	    <field name="formEntryId" type="java.lang.Integer">
+	      	<sql name="id" type="integer" dirty="check" />
+	    </field>
+	    <field name="originAddress" type="java.lang.String">
+	      	<sql name="originAddress" type="varchar" dirty="check" />
+	    </field>
+	    <field name="formName" type="java.lang.String">
+	      	<sql name="formName" type="varchar" dirty="check" />
+	    </field>
+	    <field name="formContentId" type="java.lang.Integer">
+		    <sql name="formContentId" type="integer" dirty="check" />
+	    </field>
+	    <field name="userIP" type="java.lang.String">
+	      	<sql name="userIP" type="varchar" dirty="check" />
+	    </field>
+	    <field name="userAgent" type="java.lang.String">
+	      	<sql name="userAgent" type="varchar" dirty="check" />
+	    </field>
   	</class>
 
 	<!--  Mapping for FormEntryValue  -->
@@ -1733,7 +1784,26 @@
 	    <field name="value" type="java.lang.String">
 	      	<sql name="value" type="varchar" dirty="check" />
 	    </field>
-		<field name="formEntry" type="org.infoglue.cms.entities.management.impl.simple.FormEntryImpl">
+		<field name="formEntry" type="org.infoglue.cms.entities.management.impl.simple.FormEntryImpl" lazy="true">
+		  <sql name="formEntryId"/>
+		</field>
+  	</class>
+
+	<!--  Mapping for SmallFormEntryValue  -->
+  	<class name="org.infoglue.cms.entities.management.impl.simple.SmallFormEntryValueImpl" identity="formEntryValueId" key-generator="IDENTITY">
+    	<description>FormEntryValue</description>
+    	<cache-type type="none"/>
+	    <map-to table="cmFormEntryValue"/>
+	    <field name="formEntryValueId" type="java.lang.Integer">
+	      	<sql name="id" type="integer" dirty="check" />
+	    </field>
+	    <field name="name" type="java.lang.String">
+	      	<sql name="name" type="varchar" dirty="check" />
+	    </field>
+	    <field name="value" type="java.lang.String">
+	      	<sql name="value" type="varchar" dirty="check" />
+	    </field>
+		<field name="formEntryId" type="java.lang.Integer">
 		  <sql name="formEntryId"/>
 		</field>
   	</class>
@@ -1757,7 +1827,7 @@
 	    <field name="fileSize" type="java.lang.Integer">
 	      <sql name="fileSize" type="integer" dirty="check" />
 	    </field>
-		<field name="formEntry" type="org.infoglue.cms.entities.management.impl.simple.FormEntryImpl">
+		<field name="formEntry" type="org.infoglue.cms.entities.management.impl.simple.FormEntryImpl" lazy="true">
 		  <sql name="formEntryId"/>
 		</field>
 	    <field name="assetBlob" type="stream" >
@@ -1831,6 +1901,31 @@
 	    <map-to table="dummy"/>
 		<field name="count" type="java.lang.Integer">
 	    	<sql name="count" type="integer"/>
+	    </field>
+    </class>
+
+	<!--  Mapping for GeneralOQLResult  -->
+  	<class name="org.infoglue.cms.entities.management.GeneralOQLResult" identity="id" key-generator="IDENTITY">
+	    <description>GeneralOQLResult</description>
+	    <cache-type type="none"/>
+	    <map-to table="dummy"/>
+		<field name="id" type="java.lang.Integer">
+	    	<sql name="id" type="integer"/>
+	    </field>
+		<field name="value1" type="java.lang.String">
+	    	<sql name="value1" type="varchar"/>
+	    </field>
+		<field name="value2" type="java.lang.String">
+	    	<sql name="value2" type="varchar"/>
+	    </field>
+		<field name="value3" type="java.lang.String">
+	    	<sql name="value3" type="varchar"/>
+	    </field>
+		<field name="value4" type="java.lang.String">
+	    	<sql name="value4" type="varchar"/>
+	    </field>
+		<field name="value5" type="java.lang.String">
+	    	<sql name="value5" type="varchar"/>
 	    </field>
     </class>
 
