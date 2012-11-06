@@ -983,10 +983,21 @@ public class SiteNodeController extends BaseController
 		   		siteNodeChildrenVOList = new ArrayList<SiteNodeVO>();
 				CacheController.cacheObjectInAdvancedCache("childSiteNodesCache", key, siteNodeChildrenVOList, new String[] {CacheController.getPooledString(3, siteNode.getValueObject().getParentSiteNodeId())}, true);
 			}
-			siteNodeChildrenVOList.add(siteNode.getValueObject());
-
-			String siteNodeCacheKey = "" + siteNode.getValueObject().getId();
-			CacheController.cacheObjectInAdvancedCache("siteNodeCache", siteNodeCacheKey, siteNode.getValueObject());
+	   		boolean contains = false;
+	   		for(SiteNodeVO existingSiteNodeVO : siteNodeChildrenVOList)
+	   		{
+	   			if(existingSiteNodeVO.getId().equals(siteNode.getValueObject().getId()))
+	   			{
+	   				contains = true;
+	   				break;
+	   			}
+	   		}
+	   		if(!contains)
+	   		{
+	   			siteNodeChildrenVOList.add(siteNode.getValueObject());
+				String siteNodeCacheKey = "" + siteNode.getValueObject().getId();
+				CacheController.cacheObjectInAdvancedCache("siteNodeCache", siteNodeCacheKey, siteNode.getValueObject());
+	   		}
 		}
 		
 		logger.info("Clearing last node as we are probably not done with all it's children");

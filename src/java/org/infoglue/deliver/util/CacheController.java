@@ -1880,52 +1880,53 @@ public class CacheController extends Thread
 							    	//System.out.println("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
 							    	//Thread.dumpStack();
 							    	//Hur lšser vi detta bra?
-							    	/*
-							    	logger.info("Getting eventListeners...");
-							        Object cacheEntryEventListener = eventListeners.get(e.getKey() + "_cacheEntryEventListener");
-						    		Object cacheMapAccessEventListener = eventListeners.get(e.getKey() + "_cacheMapAccessEventListener");
-
-							    	if(cacheName.equals("pageCacheExtra"))
+							    	if(CmsPropertyHandler.getOperatingMode().equalsIgnoreCase("0"))
 							    	{
-							    		clearFileCacheForGroup(cacheInstance, "siteNodeVersion_" + entityId);
-							    		clearFileCacheForGroup(cacheInstance, "selectiveCacheUpdateNonApplicable");
+								    	logger.info("Getting eventListeners...");
+								        Object cacheEntryEventListener = eventListeners.get(e.getKey() + "_cacheEntryEventListener");
+							    		Object cacheMapAccessEventListener = eventListeners.get(e.getKey() + "_cacheMapAccessEventListener");
+	
+								    	if(cacheName.equals("pageCacheExtra"))
+								    	{
+								    		clearFileCacheForGroup(cacheInstance, "siteNodeVersion_" + entityId);
+								    		clearFileCacheForGroup(cacheInstance, "selectiveCacheUpdateNonApplicable");
+								    	}
+								    	else
+								    	{
+								    		cacheInstance.flushGroup("siteNodeVersion_" + entityId);
+								    		cacheInstance.flushGroup("selectiveCacheUpdateNonApplicable");
+								    	}
+								    	logger.info("clearing " + e.getKey() + " with group " + "siteNodeVersion_" + entityId);
+								    	
+								    	try
+								    	{
+									    	logger.info("BeforesiteNodeVersionVO...");
+									    	SiteNodeVersionVO snvVO = SiteNodeVersionController.getController().getSiteNodeVersionVOWithId(new Integer(entityId));
+									    	Integer siteNodeId = snvVO.getSiteNodeId();
+									    	if(siteNodeId != null)
+								    		{
+										    	logger.info("Before flushGroup2...");
+								    			if(cacheName.equals("pageCacheExtra"))
+										    		clearFileCacheForGroup(cacheInstance, "siteNode_" + siteNodeId);
+								    			else
+								    				cacheInstance.flushGroup("siteNode_" + siteNodeId);
+	
+								    			if(cacheName.equals("childSiteNodesCache"))
+								    			{
+											    	SiteNodeVO snVO = SiteNodeController.getController().getSiteNodeVOWithId(snvVO.getSiteNodeId());
+											    	if(snVO.getParentSiteNodeId() != null)
+											    		cacheInstance.flushGroup("siteNode_" + snVO.getParentSiteNodeId());
+											    	logger.info("Clearing for:" + snVO.getParentSiteNodeId());
+								    			}
+								    			
+								    			logger.info("After flushGroup2...");
+								    		}
+								    	}
+								    	catch(SystemException se)
+								    	{
+								    		logger.warn("Missing siteNode version: " + se.getMessage(), se);
+								    	}
 							    	}
-							    	else
-							    	{
-							    		cacheInstance.flushGroup("siteNodeVersion_" + entityId);
-							    		cacheInstance.flushGroup("selectiveCacheUpdateNonApplicable");
-							    	}
-							    	logger.info("clearing " + e.getKey() + " with group " + "siteNodeVersion_" + entityId);
-							    	
-							    	try
-							    	{
-								    	logger.info("BeforesiteNodeVersionVO...");
-								    	SiteNodeVersionVO snvVO = SiteNodeVersionController.getController().getSiteNodeVersionVOWithId(new Integer(entityId));
-								    	Integer siteNodeId = snvVO.getSiteNodeId();
-								    	if(siteNodeId != null)
-							    		{
-									    	logger.info("Before flushGroup2...");
-							    			if(cacheName.equals("pageCacheExtra"))
-									    		clearFileCacheForGroup(cacheInstance, "siteNode_" + siteNodeId);
-							    			else
-							    				cacheInstance.flushGroup("siteNode_" + siteNodeId);
-
-							    			if(cacheName.equals("childSiteNodesCache"))
-							    			{
-										    	SiteNodeVO snVO = SiteNodeController.getController().getSiteNodeVOWithId(snvVO.getSiteNodeId());
-										    	if(snVO.getParentSiteNodeId() != null)
-										    		cacheInstance.flushGroup("siteNode_" + snVO.getParentSiteNodeId());
-										    	logger.info("Clearing for:" + snVO.getParentSiteNodeId());
-							    			}
-							    			
-							    			logger.info("After flushGroup2...");
-							    		}
-							    	}
-							    	catch(SystemException se)
-							    	{
-							    		logger.warn("Missing siteNode version: " + se.getMessage(), se);
-							    	}
-							    	*/
 							    }
 							    else if(selectiveCacheUpdate && (entity.indexOf("SiteNode") > 0 && entity.indexOf("SiteNodeTypeDefinition") == -1) && useSelectivePageCacheUpdate)
 							    {
