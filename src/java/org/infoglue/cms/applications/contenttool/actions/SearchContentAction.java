@@ -24,10 +24,17 @@
 package org.infoglue.cms.applications.contenttool.actions;
 
 import java.net.URLEncoder;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.log4j.Category;
@@ -41,10 +48,12 @@ import org.infoglue.cms.controllers.kernel.impl.simple.RepositoryController;
 import org.infoglue.cms.controllers.kernel.impl.simple.SearchController;
 import org.infoglue.cms.controllers.kernel.impl.simple.UserControllerProxy;
 import org.infoglue.cms.entities.content.ContentVO;
+import org.infoglue.cms.entities.content.ContentVersionVO;
 import org.infoglue.cms.entities.content.DigitalAssetVO;
 import org.infoglue.cms.entities.kernel.BaseEntityVO;
 import org.infoglue.cms.entities.management.LanguageVO;
 import org.infoglue.cms.util.CmsPropertyHandler;
+import org.infoglue.deliver.util.Timer;
 
 import webwork.action.Action;
 
@@ -53,7 +62,7 @@ import webwork.action.Action;
  * Action class for usecase SearchContentAction. Was better before but due to wanted support for multiple 
  * databases and lack of time I had to cut down on functionality - sorry Magnus. 
  *
- * @author Magnus Güvenal
+ * @author Magnus Guvenal
  * @author Mattias Bogeblad
  */
 
@@ -132,7 +141,7 @@ public class SearchContentAction extends InfoGlueAbstractAction
 
 	public List getContentVersionVOList()
 	{
-		return this.contentVersionVOList;		
+		return this.contentVersionVOList;
 	}
 	
 	public String doExecute() throws Exception 
@@ -378,6 +387,52 @@ public class SearchContentAction extends InfoGlueAbstractAction
 	    
 	    return Action.INPUT + "Binding";
 	}
+	
+	public String doSearchBindingV3() throws Exception 
+	{
+		if(this.modifiedDateTimeStart == null)
+		{
+			Calendar startCal = Calendar.getInstance();
+			//System.out.println("startCal:" + startCal.getTime());
+			startCal.roll(Calendar.WEEK_OF_YEAR, -1);
+			//System.out.println("startCal:" + startCal.getTime());
+			this.modifiedDateTimeStart = startCal.getTime();
+		}
+		
+		int maxRows = 5;
+		if(this.maxRows != 100 & this.maxRows != 0)
+			maxRows = this.maxRows;
+		else
+			this.maxRows = maxRows;
+
+		this.repositories = RepositoryController.getController().getAuthorizedRepositoryVOList(this.getInfoGluePrincipal(), false);
+
+		if (getSearchString() != null)
+		{
+			//System.out.println("Will search:" + allowedContentTypeIds);
+			Integer[] allowedContentTypeId = null;
+			if(allowedContentTypeIds != null && allowedContentTypeIds.length != 0)
+			{
+				allowedContentTypeId = new Integer[allowedContentTypeIds.length];
+				for(int i=0; i<allowedContentTypeIds.length; i++)
+					allowedContentTypeId[i] = new Integer(allowedContentTypeIds[i]);
+			}
+
+			String[] repositoryIdToSearch = this.getRequest().getParameterValues("repositoryIdToSearch");
+			Integer[] repositoryIdAsIntegerToSearch = null;
+			if(repositoryIdToSearch != null)
+			{
+				repositoryIdAsIntegerToSearch = new Integer[repositoryIdToSearch.length];
+				for(int i=0; i < repositoryIdToSearch.length; i++)
+				{
+					repositoryIdAsIntegerToSearch[i] = new Integer(repositoryIdToSearch[i]);
+					selectedRepositoryIdList.add(repositoryIdToSearch[i]);
+				}
+			}
+			contentVersionVOList = searchController.getContentVersionVOList(repositoryIdAsIntegerToSearch, this.getSearchString(), maxRows, name, languageId, allowedContentTypeId, caseSensitive, stateId, includeAssets, modifiedDateTimeStart, modifiedDateTimeEnd);
+		}
+		return "searchBindingV3";
+	}
 
 	/**
 	 * This method returns the binding search interface to the user.
@@ -567,23 +622,23 @@ public class SearchContentAction extends InfoGlueAbstractAction
     public void setModifiedDateTimeStart(String dateString)
     {
     	if(dateString != null && !dateString.equals(""))
-    		this.modifiedDateTimeStart = new VisualFormatter().parseDate(dateString, "yyyy-MM-dd HH:mm");
+    		this.modifiedDateTimeStart = new VisualFormatter().parseDate(dateString, "yyyy-MM-dd");
     }
 
     public void setModifiedDateTimeEnd(String dateString)
     {
     	if(dateString != null && !dateString.equals(""))
-    		this.modifiedDateTimeEnd = new VisualFormatter().parseDate(dateString, "yyyy-MM-dd HH:mm");
+    		this.modifiedDateTimeEnd = new VisualFormatter().parseDate(dateString, "yyyy-MM-dd");
 	}
     
     public String getModifiedDateTimeStart()
     {    		
-        return new VisualFormatter().formatDate(this.modifiedDateTimeStart, "yyyy-MM-dd HH:mm");
+        return new VisualFormatter().formatDate(this.modifiedDateTimeStart, "yyyy-MM-dd");
     }
         
     public String getModifiedDateTimeEnd()
     {
-        return new VisualFormatter().formatDate(this.modifiedDateTimeEnd, "yyyy-MM-dd HH:mm");
+        return new VisualFormatter().formatDate(this.modifiedDateTimeEnd, "yyyy-MM-dd");
     }
     
 	public List getSelectedRepositoryIdList() 

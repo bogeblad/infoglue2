@@ -1536,6 +1536,18 @@
   </script>
 #end
 
+#macro(editDateFieldCustom $fieldNameKey $fieldName $fieldValue $length $className $url $readOnly $customConfig)
+  <label for="$fieldName" id="calendarlabel_$fieldName"><span>$ui.getString("${fieldNameKey}")</span>
+  <input type="text" $readOnly class="$className" id="$fieldName" name="$fieldName" value="$!fieldValue" size="$length"/>&nbsp;<a name="calendar_$fieldName" id="calendar_$fieldName"><img src="images/calendar.gif" border="0" alt="choose date"/></a>
+  </label>
+  <script type="text/javascript">
+    Calendar.setup({
+	        inputField     :    "$fieldName",     		// id of the input field
+	        button         :    "calendarlabel_$fieldName"  // trigger for the calendar (button ID)
+	        $customConfig
+	});
+  </script>
+#end
 
 #macro(yesNoCheckBox $fieldNameKey $fieldName $value $label)
 $ui.getString("entity.${fieldNameKey}.label")<br/>

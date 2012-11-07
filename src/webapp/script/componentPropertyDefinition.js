@@ -12,7 +12,7 @@
  * ComponentPropertyDefinition object
  */
 
-function ComponentPropertyDefinition(name, displayName, type, entity, multiple, assetBinding, assetMask, isPuffContentForPage, allowedContentTypeNames, description, defaultValue, allowLanguageVariations, WYSIWYGEnabled, WYSIWYGToolbar, dataProvider, dataProviderParameters, autoCreateContent, autoCreateContentMethod, autoCreateContentPath, customMarkup, allowMultipleSelections)
+function ComponentPropertyDefinition(name, displayName, type, entity, multiple, assetBinding, assetMask, isPuffContentForPage, allowedContentTypeNames, description, defaultValue, allowLanguageVariations, WYSIWYGEnabled, WYSIWYGToolbar, dataProvider, dataProviderParameters, autoCreateContent, autoCreateContentMethod, autoCreateContentPath, customMarkup, allowMultipleSelections, supplementingEntityType, externalBindingConfig)
 {
 	this.name 						= name;
 	this.displayName				= displayName;
@@ -35,8 +35,10 @@ function ComponentPropertyDefinition(name, displayName, type, entity, multiple, 
 	this.autoCreateContentMethod	= autoCreateContentMethod;
 	this.autoCreateContentPath		= autoCreateContentPath;
 	this.customMarkup 				= customMarkup;
+	this.supplementingEntityType	= supplementingEntityType;
+	this.externalBindingConfig		= externalBindingConfig;
 	this.options					= new Vector(0);
-	  
+
   	this.getName 					= getName;
   	this.getDisplayName 			= getDisplayName;
   	this.getType 					= getType;
@@ -59,7 +61,9 @@ function ComponentPropertyDefinition(name, displayName, type, entity, multiple, 
 	this.getAutoCreateContentMethod	= getAutoCreateContentMethod;
 	this.getAutoCreateContentPath	= getAutoCreateContentPath;
 	this.getCustomMarkup			= getCustomMarkup;
-	
+	this.getSupplementingEntityType	= getSupplementingEntityType;
+	this.getExternalBindingConfig	= getExternalBindingConfig;
+
   	this.setName 					= setName;
   	this.setDisplayName 			= setDisplayName;
   	this.setType 					= setType;
@@ -81,8 +85,10 @@ function ComponentPropertyDefinition(name, displayName, type, entity, multiple, 
 	this.setAutoCreateContentMethod	= setAutoCreateContentMethod;
 	this.setAutoCreateContentPath	= setAutoCreateContentPath;
 	this.setCustomMarkup			= setCustomMarkup;
+	this.setSupplementingEntityType	= setSupplementingEntityType;
+	this.setExternalBindingConfig	= setExternalBindingConfig;
 }
-  
+
 function getName()
 {
   	return this.name;
@@ -296,4 +302,22 @@ function getCustomMarkup()
 function setCustomMarkup(customMarkup)
 {
 	this.customMarkup = customMarkup;
+}
+function getSupplementingEntityType()
+{
+	return this.supplementingEntityType;
+}
+
+function setSupplementingEntityType(supplementingEntityType)
+{
+	this.supplementingEntityType = supplementingEntityType;
+}
+function getExternalBindingConfig()
+{
+	return this.externalBindingConfig;
+}
+
+function setExternalBindingConfig(externalBindingConfig)
+{
+	this.externalBindingConfig = externalBindingConfig;
 }

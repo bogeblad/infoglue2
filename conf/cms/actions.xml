@@ -1,4 +1,4 @@
-<!-- $Id: actions.xml,v 1.83.2.9 2012/03/25 20:43:45 mattias Exp $ -->
+<!-- $Id: actions.xml,v 1.83.2.9.2.1 2012/11/07 21:47:20 mattias Exp $ -->
 <actions>
 
 	<!-- MySettings -->
@@ -762,6 +762,7 @@
 	<action name="org.infoglue.cms.applications.contenttool.actions.SearchContentAction" alias="SearchContent">
 		<view name="input">/cms/contenttool/viewContentVersionSearch.vm</view>
 		<view name="inputBinding">/cms/contenttool/viewContentVersionSearchForBinding.vm</view>
+		<view name="searchBindingV3">/cms/contenttool/v3/viewContentSearchForBinding.vm</view>
 		<view name="inputInlineAsset">/cms/contenttool/viewContentVersionSearchResultForInlineAsset.vm</view>
 		<view name="inputInlineAssetV3">/cms/contenttool/v3/viewDigitalAssetSearchResultForInlineAsset.vm</view>
 		<view name="successBindingResult">/cms/contenttool/viewContentVersionSearchResultForBinding.vm</view>
@@ -1296,6 +1297,7 @@
 		<view name="showStructureTreeForMultipleBinding">/cms/structuretool/viewStructureTreeForMultipleComponentBinding.vm</view>
 		<view name="showCategoryTree">/cms/structuretool/viewCategoryTreeForComponentBinding.vm</view>
 		<view name="showCategoryTreeForMultipleBinding">/cms/structuretool/viewCategoryTreeForMultipleComponentBinding.vm</view>
+		<view name="showExternalBinding">/cms/structuretool/viewExternalBinding.vm</view>
 		<view name="componentAdded">${url}</view>
 		<view name="componentDeleted">${url}</view>
 		<view name="error">/cms/structuretool/error.vm</view>

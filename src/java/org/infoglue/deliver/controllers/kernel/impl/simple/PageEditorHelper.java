@@ -80,6 +80,7 @@ import org.infoglue.deliver.applications.databeans.ComponentRestriction;
 import org.infoglue.deliver.applications.databeans.ComponentTask;
 import org.infoglue.deliver.applications.databeans.DeliveryContext;
 import org.infoglue.deliver.applications.databeans.Slot;
+import org.infoglue.deliver.applications.databeans.SupplementedComponentBinding;
 import org.infoglue.deliver.integration.dataproviders.PropertyOptionsDataProvider;
 import org.infoglue.deliver.util.CacheController;
 import org.infoglue.deliver.util.HttpHelper;
@@ -1319,7 +1320,7 @@ public class PageEditorHelper extends BaseDeliveryController
 	 
 	private List getComponentProperties(Integer componentId, Document document, Integer siteNodeId, Integer languageId, Integer contentId, Locale locale, Database db, InfoGluePrincipal principal) throws Exception
 	{
-		//TODO - här kan vi säkert cache:a.
+		//TODO - hï¿½r kan vi sï¿½kert cache:a.
 		
 		//logger.info("componentPropertiesXML:" + componentPropertiesXML);
 		List componentProperties = new ArrayList();
@@ -2192,8 +2193,33 @@ public class PageEditorHelper extends BaseDeliveryController
 								String entity = bindingElement.attributeValue("entity");
 								String entityId = bindingElement.attributeValue("entityId");
 								String assetKey = bindingElement.attributeValue("assetKey");
+								Element supplementingBindingElement = bindingElement.element("supplementingBinding");
 
-								ComponentBinding componentBinding = new ComponentBinding();
+								ComponentBinding componentBinding;
+								if (supplementingBindingElement == null)
+								{
+									componentBinding = new ComponentBinding();
+								}
+								else
+								{
+									String supplementingEntityIdString = null;
+									try
+									{
+										supplementingEntityIdString = supplementingBindingElement.attributeValue("entityId");
+										Integer supplementingEntityId = null;
+										if (supplementingEntityIdString != null && !supplementingEntityIdString.equals(""))
+										{
+											supplementingEntityId = new Integer(supplementingEntityIdString);
+										}
+										String supplementingAssetKey = supplementingBindingElement.attributeValue("assetKey");
+										componentBinding = new SupplementedComponentBinding(supplementingEntityId, supplementingAssetKey);
+									}
+									catch (NumberFormatException ex)
+									{
+										logger.error("Could not make Integer from supplementing entity id [id: " + supplementingEntityIdString + "]. Will ignore it!. Property name: " + propertyName);
+										componentBinding = new ComponentBinding();
+									}
+								}
 								//componentBinding.setId(new Integer(id));
 								//componentBinding.setComponentId(componentId);
 								componentBinding.setEntityClass(entity);

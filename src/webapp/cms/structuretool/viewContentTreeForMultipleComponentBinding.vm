@@ -8,9 +8,13 @@
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 	<link rel="stylesheet" type="text/css" href="css/cms.css" /> 
 	<link rel="stylesheet" type="text/css" href="css/infogluecommons.css" /> 
+	<link rel="stylesheet" type="text/css" href="script/jqueryplugins/ui/themes/flora/flora.tabs.css" />
+	
 	<script type="text/javascript" src="script/vector.js"></script>
 	<script type="text/javascript" src="script/qualifyer.js"></script>
 	<script type="text/javascript" src="script/infogluecommons.js"></script>
+	<script type="text/javascript" src="script/jquery/jquery-1.3.2.min.js"></script>
+	<script type="text/javascript" src="script/jqueryplugins/ui/ui.tabs.js"></script>
 	
 	<script language="JavaScript" type="text/javascript" src="script/tool-man/org/tool-man/core.js"></script>
 	<script language="JavaScript" type="text/javascript" src="script/tool-man/org/tool-man/events.js"></script>
@@ -46,7 +50,7 @@
 		function changeRepository(selectBox)
 		{
 			var repositoryId = selectBox.value;
-			var url = "${currentAction}?repositoryId=" + repositoryId + "&siteNodeId=$siteNodeId&languageId=$languageId&contentId=$contentId&componentId=$componentId&propertyName=$propertyName&tree=$tree&$allowedContentTypeIdsAsUrlEncodedString&showSimple=$showSimple&showDecorated=$!showDecorated";
+			var url = "${currentAction}?repositoryId=" + repositoryId + "&siteNodeId=$siteNodeId&languageId=$languageId&contentId=$contentId&componentId=$componentId&propertyName=$propertyName&tree=$tree&$allowedContentTypeIdsAsUrlEncodedString&showSimple=$showSimple&showDecorated=$!showDecorated&supplementingEntityType=$!supplementingEntityType";
 			document.location.href = url;
 		}
 	    
@@ -72,7 +76,7 @@
 	    function addQualifyer()
 		{
 			entityId = document.inputForm.entityId.value;
-			if(entityId == '' || entityId == '${select}')
+			if(entityId == '' || entityId == '${select}' || entityId == -1)
 			{
 				alert("You must choose a content to add");
 			}
@@ -81,7 +85,7 @@
 				path     = document.inputForm.path.value;
 				bindingTypeId = 1; //0 = Content, 1 = SiteNode
 				
-			    var binding = new Binding("Content", entityId, path);
+			    var binding = new Binding("Content", entityId, path, {});
 				siteNodesVector.addElement(binding);
 				drawList();
 			}
@@ -100,7 +104,15 @@
 				path 		= path + binding.getPath();
 				entityName 	= binding.getEntityName();
 				entityId   	= binding.getEntityId();
-				qualifyerXML += "<" + entityName + ">" + entityId + "</" + entityName + ">";
+				var attributes = "";
+				if (binding.getSupplementingBinding())
+				{
+					supplementingEntityId = binding.getSupplementingBinding().entityId;
+					supplementingAssetKey = binding.getSupplementingBinding().assetKey;
+					path += " {" + (supplementingAssetKey ? supplementingAssetKey : "") + "}";
+					attributes = (supplementingEntityId ? "supplementingEntityId=\"" + supplementingEntityId + "\"" : "") + " " + (supplementingAssetKey ? "supplementingAssetKey=\"" + supplementingAssetKey + "\"" : "")
+				}
+				qualifyerXML += "<" + entityName + " " + attributes + ">" + entityId + "</" + entityName + ">";
 			}
 		   	qualifyerXML += "</qualifyer>";
 			
@@ -115,18 +127,21 @@
 		 * Binding object
 		 */
 
-		function Binding(entityName, entityId, path)
+		function Binding(entityName, entityId, path, supplementingBinding)
 		{
 			this.entityName = entityName;
 			this.entityId 	= entityId;
 			this.path 		= path;
-		  
+			this.supplementingBinding = supplementingBinding;
+
 		  	this.getPath 		= getPath;
 		  	this.getEntityName 	= getEntityName;
 		  	this.getEntityId 	= getEntityId;
+		  	this.getSupplementingBinding 	= getSupplementingBinding;
 		  	this.setPath 		= setPath;
 		  	this.setEntityName 	= setEntityName;
 		  	this.setEntityId 	= setEntityId;
+		  	this.setSupplementingBinding 	= setSupplementingBinding;
 		}
 		  
 		function getPath()
@@ -144,6 +159,11 @@
 		  	return this.entityId;
 		}
 
+		function getSupplementingBinding()
+		{
+		  	return this.supplementingBinding;
+		}
+
 		function setPath(path)
 		{
 		  	this.path = path;
@@ -159,11 +179,16 @@
 			this.entityId = entityId;
 		}
 
-	  
+		function setSupplementingBinding(supplementingBinding)
+		{
+			this.supplementingBinding = supplementingBinding;
+		}
+
+
 	  	/**
 	  	 * This function creates a href-tag by manipulating the DOM.
 	  	 */
-	  	 
+
 		function addTextLink(parent, address, text)
 		{
 			var link = document.createElement("a");
@@ -211,6 +236,77 @@
 			parent.appendChild(separator);
 		}
 
+		var selectedBinding;
+		function setSupplementingAsset(entityId, assetKey)
+		{
+			if (selectedBinding)
+			{
+				var supplementingBinding = {};
+				supplementingBinding.entityId = entityId;
+				supplementingBinding.assetKey = assetKey;
+				selectedBinding.setSupplementingBinding(supplementingBinding);
+				drawList();
+			}
+			else
+			{
+				alert("You are in a weird state. Please stop it! :(");
+			}
+		}
+		
+		function openAssetPage(url) {
+			console.log("About to open: " + url);
+			window.open('" + url + "','Assign asset','toolbar=no,status=yes,scrollbars=yes,location=no,menubar=no,directories=no,resizable=no,width=800,height=600,left=5,top=5');
+		}
+
+		function bindSupplementingBinding(index) 
+		{
+			selectedBinding = siteNodesVector.getElementAt(index);
+			console.log("binding", binding);
+			// ${componentEditorUrl}
+			var assignUrl = "ViewContentVersion!viewAssetBrowserForComponentBindingV3.action?languageId=$languageId&repositoryId=$repositoryId";
+			var supplementingBinding = selectedBinding.getSupplementingBinding();
+			assignUrl += "&assignedContentId=" + supplementingBinding.entityId + "&assignedAssetKey=" + encodeURIComponent(supplementingBinding.assetKey);
+			#* assignUrl = 
+					componentEditorUrl + 
+						"ViewContentVersion!viewAssetBrowserForComponentBindingV3.action?
+							  repositoryId=" + repositoryId   <- is input
+							+ "&siteNodeId=" + siteNodeId    <- is input
+							+ "&languageId=" + languageId <- is input
+							+ "&contentId=" + contentId   <- is input
+							+ "&componentId=" + componentId    <- is input
+							+ "&propertyName=" + componentProperty.getName()    <- is input
+							+ allowedContentTypeIdParameters 
+							+ "&assetTypeFilter=" + componentProperty.getAssetMask() 
+							+ "&showSimple=" + getTemplateController().getDeliveryContext().getShowSimple() 
+							+ assignedParameters;
+							
+					assignedParameters = 
+					"&assignedContentId=" + componentBinding.getEntityId() + 
+					"&assignedAssetKey=" + formatter.encodeURI(componentBinding.getAssetKey()) + 
+					"&assignedPath=" + formatter.encodeURI(componentProperty.getValue());
+
+					var supplementingA = document.createElement("button");
+					supplementingA.setAttribute("class", "supplementingBinding");
+					var assignUrl = "ViewContentVersion!viewAssetBrowserForComponentBindingV3.action?repositoryId=$repositoryId&siteNodeId=$siteNodeId&languageId=$languageId&contentId=$contentId&componentId=$componentId&propertyName=$propertyName";
+					var supplementingBindingText, assignedParameters = "";
+					if (binding.getSupplementingBinding().entityId)
+					{
+						var sb = binding.getSupplementingBinding();
+						assignedParameters = "&assignedContentId=" + sb.entityId + "&assignedAssetKey=" + formatter.encodeURI(sb.assetKey);
+						supplementingBindingText = document.createTextNode("(" + sb.entityId + " [" + sb.assetKey + "])");
+					}
+					else
+					{
+						supplementingBindingText = document.createTextNode("(Not set)");
+					}
+					//supplementingA.setAttribute("href", "javascript:openAssetPage('" + assignUrl + "')");
+					/*supplementingA.setAttribute("onlick", "openAssetPage('" + assignUrl + "')");
+					supplementingA.appendChild(supplementingBindingText);
+					
+					myLI.appendChild(supplementingA);*/*#
+			window.open(assignUrl,'Assign asset','toolbar=no,status=yes,scrollbars=yes,location=no,menubar=no,directories=no,resizable=no,width=800,height=600,left=5,top=5');
+		}
+
 		/**
 		 * This method draws the list of bindings.
 		 */
@@ -244,12 +340,17 @@
 
 				var myLI = document.createElement("li");
 				myLI.setAttribute("itemID", i);
-				
+
+				if (binding.getSupplementingBinding())
+				{
+					addImageLink(myLI, "javascript:bindSupplementingBinding(" + i + ");", "images/edit.gif");
+				}
 				addImageLink(myLI, "javascript:moveBindingDown(" + i + ");", "images/downArrow.gif");
 				addImageLink(myLI, "javascript:moveBindingUp(" + i + ");", "images/upArrow.gif");
 				addImageLink(myLI, "javascript:deleteBinding(" + i + ");", "images/delete.gif");
+				
 				addDividerImage(myLI, 1, 16);
-								
+
 				myActionList.appendChild(myLI);
 			}
 			actionTD.appendChild(myActionList);
@@ -265,11 +366,29 @@
 				myLI.setAttribute("itemID", i);
 	
 				addImageLink(myLI, "#", "script/xloadtree/images/xp/file.png");
-				
+
 				var bindingText = document.createTextNode(binding.getPath());
 				myLI.appendChild(bindingText);
+				if (binding.getSupplementingBinding())
+				{
+					var supplementingA = document.createElement("span");
+					supplementingA.setAttribute("class", "supplementingBinding");
+					var supplementingBindingText;
+					if (binding.getSupplementingBinding().entityId)
+					{
+						var sb = binding.getSupplementingBinding();
+						supplementingBindingText = document.createTextNode("(" + sb.entityId + " [" + sb.assetKey + "])");
+					}
+					else
+					{
+						supplementingBindingText = document.createTextNode("(Not set)");
+					}
+					supplementingA.appendChild(supplementingBindingText);
+					myLI.appendChild(supplementingA);
+				}
+
 				addDividerImage(myLI, 5, 16);
-				
+
 				myList.appendChild(myLI);
 			}
 			
@@ -308,21 +427,24 @@
 			{
 				var binding 		= siteNodesVector.getElementAt(index);
 				var previousBinding = siteNodesVector.getElementAt(index - 1);
-				
+
 				path 		= binding.getPath();
 				entityName 	= binding.getEntityName();
 				entityId 	= binding.getEntityId();
-				
-				binding.setPath(previousBinding.getPath())
-				binding.setEntityName(previousBinding.getEntityName())
-				binding.setEntityId(previousBinding.getEntityId())
-			
-				previousBinding.setPath(path)
-				previousBinding.setEntityName(entityName)
-				previousBinding.setEntityId(entityId)
-				
+				supplementingBinding = binding.getSupplementingBinding();
+
+				binding.setPath(previousBinding.getPath());
+				binding.setEntityName(previousBinding.getEntityName());
+				binding.setEntityId(previousBinding.getEntityId());
+				binding.setSupplementingBinding(previousBinding.getSupplementingBinding());
+
+				previousBinding.setPath(path);
+				previousBinding.setEntityName(entityName);
+				previousBinding.setEntityId(entityId);
+				previousBinding.setSupplementingBinding(supplementingBinding);
+
 				drawList();
-			}			
+			}
 		}
 
 		/**
@@ -335,19 +457,22 @@
 			{
 				var binding 		= siteNodesVector.getElementAt(index);
 				var previousBinding = siteNodesVector.getElementAt(index + 1);
-				
+
 				path 		= binding.getPath();
 				entityName 	= binding.getEntityName();
 				entityId 	= binding.getEntityId();
-				
-				binding.setPath(previousBinding.getPath())
-				binding.setEntityName(previousBinding.getEntityName())
-				binding.setEntityId(previousBinding.getEntityId())
-			
-				previousBinding.setPath(path)
-				previousBinding.setEntityName(entityName)
-				previousBinding.setEntityId(entityId)
-			
+				supplementingBinding = binding.getSupplementingBinding();
+
+				binding.setPath(previousBinding.getPath());
+				binding.setEntityName(previousBinding.getEntityName());
+				binding.setEntityId(previousBinding.getEntityId());
+				binding.setSupplementingBinding(previousBinding.getSupplementingBinding());
+
+				previousBinding.setPath(path);
+				previousBinding.setEntityName(entityName);
+				previousBinding.setEntityId(entityId);
+				previousBinding.setSupplementingBinding(supplementingBinding);
+
 				drawList();
 			}
 		}
@@ -369,14 +494,17 @@
 				path 		= binding.getPath();
 				entityName 	= binding.getEntityName();
 				entityId 	= binding.getEntityId();
+				supplementingBinding = binding.getSupplementingBinding();
 				
 				binding.setPath(previousBinding.getPath());
 				binding.setEntityName(previousBinding.getEntityName());
 				binding.setEntityId(previousBinding.getEntityId());
+				binding.setSupplementingBinding(previousBinding.getSupplementingBinding());
 			
 				previousBinding.setPath(path);
 				previousBinding.setEntityName(entityName);
 				previousBinding.setEntityId(entityId);
+				previousBinding.setSupplementingBinding(supplementingBinding);
 				
 				currentIndex = currentIndex - 1;				
 			}			
@@ -402,14 +530,17 @@
 				path 		= binding.getPath();
 				entityName 	= binding.getEntityName();
 				entityId 	= binding.getEntityId();
+				supplementingBinding = binding.getSupplementingBinding();
 				
 				binding.setPath(nextBinding.getPath());
 				binding.setEntityName(nextBinding.getEntityName());
 				binding.setEntityId(nextBinding.getEntityId());
+				binding.setSupplementingBinding(nextBinding.getSupplementingBinding());
 			
 				nextBinding.setPath(path);
 				nextBinding.setEntityName(entityName);
 				nextBinding.setEntityId(entityId);
+				nextBinding.setSupplementingBinding(supplementingBinding);
 				
 				currentIndex = currentIndex + 1;				
 			}
@@ -420,12 +551,17 @@
 		/**
 		 * This function initializes the vector of previous bindings.
 		 */
-		 
+
 		function init()
 		{
 			#foreach($binding in $componentBindings)
 				//alert("$binding");
+				#if( $binding.containsKey("supplementingBinding") )
+				var supplementingBinding = {"entityId":"$!binding.supplementingBinding.entityId","assetKey":"$!binding.supplementingBinding.assetKey"};
+				binding = new Binding("Content", "$binding.entityId", "$formatter.cleanForJavascriptStrings($binding.path)", supplementingBinding);
+				#else
 				binding = new Binding("Content", "$binding.entityId", "$formatter.cleanForJavascriptStrings($binding.path)");
+				#end
 				siteNodesVector.addElement(binding);
 			#end
 	
@@ -568,10 +704,64 @@
 			left:		0px;
 		}
 	</style>
+	
+	<style type="text/css">
+		.supplementingBinding {margin-left:10px;}
+	
+		#tabsContainer {border:1px solid lightgrey; padding: 0; height: 437px; width: 300px;}
+		#basicTab, #searchTab { background-color: #eef7dc; border: none; padding: 0; float: left; border-top:2px solid green;  /*width: 340px; display: block;*/}
+		.repositoryRow {height: 25px;}
 
+		#basicTab > div, #search > div {
+			margin: 8px 0px 0px 8px;
+			position: relative; 
+		}
+		#tabsContainer > div {margin-bottom:0}
+
+		#contentBindingWrapper {margin:5px;}
+		#contentBindingWrapper #inputCell {
+			/*width: 342px;*/
+			border:1px solid lightgrey;
+		}
+		#contentBindingWrapper #resultCell {
+			border:1px solid lightgrey;
+		}
+		#bindingWrapper {
+			position: absolute;
+			width: 456px;
+			right: 5px;
+			bottom: 50px;
+			border: 1px solid lightgrey;
+			top: 80px;
+			overflow: auto;
+			padding: 0 7px;
+		}
+		#searchItreeFrame, #itreeFrame {
+			width: 300px;
+		}
+		#itreeFrame {
+			height: 371px;
+		}
+		#searchItreeFrame {
+			height: 408px;
+		}
+		.sitedropbox {margin: 10px;}
+		#contentBindingTabs {
+			float: left;
+			margin: 0;
+		}
+	</style>
+
+	<script type="text/javascript">
+		$(document).ready(function(){
+			init();
+
+			$("#tabsContainer").tabs({ show:function(event, ui) { /*resizeInlineTabDivsFullOnPosition(ui.panel.id);*/} });
+		});
+	</script>
 </head>
 
-<body class="contenttooledit" onload="javascript:init();" onMouseUp="clearDrag(event);">
+<body class="contenttooledit" onMouseUp="clearDrag(event);"> ##onload="javascript:init();" 
 
 <div id="buffer" style="top: 0; left: 0"><img src="images/tree/xp/item.png"></div>
 
@@ -599,12 +789,7 @@
 		</tr>		
 		<tr>
 			<td>
-		  		<select size="1" name="repositoryId" class="sitedropbox" onChange="javascript:changeRepository(this);" class="contenttool">
-				    <option value="">$ui.getString("tool.contenttool.chooseRepositoryLabel")</option>
-				    #foreach ($repositoryVO in $repositories)
-				    <option value="$repositoryVO.getRepositoryId()">$repositoryVO.getName()</option>
-				    #end
-				</select>
+		  		
 			</td>
 		</tr>
 		<tr>
@@ -612,11 +797,30 @@
 		</tr>	
 		<tr>
 			<td class="menu" style="border: 1px solid #C7D1B3;">    
-				#if($tree == "applet")
-					#showJavaTree("350" "400" "254" "248" "208" "Content" $repositoryId "false")
-				#else
-					<IFRAME frameborder="0" name="itreeFrame" id="itreeFrame" src="ViewContentHtmlTree!bindingView.action?repositoryId=${repositoryId}&${allowedContentTypeIdsAsUrlEncodedString}" width="350" height="430" align="baseline"></IFRAME>
-				#end
+				<div id="tabsContainer" class="flora">
+					<ul id="contentBindingTabs">
+				        <li><a href="#basicTab"><span>$ui.getString("tool.contenttool.assetDialog.repositoryBrowserTabLabel")</span></a></li>
+				        <li><a href="#searchTab"><span>$ui.getString("tool.contenttool.contentSearch.searchTabLabelPrefix")</span></a></li>
+				    </ul>
+
+				    <div id="basicTab" >
+				    <select size="1" name="repositoryId" class="sitedropbox" onChange="javascript:changeRepository(this);" class="contenttool">
+					    <option value="">$ui.getString("tool.contenttool.chooseRepositoryLabel")</option>
+					    #foreach ($repositoryVO in $repositories)
+					    <option value="$repositoryVO.getRepositoryId()">$repositoryVO.getName()</option>
+					    #end
+					</select>
+
+					#if($tree == "applet")
+						#showJavaTree("350" "400" "254" "248" "208" "Content" $repositoryId "false")
+					#else
+						<IFRAME frameborder="0" name="itreeFrame" id="itreeFrame" src="ViewContentHtmlTree!bindingView.action?repositoryId=${repositoryId}&${allowedContentTypeIdsAsUrlEncodedString}" align="baseline"></IFRAME>
+					#end
+					</div>
+					<div id="searchTab">
+						<iframe frameborder="0" name="itreeFrame" id="searchItreeFrame" src="SearchContent!searchBindingV3.action?${allowedContentTypeIdsAsUrlEncodedString}"></iframe>
+					</div>
+				</div>
 			</td>
 		</tr>	
 		<tr>

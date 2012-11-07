@@ -45,6 +45,8 @@ import org.infoglue.cms.controllers.kernel.impl.simple.LanguageController;
 import org.infoglue.cms.entities.content.ContentVO;
 import org.infoglue.cms.entities.content.ContentVersion;
 import org.infoglue.cms.entities.content.ContentVersionVO;
+import org.infoglue.cms.entities.content.DigitalAssetVO;
+import org.infoglue.cms.entities.content.EntityVOWithSupplementingEntityVO;
 import org.infoglue.cms.entities.management.ContentTypeDefinitionVO;
 import org.infoglue.cms.entities.management.LanguageVO;
 import org.infoglue.cms.entities.structure.SiteNodeVO;
@@ -60,6 +62,7 @@ import org.infoglue.deliver.applications.databeans.ComponentBinding;
 import org.infoglue.deliver.applications.databeans.ComponentProperty;
 import org.infoglue.deliver.applications.databeans.ComponentPropertyOption;
 import org.infoglue.deliver.applications.databeans.Slot;
+import org.infoglue.deliver.applications.databeans.SupplementedComponentBinding;
 import org.infoglue.deliver.applications.databeans.WebPage;
 import org.infoglue.deliver.util.CacheController;
 import org.infoglue.deliver.util.Support;
@@ -954,6 +957,34 @@ public class ComponentLogic
 		contents = getBoundContents(property);
 
 		return contents;
+	}
+
+	protected List<Integer> getExternalBindings(Map property)
+	{
+	    List<Integer> bindingList = new ArrayList<Integer>();
+
+	    if(property != null)
+		{
+	    	List<ComponentBinding> bindings = (List<ComponentBinding>)property.get("bindings");
+			Iterator<ComponentBinding> bindingsIterator = bindings.iterator();
+			while(bindingsIterator.hasNext())
+			{
+				ComponentBinding componentBinding = bindingsIterator.next();
+				bindingList.add(componentBinding.getEntityId());
+			}
+		}
+
+		return bindingList;
+	}
+
+	public List<Integer> getExternalBindings(String propertyName, boolean useInheritance, boolean useRepositoryInheritance, boolean useStructureInheritance)
+	{
+		List<Integer> bindings = null;
+
+		Map property = getInheritedComponentProperty(this.infoGlueComponent, propertyName, useInheritance, useRepositoryInheritance, useStructureInheritance);
+		bindings = getExternalBindings(property);
+
+		return bindings;
 	}
 	
 	/**
@@ -3694,7 +3725,7 @@ public class ComponentLogic
 	
 	private ComponentPropertyDefinition getComponentPropertyDefinition(Integer componentContentId, String propertyName, Integer siteNodeId, Integer languageId, Integer contentId, Database db, InfoGluePrincipal principal) throws Exception
 	{
-		//TODO - här kan vi säkert cache:a.
+		//TODO - hï¿½r kan vi sï¿½kert cache:a.
 		
 		ComponentPropertyDefinition propertyDefinition = null;
 		
@@ -3716,7 +3747,7 @@ public class ComponentLogic
 				if(node != null)
 				{
 					org.dom4j.Element element = (org.dom4j.Element)node;
-											
+
 					String name						= element.attributeValue("name");
 					String displayName				= element.attributeValue("displayName");
 					String type					 	= element.attributeValue("type");
@@ -3738,10 +3769,12 @@ public class ComponentLogic
 					String autoCreatContentMethod 	= element.attributeValue("autoCreatContentMethod");
 					String autoCreatContentPath		= element.attributeValue("autoCreatContentPath");
 					String customMarkup 			= element.attributeValue("customMarkup");
+					String externalBindingConfig 	= element.attributeValue("externalBindingConfig");
+					String supplementingEntityType	= element.attributeValue("supplementingEntityType");
 					if(allowLanguageVariations == null || allowLanguageVariations.equals(""))
 						allowLanguageVariations = "true";
-					
-					propertyDefinition = new ComponentPropertyDefinition(name, displayName, type, entity, new Boolean(multiple), new Boolean(assetBinding), assetMask, new Boolean(isPuffContentForPage), allowedContTypeDefNames, description, defaultValue, new Boolean(allowLanguageVariations), new Boolean(WYSIWYGEnabled), WYSIWYGToolbar, dataProvider, dataProviderParameters, new Boolean(autoCreatContent), autoCreatContentMethod, autoCreatContentPath, customMarkup, new Boolean(allowMultipleSelections));
+
+					propertyDefinition = new ComponentPropertyDefinition(name, displayName, type, entity, new Boolean(multiple), new Boolean(assetBinding), assetMask, new Boolean(isPuffContentForPage), allowedContTypeDefNames, description, defaultValue, new Boolean(allowLanguageVariations), new Boolean(WYSIWYGEnabled), WYSIWYGToolbar, dataProvider, dataProviderParameters, new Boolean(autoCreatContent), autoCreatContentMethod, autoCreatContentPath, customMarkup, new Boolean(allowMultipleSelections), supplementingEntityType, externalBindingConfig);
 				}
 			}
 		}
@@ -3819,4 +3852,50 @@ public class ComponentLogic
 
     	return resultComponentXML;
     }
+
+	public List<EntityVOWithSupplementingEntityVO> getBoundContentSupplementedWithAsset(String propertyName, boolean useInheritance, boolean useRepositoryInheritance, boolean useStructureInheritance)
+	{
+		List<EntityVOWithSupplementingEntityVO> result = new ArrayList<EntityVOWithSupplementingEntityVO>();
+
+		Map property = getInheritedComponentProperty(this.infoGlueComponent, propertyName, useInheritance, useRepositoryInheritance, useStructureInheritance);
+
+		if(property != null)
+		{
+			List<ComponentBinding> bindings = (List<ComponentBinding>)property.get("bindings");
+			Iterator<ComponentBinding> bindingsIterator = bindings.iterator();
+			EntityVOWithSupplementingEntityVO entity;
+			while(bindingsIterator.hasNext())
+			{
+				try
+				{
+					ComponentBinding componentBinding = bindingsIterator.next();
+					entity = new EntityVOWithSupplementingEntityVO();
+					Integer contentId = componentBinding.getEntityId();
+					entity.setEntity(this.templateController.getContent(contentId));
+					if (componentBinding instanceof SupplementedComponentBinding)
+					{
+						try
+						{
+							SupplementedComponentBinding supplementedComponentBinding = (SupplementedComponentBinding)componentBinding;
+							Integer supplementingEntityId = supplementedComponentBinding.getSupplementingEntityId();
+							String supplementingAssetKey = supplementedComponentBinding.getSupplementingAssetKey();
+							DigitalAssetVO asset = this.templateController.getAsset(supplementingEntityId, supplementingAssetKey);
+							entity.setSupplementingEntity(asset);
+						}
+						catch (Exception ex)
+						{
+							logger.warn("Error when getting asset for supplemented content.", ex);
+						}
+					}
+					result.add(entity);
+				}
+				catch (Exception ex)
+				{
+					logger.warn("Error when getting supplemented content. Message: " + ex.getMessage(), ex);
+				}
+			}
+		}
+
+		return result;
+	}
 }

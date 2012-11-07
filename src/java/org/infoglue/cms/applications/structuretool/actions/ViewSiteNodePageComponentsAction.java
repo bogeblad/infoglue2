@@ -109,6 +109,7 @@ public class ViewSiteNodePageComponentsAction extends InfoGlueAbstractAction
 	private String slotPositionComponentId = null;
 	private Integer pagePartContentId = null;
 	private boolean hideComponentPropertiesOnLoad = false;
+	private String externalBindingAction;
 	
 	LanguageVO masterLanguageVO = null;
 	
@@ -1736,6 +1737,7 @@ public class ViewSiteNodePageComponentsAction extends InfoGlueAbstractAction
 			Integer siteNodeId = new Integer(this.getRequest().getParameter("siteNodeId"));
 			Integer languageId = new Integer(this.getRequest().getParameter("languageId"));
 			Integer contentId  = new Integer(this.getRequest().getParameter("contentId"));
+			String supplementingEntityType = this.getRequest().getParameter("supplementingEntityType");
 			String propertyName = this.getRequest().getParameter("propertyName");
 	
 			//logger.info("**********************************************************************************");
@@ -1753,12 +1755,17 @@ public class ViewSiteNodePageComponentsAction extends InfoGlueAbstractAction
 			//logger.info("componentXPath:" + componentXPath);
 			NodeList anl = org.apache.xpath.XPathAPI.selectNodeList(document.getDocumentElement(), componentXPath);
 			//logger.info("anl:" + anl.getLength());
+
+			// We can not get a fresh path for external bindings to we look at the current path stored on the property.
+			String[] externalBindingPath = null;
+
 			for(int i=0; i<anl.getLength(); i++)
 			{
 				Element component = (Element)anl.item(i);
 				String entityName = component.getAttribute("entity");
 				String entityId = component.getAttribute("entityId");
 				String assetKey = component.getAttribute("assetKey");
+				NodeList supplementingEntities = component.getElementsByTagName("supplementing-binding");
 				
 				try
 				{
@@ -1773,12 +1780,61 @@ public class ViewSiteNodePageComponentsAction extends InfoGlueAbstractAction
 						ContentVO contentVO = ContentController.getContentController().getContentVOWithId(new Integer(entityId));
 						path = contentVO.getName();
 					}
+					else if (entityName.equalsIgnoreCase("External"))
+					{
+						if (externalBindingPath == null)
+						{
+							Element parent = (Element)component.getParentNode();
+							String propertyPath = parent.getAttribute("path");
+							if (propertyPath != null)
+							{
+								externalBindingPath = propertyPath.split(", ");
+								if (externalBindingPath.length != anl.getLength())
+								{
+									logger.error("The number of items in the current path value does not match the current number of bindings. This should be fixed! Component id " + this.componentId + " and property: " + propertyName);
+									externalBindingPath = new String[0];
+								}
+							}
+						}
+						if (externalBindingPath != null && externalBindingPath.length > 0)
+						{
+							path = externalBindingPath[i];
+						}
+						else
+						{
+							path = "Out of sync";
+						}
+					}
 					
 					Map binding = new HashMap();
 					binding.put("entityName", entityName);
 					binding.put("entityId", entityId);
 					binding.put("assetKey", assetKey);
 					binding.put("path", path);
+
+					if (supplementingEntityType != null && !"".equals(supplementingEntityType))
+					{
+						Map<String, String> supplementingBinding = new HashMap<String, String>();
+						supplementingBinding.put("entityType", supplementingEntityType);
+
+						if (supplementingEntities != null && supplementingEntities.getLength() > 0)
+						{
+							Node supplementingEntity = supplementingEntities.item(0);
+							if (supplementingEntity instanceof Element)
+							{
+								Element supplementingElement = (Element)supplementingEntity;
+								supplementingBinding.put("entityId", supplementingElement.getAttribute("entityId"));
+								supplementingBinding.put("assetKey", supplementingElement.getAttribute("assetKey"));
+							}
+							else
+							{
+								logger.warn("SupplementingBinding was not of type Element. Really Weired. Node value of component:" + component.getNodeValue());
+							}
+						}
+
+						binding.put("supplementingBinding", supplementingBinding);
+					}
+
 					bindings.add(binding);
 				}
 				catch(Exception e) 
@@ -1868,7 +1924,16 @@ public class ViewSiteNodePageComponentsAction extends InfoGlueAbstractAction
 		this.getResponse().sendRedirect(url);
 	    return NONE; 
 	}
-		    
+
+	public String doShowExternalBinding() throws Exception
+	{
+		initialize();
+
+		getHttpSession().setAttribute("" + siteNodeId + "_hideComponentPropertiesOnLoad", new Boolean(hideComponentPropertiesOnLoad));
+
+		return "showExternalBinding";
+	}
+
 	/**
 	 * This method creates a parameter for the given input type.
 	 * This is to support form steering information later.
@@ -1972,6 +2037,8 @@ public class ViewSiteNodePageComponentsAction extends InfoGlueAbstractAction
 			String entityName = qualifyerElement.getNodeName();
 			String assetKey = qualifyerElement.getAttribute("assetKey");
 			String entityId = qualifyerElement.getFirstChild().getNodeValue();
+			String supplementingEntityId = qualifyerElement.getAttribute("supplementingEntityId");
+			String supplementingAssetKey = qualifyerElement.getAttribute("supplementingAssetKey");
 			//logger.info("entityName:" + entityName);
 			//logger.info("entityId:" + entityId);
 			
@@ -1979,6 +2046,15 @@ public class ViewSiteNodePageComponentsAction extends InfoGlueAbstractAction
 			element.setAttribute("entityId", entityId);
 			element.setAttribute("entity", entityName);
 			element.setAttribute("assetKey", assetKey);
+
+			if (supplementingEntityId != null && !"".equals(supplementingEntityId))
+			{
+				Element supplementingElement = parent.getOwnerDocument().createElement("supplementing-binding");
+				supplementingElement.setAttribute("entityId", supplementingEntityId);
+				supplementingElement.setAttribute("assetKey", supplementingAssetKey);
+				element.appendChild(supplementingElement);
+			}
+
 			parent.appendChild(element);
 		}
 	}
@@ -2147,6 +2223,34 @@ public class ViewSiteNodePageComponentsAction extends InfoGlueAbstractAction
 		return imageHref;
 	}
 	
+	public String getExternalBindingAction()
+	{
+		if (externalBindingAction == null)
+		{
+			externalBindingAction = getRequest().getParameter("externalBindingAction");
+			if (externalBindingAction != null)
+			{
+				logger.warn("Why isn't the setter working!? :'(");
+			}
+		}
+		return externalBindingAction;
+	}
+	
+	public String getComponentEditorUrl()
+	{
+		return CmsPropertyHandler.getComponentEditorUrl();
+	}
+
+	public void setExternalBindingAction(String externalBindingAction)
+	{
+		this.externalBindingAction = externalBindingAction;
+	}
+
+	public String getSupplementingEntityType()
+	{
+		return this.getRequest().getParameter("supplementingEntityType");
+	}
+
 	public Integer getContentId()
 	{
 		return contentId;

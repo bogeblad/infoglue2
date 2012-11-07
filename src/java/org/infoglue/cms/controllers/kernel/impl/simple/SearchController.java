@@ -221,10 +221,12 @@ public class SearchController extends BaseController
    		System.out.println("searchString:" + searchString);
    		System.out.println("modifiedDateTimeStart:" + modifiedDateTimeStart);
    		System.out.println("modifiedDateTimeEnd:" + modifiedDateTimeEnd);
+   		/*
    		if(contentTypeDefinitionId == null || contentTypeDefinitionId.length == 0)
    		{
    			contentTypeDefinitionId = new Integer[]{ContentTypeDefinitionController.getController().getContentTypeDefinitionVOWithName("Meta info").getId()};
    		}
+   		*/
    		
    		List<ContentVersionVO> matchingContents = new ArrayList<ContentVersionVO>();
 		
@@ -233,65 +235,6 @@ public class SearchController extends BaseController
 		try
 		{
 			beginTransaction(db);
-			
-			/*
-			String repositoryArgument = " AND (";
-			
-			int index = 3;
-			List repArguments = new ArrayList();
-			
-			for(int i=0; i<repositoryId.length; i++)
-			{
-				if(i > 0)
-					repositoryArgument += " OR ";
-				
-				repositoryArgument += "cv.owningContent.repository.repositoryId = $" + index;
-			    repArguments.add(repositoryId[i]);
-				index++;
-			}
-			repositoryArgument += ")";
-				
-			//int index = 4;
-			String extraArguments = "";
-			String inverse = "";
-			List arguments = new ArrayList();
-						
-			if(userName != null && !userName.equalsIgnoreCase(""))
-			{
-			    extraArguments += " AND cv.versionModifier = $" + index;
-			    arguments.add(userName);
-				index++;
-			}
-			if(languageId != null)
-			{
-			    extraArguments += " AND cv.language = $" + index;
-			    arguments.add(languageId);
-				index++;
-			}
-			if(contentTypeDefinitionId != null && contentTypeDefinitionId.length > 0 && contentTypeDefinitionId[0] != null)
-			{
-				extraArguments += " AND(";
-				for(int i=0; i<contentTypeDefinitionId.length; i++)
-				{
-					if(i==0)
-						extraArguments += " cv.owningContent.contentTypeDefinition = $" + index;
-					else
-						extraArguments += " OR cv.owningContent.contentTypeDefinition = $" + index;
-						
-					arguments.add(contentTypeDefinitionId[i]);
-					index++;
-				}
-				extraArguments += ")";
-			}
-			if(stateId != null)
-			{
-			    extraArguments += " AND cv.stateId = $" + index;
-			    arguments.add(stateId);
-				index++;
-			}
-			    
-			String sqlOld = "SELECT cv FROM org.infoglue.cms.entities.content.impl.simple.ContentVersionImpl cv WHERE cv.isActive = $1 AND cv.versionValue LIKE $2 " + repositoryArgument + extraArguments + " ORDER BY cv.owningContent asc, cv.language, cv.contentVersionId desc";
-			*/
 			
 			String sql = null;
 			int index = 1;
@@ -309,9 +252,9 @@ public class SearchController extends BaseController
 				sb.append("    (");
 				sb.append("                  select c3.contId");
 				sb.append("                  from cmCont c3");
-				sb.append("                  WHERE ");
 				
-				if(repositoryId.length > 0)
+				String andTerm = " WHERE ";
+				if(repositoryId != null && repositoryId.length > 0)
 				{
 					sb.append("              ( ");
 					for(int i=0; i<repositoryId.length; i++)
@@ -324,11 +267,14 @@ public class SearchController extends BaseController
 						index++;
 					}
 					sb.append("              ) ");
+					andTerm = " AND ";
 				}
 				
 				if(contentTypeDefinitionId != null && contentTypeDefinitionId.length > 0 && contentTypeDefinitionId[0] != null)
 				{
-					sb.append(" AND (");
+					sb.append(andTerm);
+
+					sb.append("(");
 					for(int i=0; i<contentTypeDefinitionId.length; i++)
 					{
 						if(i==0)
@@ -340,17 +286,19 @@ public class SearchController extends BaseController
 						index++;
 					}
 					sb.append(")");
+					andTerm = " AND ";
 				}
-				sb.append("    ) ");
+				//sb.append("    ) ");
 				
 				if(stateId != null)
 				{
-					sb.append("    AND cv.stateId = $" + index);
+					sb.append(" " + andTerm + " cv.stateId = $" + index);
 					arguments.add(stateId);
 					index++;
+					andTerm = " AND ";
 				}
 				
-				sb.append("    AND cv.isactive = 1");
+				sb.append(" " + andTerm + " cv.isactive = 1");
 				if(modifiedDateTimeStart != null)
 				{
 					sb.append("    AND modifiedDateTime >= $" + index);
@@ -370,7 +318,8 @@ public class SearchController extends BaseController
 					arguments.add(userName);
 					index++;				
 				}
-
+				
+				sb.append("    ) ");
 				sb.append("  ) CVDYN ");
 				sb.append("  WHERE contVerId = ");
 				sb.append("  (    ");
@@ -384,7 +333,7 @@ public class SearchController extends BaseController
 	
 				String freeTextCondition = ((searchString == null || searchString.equals("")) ? "" : " WHERE verValue LIKE $" + index + "");
 	
-				sb.append(freeTextCondition + " ORDER BY contVerId AS org.infoglue.cms.entities.content.impl.simple.SmallContentVersionImpl");
+				sb.append(freeTextCondition + " ORDER BY contVerId DESC AS org.infoglue.cms.entities.content.impl.simple.SmallContentVersionImpl");
 	
 				sql = sb.toString();
 			}
@@ -400,11 +349,11 @@ public class SearchController extends BaseController
 				sb.append("    (");
 				sb.append("                  select c3.contentId");
 				sb.append("                  from cmContent c3");
-				sb.append("                  WHERE ");
 				
-				if(repositoryId.length > 0)
+				String andTerm = " WHERE ";
+				if(repositoryId != null && repositoryId.length > 0)
 				{
-					sb.append("              ( ");
+					sb.append("  ( ");
 					for(int i=0; i<repositoryId.length; i++)
 					{
 						if(i > 0)
@@ -415,11 +364,12 @@ public class SearchController extends BaseController
 						index++;
 					}
 					sb.append("              ) ");
+					andTerm = " AND ";
 				}
 				
 				if(contentTypeDefinitionId != null && contentTypeDefinitionId.length > 0 && contentTypeDefinitionId[0] != null)
 				{
-					sb.append(" AND (");
+					sb.append(andTerm + " (");
 					for(int i=0; i<contentTypeDefinitionId.length; i++)
 					{
 						if(i==0)
@@ -431,17 +381,19 @@ public class SearchController extends BaseController
 						index++;
 					}
 					sb.append(")");
+					andTerm = " AND ";
 				}
-				sb.append("    ) ");
+				//sb.append("    ) ");
 				
 				if(stateId != null)
 				{
-					sb.append("    AND cv.stateId = $" + index);
+					sb.append(andTerm + "  cv.stateId = $" + index);
 					arguments.add(stateId);
 					index++;
+					andTerm = " AND ";
 				}
 				
-				sb.append("    AND cv.isactive = 1");
+				sb.append(andTerm + " cv.isactive = 1");
 				
 				if(modifiedDateTimeStart != null)
 				{
@@ -462,6 +414,7 @@ public class SearchController extends BaseController
 					arguments.add(userName);
 					index++;				
 				}
+				sb.append("    ) ");
 				
 				sb.append("  ) CVDYN ");
 				sb.append("  WHERE contentVersionId = ");
@@ -476,12 +429,12 @@ public class SearchController extends BaseController
 	
 				String freeTextCondition = ((searchString == null || searchString.equals("")) ? "" : " WHERE versionValue LIKE $" + index + "");
 	
-				sb.append(freeTextCondition + " ORDER BY contentVersionId AS org.infoglue.cms.entities.content.impl.simple.SmallContentVersionImpl");
+				sb.append(freeTextCondition + " ORDER BY contentVersionId DESC AS org.infoglue.cms.entities.content.impl.simple.SmallContentVersionImpl");
 	
 				sql = sb.toString();
 			}
 			
-			//System.out.println("sql:" + sql);
+			System.out.println("sql:" + sql);
 			logger.info("sql:" + sql);
 			OQLQuery oql = db.getOQLQuery(sql);
 			Iterator shortRepArgumentsIterator = arguments.iterator();
@@ -489,11 +442,12 @@ public class SearchController extends BaseController
 			{
 				Object argument = (Object)shortRepArgumentsIterator.next();
 				logger.info(argument);
-				//System.out.println(argument);
+				System.out.println(argument);
 				oql.bind(argument);
 			}
 	        
-			oql.bind("%" + searchString + "%");
+			if(searchString != null && !searchString.equals(""))
+				oql.bind("%" + searchString + "%");
 			
 			QueryResults results = oql.execute(Database.ReadOnly);
 			

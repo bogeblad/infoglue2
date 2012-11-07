@@ -62,10 +62,18 @@
 	
 	function onOk(contentId, assetKey)
 	{
-		var url = "ViewSiteNodePageComponents!addComponentPropertyBinding.action?siteNodeId=$siteNodeId&languageId=$languageId&contentId=-1&entity=Content&entityId=" + contentId + "&assetKey=" + assetKey + "&componentId=$componentId&propertyName=$propertyName&showSimple=$showSimple&showDecorated=$!showDecorated&path=temp";
-		//var url = "DownloadAsset.action?contentId=" + contentId + "&languageId=$languageId&assetKey=" + assetKey;
-	    self.opener.location.href = url;
-	    window.close();
+		if (self.opener.setSupplementingAsset)
+		{
+			self.opener.setSupplementingAsset(contentId, assetKey);
+			window.close();
+		}
+		else
+		{
+			var url = "ViewSiteNodePageComponents!addComponentPropertyBinding.action?siteNodeId=$siteNodeId&languageId=$languageId&contentId=-1&entity=Content&entityId=" + contentId + "&assetKey=" + assetKey + "&componentId=$componentId&propertyName=$propertyName&showSimple=$showSimple&showDecorated=$!showDecorated&path=temp";
+			//var url = "DownloadAsset.action?contentId=" + contentId + "&languageId=$languageId&assetKey=" + assetKey;
+		    self.opener.location.href = url;
+		    window.close();
+	    }
 	}
 -->
 </script>		

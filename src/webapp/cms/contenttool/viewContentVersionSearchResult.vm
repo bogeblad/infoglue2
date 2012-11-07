@@ -259,10 +259,12 @@
 			<div>
 				<b>Only show contents modfied between these dates:</b><br/>
 				<div style="float: left;">
-				#editDateFieldCustom("tool.contenttool.versionModifiedDateTimeNotOlderThan" "modifiedDateTimeStart" $!modifiedDateTimeStart "30" "date" "ViewCalendar.action?date=&formPath=document.editForm.modifiedDateTimeStart" "$dateReadonly")
+				#set( $customConfig = ', ifFormat:    "%Y-%m-%d", align : "BR", showsTime: false, timeFormat: "24", cache: true' )
+				#editDateFieldCustom("tool.contenttool.versionModifiedDateTimeNotOlderThan" "modifiedDateTimeStart" $!modifiedDateTimeStart "30" "date" "ViewCalendar.action?date=&formPath=document.editForm.modifiedDateTimeStart" "$dateReadonly" $customConfig)
 				</div>
 				<div style="float: left; margin-left: 20px;">
-				#editDateFieldCustom("tool.contenttool.versionModifiedDateTimeNotNewerThan" "modifiedDateTimeEnd" $!modifiedDateTimeEnd "30" "date" "ViewCalendar.action?date=&formPath=document.editForm.modifiedDateTimeEnd" "$dateReadonly")
+				#set( $customConfig = ', ifFormat:    "%Y-%m-%d", align : "BR", showsTime: false, timeFormat: "24", cache: true' )
+				#editDateFieldCustom("tool.contenttool.versionModifiedDateTimeNotNewerThan" "modifiedDateTimeEnd" $!modifiedDateTimeEnd "30" "date" "ViewCalendar.action?date=&formPath=document.editForm.modifiedDateTimeEnd" "$dateReadonly" $customConfig)
 				</div>
 				<div style="clear:both"></div>
 			</div>
@@ -372,7 +374,7 @@
 		
 		#set( $rowUrl = "ViewContentVersion.action?contentId=$contentVersionVO.contentId&languageId=$contentVersionVO.languageId")
 		#set( $title = "$this.getContentPath($contentVersionVO.contentId).replaceAll(' ', '&nbsp;')")
-		#set( $row = ["<input type='hidden' name='rowtitle' value='$contentVersionVO.id'/> <a href=$rowUrl title=$title>$title $contentVersionVO.contentName</a>", "$this.getLanguageVO($contentVersionVO.languageId).name", "$contentVersionVO.stateId", "$formatter.formatDate($contentVersionVO.modifiedDateTime, 'yyyy-MM-dd HH:ss')"] )
+		#set( $row = ["<input type='hidden' name='rowtitle' value='$contentVersionVO.id'/> <a href=$rowUrl title=$title>$title</a>", "$this.getLanguageVO($contentVersionVO.languageId).name", "$contentVersionVO.stateId", "$formatter.formatDate($contentVersionVO.modifiedDateTime, 'yyyy-MM-dd HH:ss')"] )
 		#set($cnt = $cnt + 1)
 		
 		#lvAddRow($row $cnt $contentVersionId)

@@ -62,6 +62,7 @@ import org.infoglue.deliver.applications.databeans.ComponentBinding;
 import org.infoglue.deliver.applications.databeans.ComponentRestriction;
 import org.infoglue.deliver.applications.databeans.DeliveryContext;
 import org.infoglue.deliver.applications.databeans.Slot;
+import org.infoglue.deliver.applications.databeans.SupplementedComponentBinding;
 import org.infoglue.deliver.controllers.kernel.impl.simple.ComponentLogic;
 import org.infoglue.deliver.controllers.kernel.impl.simple.ContentDeliveryController;
 import org.infoglue.deliver.controllers.kernel.impl.simple.LanguageDeliveryController;
@@ -492,7 +493,7 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 		CacheController.cacheObjectInAdvancedCache(cacheName, cacheKey, pageComponentsString);
 		
 	    Set contentVersionIds = new HashSet();
-	    //TODO - måste fixa så att inte nulls slängs in i getUsedPageMetaInfoContentVersionIdSet... hur det kan hända
+	    //TODO - 
 	    contentVersionIds.addAll(templateController.getDeliveryContext().getUsedPageMetaInfoContentVersionIdSet());
     	
 		Set groups = new HashSet();
@@ -2803,8 +2804,33 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 								String entity = bindingElement.getAttributeValue(bindingElement.getNamespaceName(), "entity");
 								String entityId = bindingElement.getAttributeValue(bindingElement.getNamespaceName(), "entityId");
 								String assetKey = bindingElement.getAttributeValue(bindingElement.getNamespaceName(), "assetKey");
+								XmlElement supplementingBindingElement = bindingElement.element(bindingElement.getNamespace(), "supplementing-binding");
 
-								ComponentBinding componentBinding = new ComponentBinding();
+								ComponentBinding componentBinding;
+								if (supplementingBindingElement == null)
+								{
+									componentBinding = new ComponentBinding();
+								}
+								else
+								{
+									String supplementingEntityIdString = null;
+									try
+									{
+										supplementingEntityIdString = supplementingBindingElement.getAttributeValue(supplementingBindingElement.getNamespaceName(), "entityId");
+										Integer supplementingEntityId = null;
+										if (supplementingEntityIdString != null && !supplementingEntityIdString.equals(""))
+										{
+											supplementingEntityId = new Integer(supplementingEntityIdString);
+										}
+										String supplementingAssetKey = supplementingBindingElement.getAttributeValue(supplementingBindingElement.getNamespaceName(), "assetKey");
+										componentBinding = new SupplementedComponentBinding(supplementingEntityId, supplementingAssetKey);
+									}
+									catch (NumberFormatException ex)
+									{
+										logger.error("Could not make Integer from supplementing entity id [id: " + supplementingEntityIdString + "]. Will ignore it!. Property name: " + propertyName);
+										componentBinding = new ComponentBinding();
+									}
+								}
 								//componentBinding.setId(new Integer(id));
 								//componentBinding.setComponentId(componentId);
 								componentBinding.setEntityClass(entity);

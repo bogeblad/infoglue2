@@ -694,7 +694,76 @@
             <required>false</required>
             <rtexprvalue>false</rtexprvalue>
         </attribute>
-	</tag>	 
+	</tag>
+
+	<tag>
+		<name>externalBindings</name>
+		<tagclass>org.infoglue.deliver.taglib.common.ExternalBindingsTag</tagclass>
+		<bodycontent>empty</bodycontent>
+        <info></info>
+        <attribute>
+    	    <name>id</name>
+        	<required>true</required>
+	        <rtexprvalue>false</rtexprvalue>
+    	</attribute>
+        <attribute>
+    	    <name>propertyName</name>
+        	<required>true</required>
+	        <rtexprvalue>false</rtexprvalue>
+    	</attribute>
+        <attribute>
+    	    <name>useInheritance</name>
+        	<required>false</required>
+	        <rtexprvalue>false</rtexprvalue>
+    	</attribute>
+        <attribute>
+            <name>useRepositoryInheritance</name>
+            <required>false</required>
+            <rtexprvalue>false</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>useStructureInheritance</name>
+            <required>false</required>
+            <rtexprvalue>false</rtexprvalue>
+        </attribute>
+	</tag>
+
+	<tag>
+		<name>boundEntitiesWithSupplementingEntity</name>
+		<tagclass>org.infoglue.deliver.taglib.content.BoundContentSupplementedWithAssetTag</tagclass>
+		<bodycontent>empty</bodycontent>
+        <info></info>
+		<attribute>
+			<name>id</name>
+			<required>true</required>
+			<rtexprvalue>false</rtexprvalue>
+		</attribute>
+		<attribute>
+			<name>siteNodeId</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+		<attribute>
+			<name>propertyName</name>
+			<required>true</required>
+			<rtexprvalue>false</rtexprvalue>
+		</attribute>
+		<attribute>
+			<name>useInheritance</name>
+			<required>false</required>
+			<rtexprvalue>false</rtexprvalue>
+		</attribute>
+		<attribute>
+			<name>useRepositoryInheritance</name>
+			<required>false</required>
+			<rtexprvalue>false</rtexprvalue>
+		</attribute>
+		<attribute>
+			<name>useStructureInheritance</name>
+			<required>false</required>
+			<rtexprvalue>false</rtexprvalue>
+		</attribute>
+	</tag>
 
 	<tag>
 		<name>childContents</name>
