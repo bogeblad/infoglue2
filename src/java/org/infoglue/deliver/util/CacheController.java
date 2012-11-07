@@ -1335,9 +1335,10 @@ public class CacheController extends Thread
 	 */
 	public static void clearCacheForGroup(String cacheName, String group)
 	{
+		/*
 		if(cacheName.indexOf("pageCache") > -1)
 			Thread.dumpStack();
-
+		*/
 		synchronized(caches) 
 		{
 			if(caches.containsKey(cacheName))
@@ -1373,8 +1374,9 @@ public class CacheController extends Thread
 	 */
 	public static void clearFileCacheForGroup(GeneralCacheAdministrator cacheInstance, String groupName) throws Exception
 	{
+		/*
 		Thread.dumpStack();
-
+		*/
 		//logger.info("Cache entry set:" + cacheInstance.getCache().cacheMap.entrySet());
 		
         Set groupEntries = cacheInstance.getCache().cacheMap.getGroup(groupName);
@@ -1808,7 +1810,7 @@ public class CacheController extends Thread
 						    {
 						    	if(!(cacheName.equals("userAccessCache") && cacheInstance.size() < 100))
 						    	{
-						    		logger.error("clearing ordinary map:" + e.getKey() + " (" + cacheInstance.size() + ")");
+						    		logger.info("clearing ordinary map:" + e.getKey() + " (" + cacheInstance.size() + ")");
 						    		cacheInstance.clear();
 						    	}
 						    	else

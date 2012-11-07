@@ -120,7 +120,7 @@ public class SetCharacterEncodingFilter implements Filter
 				            request.setCharacterEncoding(languageVO.getCharset());
 	                	}
 	                	catch (Exception e) {
-	                		logger.warn("Could not set char encoding to the language in the url:" + e.getMessage());
+	                		logger.info("Could not set char encoding to the language in the url:" + e.getMessage() + ":" + referer + ":" + ((HttpServletRequest)request).getRequestURI());
 						}
 	                }
 	            }

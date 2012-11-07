@@ -182,7 +182,11 @@ public class SearchController extends BaseController
 
    	public List<ContentVersionVO> getContentVersionVOList(Integer repositoryId, String searchString, int maxRows, String name, Integer languageId, Integer[] contentTypeDefinitionId, Integer caseSensitive, Integer stateId, boolean searchAssets) throws SystemException, Bug
    	{
-		List<ContentVersionVO> matchingContents = getContentVersionVOList(new Integer[]{repositoryId}, searchString, maxRows, name, languageId, contentTypeDefinitionId, caseSensitive, stateId, searchAssets);
+   		return getContentVersionVOList(repositoryId, searchString, maxRows, name, languageId, contentTypeDefinitionId, caseSensitive, stateId, searchAssets, null, null);
+   	}
+   	public List<ContentVersionVO> getContentVersionVOList(Integer repositoryId, String searchString, int maxRows, String name, Integer languageId, Integer[] contentTypeDefinitionId, Integer caseSensitive, Integer stateId, boolean searchAssets, Date modifiedDateTimeStart, Date modifiedDateTimeEnd) throws SystemException, Bug
+   	{
+		List<ContentVersionVO> matchingContents = getContentVersionVOList(new Integer[]{repositoryId}, searchString, maxRows, name, languageId, contentTypeDefinitionId, caseSensitive, stateId, searchAssets, modifiedDateTimeStart, modifiedDateTimeStart);
 			
 		return matchingContents;		
    	}
@@ -194,24 +198,35 @@ public class SearchController extends BaseController
 
    	public List<ContentVersionVO> getContentVersionVOList(Integer[] repositoryId, String searchString, int maxRows, String userName, Integer languageId, Integer[] contentTypeDefinitionId, Integer caseSensitive, Integer stateId, boolean searchAssets) throws SystemException, Bug
    	{
+   		return getContentVersionVOList(repositoryId, searchString, maxRows, userName, languageId, contentTypeDefinitionId, caseSensitive, stateId, searchAssets, null, null);
+   	}
+   	/*
+   	public List<ContentVersionVO> getContentVersionVOList(Integer[] repositoryId, String searchString, int maxRows, String userName, Integer languageId, Integer[] contentTypeDefinitionId, Integer caseSensitive, Integer stateId, boolean searchAssets, Date modifiedDateTimeStart, Date modifiedDateTimeEnd) throws SystemException, Bug
+   	{
+   		return getContentVersionVOList(repositoryId, searchString, maxRows, userName, languageId, contentTypeDefinitionId, caseSensitive, stateId, searchAssets, null, null, modifiedDateTimeStart,modifiedDateTimeEnd);
+   	}
+   	*/
+   	public List<ContentVersionVO> getContentVersionVOList(Integer[] repositoryId, String searchString, int maxRows, String userName, Integer languageId, Integer[] contentTypeDefinitionId, Integer caseSensitive, Integer stateId, boolean searchAssets, Date modifiedDateTimeStart, Date modifiedDateTimeEnd) throws SystemException, Bug
+   	{
    		String internalSearchEngine = CmsPropertyHandler.getInternalSearchEngine();
    		if(internalSearchEngine.equalsIgnoreCase("sqlSearch"))
-   			return getContentVersionVOListFromCastor(repositoryId, searchString, maxRows, userName, languageId, contentTypeDefinitionId, caseSensitive, stateId, searchAssets);
+   			return getContentVersionVOListFromCastor(repositoryId, searchString, maxRows, userName, languageId, contentTypeDefinitionId, caseSensitive, stateId, searchAssets, modifiedDateTimeStart, modifiedDateTimeEnd);
    		else
    			return getContentVersionVOListFromLucene(repositoryId, searchString, maxRows, userName, languageId, contentTypeDefinitionId, caseSensitive, stateId, searchAssets);
    	}
    	
-   	private List<ContentVersionVO> getContentVersionVOListFromCastor(Integer[] repositoryId, String searchString, int maxRows, String userName, Integer languageId, Integer[] contentTypeDefinitionId, Integer caseSensitive, Integer stateId, boolean searchAssets) throws SystemException, Bug
+   	private List<ContentVersionVO> getContentVersionVOListFromCastor(Integer[] repositoryId, String searchString, int maxRows, String userName, Integer languageId, Integer[] contentTypeDefinitionId, Integer caseSensitive, Integer stateId, boolean searchAssets, Date modifiedDateTimeStart, Date modifiedDateTimeEnd) throws SystemException, Bug
    	{
+   		System.out.println("userName:" + userName);
+   		System.out.println("searchString:" + searchString);
+   		System.out.println("modifiedDateTimeStart:" + modifiedDateTimeStart);
+   		System.out.println("modifiedDateTimeEnd:" + modifiedDateTimeEnd);
    		if(contentTypeDefinitionId == null || contentTypeDefinitionId.length == 0)
    		{
    			contentTypeDefinitionId = new Integer[]{ContentTypeDefinitionController.getController().getContentTypeDefinitionVOWithName("Meta info").getId()};
    		}
    		
    		List<ContentVersionVO> matchingContents = new ArrayList<ContentVersionVO>();
-
-		Calendar cal = Calendar.getInstance();
-		cal.set(Calendar.MONTH, -3);
 		
 		ConstraintExceptionBuffer ceb = new ConstraintExceptionBuffer();
 		Database db = CastorDatabaseService.getDatabase();
@@ -278,92 +293,203 @@ public class SearchController extends BaseController
 			String sqlOld = "SELECT cv FROM org.infoglue.cms.entities.content.impl.simple.ContentVersionImpl cv WHERE cv.isActive = $1 AND cv.versionValue LIKE $2 " + repositoryArgument + extraArguments + " ORDER BY cv.owningContent asc, cv.language, cv.contentVersionId desc";
 			*/
 			
-			int shortIndex = 1;
-			List shortRepArguments = new ArrayList();
+			String sql = null;
+			int index = 1;
+			List arguments = new ArrayList();
 			
-			StringBuilder sb = new StringBuilder();
-			
-			sb.append("CALL SQL select contVerId, stateId, modifiedDateTime, verComment, isCheckedOut, isActive, contId, languageId, versionModifier, verValue from ");
-			sb.append("(");
-			sb.append("  select * from ");
-			sb.append("  (");
-			sb.append("    select contVerId, stateId, modifiedDateTime, verComment, isCheckedOut, isActive, contId, languageId, versionModifier, verValue from cmContVer cv WHERE cv.contId IN");
-			sb.append("    (");
-			sb.append("                  select c3.contId");
-			sb.append("                  from cmCont c3");
-			sb.append("                  WHERE ");
-			
-			if(repositoryId.length > 0)
+			if(CmsPropertyHandler.getUseShortTableNames().equals("true"))
 			{
-				sb.append("              ( ");
-				for(int i=0; i<repositoryId.length; i++)
+				StringBuilder sb = new StringBuilder();
+				
+				sb.append("CALL SQL select contVerId, stateId, modifiedDateTime, verComment, isCheckedOut, isActive, contId, languageId, versionModifier, verValue from ");
+				sb.append("(");
+				sb.append("  select * from ");
+				sb.append("  (");
+				sb.append("    select contVerId, stateId, modifiedDateTime, verComment, isCheckedOut, isActive, contId, languageId, versionModifier, verValue from cmContVer cv WHERE cv.contId IN");
+				sb.append("    (");
+				sb.append("                  select c3.contId");
+				sb.append("                  from cmCont c3");
+				sb.append("                  WHERE ");
+				
+				if(repositoryId.length > 0)
 				{
-					if(i > 0)
-						sb.append(" OR ");
-					
-					sb.append("c3.repositoryId = $" + shortIndex);
-					shortRepArguments.add(repositoryId[i]);
-					shortIndex++;
-				}
-				sb.append("              ) ");
-			}
-			
-			if(contentTypeDefinitionId != null && contentTypeDefinitionId.length > 0 && contentTypeDefinitionId[0] != null)
-			{
-				sb.append(" AND (");
-				for(int i=0; i<contentTypeDefinitionId.length; i++)
-				{
-					if(i==0)
-						sb.append(" c3.CONTENTTYPEDEFID = $" + shortIndex);
-					else
-						sb.append(" OR c3.CONTENTTYPEDEFID = $" + shortIndex);
+					sb.append("              ( ");
+					for(int i=0; i<repositoryId.length; i++)
+					{
+						if(i > 0)
+							sb.append(" OR ");
 						
-					shortRepArguments.add(contentTypeDefinitionId[i]);
-					shortIndex++;
+						sb.append("c3.repositoryId = $" + index);
+						arguments.add(repositoryId[i]);
+						index++;
+					}
+					sb.append("              ) ");
 				}
+				
+				if(contentTypeDefinitionId != null && contentTypeDefinitionId.length > 0 && contentTypeDefinitionId[0] != null)
+				{
+					sb.append(" AND (");
+					for(int i=0; i<contentTypeDefinitionId.length; i++)
+					{
+						if(i==0)
+							sb.append(" c3.CONTENTTYPEDEFID = $" + index);
+						else
+							sb.append(" OR c3.CONTENTTYPEDEFID = $" + index);
+							
+						arguments.add(contentTypeDefinitionId[i]);
+						index++;
+					}
+					sb.append(")");
+				}
+				sb.append("    ) ");
+				
+				if(stateId != null)
+				{
+					sb.append("    AND cv.stateId = $" + index);
+					arguments.add(stateId);
+					index++;
+				}
+				
+				sb.append("    AND cv.isactive = 1");
+				if(modifiedDateTimeStart != null)
+				{
+					sb.append("    AND modifiedDateTime >= $" + index);
+					arguments.add(modifiedDateTimeStart);
+					index++;
+				}
+				if(modifiedDateTimeEnd != null)
+				{
+					sb.append("    AND modifiedDateTime = $" + index);
+					arguments.add(modifiedDateTimeEnd);
+					index++;				
+				}
+
+				if(userName != null && !userName.equals(""))
+				{
+					sb.append("    AND versionModifier <= $" + index);
+					arguments.add(userName);
+					index++;				
+				}
+
+				sb.append("  ) CVDYN ");
+				sb.append("  WHERE contVerId = ");
+				sb.append("  (    ");
+				sb.append("          select max(contVerId) ");
+				sb.append("          from cmContVer ");
+				sb.append("          WHERE ");
+				sb.append("          contId = CVDYN.contId AND");
+				sb.append("          isactive = 1");
+				sb.append("  )");
 				sb.append(")");
+	
+				String freeTextCondition = ((searchString == null || searchString.equals("")) ? "" : " WHERE verValue LIKE $" + index + "");
+	
+				sb.append(freeTextCondition + " ORDER BY contVerId AS org.infoglue.cms.entities.content.impl.simple.SmallContentVersionImpl");
+	
+				sql = sb.toString();
 			}
-			sb.append("    ) ");
-			
-			if(stateId != null)
+			else
 			{
-				sb.append("    AND cv.stateId = $" + shortIndex);
-				shortRepArguments.add(stateId);
-				shortIndex++;
+				StringBuilder sb = new StringBuilder();
+				
+				sb.append("CALL SQL select contentVersionId, stateId, modifiedDateTime, versionComment, isCheckedOut, isActive, contentId, languageId, versionModifier, versionValue from ");
+				sb.append("(");
+				sb.append("  select * from ");
+				sb.append("  (");
+				sb.append("    select contentVersionId, stateId, modifiedDateTime, versionComment, isCheckedOut, isActive, contentId, languageId, versionModifier, versionValue from cmContentVersion cv WHERE cv.contentId IN");
+				sb.append("    (");
+				sb.append("                  select c3.contentId");
+				sb.append("                  from cmContent c3");
+				sb.append("                  WHERE ");
+				
+				if(repositoryId.length > 0)
+				{
+					sb.append("              ( ");
+					for(int i=0; i<repositoryId.length; i++)
+					{
+						if(i > 0)
+							sb.append(" OR ");
+						
+						sb.append("c3.repositoryId = $" + index);
+						arguments.add(repositoryId[i]);
+						index++;
+					}
+					sb.append("              ) ");
+				}
+				
+				if(contentTypeDefinitionId != null && contentTypeDefinitionId.length > 0 && contentTypeDefinitionId[0] != null)
+				{
+					sb.append(" AND (");
+					for(int i=0; i<contentTypeDefinitionId.length; i++)
+					{
+						if(i==0)
+							sb.append(" c3.contentTypeDefinitionId = $" + index);
+						else
+							sb.append(" OR c3.contentTypeDefinitionId = $" + index);
+							
+						arguments.add(contentTypeDefinitionId[i]);
+						index++;
+					}
+					sb.append(")");
+				}
+				sb.append("    ) ");
+				
+				if(stateId != null)
+				{
+					sb.append("    AND cv.stateId = $" + index);
+					arguments.add(stateId);
+					index++;
+				}
+				
+				sb.append("    AND cv.isactive = 1");
+				
+				if(modifiedDateTimeStart != null)
+				{
+					sb.append("    AND modifiedDateTime >= $" + index);
+					arguments.add(modifiedDateTimeStart);
+					index++;
+				}
+				if(modifiedDateTimeEnd != null)
+				{
+					sb.append("    AND modifiedDateTime <= $" + index);
+					arguments.add(modifiedDateTimeEnd);
+					index++;				
+				}
+				System.out.println("userName:" + userName);
+				if(userName != null && !userName.equals(""))
+				{
+					sb.append("    AND versionModifier = $" + index);
+					arguments.add(userName);
+					index++;				
+				}
+				
+				sb.append("  ) CVDYN ");
+				sb.append("  WHERE contentVersionId = ");
+				sb.append("  (    ");
+				sb.append("          select max(contentVersionId) ");
+				sb.append("          from cmContentVersion ");
+				sb.append("          WHERE ");
+				sb.append("          contentId = CVDYN.contentId AND");
+				sb.append("          isactive = 1");
+				sb.append("  )");
+				sb.append(") CVDYN2 ");
+	
+				String freeTextCondition = ((searchString == null || searchString.equals("")) ? "" : " WHERE versionValue LIKE $" + index + "");
+	
+				sb.append(freeTextCondition + " ORDER BY contentVersionId AS org.infoglue.cms.entities.content.impl.simple.SmallContentVersionImpl");
+	
+				sql = sb.toString();
 			}
 			
-			sb.append("    AND cv.isactive = 1");
-			//sb.append("    AND modifiedDateTime >= $" + shortIndex + " AND rownum<=5000");
-			//shortRepArguments.add(cal.getTime());
-			//shortIndex++;
-			
-			sb.append("  ) CVDYN ");
-			sb.append("  WHERE contVerId = ");
-			sb.append("  (    ");
-			sb.append("          select max(contVerId) ");
-			sb.append("          from cmContVer ");
-			sb.append("          WHERE ");
-			sb.append("          contId = CVDYN.contId AND");
-			sb.append("          isactive = 1");
-			sb.append("  )");
-			sb.append(")");
-
-			String freeTextCondition = ((searchString == null || searchString.equals("")) ? "" : " WHERE verValue LIKE $" + shortIndex + "");
-
-			sb.append(freeTextCondition + " ORDER BY contVerId AS org.infoglue.cms.entities.content.impl.simple.SmallContentVersionImpl");
-
-			String sql = sb.toString();
-			
-			System.out.println("sqlShort:" + sb.toString());
 			//System.out.println("sql:" + sql);
-			
-			//logger.info("sql:" + sql);
+			logger.info("sql:" + sql);
 			OQLQuery oql = db.getOQLQuery(sql);
-			Iterator shortRepArgumentsIterator = shortRepArguments.iterator();
+			Iterator shortRepArgumentsIterator = arguments.iterator();
 			while(shortRepArgumentsIterator.hasNext())
 			{
 				Object argument = (Object)shortRepArgumentsIterator.next();
-				System.out.println(argument);
+				logger.info(argument);
+				//System.out.println(argument);
 				oql.bind(argument);
 			}
 	        

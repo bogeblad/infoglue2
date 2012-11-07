@@ -32,6 +32,7 @@ import java.util.Set;
 
 import org.apache.log4j.Category;
 import org.apache.log4j.Logger;
+import org.infoglue.cms.applications.common.VisualFormatter;
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentTypeDefinitionController;
@@ -72,7 +73,7 @@ public class SearchContentAction extends InfoGlueAbstractAction
 	private String searchString;
 	private String name;
 	private Integer languageId;
-	private Integer contentTypeDefinitionId;
+	//private Integer contentTypeDefinitionId;
 	private Integer caseSensitive;
 	private boolean includeAssets = false;
 	private boolean onlyIDSearch = false;
@@ -80,7 +81,10 @@ public class SearchContentAction extends InfoGlueAbstractAction
 	private Integer stateId;
 	private boolean advancedEnabled = false;
 	private List selectedRepositoryIdList = new ArrayList();
+	private List selectedContentTypeDefinitionIdList = new ArrayList();
 	private String[] allowedContentTypeIds = null;
+	private Date modifiedDateTimeStart = null;
+	private Date modifiedDateTimeEnd = null;
 	
 	private int maxRows = 0;
 	
@@ -143,6 +147,7 @@ public class SearchContentAction extends InfoGlueAbstractAction
 		}
 
 		String[] repositoryIdToSearch = this.getRequest().getParameterValues("repositoryIdToSearch");
+		String[] contentTypeDefinitionId = this.getRequest().getParameterValues("contentTypeDefinitionId");
 		if(onlyIDSearch)
 		{
 			try
@@ -156,22 +161,29 @@ public class SearchContentAction extends InfoGlueAbstractAction
 		}
 		else
 		{
+			Integer[] repositoryIdAsIntegerToSearch = null;
 			if(repositoryIdToSearch != null)
 			{
-				Integer[] repositoryIdAsIntegerToSearch = new Integer[repositoryIdToSearch.length];
+				repositoryIdAsIntegerToSearch = new Integer[repositoryIdToSearch.length];
 				for(int i=0; i < repositoryIdToSearch.length; i++)
 				{
 					repositoryIdAsIntegerToSearch[i] = new Integer(repositoryIdToSearch[i]);
 					selectedRepositoryIdList.add(repositoryIdToSearch[i]);
 				}
-				
-				contentVersionVOList = searchController.getContentVersionVOList(repositoryIdAsIntegerToSearch, this.getSearchString(), maxRows, name, languageId, new Integer[]{contentTypeDefinitionId}, caseSensitive, stateId, includeAssets);
 			}
-			else
+			
+			Integer[] contentTypeDefinitionIdAsInteger = null;
+			if(contentTypeDefinitionId != null)
 			{
-				contentVersionVOList = searchController.getContentVersionVOList(this.repositoryId, this.getSearchString(), maxRows, name, languageId, new Integer[]{contentTypeDefinitionId}, caseSensitive, stateId, includeAssets);
-				selectedRepositoryIdList.add("" + this.repositoryId);
+				contentTypeDefinitionIdAsInteger = new Integer[contentTypeDefinitionId.length];
+				for(int i=0; i < contentTypeDefinitionId.length; i++)
+				{
+					contentTypeDefinitionIdAsInteger[i] = new Integer(contentTypeDefinitionId[i]);
+					selectedContentTypeDefinitionIdList.add(contentTypeDefinitionId[i]);
+				}
 			}
+
+			contentVersionVOList = searchController.getContentVersionVOList(repositoryIdAsIntegerToSearch, this.getSearchString(), maxRows, this.name, languageId, contentTypeDefinitionIdAsInteger, caseSensitive, stateId, includeAssets, modifiedDateTimeStart, modifiedDateTimeEnd);
 		}
 		
 		if(CmsPropertyHandler.getInternalSearchEngine().equalsIgnoreCase("lucene"))
@@ -490,6 +502,7 @@ public class SearchContentAction extends InfoGlueAbstractAction
         this.caseSensitive = caseSensitive;
     }
     
+    /*
     public Integer getContentTypeDefinitionId()
     {
         return contentTypeDefinitionId;
@@ -499,6 +512,7 @@ public class SearchContentAction extends InfoGlueAbstractAction
     {
         this.contentTypeDefinitionId = contentTypeDefinitionId;
     }
+    */
     
     public Integer getInverseSearch()
     {
@@ -550,10 +564,38 @@ public class SearchContentAction extends InfoGlueAbstractAction
         this.advancedEnabled = advancedEnabled;
     }
 
+    public void setModifiedDateTimeStart(String dateString)
+    {
+    	if(dateString != null && !dateString.equals(""))
+    		this.modifiedDateTimeStart = new VisualFormatter().parseDate(dateString, "yyyy-MM-dd HH:mm");
+    }
+
+    public void setModifiedDateTimeEnd(String dateString)
+    {
+    	if(dateString != null && !dateString.equals(""))
+    		this.modifiedDateTimeEnd = new VisualFormatter().parseDate(dateString, "yyyy-MM-dd HH:mm");
+	}
+    
+    public String getModifiedDateTimeStart()
+    {    		
+        return new VisualFormatter().formatDate(this.modifiedDateTimeStart, "yyyy-MM-dd HH:mm");
+    }
+        
+    public String getModifiedDateTimeEnd()
+    {
+        return new VisualFormatter().formatDate(this.modifiedDateTimeEnd, "yyyy-MM-dd HH:mm");
+    }
+    
 	public List getSelectedRepositoryIdList() 
 	{
 		return selectedRepositoryIdList;
 	}
+	
+	public List getSelectedContentTypeDefinitionIdList()
+	{
+		return this.selectedContentTypeDefinitionIdList;
+	}
+
 
     public void setAllowedContentTypeIds(String[] allowedContentTypeIds)
     {
@@ -575,14 +617,14 @@ public class SearchContentAction extends InfoGlueAbstractAction
         return sb.toString();
     }
 
-	public Set getContentVOSet()
-	{
-		return contentVOSet;
-	}
-
 	public String[] getAllowedContentTypeIds()
 	{
 		return allowedContentTypeIds;
+	}
+
+	public Set getContentVOSet()
+	{
+		return contentVOSet;
 	}
 
 	public boolean getIncludeAssets()

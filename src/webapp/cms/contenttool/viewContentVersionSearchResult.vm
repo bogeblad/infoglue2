@@ -138,7 +138,8 @@
 				{
 					var resultDiv = document.getElementById("resultsLayer");
 					document.getElementById("advancedEnabled").value = "true";
-					resultDiv.style.top = "580px";
+					//resultDiv.style.top = "580px";
+					resultDiv.style.top = "";
 				}
 					
 			}
@@ -196,6 +197,20 @@
 			document.replaceForm.replaceString.value = "";
 		}
 
+		function showUsers()
+		{
+			openPopup('ViewListSystemUser!userListForPopup.action', 'Users', 'width=800,height=600,resizable=yes,scrollbars=yes');
+		}
+		
+		function selectUser(userName)
+		{
+			document.getElementById("name").value = userName;
+		}
+	
+		function selectMyself()
+		{
+			document.getElementById("name").value = "$infoGluePrincipal.name";
+		}
 	-->
 	</script>
 	
@@ -204,62 +219,89 @@
 	#set($advanced = true)
 #end
 
-<div id="searchLayer" class="fullymarginalized" style="display:block; position: absolute; top: 0px;">
+<div id="searchLayer" class="fullymarginalized">
 
 <form method="POST" name="editForm" action="SearchContent.action">
 <input type="hidden" id="advancedEnabled" name="advancedEnabled" value="$advancedEnabled">
 <table border="0" cellpadding="0" cellspacing="0">
 <tr>
 	<td colspan="7">	
-		<p>
+		<div>
 			#editTextField3($ui.getString("tool.contenttool.searchString.label") "tool.contenttool.searchString.label" "searchString" $formatter.escapeHTML($searchString) "30" "normaltextfield") 
 			<a href="javascript:toggleDiv('advancedOptions');">$ui.getString("tool.contenttool.searchAdvanced")</a> | <a href="javascript:showReplaceDialog();">$ui.getString("tool.contenttool.replace")</a>
-		</p>
-		<div id="advancedOptions" style="#if($advanced == false)display:none;#end">
-			<p>
-				#selectBox("tool.contenttool.modifierFilter.label" "name" $name $principals "tool.contenttool.filterShowAll.label")
-			</p>
-			<p>
-				#selectBox("tool.contenttool.languageFilter.label" "languageId" $languageId $availableLanguages "tool.contenttool.filterShowAll.label")
-			</p>
-			<p>
-				#selectBox("tool.contenttool.contentTypeFilter.label" "contentTypeDefinitionId" $contentTypeDefinitionId $contentTypeDefinitions "tool.contenttool.filterShowAll.label")
-			</p>
-			#if($allowCaseSensitive)
-			<p>
-				$ui.getString("tool.contenttool.caseSensitive.label")<br>
-				<input type="checkbox" name="caseSensitive" value="1" #checkChecked("1" "$caseSensitive")> $ui.getString("tool.common.yes") 
-			</p>
-			#end
-			<p>
-				$ui.getString("tool.contenttool.includeAssets.label")<br>
-				<input type="checkbox" name="includeAssets" value="true" #checkChecked("true" "$includeAssets")> Yes 
-			</p>
-			<p>
-				$ui.getString("tool.contenttool.onlyIDSearch.label")<br>
-				<input type="checkbox" name="onlyIDSearch" value="true" #checkChecked("true" "$onlyIDSearch")> Yes 
-			</p>
-			<p>
-				$ui.getString("tool.contenttool.stateSearch.label")<br>
-				<select class="dropbox" name="stateId">
-					<option value="">$ui.getString("tool.contenttool.filterShowAll.label")</option>
-					<option value="">---------------</option>
-					<option value="0" #checkSelected("0" "$stateId")>$ui.getString("tool.contenttool.state.working")</option>
-					<!--
-					<option value="1" #checkSelected("1" "$stateId")>$ui.getString("tool.contenttool.state.final")</option>
-					-->				
-					<option value="2" #checkSelected("2" "$stateId")>$ui.getString("tool.contenttool.state.publish")</option>
-					<option value="3" #checkSelected("3" "$stateId")>$ui.getString("tool.contenttool.state.published")</option>
-				</select>
-			</p>
-			<p>
-				$ui.getString("tool.contenttool.chooseRepositoryLabel")<br>
-				<select class="dropbox" name="repositoryIdToSearch" multiple="true" size="10">
-					#foreach ($repositoryVO in $repositories)
-						<option value="$repositoryVO.id" #checkSelectedByList($selectedRepositoryIdList "$repositoryVO.id")>$repositoryVO.name</option>
-				    #end
-				</select>
-			</p>		
+		</div>
+		<div id="advancedOptions" style="#if($advanced == false)display:none;#else display: block; #end">
+			<div>
+				<div style="float: left;">
+					$ui.getString("tool.contenttool.contentTypeFilter.label")<br>
+					<select class="dropbox" name="contentTypeDefinitionId" multiple="true" size="5">
+						#foreach ($contentTypeDefinition in $contentTypeDefinitions)
+							<option value="$contentTypeDefinition.id" #checkSelectedByList($selectedContentTypeDefinitionIdList "$contentTypeDefinition.id")>$contentTypeDefinition.name</option>
+					    #end
+					</select>
+				</div>
+				<div style="float: left; margin-left: 20px;">
+					$ui.getString("tool.contenttool.chooseRepositoryLabel")<br>
+					<select class="dropbox" name="repositoryIdToSearch" multiple="true" size="5">
+						#foreach ($repositoryVO in $repositories)
+							<option value="$repositoryVO.id" #checkSelectedByList($selectedRepositoryIdList "$repositoryVO.id")>$repositoryVO.name</option>
+					    #end
+					</select>
+				</div>
+				<div style="clear:both"></div>
+			</div>
+			<div>
+				$ui.getString("tool.contenttool.modifierFilter.label"):<br/>
+				<input type="textfield" id="name" name="name" value="$name"/>
+				<a href="javascript:showUsers();"><img src="images/spyglassIcon.gif" width="16" height="16" border="0"/></a>
+				<a href="javascript:selectMyself();"><img src="images/user18.gif" width="16" height="16" border="0"/></a>
+			</div>
+			<div>
+				<b>Only show contents modfied between these dates:</b><br/>
+				<div style="float: left;">
+				#editDateFieldCustom("tool.contenttool.versionModifiedDateTimeNotOlderThan" "modifiedDateTimeStart" $!modifiedDateTimeStart "30" "date" "ViewCalendar.action?date=&formPath=document.editForm.modifiedDateTimeStart" "$dateReadonly")
+				</div>
+				<div style="float: left; margin-left: 20px;">
+				#editDateFieldCustom("tool.contenttool.versionModifiedDateTimeNotNewerThan" "modifiedDateTimeEnd" $!modifiedDateTimeEnd "30" "date" "ViewCalendar.action?date=&formPath=document.editForm.modifiedDateTimeEnd" "$dateReadonly")
+				</div>
+				<div style="clear:both"></div>
+			</div>
+			<div>
+				#if($allowCaseSensitive)
+				<div style="float: left;">
+					$ui.getString("tool.contenttool.caseSensitive.label")<br>
+					<input type="checkbox" name="caseSensitive" value="1" #checkChecked("1" "$caseSensitive")> $ui.getString("tool.common.yes") 
+				</div>
+				#end
+				<div style="float: left;">
+					$ui.getString("tool.contenttool.includeAssets.label")<br>
+					<input type="checkbox" name="includeAssets" value="true" #checkChecked("true" "$includeAssets")> Yes 
+				</div>
+				<div style="float: left;">
+					$ui.getString("tool.contenttool.onlyIDSearch.label")<br>
+					<input type="checkbox" name="onlyIDSearch" value="true" #checkChecked("true" "$onlyIDSearch")> Yes 
+				</div>
+				<div style="clear:both"></div>
+			</div>
+			<div>
+				<div style="float: left;">
+					#selectBox("tool.contenttool.languageFilter.label" "languageId" $languageId $availableLanguages "tool.contenttool.filterShowAll.label")
+				</div>
+				<div style="float: left;">
+					$ui.getString("tool.contenttool.stateSearch.label")<br>
+					<select class="dropbox" name="stateId">
+						<option value="">$ui.getString("tool.contenttool.filterShowAll.label")</option>
+						<option value="">---------------</option>
+						<option value="0" #checkSelected("0" "$stateId")>$ui.getString("tool.contenttool.state.working")</option>
+						<!--
+						<option value="1" #checkSelected("1" "$stateId")>$ui.getString("tool.contenttool.state.final")</option>
+						-->				
+						<option value="2" #checkSelected("2" "$stateId")>$ui.getString("tool.contenttool.state.publish")</option>
+						<option value="3" #checkSelected("3" "$stateId")>$ui.getString("tool.contenttool.state.published")</option>
+					</select>
+				</div>		
+				<div style="clear:both"></div>		
+			</div>
 		</div>
 	</td>
 </tr>
@@ -315,7 +357,7 @@
 </form>
 </div>
 
-<div id="resultsLayer" class="fullymarginalized" style="position: absolute; top: #if($advanced == false) 80px; #else 580px; #end">
+<div id="resultsLayer" class="fullymarginalized">
 
 <table tableborder=0 border=0 bgcolor=#C7D1B3 width=100% cellpadding="1" cellspacing="0"><tr><td>
 

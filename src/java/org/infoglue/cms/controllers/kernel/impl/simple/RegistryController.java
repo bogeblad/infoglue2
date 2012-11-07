@@ -940,7 +940,7 @@ public class RegistryController extends BaseController
 	                SiteNodeVersionVO siteNodeVersion = SiteNodeVersionController.getController().getSiteNodeVersionVOWithId(new Integer(registryVO.getReferencingEntityId()), db);
 	                SiteNodeVO siteNode = SiteNodeController.getController().getSiteNodeVOWithId(siteNodeVersion.getSiteNodeId(), db);
 	                //SiteNodeVersion siteNodeVersion = SiteNodeVersionController.getController().getSiteNodeVersionWithId(new Integer(registryVO.getReferencingEntityId()), db);
-                    t.printElapsedTime("siteNodeVersion 2");
+                    //t.printElapsedTime("siteNodeVersion 2");
 		    		logger.info("siteNodeVersion:" + siteNodeVersion.getSiteNodeVersionId());
 		    		logger.info("siteNode:" + siteNode.getId());
 		    		existingReferenceBean.setName(siteNode.getName());
