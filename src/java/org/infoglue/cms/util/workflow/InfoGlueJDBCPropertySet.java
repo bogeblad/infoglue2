@@ -756,9 +756,9 @@ public class InfoGlueJDBCPropertySet extends JDBCPropertySet
 	                	logger.info("columnTypeName: " + columnTypeName); 
 	                	if(this.driverClassName.indexOf("oracle") > -1 && columnTypeName != null && columnTypeName.indexOf("RAW") == -1)
 	                	{
-	                		System.out.println("Getting as blob");
+	                		//System.out.println("Getting as blob");
 	            	        Blob blob = rs.getBlob(colData);
-		                	System.out.println("blob:" + blob);
+		                	//System.out.println("blob:" + blob);
 		                	if(blob != null)
 		                	{
 		                		try

@@ -1447,7 +1447,7 @@ public class ContentController extends BaseController
     	String contentTypeINClause = "";
     	if(allowedContentTypeIds != null && allowedContentTypeIds.length > 0)
     	{
-        	contentTypeINClause = " AND (isBranch = true OR " + (shortTables ? "contentTypeDefId" : "contentTypeDefinitionId") + " IN (";
+        	contentTypeINClause = " AND (isBranch = 1 OR " + (shortTables ? "contentTypeDefId" : "contentTypeDefinitionId") + " IN (";
         	for(int i=0; i < allowedContentTypeIds.length; i++)
         	{
         		if(i > 0)
@@ -1591,7 +1591,7 @@ public class ContentController extends BaseController
     	String contentTypeINClause = "";
     	if(allowedContentTypeIds != null && allowedContentTypeIds.length > 0)
     	{
-        	contentTypeINClause = " AND (content.isBranch = true OR content.contentTypeDefinitionId IN LIST (";
+        	contentTypeINClause = " AND (content.isBranch = 1 OR content.contentTypeDefinitionId IN LIST (";
         	for(int i=0; i < allowedContentTypeIds.length; i++)
         	{
         		if(i > 0)

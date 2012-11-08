@@ -256,7 +256,7 @@ public class SearchController extends BaseController
 				String andTerm = " WHERE ";
 				if(repositoryId != null && repositoryId.length > 0)
 				{
-					sb.append("              ( ");
+					sb.append(andTerm + " ( ");
 					for(int i=0; i<repositoryId.length; i++)
 					{
 						if(i > 0)
@@ -272,9 +272,7 @@ public class SearchController extends BaseController
 				
 				if(contentTypeDefinitionId != null && contentTypeDefinitionId.length > 0 && contentTypeDefinitionId[0] != null)
 				{
-					sb.append(andTerm);
-
-					sb.append("(");
+					sb.append(andTerm + "(");
 					for(int i=0; i<contentTypeDefinitionId.length; i++)
 					{
 						if(i==0)
@@ -292,13 +290,13 @@ public class SearchController extends BaseController
 				
 				if(stateId != null)
 				{
-					sb.append(" " + andTerm + " cv.stateId = $" + index);
+					sb.append(andTerm + " cv.stateId = $" + index);
 					arguments.add(stateId);
 					index++;
 					andTerm = " AND ";
 				}
 				
-				sb.append(" " + andTerm + " cv.isactive = 1");
+				sb.append(andTerm + " cv.isactive = 1");
 				if(modifiedDateTimeStart != null)
 				{
 					sb.append("    AND modifiedDateTime >= $" + index);
@@ -353,7 +351,7 @@ public class SearchController extends BaseController
 				String andTerm = " WHERE ";
 				if(repositoryId != null && repositoryId.length > 0)
 				{
-					sb.append("  ( ");
+					sb.append(andTerm + "  ( ");
 					for(int i=0; i<repositoryId.length; i++)
 					{
 						if(i > 0)
