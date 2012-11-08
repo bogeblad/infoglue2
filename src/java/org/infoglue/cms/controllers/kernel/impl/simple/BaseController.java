@@ -114,6 +114,36 @@ public abstract class BaseController
     	intercept(hashMap, InterceptionPointName, infogluePrincipal, true);
 	}
 	
+    protected void intercept(Map hashMap, String InterceptionPointName, InfoGluePrincipal infogluePrincipal, boolean allowCreatorAccess, boolean ignoreMissingInterceptionPoint) throws ConstraintException, SystemException, Bug, Exception
+	{
+		InterceptionPointVO interceptionPointVO = InterceptionPointController.getController().getInterceptionPointVOWithName(InterceptionPointName);
+    	
+		if(interceptionPointVO == null)
+		{
+			if(ignoreMissingInterceptionPoint)
+				return;
+			else
+				throw new SystemException("The InterceptionPoint " + InterceptionPointName + " was not found. The system will not work unless you restore it.");
+		}
+		
+		List interceptors = InterceptorController.getController().getInterceptorsVOList(interceptionPointVO.getInterceptionPointId());
+		Iterator interceptorsIterator = interceptors.iterator();
+		while(interceptorsIterator.hasNext())
+		{
+			InterceptorVO interceptorVO = (InterceptorVO)interceptorsIterator.next();
+			logger.info("Adding interceptorVO:" + interceptorVO.getName());
+			try
+			{
+				InfoGlueInterceptor infoGlueInterceptor = (InfoGlueInterceptor)Class.forName(interceptorVO.getClassName()).newInstance();
+				infoGlueInterceptor.intercept(infogluePrincipal, interceptionPointVO, hashMap, allowCreatorAccess);
+			}
+			catch(ClassNotFoundException e)
+			{
+				logger.warn("The interceptor " + interceptorVO.getClassName() + "was not found: " + e.getMessage(), e);
+			}
+		}
+	}
+    
     protected void intercept(Map hashMap, String InterceptionPointName, InfoGluePrincipal infogluePrincipal, boolean allowCreatorAccess) throws ConstraintException, SystemException, Bug, Exception
 	{
 		InterceptionPointVO interceptionPointVO = InterceptionPointController.getController().getInterceptionPointVOWithName(InterceptionPointName);

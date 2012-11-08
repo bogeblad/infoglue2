@@ -511,6 +511,19 @@ public class PublicationController extends BaseController
 	        publicationVO = createAndPublish(publicationVO, events, overrideVersionModifyer, infoGluePrincipal, db);
 	        
 	        commitTransaction(db);
+	        
+	        // Notify the interceptors!!!
+	        try
+			{
+	            Map hashMap = new HashMap();
+	        	hashMap.put("publicationId", publicationVO.getId());
+	        	
+	    		intercept(hashMap, "Publication.Written", infoGluePrincipal, true, true);
+			}
+			catch (Exception e)
+			{
+				logger.error("An error occurred when we tried to replicate the data:" + e.getMessage(), e);
+			}
 		}
 		catch(Exception e)
 		{

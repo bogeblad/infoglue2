@@ -47,6 +47,7 @@ import org.infoglue.cms.entities.management.GroupContentTypeDefinition;
 import org.infoglue.cms.entities.management.GroupProperties;
 import org.infoglue.cms.entities.management.GroupPropertiesVO;
 import org.infoglue.cms.entities.management.Language;
+import org.infoglue.cms.entities.management.LanguageVO;
 import org.infoglue.cms.entities.management.PropertiesCategory;
 import org.infoglue.cms.entities.management.PropertiesCategoryVO;
 import org.infoglue.cms.entities.management.impl.simple.GroupContentTypeDefinitionImpl;
@@ -244,6 +245,8 @@ public class GroupPropertiesController extends BaseController
 	{
 	    List groupPropertiesVOList = new ArrayList();
 	    
+	    preCacheAllGroupProperties(db);
+	    
 		String cacheKey = "" + groupName + "_" + languageId;
 		logger.info("cacheKey:" + cacheKey);
 		groupPropertiesVOList = (List)CacheController.getCachedObject("groupPropertiesCache", cacheKey);
@@ -253,6 +256,7 @@ public class GroupPropertiesController extends BaseController
 		}
 		else
 		{
+			System.out.println("Reading hard group properties...");
 			List groupPropertiesList = getGroupPropertiesList(groupName, languageId, db, true);
 			if(groupPropertiesList != null)
 			{
@@ -987,6 +991,55 @@ public class GroupPropertiesController extends BaseController
 		return relatedSiteNodeList;
 	}
 
+	public void preCacheAllGroupProperties(Database db) throws SystemException, Exception
+	{
+		Boolean cached = (Boolean)CacheController.getCachedObject("groupPropertiesCache", "preCacheDone");
+		if(cached != null && cached)
+		{
+			return;
+		}
+		
+		System.out.println("Starting preCache");
+		List<LanguageVO> languageVOList = LanguageController.getController().getLanguageVOList(db);
+		for(LanguageVO languageVO : languageVOList)
+		{
+			OQLQuery oql = db.getOQLQuery("SELECT f FROM org.infoglue.cms.entities.management.impl.simple.GroupPropertiesImpl f WHERE f.language = $1 ORDER BY f.groupName");
+			oql.bind(languageVO.getId());
+	
+			QueryResults results;
+		    results = oql.execute(Database.ReadOnly);
+	
+		    String groupName = "";
+		    List groupPropertyValues = new ArrayList();
+			while (results.hasMore()) 
+			{
+				GroupProperties groupProperties = (GroupProperties)results.next();
+				if(!groupProperties.getGroupName().equals(groupName))
+				{
+					String cacheKey = "" + groupName + "_" + languageVO.getId();
+					logger.info("cacheKey:" + cacheKey);
+					
+					System.out.println("Caching for " + cacheKey + ":" + groupPropertyValues.size());
+					CacheController.cacheObject("groupPropertiesCache", cacheKey, groupPropertyValues);
+					groupPropertyValues = new ArrayList();
+					groupName = groupProperties.getGroupName();
+				}
+				groupPropertyValues.add(groupProperties.getValueObject());
+			}
+			if(groupName != null)
+			{
+				String cacheKey = "" + groupName + "_" + languageVO.getId();
+				CacheController.cacheObject("groupPropertiesCache", cacheKey, groupPropertyValues);
+			}
+			
+			results.close();
+			oql.close();
+		}
+		CacheController.cacheObject("groupPropertiesCache", "preCacheDone", new Boolean(true));
+		System.out.println("Precaching done....");
+	}
+
+	
 	public List<SiteNodeVO> getReadOnlyRelatedSiteNodeVOList(String groupName, Integer languageId, String attributeName, Database db) throws SystemException, Exception
 	{
 		List<SiteNodeVO> relatedSiteNodeList = new ArrayList<SiteNodeVO>();

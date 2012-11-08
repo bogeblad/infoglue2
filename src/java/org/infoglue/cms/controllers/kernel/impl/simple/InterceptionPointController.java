@@ -131,6 +131,7 @@ public class InterceptionPointController extends BaseController
 	    systemInterceptionPoints.put("ComponentPropertyEditor.EditAdvancedProperties", new InterceptionPointVO("ComponentPropertyEditor", "ComponentPropertyEditor.EditAdvancedProperties", "This interception point limits who can edit advanced properties on a component", false));
 	    
 	    systemInterceptionPoints.put("Publication.Write", new InterceptionPointVO("Publication", "Publication.Write", "This interception point intercepts publications", true));
+	    systemInterceptionPoints.put("Publication.Written", new InterceptionPointVO("Publication", "Publication.Written", "This interception point intercepts when an publication is completed", true));
 	    systemInterceptionPoints.put("Common.SubmitToPublishButton", new InterceptionPointVO("Common", "Common.SubmitToPublishButton", "Intercepts the submit to publish button", false));
 	    systemInterceptionPoints.put("Common.PublishButton", new InterceptionPointVO("Common", "Common.PublishButton", "Intercepts the publish button", false));
 	    
@@ -196,6 +197,11 @@ public class InterceptionPointController extends BaseController
 		return (InterceptionPointVO) getVOWithId(InterceptionPointImpl.class, interceptionPointId);
 	}
   
+	public InterceptionPoint getReadOnlyInterceptionPointWithId(Integer interceptionPointId, Database db) throws SystemException, Bug
+	{
+		return (InterceptionPoint) getObjectWithIdAsReadOnly(InterceptionPointImpl.class, interceptionPointId, db);
+	}
+
 	public List getInterceptionPointVOList() throws SystemException, Bug
 	{
 		return getAllVOObjects(InterceptionPointImpl.class, "interceptionPointId");

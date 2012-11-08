@@ -38,6 +38,7 @@ import org.infoglue.cms.exception.Bug;
 import org.infoglue.cms.exception.ConstraintException;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.util.ConstraintExceptionBuffer;
+import org.infoglue.deliver.util.CacheController;
 
 /**
  * This class is a helper class for the use case handle Interceptor
@@ -106,6 +107,64 @@ public class InterceptorController extends BaseController
 		return toVOList(interceptionPoints);		
 	}
 	
+	public List getInterceptorsVOList(Integer interceptionPointId) throws SystemException, Bug
+	{
+		List interceptorVOList = null;
+		
+		Database db = CastorDatabaseService.getDatabase();
+
+		try 
+		{
+			beginTransaction(db);
+
+			interceptorVOList = getInterceptorsVOList(interceptionPointId, db);
+
+			commitTransaction(db);
+		} 
+		catch (Exception e) 
+		{
+			e.printStackTrace();
+			logger.info("An error occurred so we should not complete the transaction:" + e);
+			rollbackTransaction(db);
+			throw new SystemException(e.getMessage());
+		}
+		
+		return interceptorVOList;	
+	}
+	
+	/**
+	 * Gets the interceptors for this interceptionPoint withing a transaction
+	 * 
+	 * @param interceptionPointId
+	 * @param db
+	 * @return
+	 * @throws SystemException
+	 * @throws Bug
+	 */
+	
+	public List getInterceptorsVOList(Integer interceptionPointId, Database db)  throws SystemException, Bug, Exception
+	{
+		String key = "" + interceptionPointId;
+		logger.info("key:" + key);
+		List cachedInterceptorVOList = (List)CacheController.getCachedObject("interceptorsCache", key);
+		if(cachedInterceptorVOList != null)
+		{
+			logger.info("There was an cached InterceptorVOList:" + cachedInterceptorVOList.size());
+			return cachedInterceptorVOList;
+		}
+		
+		//List<InterceptorVO> interceptorsVOList = getInterceptorVOList(interceptionPointId, db);
+		
+		InterceptionPoint interceptionPoint = InterceptionPointController.getController().getReadOnlyInterceptionPointWithId(interceptionPointId, db);
+		
+		Collection interceptors = interceptionPoint.getInterceptors();
+		
+		List interceptorsVOList = toVOList(interceptors);
+		
+		CacheController.cacheObject("interceptorsCache", key, interceptorsVOList);
+
+		return interceptorsVOList;		
+	}
 	/**
 	 * Creates a new InterceptorVO
 	 * 
