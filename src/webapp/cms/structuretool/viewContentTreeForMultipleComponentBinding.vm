@@ -265,45 +265,8 @@
 			// ${componentEditorUrl}
 			var assignUrl = "ViewContentVersion!viewAssetBrowserForComponentBindingV3.action?languageId=$languageId&repositoryId=$repositoryId";
 			var supplementingBinding = selectedBinding.getSupplementingBinding();
-			assignUrl += "&assignedContentId=" + supplementingBinding.entityId + "&assignedAssetKey=" + encodeURIComponent(supplementingBinding.assetKey);
-			#* assignUrl = 
-					componentEditorUrl + 
-						"ViewContentVersion!viewAssetBrowserForComponentBindingV3.action?
-							  repositoryId=" + repositoryId   <- is input
-							+ "&siteNodeId=" + siteNodeId    <- is input
-							+ "&languageId=" + languageId <- is input
-							+ "&contentId=" + contentId   <- is input
-							+ "&componentId=" + componentId    <- is input
-							+ "&propertyName=" + componentProperty.getName()    <- is input
-							+ allowedContentTypeIdParameters 
-							+ "&assetTypeFilter=" + componentProperty.getAssetMask() 
-							+ "&showSimple=" + getTemplateController().getDeliveryContext().getShowSimple() 
-							+ assignedParameters;
-							
-					assignedParameters = 
-					"&assignedContentId=" + componentBinding.getEntityId() + 
-					"&assignedAssetKey=" + formatter.encodeURI(componentBinding.getAssetKey()) + 
-					"&assignedPath=" + formatter.encodeURI(componentProperty.getValue());
-
-					var supplementingA = document.createElement("button");
-					supplementingA.setAttribute("class", "supplementingBinding");
-					var assignUrl = "ViewContentVersion!viewAssetBrowserForComponentBindingV3.action?repositoryId=$repositoryId&siteNodeId=$siteNodeId&languageId=$languageId&contentId=$contentId&componentId=$componentId&propertyName=$propertyName";
-					var supplementingBindingText, assignedParameters = "";
-					if (binding.getSupplementingBinding().entityId)
-					{
-						var sb = binding.getSupplementingBinding();
-						assignedParameters = "&assignedContentId=" + sb.entityId + "&assignedAssetKey=" + formatter.encodeURI(sb.assetKey);
-						supplementingBindingText = document.createTextNode("(" + sb.entityId + " [" + sb.assetKey + "])");
-					}
-					else
-					{
-						supplementingBindingText = document.createTextNode("(Not set)");
-					}
-					//supplementingA.setAttribute("href", "javascript:openAssetPage('" + assignUrl + "')");
-					/*supplementingA.setAttribute("onlick", "openAssetPage('" + assignUrl + "')");
-					supplementingA.appendChild(supplementingBindingText);
-					
-					myLI.appendChild(supplementingA);*/*#
+			assignUrl += "&assignedContentId=" + (supplementingBinding.entityId ? supplementingBinding.entityId : "") + "&assignedAssetKey=" + (supplementingBinding.assetKey ? encodeURIComponent(supplementingBinding.assetKey) : "");
+			
 			window.open(assignUrl,'Assign asset','toolbar=no,status=yes,scrollbars=yes,location=no,menubar=no,directories=no,resizable=no,width=800,height=600,left=5,top=5');
 		}
 
