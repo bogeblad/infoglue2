@@ -16,7 +16,7 @@
         <property name="longVal" column="long_val" />
         <property name="intVal" column="int_val" />
         <property name="dateVal" type="timestamp" column="date_val" />
-        <property name="dataVal" column="data_val" />
+        <property name="dataVal" type="org.infoglue.cms.util.workflow.hibernate.LongRawOrByteBinaryType" column="data_val"/>
     </class>
 	<query name="all_keys"><![CDATA[
 		select item.key from item in class org.infoglue.cms.util.workflow.hibernate.InfogluePropertySetItem

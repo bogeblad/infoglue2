@@ -772,7 +772,7 @@ public class InfoGlueJDBCPropertySet extends JDBCPropertySet
 	    			                }
 	    			                baos.flush();
 	    			                String s = baos.toString();
-	    			                System.out.println("S: " + s + "...");
+	    			                //System.out.println("S: " + s + "...");
 	    			                o = s.getBytes();
 		                		}
 		                		catch (Exception e) 

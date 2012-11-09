@@ -60,6 +60,7 @@ import org.apache.xerces.parsers.DOMParser;
 import org.exolab.castor.jdo.Database;
 import org.exolab.castor.jdo.OQLQuery;
 import org.exolab.castor.jdo.QueryResults;
+import org.infoglue.cms.applications.common.VisualFormatter;
 import org.infoglue.cms.entities.content.ContentVO;
 import org.infoglue.cms.entities.content.ContentVersion;
 import org.infoglue.cms.entities.content.ContentVersionVO;
@@ -299,20 +300,28 @@ public class SearchController extends BaseController
 				sb.append(andTerm + " cv.isactive = 1");
 				if(modifiedDateTimeStart != null)
 				{
-					sb.append("    AND modifiedDateTime >= $" + index);
-					arguments.add(modifiedDateTimeStart);
-					index++;
+					VisualFormatter formatter = new VisualFormatter();
+					String dateString = formatter.formatDate(modifiedDateTimeStart, "yyyy-MM-dd");
+					//System.out.println("dateString:" + dateString);
+					sb.append("    AND modifiedDateTime >= to_date('" + dateString + "','yyyy-MM-dd')");
+					//sb.append("    AND modifiedDateTime >= to_date('$" + index + "','yyyy-MM-dd')");
+					//sb.append("    AND modifiedDateTime >= $" + index);
+					//arguments.add(dateString);
+					//arguments.add(modifiedDateTimeStart);
+					//index++;
 				}
 				if(modifiedDateTimeEnd != null)
 				{
-					sb.append("    AND modifiedDateTime = $" + index);
-					arguments.add(modifiedDateTimeEnd);
-					index++;				
+					VisualFormatter formatter = new VisualFormatter();
+					String dateString = formatter.formatDate(modifiedDateTimeEnd, "yyyy-MM-dd");
+					sb.append("    AND modifiedDateTime <= to_date('" + dateString + "','yyyy-MM-dd')");
+					//arguments.add(modifiedDateTimeEnd);
+					//index++;				
 				}
 
 				if(userName != null && !userName.equals(""))
 				{
-					sb.append("    AND versionModifier <= $" + index);
+					sb.append("    AND versionModifier = $" + index);
 					arguments.add(userName);
 					index++;				
 				}
@@ -395,20 +404,20 @@ public class SearchController extends BaseController
 				
 				if(modifiedDateTimeStart != null)
 				{
-					sb.append("    AND modifiedDateTime >= $" + index);
+					sb.append("    AND cv.modifiedDateTime > $" + index);
 					arguments.add(modifiedDateTimeStart);
 					index++;
 				}
 				if(modifiedDateTimeEnd != null)
 				{
-					sb.append("    AND modifiedDateTime <= $" + index);
+					sb.append("    AND cv.modifiedDateTime < $" + index);
 					arguments.add(modifiedDateTimeEnd);
 					index++;				
 				}
 				System.out.println("userName:" + userName);
 				if(userName != null && !userName.equals(""))
 				{
-					sb.append("    AND versionModifier = $" + index);
+					sb.append("    AND cv.versionModifier = $" + index);
 					arguments.add(userName);
 					index++;				
 				}

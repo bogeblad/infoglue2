@@ -30,18 +30,25 @@ public class InfogluePropertySetItemImpl extends PropertySetItemImpl implements 
     public InfogluePropertySetItemImpl(String entityName, long entityId, String key) {
 		super(entityName, entityId, key);
     }
-
-	/**
-	 *
-	 */
+/*
     public void setDataVal(byte[] dataVal) {
         this.dataVal = dataVal;
     }
 
-	/**
-	 *
-	 */
     public byte[] getDataVal() {
+    	Thread.dumpStack();
+        return dataVal;
+    }
+*/
+    public void setDataVal(byte[] dataVal) {
+    	//if(dataVal != null)
+    	//	System.out.println("Setting bytes:" + new String(dataVal));
+        this.dataVal = dataVal;
+    }
+
+    public byte[] getDataVal() {
+    	//if(dataVal != null)
+    	//	System.out.println("Getting bytes:" + new String(dataVal));
         return dataVal;
     }
 }

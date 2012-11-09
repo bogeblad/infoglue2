@@ -256,7 +256,7 @@ public class GroupPropertiesController extends BaseController
 		}
 		else
 		{
-			System.out.println("Reading hard group properties...");
+			//System.out.println("Reading hard group properties...");
 			List groupPropertiesList = getGroupPropertiesList(groupName, languageId, db, true);
 			if(groupPropertiesList != null)
 			{
@@ -1019,7 +1019,7 @@ public class GroupPropertiesController extends BaseController
 					String cacheKey = "" + groupName + "_" + languageVO.getId();
 					logger.info("cacheKey:" + cacheKey);
 					
-					System.out.println("Caching for " + cacheKey + ":" + groupPropertyValues.size());
+					//System.out.println("Caching for " + cacheKey + ":" + groupPropertyValues.size());
 					CacheController.cacheObject("groupPropertiesCache", cacheKey, groupPropertyValues);
 					groupPropertyValues = new ArrayList();
 					groupName = groupProperties.getGroupName();
@@ -1126,7 +1126,7 @@ public class GroupPropertiesController extends BaseController
 		}
 		catch(Exception e)
 		{
-			logger.warn("An error getting related contents:" + e.getMessage(), e);
+			logger.warn("An error getting related contents:" + e.getMessage());
 		}
 		
 		return contents;

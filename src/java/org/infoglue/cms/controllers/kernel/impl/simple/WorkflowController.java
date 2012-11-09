@@ -74,7 +74,13 @@ public class WorkflowController extends BaseController
 	{
 		try
 		{
-			hibernateSessionFactory = new Configuration().configure().buildSessionFactory();
+			System.out.println("Oh yes....");
+			Configuration config = new Configuration();
+			config.setProperty("hibernate.cglib.use_reflection_optimizer", "false");
+			config.configure();
+			config.setProperty("hibernate.cglib.use_reflection_optimizer", "false");
+			hibernateSessionFactory = config.buildSessionFactory();
+
 		}
 		catch (HibernateException e)
 		{
@@ -936,7 +942,14 @@ public class WorkflowController extends BaseController
 	        {
 				logger.error("An error occurred when we tried to close the hibernate session factory:" + e.getMessage());	        	
 			}
-	        hibernateSessionFactory = new Configuration().configure().buildSessionFactory();
+	        
+	        Configuration config = new Configuration();
+	        config.setProperty("hibernate.cglib.use_reflection_optimizer", "false");
+			config.configure();
+			config.setProperty("hibernate.cglib.use_reflection_optimizer", "false");
+			hibernateSessionFactory = config.buildSessionFactory();
+
+	        //hibernateSessionFactory = new Configuration().configure().buildSessionFactory();
 	        logger.info("Opened:" + hibernateSessionFactory);
 		}
 		catch (Exception e)
