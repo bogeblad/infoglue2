@@ -133,7 +133,7 @@ public class MatchingContentsTag extends TemplateControllerTag
 		
 	    long runningTime = t.getElapsedTime();
 	    if(runningTime > 500)
-	    	logger.warn("Running matching contents took:" + runningTime + " ms");
+	    	logger.info("Running matching contents took:" + runningTime + " ms");
 	    
 	    return EVAL_PAGE;
     }

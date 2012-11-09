@@ -218,10 +218,10 @@ public class SearchController extends BaseController
    	
    	private List<ContentVersionVO> getContentVersionVOListFromCastor(Integer[] repositoryId, String searchString, int maxRows, String userName, Integer languageId, Integer[] contentTypeDefinitionId, Integer caseSensitive, Integer stateId, boolean searchAssets, Date modifiedDateTimeStart, Date modifiedDateTimeEnd) throws SystemException, Bug
    	{
-   		System.out.println("userName:" + userName);
-   		System.out.println("searchString:" + searchString);
-   		System.out.println("modifiedDateTimeStart:" + modifiedDateTimeStart);
-   		System.out.println("modifiedDateTimeEnd:" + modifiedDateTimeEnd);
+   		//System.out.println("userName:" + userName);
+   		//System.out.println("searchString:" + searchString);
+   		//System.out.println("modifiedDateTimeStart:" + modifiedDateTimeStart);
+   		//System.out.println("modifiedDateTimeEnd:" + modifiedDateTimeEnd);
    		/*
    		if(contentTypeDefinitionId == null || contentTypeDefinitionId.length == 0)
    		{
@@ -414,7 +414,7 @@ public class SearchController extends BaseController
 					arguments.add(modifiedDateTimeEnd);
 					index++;				
 				}
-				System.out.println("userName:" + userName);
+				//System.out.println("userName:" + userName);
 				if(userName != null && !userName.equals(""))
 				{
 					sb.append("    AND cv.versionModifier = $" + index);
@@ -441,7 +441,7 @@ public class SearchController extends BaseController
 				sql = sb.toString();
 			}
 			
-			System.out.println("sql:" + sql);
+			//System.out.println("sql:" + sql);
 			logger.info("sql:" + sql);
 			OQLQuery oql = db.getOQLQuery(sql);
 			Iterator shortRepArgumentsIterator = arguments.iterator();
@@ -449,7 +449,7 @@ public class SearchController extends BaseController
 			{
 				Object argument = (Object)shortRepArgumentsIterator.next();
 				logger.info(argument);
-				System.out.println(argument);
+				//System.out.println(argument);
 				oql.bind(argument);
 			}
 	        
