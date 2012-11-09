@@ -197,7 +197,6 @@ public class WorkflowController extends BaseController
 			session = hibernateSessionFactory.openSession();
 
 			tx = session.beginTransaction();
-			
 			WorkflowFacade wf = new WorkflowFacade(userPrincipal, hibernateSessionFactory, session);
 			final List allWorkflows = wf.getDeclaredWorkflows();
 			

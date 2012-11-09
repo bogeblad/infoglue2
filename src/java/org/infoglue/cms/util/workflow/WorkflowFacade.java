@@ -73,7 +73,7 @@ import com.opensymphony.workflow.spi.WorkflowEntry;
  * the Workflow interface.  The idea is to encapsulate the interactions with OSWorkflow and eliminate the
  * need to pass a Workflow reference and the workflow ID all over the place when extracting data from OSWorkflow
  * @author <a href="mailto:jedprentice@gmail.com">Jed Prentice</a>
- * @version $Revision: 1.41.4.1 $ $Date: 2012/10/29 15:37:25 $
+ * @version $Revision: 1.41.4.2 $ $Date: 2012/11/09 15:03:14 $
  */
 public class WorkflowFacade
 {
@@ -644,38 +644,38 @@ public class WorkflowFacade
 		
 		if(workflows == null)
 		{
-				if(principal.getIsAdministrator())
-				{
-					workflows = getActiveWorkflows(maxNumberOfWorkflows);
-				}
-				
-				Collection owners = OwnerFactory.createAll(principal);
-				Expression[] expressions = new Expression[owners.size()];
-				
-				Iterator ownersIterator = owners.iterator();
-				int i = 0;
-				while(ownersIterator.hasNext())
-				{
-					Owner owner = (Owner)ownersIterator.next();
-					Expression expression = new FieldExpression(FieldExpression.OWNER, FieldExpression.CURRENT_STEPS, FieldExpression.EQUALS, owner.getIdentifier());
-					expressions[i] = expression;
-					i++;
-				}				
-				
-				final Set workflowVOs = new HashSet();
-				workflowVOs.addAll(createWorkflowsForOwner(expressions, maxNumberOfWorkflows));
-	
-				/*
-				final Set workflowVOs = new HashSet();
-				for(final Iterator owners = OwnerFactory.createAll(principal).iterator(); owners.hasNext(); )
-				{
-					final Owner owner = (Owner) owners.next();
-					workflowVOs.addAll(createWorkflowsForOwner(owner));
-				}
-				*/
-				
-				workflows = new ArrayList(workflowVOs);
-				CacheController.cacheObject("myActiveWorkflows", key, workflows);
+			if(principal.getIsAdministrator())
+			{
+				workflows = getActiveWorkflows(maxNumberOfWorkflows);
+			}
+			
+			Collection owners = OwnerFactory.createAll(principal);
+			Expression[] expressions = new Expression[owners.size()];
+			
+			Iterator ownersIterator = owners.iterator();
+			int i = 0;
+			while(ownersIterator.hasNext())
+			{
+				Owner owner = (Owner)ownersIterator.next();
+				Expression expression = new FieldExpression(FieldExpression.OWNER, FieldExpression.CURRENT_STEPS, FieldExpression.EQUALS, owner.getIdentifier());
+				expressions[i] = expression;
+				i++;
+			}				
+			
+			final Set workflowVOs = new HashSet();
+			workflowVOs.addAll(createWorkflowsForOwner(expressions, maxNumberOfWorkflows));
+
+			/*
+			final Set workflowVOs = new HashSet();
+			for(final Iterator owners = OwnerFactory.createAll(principal).iterator(); owners.hasNext(); )
+			{
+				final Owner owner = (Owner) owners.next();
+				workflowVOs.addAll(createWorkflowsForOwner(owner));
+			}
+			*/
+			
+			workflows = new ArrayList(workflowVOs);
+			CacheController.cacheObject("myActiveWorkflows", key, workflows);
 		}
 		
 		return workflows;
