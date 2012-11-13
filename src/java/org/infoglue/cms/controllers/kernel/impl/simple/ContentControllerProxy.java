@@ -24,6 +24,9 @@
 package org.infoglue.cms.controllers.kernel.impl.simple;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -33,11 +36,14 @@ import org.apache.log4j.Logger;
 import org.exolab.castor.jdo.Database;
 import org.infoglue.cms.applications.contenttool.wizards.actions.CreateContentWizardInfoBean;
 import org.infoglue.cms.entities.content.ContentVO;
+import org.infoglue.cms.entities.content.ContentVersionVO;
+import org.infoglue.cms.entities.management.ContentTypeDefinitionVO;
 import org.infoglue.cms.entities.management.InterceptionPointVO;
 import org.infoglue.cms.exception.Bug;
 import org.infoglue.cms.exception.ConstraintException;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.security.InfoGluePrincipal;
+import org.infoglue.deliver.util.Timer;
 
 
 /**
@@ -53,7 +59,9 @@ public class ContentControllerProxy extends ContentController
 	protected static final Integer INHERITED 	= new Integer(2);
 
 	private static List interceptors = new ArrayList();
-
+	
+	private SearchController searchController = new SearchController();
+	
 	public static ContentControllerProxy getController()
 	{
 		return new ContentControllerProxy();
@@ -159,7 +167,7 @@ public class ContentControllerProxy extends ContentController
         else if(method.equalsIgnoreCase("selectListOnContentTypeName"))
     	{
 			List arguments = (List)argumentHashMap.get("arguments");
-			logger.info("Arguments:" + arguments.size());   		
+			logger.info("Arguments:" + arguments.size()); 
 			contents = getContentVOListByContentTypeNames(arguments, db);
 			Iterator contentIterator = contents.iterator();
 			while(contentIterator.hasNext())
@@ -187,6 +195,7 @@ public class ContentControllerProxy extends ContentController
 		    	}
 			}
     	}
+
         return contents;
     }
 

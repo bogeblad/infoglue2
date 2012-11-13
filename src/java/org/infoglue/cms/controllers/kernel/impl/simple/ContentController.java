@@ -1109,26 +1109,109 @@ public class ContentController extends BaseController
 		Iterator i = arguments.iterator();
     	while(i.hasNext())
     	{
-	        HashMap argument = (HashMap)i.next();
+    		Timer t = new Timer();
+    		HashMap argument = (HashMap)i.next();
     		String contentTypeDefinitionName = (String)argument.get("contentTypeDefinitionName");
-			//OQLQuery oql = db.getOQLQuery("CALL SQL SELECT c.contentId, c.name, c.publishDateTime, c.expireDateTime, c.isBranch, c.isProtected, c.creator, ctd.contentTypeDefinitionId, r.repositoryId FROM cmContent c, cmContentTypeDefinition ctd, cmRepository r where c.repositoryId = r.repositoryId AND c.contentTypeDefinitionId = ctd.contentTypeDefinitionId AND ctd.name = $1 AS org.infoglue.cms.entities.content.impl.simple.SmallContentImpl");
-			//OQLQuery oql = db.getOQLQuery("CALL SQL SELECT contentId, name FROM cmContent c, cmContentTypeDefinition ctd WHERE c.contentTypeDefinitionId = ctd.contentTypeDefinitionId AND ctd.name = $1 AS org.infoglue.cms.entities.content.impl.simple.ContentImpl");
-    		OQLQuery oql = db.getOQLQuery("SELECT c FROM org.infoglue.cms.entities.content.impl.simple.MediumContentImpl c WHERE c.contentTypeDefinition.name = $1 ORDER BY c.contentId");
+    		OQLQuery oql = null;
+    		if(CmsPropertyHandler.getUseShortTableNames().equals("true"))
+				oql = db.getOQLQuery("CALL SQL SELECT c.contId, c.name, c.publishDateTime, c.expireDateTime, c.isBranch, c.isProtected, c.creator, ctd.contentTypeDefId, c.repositoryId, c.parentContId FROM cmCont c, cmContentTypeDef ctd, cmRepository r where c.repositoryId = r.repositoryId AND c.contentTypeDefId = ctd.contentTypeDefId AND ctd.name = $1 AS org.infoglue.cms.entities.content.impl.simple.SmallContentImpl");
+			else
+				oql = db.getOQLQuery("CALL SQL SELECT c.contentId, c.name, c.publishDateTime, c.expireDateTime, c.isBranch, c.isProtected, c.creator, ctd.contentTypeDefinitionId, c.repositoryId, c.parentContId FROM cmContent c, cmContentTypeDefinition ctd, cmRepository r where c.repositoryId = r.repositoryId AND c.contentTypeDefinitionId = ctd.contentTypeDefinitionId AND ctd.name = $1 AS org.infoglue.cms.entities.content.impl.simple.SmallContentImpl");
+
+    		//OQLQuery oql = db.getOQLQuery("CALL SQL SELECT contentId, name FROM cmContent c, cmContentTypeDefinition ctd WHERE c.contentTypeDefinitionId = ctd.contentTypeDefinitionId AND ctd.name = $1 AS org.infoglue.cms.entities.content.impl.simple.ContentImpl");
+    		//OQLQuery oql = db.getOQLQuery("SELECT c FROM org.infoglue.cms.entities.content.impl.simple.MediumContentImpl c WHERE c.contentTypeDefinition.name = $1 ORDER BY c.contentId");
         	oql.bind(contentTypeDefinitionName);
-        	
         	QueryResults results = oql.execute(Database.ReadOnly);
+        	t.printElapsedTime("Query for " + contentTypeDefinitionName);
 			
 			while(results.hasMore()) 
             {
-            	MediumContentImpl content = (MediumContentImpl)results.next();
-				contents.add(content.getValueObject());
+            	//MediumContentImpl content = (MediumContentImpl)results.next();
+            	SmallContentImpl content = (SmallContentImpl)results.next();
+            	contents.add(content.getValueObject());
             }
+        	t.printElapsedTime("Getting all for " + contentTypeDefinitionName + ":" + contents.size());
 			
 			results.close();
 			oql.close();
 	   	}
     	
 		return contents;    	
+	}
+
+	protected List<ContentVersionVO> getLatestContentVersionVOListByContentTypeId(Integer[] contentTypeDefinitionIds, Database db) throws SystemException, Exception
+	{
+		List<ContentVersionVO> contentVersionVOList = new ArrayList<ContentVersionVO>();
+
+		StringBuilder sb = new StringBuilder();
+		if(CmsPropertyHandler.getUseShortTableNames().equals("true"))
+		{
+			sb.append("select cv.contVerId, cv.stateId, cv.modifiedDateTime, cv.VerComment, cv.isCheckedOut, cv.isActive, cv.ContId, cv.languageId, cv.versionModifier, cv.VerValue from cmContVer cv where cv.contid IN ");
+			sb.append("( ");
+			sb.append("   select contId from cmCont c2 where ( "); 
+			for(int i=0; i<contentTypeDefinitionIds.length; i++)
+			{
+				if(i>0)
+					sb.append(" OR ");
+				sb.append("c2.contenttypedefid = " + contentTypeDefinitionIds[i]);
+			}
+			sb.append("		) ");
+			sb.append(") ");
+			sb.append("AND cv.contverid =  ");
+			sb.append("( ");
+			sb.append("    select max(ContVerId) from cmContVer cv2, cmCont c where cv2.contId = c.contId AND cv2.contId = cv.contId AND cv2.isActive = 1 AND cv2.languageId =  ");
+			sb.append("    ( ");
+			sb.append("      select languageId from  ");
+			sb.append("      ( ");
+			sb.append("        select repositoryid, languageId from cmrepositorylanguage order by repositoryid, sortorder ");
+			sb.append("      ) ");
+			sb.append("      where repositoryid = c.repositoryId and rownum = 1 ");
+			sb.append("    ) ");
+			sb.append(") ");
+			sb.append("ORDER BY cv.contverid ");
+		}
+		else
+		{
+			sb.append("select cv.contentVersionId, cv.stateId, cv.modifiedDateTime, cv.versionComment, cv.isCheckedOut, cv.isActive, cv.contentId, cv.languageId, cv.versionModifier, cv.versionValue from cmContentVersion cv where cv.contentId IN  ");
+			sb.append("( ");
+			sb.append("   select contentId from cmContent c2 where ( "); 
+			for(int i=0; i<contentTypeDefinitionIds.length; i++)
+			{
+				if(i>0)
+					sb.append(" OR ");
+				sb.append("c2.contentTypeDefinitionId = " + contentTypeDefinitionIds[i]);
+			}
+			sb.append("		) ");
+			sb.append(") ");
+			sb.append("AND cv.contentVersionId =  ");
+			sb.append("( ");
+			sb.append("    select max(contentVersionId) from cmContentVersion cv2, cmContent c where cv2.contentId = c.contentId AND cv2.contentId = cv.contentId AND cv2.isActive = 1 AND cv2.languageId =  ");
+			sb.append("    ( ");
+			sb.append("      select languageId from  ");
+			sb.append("      ( ");
+			sb.append("        select repositoryId, languageId from cmRepositoryLanguage order by repositoryId, sortorder ");
+			sb.append("      ) langView ");
+			sb.append("      where langView.repositoryId = c.repositoryId LIMIT 1 ");
+			sb.append("    ) ");
+			sb.append(") ");
+			sb.append("ORDER BY cv.contentVersionId ");
+		}
+
+		Timer t = new Timer();
+		OQLQuery oql = db.getOQLQuery("CALL SQL " + sb.toString() + "AS org.infoglue.cms.entities.content.impl.simple.SmallContentVersionImpl");
+    	t.printElapsedTime("Query took");
+    	QueryResults results = oql.execute(Database.ReadOnly);
+		while (results.hasMore()) 
+        {
+			ContentVersion contentVersion = (ContentVersion)results.next();
+			contentVersionVOList.add(contentVersion.getValueObject());
+	    }
+    	t.printElapsedTime("Read took");
+
+		results.close();
+		oql.close();
+    	
+		return contentVersionVOList;    	
 	}
 
    	

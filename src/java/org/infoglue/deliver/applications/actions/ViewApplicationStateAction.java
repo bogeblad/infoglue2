@@ -28,6 +28,7 @@ import java.lang.management.MemoryPoolMXBean;
 import java.net.InetAddress;
 import java.security.Principal;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -40,6 +41,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Appender;
 import org.apache.log4j.Category;
 import org.apache.log4j.Level;
@@ -67,7 +69,9 @@ import org.infoglue.deliver.util.CacheController;
 import org.infoglue.deliver.util.RequestAnalyser;
 
 import com.opensymphony.oscache.base.Cache;
+import com.opensymphony.oscache.base.CacheEntry;
 import com.opensymphony.oscache.base.OSCacheUtility;
+import com.opensymphony.oscache.general.GeneralCacheAdministrator;
 import com.opensymphony.oscache.web.ServletCache;
 import com.opensymphony.oscache.web.ServletCacheAdministrator;
 
@@ -89,6 +93,8 @@ public class ViewApplicationStateAction extends InfoGlueAbstractAction
     private List states 					= new ArrayList();
     private Map applicationMap 				= new HashMap();
     private Object cache					= null;
+    private Object cacheMap					= null;
+    private String cacheKey					= null;
     
 	private boolean databaseConnectionOk 	= false;
 	private boolean applicationSettingsOk 	= false;
@@ -888,7 +894,14 @@ public class ViewApplicationStateAction extends InfoGlueAbstractAction
     		return returnValue;
         
         if(this.cacheName != null && !this.cacheName.equals(""))
+        {
         	this.cache = CacheController.getCaches().get(this.cacheName);
+        	if(this.cache instanceof GeneralCacheAdministrator)
+        	{
+        		this.cacheMap = ((GeneralCacheAdministrator)this.cache).getCache().cacheMap;
+        		System.out.println("this.cacheMap:" + this.cacheMap);
+        	}
+        }
         
         return "successCacheDetailsStatistics";
     }
@@ -1021,6 +1034,50 @@ public class ViewApplicationStateAction extends InfoGlueAbstractAction
 		
 		return "successAsXML";
 	}
+
+    public String doCacheEntryGroups() throws Exception
+    {
+    	if(this.cacheName != null && !this.cacheName.equals(""))
+        {
+        	this.cache = CacheController.getCaches().get(this.cacheName);
+        	if(this.cache instanceof GeneralCacheAdministrator)
+        	{
+        		this.cacheMap = ((GeneralCacheAdministrator)this.cache).getCache().cacheMap;
+        		System.out.println("this.cacheMap:" + this.cacheMap);
+        	}
+        }
+    	
+    	CacheEntry ce = null;
+    	
+    	Iterator ceIterator = ((GeneralCacheAdministrator)cache).getCache().cacheMap.values().iterator();
+    	while(ceIterator.hasNext())
+    	{
+    		ce = (CacheEntry)ceIterator.next();
+    		if(ce.getKey().equals(this.cacheKey))
+    		{
+    			break;
+    		}
+    	}
+    	getResponse().setContentType("text/html");
+
+    	StringBuilder sb = new StringBuilder();
+    	
+    	if(ce != null && ce.getGroups() != null)
+    	{
+    		List<String> groups = new ArrayList<String>();
+    		groups.addAll(ce.getGroups());
+    		Collections.sort(groups);
+    		
+	    	for(Object group : groups)
+	    	{
+	    		sb.append("" + group + "\n");
+	    	}
+    	}
+    	
+    	getResponse().getWriter().println(sb.toString());
+    	
+    	return NONE;
+    }
 
 	public boolean getIsApplicationSettingsOk()
 	{
@@ -1185,6 +1242,23 @@ public class ViewApplicationStateAction extends InfoGlueAbstractAction
     public Object getCache()
     {
     	return this.cache;
+    }
+
+    public Object getCacheMap()
+    {
+    	System.out.println("this.cacheMap in getter:" + this.cacheMap);
+    	return this.cacheMap;
+    }
+    
+    public void setCacheKey(String cacheKey)
+    {
+    	this.cacheKey = cacheKey;
+    }
+
+    public int getLength(byte[] array)
+    {
+    	System.out.println("array:" + array.length);
+    	return array.length;
     }
 
 	public void setAttributeName(String attributeName)
