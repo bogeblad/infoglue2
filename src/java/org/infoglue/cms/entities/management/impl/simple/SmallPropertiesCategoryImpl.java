@@ -29,20 +29,19 @@ import org.infoglue.cms.entities.management.PropertiesCategoryVO;
 /**
  * @author Frank Febbraro (frank@phase2technology.com)
  */
-public class PropertiesCategoryImpl implements PropertiesCategory
+public class SmallPropertiesCategoryImpl extends PropertiesCategoryImpl
 {
     private PropertiesCategoryVO valueObject = new PropertiesCategoryVO();
-    private CategoryImpl category;
 
-	public PropertiesCategoryImpl()
+	public SmallPropertiesCategoryImpl()
 	{}
 
-	public PropertiesCategoryImpl(Integer id)
+	public SmallPropertiesCategoryImpl(Integer id)
 	{
 		setPropertiesCategoryId(id);
 	}
 
-	public PropertiesCategoryImpl(PropertiesCategoryVO vo)
+	public SmallPropertiesCategoryImpl(PropertiesCategoryVO vo)
 	{
 		valueObject = (vo != null)? vo : new PropertiesCategoryVO();
 	}
@@ -69,23 +68,7 @@ public class PropertiesCategoryImpl implements PropertiesCategory
 	public Integer getEntityId()		{ return valueObject.getEntityId(); }
 	public void setEntityId(Integer entityId)		{ valueObject.setEntityId(entityId); }
 
-	public Integer getCategoryId()
-	{
-		return category.getId();
-	}
-
-    public CategoryImpl getCategory()
-	{
-		return category;
-	}
-
-	public void setCategory(CategoryImpl c)
-	{
-		category = c;
-		if(c != null)
-			valueObject.setCategory(c.getValueObject());
-		//else
-		//	System.out.println("Category was null for:" + getPropertiesCategoryId());
-	}
+	public Integer getCategoryId()		{ return valueObject.getCategoryId(); }
+	public void setCategoryId(Integer categoryId)	{ valueObject.setCategoryId(categoryId); }
 
 }

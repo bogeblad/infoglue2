@@ -19,7 +19,7 @@
  * Place, Suite 330 / Boston, MA 02111-1307 / USA.
  *
  * ===============================================================================
- * $Id: PropertiesCategoryVO.java,v 1.2 2006/03/06 17:19:50 mattias Exp $
+ * $Id: PropertiesCategoryVO.java,v 1.2.4.1 2012/11/13 13:59:41 mattias Exp $
  */
 package org.infoglue.cms.entities.management;
 
@@ -37,6 +37,7 @@ public class PropertiesCategoryVO extends Persistent
 	private String attributeName;
 	private String entityName;
 	private Integer entityId;
+	private Integer categoryId;
 	private CategoryVO category = new CategoryVO();
 
 	public PropertiesCategoryVO() {}
@@ -46,6 +47,8 @@ public class PropertiesCategoryVO extends Persistent
 		setAttributeName(attributeName);
 		setEntityName(entityName);
 		setEntityId(entityId);
+		if(category != null)
+			setCategoryId(category.getId());
 		setCategory(category);
 	}
 
@@ -89,7 +92,17 @@ public class PropertiesCategoryVO extends Persistent
     {
         this.entityId = entityId;
     }
+
+    public Integer getCategoryId()
+    {
+        return categoryId;
+    }
     
+    public void setCategoryId(Integer categoryId)
+    {
+        this.categoryId = categoryId;
+    }
+
     public String getEntityName()
     {
         return entityName;
