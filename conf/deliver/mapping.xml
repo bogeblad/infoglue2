@@ -1671,6 +1671,28 @@
 		</field>
 	</class>
 
+    <!--  Mapping for PropertiesCategory  -->
+	<class name="org.infoglue.cms.entities.management.impl.simple.SmallPropertiesCategoryImpl" identity="propertiesCategoryId" key-generator="IDENTITY">
+		<description>PropertiesCategory</description>
+		<cache-type type="none"/>
+		<map-to table="cmPropertiesCategory"/>
+		<field name="propertiesCategoryId" type="java.lang.Integer">
+			<sql name="propertiesCategoryId" type="integer" dirty="check" />
+		</field>
+		<field name="attributeName" type="java.lang.String">
+			<sql name="attributeName" type="varchar" dirty="check" />
+		</field>
+		<field name="entityName" type="java.lang.String">
+			<sql name="entityName" type="varchar" dirty="check" />
+		</field>
+		<field name="entityId" type="java.lang.Integer">
+			<sql name="entityId" type="integer" dirty="check" />
+		</field>
+		<field name="categoryId" type="java.lang.Integer">
+		  <sql name="categoryId" type="integer" dirty="ignore"/>
+		</field>
+	</class>
+
 	<!--  Mapping for Registry  -->
   	<class name="org.infoglue.cms.entities.management.impl.simple.RegistryImpl" identity="registryId" key-generator="IDENTITY">
 	    <description>Registry</description>
