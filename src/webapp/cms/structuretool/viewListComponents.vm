@@ -44,6 +44,9 @@
 	
 	<link rel="stylesheet" type="text/css" href="css/cms.css" /> 
 	<link rel="stylesheet" type="text/css" href="css/componentEditor.css" /> 
+	<style type="text/css">
+		//td
+	</style>
 </head>
 
 <body class="structuretooledit">
@@ -142,14 +145,14 @@
 					#end
 					<td align="center" rowspan="2" style="border-bottom: 1px solid #666666;"><a href="javascript:addComponent('$content.id');"><img src="$imageUrl" border="0" width="$width"></a>&nbsp;</td>
 					<td valign="middle"><a href="javascript:addComponent('$content.id');">$content.getName()</a></td>
-					<td valign="middle">
+					<td valign="middle" style="padding-left: 2px;">
 						#foreach ($repositoryVO in $allRepositories)
 					    	#if($repositoryVO.id == $content.repositoryId)
 					    		$repositoryVO.getName()
 					    	#end
 					    #end
 					</td>
-					<td valign="middle">$content.extraProperties.get("GroupName")</td>
+					<td valign="middle" style="padding-left: 2px;">$content.extraProperties.get("GroupName")</td>
 					<td valign="middle" rowspan="2" style="border-bottom: 1px solid #666666;">
 						#if($content.extraProperties.get("Description") != "Unknown" && $content.extraProperties.get("Description") != "")
 						<img src="images/questionMarkGrad.gif" onclick="toggleDiv('descLayer$content.id');" aonMouseOver="showDiv('descLayer$content.id');" aonMouseOut="hideDiv('descLayer$content.id');">

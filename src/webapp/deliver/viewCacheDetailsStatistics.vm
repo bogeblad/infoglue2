@@ -62,9 +62,28 @@
 	-->
 	</style>
 	
+	<script type="text/javascript" src="script/jquery/jquery-1.2.6.min.js"></script>
+	
+	<script type="text/javascript">
+	<!--
+		function showGroups(cacheKey)
+		{
+			$("#groupsContent").load("ViewApplicationState!cacheEntryGroups.action?cacheName=pageCache&cacheKey=" + cacheKey);
+			$("#groups").show();
+		}
+		
+	-->	
+	</script>
+	
 </head>
 
 <body>
+
+<div id="groups" style="position: absolute; top: 100px; left: 50px; display:none; background: white; width: 70%; height: 300px; overflow: auto; border: 2px solid #333;">
+<a href="javascript:$('#groups').hide();">Close</a>
+<pre id="groupsContent">
+</pre>
+</div>
 
 <table cellpadding="4" cellspacing="0">
   <tr>
@@ -79,20 +98,24 @@
   </tr>
   <tr class="label">
     <td>InfoGlue cache name</td>
-    <td>Cached items</td>
-    <td>Statistics</td>
+    <td>Item size in bytes</td>
+    <td>Details</td>
     <td>Actions <a href="ViewApplicationState!clearCaches.action">Clear All</a></td>
   </tr>
   #if($cache.class.name == "com.opensymphony.oscache.general.GeneralCacheAdministrator") 
-  	  #foreach($key in $cache.keySet())
+  	  #foreach($cacheEntry in $cacheMap.values())
 	  <tr>
-	 	 <td>$key</td>
+	 	 <td>$cacheEntry.key</td>
+	 	 <td>$this.getLength($cacheEntry.content)</td>
+	 	 <td><a href="javascript:showGroups('$cacheEntry.key');">View groups ($cacheEntry.groups.size() used)</a></td>
 	  </tr>
 	  #end
   #else  
   	  #foreach($key in $cache.keySet())
 	  <tr>
 	 	 <td>$key</td>
+	 	 <td>&nbsp;</td>
+	 	 <td>&nbsp;</td>
 	  </tr>
 	  #end
   #end

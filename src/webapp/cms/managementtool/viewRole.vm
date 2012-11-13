@@ -9,7 +9,7 @@
 
 <SCRIPT LANGUAGE="JavaScript">
 
-	#if($availableSystemUserCount < 5000)
+	#if($availableSystemUserCount < 10000)
 		var opt = new OptionTransfer("unassignedUserNameList","userName");
 		opt.setAutoSort(true);
 		opt.setDelimiter(",");
@@ -66,6 +66,16 @@
 		form.action = action;
 		save(form);
 	}
+	
+	function showUsers()
+	{
+		openPopup('ViewListSystemUser!userListForPopup.action', 'Users', 'width=800,height=600,resizable=yes,scrollbars=yes');
+	}
+	
+	function selectUser(userName)
+	{
+		document.getElementById("name").value = userName;
+	}
 
 </SCRIPT>
 
@@ -90,22 +100,41 @@
 	</tr>	
 		
 	<tr>
-		<td width="400">#editReadOnlyTextArea("Role.description" "description" $!description "50" "5" "normaltextarea" $readonly)</td>
+		<td width="400">#editReadOnlyTextArea("Role.description" "description" $!description "50" "5" "smalltextarea" $readonly)</td>
 	</tr>
 	<tr>
 		<td>&nbsp;</td>
 	</tr>
 	
 	<tr>
-		<td class="biglabel">Manage the members in this role below</td>
+		#if($availableSystemUserCount > 10000)
+			<td class="biglabel">Current members in this role (not editable)</td>
+		#else
+			<td class="biglabel">Manage the members in this role below</td>
+		#end
 	</tr>
 	<tr>
 	  <td>
-		#if($availableSystemUserCount > 5000)
+		#if($availableSystemUserCount > 10000)
+			<textarea style="height: 200px; font-size: 10px; width:300px;">
+#foreach($principal in $assignedInfoGluePrincipals) 
+$principal.firstName $principal.lastName ($principal.name)
+#end
+			</textarea>
+<!--			
+			<div>
+				Add new user:<br/>
+				<input type="textfield" id="name" name="name" value=""/>
+				<a href="javascript:showUsers();"><img src="images/spyglassIcon.gif" width="16" height="16" border="0"/></a>
+				<a href="javascript:showUsers();"><img src="images/spyglassIcon.gif" width="16" height="16" border="0"/></a>
+			</div>
+-->
+			<!--
 			<span style="color: red">
-		  	The system contains $availableSystemUserCount users ($assignedInfoGluePrincipals.size() assigned to this group) and showing that many at once would freeze this screen. Instead you must use the user detail view to manage individual users. We apologize for this and a better solution
-		  	is implemented in Infoglue 3.0.
+			  	The system contains $availableSystemUserCount users ($assignedInfoGluePrincipals.size() assigned to this group) and showing that many at once would freeze this screen. Instead you must use the user detail view to manage individual users. We apologize for this and a better solution
+			  	is implemented in Infoglue 3.0.
 			<span>
+			-->
 		#else
 			<table width="100%" border="0">
 			  <tr>
