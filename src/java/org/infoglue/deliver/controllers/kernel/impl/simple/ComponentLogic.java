@@ -2244,8 +2244,8 @@ public class ComponentLogic
 				    groups.add(CacheController.getPooledString(3, siteNodeId));
 
 //				  	TODO - TEST - NOT SAFE
-				    if(propertyName.equals("GUFlashImages") || key.indexOf("MiniArticleShortcuts") > -1)
-				    	logger.warn("Storing NULL 1:" + templateController.getDeliveryContext().getDebugInformation());
+				    //if(propertyName.equals("GUFlashImages") || key.indexOf("MiniArticleShortcuts") > -1)
+				    //	logger.warn("Storing NULL 1:" + templateController.getDeliveryContext().getDebugInformation());
 				    CacheController.cacheObjectInAdvancedCacheWithGroupsAsSet("componentPropertyCache", key.toString(), new NullObject(), groups, true);
 				    CacheController.cacheObjectInAdvancedCacheWithGroupsAsSet("componentPropertyVersionIdCache", versionKey, contentVersionIdList, groups, true);
 				    CacheController.cacheObjectInAdvancedCacheWithGroupsAsSet("componentPropertyVersionIdCache", usedEntitiesKey, usedContentEntities, groups, true);
