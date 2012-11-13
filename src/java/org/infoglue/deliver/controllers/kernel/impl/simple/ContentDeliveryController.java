@@ -881,7 +881,7 @@ public class ContentDeliveryController extends BaseDeliveryController
 			    	Integer protectedContentId = ContentDeliveryController.getContentDeliveryController().getProtectedContentId(db, getContentVO(db, contentId, null));
 					//Integer protectedContentId = ContentDeliveryController.getContentDeliveryController().getProtectedContentId(db, contentId);
 					logger.info("IsProtected:" + protectedContentId);
-					if(protectedContentId != null && !AccessRightController.getController().getIsPrincipalAuthorized(db, infoGluePrincipal, "Content.Read", protectedContentId.toString()))
+			    	if(protectedContentId != null && !AccessRightController.getController().getIsPrincipalAuthorized(db, infoGluePrincipal, "Content.Read", protectedContentId.toString()))
 					{
 					    hasUserContentAccess = false;
 					}
@@ -921,8 +921,10 @@ public class ContentDeliveryController extends BaseDeliveryController
 		deliveryContext.addDebugInformation("	infogluePrincipal: " + infogluePrincipal);
 		
 		//logger.info("usedContentVersionId:" + usedContentVersionId);
-		String enforceRigidContentAccess = CmsPropertyHandler.getEnforceRigidContentAccess();
-		if(enforceRigidContentAccess != null && enforceRigidContentAccess.equalsIgnoreCase("true") && !isMetaInfoQuery)
+		//String enforceRigidContentAccess = CmsPropertyHandler.getEnforceRigidContentAccess();
+		//if(enforceRigidContentAccess != null && enforceRigidContentAccess.equalsIgnoreCase("true") && !isMetaInfoQuery)
+		//Added this check as mandatory - otherwise we could have situations where values got caches for users not authorized to see them or cached empty.
+		if(!isMetaInfoQuery && !isTemplateQuery)
 		{
 			//logger.info("Enforcing getHasUserContentAccess for attributeName:" + contentId + ":" + languageId + ":" + attributeName);
 			boolean hasUserContentAccess = getHasUserContentAccess(db, infogluePrincipal, contentId);
@@ -1004,30 +1006,6 @@ public class ContentDeliveryController extends BaseDeliveryController
 				{
 					attribute = "";
 				}
-	        	
-	        	/*
- 		       	String groupKey1 = CacheController.getPooledString(2, contentVersionId);
-	        	String groupKey2 = CacheController.getPooledString(1, contentId);
-
-	        	//System.out.println("TESTCASE - adding superlong string...");
-	        	Integer nr = 1000;
-        		System.out.println("TESTCASE - adding many string...");
-				String[] groups = new String[nr + 2];
-				groups[0] = groupKey1.toString();
-				groups[1] = groupKey2.toString();
-				for(Integer i=2; i<nr+2; i++)
-				{
-					groups[i] = "contentVersion_99" + i;
-					//groups[i] = CacheController.getPooledString(2, i.toString());
-					//System.out.println("groups[i]:" + groups[i]);
-				}
-				
-	        	CacheController.cacheObjectInAdvancedCache(cacheName, attributeKey, attribute, groups, true);
-	    		if(contentVersionId != null)
-				{
-    				CacheController.cacheObjectInAdvancedCache(contentVersionIdCacheName, versionKey, contentVersionId, groups, true);
-				}
-				*/
 	        	
 	        	String groupKey1 = CacheController.getPooledString(2, contentVersionId);
 	        	String groupKey2 = CacheController.getPooledString(1, contentId);
