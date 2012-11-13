@@ -70,7 +70,7 @@ public class ViewGroupAction extends InfoGlueAbstractAction
 		if(this.supportsUpdate) //Only fetch if the user can edit.
 		{
 			this.assignedInfoGluePrincipals	= this.infoGlueGroup.getAutorizationModule().getGroupUsers(groupName);
-			if(availableSystemUserCount < 5000)
+			if(availableSystemUserCount < 10000)
 			{
 				this.infoGluePrincipals			= this.infoGlueGroup.getAutorizationModule().getUsers();
 			

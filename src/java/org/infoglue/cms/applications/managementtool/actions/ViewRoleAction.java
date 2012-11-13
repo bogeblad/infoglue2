@@ -69,7 +69,7 @@ public class ViewRoleAction extends InfoGlueAbstractAction
 		if(this.supportsUpdate)
 		{
 			this.assignedInfoGluePrincipals	= this.infoGlueRole.getAutorizationModule().getRoleUsers(roleName);
-			if(availableSystemUserCount < 5000)
+			if(availableSystemUserCount < 10000)
 			{
 				this.infoGluePrincipals			= this.infoGlueRole.getAutorizationModule().getUsers();
 				//this.supportsUpdate				= RoleControllerProxy.getController().getSupportUpdate();

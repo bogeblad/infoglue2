@@ -78,7 +78,7 @@ public class CreateGroupAction extends InfoGlueAbstractAction
 	public String doInputV3() throws Exception
     {
 		Integer count = UserControllerProxy.getTableCount("cmSystemUser", "userName").getCount();
-		if(count > 5000)
+		if(count > 10000)
 			this.infoGluePrincipals = new ArrayList();
 		else
 			this.infoGluePrincipals	= UserControllerProxy.getController().getAllUsers();
@@ -120,7 +120,7 @@ public class CreateGroupAction extends InfoGlueAbstractAction
 		catch(ConstraintException e) 
         {
 			Integer count = UserControllerProxy.getTableCount("cmSystemUser", "userName").getCount();
-			if(count > 5000)
+			if(count > 10000)
 				this.infoGluePrincipals = new ArrayList();
 			else
 				this.contentTypeDefinitionVOList = ContentTypeDefinitionController.getController().getContentTypeDefinitionVOList(ContentTypeDefinitionVO.EXTRANET_ROLE_PROPERTIES);
