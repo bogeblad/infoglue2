@@ -168,12 +168,34 @@ public class GroupController extends BaseController
 	}        
 
 	// Get list of users accosiated with this group
-	public List getGroupSystemUserVOList(String userName, Database db)  throws SystemException, Bug
+	public List getGroupSystemUserVOList(String groupName, Database db)  throws SystemException, Bug
 	{
-		Collection systemUsers = null;
+		//Collection systemUsers = null;
 		List systemUsersVO = new ArrayList();
-		Group group = null;
+		//Group group = null;
 		
+		OQLQuery oql;
+        try
+        {										
+        	oql = db.getOQLQuery( "CALL SQL SELECT u.userName, 'undefined' as password, u.firstName, u.lastName, u.email FROM cmSystemUser u, cmSystemUserGroup sur WHERE u.userName = sur.userName AND sur.groupName = $1 AS org.infoglue.cms.entities.management.impl.simple.SmallSystemUserImpl");
+        	oql.bind(groupName);
+        	
+        	QueryResults results = oql.execute(Database.ReadOnly);
+			
+			while(results.hasMore()) 
+            {
+            	SystemUser systemUser = (SystemUser)results.next();
+            	systemUsersVO.add(systemUser.getValueObject());
+            }
+			
+			results.close();
+			oql.close();
+        }
+        catch(Exception e)
+        {
+            throw new SystemException("An error occurred when we tried to fetch roleVOList for " + groupName + " Reason:" + e.getMessage(), e);    
+        }    
+        /*
 		try 
 		{
 			group = getGroupWithName(userName, db);
@@ -190,6 +212,7 @@ public class GroupController extends BaseController
 		{
 			throw new SystemException("An error occurred when we tried to fetch a list of users in this group. Reason:" + e.getMessage(), e);			
 		}
+		*/
 		
 		return systemUsersVO;		
 	}
@@ -266,7 +289,7 @@ public class GroupController extends BaseController
         SmallGroupImpl smallGroup = getSmallGroupWithName(groupVO.getGroupName(), db);
 
 		Integer systemUserCount = UserControllerProxy.getTableCount("cmSystemUser", "userName").getCount();
-		if(systemUsers != null && systemUsers.length == 0 && systemUserCount < 5000)
+		if(systemUsers != null && systemUsers.length == 0 && systemUserCount < 10000)
 		{
 			Group role = getGroupWithName(groupVO.getGroupName(), db);
 			role.getSystemUsers().clear();
@@ -290,7 +313,7 @@ public class GroupController extends BaseController
 		Group group = getGroupWithName(groupVO.getGroupName(), db);
 
 		Integer systemUserCount = UserControllerProxy.getTableCount("cmSystemUser", "userName").getCount();
-		if(systemUsers != null && systemUsers.length == 0 && systemUserCount < 5000)
+		if(systemUsers != null && systemUsers.length == 0 && systemUserCount < 10000)
 			group.getSystemUsers().clear();
 		
 		if(systemUsers != null)

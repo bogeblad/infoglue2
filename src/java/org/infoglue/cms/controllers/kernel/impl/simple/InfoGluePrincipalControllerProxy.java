@@ -40,6 +40,7 @@ import org.exolab.castor.jdo.Database;
 import org.infoglue.cms.applications.common.VisualFormatter;
 import org.infoglue.cms.entities.kernel.BaseEntityVO;
 import org.infoglue.cms.entities.management.GroupProperties;
+import org.infoglue.cms.entities.management.GroupPropertiesVO;
 import org.infoglue.cms.entities.management.LanguageVO;
 import org.infoglue.cms.entities.management.RoleProperties;
 import org.infoglue.cms.entities.management.UserProperties;
@@ -58,6 +59,7 @@ import org.infoglue.cms.util.dom.DOMBuilder;
 import org.infoglue.deliver.controllers.kernel.impl.simple.LanguageDeliveryController;
 import org.infoglue.deliver.util.CacheController;
 import org.infoglue.deliver.util.NullObject;
+import org.infoglue.deliver.util.Timer;
 
 /**
  * @author Mattias Bogeblad
@@ -291,6 +293,7 @@ public class InfoGluePrincipalControllerProxy extends BaseController
 		
 		if(value.equals(""))
 		{	
+			//Timer t = new Timer();
 			List groups = infoGluePrincipal.getGroups();
 			String largestValue = "-1";
 			String prioValue = null;
@@ -300,14 +303,18 @@ public class InfoGluePrincipalControllerProxy extends BaseController
 			{
 				InfoGlueGroup group = (InfoGlueGroup)groupsIterator.next();
 				
-				Collection groupPropertiesList = GroupPropertiesController.getController().getGroupPropertiesList(group.getName(), languageId, db, true);
-
+				Collection<GroupPropertiesVO> groupPropertiesList = GroupPropertiesController.getController().getGroupPropertiesVOList(group.getName(), languageId, db);
+				//Collection groupPropertiesList = GroupPropertiesController.getController().getGroupPropertiesList(group.getName(), languageId, db, true);
+				//t.printElapsedTime("getGroupPropertiesList");
+				
 				Iterator groupPropertiesListIterator = groupPropertiesList.iterator();
 				while(groupPropertiesListIterator.hasNext())
 				{
-					GroupProperties groupProperties = (GroupProperties)groupPropertiesListIterator.next();
+					GroupPropertiesVO groupProperties = (GroupPropertiesVO)groupPropertiesListIterator.next();
+					//GroupProperties groupProperties = (GroupProperties)groupPropertiesListIterator.next();
 					
-					if(groupProperties != null && groupProperties.getLanguage().getLanguageId().equals(languageId) && groupProperties.getValue() != null && propertyName != null)
+					//if(groupProperties != null && groupProperties.getLanguage().getLanguageId().equals(languageId) && groupProperties.getValue() != null && propertyName != null)
+					if(groupProperties != null && groupProperties.getLanguageId().equals(languageId) && groupProperties.getValue() != null && propertyName != null)
 					{
 						String propertyXML = groupProperties.getValue();
 						DOMBuilder domBuilder = new DOMBuilder();
@@ -354,6 +361,10 @@ public class InfoGluePrincipalControllerProxy extends BaseController
 						}
 					}
 				}
+				
+				//t.printElapsedTime("group part done:" + largestValue + ":" + prioValue);
+				if(!largestValue.equals("-1") || prioValue != null)
+					System.out.println("FOUND VALUE:" + largestValue + ":" + prioValue);
 			}
 			
 			if(findLargestValue)

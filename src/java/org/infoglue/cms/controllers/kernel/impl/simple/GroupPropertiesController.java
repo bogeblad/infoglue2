@@ -30,6 +30,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.log4j.Logger;
 import org.apache.xerces.parsers.DOMParser;
@@ -42,6 +43,7 @@ import org.infoglue.cms.entities.content.Content;
 import org.infoglue.cms.entities.content.ContentVO;
 import org.infoglue.cms.entities.content.DigitalAsset;
 import org.infoglue.cms.entities.kernel.BaseEntityVO;
+import org.infoglue.cms.entities.management.CategoryVO;
 import org.infoglue.cms.entities.management.ContentTypeDefinition;
 import org.infoglue.cms.entities.management.GroupContentTypeDefinition;
 import org.infoglue.cms.entities.management.GroupProperties;
@@ -59,11 +61,13 @@ import org.infoglue.cms.exception.Bug;
 import org.infoglue.cms.exception.ConstraintException;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.security.InfoGlueGroup;
+import org.infoglue.cms.security.InfoGluePrincipal;
 import org.infoglue.cms.util.CmsPropertyHandler;
 import org.infoglue.cms.util.ConstraintExceptionBuffer;
 import org.infoglue.cms.util.dom.DOMBuilder;
 import org.infoglue.deliver.util.CacheController;
 import org.infoglue.deliver.util.RequestAnalyser;
+import org.infoglue.deliver.util.Timer;
 import org.w3c.dom.CDATASection;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
@@ -240,12 +244,50 @@ public class GroupPropertiesController extends BaseController
 	 * This method gets a list of groupProperties for a group
 	 * The result is a list of propertiesblobs - each propertyblob is a list of actual properties.
 	 */
-
+	private static AtomicBoolean inCacheProgress = new AtomicBoolean(false);
 	public List getGroupPropertiesVOList(String groupName, Integer languageId, Database db) throws ConstraintException, Exception
 	{
 	    List groupPropertiesVOList = new ArrayList();
 	    
-	    preCacheAllGroupProperties(db);
+		class PreCacheGroupPropertiesTask implements Runnable 
+		{
+			PreCacheGroupPropertiesTask() { }
+	        
+	        public void run() 
+	        {
+				try
+				{
+					Database db = CastorDatabaseService.getDatabase();
+					try 
+					{
+						beginTransaction(db);
+
+						preCacheAllGroupProperties(db);
+						commitTransaction(db);
+					} 
+					catch (Exception e) 
+					{
+						logger.error("Error precaching all group properties: " + e.getMessage(), e);
+						rollbackTransaction(db);
+					}
+				}
+				catch (Exception e) 
+				{
+					logger.error("Could not start PreCacheTask:" + e.getMessage(), e);
+				}
+				finally
+				{
+					inCacheProgress.set(false);
+				}
+	        }
+	    }
+		if(inCacheProgress.compareAndSet(false, true))
+		{
+			Thread thread = new Thread(new PreCacheGroupPropertiesTask());
+		    thread.start();
+		}
+
+	    //preCacheAllGroupProperties(db);
 	    
 		String cacheKey = "" + groupName + "_" + languageId;
 		logger.info("cacheKey:" + cacheKey);
@@ -276,17 +318,6 @@ public class GroupPropertiesController extends BaseController
 	 */
 
 	public List getGroupPropertiesList(String groupName, Integer languageId, Database db, boolean readOnly) throws ConstraintException, SystemException, Exception
-	{
-		return getGroupPropertiesList(groupName, languageId, db, readOnly, true);
-	}
-	
-	
-	/**
-	 * This method gets a list of groupProperties for a group
-	 * The result is a list of propertiesblobs - each propertyblob is a list of actual properties.
-	 */
-
-	public List getGroupPropertiesList(String groupName, Integer languageId, Database db, boolean readOnly, boolean retry) throws ConstraintException, SystemException, Exception
 	{
 		List groupPropertiesList = new ArrayList();
 
@@ -330,23 +361,8 @@ public class GroupPropertiesController extends BaseController
 		}
 		catch(Exception e)
         {
-			try
-			{
-				if(retry)
-				{
-					logger.warn("Error getting groupPropertiesList. Message: " + e.getMessage() + ". Retrying...");
-					groupPropertiesList = getGroupPropertiesList(groupName, languageId, db, readOnly, false);
-				}
-				else
-				{
-					logger.warn("Error getting groupPropertiesList. Message: " + e.getMessage() + ". Not retrying...");
-					throw e;
-				}
-			}
-			catch(Exception e2)
-			{
-	            throw e2;    
-			}
+			logger.warn("Error getting groupPropertiesList. Message: " + e.getMessage() + ". Not retrying...");
+			throw e;
         }
 		finally
 		{
@@ -1328,26 +1344,31 @@ public class GroupPropertiesController extends BaseController
 	 * @return
 	 */
 	
-	public List getRelatedCategoriesVOList(String groupName, Integer languageId, String attribute, Database db) throws SystemException, Exception
+	public List<CategoryVO> getRelatedCategoriesVOList(String groupName, Integer languageId, String attribute, Database db) throws SystemException, Exception
 	{
-	    List relatedCategoriesVOList = new ArrayList();
+	    List<CategoryVO> relatedCategoriesVOList = new ArrayList<CategoryVO>();
 	    
 	    
 		String cacheKey = "" + groupName + "_" + languageId + "_" + attribute;
 		logger.info("cacheKey:" + cacheKey);
-		relatedCategoriesVOList = (List)CacheController.getCachedObject("relatedCategoriesCache", cacheKey);
+		relatedCategoriesVOList = (List<CategoryVO>)CacheController.getCachedObject("relatedCategoriesCache", cacheKey);
 		if(relatedCategoriesVOList != null)
 		{
 			logger.info("There was an cached groupPropertiesVOList:" + relatedCategoriesVOList.size());
 		}
 		else
 		{
+			relatedCategoriesVOList = getRelatedCategoryVOList(groupName, languageId, attribute, db);
+	    	if(relatedCategoriesVOList != null)
+	    		CacheController.cacheObject("relatedCategoriesCache", cacheKey, relatedCategoriesVOList);
+			/*
 			List relatedCategories = getRelatedCategoriesReadOnly(groupName, languageId, attribute, db);
 			if(relatedCategories != null)
 			{
 			    relatedCategoriesVOList = toVOList(relatedCategories);
 		    	CacheController.cacheObject("relatedCategoriesCache", cacheKey, relatedCategoriesVOList);
 			}
+			*/
 		}
 
 		return relatedCategoriesVOList;
@@ -1425,6 +1446,74 @@ public class GroupPropertiesController extends BaseController
 		    	    PropertiesCategory propertiesCategory = (PropertiesCategory)propertiesCategoryListIterator.next();
 		    	    relatedCategories.add(propertiesCategory.getCategory());
 		    	}
+			}
+		}
+		catch(Exception e)
+		{
+			logger.warn("We could not fetch the list of defined category keys: " + e.getMessage(), e);
+		}
+
+		return relatedCategories;
+	}
+
+	/**
+	 * Returns all current Category relationships for th specified attribute name
+	 * @param attribute
+	 * @return
+	 */
+	
+	public List<CategoryVO> getRelatedCategoryVOList(String groupName, Integer languageId, String attribute, Database db)
+	{
+	    List<CategoryVO> relatedCategories = new ArrayList<CategoryVO>();
+	    
+		try
+		{
+		    List groupPropertiesVOList = this.getGroupPropertiesVOList(groupName, languageId, db);
+		    Iterator iterator = groupPropertiesVOList.iterator();
+		    GroupPropertiesVO groupPropertyVO = null;
+		    while(iterator.hasNext())
+		    {
+		        groupPropertyVO = (GroupPropertiesVO)iterator.next();
+		        break;
+		    }
+
+			if(groupPropertyVO != null && groupPropertyVO.getId() != null)
+			{
+				if(CacheController.getCacheSize("propertiesCategoryCache") == 0)
+				{
+					Timer t = new Timer();
+					PropertiesCategoryController.getController().preCacheAllPropertiesCategoryVOList();
+					t.printElapsedTime("preCacheAllPropertiesCategoryVOList took");
+				}
+				 
+				String key = "categoryVOList_" + attribute + "_" + GroupProperties.class.getName() + "_" + groupPropertyVO.getId();
+				List<CategoryVO> categoryVOList = (List<CategoryVO>)CacheController.getCachedObject("propertiesCategoryCache", key);
+				if(categoryVOList != null)
+				{
+					//System.out.println("Returning cached result:" + categoryVOList.size());
+					relatedCategories = categoryVOList;
+				}
+				else
+				{
+					
+					if(CacheController.getCachedObject("propertiesCategoryCache", "allValuesCached") != null)
+					{
+						//System.out.println("Skipping as there is no such property in the full precache..");
+					}
+					else
+					{
+						System.out.println("Reading the hard way for:" + key);
+	
+				    	List propertiesCategoryList = PropertiesCategoryController.getController().findByPropertiesAttributeReadOnly(attribute, GroupProperties.class.getName(), groupPropertyVO.getId(), db);
+		
+				    	Iterator propertiesCategoryListIterator = propertiesCategoryList.iterator();
+				    	while(propertiesCategoryListIterator.hasNext())
+				    	{
+				    	    PropertiesCategory propertiesCategory = (PropertiesCategory)propertiesCategoryListIterator.next();
+				    	    relatedCategories.add(propertiesCategory.getCategory().getValueObject());
+				    	}
+					}
+				}
 			}
 		}
 		catch(Exception e)

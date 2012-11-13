@@ -541,19 +541,23 @@ public class RegistryController extends BaseController
 	        int contentEndIndex = match.indexOf(",");
 	        if(contentStartIndex > 0 && contentEndIndex > 0 && contentEndIndex > contentStartIndex)
 	        {
-	            contentId = new Integer(match.substring(contentStartIndex + 1, contentEndIndex));
-	            logger.info("contentId:" + contentId);
-	            
-	            RegistryVO registryVO = new RegistryVO();
-	            registryVO.setEntityId(contentId.toString());
-	            registryVO.setEntityName(Content.class.getName());
-	            registryVO.setReferenceType(RegistryVO.INLINE_ASSET);
-	            registryVO.setReferencingEntityId(contentVersion.getContentVersionId().toString());
-	            registryVO.setReferencingEntityName(ContentVersion.class.getName());
-	            registryVO.setReferencingEntityCompletingId(contentVersion.getOwningContent().getContentId().toString());
-	            registryVO.setReferencingEntityCompletingName(Content.class.getName());
-	            
-	            this.create(registryVO, db);
+	        	String contentIdString = match.substring(contentStartIndex + 1, contentEndIndex);
+	            if(contentIdString != null && !contentIdString.equals(""))
+	            {
+		        	contentId = new Integer(contentIdString);
+		            logger.info("contentId:" + contentId);
+		            
+		            RegistryVO registryVO = new RegistryVO();
+		            registryVO.setEntityId(contentId.toString());
+		            registryVO.setEntityName(Content.class.getName());
+		            registryVO.setReferenceType(RegistryVO.INLINE_ASSET);
+		            registryVO.setReferencingEntityId(contentVersion.getContentVersionId().toString());
+		            registryVO.setReferencingEntityName(ContentVersion.class.getName());
+		            registryVO.setReferencingEntityCompletingId(contentVersion.getOwningContent().getContentId().toString());
+		            registryVO.setReferencingEntityCompletingName(Content.class.getName());
+		            
+		            this.create(registryVO, db);
+	            }
 	        }
 	    }
 	}
@@ -1328,7 +1332,7 @@ public class RegistryController extends BaseController
 		
 		//t.printElapsedTime("after registry pullout:" + siteNodeIds.size());
 
-		//System.out.println("siteNodeIds:" + siteNodeIds.size());
+		System.out.println("siteNodeIds:" + siteNodeIds.size());
 		Map<Integer,SiteNodeVO> siteNodeVOMap = SiteNodeController.getController().getSiteNodeVOMap(siteNodeIds.toArray(new Integer[siteNodeIds.size()]), db);
 		
 		//t.printElapsedTime("siteNodeVOMap:" + siteNodeVOMap.size());

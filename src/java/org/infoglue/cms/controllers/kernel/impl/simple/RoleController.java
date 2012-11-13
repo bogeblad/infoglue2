@@ -162,12 +162,36 @@ public class RoleController extends BaseController
 	// Get list of users accosiated with this role
 	public List getRoleSystemUserVOList(String userName, Database db)  throws SystemException, Bug
 	{
-		Collection systemUsers = null;
+		//Collection systemUsers = null;
 		List systemUsersVO = new ArrayList();
-		Role role = null;
+		//Role role = null;
 		
+        OQLQuery oql;
+        try
+        {										
+        	oql = db.getOQLQuery( "CALL SQL SELECT u.userName, 'undefined' as password, u.firstName, u.lastName, u.email FROM cmSystemUser u, cmSystemUserRole sur WHERE u.userName = sur.userName AND sur.roleName = $1 AS org.infoglue.cms.entities.management.impl.simple.SmallSystemUserImpl");
+        	oql.bind(userName);
+        	
+        	QueryResults results = oql.execute(Database.ReadOnly);
+			
+			while(results.hasMore()) 
+            {
+            	SystemUser systemUser = (SystemUser)results.next();
+            	systemUsersVO.add(systemUser.getValueObject());
+            }
+			
+			results.close();
+			oql.close();
+        }
+        catch(Exception e)
+        {
+            throw new SystemException("An error occurred when we tried to fetch roleVOList for " + userName + " Reason:" + e.getMessage(), e);    
+        }    
+        /*
 		try 
 		{
+		ssss
+			
 			role = getRoleWithName(userName, db);
 			systemUsers = role.getSystemUsers();		
 			
@@ -182,6 +206,7 @@ public class RoleController extends BaseController
 		{
 			throw new SystemException("An error occurred when we tried to fetch a list of users in this role. Reason:" + e.getMessage(), e);			
 		}
+		*/
 		
 		return systemUsersVO;		
 	}
@@ -252,7 +277,7 @@ public class RoleController extends BaseController
         SmallRoleImpl smallRole = getSmallRoleWithName(roleVO.getRoleName(), db);
 
 		Integer systemUserCount = UserControllerProxy.getTableCount("cmSystemUser", "userName").getCount();
-		if(systemUsers != null && systemUsers.length == 0 && systemUserCount < 5000)
+		if(systemUsers != null && systemUsers.length == 0 && systemUserCount < 10000)
 		{
 			Role role = getRoleWithName(roleVO.getRoleName(), db);
 			role.getSystemUsers().clear();

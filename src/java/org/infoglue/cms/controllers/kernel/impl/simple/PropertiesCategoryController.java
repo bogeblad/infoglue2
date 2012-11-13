@@ -20,24 +20,37 @@
  *
  * ===============================================================================
  *
- * $Id: PropertiesCategoryController.java,v 1.3.4.1 2012/10/16 09:22:19 mattias Exp $
+ * $Id: PropertiesCategoryController.java,v 1.3.4.2 2012/11/13 14:09:10 mattias Exp $
  */
 package org.infoglue.cms.controllers.kernel.impl.simple;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 import org.exolab.castor.jdo.Database;
+import org.exolab.castor.jdo.OQLQuery;
+import org.exolab.castor.jdo.ObjectNotFoundException;
 import org.exolab.castor.jdo.PersistenceException;
+import org.exolab.castor.jdo.QueryResults;
 import org.infoglue.cms.entities.kernel.BaseEntityVO;
 import org.infoglue.cms.entities.management.Category;
+import org.infoglue.cms.entities.management.CategoryVO;
+import org.infoglue.cms.entities.management.GroupContentTypeDefinition;
+import org.infoglue.cms.entities.management.GroupProperties;
 import org.infoglue.cms.entities.management.PropertiesCategory;
 import org.infoglue.cms.entities.management.PropertiesCategoryVO;
 import org.infoglue.cms.entities.management.impl.simple.CategoryImpl;
 import org.infoglue.cms.entities.management.impl.simple.PropertiesCategoryImpl;
 import org.infoglue.cms.exception.SystemException;
+import org.infoglue.cms.util.ConstraintExceptionBuffer;
+import org.infoglue.deliver.util.CacheController;
+import org.infoglue.deliver.util.Timer;
 
 /**
  * The PropertiesCategoryController manages all actions related to persistence
@@ -50,6 +63,8 @@ import org.infoglue.cms.exception.SystemException;
  */
 public class PropertiesCategoryController extends BaseController
 {
+    private final static Logger logger = Logger.getLogger(PropertiesCategoryController.class.getName());
+
 	private static final PropertiesCategoryController instance = new PropertiesCategoryController();
 
 	private static final String findByProperties = new StringBuffer("SELECT c ")
@@ -85,6 +100,100 @@ public class PropertiesCategoryController extends BaseController
 		return (PropertiesCategoryVO)getVOWithId(PropertiesCategoryImpl.class, id);
 	}
 
+	/**
+	 * Gets and precaches all propertycategory-objects.
+	 */
+	public void preCacheAllPropertiesCategoryVOList() throws SystemException, Exception
+	{
+		Database db = CastorDatabaseService.getDatabase();
+
+        beginTransaction(db);
+
+        try
+        {
+        	Timer t = new Timer();
+        	Map<Integer,CategoryVO> categoriesMap = new HashMap<Integer,CategoryVO>();
+    		OQLQuery oql1 = db.getOQLQuery("SELECT c FROM org.infoglue.cms.entities.management.impl.simple.CategoryImpl c ORDER BY c.categoryId");
+
+    		QueryResults results1 = oql1.execute(Database.ReadOnly);
+    		while (results1.hasMore()) 
+    		{
+    			Category category = (Category)results1.next();
+    			categoriesMap.put(category.getId(), category.getValueObject());
+    		}
+
+    		results1.close();
+    		oql1.close();
+    		t.printElapsedTime("Categories took");
+        	//getCastorCategory().setLevel(Level.DEBUG);
+    		//getCastorJDOCategory().setLevel(Level.DEBUG);
+        	
+    		OQLQuery oql = db.getOQLQuery("SELECT c FROM org.infoglue.cms.entities.management.impl.simple.SmallPropertiesCategoryImpl c ORDER BY c.propertiesCategoryId");
+
+    		QueryResults results = oql.execute(Database.ReadOnly);
+    		while (results.hasMore()) 
+    		{
+    			PropertiesCategory propertiesCategory = (PropertiesCategory)results.next();
+    			
+    			String key = "categoryVOList_" + propertiesCategory.getAttributeName() + "_" + propertiesCategory.getEntityName() + "_" + propertiesCategory.getEntityId();
+    			List<CategoryVO> categoryVOList = (List<CategoryVO>)CacheController.getCachedObject("propertiesCategoryCache", key);
+    			if(categoryVOList == null)
+    			{
+    				categoryVOList = new ArrayList<CategoryVO>();
+    				CacheController.cacheObject("propertiesCategoryCache", key, categoryVOList);
+    			}
+    			
+    			if(propertiesCategory.getValueObject().getCategoryId() != null)
+    			{
+    				CategoryVO categoryVO = categoriesMap.get(propertiesCategory.getValueObject().getCategoryId());
+    				if(categoryVO != null)
+    					categoryVOList.add(categoryVO);
+    				else
+    					logger.info("An inconsistency found. The propertyCategory " + propertiesCategory.getId() + " pointed to a missing categoryID: " + propertiesCategory.getValueObject().getCategoryId());
+    				/*
+    				try
+    				{
+	    				CategoryVO categoryVO = CategoryController.getController().findById(propertiesCategory.getValueObject().getCategoryId(), db).getValueObject();
+    					categoryVOList.add(categoryVO);
+    				}
+    				catch (Exception e) 
+    				{
+    					logger.error("An inconsistency found. The propertyCategory " + propertiesCategory.getId() + " pointed to a missing category:" + e.getMessage());
+					}
+					*/
+    			}
+
+    			/*
+    			if(propertiesCategory.getCategory() != null)
+    			{
+    				categoryVOList.add(propertiesCategory.getCategory().getValueObject());
+    				//System.out.println("Category was ok for: " + key);    				
+    			}
+    			//else
+    				//System.out.println("Category was null for: " + key);
+    			*/
+    		}
+
+        	//getCastorCategory().setLevel(Level.WARN);
+    		//getCastorJDOCategory().setLevel(Level.WARN);
+
+    		results.close();
+    		oql.close();
+    		
+    		CacheController.cacheObject("propertiesCategoryCache", "allValuesCached", true);
+    		
+    		t.printElapsedTime("PropCategories took");
+			            
+            commitTransaction(db);
+        }
+        catch(Exception e)
+        {
+            logger.error("An error occurred when we tried to fetch the list of PropertiesCategory:" + e);
+            rollbackTransaction(db);
+            throw new SystemException(e.getMessage());
+        }
+	}
+	
 	/**
 	 * Find a List of PropertiesCategories for the specific attribute and Properties Version.
 	 * @param	attribute The attribute name of the PropertiesCategory to find
