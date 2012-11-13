@@ -244,7 +244,7 @@ public class GroupPropertiesController extends BaseController
 	 * This method gets a list of groupProperties for a group
 	 * The result is a list of propertiesblobs - each propertyblob is a list of actual properties.
 	 */
-	private static AtomicBoolean inCacheProgress = new AtomicBoolean(false);
+	public static AtomicBoolean inCacheProgress = new AtomicBoolean(false);
 	public List getGroupPropertiesVOList(String groupName, Integer languageId, Database db) throws ConstraintException, Exception
 	{
 	    List groupPropertiesVOList = new ArrayList();
