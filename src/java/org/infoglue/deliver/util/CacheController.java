@@ -58,7 +58,9 @@ import org.exolab.castor.jdo.Database;
 import org.infoglue.cms.applications.common.VisualFormatter;
 import org.infoglue.cms.controllers.kernel.impl.simple.AccessRightController;
 import org.infoglue.cms.controllers.kernel.impl.simple.CastorDatabaseService;
+import org.infoglue.cms.controllers.kernel.impl.simple.ComponentController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentController;
+import org.infoglue.cms.controllers.kernel.impl.simple.ContentTypeDefinitionController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentVersionController;
 import org.infoglue.cms.controllers.kernel.impl.simple.InterceptionPointController;
 import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeController;
@@ -78,6 +80,7 @@ import org.infoglue.cms.entities.content.impl.simple.SmallDigitalAssetImpl;
 import org.infoglue.cms.entities.content.impl.simple.SmallestContentVersionImpl;
 import org.infoglue.cms.entities.content.impl.simple.SmallishContentImpl;
 import org.infoglue.cms.entities.management.AccessRightVO;
+import org.infoglue.cms.entities.management.ContentTypeDefinitionVO;
 import org.infoglue.cms.entities.management.InterceptionPointVO;
 import org.infoglue.cms.entities.management.impl.simple.AccessRightGroupImpl;
 import org.infoglue.cms.entities.management.impl.simple.AccessRightImpl;
@@ -303,10 +306,12 @@ public class CacheController extends Thread
 
 	public static synchronized void preCacheCMSEntities() throws Exception 
 	{
-		List<SiteNodeVO> snVOList = SiteNodeController.getController().getSiteNodeVOList(false, 0, 10000);
+		ComponentController.getController().preCacheComponents(-1);
+
+		List<SiteNodeVO> snVOList = SiteNodeController.getController().getSiteNodeVOList(false, 0, 30000);
 		logger.error("snVOList:" + snVOList.size() + " fetched and precached");
 
-		List<ContentVO> cList = ContentController.getContentController().getContentVOList(30000);
+		List<ContentVO> cList = ContentController.getContentController().getContentVOList(10000);
 		logger.error("cList:" + cList.size() + " fetched and precached");
 
 		/*
@@ -326,17 +331,21 @@ public class CacheController extends Thread
 
 	public static synchronized void preCacheDeliverEntities() throws Exception 
 	{
+		ComponentController.getController().preCacheComponents(-1);
+
 		List<SiteNodeVO> snVOList = SiteNodeController.getController().getSiteNodeVOList(false, new Integer(CmsPropertyHandler.getOperatingMode()), 30000);
 		logger.error("snVOList:" + snVOList.size() + " fetched and precached");
 
 		List<ContentVO> cList = ContentController.getContentController().getContentVOList(10000);
 		logger.error("cList:" + cList.size() + " fetched and precached");
 
+		/*
 		FileInputStream fis = new FileInputStream(CmsPropertyHandler.getDigitalAssetPath() + File.separator + "startupCache.txt");
         ObjectInputStream ois = new ObjectInputStream(fis);
         Map<Integer,Integer> mostUsedContentId = (Map<Integer,Integer>) ois.readObject();
         ois.close();
-        
+        */
+		
 		/*
 		List<SiteNodeVO> snVOList = SiteNodeController.getController().getSiteNodeVOList(false, 0, 100000);
 		logger.info("snVOList:" + snVOList.size() + " fetched and precached");
@@ -1715,6 +1724,10 @@ public class CacheController extends Thread
 						clear = true;
 						selectiveCacheUpdate = true;
 					}
+					if(cacheName.equalsIgnoreCase("componentContentsCache") && entity.indexOf("Content") > 0)
+					{
+						clear = true;
+					}
 					if(cacheName.equalsIgnoreCase("childSiteNodesCache") && entity.indexOf("SiteNode") > 0)
 					{
 						clear = true;
@@ -1807,7 +1820,33 @@ public class CacheController extends Thread
 							Map cacheInstance = (Map)e.getValue();
 						    synchronized(cacheInstance)
 						    {
-						    	if(!(cacheName.equals("userAccessCache") && cacheInstance.size() < 100))
+						    	if(cacheName.equals("componentContentsCache"))
+						    	{
+						    		try
+						    		{
+							    		if(entity.indexOf("ContentVersion") > 0)
+							    		{
+									    	Integer contentId = ContentVersionController.getContentVersionController().getContentIdForContentVersion(new Integer(entityId));
+									    	if(contentId != null)
+									    	{
+									    		ContentVO contentVO = ContentController.getContentController().getContentVOWithId(contentId); 
+									    		ContentTypeDefinitionVO ctdVO = ContentTypeDefinitionController.getController().getContentTypeDefinitionVOWithId(contentVO.getContentTypeDefinitionId());
+									    		if(ctdVO.getName().equals("HTMLTemplate") || ctdVO.getName().equals("PagePartTemplate"))
+									    		{
+									    			cacheInstance.clear();
+									    			ComponentController.getController().preCacheComponentsDelayed();
+									    		}
+									    	}
+							    		}
+							    		else
+							    			logger.warn("skipping clearing components as it seems stupid");
+						    		}
+						    		catch (Exception e2) 
+						    		{
+						    			logger.warn("Error clearing componentContentsCache:" + e2.getMessage(), e2);
+									}
+						    	}
+						    	else if(!(cacheName.equals("userAccessCache") && cacheInstance.size() < 100))
 						    	{
 						    		logger.info("clearing ordinary map:" + e.getKey() + " (" + cacheInstance.size() + ")");
 						    		cacheInstance.clear();

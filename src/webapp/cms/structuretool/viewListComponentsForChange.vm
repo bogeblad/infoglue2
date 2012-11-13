@@ -94,10 +94,12 @@
 				<strong><a href="ViewSiteNodePageComponents!listComponentsForChange.action?siteNodeId=$siteNodeId&languageId=$languageId&contentId=$contentId&specifyBaseTemplate=$!specifyBaseTemplate&parentComponentId=$!parentComponentId&slotId=$slotId&filterRepositoryId=$filterRepositoryId&sortProperty=repositoryId&showSimple=$showSimple&$allowedComponentNamesAsUrlEncodedString&$disallowedComponentNamesAsUrlEncodedString&$allowedComponentGroupNamesAsUrlEncodedString">$ui.getString("tool.structuretool.repositoryLabel")</a></strong>
 				#if($sortProperty == "repositoryId")<img src="images/downArrow.gif">#end
 			</td>
+			<!--
 			<td height="1">
 			<strong><a href="ViewSiteNodePageComponents!listComponentsForChange.action?siteNodeId=$siteNodeId&languageId=$languageId&contentId=$contentId&specifyBaseTemplate=$!specifyBaseTemplate&parentComponentId=$!parentComponentId&slotId=$slotId&filterRepositoryId=$filterRepositoryId&sortProperty=GroupName&showSimple=$showSimple&$allowedComponentNamesAsUrlEncodedString&$disallowedComponentNamesAsUrlEncodedString&$allowedComponentGroupNamesAsUrlEncodedString">$ui.getString("tool.structuretool.groupNameLabel")</a></strong>
 				#if($sortProperty == "GroupName")<img src="images/downArrow.gif">#end
 			</td>
+			-->
 			<td height="1" width="20"><img src="images/trans.gif" width="20" height="1"></td>
 		</tr>
 		<tr>
@@ -131,7 +133,7 @@
 					#set($isOdd = true)
 				#end
 				
-				#set($imageUrl = $this.getDigitalAssetUrl($content.id, "thumbnail"))
+				#set($imageUrl = "$!this.getDigitalAssetUrl($content.id, 'thumbnail')")
 				#if("$!imageUrl" == "")
 					#set($imageUrl = "images/componentIcon.gif")
 				#end
@@ -150,23 +152,24 @@
 					    	#end
 					    #end
 					</td>
-					<td valign="middle">$content.extraProperties.get("GroupName")</td>
+					#*<td valign="middle">$content.extraProperties.get("GroupName")</td>*#
 					<td valign="middle" rowspan="2" style="border-bottom: 1px solid #666666;">
-						#if($content.extraProperties.get("Description") != "Unknown" && $content.extraProperties.get("Description") != "")
+						##if($content.extraProperties.get("Description") != "Unknown" && $content.extraProperties.get("Description") != "")
 						<img src="images/questionMarkGrad.gif" onclick="toggleDiv('descLayer$content.id');" aonMouseOver="showDiv('descLayer$content.id');" aonMouseOut="hideDiv('descLayer$content.id');">
-						#else
-						&nbsp;
-						#end
+						##else
+						##&nbsp;
+						##end
 					</td>
 				</tr>
 				<tr $class style="height: 0px;">
 					<td colspan="3" style="height: 0px; border-bottom: 1px solid #666666;">
-						<span id="descLayer$content.id" style="display:none; padding-bottom: 4px;"><b>$ui.getString("tool.structuretool.descriptionLabel"):</b><br/>
-						#if($content.extraProperties.get("Description"))
-							$content.extraProperties.get("Description")
+						<span id="descLayer$content.id" style="display:none; padding-bottom: 4px;"><b>$ui.getString("tool.structuretool.descriptionLabel"):</b>
+						#if($content.extraProperties.get("Description") != "")
+							<br/>$content.extraProperties.get("Description")
 						#else
 							No description
 						#end
+							<br/><b>Groups:</b> $content.extraProperties.get("GroupName").replaceAll(",",", ")
 						</span>
 					</td>
 				</tr>

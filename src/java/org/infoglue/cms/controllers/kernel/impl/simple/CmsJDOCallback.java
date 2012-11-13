@@ -32,6 +32,7 @@ import org.exolab.castor.jdo.Database;
 import org.exolab.castor.persist.spi.CallbackInterceptor;
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.entities.content.Content;
+import org.infoglue.cms.entities.content.ContentVO;
 import org.infoglue.cms.entities.content.ContentVersion;
 import org.infoglue.cms.entities.content.impl.simple.ContentImpl;
 import org.infoglue.cms.entities.content.impl.simple.ContentVersionImpl;
@@ -44,6 +45,7 @@ import org.infoglue.cms.entities.content.impl.simple.SmallDigitalAssetImpl;
 import org.infoglue.cms.entities.content.impl.simple.SmallestContentVersionImpl;
 import org.infoglue.cms.entities.content.impl.simple.SmallishContentImpl;
 import org.infoglue.cms.entities.kernel.IBaseEntity;
+import org.infoglue.cms.entities.management.ContentTypeDefinitionVO;
 import org.infoglue.cms.entities.management.impl.simple.AccessRightGroupImpl;
 import org.infoglue.cms.entities.management.impl.simple.AccessRightImpl;
 import org.infoglue.cms.entities.management.impl.simple.AccessRightRoleImpl;
@@ -105,13 +107,11 @@ public class CmsJDOCallback implements CallbackInterceptor
 
     public Class loaded(Object object, short accessMode) throws Exception
     {
-    	/*
-    	if(object.getClass().getName().indexOf("SystemUserImpl") > -1)
-    	{
-    		logger.error("Loaded " + object.getClass().getName() + " accessMode:" + accessMode);
-    		Thread.dumpStack();
-    	}
-    	*/
+    	//if(object.getClass().getName().indexOf("GroupPropertiesImpl") > -1)
+    	//{
+    		//logger.error("Loaded " + object.getClass().getName() + " accessMode:" + accessMode);
+    		//Thread.dumpStack();
+    	//}
     	
     	//if(accessMode == 1)
     	//	logger.error("Loaded " + object.getClass().getName() + " accessMode:" + accessMode);
@@ -196,7 +196,6 @@ public class CmsJDOCallback implements CallbackInterceptor
 				CacheController.clearCache("interceptorsCache");
 				CacheController.clearCache("authorizationCache");
 				CacheController.clearCache("personalAuthorizationCache");
-				CacheController.clearCache("componentContentsCache");
 			}
 			else if(object.getClass().getName().equals(ContentTypeDefinitionImpl.class.getName()))
 			{
@@ -208,10 +207,6 @@ public class CmsJDOCallback implements CallbackInterceptor
 				try
 				{
 					ContentImpl content = (ContentImpl)object;
-					if(content.getContentTypeDefinition() == null || !content.getContentTypeDefinition().getName().equalsIgnoreCase("Meta info"))
-					{
-						CacheController.clearCache("componentContentsCache");						
-					}
 					CacheController.clearCacheForGroup("contentCache", "" + content.getId());
 					CacheController.clearCacheForGroup("contentVersionCache", "content_" + content.getId());
 					CacheController.clearCacheForGroup("childContentCache", "content_" + content.getId());
@@ -232,9 +227,12 @@ public class CmsJDOCallback implements CallbackInterceptor
 				try
 				{
 					ContentVersionImpl contentVersion = (ContentVersionImpl)object;
-					if(contentVersion.getOwningContent().getContentTypeDefinition() == null || !contentVersion.getOwningContent().getContentTypeDefinition().getName().equalsIgnoreCase("Meta info"))
+					if(contentVersion.getOwningContent().getContentTypeDefinition() == null || (
+					   contentVersion.getOwningContent().getContentTypeDefinition().getName().equalsIgnoreCase("HTMLTemplate") ||
+					   contentVersion.getOwningContent().getContentTypeDefinition().getName().equalsIgnoreCase("PagePartTemplate")))
 					{
-						CacheController.clearCache("componentContentsCache");						
+						CacheController.clearCache("componentContentsCache");
+		    			ComponentController.getController().preCacheComponentsDelayed();
 					}
 
 					CacheController.clearCacheForGroup("registryCache", "" + ("org.infoglue.cms.entities.content.ContentVersion_" + getObjectIdentity(object)).hashCode());						
@@ -326,7 +324,6 @@ public class CmsJDOCallback implements CallbackInterceptor
 			{
 				clearCache(SmallSystemUserImpl.class);
 				CacheController.clearCache("principalCache");
-				CacheController.clearCache("componentContentsCache");
 				CacheController.clearCache("principalPropertyValueCache");
 				CacheController.clearCache("authorizationCache");
 				CacheController.clearCache("personalAuthorizationCache");
@@ -336,16 +333,14 @@ public class CmsJDOCallback implements CallbackInterceptor
 				clearCache(SmallGroupImpl.class);
 				CacheController.clearCache("groupListCache");
 				CacheController.clearCache("groupVOListCache");
-				CacheController.clearCache("componentContentsCache");
-			    CacheController.clearCache("principalPropertyValueCache");
+				CacheController.clearCache("principalPropertyValueCache");
 			}
 			else if(object.getClass().getName().equals(RoleImpl.class.getName()))
 			{
 				clearCache(SmallRoleImpl.class);
 				CacheController.clearCache("roleListCache");
 				CacheController.clearCache("roleVOListCache");
-				CacheController.clearCache("componentContentsCache");
-			    CacheController.clearCache("principalPropertyValueCache");
+				CacheController.clearCache("principalPropertyValueCache");
 			}
 			else if(object.getClass().getName().equals(SystemUserGroupImpl.class.getName()))
 			{
@@ -353,8 +348,7 @@ public class CmsJDOCallback implements CallbackInterceptor
 				//clearCache(GroupImpl.class);
 				CacheController.clearCache("groupListCache");
 				CacheController.clearCache("groupVOListCache");
-				CacheController.clearCache("componentContentsCache");
-
+				
 				CacheController.clearCache("principalCache");
 				CacheController.clearCache("principalPropertyValueCache");
 				CacheController.clearCache("rolePropertiesCache");
@@ -370,7 +364,6 @@ public class CmsJDOCallback implements CallbackInterceptor
 				//clearCache(RoleImpl.class);
 				CacheController.clearCache("roleListCache");
 				CacheController.clearCache("roleVOListCache");
-				CacheController.clearCache("componentContentsCache");
 
 				CacheController.clearCache("principalCache");
 				CacheController.clearCache("principalPropertyValueCache");
@@ -504,7 +497,6 @@ public class CmsJDOCallback implements CallbackInterceptor
 				CacheController.clearCache("interceptorsCache");
 				CacheController.clearCache("authorizationCache");
 				CacheController.clearCache("personalAuthorizationCache");
-				CacheController.clearCache("componentContentsCache");
 			}
 			else if(object.getClass().getName().equals(ContentTypeDefinitionImpl.class.getName()))
 			{
@@ -520,7 +512,14 @@ public class CmsJDOCallback implements CallbackInterceptor
 			}
 			else if(object.getClass().getName().equals(ContentVersionImpl.class.getName()))
 			{
-				CacheController.clearCache("componentContentsCache");
+				ContentVersionImpl contentVersion = (ContentVersionImpl)object;
+				if(contentVersion.getOwningContent().getContentTypeDefinition() == null || (
+				   contentVersion.getOwningContent().getContentTypeDefinition().getName().equalsIgnoreCase("HTMLTemplate") ||
+				   contentVersion.getOwningContent().getContentTypeDefinition().getName().equalsIgnoreCase("PagePartTemplate")))
+				{
+					CacheController.clearCache("componentContentsCache");
+	    			ComponentController.getController().preCacheComponentsDelayed();
+				}
 				clearCache(SmallContentVersionImpl.class);
 				clearCache(SmallestContentVersionImpl.class);
 			}
@@ -551,7 +550,6 @@ public class CmsJDOCallback implements CallbackInterceptor
 			{
 				clearCache(SmallSystemUserImpl.class);
 				CacheController.clearCache("principalCache");
-				CacheController.clearCache("componentContentsCache");
 			    CacheController.clearCache("principalPropertyValueCache");
 				CacheController.clearCache("authorizationCache");
 				CacheController.clearCache("personalAuthorizationCache");
@@ -560,7 +558,6 @@ public class CmsJDOCallback implements CallbackInterceptor
 			{
 				clearCache(SmallGroupImpl.class);
 				CacheController.clearCache("groupListCache");
-				CacheController.clearCache("componentContentsCache");
 			    CacheController.clearCache("principalPropertyValueCache");
 				CacheController.clearCache("authorizationCache");
 				CacheController.clearCache("personalAuthorizationCache");
@@ -569,7 +566,6 @@ public class CmsJDOCallback implements CallbackInterceptor
 			{
 				clearCache(SmallRoleImpl.class);
 				CacheController.clearCache("roleListCache");
-				CacheController.clearCache("componentContentsCache");
 			    CacheController.clearCache("principalPropertyValueCache");
 				CacheController.clearCache("authorizationCache");
 				CacheController.clearCache("personalAuthorizationCache");
@@ -580,7 +576,6 @@ public class CmsJDOCallback implements CallbackInterceptor
 				//clearCache(GroupImpl.class);
 				CacheController.clearCache("principalCache");
 				CacheController.clearCache("groupListCache");
-				CacheController.clearCache("componentContentsCache");
 				
 				CacheController.clearCache("principalPropertyValueCache");
 				CacheController.clearCache("rolePropertiesCache");
@@ -596,7 +591,6 @@ public class CmsJDOCallback implements CallbackInterceptor
 				//clearCache(RoleImpl.class);
 				CacheController.clearCache("principalCache");
 				CacheController.clearCache("groupListCache");
-				CacheController.clearCache("componentContentsCache");
 
 				CacheController.clearCache("principalPropertyValueCache");
 				CacheController.clearCache("rolePropertiesCache");
@@ -710,7 +704,6 @@ public class CmsJDOCallback implements CallbackInterceptor
 				CacheController.clearCache("interceptorsCache");
 				CacheController.clearCache("authorizationCache");
 				CacheController.clearCache("personalAuthorizationCache");
-				CacheController.clearCache("componentContentsCache");
 			}
 			else if(object.getClass().getName().equals(ContentTypeDefinitionImpl.class.getName()))
 			{
@@ -742,7 +735,16 @@ public class CmsJDOCallback implements CallbackInterceptor
 			else if(object.getClass().getName().equals(ContentVersionImpl.class.getName()))
 			{
 				CacheController.clearCacheForGroup("contentCategoryCache", "contentVersion_" + getObjectIdentity(object).toString());
-				CacheController.clearCache("componentContentsCache");
+
+				ContentVersionImpl contentVersion = (ContentVersionImpl)object;
+				if(contentVersion.getOwningContent().getContentTypeDefinition() == null || (
+				   contentVersion.getOwningContent().getContentTypeDefinition().getName().equalsIgnoreCase("HTMLTemplate") ||
+				   contentVersion.getOwningContent().getContentTypeDefinition().getName().equalsIgnoreCase("PagePartTemplate")))
+				{
+					CacheController.clearCache("componentContentsCache");
+	    			ComponentController.getController().preCacheComponentsDelayed();
+				}
+
 				clearCache(SmallContentVersionImpl.class);
 				clearCache(SmallestContentVersionImpl.class);
 				RegistryController.getController().clearRegistryForReferencingEntityName(ContentVersion.class.getName(), getObjectIdentity(object).toString());
@@ -817,7 +819,6 @@ public class CmsJDOCallback implements CallbackInterceptor
 			{
 				clearCache(SmallSystemUserImpl.class);
 				CacheController.clearCache("principalCache");
-				CacheController.clearCache("componentContentsCache");
 			    CacheController.clearCache("principalPropertyValueCache");
 				CacheController.clearCache("authorizationCache");
 				CacheController.clearCache("personalAuthorizationCache");
@@ -826,7 +827,6 @@ public class CmsJDOCallback implements CallbackInterceptor
 			{
 				clearCache(SmallGroupImpl.class);
 				CacheController.clearCache("groupListCache");
-				CacheController.clearCache("componentContentsCache");
 			    CacheController.clearCache("principalPropertyValueCache");
 				CacheController.clearCache("authorizationCache");
 				CacheController.clearCache("personalAuthorizationCache");
@@ -835,7 +835,6 @@ public class CmsJDOCallback implements CallbackInterceptor
 			{
 				clearCache(SmallRoleImpl.class);
 				CacheController.clearCache("roleListCache");
-				CacheController.clearCache("componentContentsCache");
 			    CacheController.clearCache("principalPropertyValueCache");
 				CacheController.clearCache("authorizationCache");
 				CacheController.clearCache("personalAuthorizationCache");
