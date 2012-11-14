@@ -20,7 +20,7 @@
  *
  * ===============================================================================
  *
- * $Id: ContentCategoryController.java,v 1.22.2.1.2.1 2012/10/16 09:22:19 mattias Exp $
+ * $Id: ContentCategoryController.java,v 1.22.2.1.2.2 2012/11/14 23:08:25 mattias Exp $
  */
 package org.infoglue.cms.controllers.kernel.impl.simple;
 
@@ -46,6 +46,7 @@ import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.security.InfoGluePrincipal;
 import org.infoglue.cms.util.ConstraintExceptionBuffer;
 import org.infoglue.deliver.util.CacheController;
+import org.infoglue.deliver.util.Timer;
 
 /**
  * The ContentCategoryController manages all actions related to persistence
@@ -185,8 +186,10 @@ public class ContentCategoryController extends BaseController
 	{
 	    List contentCategoryList = new ArrayList();
 	    
+	    Timer t = new Timer();
 	    //TODO - kan optimeras mycket
 	    List contentCategories = findByContentVersionReadOnly(versionId, db);
+	    t.printElapsedTime("findByContentVersionReadOnly");
 	    
 	    //t.printElapsedTime("contentCategories");
 		if(contentCategories != null)
@@ -201,7 +204,9 @@ public class ContentCategoryController extends BaseController
 		        }
 		    }
 		}
-		return contentCategoryList;
+	    t.printElapsedTime("Rest");
+
+	    return contentCategoryList;
 
 	    /*
 	    List contentCategoryList = new ArrayList();

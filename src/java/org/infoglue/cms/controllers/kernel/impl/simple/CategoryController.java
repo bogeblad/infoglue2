@@ -20,7 +20,7 @@
  *
  * ===============================================================================
  *
- * $Id: CategoryController.java,v 1.20.4.2 2012/10/29 15:35:13 mattias Exp $
+ * $Id: CategoryController.java,v 1.20.4.3 2012/11/14 23:08:25 mattias Exp $
  */
 package org.infoglue.cms.controllers.kernel.impl.simple;
 
@@ -108,6 +108,18 @@ public class CategoryController extends BaseController
 	public Category findById(Integer id, Database db) throws SystemException
 	{
 		return (Category)getObjectWithId(CategoryImpl.class, id, db);
+	}
+
+	/**
+	 * Find a Category by it's identifier.
+	 *
+	 * @param	id The id of the Category to find
+	 * @return	The Category identified by the provided id
+	 * @throws	SystemException If an error happens
+	 */
+	public CategoryVO findVOById(Integer id, Database db) throws SystemException
+	{
+		return (CategoryVO) getVOWithId(CategoryImpl.class, id);
 	}
 
 	/**

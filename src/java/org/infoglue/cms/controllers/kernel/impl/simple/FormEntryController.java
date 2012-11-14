@@ -420,11 +420,20 @@ public class FormEntryController extends BaseController
 			
 			dumpDigitalAsset(formEntryAsset, fileName, filePath);
 			
+			SiteNodeVO siteNodeVO = NodeDeliveryController.getNodeDeliveryController(deliveryContext.getSiteNodeId(), deliveryContext.getLanguageId(), deliveryContext.getContentId()).getSiteNodeVO(db, deliveryContext.getSiteNodeId());
+			String dnsName = CmsPropertyHandler.getWebServerAddress();
+			if(siteNodeVO != null)
+			{
+				RepositoryVO repositoryVO = RepositoryController.getController().getRepositoryVOWithId(siteNodeVO.getRepositoryId(), db);
+				if(repositoryVO.getDnsName() != null && !repositoryVO.getDnsName().equals(""))
+					dnsName = repositoryVO.getDnsName();
+			}
+			/*
 			SiteNode siteNode = NodeDeliveryController.getNodeDeliveryController(deliveryContext.getSiteNodeId(), deliveryContext.getLanguageId(), deliveryContext.getContentId()).getSiteNode(db, deliveryContext.getSiteNodeId());
 			String dnsName = CmsPropertyHandler.getWebServerAddress();
 			if(siteNode != null && siteNode.getRepository().getDnsName() != null && !siteNode.getRepository().getDnsName().equals(""))
 				dnsName = siteNode.getRepository().getDnsName();
-			
+			*/
 			assetUrl = URLComposer.getURLComposer().composeDigitalAssetUrl(dnsName, null, fileName, deliveryContext); 
 			//System.out.println("assetUrl:" + assetUrl);
 			
