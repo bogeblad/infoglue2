@@ -321,13 +321,8 @@ public class SiteNodeController extends BaseController
     {
 		return (SiteNodeVersion) getObjectWithId(SiteNodeVersionImpl.class, siteNodeVersionId, db);
     }
-
-    public static SiteNode getSiteNodeWithId(Integer siteNodeId, Database db, boolean readOnly) throws SystemException, Bug
-    {
-    	return getSiteNodeWithId(siteNodeId, db, readOnly, true);
-    }
     
-    public static SiteNode getSiteNodeWithId(Integer siteNodeId, Database db, boolean readOnly, boolean retry) throws SystemException, Bug
+    public static SiteNode getSiteNodeWithId(Integer siteNodeId, Database db, boolean readOnly) throws SystemException, Bug
     {
         SiteNode siteNode = null;
         try
@@ -344,23 +339,8 @@ public class SiteNodeController extends BaseController
     	}
         catch(Exception e)
         {
-			try
-			{
-				if(retry)
-				{
-					logger.warn("An error occurred when we tried to fetch the SiteNode. Reason:" + e.getMessage() + ". Retrying...");
-					siteNode = getSiteNodeWithId(siteNodeId, db, readOnly, false);
-				}
-				else
-				{
-					logger.warn("An error occurred when we tried to fetch the SiteNode. Reason:" + e.getMessage() + ". Not retrying...");
-		            throw new SystemException("An error occurred when we tried to fetch the SiteNode. Reason:" + e.getMessage(), e);    
-				}
-			}
-			catch(Exception e2)
-			{
-	            throw new SystemException("An error occurred when we tried to fetch the SiteNode. Reason:" + e.getMessage(), e);    
-			}
+			logger.warn("An error occurred when we tried to fetch the SiteNode. Reason:" + e.getMessage() + ". Not retrying...");
+            throw new SystemException("An error occurred when we tried to fetch the SiteNode. Reason:" + e.getMessage(), e);    
         }
 		finally
 		{

@@ -917,6 +917,19 @@ public class PublicationController extends BaseController
         return publicationDetails;
 	}
 
+	/**
+	 * This method returns a list of all details a publication has.
+	 */
+	public List<PublicationDetailVO> getPublicationDetailVOList(Integer publicationId, Database db) throws SystemException
+	{
+		List<PublicationDetailVO> publicationDetails = new ArrayList<PublicationDetailVO>();
+
+    	Publication publication = getPublicationWithId(publicationId, db);
+    	Collection<PublicationDetailVO> details = publication.getPublicationDetails();
+        publicationDetails = toVOList(details);
+
+        return publicationDetails;
+	}
 
 	/**
 	 * This method returns a list of all details a publication has.

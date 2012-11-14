@@ -374,8 +374,6 @@ public class RegistryController extends BaseController
 				        }
 			            else if(name.equalsIgnoreCase("siteNodeId"))
 				        {
-			                SiteNode siteNode = SiteNodeController.getController().getSiteNodeWithId(new Integer(value), db);
-			                
 			                registryVO.setEntityId(value);
 				            registryVO.setEntityName(SiteNode.class.getName());
 				            

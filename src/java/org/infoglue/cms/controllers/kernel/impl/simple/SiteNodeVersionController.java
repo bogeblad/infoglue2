@@ -1560,7 +1560,7 @@ public class SiteNodeVersionController extends BaseController
 	
 	public SiteNodeVersionVO update(SiteNodeVersionVO siteNodeVersionVO, Database db) throws ConstraintException, SystemException, Exception
 	{
-	    SiteNodeVersion siteNodeVersion = getSiteNodeVersionWithId(siteNodeVersionVO.getId(), db);
+		SiteNodeVersion siteNodeVersion = getSiteNodeVersionWithId(siteNodeVersionVO.getId(), db);
     	registryController.updateSiteNodeVersion(siteNodeVersion, db);
 
     	siteNodeVersion.setValueObject(siteNodeVersionVO);
