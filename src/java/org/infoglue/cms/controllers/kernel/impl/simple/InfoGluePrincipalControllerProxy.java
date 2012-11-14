@@ -106,9 +106,9 @@ public class InfoGluePrincipalControllerProxy extends BaseController
 	 * group-properties as well.
 	 */
 	
-	public String getPrincipalPropertyValue(InfoGluePrincipal infoGluePrincipal, String propertyName, Integer languageId, Integer siteNodeId, boolean useLanguageFallback, boolean escapeSpecialCharacters, boolean findLargestValue) throws Exception
+	public String getPrincipalPropertyValue(InfoGluePrincipal infoGluePrincipal, String propertyName, Integer languageId, Integer repositoryId, boolean useLanguageFallback, boolean escapeSpecialCharacters, boolean findLargestValue) throws Exception
 	{
-		return getPrincipalPropertyValue(infoGluePrincipal, propertyName, languageId, siteNodeId, useLanguageFallback, escapeSpecialCharacters, findLargestValue, false);
+		return getPrincipalPropertyValue(infoGluePrincipal, propertyName, languageId, repositoryId, useLanguageFallback, escapeSpecialCharacters, findLargestValue, false);
 	}
 	
 	/**
@@ -117,7 +117,7 @@ public class InfoGluePrincipalControllerProxy extends BaseController
 	 * group-properties as well.
 	 */
 	
-	public String getPrincipalPropertyValue(InfoGluePrincipal infoGluePrincipal, String propertyName, Integer languageId, Integer siteNodeId, boolean useLanguageFallback, boolean escapeSpecialCharacters, boolean findLargestValue, boolean findPrioValue) throws Exception
+	public String getPrincipalPropertyValue(InfoGluePrincipal infoGluePrincipal, String propertyName, Integer languageId, Integer repositoryId, boolean useLanguageFallback, boolean escapeSpecialCharacters, boolean findLargestValue, boolean findPrioValue) throws Exception
 	{
 		String value = "";
 		
@@ -130,7 +130,7 @@ public class InfoGluePrincipalControllerProxy extends BaseController
 		
 		try
         {
-		    value = getPrincipalPropertyValue(db, infoGluePrincipal, propertyName, languageId, siteNodeId, useLanguageFallback, escapeSpecialCharacters, findLargestValue, findPrioValue);
+		    value = getPrincipalPropertyValue(db, infoGluePrincipal, propertyName, languageId, repositoryId, useLanguageFallback, escapeSpecialCharacters, findLargestValue, findPrioValue);
 		    commitTransaction(db);
         }
         catch(Exception e)
@@ -150,9 +150,9 @@ public class InfoGluePrincipalControllerProxy extends BaseController
 	 * group-properties as well.
 	 */
 	
-	public String getPrincipalPropertyValue(Database db, InfoGluePrincipal infoGluePrincipal, String propertyName, Integer languageId, Integer siteNodeId, boolean useLanguageFallback, boolean escapeSpecialCharacters, boolean findLargestValue) throws Exception
+	public String getPrincipalPropertyValue(Database db, InfoGluePrincipal infoGluePrincipal, String propertyName, Integer languageId, Integer repositoryId, boolean useLanguageFallback, boolean escapeSpecialCharacters, boolean findLargestValue) throws Exception
 	{
-		return getPrincipalPropertyValue(db, infoGluePrincipal, propertyName, languageId, siteNodeId, useLanguageFallback, escapeSpecialCharacters, findLargestValue, false);
+		return getPrincipalPropertyValue(db, infoGluePrincipal, propertyName, languageId, repositoryId, useLanguageFallback, escapeSpecialCharacters, findLargestValue, false);
 	}
 	
 	/**
@@ -161,12 +161,12 @@ public class InfoGluePrincipalControllerProxy extends BaseController
 	 * group-properties as well.
 	 */
 	
-	public String getPrincipalPropertyValue(Database db, InfoGluePrincipal infoGluePrincipal, String propertyName, Integer languageId, Integer siteNodeId, boolean useLanguageFallback, boolean escapeSpecialCharacters, boolean findLargestValue, boolean findPrioValue) throws Exception
+	public String getPrincipalPropertyValue(Database db, InfoGluePrincipal infoGluePrincipal, String propertyName, Integer languageId, Integer repositoryId, boolean useLanguageFallback, boolean escapeSpecialCharacters, boolean findLargestValue, boolean findPrioValue) throws Exception
 	{
-		String key = "" + infoGluePrincipal.getName() + "_" + propertyName + "_" + languageId + "_" + siteNodeId + "_" + useLanguageFallback + "_" + escapeSpecialCharacters + "_" + findLargestValue + "_" + findPrioValue;
+		String key = "" + infoGluePrincipal.getName() + "_" + propertyName + "_" + languageId + "_" + repositoryId + "_" + useLanguageFallback + "_" + escapeSpecialCharacters + "_" + findLargestValue + "_" + findPrioValue;
 		logger.info("key:" + key);
 		Object object = (String)CacheController.getCachedObject("principalPropertyValueCache", key);
-
+		
 	    if(object instanceof NullObject)
 		{
 			logger.info("There was an cached property but it was null:" + object);
@@ -178,6 +178,7 @@ public class InfoGluePrincipalControllerProxy extends BaseController
 			return (String)object;
 		}
 
+	    logger.warn("Reading principalPropertyValue again:" + key);
 		String value = "";
 		
 		if(infoGluePrincipal == null || propertyName == null)
@@ -285,9 +286,9 @@ public class InfoGluePrincipalControllerProxy extends BaseController
 			
 			if(value.equals("") && useLanguageFallback)
 			{
-				LanguageVO masterLanguageVO = LanguageDeliveryController.getLanguageDeliveryController().getMasterLanguageForSiteNode(db, siteNodeId);
+				LanguageVO masterLanguageVO = LanguageDeliveryController.getLanguageDeliveryController().getMasterLanguageForRepository(db, repositoryId);
 				if(!masterLanguageVO.getLanguageId().equals(languageId))
-					value = getPrincipalPropertyValue(infoGluePrincipal, propertyName, masterLanguageVO.getLanguageId(), siteNodeId, useLanguageFallback, escapeSpecialCharacters, findLargestValue);
+					value = getPrincipalPropertyValue(infoGluePrincipal, propertyName, masterLanguageVO.getLanguageId(), repositoryId, useLanguageFallback, escapeSpecialCharacters, findLargestValue);
 			}
 		}
 		
@@ -378,9 +379,9 @@ public class InfoGluePrincipalControllerProxy extends BaseController
 
 			if(value.equals("") && useLanguageFallback)
 			{
-				LanguageVO masterLanguageVO = LanguageDeliveryController.getLanguageDeliveryController().getMasterLanguageForSiteNode(db, siteNodeId);
+				LanguageVO masterLanguageVO = LanguageDeliveryController.getLanguageDeliveryController().getMasterLanguageForRepository(db, repositoryId);
 				if(!masterLanguageVO.getLanguageId().equals(languageId))
-					value = getPrincipalPropertyValue(infoGluePrincipal, propertyName, masterLanguageVO.getLanguageId(), siteNodeId, useLanguageFallback, escapeSpecialCharacters, findLargestValue);
+					value = getPrincipalPropertyValue(infoGluePrincipal, propertyName, masterLanguageVO.getLanguageId(), repositoryId, useLanguageFallback, escapeSpecialCharacters, findLargestValue);
 			}
 		}
 			
@@ -503,11 +504,11 @@ public class InfoGluePrincipalControllerProxy extends BaseController
 	 * group-properties as well. The value in question is a map - name-value.
 	 */
 	
-	public Map getPrincipalPropertyHashValues(InfoGluePrincipal infoGluePrincipal, String propertyName, Integer languageId, Integer siteNodeId, boolean useLanguageFallback, boolean escapeSpecialCharacters) throws Exception
+	public Map getPrincipalPropertyHashValues(InfoGluePrincipal infoGluePrincipal, String propertyName, Integer languageId, Integer repositoryId, boolean useLanguageFallback, boolean escapeSpecialCharacters) throws Exception
 	{
 		Properties properties = new Properties();
 		
-		String attributeValue = getPrincipalPropertyValue(infoGluePrincipal, propertyName, languageId, siteNodeId, useLanguageFallback, escapeSpecialCharacters, false);
+		String attributeValue = getPrincipalPropertyValue(infoGluePrincipal, propertyName, languageId, repositoryId, useLanguageFallback, escapeSpecialCharacters, false);
 		
 		ByteArrayInputStream is = new ByteArrayInputStream(attributeValue.getBytes("UTF-8"));
 
@@ -522,11 +523,11 @@ public class InfoGluePrincipalControllerProxy extends BaseController
 	 * group-properties as well. The value in question is a map - name-value.
 	 */
 	
-	public Map getPrincipalPropertyHashValues(Database db, InfoGluePrincipal infoGluePrincipal, String propertyName, Integer languageId, Integer siteNodeId, boolean useLanguageFallback, boolean escapeSpecialCharacters) throws Exception
+	public Map getPrincipalPropertyHashValues(Database db, InfoGluePrincipal infoGluePrincipal, String propertyName, Integer languageId, Integer repositoryId, boolean useLanguageFallback, boolean escapeSpecialCharacters) throws Exception
 	{
 		Properties properties = new Properties();
 		
-		String attributeValue = getPrincipalPropertyValue(db, infoGluePrincipal, propertyName, languageId, siteNodeId, useLanguageFallback, escapeSpecialCharacters, false);
+		String attributeValue = getPrincipalPropertyValue(db, infoGluePrincipal, propertyName, languageId, repositoryId, useLanguageFallback, escapeSpecialCharacters, false);
 		
 		ByteArrayInputStream is = new ByteArrayInputStream(attributeValue.getBytes("UTF-8"));
 
