@@ -208,9 +208,12 @@ public class ViewSiteNodeAction extends InfoGlueAbstractAction
 		if(siteNodeVO.getSiteNodeTypeDefinitionId() != null)
 		{
 			this.siteNodeTypeDefinitionVO = SiteNodeTypeDefinitionController.getController().getSiteNodeTypeDefinitionVOWithId(siteNodeVO.getSiteNodeTypeDefinitionId(), db);
-			this.availableServiceBindings = SiteNodeTypeDefinitionController.getController().getAvailableServiceBindingVOList(siteNodeVO.getSiteNodeTypeDefinitionId(), db);
-			if(siteNodeVersionVO != null)
-				this.serviceBindings = SiteNodeVersionController.getServiceBindningVOList(siteNodeVersionVO.getSiteNodeVersionId(), db);
+			if(siteNodeTypeDefinitionVO.getName().equalsIgnoreCase("HTMLPage"))
+			{
+				this.availableServiceBindings = SiteNodeTypeDefinitionController.getController().getAvailableServiceBindingVOList(siteNodeVO.getSiteNodeTypeDefinitionId(), db);
+				if(siteNodeVersionVO != null)
+					this.serviceBindings = SiteNodeVersionController.getServiceBindningVOList(siteNodeVersionVO.getSiteNodeVersionId(), db);
+			}
 		}
 	} 
 
