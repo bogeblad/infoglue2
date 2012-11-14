@@ -592,15 +592,6 @@ public abstract class BaseController
 	
     protected static Object getObjectWithIdAsReadOnly(Class arg, Integer id, Database db) throws SystemException, Bug
     {
-    	return getObjectWithIdAsReadOnly(arg, id, db, true);
-    }
-    
-	/**
-	 * This method fetches one object / entity within a transaction.
-	 **/
-	
-    protected static Object getObjectWithIdAsReadOnly(Class arg, Integer id, Database db, boolean retry) throws SystemException, Bug
-    {
         Object object = null;
         try
         {
@@ -609,23 +600,8 @@ public abstract class BaseController
         }
         catch(Exception e)
         {
-			try
-			{
-				if(retry)
-				{
-					logger.warn("Error getting object. Message: " + e.getMessage() + ". Retrying...");
-					object = getObjectWithIdAsReadOnly(arg, id, db, false);
-				}
-				else
-				{
-					logger.warn("Error getting object. Message: " + e.getMessage() + ". No retrying again.");
-					throw new SystemException("An error occurred when we tried to fetch the object " + arg.getName() + ". Reason:" + e.getMessage(), e);    
-				}
-			}
-			catch(Exception e2)
-			{
-	            throw new SystemException("An error occurred when we tried to fetch the object " + arg.getName() + ". Reason:" + e.getMessage(), e);    
-			}
+			logger.warn("Error getting object. Message: " + e.getMessage() + ". No retrying again.");
+			throw new SystemException("An error occurred when we tried to fetch the object " + arg.getName() + ". Reason:" + e.getMessage(), e);    
         }
 		finally
 		{

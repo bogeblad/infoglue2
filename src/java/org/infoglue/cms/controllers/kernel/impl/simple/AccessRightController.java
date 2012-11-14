@@ -245,7 +245,7 @@ public class AccessRightController extends BaseController
 		results.close();
 		oql.close();
 
-		t.printElapsedTime("Recaching access rights in " + CmsPropertyHandler.getContextRootPath());
+		t.printElapsedTime("Recaching access rights in " + CmsPropertyHandler.getContextRootPath() + " for user " + principal.getName());
 	}
 	
 	
@@ -646,15 +646,7 @@ public class AccessRightController extends BaseController
 		}
 		catch(Exception e)
 		{
-			logger.warn("Error getting access rights. Message: " + e.getMessage() + ". Retrying...");
-			try
-			{
-				accessRightRoleList = getAccessRightRoleVOList(interceptionPointId, parameters, db);
-			}
-			catch(Exception e2)
-			{
-				throw new SystemException("An error occurred when we tried to fetch a list of Access rights. Reason:" + e.getMessage(), e);    
-			}
+			logger.warn("Error getting access rights. Message: " + e.getMessage() + ".");
 		}
 
 		return accessRightRoleList;		
@@ -692,7 +684,7 @@ public class AccessRightController extends BaseController
 		}
 		catch(Exception e)
 		{
-			logger.warn("Error getting access rights. Message: " + e.getMessage() + ". Retrying...");
+			logger.warn("Error getting access rights. Message: " + e.getMessage() + ".");
 			try
 			{
 				accessRightGroupList = getAccessRightGroupVOList(interceptionPointId, parameters, db);
@@ -739,15 +731,7 @@ public class AccessRightController extends BaseController
 		}
 		catch(Exception e)
 		{
-			logger.warn("Error getting access rights. Message: " + e.getMessage() + ". Retrying...");
-			try
-			{
-				accessRightUserList = getAccessRightUserVOList(interceptionPointId, parameters, db);
-			}
-			catch(Exception e2)
-			{
-				throw new SystemException("An error occurred when we tried to fetch a list of Access rights users. Reason:" + e.getMessage(), e);    
-			}
+			logger.warn("Error getting access rights. Message: " + e.getMessage() + ".");
 		}
 
 		return accessRightUserList;		
@@ -1741,7 +1725,52 @@ public class AccessRightController extends BaseController
 		Map<String,Integer> cachedPrincipalAuthorizationMap = (Map<String,Integer>)CacheController.getCachedObject("userAccessCache", "authorizationMap_" + infoGluePrincipal.getName());
 		if(!infoGluePrincipal.getIsAdministrator() && cachedPrincipalAuthorizationMap == null && !preCacheInProcessForUsers.contains(infoGluePrincipal.getName()))
 		{
+			/*
+			class PreCacheTask implements Runnable 
+			{
+		        InfoGluePrincipal infoGluePrincipal;
+		        PreCacheTask(InfoGluePrincipal infoGluePrincipal) { this.infoGluePrincipal = infoGluePrincipal; }
+		        
+		        public void run() 
+		        {
+		        	Timer t = new Timer();
+		    		
+		        	preCacheInProcessForUsers.add(infoGluePrincipal.getName());
+					logger.info("Precaching all access rights for this user");
+					
+					try
+					{
+						Database db = CastorDatabaseService.getDatabase();
+						try 
+						{
+							beginTransaction(db);
+	
+							preCacheUserAccessRightVOList(infoGluePrincipal, db);
+							t.printElapsedTime("Done precaching all access rights for this user");
+							commitTransaction(db);
+						} 
+						catch (Exception e) 
+						{
+							logger.error("Error precaching all access rights for this user: " + e.getMessage(), e);
+							rollbackTransaction(db);
+						}
+						finally
+						{
+							preCacheInProcessForUsers.remove(infoGluePrincipal.getName());
+						}						
+					}
+					catch (Exception e) 
+					{
+						logger.error("Could not start PreCacheTask:" + e.getMessage(), e);
+					}
+		        }
+		    }
+		    Thread thread = new Thread(new PreCacheTask(infoGluePrincipal));
+		    thread.start();
+		    */
+			
 			preCacheInProcessForUsers.add(infoGluePrincipal.getName());
+			
 			logger.info("Precaching all access rights for this user");
 			try 
 			{
@@ -2312,6 +2341,49 @@ public class AccessRightController extends BaseController
 		//Map<String,Integer> cachedPrincipalAuthorizationMap = (Map<String,Integer>)CacheController.getCachedObjectFromAdvancedCache("personalAuthorizationCache", "authorizationMap_" + infoGluePrincipal.getName());
 		if(!infoGluePrincipal.getIsAdministrator() && cachedPrincipalAuthorizationMap == null && !preCacheInProcessForUsers.contains(infoGluePrincipal.getName()))
 		{
+			/*
+			class PreCacheTask implements Runnable 
+			{
+		        InfoGluePrincipal infoGluePrincipal;
+		        PreCacheTask(InfoGluePrincipal infoGluePrincipal) { this.infoGluePrincipal = infoGluePrincipal; }
+		        
+		        public void run() 
+		        {
+		        	Timer t = new Timer();
+		    		
+		        	preCacheInProcessForUsers.add(infoGluePrincipal.getName());
+					logger.info("Precaching all access rights for this user");
+					
+					try
+					{
+						Database db = CastorDatabaseService.getDatabase();
+						try 
+						{
+							beginTransaction(db);
+	
+							preCacheUserAccessRightVOList(infoGluePrincipal, db);
+							t.printElapsedTime("Done precaching all access rights for this user");
+							commitTransaction(db);
+						} 
+						catch (Exception e) 
+						{
+							logger.error("Error precaching all access rights for this user: " + e.getMessage(), e);
+							rollbackTransaction(db);
+						}
+						finally
+						{
+							preCacheInProcessForUsers.remove(infoGluePrincipal.getName());
+						}						
+					}
+					catch (Exception e) 
+					{
+						logger.error("Could not start PreCacheTask:" + e.getMessage(), e);
+					}
+		        }
+		    }
+			Thread thread = new Thread(new PreCacheTask(infoGluePrincipal));
+		    thread.start();
+		    */
 			preCacheInProcessForUsers.add(infoGluePrincipal.getName());
 			
 			logger.info("Precaching all access rights for this user");
