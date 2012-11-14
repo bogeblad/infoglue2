@@ -42,6 +42,7 @@ import org.exolab.castor.jdo.OQLQuery;
 import org.exolab.castor.jdo.QueryResults;
 import org.infoglue.cms.controllers.kernel.impl.simple.CastorDatabaseService;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentController;
+import org.infoglue.cms.controllers.kernel.impl.simple.RepositoryController;
 import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeController;
 import org.infoglue.cms.entities.content.Content;
 import org.infoglue.cms.entities.content.ContentVO;
@@ -363,7 +364,7 @@ public class NodeDeliveryController extends BaseDeliveryController
 	/**
 	 * This method returns the SiteNodeVO that is sent in.
 	 */
-	
+	/*
 	public SiteNode getSiteNode(Database db, Integer siteNodeId) throws SystemException
 	{
 		if(siteNodeId == null || siteNodeId.intValue() < 1)
@@ -378,7 +379,7 @@ public class NodeDeliveryController extends BaseDeliveryController
 			
 		return siteNode;
 	}
-	
+	*/
 	/**
 	 * This method returns the SiteNodeVO that is sent in.
 	 */
@@ -1596,10 +1597,14 @@ public class NodeDeliveryController extends BaseDeliveryController
 				filePath = CmsPropertyHandler.getProperty("digitalAssetPath." + i);
 			}
 
-			SiteNode siteNode = NodeDeliveryController.getNodeDeliveryController(siteNodeId, languageId, contentId).getSiteNode(database, siteNodeId);
+			SiteNodeVO siteNodeVO = NodeDeliveryController.getNodeDeliveryController(siteNodeId, languageId, contentId).getSiteNodeVO(database, siteNodeId);
 			String dnsName = CmsPropertyHandler.getWebServerAddress();
-			if(siteNode != null && siteNode.getRepository().getDnsName() != null && !siteNode.getRepository().getDnsName().equals(""))
-				dnsName = siteNode.getRepository().getDnsName();
+			if(siteNodeVO != null)
+			{
+				RepositoryVO repositoryVO = RepositoryController.getController().getRepositoryVOWithId(siteNodeVO.getRepositoryId(), database);
+				if(repositoryVO.getDnsName() != null && !repositoryVO.getDnsName().equals(""))
+					dnsName = repositoryVO.getDnsName();
+			}
 
 			pageAsDigitalAssetUrl = urlComposer.composeDigitalAssetUrl(dnsName, fileName, context);
 			
@@ -1648,15 +1653,26 @@ public class NodeDeliveryController extends BaseDeliveryController
 	/**
 	 * This method returns a url to the delivery engine
 	 */
-	public String getPageBaseUrl(Database db) throws SystemException
+	public String getPageBaseUrl(Database db) throws SystemException, Exception
 	{
 		String pageUrl = "";
 		
+		SiteNodeVO siteNodeVO = getSiteNodeVO(db, this.siteNodeId);
+		String dnsName = CmsPropertyHandler.getWebServerAddress();
+		if(siteNodeVO != null)
+		{
+			RepositoryVO repositoryVO = RepositoryController.getController().getRepositoryVOWithId(siteNodeVO.getRepositoryId(), db);
+			if(repositoryVO.getDnsName() != null && !repositoryVO.getDnsName().equals(""))
+				dnsName = repositoryVO.getDnsName();
+		}
+
+		/*
 		SiteNode siteNode = this.getSiteNode(db, this.siteNodeId);
 		String dnsName = CmsPropertyHandler.getWebServerAddress();
 		if(siteNode != null && siteNode.getRepository().getDnsName() != null && !siteNode.getRepository().getDnsName().equals(""))
 			dnsName = siteNode.getRepository().getDnsName();
-						
+		*/
+		
 		pageUrl = urlComposer.composePageBaseUrl(dnsName); 
 		
 		return pageUrl;

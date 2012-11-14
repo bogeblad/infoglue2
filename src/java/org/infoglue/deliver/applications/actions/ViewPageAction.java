@@ -1108,7 +1108,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
 
 				
 				NodeDeliveryController ndc = NodeDeliveryController.getNodeDeliveryController(siteNodeId, languageId, contentId);
-				boolean isMasterLanguageValid = LanguageDeliveryController.getLanguageDeliveryController().getIsValidLanguage(db, ndc, ndc.getSiteNode(db, siteNodeId), masterLanguageVO.getId());
+				boolean isMasterLanguageValid = LanguageDeliveryController.getLanguageDeliveryController().getIsValidLanguage(db, ndc, siteNodeId, masterLanguageVO.getId());
 				if(!isMasterLanguageValid)
 				{
 				    logger.info("Master language was not allowed on this sitenode... let's take the next on in order");
@@ -1117,7 +1117,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
 				    while(languagesIterator.hasNext())
 				    {
 				        LanguageVO currentLanguage = (LanguageVO)languagesIterator.next();
-				        boolean isCurrentLanguageValid = LanguageDeliveryController.getLanguageDeliveryController().getIsValidLanguage(db, ndc, ndc.getSiteNode(db, siteNodeId), currentLanguage.getId());
+				        boolean isCurrentLanguageValid = LanguageDeliveryController.getLanguageDeliveryController().getIsValidLanguage(db, ndc, siteNodeId, currentLanguage.getId());
 					    logger.info("currentLanguage validity:" + isCurrentLanguageValid);
 				        if(isCurrentLanguageValid)
 				        {
@@ -1150,7 +1150,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
 					throw new SystemException("There was no master language for the siteNode " + getSiteNodeId());
 				
 				NodeDeliveryController ndc = NodeDeliveryController.getNodeDeliveryController(siteNodeId, languageId, contentId);
-				boolean isMasterLanguageValid = LanguageDeliveryController.getLanguageDeliveryController().getIsValidLanguage(db, ndc, ndc.getSiteNode(db, siteNodeId), masterLanguageVO.getId());
+				boolean isMasterLanguageValid = LanguageDeliveryController.getLanguageDeliveryController().getIsValidLanguage(db, ndc, siteNodeId, masterLanguageVO.getId());
 				if(!isMasterLanguageValid)
 				{
 				    logger.info("Master language was not allowed on this sitenode... let's take the next on in order");
@@ -1159,7 +1159,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
 				    while(languagesIterator.hasNext())
 				    {
 				        LanguageVO currentLanguage = (LanguageVO)languagesIterator.next();
-				        boolean isCurrentLanguageValid = LanguageDeliveryController.getLanguageDeliveryController().getIsValidLanguage(db, ndc, ndc.getSiteNode(db, siteNodeId), currentLanguage.getId());
+				        boolean isCurrentLanguageValid = LanguageDeliveryController.getLanguageDeliveryController().getIsValidLanguage(db, ndc, siteNodeId, currentLanguage.getId());
 					    logger.info("currentLanguage validity:" + isCurrentLanguageValid);
 				        if(isCurrentLanguageValid)
 				        {

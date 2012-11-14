@@ -423,7 +423,7 @@ public class LanguageDeliveryController extends BaseDeliveryController
             {
 				Language language = (Language)results.next();
 				LanguageVO languageVOCandidate = language.getValueObject();
-				if(getIsValidLanguage(db, ndc, siteNode, languageVOCandidate.getId()))
+				if(getIsValidLanguage(db, ndc, siteNodeId, languageVOCandidate.getId()))
 				{
 					languageVO = languageVOCandidate;		
 					break;
@@ -615,9 +615,10 @@ public class LanguageDeliveryController extends BaseDeliveryController
 		
         LanguageVO language = null;
 
-    	SiteNode siteNode = (SiteNode)getObjectWithId(SiteNodeImpl.class, siteNodeId, db);
+    	//SiteNode siteNode = (SiteNode)getObjectWithId(SiteNodeImpl.class, siteNodeId, db);
+        SiteNodeVO siteNodeVO = NodeDeliveryController.getNodeDeliveryController(null, null, null).getSiteNodeVO(db, siteNodeId);
 		
-    	List repositoryLanguages = getAvailableLanguagesForRepository(db, siteNode.getValueObject().getRepositoryId());
+    	List repositoryLanguages = getAvailableLanguagesForRepository(db, siteNodeVO.getRepositoryId());
 
 		Iterator languageIterator = repositoryLanguages.iterator();
 		while(languageIterator.hasNext())
@@ -628,7 +629,7 @@ public class LanguageDeliveryController extends BaseDeliveryController
 			NodeDeliveryController ndc = NodeDeliveryController.getNodeDeliveryController(siteNodeId, currentLanguage.getId(), new Integer(-1));
 			
 			currentIndex = languageCodes.toLowerCase().indexOf(currentLanguage.getLanguageCode().toLowerCase());
-			if(getIsValidLanguage(db, ndc, siteNode, currentLanguage.getId()) && currentIndex > -1 && currentIndex < index)
+			if(getIsValidLanguage(db, ndc, siteNodeVO.getId(), currentLanguage.getId()) && currentIndex > -1 && currentIndex < index)
 			{
 				index = currentIndex;
 				logger.info("Found the language in the list of supported languages for this site: " + currentLanguage.getName() + " - priority:" + index);
@@ -649,7 +650,7 @@ public class LanguageDeliveryController extends BaseDeliveryController
 			}
 		}
 
-    	String groupKey1 = "repository_" + siteNode.getValueObject().getRepositoryId();
+    	String groupKey1 = "repository_" + siteNodeVO.getRepositoryId();
     	String groupKey2 = CacheController.getPooledString(3, siteNodeId);
     	
 		if(language != null)
@@ -834,10 +835,10 @@ public class LanguageDeliveryController extends BaseDeliveryController
 		
         languageVOList = new ArrayList();
 
-    	SiteNode siteNode = (SiteNode)getObjectWithId(SiteNodeImpl.class, siteNodeId, db);
-		//SiteNodeVO siteNodeVO = SiteNodeController.getController().getSmallSiteNodeVOWithId(siteNodeId, db);
+    	//SiteNode siteNode = (SiteNode)getObjectWithId(SiteNodeImpl.class, siteNodeId, db);
+		SiteNodeVO siteNodeVO = NodeDeliveryController.getNodeDeliveryController(null,null,null).getSiteNodeVO(db, siteNodeId);
         
-		List repositoryLanguages = getAvailableLanguagesForRepository(db, siteNode.getValueObject().getRepositoryId());
+		List repositoryLanguages = getAvailableLanguagesForRepository(db, siteNodeVO.getRepositoryId());
 		
 		Iterator languageIterator = repositoryLanguages.iterator();
 		while(languageIterator.hasNext())
@@ -846,7 +847,7 @@ public class LanguageDeliveryController extends BaseDeliveryController
 			logger.info("CurrentLanguageCode:" + currentLanguage.getLanguageCode());
 			
 			NodeDeliveryController ndc = NodeDeliveryController.getNodeDeliveryController(siteNodeId, currentLanguage.getId(), new Integer(-1));
-			if(getIsValidLanguage(db, ndc, siteNode, currentLanguage.getId()))
+			if(getIsValidLanguage(db, ndc, siteNodeVO.getId(), currentLanguage.getId()))
 			{
 				logger.info("Found the language in the list of supported languages for this site: " + currentLanguage.getName());
 				languageVOList.add(currentLanguage);
@@ -855,7 +856,7 @@ public class LanguageDeliveryController extends BaseDeliveryController
 
 		if(languageVOList != null)
 		{
-	    	String groupKey1 = new StringBuilder("repository_").append(siteNode.getValueObject().getRepositoryId()).toString();
+	    	String groupKey1 = new StringBuilder("repository_").append(siteNodeVO.getRepositoryId()).toString();
 	    	String groupKey2 = CacheController.getPooledString(3, siteNodeId);
 
 			CacheController.cacheObjectInAdvancedCache("siteNodeLanguageCache", key, languageVOList, new String[]{groupKey1, groupKey2}, true);
@@ -900,11 +901,11 @@ public class LanguageDeliveryController extends BaseDeliveryController
 	}
 
 	
-	public boolean getIsValidLanguage(Database db, NodeDeliveryController ndc, /*Integer siteNodeId, */SiteNode siteNode, Integer languageId) throws Exception
+	public boolean getIsValidLanguage(Database db, NodeDeliveryController ndc, Integer siteNodeId, /*SiteNode siteNode,*/ Integer languageId) throws Exception
 	{
 	    boolean isValidLanguage = true;
 	    									
-    	Integer siteNodeId = siteNode.getId();
+    	//Integer siteNodeId = siteNode.getId();
 	    Integer disabledLanguagesSiteNodeVersionId = ndc.getDisabledLanguagesSiteNodeVersionId(db, siteNodeId);
 	    logger.info("disabledLanguagesSiteNodeVersionId:" + disabledLanguagesSiteNodeVersionId);
 

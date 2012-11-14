@@ -958,7 +958,8 @@ public class BasicTemplateController implements TemplateController
 		
 		try
 		{
-			value = InfoGluePrincipalControllerProxy.getController().getPrincipalPropertyValue(this.getDatabase(), infoGluePrincipal, propertyName, this.languageId, this.siteNodeId, USE_LANGUAGE_FALLBACK, escapeSpecialCharacters, findLargestValue);
+		    SiteNodeVO siteNodeVO = getSiteNode();
+			value = InfoGluePrincipalControllerProxy.getController().getPrincipalPropertyValue(this.getDatabase(), infoGluePrincipal, propertyName, this.languageId, siteNodeVO.getRepositoryId(), USE_LANGUAGE_FALLBACK, escapeSpecialCharacters, findLargestValue);
 		}
 		catch(Exception e)
 		{
@@ -974,7 +975,8 @@ public class BasicTemplateController implements TemplateController
 		
 		try
 		{
-			value = InfoGluePrincipalControllerProxy.getController().getPrincipalPropertyValue(this.getDatabase(), infoGluePrincipal, propertyName, languageId, this.siteNodeId, USE_LANGUAGE_FALLBACK, escapeSpecialCharacters, findLargestValue);
+		    SiteNodeVO siteNodeVO = getSiteNode();
+			value = InfoGluePrincipalControllerProxy.getController().getPrincipalPropertyValue(this.getDatabase(), infoGluePrincipal, propertyName, languageId, siteNodeVO.getRepositoryId(), USE_LANGUAGE_FALLBACK, escapeSpecialCharacters, findLargestValue);
 		}
 		catch(Exception e)
 		{
@@ -997,7 +999,6 @@ public class BasicTemplateController implements TemplateController
 		
 		try
 		{
-		    InfoGluePrincipal infoGluePrincipal = this.getPrincipal();
 		    value = getPrincipalPropertyValue(propertyName, escapeSpecialCharacters, false);
 		}
 		catch(Exception e)
@@ -1014,7 +1015,6 @@ public class BasicTemplateController implements TemplateController
 		
 		try
 		{
-		    InfoGluePrincipal infoGluePrincipal = this.getPrincipal();
 		    value = getPrincipalPropertyValue(propertyName, escapeSpecialCharacters, false, languageId);
 		}
 		catch(Exception e)
@@ -1039,7 +1039,8 @@ public class BasicTemplateController implements TemplateController
 		try
 		{
 		    InfoGluePrincipal infoGluePrincipal = this.getPrincipal();
-		    value = InfoGluePrincipalControllerProxy.getController().getPrincipalPropertyValue(this.getDatabase(), infoGluePrincipal, propertyName, this.languageId, this.siteNodeId, USE_LANGUAGE_FALLBACK, escapeSpecialCharacters, findLargestValue);
+		    SiteNodeVO siteNodeVO = getSiteNode();
+		    value = InfoGluePrincipalControllerProxy.getController().getPrincipalPropertyValue(this.getDatabase(), infoGluePrincipal, propertyName, this.languageId, siteNodeVO.getRepositoryId(), USE_LANGUAGE_FALLBACK, escapeSpecialCharacters, findLargestValue);
 		}
 		catch(Exception e)
 		{
@@ -1056,7 +1057,8 @@ public class BasicTemplateController implements TemplateController
 		try
 		{
 		    InfoGluePrincipal infoGluePrincipal = this.getPrincipal();
-		    value = InfoGluePrincipalControllerProxy.getController().getPrincipalPropertyValue(this.getDatabase(), infoGluePrincipal, propertyName, languageId, this.siteNodeId, USE_LANGUAGE_FALLBACK, escapeSpecialCharacters, findLargestValue);
+		    SiteNodeVO siteNodeVO = getSiteNode();
+		    value = InfoGluePrincipalControllerProxy.getController().getPrincipalPropertyValue(this.getDatabase(), infoGluePrincipal, propertyName, languageId, siteNodeVO.getRepositoryId(), USE_LANGUAGE_FALLBACK, escapeSpecialCharacters, findLargestValue);
 		}
 		catch(Exception e)
 		{
@@ -1079,7 +1081,8 @@ public class BasicTemplateController implements TemplateController
 		
 		try
 		{
-		    value = InfoGluePrincipalControllerProxy.getController().getPrincipalPropertyHashValues(this.getDatabase(), infoGluePrincipal, propertyName, this.languageId, this.siteNodeId, USE_LANGUAGE_FALLBACK, escapeSpecialCharacters);
+		    SiteNodeVO siteNodeVO = getSiteNode();
+		    value = InfoGluePrincipalControllerProxy.getController().getPrincipalPropertyHashValues(this.getDatabase(), infoGluePrincipal, propertyName, this.languageId, siteNodeVO.getRepositoryId(), USE_LANGUAGE_FALLBACK, escapeSpecialCharacters);
 		}
 		catch(Exception e)
 		{
@@ -1095,7 +1098,8 @@ public class BasicTemplateController implements TemplateController
 		
 		try
 		{
-		    value = InfoGluePrincipalControllerProxy.getController().getPrincipalPropertyHashValues(this.getDatabase(), infoGluePrincipal, propertyName, languageId, this.siteNodeId, USE_LANGUAGE_FALLBACK, escapeSpecialCharacters);
+			SiteNodeVO siteNodeVO = getSiteNode();
+		    value = InfoGluePrincipalControllerProxy.getController().getPrincipalPropertyHashValues(this.getDatabase(), infoGluePrincipal, propertyName, languageId, siteNodeVO.getRepositoryId(), USE_LANGUAGE_FALLBACK, escapeSpecialCharacters);
 		}
 		catch(Exception e)
 		{
@@ -1118,7 +1122,6 @@ public class BasicTemplateController implements TemplateController
 		
 		try
 		{
-			InfoGluePrincipal infoGluePrincipal = this.getPrincipal();
 			value = getPrincipalPropertyHashValues(this.infoGluePrincipal, propertyName, escapeSpecialCharacters);
 		}
 		catch(Exception e)
@@ -1135,7 +1138,6 @@ public class BasicTemplateController implements TemplateController
 		
 		try
 		{
-			InfoGluePrincipal infoGluePrincipal = this.getPrincipal();
 			value = getPrincipalPropertyHashValues(this.infoGluePrincipal, propertyName, escapeSpecialCharacters, languageId);
 		}
 		catch(Exception e)
@@ -3536,7 +3538,7 @@ public class BasicTemplateController implements TemplateController
 				Timer t = new Timer();
 				Set<SiteNodeVO> referencingSiteNodeVOList = RegistryController.getController().getReferencingSiteNodesForContent(contentId, maxRows, this.getDatabase());
 				//List referencingObjects = RegistryController.getController().getReferencingObjectsForContent(contentId, maxRows, this.getDatabase());
-				t.printElapsedTime("referencingObjects took");
+				//t.printElapsedTime("referencingObjects took");
 				
 				for(SiteNodeVO siteNode : referencingSiteNodeVOList)
 				{
@@ -3700,11 +3702,21 @@ public class BasicTemplateController implements TemplateController
 				filePath = CmsPropertyHandler.getProperty("digitalAssetPath." + i);
 			}
 			
+			SiteNodeVO siteNodeVO = this.nodeDeliveryController.getSiteNodeVO(getDatabase(), this.siteNodeId);
+			String dnsName = CmsPropertyHandler.getWebServerAddress();
+			if(siteNodeVO != null)
+			{
+				RepositoryVO repositoryVO = RepositoryController.getController().getRepositoryVOWithId(siteNodeVO.getRepositoryId(), getDatabase());
+				if(repositoryVO.getDnsName() != null && !repositoryVO.getDnsName().equals(""))
+					dnsName = repositoryVO.getDnsName();
+			}
+			/*
 			SiteNode siteNode = this.nodeDeliveryController.getSiteNode(getDatabase(), this.siteNodeId);
 			String dnsName = CmsPropertyHandler.getWebServerAddress();
 			if(siteNode != null && siteNode.getRepository().getDnsName() != null && !siteNode.getRepository().getDnsName().equals(""))
 				dnsName = siteNode.getRepository().getDnsName();
-
+			*/
+			
 			//pdfUrl = dnsName + "/" + CmsPropertyHandler.getDigitalAssetBaseUrl() + "/" + fileName;
 			pdfUrl = urlComposer.composeDigitalAssetUrl(dnsName, null, fileName, deliveryContext); 
 		}
@@ -3742,11 +3754,21 @@ public class BasicTemplateController implements TemplateController
 				filePath = CmsPropertyHandler.getProperty("digitalAssetPath." + i);
 			}
 			
+			SiteNodeVO siteNodeVO = this.nodeDeliveryController.getSiteNodeVO(getDatabase(), this.siteNodeId);
+			String dnsName = CmsPropertyHandler.getWebServerAddress();
+			if(siteNodeVO != null)
+			{
+				RepositoryVO repositoryVO = RepositoryController.getController().getRepositoryVOWithId(siteNodeVO.getRepositoryId(), getDatabase());
+				if(repositoryVO.getDnsName() != null && !repositoryVO.getDnsName().equals(""))
+					dnsName = repositoryVO.getDnsName();
+			}
+			/*
 			SiteNode siteNode = this.nodeDeliveryController.getSiteNode(getDatabase(), this.siteNodeId);
 			String dnsName = CmsPropertyHandler.getWebServerAddress();
 			if(siteNode != null && siteNode.getRepository().getDnsName() != null && !siteNode.getRepository().getDnsName().equals(""))
 				dnsName = siteNode.getRepository().getDnsName();
-
+			*/
+			
 			assetUrl = urlComposer.composeDigitalAssetUrl(dnsName, null, uniqueFileName, deliveryContext); 
 		}
 		catch(Exception e)
@@ -3791,11 +3813,21 @@ public class BasicTemplateController implements TemplateController
 				filePath = CmsPropertyHandler.getProperty("digitalAssetPath." + i);
 			}
 			
+			SiteNodeVO siteNodeVO = this.nodeDeliveryController.getSiteNodeVO(getDatabase(), this.siteNodeId);
+			String dnsName = CmsPropertyHandler.getWebServerAddress();
+			if(siteNodeVO != null)
+			{
+				RepositoryVO repositoryVO = RepositoryController.getController().getRepositoryVOWithId(siteNodeVO.getRepositoryId(), getDatabase());
+				if(repositoryVO.getDnsName() != null && !repositoryVO.getDnsName().equals(""))
+					dnsName = repositoryVO.getDnsName();
+			}
+			/*
 			SiteNode siteNode = this.nodeDeliveryController.getSiteNode(getDatabase(), this.siteNodeId);
 			String dnsName = CmsPropertyHandler.getWebServerAddress();
 			if(siteNode != null && siteNode.getRepository().getDnsName() != null && !siteNode.getRepository().getDnsName().equals(""))
 				dnsName = siteNode.getRepository().getDnsName();
-
+			*/
+			
 			//pdfUrl = dnsName + "/" + CmsPropertyHandler.getDigitalAssetBaseUrl() + "/" + fileName;
 			pdfUrl = urlComposer.composeDigitalAssetUrl(dnsName, null, fileName, deliveryContext); 
 		}
@@ -4038,7 +4070,7 @@ public class BasicTemplateController implements TemplateController
      * @throws SystemException if something goes wrong
      * @author Per Jonsson - per.jonsson@it-huset.se
      */
-    private String writeRenderedImage( AdvancedImageRenderer imageRenderer, String fileName ) throws SystemException
+    private String writeRenderedImage( AdvancedImageRenderer imageRenderer, String fileName ) throws SystemException, Exception
     {
         // write the result
         int i = 0;
@@ -4054,14 +4086,21 @@ public class BasicTemplateController implements TemplateController
             filePath = CmsPropertyHandler.getProperty( "digitalAssetPath." + i );
         }
 
+		SiteNodeVO siteNodeVO = this.nodeDeliveryController.getSiteNodeVO(getDatabase(), this.siteNodeId);
+		String dnsName = CmsPropertyHandler.getWebServerAddress();
+		if(siteNodeVO != null)
+		{
+			RepositoryVO repositoryVO = RepositoryController.getController().getRepositoryVOWithId(siteNodeVO.getRepositoryId(), getDatabase());
+			if(repositoryVO.getDnsName() != null && !repositoryVO.getDnsName().equals(""))
+				dnsName = repositoryVO.getDnsName();
+		}
+		/*
         SiteNode siteNode = this.nodeDeliveryController.getSiteNode( getDatabase(), this.siteNodeId );
         String dnsName = CmsPropertyHandler.getWebServerAddress();
-        if ( siteNode != null && siteNode.getRepository().getDnsName() != null
-                && !siteNode.getRepository().getDnsName().equals( "" ) )
-        {
+        if ( siteNode != null && siteNode.getRepository().getDnsName() != null && !siteNode.getRepository().getDnsName().equals( "" ) )
             dnsName = siteNode.getRepository().getDnsName();
-        }
-
+		*/
+		
         return urlComposer.composeDigitalAssetUrl( dnsName, null, fileName, deliveryContext );
     }
     
@@ -4141,11 +4180,21 @@ public class BasicTemplateController implements TemplateController
 			}
 			*/
 			
+			SiteNodeVO siteNodeVO = this.nodeDeliveryController.getSiteNodeVO(getDatabase(), this.siteNodeId);
+			String dnsName = CmsPropertyHandler.getWebServerAddress();
+			if(siteNodeVO != null)
+			{
+				RepositoryVO repositoryVO = RepositoryController.getController().getRepositoryVOWithId(siteNodeVO.getRepositoryId(), getDatabase());
+				if(repositoryVO.getDnsName() != null && !repositoryVO.getDnsName().equals(""))
+					dnsName = repositoryVO.getDnsName();
+			}
+			/*
 			SiteNode siteNode = this.nodeDeliveryController.getSiteNode(getDatabase(), this.siteNodeId);
 			String dnsName = CmsPropertyHandler.getWebServerAddress();
 			if(siteNode != null && siteNode.getRepository().getDnsName() != null && !siteNode.getRepository().getDnsName().equals(""))
 				dnsName = siteNode.getRepository().getDnsName();
-
+			*/
+			
 			//assetUrl = dnsName + "/" + CmsPropertyHandler.getDigitalAssetBaseUrl() + "/" + fileName;
 			assetUrl = urlComposer.composeDigitalAssetUrl(dnsName, null, fileName, deliveryContext); 
 		}
@@ -4301,11 +4350,21 @@ public class BasicTemplateController implements TemplateController
 			}
 			*/
 			
+			SiteNodeVO siteNodeVO = this.nodeDeliveryController.getSiteNodeVO(getDatabase(), this.siteNodeId);
+			String dnsName = CmsPropertyHandler.getWebServerAddress();
+			if(siteNodeVO != null)
+			{
+				RepositoryVO repositoryVO = RepositoryController.getController().getRepositoryVOWithId(siteNodeVO.getRepositoryId(), getDatabase());
+				if(repositoryVO.getDnsName() != null && !repositoryVO.getDnsName().equals(""))
+					dnsName = repositoryVO.getDnsName();
+			}
+			/*
 			SiteNode siteNode = this.nodeDeliveryController.getSiteNode(getDatabase(), this.siteNodeId);
 			String dnsName = CmsPropertyHandler.getWebServerAddress();
 			if(siteNode != null && siteNode.getRepository().getDnsName() != null && !siteNode.getRepository().getDnsName().equals(""))
 				dnsName = siteNode.getRepository().getDnsName();
-				
+			*/
+			
 			//assetUrl = dnsName + "/" + CmsPropertyHandler.getDigitalAssetBaseUrl() + "/" + fileName;
 			assetUrl = urlComposer.composeDigitalAssetUrl(dnsName, null, fileName, deliveryContext); 
 		}
@@ -4386,11 +4445,17 @@ public class BasicTemplateController implements TemplateController
 	
         String context = CmsPropertyHandler.getServletContext();
 
-		SiteNode siteNode = this.nodeDeliveryController.getSiteNode(getDatabase(), this.siteNodeId);
+		SiteNodeVO siteNodeVO = this.nodeDeliveryController.getSiteNodeVO(getDatabase(), this.siteNodeId);
+		RepositoryVO repositoryVO = RepositoryController.getController().getRepositoryVOWithId(siteNodeVO.getRepositoryId(), getDatabase());
 		String dnsName = CmsPropertyHandler.getWebServerAddress();
-		if(siteNode != null && siteNode.getRepository().getDnsName() != null && !siteNode.getRepository().getDnsName().equals(""))
+		if(siteNodeVO != null && repositoryVO.getDnsName() != null && !repositoryVO.getDnsName().equals(""))
 		{
-			dnsName = siteNode.getRepository().getDnsName();
+			dnsName = repositoryVO.getDnsName();
+		//SiteNode siteNode = this.nodeDeliveryController.getSiteNode(getDatabase(), this.siteNodeId);
+		//String dnsName = CmsPropertyHandler.getWebServerAddress();
+		//if(siteNode != null && siteNode.getRepository().getDnsName() != null && !siteNode.getRepository().getDnsName().equals(""))
+		//{
+		//	dnsName = siteNode.getRepository().getDnsName();
 
 	        String useDNSNameInUrls = CmsPropertyHandler.getUseDNSNameInURI();
 	 
@@ -5083,13 +5148,13 @@ public class BasicTemplateController implements TemplateController
 					criterias.setRepositoryIdList(repositoryIdList);
 				
 				final Set set = ExtendedSearchController.getController().search(criterias, getDatabase());
-				//t.printElapsedTime("AAAAAAAAAAAAAAAAAAAAAA search returning :" + set.size());
+				//t.printElapsedTime("AAAAAAAAAAAAAAAAAAAAAA search returning :" + set.size() + ":" + Thread.currentThread().getId());
 				final List result = new ArrayList();
 				for(Iterator i = set.iterator(); i.hasNext(); ) 
 				{
 					final Content content = (Content) i.next();
 					//if(ContentDeliveryController.getContentDeliveryController().isValidContent(this.getDatabase(), content.getId(), localLanguageId, USE_LANGUAGE_FALLBACK, true, getPrincipal(), this.deliveryContext))
-						if(ContentDeliveryController.getContentDeliveryController().isValidContent(this.getDatabase(), content.getValueObject(), localLanguageId, USE_LANGUAGE_FALLBACK, true, getPrincipal(), this.deliveryContext, false, false))
+					if(ContentDeliveryController.getContentDeliveryController().isValidContent(this.getDatabase(), content.getValueObject(), localLanguageId, USE_LANGUAGE_FALLBACK, true, getPrincipal(), this.deliveryContext, false, false))
 					{
 						if(startNodeId != null)
 						{
@@ -5105,6 +5170,8 @@ public class BasicTemplateController implements TemplateController
 					}
 				}
 
+				//t.printElapsedTime("After check..");
+				
 				if(cacheResult)
 					CacheController.cacheObjectInAdvancedCache(cacheName, key, result, null, false);
 				return result;
@@ -7796,11 +7863,21 @@ public class BasicTemplateController implements TemplateController
 			
 			if(fileName != null)
 			{
+				SiteNodeVO siteNodeVO = this.nodeDeliveryController.getSiteNodeVO(getDatabase(), this.siteNodeId);
+				String dnsName = CmsPropertyHandler.getWebServerAddress();
+				if(siteNodeVO != null)
+				{
+					RepositoryVO repositoryVO = RepositoryController.getController().getRepositoryVOWithId(siteNodeVO.getRepositoryId(), getDatabase());
+					if(repositoryVO.getDnsName() != null && !repositoryVO.getDnsName().equals(""))
+						dnsName = repositoryVO.getDnsName();
+				}
+				/*
 				SiteNode siteNode = this.nodeDeliveryController.getSiteNode(getDatabase(), this.siteNodeId);
 				String dnsName = CmsPropertyHandler.getWebServerAddress();
 				if(siteNode != null && siteNode.getRepository().getDnsName() != null && !siteNode.getRepository().getDnsName().equals(""))
 					dnsName = siteNode.getRepository().getDnsName();
-		
+				*/
+				
 				url = urlComposer.composeDigitalAssetUrl(dnsName, null, fileName, deliveryContext); 
 			}
 		}
