@@ -1255,10 +1255,24 @@ public class ViewApplicationStateAction extends InfoGlueAbstractAction
     	this.cacheKey = cacheKey;
     }
 
-    public int getLength(byte[] array)
+    public int getLength(Object o)
     {
-    	System.out.println("array:" + array.length);
-    	return array.length;
+    	logger.info("o:" + o);
+    	if(o == null)
+    		return -1;
+    	if(o instanceof byte[])
+    	{
+    		byte[] array = (byte[])o;
+    		logger.info("array:" + array.length);
+    		return array.length;
+    	}
+    	else if(o instanceof String)
+    	{
+    		logger.info("object string:" + (String)o.toString());
+    		return o.toString().length();
+    	}
+    	else
+    		return o.toString().length();
     }
 
 	public void setAttributeName(String attributeName)

@@ -379,18 +379,28 @@ public class ViewPageFilter implements Filter
         String serverName = request.getServerName();
         String portNumber = new Integer(request.getServerPort()).toString();
         String repositoryName = request.getParameter("repositoryName");
+        String requestURI = request.getRequestURI();
         logger.info("serverName:" + serverName);
         logger.info("repositoryName:" + repositoryName);
-
-        String repCacheKey = "" + serverName + "_" + portNumber + "_" + repositoryName;
+        String firstPath = requestURI.replaceAll(request.getContextPath(), "").replaceAll("//", "/");
+        logger.info("firstPath:" + firstPath);
+        if(firstPath.startsWith("/"))
+        	firstPath = firstPath.substring(1);
+        String[] splitPath = firstPath.split("/");
+        if(splitPath.length > 2)
+        	firstPath = "/" + splitPath[0] + "/" + splitPath[1];
+        
+        String repCacheKey = "" + serverName + "_" + portNumber + "_" + repositoryName + "_" + firstPath;
+        logger.info("repCacheKey:" + repCacheKey);
         Set<RepositoryVO> repositoryVOList = (Set<RepositoryVO>)CacheController.getCachedObject(uriCache.CACHE_NAME, repCacheKey);
         if (repositoryVOList != null) 
         {
-            logger.info("Using cached repositoryVOList");
+        	logger.info("Using cached repositoryVOList");
             return repositoryVOList;
         }
-
-        Set<RepositoryVO> repositories = RepositoryDeliveryController.getRepositoryDeliveryController().getRepositoryVOListFromServerName(db, serverName, portNumber, repositoryName, request.getRequestURI());
+        
+        Timer t = new Timer();
+        Set<RepositoryVO> repositories = RepositoryDeliveryController.getRepositoryDeliveryController().getRepositoryVOListFromServerName(db, serverName, portNumber, repositoryName, requestURI);
         if(logger.isInfoEnabled())
         logger.info("repositories:" + repositories);
                 
@@ -419,6 +429,7 @@ public class ViewPageFilter implements Filter
                     throw new ServletException("Unable to find a repository for server-name " + serverName);
             }
         }
+        //t.printElapsedTime("getRepositoryVOListFromServerName took");
         
         CacheController.cacheObject(uriCache.CACHE_NAME, repCacheKey, repositories);
         //session.setAttribute(FilterConstants.REPOSITORY_ID, repository.getRepositoryId());

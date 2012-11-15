@@ -80,17 +80,19 @@ public class ErrorPageAction extends InfoGlueAbstractAction
         String serverName = request.getServerName();
         String portNumber = new Integer(request.getServerPort()).toString();
         String repositoryName = request.getParameter("repositoryName");
-        
+        /*
         String repCacheKey = "" + serverName + "_" + portNumber + "_" + repositoryName;
         Set<RepositoryVO> repositoryVOList = (Set<RepositoryVO>)CacheController.getCachedObject("NavigationCache", repCacheKey);
         if (repositoryVOList != null) 
         {
             return repositoryVOList;
         }
+        */
         
         Set<RepositoryVO> repositories = RepositoryDeliveryController.getRepositoryDeliveryController().getRepositoryVOListFromServerName(serverName, portNumber, repositoryName, request.getRequestURI());
         
-        CacheController.cacheObject("NavigationCache", repCacheKey, repositories);
+        //System.out.println("Caching in error page:" + repCacheKey + ":" + repositories + ":" + request.getRequestURI());
+        //CacheController.cacheObject("NavigationCache", repCacheKey, repositories);
 
         return repositories;
     }

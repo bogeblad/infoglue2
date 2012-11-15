@@ -195,7 +195,7 @@ public class RepositoryDeliveryController extends BaseDeliveryController
 
             if(CmsPropertyHandler.getOperatingMode().equals("0"))
             {
-	            String workingPathAlternative1 = workingPath;
+            	String workingPathAlternative1 = workingPath;
 	            if(workingPathAlternative1 != null)
 	            	workingPathAlternative1 = URLEncoder.encode(workingPathAlternative1, niceURIEncoding);
 	            String workingPathAlternative2 = workingPath;
@@ -204,15 +204,12 @@ public class RepositoryDeliveryController extends BaseDeliveryController
  
 	            if(workingPath != null && url.indexOf(workingPath) == -1 && url.indexOf(workingPathAlternative1) == -1 && url.indexOf(workingPathAlternative2) == -1)
 	            {
-	            	//System.out.println("This repo had a working path but the url did not include any sign of it - let's skip it");
+	            	logger.info("This repo had a working path but the url did not include any sign of it - let's skip it");
 	            	continue;
 	            }
 	        }
             else if(CmsPropertyHandler.getOperatingMode().equals("3"))
             {
-	            if(livePath != null)
-	            	livePath = URLEncoder.encode(livePath, niceURIEncoding);
-
 	            String livePathAlternative1 = livePath;
 	            if(livePathAlternative1 != null)
 	            	livePathAlternative1 = URLEncoder.encode(livePathAlternative1, niceURIEncoding);
@@ -222,7 +219,7 @@ public class RepositoryDeliveryController extends BaseDeliveryController
 
 	            if(livePath != null && url.indexOf(livePath) == -1 && url.indexOf(livePathAlternative1) == -1 && url.indexOf(livePathAlternative2) == -1)
 	            {
-	            	//System.out.println("This repo had a live path but the url did not include any sign of it - let's skip it");
+	            	logger.info("This repo had a live path but the url did not include any sign of it - let's skip it");
 	            	continue;
 	            }
 	        }

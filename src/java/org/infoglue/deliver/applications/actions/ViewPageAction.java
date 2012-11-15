@@ -168,9 +168,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
          
     public String doExecute() throws Exception
     {
-    	Timer t = new Timer();
-    	
-        if(isRecacheCall)
+    	if(isRecacheCall)
         {
 	        //logger.warn("ThreadId:" + Thread.currentThread().getName());
             Thread.currentThread().setPriority(Thread.MIN_PRIORITY);

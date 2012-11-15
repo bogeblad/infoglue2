@@ -539,7 +539,7 @@ public class CacheController extends Thread
 		    	String cacheCapacity = (String)cacheSettings.get("CACHE_CAPACITY_" + cacheName);
 		    	if(cacheCapacity == null || !cacheCapacity.equals(""))
 		    		cacheCapacity = "15000";
-		    	
+		    			    	
 		    	if(cacheName != null && cacheName.startsWith("contentAttributeCache"))
 		    		cacheCapacity = "100000";
 		    	//else if(cacheName != null && cacheName.startsWith("contentAttributeCache"))
@@ -590,7 +590,6 @@ public class CacheController extends Thread
 				if(cacheCapacity != null && !cacheCapacity.equals(""))
 		    	{
 					Properties p = new Properties();
-			    	
 					String cacheAlgorithm = (String)cacheSettings.get("CACHE_ALGORITHM_" + cacheName);
 					if(cacheAlgorithm == null || cacheAlgorithm.equals(""))
 						p.setProperty(AbstractCacheAdministrator.CACHE_ALGORITHM_KEY, "com.opensymphony.oscache.base.algorithm.ImprovedLRUCache");
@@ -735,6 +734,7 @@ public class CacheController extends Thread
 	    	
 	    	String compressPageCache = CmsPropertyHandler.getCompressPageCache();
 	    	
+	    	System.out.println("Caching in file...:" + value.toString());
 	    	if(cacheName.equals("pageCache") && compressPageCache != null && compressPageCache.equals("true"))
 	    		putCachedCompressedContentInFile(cacheName, key.toString(), (byte[])value);				    	
 	    	else
@@ -744,6 +744,88 @@ public class CacheController extends Thread
 		
 		//logger.info("Done cacheObjectInAdvancedCache");
 	}	
+	
+	
+	public static void cacheObjectInAdvancedCache(String cacheName, Object key, Object value, boolean useFileCacheFallback, boolean useMemoryCache, String fileCacheCharEncoding, Integer memoryCacheSize, boolean unlimitedDiskCache)
+	{
+		if(cacheName == null || key == null || value == null || key.toString().length() == 0)
+			return;
+		
+		if(logger.isInfoEnabled())
+		{			
+			logger.info("cacheName: " + cacheName);
+			logger.info("key: " + key);
+			logger.info("useFileCacheFallback: " + useFileCacheFallback);
+			logger.info("useMemoryCache: "+ useMemoryCache);
+			logger.info("fileCacheCharEncoding: "+ fileCacheCharEncoding);
+			logger.info("memoryCacheSize: "+ memoryCacheSize);
+			logger.info("unlimitedDiskCache: "+ unlimitedDiskCache);
+		}
+
+	    if(!caches.containsKey(cacheName))
+	    {
+	    	GeneralCacheAdministrator cacheAdministrator = null;
+			
+			Properties p = new Properties();
+			
+			p.setProperty(AbstractCacheAdministrator.CACHE_MEMORY_KEY, Boolean.toString(useMemoryCache));
+			p.setProperty(AbstractCacheAdministrator.CACHE_DISK_UNLIMITED_KEY, Boolean.toString(unlimitedDiskCache));
+			p.setProperty(AbstractCacheAdministrator.CACHE_CAPACITY_KEY, "" + memoryCacheSize);
+			p.setProperty(AbstractCacheAdministrator.CACHE_PERSISTENCE_OVERFLOW_KEY, Boolean.toString(useFileCacheFallback));
+			
+			p.setProperty(AbstractCacheAdministrator.CACHE_ALGORITHM_KEY, "com.opensymphony.oscache.base.algorithm.ImprovedLRUCache");
+			p.setProperty("cache.persistence.class", "com.opensymphony.oscache.plugins.diskpersistence.DiskPersistenceListener");
+			p.setProperty("cache.path", CmsPropertyHandler.getDigitalAssetPath() + File.separator + "caches" + File.separator + cacheName);
+			
+			cacheAdministrator = new GeneralCacheAdministrator(p);
+			
+	        CacheEntryEventListenerImpl cacheEntryEventListener = new ExtendedCacheEntryEventListenerImpl();
+	        CacheMapAccessEventListenerImpl cacheMapAccessEventListener = new CacheMapAccessEventListenerImpl(); 
+	        
+	        cacheAdministrator.getCache().addCacheEventListener(cacheEntryEventListener, CacheEntryEventListener.class);
+	        cacheAdministrator.getCache().addCacheEventListener(cacheMapAccessEventListener, CacheMapAccessEventListener.class);
+	        caches.put(cacheName, cacheAdministrator);
+	        eventListeners.put(cacheName + "_cacheEntryEventListener", cacheEntryEventListener);
+	        eventListeners.put(cacheName + "_cacheMapAccessEventListener", cacheMapAccessEventListener);
+	    }
+	    
+		GeneralCacheAdministrator cacheAdministrator = (GeneralCacheAdministrator)caches.get(cacheName);
+			
+		if(CmsPropertyHandler.getUseSynchronizationOnCaches())
+		{
+			synchronized(cacheAdministrator)
+			{
+				try
+				{
+					if(CmsPropertyHandler.getUseHashCodeInCaches())
+						cacheAdministrator.putInCache("" + key.toString().hashCode(), value);
+					else
+					    cacheAdministrator.putInCache(key.toString(), value);
+				}
+				catch (Exception e) 
+				{
+					logger.warn("Error putting in cache:" + e.getMessage());
+				}
+			}
+		}
+		else
+		{
+			try
+			{
+				if(CmsPropertyHandler.getUseHashCodeInCaches())
+					cacheAdministrator.putInCache("" + key.toString().hashCode(), value);
+				else
+				    cacheAdministrator.putInCache(key.toString(), value);
+			}
+			catch (Exception e) 
+			{
+				logger.warn("Error putting in cache:" + e.getMessage(), e);
+			}
+		}
+					
+		//logger.info("Done cacheObjectInAdvancedCache");
+	}	
+	
 
 	public static Object getCachedObjectFromAdvancedCache(String cacheName, String key)
 	{
