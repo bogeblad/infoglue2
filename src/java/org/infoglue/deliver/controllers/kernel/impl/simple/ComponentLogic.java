@@ -43,7 +43,6 @@ import org.infoglue.cms.applications.databeans.ComponentPropertyDefinition;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentVersionController;
 import org.infoglue.cms.controllers.kernel.impl.simple.LanguageController;
 import org.infoglue.cms.entities.content.ContentVO;
-import org.infoglue.cms.entities.content.ContentVersion;
 import org.infoglue.cms.entities.content.ContentVersionVO;
 import org.infoglue.cms.entities.content.DigitalAssetVO;
 import org.infoglue.cms.entities.content.EntityVOWithSupplementingEntityVO;
@@ -1925,7 +1924,8 @@ public class ComponentLogic
 		Map property = (Map)this.infoGlueComponent.getProperties().get(propertyName);
 		if(property != null)
 		{
-			String pageComponentsXML = this.templateController.getContentAttribute(this.templateController.getMetaInformationContentId(), "ComponentStructure", true);
+			LanguageVO languageVO = LanguageController.getController().getMasterLanguage(this.templateController.getSiteNode().getRepositoryId(), this.templateController.getDatabase());
+			String pageComponentsXML = this.templateController.getContentAttribute(this.templateController.getMetaInformationContentId(), languageVO.getId(), "ComponentStructure", true);
 			int propertyHashCode = getPropertyAsStringHashCode(pageComponentsXML, this.infoGlueComponent.getId(), propertyName, this.templateController.getSiteNodeId(), this.templateController.getLanguageId());
 			//logger.info("propertyHashCode:" + propertyHashCode);
 			this.templateController.getDeliveryContext().addUsedContent("content_" + this.templateController.getMetaInformationContentId() + "_ComponentStructure(" + this.infoGlueComponent.getId() + "," + propertyName + "," + this.templateController.getSiteNodeId() + "," + this.templateController.getLanguageId() + ")=" + propertyHashCode);
@@ -1952,7 +1952,8 @@ public class ComponentLogic
 
 				if(property != null)
 				{
-					String pageComponentsXML = this.templateController.getContentAttribute(this.templateController.getMetaInformationContentId(), "ComponentStructure", true);
+					LanguageVO languageVO = LanguageController.getController().getMasterLanguage(this.templateController.getSiteNode().getRepositoryId(), this.templateController.getDatabase());
+					String pageComponentsXML = this.templateController.getContentAttribute(this.templateController.getMetaInformationContentId(), languageVO.getId(), "ComponentStructure", true);
 					int propertyHashCode = getPropertyAsStringHashCode(pageComponentsXML, parentComponent.getId(), propertyName, this.templateController.getSiteNodeId(), this.templateController.getLanguageId());
 					//System.out.println("propertyHashCode:" + propertyHashCode);
 					this.templateController.getDeliveryContext().addUsedContent("content_" + this.templateController.getMetaInformationContentId() + "_ComponentStructure(" + parentComponent.getId() + "," + propertyName + "," + this.templateController.getSiteNodeId() + "," + this.templateController.getLanguageId() + ")=" + propertyHashCode);
@@ -2936,7 +2937,7 @@ public class ComponentLogic
 	/**
 	 * This method fetches the template-string.
 	 */
-    
+   /*
 	private String getComponentPropertiesString(TemplateController templateController, Integer siteNodeId, Integer languageId, Integer contentId) throws SystemException, Exception
 	{
 		String template = null;
@@ -2956,6 +2957,7 @@ public class ComponentLogic
 
 		return template;
 	}
+	*/
 	
 	/**
 	 * This method returns a value for a property if it's set. The value is collected in the
