@@ -4,6 +4,7 @@
 package org.infoglue.cms.entities.content;
 
 import org.infoglue.cms.entities.kernel.BaseEntityVO;
+import org.infoglue.cms.util.ConstraintExceptionBuffer;
 
 /**
  * @author Erik Stenbäcka
@@ -36,6 +37,10 @@ public class EntityVOWithSupplementingEntityVO
 	public boolean getIsEntityContent()
 	{
 		return entity instanceof ContentVO;
+	}
+	public boolean getIsEntityExternal()
+	{
+		return entity instanceof IdOnlyBaseEntityVO;
 	}
 	public boolean getIsSupplementingEntityAsset()
 	{
@@ -74,5 +79,31 @@ public class EntityVOWithSupplementingEntityVO
 		sb.append("]");
 
 		return sb.toString();
+	}
+	
+	public static class IdOnlyBaseEntityVO implements BaseEntityVO
+	{
+		private Integer id;
+
+		public IdOnlyBaseEntityVO(Integer id)
+		{
+			this.id = id;
+		}
+
+		@Override
+		public Integer getId()
+		{
+			return id;
+		}
+
+		/** 
+		 * Beware: does nothing;
+		 */
+		@Override
+		public ConstraintExceptionBuffer validate()
+		{
+			return null;
+		}
+		
 	}
 }

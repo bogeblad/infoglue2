@@ -79,7 +79,7 @@
 			}
 			else
 			{
-			    var binding = new Binding("External", entityId, path);
+			    var binding = new Binding("External", entityId, path, {});
 				siteNodesVector.addElement(binding);
 				drawList();
 			}
@@ -103,7 +103,15 @@
 				path 		= path + binding.getPath();
 				entityName 	= binding.getEntityName();
 				entityId   	= binding.getEntityId();
-				qualifyerXML += "<" + entityName + ">" + entityId + "</" + entityName + ">";
+				var attributes = "";
+				if (binding.getSupplementingBinding())
+				{
+					supplementingEntityId = binding.getSupplementingBinding().entityId;
+					supplementingAssetKey = binding.getSupplementingBinding().assetKey;
+					path += " {" + (supplementingAssetKey ? supplementingAssetKey : "") + "}";
+					attributes = (supplementingEntityId ? "supplementingEntityId=\"" + supplementingEntityId + "\"" : "") + " " + (supplementingAssetKey ? "supplementingAssetKey=\"" + supplementingAssetKey + "\"" : "")
+				}
+				qualifyerXML += "<" + entityName + " " + attributes + ">" + entityId + "</" + entityName + ">";
 			}
 		   	qualifyerXML += "</qualifyer>";
 			
@@ -130,18 +138,21 @@
 		 * Binding object
 		 */
 
-		function Binding(entityName, entityId, path)
+		function Binding(entityName, entityId, path, supplementingBinding)
 		{
 			this.entityName = entityName;
 			this.entityId 	= entityId;
 			this.path 		= path;
+			this.supplementingBinding = supplementingBinding;
 		  
 		  	this.getPath 		= getPath;
 		  	this.getEntityName 	= getEntityName;
 		  	this.getEntityId 	= getEntityId;
+		  	this.getSupplementingBinding 	= getSupplementingBinding;
 		  	this.setPath 		= setPath;
 		  	this.setEntityName 	= setEntityName;
 		  	this.setEntityId 	= setEntityId;
+		  	this.setSupplementingBinding 	= setSupplementingBinding;
 		}
 		  
 		function getPath()
@@ -159,6 +170,11 @@
 		  	return this.entityId;
 		}
 
+		function getSupplementingBinding()
+		{
+		  	return this.supplementingBinding;
+		}
+
 		function setPath(path)
 		{
 		  	this.path = path;
@@ -173,6 +189,12 @@
 		{
 			this.entityId = entityId;
 		}
+
+		function setSupplementingBinding(supplementingBinding)
+		{
+			this.supplementingBinding = supplementingBinding;
+		}
+
 
 	  	/**
 	  	 * This function creates a href-tag by manipulating the DOM.
@@ -223,6 +245,41 @@
 			parent.appendChild(separator);
 		}
 
+		var selectedBinding;
+		function setSupplementingAsset(entityId, assetKey)
+		{
+			if (selectedBinding)
+			{
+				var supplementingBinding = {};
+				supplementingBinding.entityId = entityId;
+				supplementingBinding.assetKey = assetKey;
+				selectedBinding.setSupplementingBinding(supplementingBinding);
+				drawList();
+				selectedBinding = null;
+			}
+			else
+			{
+				alert("You are in a weird state.");
+			}
+		}
+		
+		function openAssetPage(url) {
+			console.log("About to open: " + url);
+			window.open('" + url + "','Assign asset','toolbar=no,status=yes,scrollbars=yes,location=no,menubar=no,directories=no,resizable=no,width=800,height=600,left=5,top=5');
+		}
+
+		function bindSupplementingBinding(index) 
+		{
+			selectedBinding = siteNodesVector.getElementAt(index);
+			console.log("binding", binding);
+			// ${componentEditorUrl}
+			var assignUrl = "ViewContentVersion!viewAssetBrowserForComponentBindingV3.action?languageId=$languageId&repositoryId=$repositoryId";
+			var supplementingBinding = selectedBinding.getSupplementingBinding();
+			assignUrl += "&assignedContentId=" + (supplementingBinding.entityId ? supplementingBinding.entityId : "") + "&assignedAssetKey=" + (supplementingBinding.assetKey ? encodeURIComponent(supplementingBinding.assetKey) : "");
+			
+			window.open(assignUrl,'Assign asset','toolbar=no,status=yes,scrollbars=yes,location=no,menubar=no,directories=no,resizable=no,width=800,height=600,left=5,top=5');
+		}
+
 		/**
 		 * This method draws the list of bindings.
 		 */
@@ -257,6 +314,10 @@
 				var myLI = document.createElement("li");
 				myLI.setAttribute("itemID", i);
 				
+				if (binding.getSupplementingBinding())
+				{
+					addImageLink(myLI, "javascript:bindSupplementingBinding(" + i + ");", "images/edit.gif");
+				}
 				addImageLink(myLI, "javascript:moveBindingDown(" + i + ");", "images/downArrow.gif");
 				addImageLink(myLI, "javascript:moveBindingUp(" + i + ");", "images/upArrow.gif");
 				addImageLink(myLI, "javascript:deleteBinding(" + i + ");", "images/delete.gif");
@@ -278,8 +339,49 @@
 	
 				addImageLink(myLI, "#", "script/xloadtree/images/xp/file.png");
 				
+				var wrapperDiv = document.createElement("div");
+				wrapperDiv.setAttribute("class", "wrapper");
+
+				var nameDiv = document.createElement("div");
+				nameDiv.setAttribute("class", "nameDiv");
+				nameDiv.setAttribute("title", binding.getPath());
+
 				var bindingText = document.createTextNode(binding.getPath());
-				myLI.appendChild(bindingText);
+				nameDiv.appendChild(bindingText);
+
+				wrapperDiv.appendChild(nameDiv);
+
+				if (binding.getSupplementingBinding())
+				{
+					var assetDiv = document.createElement("div");
+					var supplementingBindingText;
+					if (binding.getSupplementingBinding().entityId)
+					{
+						var sb = binding.getSupplementingBinding()
+						assetDiv.setAttribute("title", sb.assetKey);
+						var sb = binding.getSupplementingBinding();
+						supplementingBindingText = document.createTextNode(sb.assetKey);
+					}
+					else
+					{
+						supplementingBindingText = document.createTextNode("(Not set)");
+					}
+
+					assetDiv.appendChild(supplementingBindingText);
+					assetDiv.setAttribute("class", "supplementingBinding");
+
+					var supplementingA = document.createElement("div");
+					supplementingA.setAttribute("class", "supplementingAssetWrapper");
+					supplementingA.appendChild(assetDiv);
+					
+					var assetWrapper = document.createElement("div");
+					assetWrapper.setAttribute("class", "supplementingAssetContainer");
+					assetWrapper.appendChild(supplementingA);
+					wrapperDiv.appendChild(assetWrapper);
+				}
+
+				myLI.appendChild(wrapperDiv);
+
 				addDividerImage(myLI, 5, 16);
 				
 				myList.appendChild(myLI);
@@ -322,14 +424,17 @@
 				path 		= binding.getPath();
 				entityName 	= binding.getEntityName();
 				entityId 	= binding.getEntityId();
+				supplementingBinding = binding.getSupplementingBinding();
 				
-				binding.setPath(previousBinding.getPath())
-				binding.setEntityName(previousBinding.getEntityName())
-				binding.setEntityId(previousBinding.getEntityId())
+				binding.setPath(previousBinding.getPath());
+				binding.setEntityName(previousBinding.getEntityName());
+				binding.setEntityId(previousBinding.getEntityId());
+				binding.setSupplementingBinding(previousBinding.getSupplementingBinding());
 			
-				previousBinding.setPath(path)
-				previousBinding.setEntityName(entityName)
-				previousBinding.setEntityId(entityId)
+				previousBinding.setPath(path);
+				previousBinding.setEntityName(entityName);
+				previousBinding.setEntityId(entityId);
+				previousBinding.setSupplementingBinding(supplementingBinding);
 				
 				drawList();
 			}			
@@ -349,14 +454,17 @@
 				path 		= binding.getPath();
 				entityName 	= binding.getEntityName();
 				entityId 	= binding.getEntityId();
+				supplementingBinding = binding.getSupplementingBinding();
 				
-				binding.setPath(previousBinding.getPath())
-				binding.setEntityName(previousBinding.getEntityName())
-				binding.setEntityId(previousBinding.getEntityId())
+				binding.setPath(previousBinding.getPath());
+				binding.setEntityName(previousBinding.getEntityName());
+				binding.setEntityId(previousBinding.getEntityId());
+				binding.setSupplementingBinding(previousBinding.getSupplementingBinding());
 			
-				previousBinding.setPath(path)
-				previousBinding.setEntityName(entityName)
-				previousBinding.setEntityId(entityId)
+				previousBinding.setPath(path);
+				previousBinding.setEntityName(entityName);
+				previousBinding.setEntityId(entityId);
+				previousBinding.setSupplementingBinding(supplementingBinding);
 			
 				drawList();
 			}
@@ -368,7 +476,16 @@
 		function init()
 		{
 			#foreach($binding in $componentBindings)
-				binding = new Binding("External", "$binding.entityId", "$formatter.cleanForJavascriptStrings($binding.path)");
+				#set( $path = "$formatter.cleanForJavascriptStrings($binding.path)" )
+				console.log("path: $path");
+				#set( $path = "$!this.cleanExternalBindingPath($path)" )
+				console.log("path2: $path");
+				#if( $binding.containsKey("supplementingBinding") )
+				var supplementingBinding = {"entityId":"$!binding.supplementingBinding.entityId","assetKey":"$!binding.supplementingBinding.assetKey"};
+				binding = new Binding("External", "$binding.entityId", "$path", supplementingBinding);
+				#else
+				binding = new Binding("External", "$binding.entityId", "$path");
+				#end
 				siteNodesVector.addElement(binding);
 			#end
 
@@ -408,6 +525,37 @@
 		#externalBindingIframe {width:320px; height: 420px; border-width: 0px;}
 		#inputColumn {width: 320px; padding-right: 20px;}
 		#bindingColumn {width: 315px;}
+
+		#currentBindings div.wrapper {
+			display: inline-block;
+			width: 215px;
+		}
+		#currentBindings div.nameDiv {
+			display: inline-block;
+			width: 115px;
+			text-overflow: ellipsis;
+			overflow: hidden;
+		}
+		#currentBindings div.supplementingAssetWrapper {
+			display: inline-block;
+			float: right;
+		}
+		#currentBindings div.supplementingAssetWrapper::before {
+			content: "[";
+		}
+		#currentBindings div.supplementingAssetWrapper::after {
+			content: "]";
+		}
+		#currentBindings div.supplementingBinding {
+			display: inline-block;
+			max-width: 90px;
+			text-overflow: ellipsis;
+			overflow: hidden;
+		}
+		#currentBindings div.supplementingAssetContainer {
+			width: 100px;
+			display: inline-block;
+		}
 	</style>
 </head>
 
