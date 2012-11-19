@@ -86,6 +86,7 @@ public class ViewAccessRightsAction extends InfoGlueAbstractAction
 	private Collection accessRightsUserRows = null;
 	private Map<Integer,List<AccessRightGroupVO>> accessRightGroupsMap = new HashMap<Integer,List<AccessRightGroupVO>>();
 	private Map<String,Object> accessRightHasAccessMap = new HashMap<String,Object>();
+	private Map<String,Integer> accessRightIdMap = new HashMap<String,Integer>();
 	private String extraAccessRightInfo = "";
 
 	public String doV3() throws Exception
@@ -147,12 +148,16 @@ public class ViewAccessRightsAction extends InfoGlueAbstractAction
 				}
 			}
 		}
-				
+
 		this.interceptionPointVOList = InterceptionPointController.getController().getInterceptionPointVOList(interceptionPointCategory);
+		//t.printElapsedTime("1");
 		this.roleList = RoleControllerProxy.getController().getAllRoles();
+		//t.printElapsedTime("2");
 		this.groupList = GroupControllerProxy.getController().getAllGroups();
+		//t.printElapsedTime("3");
 		
 		this.accessRightsUserRows = AccessRightController.getController().getAccessRightsUserRows(interceptionPointCategory, extraParameters);
+		//t.printElapsedTime("4");
 		
 		Database db = CastorDatabaseService.getDatabase();
         beginTransaction(db);
@@ -164,8 +169,11 @@ public class ViewAccessRightsAction extends InfoGlueAbstractAction
     			this.extraAccessRightInfo += getExtraAccessRightText(interceptionPointVO, getExtraParameters(), db);
 
     			Integer accessRightId = getAccessRightId(interceptionPointVO.getId(), getExtraParameters(), db);
-    			//Integer[] accessRightIds = getAccessRightIds(interceptionPointVO.getId(), getExtraParameters(), db);
-    			
+    			//t.printElapsedTime("5");
+
+    			Integer[] accessRightIds = getAccessRightIds(interceptionPointVO.getId(), getExtraParameters(), db);
+    			//t.printElapsedTime("6");
+
     			accessRightHasAccessMap.put("" + interceptionPointVO.getId() + "_" + getExtraParameters(), accessRightId);
     			
     			for(InfoGlueRole role : (List<InfoGlueRole>)this.roleList)
@@ -173,7 +181,7 @@ public class ViewAccessRightsAction extends InfoGlueAbstractAction
         			Boolean hasAccess = getHasAccessRight(interceptionPointVO.getId(), getExtraParameters(), role.getName(), db);
         			accessRightHasAccessMap.put("" + interceptionPointVO.getId() + "_" + getExtraParameters() + "_" + role.getName(), hasAccess);
     			}
-    			
+    			//t.printElapsedTime("7");
     			/*
     			for(Integer currentAccessRightId : accessRightIds)
     			{
@@ -184,6 +192,7 @@ public class ViewAccessRightsAction extends InfoGlueAbstractAction
     				}
     			}
     			*/
+    			//t.printElapsedTime("8");
     			
     			if(accessRightId != null && accessRightId > -1)
     			{
@@ -192,6 +201,7 @@ public class ViewAccessRightsAction extends InfoGlueAbstractAction
     				accessRightGroupsMap.put(accessRightId, accessRightGroupVOList);
     				accessRightGroupsMap.put(interceptionPointVO.getId(), accessRightGroupVOList);
     			}
+    			//t.printElapsedTime("9");
     		}		
             
             commitTransaction(db);
@@ -269,9 +279,17 @@ public class ViewAccessRightsAction extends InfoGlueAbstractAction
 		Timer t = new Timer();
 	    try
 	    {
-			List accessRights = AccessRightController.getController().getAccessRightVOList(interceptionPointId, extraParameters, roleName);
+	    	//System.out.println("interceptionPointId:" + interceptionPointId);
+	    	//System.out.println("extraParameters:" + extraParameters);
+	    	//System.out.println("roleName:" + roleName);
+	    	Boolean hasAccess = (Boolean)accessRightHasAccessMap.get("" + interceptionPointId + "_" + extraParameters + "_" + roleName);
+	    	if(hasAccess != null)
+	    		return hasAccess;
+
+	    	List accessRights = AccessRightController.getController().getAccessRightVOList(interceptionPointId, extraParameters, roleName);
 			boolean hasAccessRight = (accessRights.size() > 0) ? true : false;
-			t.printElapsedTime("getHasAccessRight");
+			//t.printElapsedTime("getHasAccessRight 1:" + hasAccessRight);
+			//Thread.dumpStack();
 			return hasAccessRight;
 	    }
 	    catch(Exception e)
@@ -283,12 +301,21 @@ public class ViewAccessRightsAction extends InfoGlueAbstractAction
 
 	public boolean getHasAccessRight(Integer interceptionPointId, String extraParameters, String roleName, Database db) throws SystemException, Bug
 	{
-		//Timer t = new Timer();
+		Timer t = new Timer();
 	    try
 	    {
+	    	//System.out.println("interceptionPointId:" + interceptionPointId);
+	    	//System.out.println("extraParameters:" + extraParameters);
+	    	//System.out.println("roleName:" + roleName);
+	    	Boolean hasAccess = (Boolean)accessRightHasAccessMap.get("" + interceptionPointId + "_" + extraParameters + "_" + roleName);
+	    	if(hasAccess != null)
+	    		return hasAccess;
+
 			List accessRights = AccessRightController.getController().getAccessRightVOList(db, interceptionPointId, extraParameters, roleName);
 			boolean hasAccessRight = (accessRights.size() > 0) ? true : false;
-			//t.printElapsedTime("getHasAccessRight");
+			//t.printElapsedTime("getHasAccessRight 2:" + hasAccessRight);
+			//Thread.dumpStack();
+
 			return hasAccessRight;
 	    }
 	    catch(Exception e)
@@ -301,6 +328,10 @@ public class ViewAccessRightsAction extends InfoGlueAbstractAction
 	public Integer getAccessRightId(Integer interceptionPointId, String extraParameters) throws SystemException, Bug
 	{
 		//Timer t = new Timer();
+		Integer accessRightId = (Integer)accessRightHasAccessMap.get("" + interceptionPointId + "_" + extraParameters);
+		if(accessRightId != null)
+			return accessRightId;
+		
 		List accessRights = AccessRightController.getController().getAccessRightVOListOnly(interceptionPointId, extraParameters);
 		//t.printElapsedTime("getAccessRightId");
 
@@ -309,6 +340,10 @@ public class ViewAccessRightsAction extends InfoGlueAbstractAction
 
 	public Integer getAccessRightId(Integer interceptionPointId, String extraParameters, Database db) throws SystemException, Bug
 	{
+		Integer accessRightId = (Integer)accessRightHasAccessMap.get("" + interceptionPointId + "_" + extraParameters);
+		if(accessRightId != null)
+			return accessRightId;
+
 		//Timer t = new Timer();
 		List accessRights = AccessRightController.getController().getAccessRightVOListOnly(db, interceptionPointId, extraParameters);
 		//t.printElapsedTime("getAccessRightId");

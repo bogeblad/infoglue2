@@ -177,6 +177,15 @@
 
 #set($interceptionPointIndex = 0)
 #foreach($interceptionPointVO in $interceptionPointVOList)
+					#set($accessRightGroupIndex = 0)
+					#set($groups = [])
+					#set($groups = $accessRightGroupsMap.get($interceptionPointVO.id))
+					#foreach($accessRightGroup in $groups)
+						<input type="hidden" name="${interceptionPointVO.id}_${accessRightGroupIndex}_groupName" value="$accessRightGroup.groupName"/>
+						#set($accessRightGroupIndex = $accessRightGroupIndex + 1)
+					#end
+
+#*
 	#set($accessRightId = -1)
 	#set($accessRightId = $this.getAccessRightId($interceptionPointVO.id, $extraParameters))
 	#set($accessRightIds = $this.getAccessRightIds($interceptionPointVO.id, $extraParameters))
@@ -195,6 +204,7 @@
 		#end
 	#end
 	#set($interceptionPointIndex = $interceptionPointIndex + 1)
+*#
 #end
 
 <script type="text/javascript">var useAnonymousWarningCheck = false;</script>
@@ -215,14 +225,19 @@ Rights saved...
 			#if($interceptionPointVO.name == "Content.Read" || $interceptionPointVO.name == "SiteNodeVersion.Read")
 				<script type="text/javascript">useAnonymousWarningCheck = true;</script>	
 			#end
-			#*
-			$interceptionPointVO.name<br/>
-			getUsesExtraDataForAccessControl: $interceptionPointVO.getUsesExtraDataForAccessControl()<br/>
-			extraParameters: $extraParameters<br/>
-			extraMultiParameters: $extraMultiParameters<br/>
-			*#
 			##if(($interceptionPointVO.getUsesExtraDataForAccessControl() && $extraParameters && $extraParameters != "") || (!$interceptionPointVO.getUsesExtraDataForAccessControl() && (!$extraParameters || $extraParameters == "")))
 			#if(($interceptionPointVO.getUsesExtraDataForAccessControl() && (($extraParameters && $extraParameters != "") || $extraMultiParameters)) || (!$interceptionPointVO.getUsesExtraDataForAccessControl() && (!$extraParameters || $extraParameters == "") && !$extraMultiParameters))
+				
+							#set($accessRightId = -1)
+							#set($hasGroupLimitations = false)
+							#set($accessRightId = $accessRightHasAccessMap.get("${interceptionPointVO.id}_${extraParameters}"))
+							#set($accessRightGroups = [])
+							#set($accessRightGroups = $accessRightGroupsMap.get($accessRightId))
+							#if($accessRightGroups.size() > 0)
+								#set($hasGroupLimitations = true)
+							#end
+				
+				#*
 				#set($accessRightId = -1)
 				#set($accessRightId = $this.getAccessRightId($interceptionPointVO.id, $extraParameters))
 				#set($accessRightIds = $this.getAccessRightIds($interceptionPointVO.id, $extraParameters))
@@ -234,16 +249,18 @@ Rights saved...
 						#set($accessRightId = $currentAccessRightId)
 					#end
 				#end
+				*#
+				
 				#set($dotIndex = $interceptionPointVO.name.indexOf(".") + 1)
 				<td align="center" class="smalllabel">$interceptionPointVO.name.substring($dotIndex)
-				#if($accessRightId > -1)
+				##if($accessRightId > -1)
 					#if($hasGroupLimitations)
 						<script type="text/javascript">hasGroupLimitation = true;</script>
 						<br/><a href="javascript:showDiv('groups$accessRightId');" title="Limited by groups also - click to view."><img src="images/groups.gif" border="0"/></a>
 					#else
 						<br/><a href="javascript:showDiv('groups$accessRightId');" title="Not limited by groups at the moment"><img src="images/groupsInactive.gif" border="0"/></a>
 					#end
-				#end
+				##end
 				</td>
 				<td><img src="images/trans.gif" width="20" height="1"></td>
 				#set($colspan = $colspan + 3)
@@ -280,12 +297,22 @@ Rights saved...
 				##if(($interceptionPointVO.getUsesExtraDataForAccessControl() && $extraParameters && $extraParameters != "") || (!$interceptionPointVO.getUsesExtraDataForAccessControl() && (!$extraParameters || $extraParameters == "")))
 				#if(($interceptionPointVO.getUsesExtraDataForAccessControl() && (($extraParameters && $extraParameters != "") || $extraMultiParameters)) || (!$interceptionPointVO.getUsesExtraDataForAccessControl() && (!$extraParameters || $extraParameters == "") && !$extraMultiParameters))
 					<td $class align="center" nowrap>
+					
+									#set($checked = "")
+									#set($key = "${interceptionPointVO.id}_${extraParameters}_$role.name")
+									#set($key2 = "${interceptionPointVO.id}_${extraParameters}")
+									#set($hasAccess = $accessRightHasAccessMap.get($key))
+									#if($hasAccess)
+										#set($checked = "checked")
+										#set($accessRightId = $accessRightHasAccessMap.get($key2))
+									#end
+					#*
 						#set($checked = "")
 						#if($this.getHasAccessRight($interceptionPointVO.id, $extraParameters, $role.name))
 							#set($checked = "checked")
 							#set($accessRightId = $this.getAccessRightId($interceptionPointVO.id, $extraParameters))
 						#end 
-						
+					*#		
 						#if($interceptionPointVO.name == "Content.Read" || $interceptionPointVO.name == "SiteNodeVersion.Read")
 							#set($anonymousRolesCount = 0)
 							#foreach($anonymousRole in $anonymousPrincipal.roles)
@@ -344,7 +371,12 @@ Rights saved...
 			##if(($interceptionPointVO.getUsesExtraDataForAccessControl() && $extraParameters && $extraParameters != "") || (!$interceptionPointVO.getUsesExtraDataForAccessControl() && (!$extraParameters || $extraParameters == "")))
 			#if(($interceptionPointVO.getUsesExtraDataForAccessControl() && (($extraParameters && $extraParameters != "") || $extraMultiParameters)) || (!$interceptionPointVO.getUsesExtraDataForAccessControl() && (!$extraParameters || $extraParameters == "") && !$extraMultiParameters))
 				#set($accessRightId = -1)
+				
+							#set($keyAccessRightId = "${interceptionPointVO.id}_${extraParameters}")
+							#set($accessRightId = $accessRightHasAccessMap.get($keyAccessRightId))
+				#*
 				#set($accessRightId = $this.getAccessRightId($interceptionPointVO.id, $extraParameters))
+				*#
 				#set($dotIndex = $interceptionPointVO.name.indexOf(".") + 1)
 				<td align="center" class="smalllabel">$interceptionPointVO.name.substring($dotIndex)</td>
 				<td><img src="images/trans.gif" width="20" height="1"></td>
@@ -449,10 +481,19 @@ Rights saved...
 #set($interceptionPointIndex = 0)
 #foreach($interceptionPointVO in $interceptionPointVOList)
 	#set($accessRightId = -1)
+	
+			#set($keyAccessRightId = "${interceptionPointVO.id}_${extraParameters}")
+			#set($accessRightId = $accessRightHasAccessMap.get($keyAccessRightId))
+			
+			##set($accessRightIds = $this.getAccessRightIds($interceptionPointVO.id, $extraParameters))
+	
+	#*
 	#set($accessRightId = $this.getAccessRightId($interceptionPointVO.id, $extraParameters))
 	#set($accessRightIds = $this.getAccessRightIds($interceptionPointVO.id, $extraParameters))
+	*#
 	
 	#if($accessRightId > -1)
+		#*
 		#set($accessRightGroups = $this.getAccessRightGroups($accessRightId))
 		#foreach($currentAccessRightId in $accessRightIds)
 			#set($accessRightGroupsCandidate = $this.getAccessRightGroups($currentAccessRightId))
@@ -460,7 +501,12 @@ Rights saved...
 				#set($accessRightGroups = $accessRightGroupsCandidate)
 				#set($accessRightId = $currentAccessRightId)
 			#end
-		#end						
+		#end
+		*#
+				#set($accessRightGroups = [])
+				##set($accessRightGroups = $this.getAccessRightGroups($accessRightId))
+				#set($accessRightGroups = $accessRightGroupsMap.get($accessRightId))
+								
 		
 		<script type="text/javascript">
 		
