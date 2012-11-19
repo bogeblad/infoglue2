@@ -233,6 +233,7 @@ public class WorkingPublicationThread extends Thread
 
 				    	//continue;
 				    }
+				    t.printElapsedTime("First part in working thread done...");
 					//logger.info("changedAttributeNames in working thread:" + changedAttributeNames);
 					
 					//logger.info("className:" + className);
@@ -280,6 +281,8 @@ public class WorkingPublicationThread extends Thread
 								}
 						    }
 			
+						    t.printElapsedTime("2");
+
 							//If it's an contentVersion we should delete all images it might have generated from attributes.
 							if(Class.forName(className).getName().equals(ContentImpl.class.getName()))
 							{
@@ -309,6 +312,7 @@ public class WorkingPublicationThread extends Thread
 								Class typesExtraSmallest = SmallestContentVersionImpl.class;
 								Object[] idsExtraSmallest = {new Integer(objectId)};
 								CacheController.clearCache(typesExtraSmallest, idsExtraSmallest);
+							    t.printElapsedTime("CV");
 							}
 							else if(Class.forName(className).getName().equals(AvailableServiceBindingImpl.class.getName()))
 							{
@@ -327,6 +331,7 @@ public class WorkingPublicationThread extends Thread
 							    Class typesExtra = SmallSiteNodeVersionImpl.class;
 								Object[] idsExtra = {new Integer(objectId)};
 								CacheController.clearCache(typesExtra, idsExtra);
+							    t.printElapsedTime("SNV");
 							}
 							else if(Class.forName(className).getName().equals(RepositoryImpl.class.getName()))
 							{
@@ -389,8 +394,6 @@ public class WorkingPublicationThread extends Thread
 								Object[] idsExtra = {objectId};
 								CacheController.clearCache(typesExtra, idsExtra);
 							}
-	
-						    logger.info("4");
 						}	
 					    
 					    t.printElapsedTime("Clearing all castor caches took");

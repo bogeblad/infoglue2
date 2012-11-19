@@ -1988,7 +1988,8 @@ public class NodeDeliveryController extends BaseDeliveryController
         }
 
         String repositoryPath = null;
-    	
+    	boolean noHostStated = true;
+    		
     	if(!CmsPropertyHandler.getOperatingMode().equals("3"))
     	{
 	    	int workingPathStartIndex = repositoryVO.getDnsName().indexOf("workingPath=");
@@ -2000,6 +2001,8 @@ public class NodeDeliveryController extends BaseDeliveryController
 	    		else
 	    			repositoryPath = repositoryVO.getDnsName().substring(workingPathStartIndex + 12);
 	    	}
+	    	if(repositoryVO.getDnsName().indexOf("working=") > -1)
+	    		noHostStated = false;
     	}
 
     	if(repositoryPath == null)
@@ -2013,12 +2016,21 @@ public class NodeDeliveryController extends BaseDeliveryController
 	    		else
 	    			repositoryPath = repositoryVO.getDnsName().substring(pathStartIndex + 5);
         	}
+	    	if(repositoryVO.getDnsName().indexOf("live=") > -1 || repositoryVO.getDnsName().indexOf("preview=") > -1)
+	    		noHostStated = false;
     	}
     	
 		if(logger.isInfoEnabled())
 		{
 	    	logger.info("repositoryPath:" + repositoryPath);    	
 	    	logger.info("path:" + path.length);    	
+		}
+		
+		if(repositoryPath == null && noHostStated)
+		{
+			if(logger.isInfoEnabled())
+    			logger.info("The repo " + repositoryVO.getName() + " seems corrupt so this repository should be excluded.");
+    		return null;
 		}
 		
     	if(repositoryPath != null && path.length <= 0)

@@ -1893,6 +1893,44 @@ public class ContentVersionController extends BaseController
 	}
 
 	/**
+	 * Returns an attribute value from the ContentVersionVO
+	 *
+	 * @param contentVersionVO The version on which to find the value
+	 * @param attributeName THe name of the attribute whose value is wanted
+	 * @param escapeHTML A boolean indicating if the result should be escaped
+	 * @return The String vlaue of the attribute, or blank if it doe snot exist.
+	 */
+	public List<String> getAttributeNames(ContentVersionVO contentVersionVO1)
+	{
+		List<String> attributeNames = new ArrayList<String>();
+		try
+		{
+			String xml = contentVersionVO1.getVersionValue();
+	
+			int attributesStartTagIndex = xml.indexOf("<attributes>");
+			int attributesStopTagIndex = xml.indexOf("</attributes>");
+			
+			String attributes = xml.substring(attributesStartTagIndex+12, attributesStopTagIndex);
+			
+			//logger.info("attributes1:" + attributes);
+			
+			int startTagIndex = attributes.indexOf("<");
+			while(startTagIndex > -1)
+			{
+				String attributeName = attributes.substring(startTagIndex + 1, attributes.indexOf(">",startTagIndex+1));
+				int endTagEndIndex = attributes.indexOf("</" + attributeName + ">", startTagIndex);
+				attributeNames.add(attributeName);
+				
+				startTagIndex = attributes.indexOf("<", endTagEndIndex + 1);
+			}
+		}
+		catch (Exception e) 
+		{
+			e.printStackTrace();
+		}
+		return attributeNames;
+	}
+	/**
 	 * This method fetches a value from the xml that is the contentVersions Value. If the 
 	 * contentVersioVO is null the contentVersion has not been created yet and no values are present.
 	 */

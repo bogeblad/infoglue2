@@ -355,7 +355,12 @@ public class BasicURLComposer extends URLComposer
         try
 		{
         	SiteNodeVO siteNodeVO = SiteNodeController.getController().getSiteNodeVOWithId(siteNodeId, db);
-	
+        	if(siteNodeVO == null)
+        	{
+	        	logger.warn("composePageUrl was called with siteNodeId which does not exist:" + siteNodeId + " from the page with key: " + deliveryContext.getPageKey());
+	    		return "";
+        	}
+        	
 	        String deriveProtocolWhenUsingProtocolRedirects = RepositoryDeliveryController.getRepositoryDeliveryController().getExtraPropertyValue(siteNodeVO.getRepositoryId(), "deriveProtocolWhenUsingProtocolRedirects");
 			if(deriveProtocolWhenUsingProtocolRedirects == null || deriveProtocolWhenUsingProtocolRedirects.equals("") || !deriveProtocolWhenUsingProtocolRedirects.equals("true") || !deriveProtocolWhenUsingProtocolRedirects.equals("false"))
 				deriveProtocolWhenUsingProtocolRedirects = CmsPropertyHandler.getDeriveProtocolWhenUsingProtocolRedirects();
@@ -401,7 +406,7 @@ public class BasicURLComposer extends URLComposer
 		}
 		catch (Exception e) 
 		{
-			logger.warn("Error checking up if we should switch protocol:" + e.getMessage());
+			logger.warn("Error checking up if we should switch protocol:" + e.getMessage(), e);
 		}
         
         if(enableNiceURI.equalsIgnoreCase("true") && deliveryContext.getHttpServletRequest().getRequestURI().indexOf("!renderDecoratedPage") == -1 && !deliveryContext.getDisableNiceUri())
@@ -409,6 +414,12 @@ public class BasicURLComposer extends URLComposer
             String context = CmsPropertyHandler.getServletContext();
             
             SiteNodeVO siteNode = SiteNodeController.getController().getSmallSiteNodeVOWithId(siteNodeId, db);
+        	if(siteNode == null)
+        	{
+	        	logger.warn("composePageUrl was called with siteNodeId which does not exist:" + siteNodeId + " from the page with key: " + deliveryContext.getPageKey());
+	    		return "";
+        	}
+
             SiteNodeVO currentSiteNode = SiteNodeController.getController().getSmallSiteNodeVOWithId(deliveryContext.getSiteNodeId(), db);
     		if(!siteNode.getRepositoryId().equals(currentSiteNode.getRepositoryId()))
     		{
