@@ -1336,7 +1336,7 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 					if(hasAccessToProperty)
 					{
 						String warningText = getLocalizedString(locale, "deliver.editOnSight.dirtyWarning");
-						String assignUrl = componentEditorUrl + "ViewSiteNodePageComponents!showExternalBinding.action?repositoryId=" + repositoryId + "&siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&componentId=" + componentId + "&propertyName=" + componentProperty.getName() + "&showSimple=" + getTemplateController().getDeliveryContext().getShowSimple() + "&externalBindingAction=" + URIUtil.encodeWithinQuery(componentProperty.getExternalBindingConfig());
+						String assignUrl = componentEditorUrl + "ViewSiteNodePageComponents!showExternalBinding.action?repositoryId=" + repositoryId + "&siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&componentId=" + componentId + "&propertyName=" + componentProperty.getName() + "&showSimple=" + getTemplateController().getDeliveryContext().getShowSimple() + "&externalBindingAction=" + URIUtil.encodeWithinQuery(componentProperty.getExternalBindingConfig()) + "&supplementingEntityType=" + componentProperty.getSupplementingEntityType();
 						sb.append("<a title=\"" + title + "\" class=\"componentEditorLink\" href=\"#\" onclick=\"if(checkDirty('" + warningText + "')){window.open('" + assignUrl + "','Assign','toolbar=no,status=yes,scrollbars=yes,location=no,menubar=no,directories=no,resizable=no,width=800,height=600,left=5,top=5');} return false;\">"); //openInlineDivImpl('" + assignUrl + "', 900, 850, true, true);
 					}
 
@@ -2558,7 +2558,9 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 					else if(type.equalsIgnoreCase(ComponentProperty.EXTERNALBINDING))	
 					{
 						String entity 	= binding.attributeValue("entity");
+						String supplementingEntityType	= binding.attributeValue("supplementingEntityType");
 						property.setEntityClass(entity);
+						property.setSupplementingEntityType(supplementingEntityType);
 						String externalBindingConfig = binding.attributeValue("externalBindingConfig");
 						property.setExternalBindingConfig(externalBindingConfig);
 						String value = getComponentPropertyValue(componentId, name, false);

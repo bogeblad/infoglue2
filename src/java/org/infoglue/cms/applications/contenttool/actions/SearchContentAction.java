@@ -400,11 +400,16 @@ public class SearchContentAction extends InfoGlueAbstractAction
 		}
 		
 		int maxRows = 5;
-		if(this.maxRows != 100 & this.maxRows != 0)
+		if (this.maxRows <= 100 && this.maxRows > 0)
+		{
 			maxRows = this.maxRows;
+		}
 		else
+		{
 			this.maxRows = maxRows;
+		}
 
+		
 		this.repositories = RepositoryController.getController().getAuthorizedRepositoryVOList(this.getInfoGluePrincipal(), false);
 
 		if (getSearchString() != null)

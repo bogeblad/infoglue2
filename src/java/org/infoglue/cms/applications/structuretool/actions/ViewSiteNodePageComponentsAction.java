@@ -2591,4 +2591,31 @@ public class ViewSiteNodePageComponentsAction extends InfoGlueAbstractAction
 			return false;
 		}
 	}
+	
+	public String cleanExternalBindingPath(String path)
+	{
+		if (path == null)
+		{
+			return null;
+		}
+		path = path.trim();
+		int start = path.lastIndexOf("{");
+		if (start != -1)
+		{
+			int end = path.indexOf("}", start);
+			if (end != -1)
+			{
+				if (end == path.length() -1)
+				{
+					// Since the path should end with the substring we want to remove we do not need to give an end id.
+					path = path.substring(0, start);
+				}
+				else
+				{
+					logger.info("Found path with '{' and '}' but the path did not end with '}'. This is probably just a weirdly named content. Let's not clean it. Path: " + path);
+				}
+			}
+		}
+		return path;
+	}
 }

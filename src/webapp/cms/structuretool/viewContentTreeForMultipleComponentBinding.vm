@@ -246,10 +246,11 @@
 				supplementingBinding.assetKey = assetKey;
 				selectedBinding.setSupplementingBinding(supplementingBinding);
 				drawList();
+				selectedBinding = null;
 			}
 			else
 			{
-				alert("You are in a weird state. Please stop it! :(");
+				alert("You are in a weird state.");
 			}
 		}
 		
@@ -330,25 +331,47 @@
 	
 				addImageLink(myLI, "#", "script/xloadtree/images/xp/file.png");
 
+				var wrapperDiv = document.createElement("div");
+				wrapperDiv.setAttribute("class", "wrapper");
+
+				var nameDiv = document.createElement("div");
+				nameDiv.setAttribute("class", "nameDiv");
+				nameDiv.setAttribute("title", binding.getPath());
+
 				var bindingText = document.createTextNode(binding.getPath());
-				myLI.appendChild(bindingText);
+				nameDiv.appendChild(bindingText);
+
+				wrapperDiv.appendChild(nameDiv);
+
 				if (binding.getSupplementingBinding())
 				{
-					var supplementingA = document.createElement("span");
-					supplementingA.setAttribute("class", "supplementingBinding");
 					var supplementingBindingText;
 					if (binding.getSupplementingBinding().entityId)
 					{
 						var sb = binding.getSupplementingBinding();
-						supplementingBindingText = document.createTextNode("(" + sb.entityId + " [" + sb.assetKey + "])");
+						supplementingBindingText = document.createTextNode(sb.assetKey);
 					}
 					else
 					{
 						supplementingBindingText = document.createTextNode("(Not set)");
 					}
-					supplementingA.appendChild(supplementingBindingText);
-					myLI.appendChild(supplementingA);
+
+					var assetDiv = document.createElement("div");
+					assetDiv.appendChild(supplementingBindingText);
+					assetDiv.setAttribute("class", "supplementingBinding");
+					assetDiv.setAttribute("title", sb.assetKey);
+
+					var supplementingA = document.createElement("div");
+					supplementingA.setAttribute("class", "supplementingAssetWrapper");
+					supplementingA.appendChild(assetDiv);
+					
+					var assetWrapper = document.createElement("div");
+					assetWrapper.setAttribute("class", "supplementingAssetContainer");
+					assetWrapper.appendChild(supplementingA);
+					wrapperDiv.appendChild(assetWrapper);
 				}
+
+				myLI.appendChild(wrapperDiv);
 
 				addDividerImage(myLI, 5, 16);
 
@@ -518,7 +541,6 @@
 		function init()
 		{
 			#foreach($binding in $componentBindings)
-				//alert("$binding");
 				#if( $binding.containsKey("supplementingBinding") )
 				var supplementingBinding = {"entityId":"$!binding.supplementingBinding.entityId","assetKey":"$!binding.supplementingBinding.assetKey"};
 				binding = new Binding("Content", "$binding.entityId", "$formatter.cleanForJavascriptStrings($binding.path)", supplementingBinding);
@@ -669,7 +691,7 @@
 	</style>
 	
 	<style type="text/css">
-		.supplementingBinding {margin-left:10px;}
+		/*.supplementingBinding {margin-left:10px;}*/
 	
 		#tabsContainer {border:1px solid lightgrey; padding: 0; height: 437px; width: 300px;}
 		#basicTab, #searchTab { background-color: #eef7dc; border: none; padding: 0; float: left; border-top:2px solid green;  /*width: 340px; display: block;*/}
@@ -712,6 +734,37 @@
 		#contentBindingTabs {
 			float: left;
 			margin: 0;
+		}
+		
+		#currentBindings div.wrapper {
+			display: inline-block;
+			width: 250px;
+		}
+		#currentBindings div.nameDiv {
+			display: inline-block;
+			width: 150px;
+			text-overflow: ellipsis;
+			overflow: hidden;
+		}
+		#currentBindings div.supplementingAssetWrapper {
+			display: inline-block;
+			float: right;
+		}
+		#currentBindings div.supplementingAssetWrapper::before {
+			content: "[";
+		}
+		#currentBindings div.supplementingAssetWrapper::after {
+			content: "]";
+		}
+		#currentBindings div.supplementingBinding {
+			display: inline-block;
+			max-width: 90px;
+			text-overflow: ellipsis;
+			overflow: hidden;
+		}
+		#currentBindings div.supplementingAssetContainer {
+			width: 100px;
+			display: inline-block;
 		}
 	</style>
 

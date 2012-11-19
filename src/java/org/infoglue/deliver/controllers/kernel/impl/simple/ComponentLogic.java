@@ -3900,4 +3900,70 @@ public class ComponentLogic
 
 		return result;
 	}
+	/**
+	 * Retrieves the entities bound to the given <em>propertyName</em>. What entity type is used is determined
+	 * by the content of {@link ComponentBinding#getEntityClass()}.
+	 * 
+	 * At the time of writing the method only supports Content and External for entity, and Asset for supplementing.
+	 * @param propertyName
+	 * @param useInheritance
+	 * @param useRepositoryInheritance
+	 * @param useStructureInheritance
+	 * @return
+	 */
+	public List<EntityVOWithSupplementingEntityVO> getBoundEntitiesSupplementedWithEntity(String propertyName, boolean useInheritance, boolean useRepositoryInheritance, boolean useStructureInheritance)
+	{
+		List<EntityVOWithSupplementingEntityVO> result = new ArrayList<EntityVOWithSupplementingEntityVO>();
+		
+		Map property = getInheritedComponentProperty(this.infoGlueComponent, propertyName, useInheritance, useRepositoryInheritance, useStructureInheritance);
+		
+		if(property != null)
+		{
+			List<ComponentBinding> bindings = (List<ComponentBinding>)property.get("bindings");
+			Iterator<ComponentBinding> bindingsIterator = bindings.iterator();
+			EntityVOWithSupplementingEntityVO entity;
+			while(bindingsIterator.hasNext())
+			{
+				try
+				{
+					ComponentBinding componentBinding = bindingsIterator.next();
+					entity = new EntityVOWithSupplementingEntityVO();
+
+					if ("Content".equalsIgnoreCase(componentBinding.getEntityClass()))
+					{
+						Integer contentId = componentBinding.getEntityId();
+						entity.setEntity(this.templateController.getContent(contentId));
+					}
+					else if ("External".equalsIgnoreCase(componentBinding.getEntityClass()))
+					{
+						Integer entityId = componentBinding.getEntityId();
+						entity.setEntity(new EntityVOWithSupplementingEntityVO.IdOnlyBaseEntityVO(entityId));
+					}
+
+					if (componentBinding instanceof SupplementedComponentBinding)
+					{
+						try
+						{
+							SupplementedComponentBinding supplementedComponentBinding = (SupplementedComponentBinding)componentBinding;
+							Integer supplementingEntityId = supplementedComponentBinding.getSupplementingEntityId();
+							String supplementingAssetKey = supplementedComponentBinding.getSupplementingAssetKey();
+							DigitalAssetVO asset = this.templateController.getAsset(supplementingEntityId, supplementingAssetKey);
+							entity.setSupplementingEntity(asset);
+						}
+						catch (Exception ex)
+						{
+							logger.warn("Error when getting asset for supplemented content.", ex);
+						}
+					}
+					result.add(entity);
+				}
+				catch (Exception ex)
+				{
+					logger.warn("Error when getting supplemented content. Message: " + ex.getMessage(), ex);
+				}
+			}
+		}
+		
+		return result;
+	}
 }

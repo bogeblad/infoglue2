@@ -489,6 +489,10 @@
 				componentPropertyDefinition.setAllowMultipleSelections(document.getElementById("componentPropertyDefinition_allowMultipleSelections").value);
 				componentPropertyDefinition.setCustomMarkup(document.getElementById("componentPropertyDefinition_customMarkup").value + "<!--igescaped-->");
 				componentPropertyDefinition.setExternalBindingConfig(document.getElementById("componentPropertyDefinition_externalBindingConfig").value);
+				if (componentPropertyDefinition.getType() == "externalbinding")
+				{
+					componentPropertyDefinition.setSupplementingEntityType(document.getElementById("componentPropertyDefinition_supplementingEntityType").value);
+				}
 			}
 			
 			hideProperties();
@@ -1008,6 +1012,7 @@
 				document.getElementById("autoCreateContentParagraph").style.display = "none";
 				document.getElementById("isPuffContentForPageParagraph").style.display = "none";
 				document.getElementById("dataProviderParagraph").style.display = "none";
+				document.getElementById("supplementingEntityTypeParagraph").style.display = "block";
 				document.getElementById("externalBindingConfigParagraph").style.display = "block";
  			}
 			else
@@ -1237,13 +1242,13 @@
 	<label for="name">Auto create content base path:</label>
 	<input type="textfield" name="componentPropertyDefinition_autoCreateContentPath" id="componentPropertyDefinition_autoCreateContentPath" value=""/>
 	</p>
-	<p id="supplementingEntityTypeParagraph" style="display: block;"><label for="componentPropertyDefinition_supplementingEntityType">Supplementing entity:</label>
-		<select size="1" name="componentPropertyDefinition_supplementingEntityType" id="componentPropertyDefinition_supplementingEntityType" class="sitedropbox">
-		    <option value="">--</option>
-		    <option value="Asset">Asset</option>
-		</select>
-	</p>
 </div>
+<p id="supplementingEntityTypeParagraph" style="display: block;"><label for="componentPropertyDefinition_supplementingEntityType">Supplementing entity:</label>
+	<select size="1" name="componentPropertyDefinition_supplementingEntityType" id="componentPropertyDefinition_supplementingEntityType" class="sitedropbox">
+	    <option value="">--</option>
+	    <option value="Asset">Asset</option>
+	</select>
+</p>
 <p style="margin-left: 165px;">
 	<br/>
 	<a href="javascript:updateProperties();"><img src="$ui.getString("images.managementtool.buttons.save")" width="50" height="25" border="0"></a>
