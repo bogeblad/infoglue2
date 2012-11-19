@@ -1461,6 +1461,7 @@ public class GroupPropertiesController extends BaseController
 	 * @param attribute
 	 * @return
 	 */
+	private static AtomicBoolean preCacheInProgress = new AtomicBoolean(false);
 	
 	public List<CategoryVO> getRelatedCategoryVOList(String groupName, Integer languageId, String attribute, Database db)
 	{
@@ -1479,10 +1480,17 @@ public class GroupPropertiesController extends BaseController
 
 			if(groupPropertyVO != null && groupPropertyVO.getId() != null)
 			{
-				if(CacheController.getCacheSize("propertiesCategoryCache") == 0)
+				if(CacheController.getCacheSize("propertiesCategoryCache") == 0 && preCacheInProgress.compareAndSet(false, true))
 				{
 					Timer t = new Timer();
-					PropertiesCategoryController.getController().preCacheAllPropertiesCategoryVOList();
+					try
+					{
+						PropertiesCategoryController.getController().preCacheAllPropertiesCategoryVOList();
+					}
+					finally
+					{
+						preCacheInProgress.set(false);
+					}
 					t.printElapsedTime("preCacheAllPropertiesCategoryVOList took");
 				}
 				 
