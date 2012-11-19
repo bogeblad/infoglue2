@@ -94,14 +94,14 @@ public class PortletAssetController extends DigitalAssetController
      */
     public static DigitalAsset getPortletRegistry() throws SystemException
     {
-        Database db = CastorDatabaseService.getDatabase();
-    	
         String portletId = CmsPropertyHandler.getDigitalAssetPortletRegistryId();
         
         DigitalAsset da = null;
         if(portletId == null || portletId.equals("") || portletId.equalsIgnoreCase("@digitalAssetPortletRegistryId@"))
         	return da;
         	
+        Database db = CastorDatabaseService.getDatabase();
+    	
         beginTransaction(db);
         try 
         {

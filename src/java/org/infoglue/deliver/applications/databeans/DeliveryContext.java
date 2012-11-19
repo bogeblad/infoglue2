@@ -330,11 +330,18 @@ public class DeliveryContext implements UsageListener
     {
         this.usedContents.add(usedContent);
 
-        Iterator iterator = this.getUsageListeners().iterator();
-        while(iterator.hasNext())
+        try
         {
-            UsageListener usageListener = (UsageListener)iterator.next();
-            usageListener.addUsedContent(usedContent);
+	        Iterator iterator = this.getUsageListeners().iterator();
+	        while(iterator.hasNext())
+	        {
+	            UsageListener usageListener = (UsageListener)iterator.next();
+	            usageListener.addUsedContent(usedContent);
+	        }
+        }
+        catch(Exception e)
+        {
+        	logger.warn("Sync issue when adding usedContent:" + e.getMessage());
         }
     }
 
@@ -342,36 +349,57 @@ public class DeliveryContext implements UsageListener
     {
         this.usedSiteNodes.add(usedSiteNode);
         
-        Iterator iterator = this.getUsageListeners().iterator();
-        while(iterator.hasNext())
+        try
         {
-            UsageListener usageListener = (UsageListener)iterator.next();
-            usageListener.addUsedSiteNode(usedSiteNode);
+	        Iterator iterator = this.getUsageListeners().iterator();
+	        while(iterator.hasNext())
+	        {
+	            UsageListener usageListener = (UsageListener)iterator.next();
+	            usageListener.addUsedSiteNode(usedSiteNode);
+	        }
+        }
+        catch(Exception e)
+        {
+        	logger.warn("Sync issue when adding usedSiteNode:" + e.getMessage());
         }
     }
 
     public void addUsedContentVersion(String usedContentVersion)
     {
         this.usedContentVersions.add(usedContentVersion);
-        
-        Iterator iterator = this.getUsageListeners().iterator();
-        while(iterator.hasNext())
+
+        try
         {
-            UsageListener usageListener = (UsageListener)iterator.next();
-            usageListener.addUsedContentVersion(usedContentVersion);
-        }
+	        Iterator iterator = this.getUsageListeners().iterator();
+	        while(iterator.hasNext())
+	        {
+	            UsageListener usageListener = (UsageListener)iterator.next();
+	            usageListener.addUsedContentVersion(usedContentVersion);
+	        }
+	    }
+	    catch(Exception e)
+	    {
+        	logger.warn("Sync issue when adding usedContentVersion:" + e.getMessage());
+	    }
     }
 
     public void addUsedSiteNodeVersion(String usedSiteNodeVersion)
     {
         this.usedSiteNodeVersions.add(usedSiteNodeVersion);
         
-        Iterator iterator = this.getUsageListeners().iterator();
-        while(iterator.hasNext())
+        try
         {
-            UsageListener usageListener = (UsageListener)iterator.next();
-            usageListener.addUsedSiteNodeVersion(usedSiteNodeVersion);
-        }
+	        Iterator iterator = this.getUsageListeners().iterator();
+	        while(iterator.hasNext())
+	        {
+	            UsageListener usageListener = (UsageListener)iterator.next();
+	            usageListener.addUsedSiteNodeVersion(usedSiteNodeVersion);
+	        }
+	    }
+	    catch(Exception e)
+	    {
+	    	logger.warn("Sync issue when adding usedSiteNodeVersion:" + e.getMessage());
+	    }
     }
 
     public String[] getAllUsedEntities()

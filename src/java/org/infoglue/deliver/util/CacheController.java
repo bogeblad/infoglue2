@@ -2172,68 +2172,82 @@ public class CacheController extends Thread
 									    				if(groupEntries != null)
 									    				{
 									    					System.out.println("groupEntries:" + groupEntries.size());
-										    				for(String key : groupEntries)
+										    				outer:for(String key : groupEntries)
 										    				{
 										    					//System.out.println("key 1:" + key);
-										    					String[] usedEntities = (String[])cacheInstance.getFromCache(key + "_entities");
-										    					//Integer currentPageMetaInfoContentId = (Integer)cacheInstance.getFromCache(key + "_metaInfoContentId");
-										    					//System.out.println("usedEntities 1:" + usedEntities);
-										    					
-												    			ContentVersionVO newContentVersionVO = ContentVersionController.getContentVersionController().getContentVersionVOWithId(new Integer(entityId));
-												    			//System.out.println("BBBBBBBBBBBBBBBBBBBBBB:" + newContentVersionVO.getModifiedDateTime().getTime());
-												    			String newComponentStructure = ContentVersionController.getContentVersionController().getAttributeValue(newContentVersionVO, "ComponentStructure", false);
-	
-												    			for(String usedEntity : usedEntities)
+										    					try
 										    					{
-										    						//System.out.println("usedEntity:" + usedEntity);
-										    						if(usedEntity.startsWith("content_" + contentId + "_ComponentStructure("))
-										    						{
-										    							//System.out.println("Match - now lets parse: " + usedEntity);
-										    							String arguments = usedEntity.substring(usedEntity.indexOf("(") + 1, usedEntity.indexOf(")"));
-										    							Integer oldComponentPropertyHash = new Integer(usedEntity.substring(usedEntity.indexOf("=") + 1));
-										    							String[] args = arguments.split(",");
-										    							Integer componentId = new Integer(args[0]);
-										    							String propertyName = args[1];
-										    							Integer siteNodeId = new Integer(args[2]);
-										    							Integer languageId = new Integer(args[3]);
-										    							//System.out.println("componentId:" + componentId);
-										    							//System.out.println("propertyName:" + propertyName);
-										    							//System.out.println("siteNodeId:" + siteNodeId);
-										    							//System.out.println("languageId:" + languageId);
-																		
-														    			int newComponentPropertyHash = getPropertyAsStringHashCode(newComponentStructure, componentId, propertyName, siteNodeId, languageId);
-														    			//System.out.println("oldComponentPropertyHash:" + oldComponentPropertyHash);
-														    			//System.out.println("newComponentPropertyHash:" + newComponentPropertyHash);
-														    			if(oldComponentPropertyHash.intValue() != newComponentPropertyHash)
-														    			{
-														    				//System.out.println("Yes - clearing - must have changed something important:" + usedEntity);
-														    				clearFileCacheForGroup(cacheInstance, usedEntity);
-														    			}
-														    			else
-														    			{
-														    				//System.out.println("Flushing content_" + currentPageMetaInfoContentId + "_ComponentStructure just to catch page itself");
-															    			//cacheInstance.flushGroup("content_" + currentPageMetaInfoContentId + "_ComponentStructure");
-														    				//System.out.println("Flushing content_" + contentId + "_ComponentStructure just to catch page itself");
-															    			cacheInstance.flushGroup("content_" + contentId + "_ComponentStructure");
-														    			}
-														    			
-										    						}
-										    						else if(usedEntity.startsWith("content_" + contentId + "_ComponentStructure:"))
-										    						{
-										    							//System.out.println("Match - now lets parse component order etc: " + usedEntity);
-										    							String xPath = usedEntity.substring(usedEntity.indexOf(":") + 1, usedEntity.lastIndexOf("="));
-										    							Integer oldComponentPropertyHash = new Integer(usedEntity.substring(usedEntity.lastIndexOf("=") + 1));
-										    							//System.out.println("xPath:" + xPath);
-										    							
-										    							int newComponentPropertyHash = getComponentsAsStringHashCode(newComponentStructure, xPath);
-										    							//System.out.println("oldComponentPropertyHash:" + oldComponentPropertyHash);
-										    							//System.out.println("newComponentPropertyHash:" + newComponentPropertyHash);
-														    			if(oldComponentPropertyHash.intValue() != newComponentPropertyHash)
-														    			{
-														    				//System.out.println("Yes - clearing - must have changed order or added/subtracted components:" + usedEntity);
-														    				clearFileCacheForGroup(cacheInstance, usedEntity);
-														    			}
-										    						}
+											    					String[] usedEntities = (String[])cacheInstance.getFromCache(key + "_entities");
+											    					//Integer currentPageMetaInfoContentId = (Integer)cacheInstance.getFromCache(key + "_metaInfoContentId");
+											    					//System.out.println("usedEntities 1:" + usedEntities);
+											    					
+													    			ContentVersionVO newContentVersionVO = ContentVersionController.getContentVersionController().getContentVersionVOWithId(new Integer(entityId));
+													    			//System.out.println("BBBBBBBBBBBBBBBBBBBBBB:" + newContentVersionVO.getModifiedDateTime().getTime());
+													    			String newComponentStructure = ContentVersionController.getContentVersionController().getAttributeValue(newContentVersionVO, "ComponentStructure", false);
+		
+													    			for(String usedEntity : usedEntities)
+											    					{
+											    						//System.out.println("usedEntity:" + usedEntity);
+											    						if(usedEntity.startsWith("content_" + contentId + "_ComponentStructure("))
+											    						{
+											    							//System.out.println("Match - now lets parse: " + usedEntity);
+											    							String arguments = usedEntity.substring(usedEntity.indexOf("(") + 1, usedEntity.indexOf(")"));
+											    							Integer oldComponentPropertyHash = new Integer(usedEntity.substring(usedEntity.indexOf("=") + 1));
+											    							String[] args = arguments.split(",");
+											    							Integer componentId = new Integer(args[0]);
+											    							String propertyName = args[1];
+											    							Integer siteNodeId = new Integer(args[2]);
+											    							Integer languageId = new Integer(args[3]);
+											    							//System.out.println("componentId:" + componentId);
+											    							//System.out.println("propertyName:" + propertyName);
+											    							//System.out.println("siteNodeId:" + siteNodeId);
+											    							//System.out.println("languageId:" + languageId);
+																			
+															    			int newComponentPropertyHash = getPropertyAsStringHashCode(newComponentStructure, componentId, propertyName, siteNodeId, languageId);
+															    			//System.out.println("oldComponentPropertyHash:" + oldComponentPropertyHash);
+															    			//System.out.println("newComponentPropertyHash:" + newComponentPropertyHash);
+															    			if(oldComponentPropertyHash.intValue() != newComponentPropertyHash)
+															    			{
+															    				//System.out.println("Yes - clearing - must have changed something important:" + usedEntity);
+															    				clearFileCacheForGroup(cacheInstance, usedEntity);
+															    			}
+															    			else
+															    			{
+															    				//System.out.println("Flushing content_" + currentPageMetaInfoContentId + "_ComponentStructure just to catch page itself");
+																    			//cacheInstance.flushGroup("content_" + currentPageMetaInfoContentId + "_ComponentStructure");
+															    				//System.out.println("Flushing content_" + contentId + "_ComponentStructure just to catch page itself");
+																    			cacheInstance.flushGroup("content_" + contentId + "_ComponentStructure");
+															    			}
+															    			
+											    						}
+											    						else if(usedEntity.startsWith("content_" + contentId + "_ComponentStructure:"))
+											    						{
+											    							//System.out.println("Match - now lets parse component order etc: " + usedEntity);
+											    							String xPath = usedEntity.substring(usedEntity.indexOf(":") + 1, usedEntity.lastIndexOf("="));
+											    							Integer oldComponentPropertyHash = new Integer(usedEntity.substring(usedEntity.lastIndexOf("=") + 1));
+											    							//System.out.println("xPath:" + xPath);
+											    							
+											    							int newComponentPropertyHash = getComponentsAsStringHashCode(newComponentStructure, xPath);
+											    							//System.out.println("oldComponentPropertyHash:" + oldComponentPropertyHash);
+											    							//System.out.println("newComponentPropertyHash:" + newComponentPropertyHash);
+															    			if(oldComponentPropertyHash.intValue() != newComponentPropertyHash)
+															    			{
+															    				//System.out.println("Yes - clearing - must have changed order or added/subtracted components:" + usedEntity);
+															    				clearFileCacheForGroup(cacheInstance, usedEntity);
+															    			}
+											    						}
+											    					}
+										    					}
+										    					catch (Exception ex) 
+										    					{
+																	logger.error("Got error trying to update cache:" + ex.getMessage());
+													    			logger.warn("Got error trying to update cache:" + ex.getMessage(), ex);
+
+													    			clearFileCacheForGroup(cacheInstance, "content_" + contentId + "_" + changedAttributeName);
+												    				//cacheInstance.flushGroup("content_" + contentId + "_" + changedAttributeName);
+													    			logger.warn("Cleared pageCache for " + "content_" + contentId + "_" + changedAttributeName);
+
+													    			break outer;
 										    					}
 										    				}
 									    				}
@@ -2320,68 +2334,88 @@ public class CacheController extends Thread
 									    				//System.out.println("groupEntries:" + groupEntries);
 									    				if(groupEntries != null)
 									    				{
-															for(String key : groupEntries)
+									    					outer:for(String key : groupEntries)
 										    				{
 																logger.info("key 2:" + key);
-										    					String[] usedEntities = (String[])pageCacheExtraInstance.getFromCache(key + "_entities");
-										    					ContentVersionVO newestContentVersionVO = ContentVersionController.getContentVersionController().getContentVersionVOWithId(new Integer(entityId));
-												    			//System.out.println("BBBBBBBBBBBBBBBBBBBBBB:" + newContentVersionVO.getModifiedDateTime().getTime());
-												    			String newComponentStructure = ContentVersionController.getContentVersionController().getAttributeValue(newestContentVersionVO, "ComponentStructure", false);
-	
-										    					for(String usedEntity : usedEntities)
-										    					{
-										    						//System.out.println("usedEntity:" + usedEntity);
-										    						if(usedEntity.startsWith("content_" + contentId + "_ComponentStructure("))
-										    						{
-										    							//System.out.println("Match - now lets parse: " + usedEntity);
-										    							String arguments = usedEntity.substring(usedEntity.indexOf("(") + 1, usedEntity.indexOf(")"));
-										    							Integer oldComponentPropertyHash = new Integer(usedEntity.substring(usedEntity.indexOf("=") + 1));
-										    							String[] args = arguments.split(",");
-										    							Integer componentId = new Integer(args[0]);
-										    							String propertyName = args[1];
-										    							Integer siteNodeId = new Integer(args[2]);
-										    							Integer languageId = new Integer(args[3]);
-										    							//System.out.println("componentId:" + componentId);
-										    							//System.out.println("propertyName:" + propertyName);
-										    							//System.out.println("siteNodeId:" + siteNodeId);
-										    							//System.out.println("languageId:" + languageId);
-																		
-														    			int newComponentPropertyHash = getPropertyAsStringHashCode(newComponentStructure, componentId, propertyName, siteNodeId, languageId);
-														    			//System.out.println("oldComponentPropertyHash:" + oldComponentPropertyHash);
-														    			//System.out.println("newComponentPropertyHash:" + newComponentPropertyHash);
-														    			if(oldComponentPropertyHash.intValue() != newComponentPropertyHash)
-														    			{
-														    				//System.out.println("Yes - clearing - must have changed something important:" + usedEntity);
-															    			cacheInstance.flushGroup(usedEntity);
-														    				//clearFileCacheForGroup(cacheInstance, usedEntity);
-														    			}
-														    			else
-														    			{
-														    				//System.out.println("Flushing content_" + currentPageMetaInfoContentId + "_ComponentStructure just to catch page itself");
-															    			//cacheInstance.flushGroup("content_" + currentPageMetaInfoContentId + "_ComponentStructure");
-														    				//System.out.println("Flushing content_" + contentId + "_ComponentStructure just to catch page itself");
-															    			cacheInstance.flushGroup("content_" + contentId + "_ComponentStructure");
-														    			}
-														    			
-										    						}
-										    						else if(usedEntity.startsWith("content_" + contentId + "_ComponentStructure:"))
-										    						{
-										    							//System.out.println("Match - now lets parse component order etc: " + usedEntity);
-										    							String xPath = usedEntity.substring(usedEntity.indexOf(":") + 1, usedEntity.lastIndexOf("="));
-										    							Integer oldComponentPropertyHash = new Integer(usedEntity.substring(usedEntity.lastIndexOf("=") + 1));
-										    							//System.out.println("xPath:" + xPath);
-										    							
-										    							int newComponentPropertyHash = getComponentsAsStringHashCode(newComponentStructure, xPath);
-										    							//System.out.println("oldComponentPropertyHash:" + oldComponentPropertyHash);
-										    							//System.out.println("newComponentPropertyHash:" + newComponentPropertyHash);
-														    			if(oldComponentPropertyHash.intValue() != newComponentPropertyHash)
-														    			{
-														    				//System.out.println("Yes - clearing - must have changed order or added/subtracted components:" + usedEntity);
-															    			cacheInstance.flushGroup(usedEntity);
-														    			}
-										    						}
-	
-										    					}
+																try
+																{
+																	String[] usedEntities = (String[])pageCacheExtraInstance.getFromCache(key + "_entities");
+											    					ContentVersionVO newestContentVersionVO = ContentVersionController.getContentVersionController().getContentVersionVOWithId(new Integer(entityId));
+													    			//System.out.println("BBBBBBBBBBBBBBBBBBBBBB:" + newContentVersionVO.getModifiedDateTime().getTime());
+													    			String newComponentStructure = ContentVersionController.getContentVersionController().getAttributeValue(newestContentVersionVO, "ComponentStructure", false);
+		
+											    					for(String usedEntity : usedEntities)
+											    					{
+											    						//System.out.println("usedEntity:" + usedEntity);
+											    						if(usedEntity.startsWith("content_" + contentId + "_ComponentStructure("))
+											    						{
+											    							//System.out.println("Match - now lets parse: " + usedEntity);
+											    							String arguments = usedEntity.substring(usedEntity.indexOf("(") + 1, usedEntity.indexOf(")"));
+											    							Integer oldComponentPropertyHash = new Integer(usedEntity.substring(usedEntity.indexOf("=") + 1));
+											    							String[] args = arguments.split(",");
+											    							Integer componentId = new Integer(args[0]);
+											    							String propertyName = args[1];
+											    							Integer siteNodeId = new Integer(args[2]);
+											    							Integer languageId = new Integer(args[3]);
+											    							//System.out.println("componentId:" + componentId);
+											    							//System.out.println("propertyName:" + propertyName);
+											    							//System.out.println("siteNodeId:" + siteNodeId);
+											    							//System.out.println("languageId:" + languageId);
+																			
+															    			int newComponentPropertyHash = getPropertyAsStringHashCode(newComponentStructure, componentId, propertyName, siteNodeId, languageId);
+															    			//System.out.println("oldComponentPropertyHash:" + oldComponentPropertyHash);
+															    			//System.out.println("newComponentPropertyHash:" + newComponentPropertyHash);
+															    			if(oldComponentPropertyHash.intValue() != newComponentPropertyHash)
+															    			{
+															    				//System.out.println("Yes - clearing - must have changed something important:" + usedEntity);
+																    			cacheInstance.flushGroup(usedEntity);
+															    				//clearFileCacheForGroup(cacheInstance, usedEntity);
+															    			}
+															    			else
+															    			{
+															    				//System.out.println("Flushing content_" + currentPageMetaInfoContentId + "_ComponentStructure just to catch page itself");
+																    			//cacheInstance.flushGroup("content_" + currentPageMetaInfoContentId + "_ComponentStructure");
+															    				//System.out.println("Flushing content_" + contentId + "_ComponentStructure just to catch page itself");
+																    			cacheInstance.flushGroup("content_" + contentId + "_ComponentStructure");
+															    			}
+															    			
+											    						}
+											    						else if(usedEntity.startsWith("content_" + contentId + "_ComponentStructure:"))
+											    						{
+											    							//System.out.println("Match - now lets parse component order etc: " + usedEntity);
+											    							String xPath = usedEntity.substring(usedEntity.indexOf(":") + 1, usedEntity.lastIndexOf("="));
+											    							Integer oldComponentPropertyHash = new Integer(usedEntity.substring(usedEntity.lastIndexOf("=") + 1));
+											    							//System.out.println("xPath:" + xPath);
+											    							
+											    							int newComponentPropertyHash = getComponentsAsStringHashCode(newComponentStructure, xPath);
+											    							//System.out.println("oldComponentPropertyHash:" + oldComponentPropertyHash);
+											    							//System.out.println("newComponentPropertyHash:" + newComponentPropertyHash);
+															    			if(oldComponentPropertyHash.intValue() != newComponentPropertyHash)
+															    			{
+															    				//System.out.println("Yes - clearing - must have changed order or added/subtracted components:" + usedEntity);
+																    			cacheInstance.flushGroup(usedEntity);
+															    			}
+											    						}
+		
+											    					}
+																}
+																catch(Exception ex)
+																{
+																	logger.error("Got error trying to update cache:" + ex.getMessage());
+													    			logger.warn("Got error trying to update cache:" + ex.getMessage(), ex);
+													    			
+													    			try
+													    			{
+													    				cacheInstance.flushGroup("content_" + contentId + "_" + changedAttributeName);
+													    				logger.warn("Cleared pageCache for " + "content_" + contentId + "_" + changedAttributeName);
+													    			}
+																	catch(Exception ex2)
+																	{
+																		logger.error("Got error trying to flushGroup 2:" + ex2.getMessage());
+																		cacheInstance.flushAll();
+																	}
+													    			break outer;
+																}
 																RequestAnalyser.getRequestAnalyser().registerComponentStatistics("Handled group entries", t.getElapsedTime());
 										    				}
 									    				}

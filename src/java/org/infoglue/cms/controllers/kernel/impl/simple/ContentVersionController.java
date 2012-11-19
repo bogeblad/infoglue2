@@ -2191,13 +2191,14 @@ public class ContentVersionController extends BaseController
 			                Iterator relatedContentVersionsIterator = relatedContentVersions.iterator();
 			                while(relatedContentVersionsIterator.hasNext())
 			                {
-			                    ContentVersion relatedContentVersion = (ContentVersion)relatedContentVersionsIterator.next();
-				                if(relatedContentVersion != null && contentVO.getRepositoryId().intValue() == relatedContentVersion.getOwningContent().getRepository().getId().intValue())
+			                    ContentVersionVO relatedContentVersionVO = (ContentVersionVO)relatedContentVersionsIterator.next();
+				                ContentVO relContentVO = ContentController.getContentController().getContentVOWithId(relatedContentVersionVO.getContentId(), db);
+				                if(relatedContentVersionVO != null && contentVO.getRepositoryId().intValue() == relContentVO.getRepositoryId().intValue())
 				                {
-				        	        contentVersionVOList.add(relatedContentVersion.getValueObject());
-				                    logger.info("Added:" + relatedContentVersion.getId());
+				        	        contentVersionVOList.add(relatedContentVersionVO);
+				                    logger.info("Added:" + relatedContentVersionVO.getId());
 				                    if(currentLevel < maxLevels)
-				                    	getContentAndAffectedItemsRecursive(relatedContentVersion.getOwningContent().getValueObject(), stateId, checkedSiteNodes, checkedContents, db, siteNodeVersionVOList, contentVersionVOList, mustBeFirst, includeMetaInfo, maxLevels, currentLevel + 1);
+				                    	getContentAndAffectedItemsRecursive(relContentVO, stateId, checkedSiteNodes, checkedContents, db, siteNodeVersionVOList, contentVersionVOList, mustBeFirst, includeMetaInfo, maxLevels, currentLevel + 1);
 					            }
 			
 			                }
