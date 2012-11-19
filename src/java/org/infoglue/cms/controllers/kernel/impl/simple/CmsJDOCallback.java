@@ -192,6 +192,18 @@ public class CmsJDOCallback implements CallbackInterceptor
 			}
 			else if(object.getClass().getName().equals(AccessRightImpl.class.getName()) || object.getClass().getName().equals(AccessRightRoleImpl.class.getName()) || object.getClass().getName().equals(AccessRightGroupImpl.class.getName()) || object.getClass().getName().equals(AccessRightUserImpl.class.getName()))
 			{
+				try
+				{
+					AccessRightImpl ar = (AccessRightImpl)object;
+					String acKey = "" + ar.getValueObject().getInterceptionPointId();
+					if(ar.getValueObject().getParameters() != null && !ar.getValueObject().getParameters().equals(""))
+						acKey = "" + ar.getValueObject().getInterceptionPointId() + "_" + ar.getValueObject().getParameters();
+					CacheController.clearUserAccessCache(acKey);						  
+				}
+				catch (Exception e) 
+				{
+					logger.error("Failed to clear user cache:" + e.getMessage());
+				}
 				CacheController.clearCache("interceptionPointCache");
 				CacheController.clearCache("interceptorsCache");
 				CacheController.clearCache("authorizationCache");
@@ -355,7 +367,7 @@ public class CmsJDOCallback implements CallbackInterceptor
 				CacheController.clearCache("groupPropertiesCache");
 				CacheController.clearCache("authorizationCache");
 				CacheController.clearCache("personalAuthorizationCache");
-
+				
 				new Thread(new Runnable() { public void run() {try {CmsSessionContextListener.reCacheSessionPrincipal();} catch (Exception e) {}}}).start();
 			}
 			else if(object.getClass().getName().equals(SystemUserRoleImpl.class.getName()))
@@ -493,6 +505,19 @@ public class CmsJDOCallback implements CallbackInterceptor
 			}
 			else if(object.getClass().getName().equals(AccessRightImpl.class.getName()) || object.getClass().getName().equals(AccessRightRoleImpl.class.getName()) || object.getClass().getName().equals(AccessRightGroupImpl.class.getName()) || object.getClass().getName().equals(AccessRightUserImpl.class.getName()))
 			{
+				try
+				{
+					AccessRightImpl ar = (AccessRightImpl)object;
+					String acKey = "" + ar.getValueObject().getInterceptionPointId();
+					if(ar.getValueObject().getParameters() != null && !ar.getValueObject().getParameters().equals(""))
+						acKey = "" + ar.getValueObject().getInterceptionPointId() + "_" + ar.getValueObject().getParameters();
+					CacheController.clearUserAccessCache(acKey);						  
+				}
+				catch (Exception e) 
+				{
+					logger.error("Failed to clear user cache:" + e.getMessage());
+				}
+
 				CacheController.clearCache("interceptionPointCache");
 				CacheController.clearCache("interceptorsCache");
 				CacheController.clearCache("authorizationCache");
@@ -700,6 +725,19 @@ public class CmsJDOCallback implements CallbackInterceptor
 			}
 			else if(object.getClass().getName().equals(AccessRightImpl.class.getName()) || object.getClass().getName().equals(AccessRightRoleImpl.class.getName()) || object.getClass().getName().equals(AccessRightGroupImpl.class.getName()) || object.getClass().getName().equals(AccessRightUserImpl.class.getName()))
 			{
+				try
+				{
+					AccessRightImpl ar = (AccessRightImpl)object;
+					String acKey = "" + ar.getValueObject().getInterceptionPointId();
+					if(ar.getValueObject().getParameters() != null && !ar.getValueObject().getParameters().equals(""))
+						acKey = "" + ar.getValueObject().getInterceptionPointId() + "_" + ar.getValueObject().getParameters();
+					CacheController.clearUserAccessCache(acKey);						  
+				}
+				catch (Exception e) 
+				{
+					logger.error("Failed to clear user cache:" + e.getMessage());
+				}
+
 				CacheController.clearCache("interceptionPointCache");
 				CacheController.clearCache("interceptorsCache");
 				CacheController.clearCache("authorizationCache");
