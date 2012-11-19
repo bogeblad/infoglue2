@@ -1725,7 +1725,7 @@ public class AccessRightController extends BaseController
 		Map<String,Integer> cachedPrincipalAuthorizationMap = (Map<String,Integer>)CacheController.getCachedObject("userAccessCache", "authorizationMap_" + infoGluePrincipal.getName());
 		if(!infoGluePrincipal.getIsAdministrator() && cachedPrincipalAuthorizationMap == null && !preCacheInProcessForUsers.contains(infoGluePrincipal.getName()))
 		{
-			/*
+
 			class PreCacheTask implements Runnable 
 			{
 		        InfoGluePrincipal infoGluePrincipal;
@@ -1767,8 +1767,8 @@ public class AccessRightController extends BaseController
 		    }
 		    Thread thread = new Thread(new PreCacheTask(infoGluePrincipal));
 		    thread.start();
-		    */
-			
+		    
+			/*
 			preCacheInProcessForUsers.add(infoGluePrincipal.getName());
 			
 			logger.info("Precaching all access rights for this user");
@@ -1786,6 +1786,7 @@ public class AccessRightController extends BaseController
 			{
 				preCacheInProcessForUsers.remove(infoGluePrincipal.getName());
 			}
+			*/
 		}
 		
 		boolean enableDebug = false;
@@ -2341,7 +2342,6 @@ public class AccessRightController extends BaseController
 		//Map<String,Integer> cachedPrincipalAuthorizationMap = (Map<String,Integer>)CacheController.getCachedObjectFromAdvancedCache("personalAuthorizationCache", "authorizationMap_" + infoGluePrincipal.getName());
 		if(!infoGluePrincipal.getIsAdministrator() && cachedPrincipalAuthorizationMap == null && !preCacheInProcessForUsers.contains(infoGluePrincipal.getName()))
 		{
-			/*
 			class PreCacheTask implements Runnable 
 			{
 		        InfoGluePrincipal infoGluePrincipal;
@@ -2383,7 +2383,8 @@ public class AccessRightController extends BaseController
 		    }
 			Thread thread = new Thread(new PreCacheTask(infoGluePrincipal));
 		    thread.start();
-		    */
+		    
+		    /*
 			preCacheInProcessForUsers.add(infoGluePrincipal.getName());
 			
 			logger.info("Precaching all access rights for this user");
@@ -2401,6 +2402,7 @@ public class AccessRightController extends BaseController
 			{
 				preCacheInProcessForUsers.remove(infoGluePrincipal.getName());
 			}
+			*/
 		}
 		
 		
