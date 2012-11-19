@@ -2278,7 +2278,7 @@ public class CacheController extends Thread
 												    		if(!cvVO.getId().equals(newContentVersionVO.getId()) && cvVO.getStateId().equals(new Integer(CmsPropertyHandler.getOperatingMode())) && cvVO.getLanguageId().equals(newContentVersionVO.getLanguageId()) && cvVO.getIsActive() && (oldContentVersionVO == null || oldContentVersionVO.getId() < cvVO.getId()))
 												    			oldContentVersionVO = cvVO;
 												    	}
-										    			debug += "oldContentVersionVO:" + oldContentVersionVO.getId() + "\n";
+										    			debug += "oldContentVersionVO:" + (oldContentVersionVO == null ? "null" : oldContentVersionVO.getId()) + "\n";
 										    		}
 										    		
 										    		//System.out.println("Now we should have current and previous version:" + newContentVersionVO + " / " + oldContentVersionVO);
