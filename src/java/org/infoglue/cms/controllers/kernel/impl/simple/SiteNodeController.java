@@ -1330,6 +1330,7 @@ public class SiteNodeController extends BaseController
             logger.info("Setting the new Parent siteNode:" + siteNode.getSiteNodeId() + " " + newParentSiteNode.getSiteNodeId());
             siteNode.setParentSiteNode((SiteNodeImpl)newParentSiteNode);
             
+            /*
             Integer metaInfoContentId = siteNode.getMetaInfoContentId();
             //logger.info("metaInfoContentId:" + metaInfoContentId);
             if(!siteNode.getRepository().getId().equals(newParentSiteNode.getRepository().getId()) && metaInfoContentId != null)
@@ -1347,8 +1348,9 @@ public class SiteNodeController extends BaseController
             		changeRepositoryRecursiveForContent(metaInfoContent, newParentSiteNode.getRepository());
 				}
             }
+            */
             
-            changeRepositoryRecursive(siteNode, newParentSiteNode.getRepository());
+            changeRepositoryRecursive(siteNode, newParentSiteNode.getRepository(), principal, db);
             //siteNode.setRepository(newParentSiteNode.getRepository());
 			newParentSiteNode.getChildSiteNodes().add(siteNode);
 			oldParentSiteNode.getChildSiteNodes().remove(siteNode);
@@ -1380,16 +1382,57 @@ public class SiteNodeController extends BaseController
 	 * @param newRepository
 	 */
 
-	private void changeRepositoryRecursive(SiteNode siteNode, Repository newRepository)
+	private void changeRepositoryRecursive(SiteNode siteNode, Repository newRepository, InfoGluePrincipal principal, Database db) throws Exception
 	{
 	    if(siteNode.getRepository().getId().intValue() != newRepository.getId().intValue())
 	    {
+	        Integer metaInfoContentId = siteNode.getMetaInfoContentId();
+        	Content metaInfoContent = ContentController.getContentController().getContentWithId(metaInfoContentId, db);
+        	//String previousPath = ContentController.getContentController().getContentPath(metaInfoContentId, db);
+        	
+        	String siteNodePath = SiteNodeController.getController().getSiteNodePath(siteNode.getId(), db);
+        	logger.info("siteNodePath:" + siteNodePath);
+        	if(siteNodePath.indexOf("/", 2) > -1)
+        		siteNodePath = siteNodePath.substring(siteNodePath.indexOf("/", 2));
+        	logger.info("siteNodePath:" + siteNodePath);
+        	
+        	Content newParentContent = ContentController.getContentController().getContentWithPath(newRepository.getId(), "Meta info folder" + siteNodePath, true, principal, db);
+        	if(metaInfoContent != null && newParentContent != null)
+        	{
+        		logger.info("Moving:" + metaInfoContent.getName() + " to " + newParentContent.getName());
+        		newParentContent.getChildren().add(metaInfoContent);
+        		Content previousParentContent = metaInfoContent.getParentContent();
+        		metaInfoContent.setParentContent((ContentImpl)newParentContent);
+        		previousParentContent.getChildren().remove(metaInfoContent);
+        		
+        		LanguageVO oldMasterLanguage = LanguageController.getController().getMasterLanguage(metaInfoContent.getRepositoryId(), db);
+        		LanguageVO newMasterLanguage = LanguageController.getController().getMasterLanguage(newParentContent.getRepositoryId(), db);
+        		
+        		ContentVersionVO oldMasterContentVersionVO = ContentVersionController.getContentVersionController().getLatestContentVersionVO(metaInfoContent.getId(), oldMasterLanguage.getId(), db);
+        		ContentVersionVO newMasterContentVersionVO = ContentVersionController.getContentVersionController().getLatestContentVersionVO(metaInfoContent.getId(), newMasterLanguage.getId(), db);
+        		if(oldMasterContentVersionVO != null && newMasterContentVersionVO == null)
+        		{
+        			ContentVersionController.getContentVersionController().create(metaInfoContentId, newMasterLanguage.getId(), oldMasterContentVersionVO, null, db);
+        		}
+        		else if(oldMasterContentVersionVO != null && newMasterContentVersionVO != null)
+        		{
+        			String oldComponentStructure = ContentVersionController.getContentVersionController().getAttributeValue(oldMasterContentVersionVO, "ComponentStructure", false);
+        			String newComponentStructure = ContentVersionController.getContentVersionController().getAttributeValue(newMasterContentVersionVO, "ComponentStructure", false);
+        			if(oldComponentStructure != null && !oldComponentStructure.equals("") && (newComponentStructure == null || newComponentStructure.equals("")))
+        			{
+        				ContentVersionController.getContentVersionController().updateAttributeValue(newMasterContentVersionVO.getId(), "ComponentStructure", oldComponentStructure, principal, true);
+        			}
+        		}
+        		metaInfoContent.setRepository(newParentContent.getRepository());
+        		//changeRepositoryRecursiveForContent(metaInfoContent, newRepository);
+        	}
+
 	        siteNode.setRepository((RepositoryImpl)newRepository);
 		    Iterator ChildSiteNodesIterator = siteNode.getChildSiteNodes().iterator();
 		    while(ChildSiteNodesIterator.hasNext())
 		    {
 		        SiteNode childSiteNode = (SiteNode)ChildSiteNodesIterator.next();
-		        changeRepositoryRecursive(childSiteNode, newRepository);
+		        changeRepositoryRecursive(childSiteNode, newRepository, principal, db);
 		    }
 	    }
 	}

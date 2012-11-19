@@ -873,7 +873,7 @@ public class RegistryController extends BaseController
             try
             {
                 SiteNodeVO siteNodeVO = SiteNodeController.getController().getSiteNodeVOWithId(new Integer(registryVO.getReferencingEntityCompletingId()), db);
-                t.printElapsedTime("siteNodeVersion 1");
+                //t.printElapsedTime("siteNodeVersion 1");
 	    		referenceBeanList.add(siteNodeVO);
             }
             catch(Exception e)
