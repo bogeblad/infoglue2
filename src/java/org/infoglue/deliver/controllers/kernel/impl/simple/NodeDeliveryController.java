@@ -1817,6 +1817,8 @@ public class NodeDeliveryController extends BaseDeliveryController
             niceURIEncoding = "UTF-8";
         
         String attributeName = ViewPageFilter.attributeName;
+        if(attributeName == null)
+        	attributeName = CmsPropertyHandler.getNiceURIAttributeName();
         
         String pathPart;
         
