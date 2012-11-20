@@ -178,6 +178,8 @@ public class SelectiveLivePublicationThread extends PublicationThread
 		{
 			try
 			{		
+				Timer t = new Timer();
+
 				logger.info("setting block");
 		        RequestAnalyser.getRequestAnalyser().setBlockRequests(true);
 		        
@@ -656,10 +658,18 @@ public class SelectiveLivePublicationThread extends PublicationThread
 								}
 							}
 							
+						    long elapsedTime = t.getElapsedTime();
+						    if(elapsedTime > 100)
+						    	logger.warn("Cleared all castor caches for " + className + ":" + objectId + " took");
+
 							for(Map<String,String> igCacheCall : allIGCacheCalls)
 							{
 								logger.info("Calling clear caches with:" + igCacheCall.get("className") + ":" + igCacheCall.get("objectId"));
 								CacheController.clearCaches(igCacheCall.get("className"), igCacheCall.get("objectId"), null);
+								
+							    elapsedTime = t.getElapsedTime();
+							    if(elapsedTime > 100)
+							    	logger.warn("Clearing all caches for " + igCacheCall.get("className") + ":" + igCacheCall.get("objectId") + " took");
 							}
 
 							if(CmsPropertyHandler.getServerNodeProperty("recacheEntities", true, "false").equals("true"))

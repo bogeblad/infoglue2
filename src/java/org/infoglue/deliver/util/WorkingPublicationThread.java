@@ -396,12 +396,18 @@ public class WorkingPublicationThread extends Thread
 							}
 						}	
 					    
-					    t.printElapsedTime("Clearing all castor caches took");
+					    long elapsedTime = t.getElapsedTime();
+					    if(elapsedTime > 50)
+					    	logger.warn("Clearing all castor caches took");
 
 					    for(Map<String,String> igCacheCall : allIGCacheCalls)
 						{
 							logger.info("Calling clear caches with:" + igCacheCall.get("className") + ":" + igCacheCall.get("objectId"));
 							CacheController.clearCaches(igCacheCall.get("className"), igCacheCall.get("objectId"), null);
+
+						    elapsedTime = t.getElapsedTime();
+						    if(elapsedTime > 100)
+						    	logger.warn("Clearing all caches for " + igCacheCall.get("className") + ":" + igCacheCall.get("objectId") + " took");
 						}
 					    
 					    if(!skipOriginalEntity)
@@ -409,7 +415,9 @@ public class WorkingPublicationThread extends Thread
 					    	//System.out.println("" + className + ":" + objectId + ":" + changedAttributeNames);
 						    CacheController.clearCaches(className, objectId, changedAttributeNames, null);
 							CacheController.setForcedCacheEvictionMode(true);
-						    //t.printElapsedTime("Clearing all caches took");
+						    elapsedTime = t.getElapsedTime();
+						    if(elapsedTime > 100)
+						    	logger.warn("Clearing all caches for " + className + ":" + objectId + ":" + changedAttributeNames + " took");
 					    }
 						CacheEvictionBeanListenerService.getService().notifyListeners(cacheEvictionBean);
 					}

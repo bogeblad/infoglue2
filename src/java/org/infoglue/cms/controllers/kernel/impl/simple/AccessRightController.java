@@ -273,9 +273,8 @@ public class AccessRightController extends BaseController
 		}
 		t.printElapsedTime("1.0");
 		
-		System.out.println("WTF.....");
 		//Thread.dumpStack();
-		logger.error("Reading the hard way:" + interceptionPointName + ":" + parameters);
+		logger.warn("Reading the hard way from an unexpected place:" + interceptionPointName + ":" + parameters);
 		
 		List accessRightList = this.getAccessRightListOnlyReadOnly(interceptionPointVO.getId(), parameters, db);
 		t.printElapsedTime("1.1");
@@ -1903,7 +1902,7 @@ public class AccessRightController extends BaseController
 			}
 		}
 		
-		logger.error("Reading the hard way:" + interceptionPointVO.getId() + ":" + extraParameters);
+		logger.info("Reading the hard way:" + interceptionPointVO.getId() + ":" + extraParameters);
 		
 		List accessRightList = this.getAccessRightListOnlyReadOnly(interceptionPointVO.getId(), extraParameters, db);
 		if(logger.isInfoEnabled())

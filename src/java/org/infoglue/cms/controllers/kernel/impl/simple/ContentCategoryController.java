@@ -20,7 +20,7 @@
  *
  * ===============================================================================
  *
- * $Id: ContentCategoryController.java,v 1.22.2.1.2.2 2012/11/14 23:08:25 mattias Exp $
+ * $Id: ContentCategoryController.java,v 1.22.2.1.2.3 2012/11/20 07:01:54 mattias Exp $
  */
 package org.infoglue.cms.controllers.kernel.impl.simple;
 
@@ -186,10 +186,10 @@ public class ContentCategoryController extends BaseController
 	{
 	    List contentCategoryList = new ArrayList();
 	    
-	    Timer t = new Timer();
+	    //Timer t = new Timer();
 	    //TODO - kan optimeras mycket
 	    List contentCategories = findByContentVersionReadOnly(versionId, db);
-	    t.printElapsedTime("findByContentVersionReadOnly");
+	    //t.printElapsedTime("findByContentVersionReadOnly");
 	    
 	    //t.printElapsedTime("contentCategories");
 		if(contentCategories != null)
@@ -204,7 +204,7 @@ public class ContentCategoryController extends BaseController
 		        }
 		    }
 		}
-	    t.printElapsedTime("Rest");
+		//t.printElapsedTime("Rest");
 
 	    return contentCategoryList;
 
