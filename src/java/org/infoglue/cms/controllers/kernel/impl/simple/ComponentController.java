@@ -46,6 +46,7 @@ import org.infoglue.cms.exception.Bug;
 import org.infoglue.cms.exception.ConstraintException;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.security.InfoGluePrincipal;
+import org.infoglue.cms.util.CmsPropertyHandler;
 import org.infoglue.cms.util.ConstraintExceptionBuffer;
 import org.infoglue.cms.util.sorters.ContentComparator;
 import org.infoglue.deliver.applications.databeans.DeliveryContext;
@@ -195,7 +196,7 @@ public class ComponentController extends BaseController
 			        	}
 		        	}
 			    }
-			    t.printElapsedTime("Done indexing took:" + templatesAndPagePartMap.size());
+			    t.printElapsedTime("Done indexing took in " + CmsPropertyHandler.getContextRootPath() + ":" + templatesAndPagePartMap.size());
 				
 				CacheController.cacheObject("componentContentsCache", cacheKey, templatesAndPagePartMap);
 				CacheController.cacheObject("componentContentsCache", cacheKey + "_preCacheDone", new Boolean(true));

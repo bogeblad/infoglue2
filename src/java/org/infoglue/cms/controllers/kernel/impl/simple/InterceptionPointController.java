@@ -309,27 +309,45 @@ public class InterceptionPointController extends BaseController
 
 	public InterceptionPointVO getInterceptionPointVOWithName(String interceptorPointName)  throws SystemException, Bug
 	{
+	    String key = "" + interceptorPointName;
+		logger.info("key:" + key);
+		
 		InterceptionPointVO interceptionPointVO = null;
 		
-		Database db = CastorDatabaseService.getDatabase();
-
-		try 
-		{
-			beginTransaction(db);
-
-			InterceptionPoint interceptionPoint = getInterceptionPointWithName(interceptorPointName, db);
-			if(interceptionPoint != null)
-				interceptionPointVO = interceptionPoint.getValueObject();
-
-			commitTransaction(db);
-		} 
-		catch (Exception e) 
-		{
-			logger.info("An error occurred so we should not complete the transaction:" + e);
-			rollbackTransaction(db);
-			throw new SystemException(e.getMessage());
-		}
+	    Object object = CacheController.getCachedObject("interceptionPointCache", key);
 		
+	    if(object instanceof NullObject)
+		{
+			return null;
+		}
+		else if(object != null)
+		{
+		    interceptionPointVO = (InterceptionPointVO)object;
+		}
+		else
+		{
+			Database db = CastorDatabaseService.getDatabase();
+	
+			try 
+			{
+				beginTransaction(db);
+				
+				interceptionPointVO = getInterceptionPointVOWithName(interceptorPointName, db);
+				/*
+				InterceptionPoint interceptionPoint = getInterceptionPointWithName(interceptorPointName, db);
+				if(interceptionPoint != null)
+					interceptionPointVO = interceptionPoint.getValueObject();
+				*/
+				commitTransaction(db);
+			} 
+			catch (Exception e) 
+			{
+				logger.info("An error occurred so we should not complete the transaction:" + e);
+				rollbackTransaction(db);
+				throw new SystemException(e.getMessage());
+			}
+		}
+	    
 		return interceptionPointVO;		
 	}	
 
@@ -352,16 +370,6 @@ public class InterceptionPointController extends BaseController
 		}
 		else
 		{
-
-		/*
-		InterceptionPointVO interceptionPointVO = (InterceptionPointVO)CacheController.getCachedObject("interceptionPointCache", key);
-		if(interceptionPointVO != null)
-		{
-			logger.info("There was an cached interceptionPointVO:" + interceptionPointVO);
-		}
-		else
-		{
-		*/	
 			InterceptionPoint interceptorPoint = null;
 			
 			try

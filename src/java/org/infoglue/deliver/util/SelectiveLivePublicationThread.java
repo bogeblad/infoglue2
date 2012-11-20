@@ -728,6 +728,28 @@ public class SelectiveLivePublicationThread extends PublicationThread
 								CacheController.clearPortlets();
 								logger.info("cleared portletRegistry");
 						    }
+							else if(className.indexOf("RepositoryImpl") > -1)
+						    {
+								logger.info("clearing repo affecting stuff");
+								CacheController.clearServerNodeProperty(true);
+
+								Class repoClass = RepositoryImpl.class;
+								CacheController.clearCache(repoClass);
+								CacheController.clearCaches(repoClass.getName(), null, null);
+
+								CacheController.clearCache("repositoryCache");
+								CacheController.clearCache("masterRepository");
+								CacheController.clearCache("parentRepository");
+								CacheController.clearCache("componentPropertyCache");
+						        CacheController.clearFileCaches("pageCache");
+						        CacheController.clearCache("pageCache");
+								CacheController.clearCache("pageCacheExtra");
+								CacheController.clearCache("componentCache");
+								CacheController.clearCache("NavigationCache");
+								CacheController.clearCache("pagePathCache");
+						    	URIMapperCache.getInstance().clear();
+								logger.info("cleared repo affecting stuff");
+						    }
 							else
 							{
 								logger.info("This was an deviation: " + className);

@@ -92,6 +92,10 @@ public class ExtendedCacheEntryEventListenerImpl extends CacheEntryEventListener
         {
         	event.getMap().cancelUpdate(event.getKey());
         }
+        catch (Exception e)
+        {
+        	logger.warn("Problem getting stats:" + e.getMessage());
+        }
         return oldSize;
     }
     

@@ -281,7 +281,7 @@ public class WorkingPublicationThread extends Thread
 								}
 						    }
 			
-						    t.printElapsedTime("2");
+						    //t.printElapsedTime("2");
 
 							//If it's an contentVersion we should delete all images it might have generated from attributes.
 							if(Class.forName(className).getName().equals(ContentImpl.class.getName()))
@@ -335,12 +335,16 @@ public class WorkingPublicationThread extends Thread
 							}
 							else if(Class.forName(className).getName().equals(RepositoryImpl.class.getName()))
 							{
+								CacheController.clearServerNodeProperty(true);
+
 								Class repoClass = RepositoryImpl.class;
 								CacheController.clearCache(repoClass);
 								CacheController.clearCaches(repoClass.getName(), null, null);
 
 								CacheController.clearCache("repositoryCache");
 								CacheController.clearCache("masterRepository");
+								CacheController.clearCache("parentRepository");
+								CacheController.clearCache("componentPropertyCache");
 						        CacheController.clearFileCaches("pageCache");
 						        CacheController.clearCache("pageCache");
 								CacheController.clearCache("pageCacheExtra");

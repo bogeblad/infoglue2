@@ -2267,7 +2267,7 @@ public class NodeDeliveryController extends BaseDeliveryController
 			SiteNodeVO parentSiteNodeVO = getSiteNodeVO(db, siteNodeId);
 			if(parentSiteNodeVO != null && parentSiteNodeVO.getChildCount() != null && parentSiteNodeVO.getChildCount() == 0)
 			{
-				//logger.info("Skipping node as it has no children...");
+				logger.info("Skipping node as it has no children...");
 				return new ArrayList();
 			}
 		}

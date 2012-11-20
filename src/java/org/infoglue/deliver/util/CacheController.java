@@ -2030,15 +2030,22 @@ public class CacheController extends Thread
 								    			if(cacheName.equals("pageCacheExtra"))
 										    		clearFileCacheForGroup(cacheInstance, "siteNode_" + siteNodeId);
 								    			else
+								    			{
 								    				cacheInstance.flushGroup("siteNode_" + siteNodeId);
-	
-								    			if(cacheName.equals("childSiteNodesCache"))
+								    				cacheInstance.flushGroup("" + siteNodeId);
+									    		}
+								    			
+								    			if(cacheName.equals("childSiteNodesCache") || cacheName.equals("siteNodeCache"))
 								    			{
 											    	SiteNodeVO snVO = SiteNodeController.getController().getSiteNodeVOWithId(snvVO.getSiteNodeId());
 											    	if(snVO.getParentSiteNodeId() != null)
+											    	{
 											    		cacheInstance.flushGroup("siteNode_" + snVO.getParentSiteNodeId());
-											    	logger.info("Clearing for:" + snVO.getParentSiteNodeId());
-								    			}
+											    		cacheInstance.flushGroup("" + snVO.getParentSiteNodeId());
+											    		cacheInstance.flushEntry("" + snVO.getParentSiteNodeId());
+											    		logger.info("Clearing for:" + snVO.getParentSiteNodeId());
+											    	}
+											    }
 								    			
 								    			logger.info("After flushGroup2...");
 								    		}
@@ -2052,8 +2059,9 @@ public class CacheController extends Thread
 							    else if(selectiveCacheUpdate && (entity.indexOf("SiteNode") > 0 && entity.indexOf("SiteNodeTypeDefinition") == -1) && useSelectivePageCacheUpdate)
 							    {
 							    	//System.out.println("Entity: " + entity);
-							    	//System.out.println("Flushing " + "siteNode_" + entityId);
-							    	//System.out.println("Flushing " + "selectiveCacheUpdateNonApplicable");
+							    	System.out.println("Flushing " + "" + entityId);
+							    	System.out.println("Flushing " + "siteNode_" + entityId);
+							    	System.out.println("Flushing " + "selectiveCacheUpdateNonApplicable");
 
 							    	if(cacheName.equals("pageCacheExtra"))
 							    	{
@@ -2065,6 +2073,29 @@ public class CacheController extends Thread
 								    	cacheInstance.flushGroup("" + entityId);
 								    	cacheInstance.flushGroup("siteNode_" + entityId);
 								    	cacheInstance.flushGroup("selectiveCacheUpdateNonApplicable");
+							    	
+						    			if(cacheName.equals("childSiteNodesCache") || cacheName.equals("siteNodeCache"))
+						    			{
+						    				System.out.println("Flushing parent also");
+						    				try
+						    				{
+										    	SiteNodeVO snVO = SiteNodeController.getController().getSiteNodeVOWithId(new Integer(entityId));
+										    	if(snVO.getParentSiteNodeId() != null)
+										    	{
+											    	System.out.println("Flushing " + "" + entityId);
+											    	System.out.println("Flushing " + "siteNode_" + entityId);
+
+										    		cacheInstance.flushGroup("siteNode_" + snVO.getParentSiteNodeId());
+										    		cacheInstance.flushGroup("" + snVO.getParentSiteNodeId());
+										    		cacheInstance.flushEntry("" + snVO.getParentSiteNodeId());
+										    		logger.info("Clearing for:" + snVO.getParentSiteNodeId());
+										    	}
+									    	}
+									    	catch(SystemException se)
+									    	{
+									    		logger.warn("Missing siteNode: " + se.getMessage(), se);
+									    	}
+									    }
 							    	}
 
 							    	logger.info("clearing " + e.getKey() + " with group " + "siteNode_" + entityId);
@@ -2096,7 +2127,7 @@ public class CacheController extends Thread
 							    	{
 							    		cacheInstance.flushGroup("contentVersion_" + entityId);
 							    		cacheInstance.flushGroup("selectiveCacheUpdateNonApplicable");
-								    	logger.error("clearing " + e.getKey() + " with selectiveCacheUpdateNonApplicable");
+								    	logger.warn("clearing " + e.getKey() + " with selectiveCacheUpdateNonApplicable");
 							    	}
 							    	logger.info("clearing " + e.getKey() + " with group " + "contentVersion_" + entityId);
 									
@@ -2490,7 +2521,7 @@ public class CacheController extends Thread
 							    	{
 								    	cacheInstance.flushGroup("" + entityId);
 								    	cacheInstance.flushGroup("content_" + entityId);
-								    	logger.error("clearing " + e.getKey() + " with selectiveCacheUpdateNonApplicable");
+								    	logger.warn("clearing " + e.getKey() + " with selectiveCacheUpdateNonApplicable");
 								    	cacheInstance.flushGroup("selectiveCacheUpdateNonApplicable");
 							    	}
 							    	
@@ -2634,7 +2665,7 @@ public class CacheController extends Thread
 			
     		if(!useSelectivePageCacheUpdate || entity.indexOf("AccessRight") > -1)
     		{
-    			logger.error("Clearing all pageCaches");
+    			logger.warn("Clearing all pageCaches");
     			CacheController.clearFileCaches("pageCache");
     		}
 

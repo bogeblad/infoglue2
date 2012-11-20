@@ -28,15 +28,20 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.log4j.Logger;
+import org.exolab.castor.jdo.Database;
 import org.infoglue.cms.entities.content.ContentVO;
 import org.infoglue.cms.entities.content.ContentVersionVO;
 import org.infoglue.cms.entities.kernel.BaseEntityVO;
 import org.infoglue.cms.entities.structure.SiteNodeVO;
+import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.security.InfoGluePrincipal;
 
 public class PageTemplateController extends BaseController 
 {
-	
+
+    private final static Logger logger = Logger.getLogger(PageTemplateController.class.getName());
+
 	/**
 	 * Factory method
 	 */
@@ -52,18 +57,35 @@ public class PageTemplateController extends BaseController
 	
 	public List getPageTemplates(InfoGluePrincipal infoGluePrincipal, Integer languageId) throws Exception
 	{
-	    List pageTemplates = getPageTemplates(infoGluePrincipal);
-	    Iterator i = pageTemplates.iterator();
-	    while(i.hasNext())
-	    {
-	        ContentVO contentVO = (ContentVO)i.next();
-	        ContentVersionVO contentVersionVO = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(contentVO.getId(), languageId);
-		    if(contentVersionVO == null)
+		Database db = CastorDatabaseService.getDatabase();
+
+		List pageTemplates = new ArrayList();
+		
+		try 
+		{
+			beginTransaction(db);
+
+		    pageTemplates = getPageTemplates(infoGluePrincipal, db);
+		    Iterator i = pageTemplates.iterator();
+		    while(i.hasNext())
 		    {
-		        i.remove();
-		    }
+		        ContentVO contentVO = (ContentVO)i.next();
+		        ContentVersionVO contentVersionVO = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(contentVO.getId(), languageId, db);
+			    if(contentVersionVO == null)
+			    {
+			        i.remove();
+			    }
+			}
+
+			commitTransaction(db);
+		} 
+		catch (Exception e) 
+		{
+			logger.info("An error occurred so we should not complete the transaction:" + e);
+			rollbackTransaction(db);
+			throw new SystemException(e.getMessage());
 		}
-	    
+
 	    return pageTemplates;
 	}
 
@@ -71,7 +93,7 @@ public class PageTemplateController extends BaseController
 	 * This method returns the contents that are of contentTypeDefinition "PageTemplate"
 	 */
 	
-	public List getPageTemplates(InfoGluePrincipal infoGluePrincipal) throws Exception
+	public List getPageTemplates(InfoGluePrincipal infoGluePrincipal, Database db) throws Exception
 	{
 		HashMap arguments = new HashMap();
 		arguments.put("method", "selectListOnContentTypeName");
@@ -82,7 +104,7 @@ public class PageTemplateController extends BaseController
 		argumentList.add(argument);
 		arguments.put("arguments", argumentList);
 		
-		return ContentControllerProxy.getController().getACContentVOList(infoGluePrincipal, arguments);
+		return ContentControllerProxy.getController().getACContentVOList(infoGluePrincipal, arguments, db);
 		//return ContentController.getContentController().getContentVOList(arguments);
 	}
 
