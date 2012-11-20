@@ -180,11 +180,11 @@ public class CacheEvictionBean
 		map.put("publicationId", "" + this.getPublicationId());
 		map.put("userName", this.getUserName());
 		map.put("timestamp", "" + this.getTimestamp());
-		map.put("className", this.getClassName());
-		map.put("objectId", this.getObjectId());
-		map.put("objectName", this.getObjectName());
-		map.put("changedAttributeNames", this.getChangedAttributeNames());
-		map.put("typeId", this.getTypeId());
+		map.put("className", "" + this.getClassName());
+		map.put("objectId", "" + this.getObjectId());
+		map.put("objectName", "" + this.getObjectName());
+		map.put("changedAttributeNames", "" + this.getChangedAttributeNames());
+		map.put("typeId", "" + this.getTypeId());
 		map.put("receivedTimestamp", "" + this.getReceivedTimestamp());
 		map.put("processedTimestamp", "" + this.getProcessedTimestamp());
 		String status = "Received";
