@@ -481,11 +481,11 @@ public class UpdateCacheAction extends InfoGlueAbstractAction
 		}
 		catch(Exception e)
 		{
-			logger.error(e.getMessage(), e);
+			logger.error("Error in UpdateCache: " + e.getMessage(), e);
 		}
 		catch(Throwable t)
 		{
-		    logger.error(t.getMessage());
+		    logger.error("Error in UpdateCache: " + t.getMessage());
 		}
                 
 		//this.getHttpSession().invalidate();

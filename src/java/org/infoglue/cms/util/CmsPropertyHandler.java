@@ -1756,6 +1756,7 @@ public class CmsPropertyHandler
 				while((deliverUrl = properties.getProperty("" + i)) != null)
 				{ 
 					urls.add(deliverUrl);
+				    logger.warn("deliverUrl:" + deliverUrl);
 					i++;
 				}	
 
@@ -1763,16 +1764,18 @@ public class CmsPropertyHandler
 			catch(Exception e)
 			{
 			    logger.error("Error loading properties from string. Reason:" + e.getMessage());
-				e.printStackTrace();
+			    logger.warn("Error loading properties from string. Reason:" + e.getMessage(), e);
 			}
 		}
 	    else
 	    {
+	    	logger.error("Strange - it seems the system cannot find the publicDeliveryUrls in properties system. Looking on disk.");
 			int i = 0;
 			String deliverUrl = null;
 			while((deliverUrl = CmsPropertyHandler.getProperty("publicDeliverUrl." + i)) != null)
 			{ 
 				urls.add(deliverUrl);
+			    logger.warn("deliverUrl from disk:" + deliverUrl);
 				i++;
 			}	
 	    }
