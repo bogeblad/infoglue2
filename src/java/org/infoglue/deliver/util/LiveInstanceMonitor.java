@@ -131,7 +131,9 @@ public class LiveInstanceMonitor implements Runnable
     			}
     		}
 			catch(Exception e)
-			{				
+			{		
+				logger.error("Error in instance monitor: " + serverBase + ", Message: " + e.getMessage(), e);
+
 				try
 				{
 					String cause = "" + e.getMessage();
@@ -140,7 +142,7 @@ public class LiveInstanceMonitor implements Runnable
 					else if(e instanceof SocketTimeoutException)
 						cause = "" + e.getMessage();
 					
-					NotificationMessage serverErrorMessage = new NotificationMessage("Server down: " + cause, serverBase, "SYSTEM", NotificationMessage.SERVER_UNAVAILABLE, "n/a", serverBase);
+					NotificationMessage serverErrorMessage = new NotificationMessage("Server down!: " + cause, serverBase, "SYSTEM", NotificationMessage.SERVER_UNAVAILABLE, "n/a", serverBase);
 					TransactionHistoryController.getController().create(serverErrorMessage);
 				}
 				catch (Exception e2) 
@@ -208,7 +210,7 @@ public class LiveInstanceMonitor implements Runnable
 					else if(e instanceof SocketTimeoutException)
 						cause = "" + e.getMessage();
 					
-					NotificationMessage serverErrorMessage = new NotificationMessage("Server down: " + cause, serverBase, "SYSTEM", NotificationMessage.SERVER_UNAVAILABLE, "n/a", serverBase);
+					NotificationMessage serverErrorMessage = new NotificationMessage("Server down!: " + cause, serverBase, "SYSTEM", NotificationMessage.SERVER_UNAVAILABLE, "n/a", serverBase);
 					TransactionHistoryController.getController().create(serverErrorMessage);
 				}
 				catch (Exception e2) 
