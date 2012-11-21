@@ -144,7 +144,8 @@ public class ComponentController extends BaseController
 				
 				Timer t = new Timer();
 				List<ContentVersionVO> componentContentVersionVOList = ContentControllerProxy.getController().getLatestContentVersionVOListByContentTypeId(new Integer[]{htmlTemplateContentType.getId(), pagePartTemplateContentType.getId()}, db);
-				t.printElapsedTime("componentContentVersionVOList " + componentContentVersionVOList.size() + " took");
+				
+				logger.warn("Getting componentContentVersionVOList " + componentContentVersionVOList.size() + " took: " + t.getElapsedTime());
 				
 				templatesAndPagePartMap = new HashMap<String,List<ContentVO>>();
 				
@@ -196,7 +197,8 @@ public class ComponentController extends BaseController
 			        	}
 		        	}
 			    }
-			    t.printElapsedTime("Done indexing took in " + CmsPropertyHandler.getContextRootPath() + ":" + templatesAndPagePartMap.size());
+			    
+			    logger.warn("Done indexing took in " + CmsPropertyHandler.getContextRootPath() + ":" + templatesAndPagePartMap.size() + " took: " + t.getElapsedTime());
 				
 				CacheController.cacheObject("componentContentsCache", cacheKey, templatesAndPagePartMap);
 				CacheController.cacheObject("componentContentsCache", cacheKey + "_preCacheDone", new Boolean(true));

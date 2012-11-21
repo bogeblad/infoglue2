@@ -209,7 +209,7 @@ public class AccessRightController extends BaseController
 			*/
 			//accessRightVOList.add(aru.getValueObject());
 		}
-		t.printElapsedTime("accessRightsMap:" + accessRightsMap.size());
+		logger.warn("accessRightsMap:" + accessRightsMap.size() + " took " + t.getElapsedTime());
 		
 		List<AccessRightVO> duplicateAccessRightVOList = new ArrayList<AccessRightVO>();
 		List<AccessRightVO> duplicateNonHarmfulAccessRightVOList = new ArrayList<AccessRightVO>();
@@ -245,7 +245,7 @@ public class AccessRightController extends BaseController
 		results.close();
 		oql.close();
 
-		t.printElapsedTime("Recaching access rights in " + CmsPropertyHandler.getContextRootPath() + " for user " + principal.getName());
+		logger.warn("Recaching access rights in " + CmsPropertyHandler.getContextRootPath() + " for user " + principal.getName() + " took " + t.getElapsedTime());
 	}
 	
 	
@@ -271,13 +271,11 @@ public class AccessRightController extends BaseController
 			logger.info("interceptionPointName:" + interceptionPointName + " not found");
 			return new ArrayList();
 		}
-		t.printElapsedTime("1.0");
 		
 		//Thread.dumpStack();
 		logger.warn("Reading the hard way from an unexpected place:" + interceptionPointName + ":" + parameters);
 		
 		List accessRightList = this.getAccessRightListOnlyReadOnly(interceptionPointVO.getId(), parameters, db);
-		t.printElapsedTime("1.1");
 
 		Iterator accessRightListIterator = accessRightList.iterator();
 		while(accessRightListIterator.hasNext())
@@ -296,8 +294,6 @@ public class AccessRightController extends BaseController
 		    accessRightVOList.add(vo);
 		}
 		
-		t.printElapsedTime("1.3");
-
 		if(accessRightVOList != null)
 			CacheController.cacheObject("authorizationCache", key, accessRightVOList);
 		
@@ -1745,7 +1741,7 @@ public class AccessRightController extends BaseController
 							beginTransaction(db);
 	
 							preCacheUserAccessRightVOList(infoGluePrincipal, db);
-							t.printElapsedTime("Done precaching all access rights for this user");
+							logger.warn("Done precaching all access rights for this user took:" + t.getElapsedTime());
 							commitTransaction(db);
 						} 
 						catch (Exception e) 
@@ -2361,7 +2357,7 @@ public class AccessRightController extends BaseController
 							beginTransaction(db);
 	
 							preCacheUserAccessRightVOList(infoGluePrincipal, db);
-							t.printElapsedTime("Done precaching all access rights for this user");
+							logger.warn("Done precaching all access rights for this user took:" + t.getElapsedTime());
 							commitTransaction(db);
 						} 
 						catch (Exception e) 

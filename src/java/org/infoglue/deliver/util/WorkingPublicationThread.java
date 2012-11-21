@@ -233,7 +233,7 @@ public class WorkingPublicationThread extends Thread
 
 				    	//continue;
 				    }
-				    t.printElapsedTime("First part in working thread done...");
+				    //t.printElapsedTime("First part in working thread done...");
 					//logger.info("changedAttributeNames in working thread:" + changedAttributeNames);
 					
 					//logger.info("className:" + className);

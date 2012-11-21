@@ -906,8 +906,6 @@ public class SiteNodeController extends BaseController
 	{
 		List<SiteNodeVO> childrenVOList = new ArrayList<SiteNodeVO>();
 
-   		Timer t = new Timer();
-
    		StringBuffer SQL = new StringBuffer();
    		if(CmsPropertyHandler.getUseShortTableNames() != null && CmsPropertyHandler.getUseShortTableNames().equalsIgnoreCase("true"))
     	{
@@ -986,8 +984,6 @@ public class SiteNodeController extends BaseController
 		
 		results.close();
 		oql.close();
-
-   		t.printElapsedTime("getSiteNodeVOList " + childrenVOList.size() + " took");
    		
 		return childrenVOList;
 	}

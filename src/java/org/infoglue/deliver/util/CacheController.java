@@ -306,13 +306,16 @@ public class CacheController extends Thread
 
 	public static synchronized void preCacheCMSEntities() throws Exception 
 	{
+		Timer t = new Timer();
+		
 		ComponentController.getController().preCacheComponents(-1);
-
+		logger.warn("preCacheComponents took:" + t.getElapsedTime());
+		
 		List<SiteNodeVO> snVOList = SiteNodeController.getController().getSiteNodeVOList(false, 0, 30000);
-		logger.error("snVOList:" + snVOList.size() + " fetched and precached");
+		logger.warn("snVOList:" + snVOList.size() + " fetched and precached in " + t.getElapsedTime() + " ms");
 
 		List<ContentVO> cList = ContentController.getContentController().getContentVOList(10000);
-		logger.error("cList:" + cList.size() + " fetched and precached");
+		logger.warn("cList:" + snVOList.size() + " fetched and precached in " + t.getElapsedTime() + " ms");
 
 		/*
 		List<SiteNodeVO> snVOList = SiteNodeController.getController().getSiteNodeVOList(false, 0, 10000);
@@ -331,13 +334,16 @@ public class CacheController extends Thread
 
 	public static synchronized void preCacheDeliverEntities() throws Exception 
 	{
+		Timer t = new Timer();
+
 		ComponentController.getController().preCacheComponents(-1);
+		logger.warn("preCacheComponents took:" + t.getElapsedTime());
 
 		List<SiteNodeVO> snVOList = SiteNodeController.getController().getSiteNodeVOList(false, new Integer(CmsPropertyHandler.getOperatingMode()), 30000);
-		logger.error("snVOList:" + snVOList.size() + " fetched and precached");
+		logger.warn("snVOList:" + snVOList.size() + " fetched and precached in " + t.getElapsedTime() + " ms");
 
 		List<ContentVO> cList = ContentController.getContentController().getContentVOList(10000);
-		logger.error("cList:" + cList.size() + " fetched and precached");
+		logger.warn("cList:" + snVOList.size() + " fetched and precached in " + t.getElapsedTime() + " ms");
 
 		/*
 		FileInputStream fis = new FileInputStream(CmsPropertyHandler.getDigitalAssetPath() + File.separator + "startupCache.txt");

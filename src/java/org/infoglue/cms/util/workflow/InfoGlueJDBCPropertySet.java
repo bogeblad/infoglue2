@@ -392,7 +392,6 @@ public class InfoGlueJDBCPropertySet extends JDBCPropertySet
             allKeysCachedType10 = true;
             if(isRecacheCall)
             {
-            	System.out.println("AAAAAA");
             	//System.out.println("Switching valueMap from:" + valueMap.hashCode() + " --> " + currentValueMap.hashCode());
             	type5Map = currentType5Map;
             	valueMapType5 = currentValue5Map;
@@ -620,13 +619,13 @@ public class InfoGlueJDBCPropertySet extends JDBCPropertySet
     {	    	
     	if(key.indexOf("allowedAdminIP") == -1 && key.indexOf("_") == -1 && globalKey.equals("infoglue"))
     	{
-    		System.out.println("Returning null for key:" + key);
+    		logger.info("Returning null for key:" + key);
     		return null;
     	}
     	
     	if(type == 5 && enableCache && valueMapType5 == null && !allKeysCachedType5)
     	{
-    		System.out.println("Caching as:" + valueMapType5 + ":" + allKeysCachedType5);
+    		logger.info("Caching as:" + valueMapType5 + ":" + allKeysCachedType5);
     		this.getKeys();
     	}
     	if(type == 10 && enableCache && valueMapType10 == null && !allKeysCachedType10)

@@ -1015,7 +1015,9 @@ public class GroupPropertiesController extends BaseController
 			return;
 		}
 		
-		System.out.println("Starting preCache");
+		Timer t = new Timer();
+		
+		logger.warn("Starting preCache");
 		List<LanguageVO> languageVOList = LanguageController.getController().getLanguageVOList(db);
 		for(LanguageVO languageVO : languageVOList)
 		{
@@ -1051,8 +1053,9 @@ public class GroupPropertiesController extends BaseController
 			results.close();
 			oql.close();
 		}
+
 		CacheController.cacheObject("groupPropertiesCache", "preCacheDone", new Boolean(true));
-		System.out.println("Precaching done....");
+		logger.warn("Precaching done in " + t.getElapsedTime());
 	}
 
 	

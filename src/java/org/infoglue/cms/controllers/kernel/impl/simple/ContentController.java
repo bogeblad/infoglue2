@@ -1199,14 +1199,16 @@ public class ContentController extends BaseController
 
 		Timer t = new Timer();
 		OQLQuery oql = db.getOQLQuery("CALL SQL " + sb.toString() + "AS org.infoglue.cms.entities.content.impl.simple.SmallContentVersionImpl");
-    	t.printElapsedTime("Query took");
+		logger.warn("Query for component content versions took:" + t.getElapsedTime());
+
     	QueryResults results = oql.execute(Database.ReadOnly);
 		while (results.hasMore()) 
         {
 			ContentVersion contentVersion = (ContentVersion)results.next();
 			contentVersionVOList.add(contentVersion.getValueObject());
 	    }
-    	t.printElapsedTime("Read took");
+
+		logger.warn("Read of component content versions took:" + t.getElapsedTime());
 
 		results.close();
 		oql.close();
