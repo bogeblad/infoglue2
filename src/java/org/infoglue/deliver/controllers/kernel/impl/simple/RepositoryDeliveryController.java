@@ -279,17 +279,30 @@ public class RepositoryDeliveryController extends BaseDeliveryController
 	                logger.info("indexMode:" + indexMode);
                 }
                 
-            	if((dnsName.indexOf(":") == -1 && dnsName.indexOf(serverName) == 0) || dnsName.indexOf(serverName + ":" + portNumber) == 0 || index > -1 || indexMode == -1)
+                if((dnsName.indexOf(":") == -1 && dnsName.indexOf(serverName) == 0) || dnsName.indexOf(serverName + ":" + portNumber) == 0 || index > -1 || indexMode == -1)
                 {
-            	    if(repositoryName != null && repositoryName.length() > 0)
+                	if(repositoryName != null && repositoryName.length() > 0)
             	    {
-            	        logger.info("Has to check repositoryName also:" + repositoryName);
+            	        logger.info("Has to check repositoryName also:" + repositoryVO.getName() + "=" + repositoryName + "=" + serverName);
                         if(repositoryVO.getName().equalsIgnoreCase(repositoryName))
-            	            repositories.add(repositoryVO);
+                        {
+                	        logger.info("Adding 1:" + repositoryVO.getName() + "=" + repositoryName);
+                        	repositories.add(repositoryVO);
+                        }
             	    }
             	    else
             	    {
-            	        repositories.add(repositoryVO);
+            	    	logger.info("dnsName:" + dnsName);
+            	    	logger.info("serverName:" + serverName);
+                    	if(dnsName.startsWith(serverName))
+                	    {
+                	        logger.info("Adding 2:" + repositoryVO.getName() + "=" + repositoryName + "=" + serverName);
+                        	repositories.add(repositoryVO);
+                	    }
+                	    /*
+            	        logger.warn("Adding 2:" + repositoryVO.getName() + "=" + repositoryName);
+            	    	repositories.add(repositoryVO);
+            	    	*/
             	    }
             	}
             }
