@@ -1698,7 +1698,7 @@ public class CmsPropertyHandler
 				String deliverUrl = null;
 				while((deliverUrl = properties.getProperty("" + i)) != null)
 				{ 
-					logger.info("deliverUrl:" + deliverUrl);
+					logger.warn("deliverUrl:" + deliverUrl);
 					if(deliverUrl.startsWith("unless["))
 					{
 						String unlessIP = deliverUrl.substring(7, deliverUrl.indexOf("]"));
@@ -1706,10 +1706,10 @@ public class CmsPropertyHandler
 						if(localAddress == null || !localAddress.getHostAddress().equals(unlessIP))
 						{
 							urls.add(deliverUrl.substring(deliverUrl.indexOf("=") + 1));
-							logger.info("Adding url:" + deliverUrl.substring(deliverUrl.indexOf("=") + 1));							
+							logger.warn("Adding url:" + deliverUrl.substring(deliverUrl.indexOf("=") + 1));							
 						}
 						else
-							logger.info("Not adding url:" + deliverUrl + " as it was ruled not to..");
+							logger.warn("Not adding url:" + deliverUrl + " as it was ruled not to..");
 					}
 					else
 					{
@@ -1723,14 +1723,17 @@ public class CmsPropertyHandler
 			catch(Exception e)
 			{
 			    logger.error("Error loading properties from string. Reason:" + e.getMessage());
+			    logger.warn("Error loading properties from string. Reason:" + e.getMessage(), e);
 			}
 		}
 	    else
 	    {
+	    	logger.error("Strange - it seems the system cannot find the publicDeliveryUrls in properties system. Looking on disk.");
 			int i = 0;
 			String deliverUrl = null;
 			while((deliverUrl = CmsPropertyHandler.getProperty("internalDeliverUrl." + i)) != null)
 			{ 
+				logger.warn("Adding url:" + deliverUrl);							
 				urls.add(deliverUrl);
 				i++;
 			}	

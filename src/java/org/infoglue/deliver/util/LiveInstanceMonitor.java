@@ -199,6 +199,7 @@ public class LiveInstanceMonitor implements Runnable
 			}
 			catch(Exception e)
 			{
+				logger.error("Error in instance monitor: " + serverBase + ", Message: " + e.getMessage(), e);
 				try
 				{
 					String cause = "" + e.getMessage();
