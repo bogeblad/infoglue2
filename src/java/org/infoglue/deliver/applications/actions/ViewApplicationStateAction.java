@@ -899,7 +899,6 @@ public class ViewApplicationStateAction extends InfoGlueAbstractAction
         	if(this.cache instanceof GeneralCacheAdministrator)
         	{
         		this.cacheMap = ((GeneralCacheAdministrator)this.cache).getCache().cacheMap;
-        		System.out.println("this.cacheMap:" + this.cacheMap);
         	}
         }
         
@@ -1043,7 +1042,6 @@ public class ViewApplicationStateAction extends InfoGlueAbstractAction
         	if(this.cache instanceof GeneralCacheAdministrator)
         	{
         		this.cacheMap = ((GeneralCacheAdministrator)this.cache).getCache().cacheMap;
-        		System.out.println("this.cacheMap:" + this.cacheMap);
         	}
         }
     	
