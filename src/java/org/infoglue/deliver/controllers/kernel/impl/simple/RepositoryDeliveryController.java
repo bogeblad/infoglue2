@@ -47,6 +47,8 @@ import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.util.CmsPropertyHandler;
 import org.infoglue.deliver.util.CacheController;
 import org.infoglue.deliver.util.NullObject;
+import org.infoglue.deliver.util.RequestAnalyser;
+import org.infoglue.deliver.util.Timer;
 
 import com.opensymphony.module.propertyset.PropertySet;
 import com.opensymphony.module.propertyset.PropertySetManager;
@@ -139,6 +141,8 @@ public class RepositoryDeliveryController extends BaseDeliveryController
 	
 	public Set<RepositoryVO> getRepositoryVOListFromServerName(Database db, String serverName, String portNumber, String repositoryName, String url) throws SystemException, Exception
     {
+		Timer t = new Timer();
+		
 	    Set<RepositoryVO> repositories = new HashSet<RepositoryVO>();
 	    
 	    String niceURIEncoding = CmsPropertyHandler.getNiceURIEncoding();
@@ -166,12 +170,14 @@ public class RepositoryDeliveryController extends BaseDeliveryController
 				CacheController.cacheObject("masterRepository", "allDNSRepositories", cachedRepositories);
 		}
 		
+		//t.printElapsedTime("Repositories " + cachedRepositories.size() + " st took");
+		
 		Iterator repositoriesIterator = cachedRepositories.iterator();
         while (repositoriesIterator.hasNext()) 
         {
             RepositoryVO repositoryVO = (RepositoryVO) repositoriesIterator.next();
             logger.info("repository:" + repositoryVO.getDnsName());
-            
+
             String fullDnsNames = repositoryVO.getDnsName();
 
             String workingPath = null;
@@ -223,7 +229,7 @@ public class RepositoryDeliveryController extends BaseDeliveryController
 	            	continue;
 	            }
 	        }
-
+            
             String[] dnsNames = splitStrings(fullDnsNames);
             logger.info("dnsNames:" + dnsNames);
             for (int i=0;i<dnsNames.length;i++) 
@@ -308,6 +314,8 @@ public class RepositoryDeliveryController extends BaseDeliveryController
             }
         }
         
+        RequestAnalyser.getRequestAnalyser().registerComponentStatistics("Getting all repos", t.getElapsedTime());
+
         return repositories;
     }
 

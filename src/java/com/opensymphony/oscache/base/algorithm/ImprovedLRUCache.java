@@ -22,7 +22,7 @@ import java.util.*;
  * <code>AbstractConcurrentReadCache</code> already takes care of any
  * synchronization requirements.</p>
  *
- * @version        $Revision: 1.2 $
+ * @version        $Revision: 1.2.4.1 $
  * @author <a href="mailto:salaman@teknos.com">Victor Salaman</a>
  * @author <a href="mailto:fbeauregard@pyxis-tech.com">Francois Beauregard</a>
  * @author <a href="mailto:abergevin@pyxis-tech.com">Alain Bergevin</a>
@@ -67,7 +67,7 @@ public class ImprovedLRUCache extends AbstractConcurrentReadCache
      * @param key The cache key of the item that was retrieved.
      */
     protected void itemRetrieved(Object key) {
-        // Prevent list operations during remove
+    	// Prevent list operations during remove
         while (removeInProgress) {
             try {
                 Thread.sleep(5);
@@ -78,7 +78,7 @@ public class ImprovedLRUCache extends AbstractConcurrentReadCache
         // We need to synchronize here because AbstractConcurrentReadCache
         // doesn't prevent multiple threads from calling this method simultaneously.
         synchronized (list) {
-            list.remove(key);
+        	list.remove(key);
             list.add(key);
         }
     }
@@ -105,6 +105,10 @@ public class ImprovedLRUCache extends AbstractConcurrentReadCache
      * @return The key of whichever item was removed.
      */
     protected Object removeItem() {
+    	//System.out.println("this.getGroupsForReading().size():" + this.getGroupsForReading().size());
+    	if(this.getGroupsForReading().size() > maxGroups)
+    		maxGroups = this.getGroupsForReading().size();
+
         Object toRemove = null;
 
         removeInProgress = true;
@@ -146,14 +150,36 @@ public class ImprovedLRUCache extends AbstractConcurrentReadCache
      *
      * @return the object that was removed
      */
+    int maxGroups = 0;
+    
     private Object removeFirst() {
     	Object toRemove = null;
     	
     	synchronized (list) { // A further fix for CACHE-44 and CACHE-246
+
         	Iterator it = list.iterator();
         	toRemove = it.next();
         	it.remove();
         	this.remove(toRemove);
+        	
+        	if(maxGroups > 1000 && maxGroups > (this.getGroupsForReading().size() * 5))
+        	{
+        		System.out.println("The group map must be made smaller:" + maxGroups);
+        		HashMap newGroups = new HashMap();
+        		newGroups.putAll(groups);
+        		groups = newGroups;
+        		maxGroups = 0;
+        	}
+        	/*
+        	System.out.println("Key: " + this.keySet().iterator().next());
+            System.out.println("Removing: " + toRemove + " from " + this.getClass());
+            System.out.println("maxGroups:" + maxGroups);
+            System.out.println("list.size():" + list.size());
+            System.out.println("Info:" + this.count);
+            System.out.println("Info:" + this.loadFactor());
+            System.out.println("Info:" + this.size());
+            System.out.println("Info:" + this.getGroupsForReading().size());
+            */
     	}
 
         return toRemove;
