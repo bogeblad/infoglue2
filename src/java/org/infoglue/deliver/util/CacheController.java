@@ -740,7 +740,7 @@ public class CacheController extends Thread
 	    	
 	    	String compressPageCache = CmsPropertyHandler.getCompressPageCache();
 	    	
-	    	System.out.println("Caching in file...:" + value.toString());
+	    	//System.out.println("Caching in file...:" + value.toString());
 	    	if(cacheName.equals("pageCache") && compressPageCache != null && compressPageCache.equals("true"))
 	    		putCachedCompressedContentInFile(cacheName, key.toString(), (byte[])value);				    	
 	    	else
