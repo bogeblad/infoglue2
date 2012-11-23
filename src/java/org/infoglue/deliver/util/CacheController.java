@@ -1060,19 +1060,20 @@ public class CacheController extends Thread
 
 	private static boolean cacheNewResult(PageInvoker pageInvoker, GeneralCacheAdministrator cacheAdministrator, String pageKey, String value) 
 	{
+		/*
 		int argumentCount = StringUtils.countMatches(pageKey, "&");
 		if(argumentCount > 4)
 		{
-			logger.info("Skipping caching as we don't cache url:s with more than 3 params");
+			logger.error("Skipping caching as we don't cache url:s with more than 3 params:" + pageKey);
 			return false;
 		}
-
 		argumentCount = StringUtils.countMatches(pageKey, "/");
 		if(argumentCount > 7)
 		{
-			logger.info("Skipping caching as we don't cache url:s with more than 6 slashes");
+			logger.error("Skipping caching as we don't cache url:s with more than 7 slashes:" + pageKey);
 			return false;
 		}
+		*/
 
 		boolean isCached = false;
 		
