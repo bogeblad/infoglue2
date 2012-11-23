@@ -1657,7 +1657,7 @@ public class CacheController extends Thread
 			//synchronized(caches)
 		    //{
 	    		//for (Iterator i = caches.entrySet().iterator(); i.hasNext(); ) 
-		    	for (Iterator i = orderedCaches.entrySet().iterator(); i.hasNext(); ) 
+		    	cachesLoop:for (Iterator i = orderedCaches.entrySet().iterator(); i.hasNext(); ) 
 				{
 					RequestAnalyser.getRequestAnalyser().registerComponentStatistics("cache iteration top", t.getElapsedTime());
 
@@ -1667,6 +1667,17 @@ public class CacheController extends Thread
 					boolean clear = false;
 					boolean selectiveCacheUpdate = false;
 					String cacheName = e.getKey().toString();
+
+					if(cachesToSkip != null)
+					{
+						for(int index=0; index<cachesToSkip.length; index++)
+						{
+						    if(cacheName.equals(cachesToSkip[index]))
+						    {
+						        continue cachesLoop;
+						    }
+						}
+					}
 					
 					if(cacheName.equalsIgnoreCase("serviceDefinitionCache") && entity.indexOf("ServiceBinding") > 0)
 					{
@@ -3436,6 +3447,26 @@ public class CacheController extends Thread
 	{
 		List<String> caches = new ArrayList<String>();
 
+		caches.add("redirectCache");
+		caches.add("languageCache");
+		caches.add("childSiteNodesCache");
+		caches.add("parentSiteNodeCache");
+		caches.add("contentTypeDefinitionCache");
+		caches.add("componentContentsCache");
+		caches.add("contentVersionIdCache");
+		caches.add("rootSiteNodeCache");
+		caches.add("contentCache");
+		caches.add("relatedCategoriesCache");
+		caches.add("matchingContentsCache");
+		caches.add("propertiesCategoryCache");
+		caches.add("userCache");
+		caches.add("siteNodeCache");
+		caches.add("contentCategoryCache");
+		caches.add("contentVersionCache");
+		caches.add("digitalAssetCache");
+		caches.add("latestSiteNodeVersionCache");
+		caches.add("interceptionPointCache");
+		caches.add("contentAttributeCache");		
 		caches.add("ServerNodeProperties");
 		caches.add("serverNodePropertiesCache");
 		caches.add("pageCache");

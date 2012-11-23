@@ -696,10 +696,9 @@ public class SelectiveLivePublicationThread extends PublicationThread
 	
 							    logger.info("Updating all caches from SelectiveLivePublicationThread as this was a publishing-update\n\n\n");
 							    //CacheController.clearCastorCaches();
-	
+
 							    String[] excludedCaches = CacheController.getPublicationPersistentCacheNames();
 								logger.info("clearing all except " + excludedCaches + " as we are in publish mode..\n\n\n");											
-								//CacheController.clearCaches(null, null, new String[] {"ServerNodeProperties", "serverNodePropertiesCache", "pageCache", "pageCacheExtra", "componentCache", "NavigationCache", "pagePathCache", "userCache", "pageCacheParentSiteNodeCache", "pageCacheLatestSiteNodeVersions", "pageCacheSiteNodeTypeDefinition", "JNDIAuthorizationCache", "WebServiceAuthorizationCache", "importTagResultCache"});
 								CacheController.clearCaches(null, null, excludedCaches);
 							    
 								//logger.info("Recaching all caches as this was a publishing-update\n\n\n");
@@ -711,6 +710,7 @@ public class SelectiveLivePublicationThread extends PublicationThread
 								logger.info("Finally clearing page cache and some other caches as this was a publishing-update\n\n\n");
 								//CacheController.clearCache("ServerNodeProperties");
 								//CacheController.clearCache("serverNodePropertiesCache");
+								
 							    CacheController.clearCache("boundContentCache");
 						        CacheController.clearFileCaches("pageCache");
 						        CacheController.clearCache("pageCache");
@@ -721,6 +721,7 @@ public class SelectiveLivePublicationThread extends PublicationThread
 								CacheController.clearCache("pageCacheParentSiteNodeCache");
 								CacheController.clearCache("pageCacheLatestSiteNodeVersions");
 								CacheController.clearCache("pageCacheSiteNodeTypeDefinition");
+								
 							}
 							else if(className.equalsIgnoreCase("PortletRegistry"))
 						    {
@@ -779,8 +780,11 @@ public class SelectiveLivePublicationThread extends PublicationThread
 								
 							for(Map<String,String> igCacheCall : allIGCacheCalls)
 							{
-								logger.info("Calling clear caches with:" + igCacheCall.get("className") + ":" + igCacheCall.get("objectId"));
-								CacheController.clearCaches(igCacheCall.get("className"), igCacheCall.get("objectId"), null);
+								if(igCacheCall.get("className") == null || !igCacheCall.get("className").equals("ServerNodeProperties"))
+								{
+									logger.info("Calling clear caches with:" + igCacheCall.get("className") + ":" + igCacheCall.get("objectId"));
+									CacheController.clearCaches(igCacheCall.get("className"), igCacheCall.get("objectId"), null);
+								}
 							}
 						}
 				    }
