@@ -23,6 +23,7 @@
 package org.infoglue.deliver.jobs;
 
 import java.io.File;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -94,9 +95,11 @@ public class ExpireCacheJob implements Job
 		    RequestAnalyser.getRequestAnalyser().setBlockRequests(false);
     	}
     	
+	    
     	long diff = ((System.currentTimeMillis() - lastCacheCleanup) / 1000);
-    	if(diff > 3600)
-    	{
+    	//if(diff > 3600)
+    	if(diff > 3600 && (Calendar.getInstance().get(Calendar.HOUR_OF_DAY) == 23 || Calendar.getInstance().get(Calendar.HOUR_OF_DAY) == 1 || Calendar.getInstance().get(Calendar.HOUR_OF_DAY) == 2))
+	    {
     		logger.info("Cleaning heavy caches so memory footprint is kept low:" + diff);
             /*
             synchronized(RequestAnalyser.getRequestAnalyser()) 
@@ -110,27 +113,36 @@ public class ExpireCacheJob implements Job
 
     	       	RequestAnalyser.getRequestAnalyser().setBlockRequests(true);
     		}
-            
+            */
 			try
             {
-    			logger.info("Finally clearing page cache as this was a publishing-update");
-    			//logger.error("Flushing heavy caches..");
-    			//CacheController.clearCache("contentVersionCache");
-    			//CacheController.clearCache("componentPropertyCache");
-    			//CacheController.clearCache("componentPropertyVersionIdCache");
-    			//CacheController.clearCachesStartingWith("contentAttributeCache");
-    			//CacheController.clearCachesStartingWith("contentVersionIdCache");
-    			//CacheController.clearCache("componentEditorCache");
-    			//CacheController.clearCache("componentEditorVersionIdCache");
-    			//CacheController.clearCache("pageCache");
-    			//CacheController.clearCache("pageCacheExtra");
-    		    logger.error("Done flushing heavy caches..");
+    			logger.warn("Flushing heavy caches..");
+    			if(Calendar.getInstance().get(Calendar.HOUR_OF_DAY) == 23)
+    			{
+	    			CacheController.clearCache("contentVersionCache");
+	    			CacheController.clearCache("contentVersionIdCache");
+	    			CacheController.clearCache("componentPropertyCache");
+	    			CacheController.clearCache("componentPropertyVersionIdCache");
+    			}
+    			if(Calendar.getInstance().get(Calendar.HOUR_OF_DAY) == 1)
+    			{
+		    		CacheController.clearCache("contentAttributeCache");
+	    			//CacheController.clearCache("componentEditorCache");
+	    			//CacheController.clearCache("componentEditorVersionIdCache");
+    			}
+    			if(Calendar.getInstance().get(Calendar.HOUR_OF_DAY) == 2)
+    			{
+			    	CacheController.clearCache("pageCache");
+	    			CacheController.clearCache("pageCacheExtra");
+    			}
+    			logger.warn("Done flushing heavy caches..");
     		    lastCacheCleanup = System.currentTimeMillis();
             }
             catch(Exception e)
             {
                 logger.error("An error occurred when we tried to clear caches:" + e.getMessage(), e);
             }
+            /*
 		    logger.info("releasing block");
 		    RequestAnalyser.getRequestAnalyser().setBlockRequests(false);
 		    */

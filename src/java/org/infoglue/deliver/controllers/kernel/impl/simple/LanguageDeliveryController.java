@@ -195,11 +195,12 @@ public class LanguageDeliveryController extends BaseDeliveryController
 
         logger.info("siteNodeId:" + siteNodeId);
 
-        SiteNode siteNode = (SiteNode)getObjectWithId(SiteNodeImpl.class, siteNodeId, db);
-			
-		if(siteNode != null)
+        //SiteNode siteNode = (SiteNode)getObjectWithId(SiteNodeImpl.class, siteNodeId, db);
+        SiteNodeVO siteNodeVO = SiteNodeController.getController().getSiteNodeVOWithId(siteNodeId, db);
+        
+		if(siteNodeVO != null)
 		{
-			List repositoryLanguages = getAvailableLanguagesForRepository(db, siteNode.getValueObject().getRepositoryId());
+			List repositoryLanguages = getAvailableLanguagesForRepository(db, siteNodeVO.getRepositoryId());
 
 			if(logger.isInfoEnabled())
 				logger.info("repositoryLanguages:" + repositoryLanguages.size());

@@ -35,9 +35,9 @@ public class LongRawOrByteBinaryType extends net.sf.hibernate.type.BinaryType
 		{
 			for(int i=1; i <= rs.getMetaData().getColumnCount(); i++)
 			{
-				String columnName = rs.getMetaData().getColumnName(i);
-				//System.out.println("columnName:" + columnName + ":" + rs.getMetaData().getColumnTypeName(i));
-				if(columnName.equals(name))
+				String columnName = rs.getMetaData().getColumnName(i).toLowerCase();
+				//System.out.println("columnName:" + columnName + ":" + rs.getMetaData().getColumnTypeName(i) + ":" + name.toLowerCase());
+				if(columnName.startsWith(name.toLowerCase()))
 				{
 					columnTypeName = rs.getMetaData().getColumnTypeName(i);
 					break;
@@ -50,6 +50,7 @@ public class LongRawOrByteBinaryType extends net.sf.hibernate.type.BinaryType
 		}
 
     	//System.out.println("columnTypeName: " + columnTypeName); 
+		//System.out.println("dbName: " + CmsPropertyHandler.getDatabaseEngine().indexOf("oracle")); 
     	if(CmsPropertyHandler.getDatabaseEngine().indexOf("oracle") > -1 && columnTypeName != null && columnTypeName.indexOf("RAW") == -1)
     	{
     		//System.out.println("Getting as blob");

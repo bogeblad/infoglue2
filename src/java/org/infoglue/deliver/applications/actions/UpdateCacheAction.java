@@ -353,6 +353,8 @@ public class UpdateCacheAction extends InfoGlueAbstractAction
          
     public String doExecute() throws Exception
     {
+    	logger.warn("A cache update was received");
+    	
     	if(!CmsPropertyHandler.getOperatingMode().equals("3"))
     		tk = new ThreadMonitor(2000, this.getRequest(), "Update cache took to long", false);
 
@@ -397,8 +399,7 @@ public class UpdateCacheAction extends InfoGlueAbstractAction
 		    
 		    while(className != null && !className.equals(""))
 		    {
-		    	logger.info("className:" + className);
-			    logger.info("objectId:" + objectId);
+		    	logger.warn("Cache update info:" + className + "/" + objectId);
 			    Integer publicationId = -1;
 			    if(className.indexOf(PublicationImpl.class.getName()) > -1)
 			    	publicationId = Integer.parseInt(objectId);
