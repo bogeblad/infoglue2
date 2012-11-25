@@ -36,6 +36,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.log4j.Logger;
 import org.dom4j.Attribute;
 import org.dom4j.Document;
@@ -2823,6 +2824,7 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 											supplementingEntityId = new Integer(supplementingEntityIdString);
 										}
 										String supplementingAssetKey = supplementingBindingElement.getAttributeValue(supplementingBindingElement.getNamespaceName(), "assetKey");
+										supplementingAssetKey = StringEscapeUtils.unescapeXml(supplementingAssetKey);
 										componentBinding = new SupplementedComponentBinding(supplementingEntityId, supplementingAssetKey);
 									}
 									catch (NumberFormatException ex)

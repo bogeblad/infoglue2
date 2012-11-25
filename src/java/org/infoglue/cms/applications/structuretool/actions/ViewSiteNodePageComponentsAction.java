@@ -32,6 +32,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.log4j.Logger;
 import org.infoglue.cms.applications.common.VisualFormatter;
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
@@ -1824,7 +1825,9 @@ public class ViewSiteNodePageComponentsAction extends InfoGlueAbstractAction
 							{
 								Element supplementingElement = (Element)supplementingEntity;
 								supplementingBinding.put("entityId", supplementingElement.getAttribute("entityId"));
-								supplementingBinding.put("assetKey", supplementingElement.getAttribute("assetKey"));
+								String supplementingAssetKey = supplementingElement.getAttribute("assetKey");
+								supplementingAssetKey = StringEscapeUtils.unescapeXml(supplementingAssetKey);
+								supplementingBinding.put("assetKey", supplementingAssetKey);
 							}
 							else
 							{
@@ -2051,7 +2054,7 @@ public class ViewSiteNodePageComponentsAction extends InfoGlueAbstractAction
 			{
 				Element supplementingElement = parent.getOwnerDocument().createElement("supplementing-binding");
 				supplementingElement.setAttribute("entityId", supplementingEntityId);
-				supplementingElement.setAttribute("assetKey", supplementingAssetKey);
+				supplementingElement.setAttribute("assetKey", StringEscapeUtils.escapeXml(supplementingAssetKey));
 				element.appendChild(supplementingElement);
 			}
 
