@@ -57,6 +57,7 @@
 	<!--	
 		var itemIndex;	
 			
+			
 		function encodeXML(string) 
 		{
 			if(!string)
@@ -160,7 +161,7 @@
 					propertiesXML += "</property>";					
 				}
 				else
-					propertiesXML += "<property name='" + clean(propertyName) + "' displayName='" + clean(propertyDisplayName) + "' type='" + propertyType + "' entity='" + propertyEntity + "' multiple='" + propertyMultiple + "' assetBinding='" + propertyAssetBinding + "' assetMask='" + propertyAssetMask + "' isPuffContentForPage='" + isPuffContentForPage + "' allowedContentTypeDefinitionNames='" + propertyAllowedContentTypeNames + "' description='" + clean(propertyDescription) + "' defaultValue='" + clean(propertyDefaultValue) + "' allowLanguageVariations='" + propertyAllowLanguageVariations + "' WYSIWYGEnabled='" + propertyWYSIWYGEnabled + "' WYSIWYGToolbar='" + propertyWYSIWYGToolbar + "' dataProvider='" + propertyDataProvider + "' dataProviderParameters='" + propertyDataProviderParameters + "' autoCreateContent='" + propertyAutoCreateContent + "' autoCreateContentMethod='" + propertyAutoCreateContentMethod + "' autoCreateContentPath='" + propertyAutoCreateContentPath + "' supplementingEntityType='" + propertySupplementingEntityType + "' customMarkup='" + encodeXML(propertyCustomMarkup) + "' externalBindingConfig='" + propertyExternalBindingConfig + "'/>";
+					propertiesXML += "<property name='" + clean(propertyName) + "' displayName='" + clean(propertyDisplayName) + "' type='" + propertyType + "' entity='" + propertyEntity + "' multiple='" + propertyMultiple + "' assetBinding='" + propertyAssetBinding + "' assetMask='" + propertyAssetMask + "' isPuffContentForPage='" + isPuffContentForPage + "' allowedContentTypeDefinitionNames='" + propertyAllowedContentTypeNames + "' description='" + clean(propertyDescription) + "' defaultValue='" + clean(propertyDefaultValue) + "' allowLanguageVariations='" + propertyAllowLanguageVariations + "' WYSIWYGEnabled='" + propertyWYSIWYGEnabled + "' WYSIWYGToolbar='" + propertyWYSIWYGToolbar + "' dataProvider='" + propertyDataProvider + "' dataProviderParameters='" + propertyDataProviderParameters + "' autoCreateContent='" + propertyAutoCreateContent + "' autoCreateContentMethod='" + propertyAutoCreateContentMethod + "' autoCreateContentPath='" + propertyAutoCreateContentPath + "' supplementingEntityType='" + propertySupplementingEntityType + "' customMarkup='" + encodeXML(propertyCustomMarkup) + "' externalBindingConfig='" + encodeXML(propertyExternalBindingConfig) + "'/>";
 			}
 		   	
 		   	propertiesXML += "</properties>";
@@ -1073,10 +1074,21 @@
 		function refreshCaller()
 		{
 			if(window.opener && window.opener.parent && window.opener.parent.frames['main'])
-				window.opener.parent.frames['main'].location.reload();
+			{
+				if ( (typeof window.opener.parent.frames['main'].location) === "string" )
+				{
+					window.opener.parent.frames["main"].contentWindow.location.reload();
+				}
+				else
+				{
+					window.opener.parent.frames['main'].location.reload();
+				}
+			}
 			else
-				window.opener.location.reload();	
-			
+			{
+				window.opener.location.reload();
+			}
+
 			window.close();
 		}
 
