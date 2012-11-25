@@ -29,6 +29,19 @@
 
 	<script type="text/javascript">
 	<!-- 
+		function encodeXML(string) 
+		{
+			if(!string)
+				return "";
+			var LT = new RegExp("<", "g");  
+			var GT = new RegExp(">", "g");  
+			var AMP = new RegExp("&", "g");  
+			var APOS = new RegExp('\'', "g");  
+			var QUOT = new RegExp('"', "g");  
+
+			return string.replace(AMP,'&amp;').replace(LT,'&lt;').replace(GT,'&gt;').replace(APOS,'&apos;').replace(QUOT,'&quot;');
+		}
+	
 		var dragsort = ToolMan.dragsort();
 		var junkdrawer = ToolMan.junkdrawer();
 						
@@ -84,8 +97,12 @@
 			{
 				path     = document.inputForm.path.value;
 				bindingTypeId = 1; //0 = Content, 1 = SiteNode
-				
+
+				#if ( "$!supplementingEntityType" == "")
+				var binding = new Binding("Content", entityId, path);
+				#else
 			    var binding = new Binding("Content", entityId, path, {});
+			    #end
 				siteNodesVector.addElement(binding);
 				drawList();
 			}
@@ -110,7 +127,7 @@
 					supplementingEntityId = binding.getSupplementingBinding().entityId;
 					supplementingAssetKey = binding.getSupplementingBinding().assetKey;
 					path += " {" + (supplementingAssetKey ? supplementingAssetKey : "") + "}";
-					attributes = (supplementingEntityId ? "supplementingEntityId=\"" + supplementingEntityId + "\"" : "") + " " + (supplementingAssetKey ? "supplementingAssetKey=\"" + supplementingAssetKey + "\"" : "")
+					attributes = (supplementingEntityId ? "supplementingEntityId=\"" + supplementingEntityId + "\"" : "") + " " + (supplementingAssetKey ? "supplementingAssetKey=\"" + encodeXML(supplementingAssetKey) + "\"" : "")
 				}
 				qualifyerXML += "<" + entityName + " " + attributes + ">" + entityId + "</" + entityName + ">";
 			}
@@ -243,7 +260,8 @@
 			{
 				var supplementingBinding = {};
 				supplementingBinding.entityId = entityId;
-				supplementingBinding.assetKey = assetKey;
+				assetKey = assetKey.replace(/\+/g,' ');
+				supplementingBinding.assetKey = decodeURIComponent(assetKey);
 				selectedBinding.setSupplementingBinding(supplementingBinding);
 				drawList();
 				selectedBinding = null;
@@ -256,19 +274,17 @@
 		
 		function openAssetPage(url) {
 			console.log("About to open: " + url);
-			window.open('" + url + "','Assign asset','toolbar=no,status=yes,scrollbars=yes,location=no,menubar=no,directories=no,resizable=no,width=800,height=600,left=5,top=5');
+			window.open('" + url + "','','toolbar=no,status=yes,scrollbars=yes,location=no,menubar=no,directories=no,resizable=no,width=800,height=600,left=5,top=5');
 		}
 
 		function bindSupplementingBinding(index) 
 		{
 			selectedBinding = siteNodesVector.getElementAt(index);
-			console.log("binding", binding);
-			// ${componentEditorUrl}
 			var assignUrl = "ViewContentVersion!viewAssetBrowserForComponentBindingV3.action?languageId=$languageId&repositoryId=$repositoryId";
 			var supplementingBinding = selectedBinding.getSupplementingBinding();
 			assignUrl += "&assignedContentId=" + (supplementingBinding.entityId ? supplementingBinding.entityId : "") + "&assignedAssetKey=" + (supplementingBinding.assetKey ? encodeURIComponent(supplementingBinding.assetKey) : "");
 			
-			window.open(assignUrl,'Assign asset','toolbar=no,status=yes,scrollbars=yes,location=no,menubar=no,directories=no,resizable=no,width=800,height=600,left=5,top=5');
+			window.open(assignUrl,'','toolbar=no,status=yes,scrollbars=yes,location=no,menubar=no,directories=no,resizable=no,width=800,height=600,left=5,top=5');
 		}
 
 		/**
@@ -284,16 +300,20 @@
 			mytable = document.createElement("TABLE");
 			mytable.setAttribute("id", "bindings");
 			mytable.setAttribute("border", "0");
-			mytable.setAttribute("width", "100%");
+			mytable.setAttribute("style", "width:350px;");
 			mytable.setAttribute("cellpadding", "0");
 			mytable.setAttribute("cellspacing", "0");
 	        mytablebody = document.createElement("TBODY");
 
 			var myTR = document.createElement("TR");
 			var bindingTD = document.createElement("TD");
-			bindingTD.setAttribute("width", "100%");
+			bindingTD.setAttribute("style", "width:270px;");
 			var actionTD = document.createElement("TD");
-			actionTD.setAttribute("width", "100");
+			#if ( "$!supplementingEntityType" == "")
+			actionTD.setAttribute("style", "width:55px;");
+			#else
+			actionTD.setAttribute("style", "width:75px;");
+			#end
 						
 			myActionList = document.createElement("ul");
 			myActionList.setAttribute("id", "actions");
@@ -346,28 +366,42 @@
 				if (binding.getSupplementingBinding())
 				{
 					var supplementingBindingText;
+					var assetDiv = document.createElement("div");
 					if (binding.getSupplementingBinding().entityId)
 					{
 						var sb = binding.getSupplementingBinding();
 						supplementingBindingText = document.createTextNode(sb.assetKey);
+						assetDiv.setAttribute("title", sb.assetKey);
 					}
 					else
 					{
 						supplementingBindingText = document.createTextNode("(Not set)");
 					}
 
-					var assetDiv = document.createElement("div");
 					assetDiv.appendChild(supplementingBindingText);
 					assetDiv.setAttribute("class", "supplementingBinding");
-					assetDiv.setAttribute("title", sb.assetKey);
 
 					var supplementingA = document.createElement("div");
 					supplementingA.setAttribute("class", "supplementingAssetWrapper");
 					supplementingA.appendChild(assetDiv);
-					
+
 					var assetWrapper = document.createElement("div");
 					assetWrapper.setAttribute("class", "supplementingAssetContainer");
-					assetWrapper.appendChild(supplementingA);
+
+					/* The followin divs will be floatted right so we add them in opposite order. */
+					var afterDelimiter = document.createElement("div");
+					afterDelimiter.appendChild(document.createTextNode("]"));
+					afterDelimiter.setAttribute("class", "assetKeyDelimiter");
+					assetWrapper.appendChild(afterDelimiter);
+
+					//assetWrapper.appendChild(supplementingA);
+					assetWrapper.appendChild(assetDiv);
+
+					var beforeDelimiter = document.createElement("div");
+					beforeDelimiter.appendChild(document.createTextNode("["));
+					beforeDelimiter.setAttribute("class", "assetKeyDelimiter");
+					assetWrapper.appendChild(beforeDelimiter);
+
 					wrapperDiv.appendChild(assetWrapper);
 				}
 
@@ -542,7 +576,7 @@
 		{
 			#foreach($binding in $componentBindings)
 				#if( $binding.containsKey("supplementingBinding") )
-				var supplementingBinding = {"entityId":"$!binding.supplementingBinding.entityId","assetKey":"$!binding.supplementingBinding.assetKey"};
+				var supplementingBinding = {"entityId":"$!binding.supplementingBinding.entityId","assetKey":'$!formatter.escapeForJavascripts($!binding.supplementingBinding.assetKey)'};
 				binding = new Binding("Content", "$binding.entityId", "$formatter.cleanForJavascriptStrings($binding.path)", supplementingBinding);
 				#else
 				binding = new Binding("Content", "$binding.entityId", "$formatter.cleanForJavascriptStrings($binding.path)");
@@ -592,8 +626,9 @@
     	    if(document.inputForm.draggedComponentId.value != "") 
     	    {	
     	    	addQualifyer();
-	    	    document.inputForm.draggedComponentId.value = "";     
+	    	    document.inputForm.draggedComponentId.value = "";
 	    	    document.getElementById("buffer").style.visibility = "hidden";
+	    	    document.onmousemove = null;
     	    } 
    		}
    		
@@ -603,6 +638,7 @@
     	    {	
     	    	document.inputForm.draggedComponentId.value = "";
 	    	    document.getElementById("buffer").style.visibility = "hidden";
+	    	    document.onmousemove = null;
     	    } 
    		}
 		
@@ -691,9 +727,9 @@
 	</style>
 	
 	<style type="text/css">
-		/*.supplementingBinding {margin-left:10px;}*/
-	
-		#tabsContainer {border:1px solid lightgrey; padding: 0; height: 437px; width: 300px;}
+		body {overflow-x:hidden;}
+		.contenttooledit {height:490px;}
+		#tabsContainer {border:1px solid lightgrey; padding: 0; height: 425px; width: 300px;}
 		#basicTab, #searchTab { background-color: #eef7dc; border: none; padding: 0; float: left; border-top:2px solid green;  /*width: 340px; display: block;*/}
 		.repositoryRow {height: 25px;}
 
@@ -705,7 +741,6 @@
 
 		#contentBindingWrapper {margin:5px;}
 		#contentBindingWrapper #inputCell {
-			/*width: 342px;*/
 			border:1px solid lightgrey;
 		}
 		#contentBindingWrapper #resultCell {
@@ -725,10 +760,10 @@
 			width: 300px;
 		}
 		#itreeFrame {
-			height: 371px;
+			height: 362px;
 		}
 		#searchItreeFrame {
-			height: 408px;
+			height: 400px;
 		}
 		.sitedropbox {margin: 10px;}
 		#contentBindingTabs {
@@ -750,21 +785,20 @@
 			display: inline-block;
 			float: right;
 		}
-		#currentBindings div.supplementingAssetWrapper::before {
-			content: "[";
-		}
-		#currentBindings div.supplementingAssetWrapper::after {
-			content: "]";
-		}
 		#currentBindings div.supplementingBinding {
 			display: inline-block;
 			max-width: 90px;
 			text-overflow: ellipsis;
 			overflow: hidden;
+			height: 14px;
+			float: right;
 		}
 		#currentBindings div.supplementingAssetContainer {
 			width: 100px;
 			display: inline-block;
+		}
+		#currentBindings .assetKeyDelimiter {
+			float: right;
 		}
 	</style>
 
@@ -790,7 +824,7 @@
 <tr>
 	<td valign="top">
 		
-		<table cellpadding="0" cellspacing="0" border="0">
+		<table cellpadding="0" cellspacing="0" border="0" style="width:300px">
 		<tr class="darkgreen">
 			<td class="smalllabel">Click on page the binding should use and then "add".</td>
 		</tr>
@@ -887,7 +921,7 @@
 		</tr>
 		<tr>
 			<td style="border: 1px solid #C7D1B3; background-color: white;" onMouseUp="checkDrag(event);">				
-				<TABLE id="bindings" border="1">
+				<TABLE id="bindings" border="1" style="width:350px;">
 			  	
 			  	</table>
 			</td>
