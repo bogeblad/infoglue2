@@ -199,12 +199,13 @@ public class RegistryController extends BaseController
 	    
 	    ContentVersion oldContentVersion = contentVersion; //ContentVersionController.getContentVersionController().getContentVersionWithId(contentVersionVO.getContentVersionId(), db);
 	    Content oldContent = oldContentVersion.getOwningContent();
-	    
 	    if(oldContent!= null && oldContent.getContentTypeDefinition() != null && oldContent.getContentTypeDefinition().getName().equalsIgnoreCase("Meta info"))
 	    {
 	        logger.info("It was a meta info so lets check it for other stuff as well");
 		    
-	        SiteNodeVersion siteNodeVersion = getLatestActiveSiteNodeVersionWhichUsesContentVersionAsMetaInfo(oldContentVersion, db);
+	        SiteNodeVO siteNodeVO = SiteNodeController.getController().getSiteNodeVOWithMetaInfoContentId(db, oldContent.getContentId());
+	        SiteNodeVersion siteNodeVersion = SiteNodeVersionController.getController().getLatestActiveSiteNodeVersion(db, siteNodeVO.getId());
+	        //SiteNodeVersion siteNodeVersion = getLatestActiveSiteNodeVersionWhichUsesContentVersionAsMetaInfo(oldContentVersion, db);
 		    if(siteNodeVersion != null)
 		    {
 		        logger.info("Going to use " + siteNodeVersion.getId() + " as reference");
@@ -558,8 +559,7 @@ public class RegistryController extends BaseController
 	            }
 	        }
 	    }
-	}
-	
+	}	
 
 	/**
 	 * This method fetches all inline links from any text.
@@ -687,7 +687,7 @@ public class RegistryController extends BaseController
 	{
 	    List foundComponents = new ArrayList();
 
-	    Pattern pattern = Pattern.compile("<binding entity=\".*?\" entityId=\".*?\">");
+	    Pattern pattern = Pattern.compile("<binding.*?entity=\".*?\" entityId=\".*?\">");
 	    Matcher matcher = pattern.matcher(versionValue);
 	    while ( matcher.find() ) 
 	    { 
@@ -696,22 +696,22 @@ public class RegistryController extends BaseController
 	        String entityName;
 	        String entityId;
 	        
-	        int entityNameStartIndex = match.indexOf("\"");
-	        int entityNameEndIndex = match.indexOf("\"", entityNameStartIndex + 1);
+	        int entityNameStartIndex = match.indexOf("entity=\"");
+	        int entityNameEndIndex = match.indexOf("\"", entityNameStartIndex + 8);
 	        logger.info("entityNameStartIndex:" + entityNameStartIndex);
 	        logger.info("entityNameEndIndex:" + entityNameEndIndex);
 	        if(entityNameStartIndex > 0 && entityNameEndIndex > 0 && entityNameEndIndex > entityNameStartIndex)
 	        {
-	            entityName = match.substring(entityNameStartIndex + 1, entityNameEndIndex);
+	            entityName = match.substring(entityNameStartIndex + 8, entityNameEndIndex);
 	            logger.info("entityName:" + entityName);
 
-		        int entityIdStartIndex = match.indexOf("\"", entityNameEndIndex + 1);
-		        int entityIdEndIndex = match.indexOf("\"", entityIdStartIndex + 1);
+		        int entityIdStartIndex = match.indexOf("entityId=\"", entityNameEndIndex + 1);
+		        int entityIdEndIndex = match.indexOf("\"", entityIdStartIndex + 10);
 		        logger.info("entityIdStartIndex:" + entityIdStartIndex);
 		        logger.info("entityIdEndIndex:" + entityIdEndIndex);
 		        if(entityIdStartIndex > 0 && entityIdEndIndex > 0 && entityIdEndIndex > entityIdStartIndex)
 		        {
-		            entityId = match.substring(entityIdStartIndex + 1, entityIdEndIndex);
+		            entityId = match.substring(entityIdStartIndex + 10, entityIdEndIndex);
 		            logger.info("entityId:" + entityId);
 
 		            String key = entityName + ":" + entityId;
@@ -841,7 +841,6 @@ public class RegistryController extends BaseController
 		}
 		catch (Exception e)		
 		{
-		    e.printStackTrace();
 		    logger.warn("One of the references was not found which is bad but not critical:" + e.getMessage(), e);
 		    rollbackTransaction(db);
 			//throw new SystemException("An error occurred when we tried to fetch a list of roles in the repository. Reason:" + e.getMessage(), e);			
@@ -1092,7 +1091,6 @@ public class RegistryController extends BaseController
 		}
 		catch (Exception e)		
 		{
-		    e.printStackTrace();
 		    logger.warn("One of the references was not found which is bad but not critical:" + e.getMessage(), e);
 		    rollbackTransaction(db);
 		}
@@ -1464,7 +1462,6 @@ public class RegistryController extends BaseController
 		List matchingRegistryVOList = (List)CacheController.getCachedObjectFromAdvancedCache(cacheName, cacheKey); 
 		if(matchingRegistryVOList != null)
 		{
-			//System.out.println("\n\nFound cached match...:" + cacheKey);
 			return matchingRegistryVOList;
 		}
 		else
