@@ -1823,11 +1823,33 @@ public class ViewSiteNodePageComponentsAction extends InfoGlueAbstractAction
 							Node supplementingEntity = supplementingEntities.item(0);
 							if (supplementingEntity instanceof Element)
 							{
-								Element supplementingElement = (Element)supplementingEntity;
-								supplementingBinding.put("entityId", supplementingElement.getAttribute("entityId"));
-								String supplementingAssetKey = supplementingElement.getAttribute("assetKey");
-								supplementingAssetKey = StringEscapeUtils.unescapeXml(supplementingAssetKey);
-								supplementingBinding.put("assetKey", supplementingAssetKey);
+								String supplementingEntityIdString = null;
+								try
+								{
+									Element supplementingElement = (Element)supplementingEntity;
+									supplementingEntityIdString = supplementingElement.getAttribute("entityId");
+									Integer supplementingEntityId = Integer.parseInt(supplementingEntityIdString);
+
+									ContentVO supplementingContentVO = ContentController.getContentController().getContentVOWithId(supplementingEntityId);
+
+									if (supplementingContentVO != null)
+									{
+										supplementingBinding.put("entityId", supplementingContentVO.getContentId().toString());
+										String supplementingAssetKey = supplementingElement.getAttribute("assetKey");
+										supplementingAssetKey = StringEscapeUtils.unescapeXml(supplementingAssetKey);
+										supplementingBinding.put("assetKey", supplementingAssetKey);
+									}
+								}
+								catch (NumberFormatException ex)
+								{
+									logger.error("Failed to parse entity id for supplementing entity id. Entity-id: " + supplementingEntityIdString + ". Message: " + ex.getMessage());
+									logger.warn("Failed to parse entity id for supplementing entity id.", ex);
+								}
+								catch (SystemException ex)
+								{
+									logger.warn("Exception when verifying existence of supplementing entity. Assuming removed entity, will ignore. Entity-id: " + supplementingEntityIdString + ". Message: " + ex.getMessage());
+									logger.debug("Exception when verifying existence of supplementing entity. Entity-id: " + supplementingEntityIdString, ex);
+								}
 							}
 							else
 							{
