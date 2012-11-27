@@ -1904,7 +1904,7 @@ public class AccessRightController extends BaseController
 		if(logger.isInfoEnabled())
 			logger.info("accessRightList:" + accessRightList.size());
 		
-		if(returnTrueIfNoAccessRightsDefined && accessRightList == null || accessRightList.size() == 0)
+		if(returnTrueIfNoAccessRightsDefined && (accessRightList == null || accessRightList.size() == 0))
 		{
 			logger.warn("Returned true as there was no access rights defined which means it's not correctly protected.");
 		    CacheController.cacheObjectInAdvancedCache("personalAuthorizationCache", key, new Boolean(true), new String[]{infoGluePrincipal.getName()}, true);
