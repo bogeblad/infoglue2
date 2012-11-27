@@ -2115,9 +2115,9 @@ public class CacheController extends Thread
 							    else if(selectiveCacheUpdate && (entity.indexOf("SiteNode") > 0 && entity.indexOf("SiteNodeTypeDefinition") == -1) && useSelectivePageCacheUpdate)
 							    {
 							    	//System.out.println("Entity: " + entity);
-							    	System.out.println("Flushing " + "" + entityId);
-							    	System.out.println("Flushing " + "siteNode_" + entityId);
-							    	System.out.println("Flushing " + "selectiveCacheUpdateNonApplicable");
+							    	logger.info("Flushing " + "" + entityId);
+							    	logger.info("Flushing " + "siteNode_" + entityId);
+							    	logger.info("Flushing " + "selectiveCacheUpdateNonApplicable");
 
 							    	if(cacheName.equals("pageCacheExtra"))
 							    	{
@@ -2132,14 +2132,14 @@ public class CacheController extends Thread
 							    	
 						    			if(cacheName.equals("childSiteNodesCache") || cacheName.equals("siteNodeCache"))
 						    			{
-						    				System.out.println("Flushing parent also");
+						    				logger.info("Flushing parent also");
 						    				try
 						    				{
 										    	SiteNodeVO snVO = SiteNodeController.getController().getSiteNodeVOWithId(new Integer(entityId));
 										    	if(snVO.getParentSiteNodeId() != null)
 										    	{
-											    	System.out.println("Flushing " + "" + entityId);
-											    	System.out.println("Flushing " + "siteNode_" + entityId);
+										    		logger.info("Flushing " + "" + entityId);
+										    		logger.info("Flushing " + "siteNode_" + entityId);
 
 										    		cacheInstance.flushGroup("siteNode_" + snVO.getParentSiteNodeId());
 										    		cacheInstance.flushGroup("" + snVO.getParentSiteNodeId());
@@ -2230,7 +2230,7 @@ public class CacheController extends Thread
 									    		{
 									    			ContentVersionVO oldContentVersionVO = ContentVersionController.getContentVersionController().getContentVersionVOWithId(new Integer(entityId));
 										    		ContentVersionVO newContentVersionVO = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(contentId, oldContentVersionVO.getLanguageId(), new Integer(CmsPropertyHandler.getOperatingMode()));
-										    		if(newContentVersionVO.getId().equals(oldContentVersionVO.getId()))
+										    		if(newContentVersionVO != null && oldContentVersionVO != null && newContentVersionVO.getId().equals(oldContentVersionVO.getId()))
 										    		{
 										    			oldContentVersionVO = null;
 										    			//System.out.println("SHIT - same version allready - must find other");
@@ -2365,11 +2365,12 @@ public class CacheController extends Thread
 									    			debug += "oldContentVersionVO:" + oldContentVersionVO.getId() + ":" + oldContentVersionVO.getLanguageId() + "\n";
 									    			debug += "oldContentVersionVO:" + CmsPropertyHandler.getOperatingMode() + "\n";
 										    		newContentVersionVO = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(contentId, oldContentVersionVO.getLanguageId(), new Integer(CmsPropertyHandler.getOperatingMode()));
-									    			debug += "newContentVersionVO:" + newContentVersionVO.getId() + "\n";
-										    		if(newContentVersionVO.getId().equals(oldContentVersionVO.getId()))
+									    			debug += "newContentVersionVO:" + newContentVersionVO + "\n";
+										    		if(newContentVersionVO != null && oldContentVersionVO != null && newContentVersionVO.getId().equals(oldContentVersionVO.getId()))
 										    		{
-										    			oldContentVersionVO = null;
-										    			System.out.println("SHIT - same version allready - must find other");
+										    			debug += "newContentVersionVO:" + newContentVersionVO.getId() + "\n";
+											    		oldContentVersionVO = null;
+											    		debug += "SHIT - same version allready - must find other";
 											    		List<ContentVersionVO> contentVersionVOList = ContentVersionController.getContentVersionController().getContentVersionVOList(new Integer(contentId));
 												    	for(ContentVersionVO cvVO : contentVersionVOList)
 												    	{
@@ -3381,7 +3382,7 @@ public class CacheController extends Thread
 			
 			if(size > 0)
 			{
-				System.out.println("Starting selective publication thread [" + pt.getClass().getName() + "]");
+				logger.info("Starting selective publication thread [" + pt.getClass().getName() + "]");
 		    	pt.setPriority(Thread.MIN_PRIORITY);
 		    	pt.start();
 		    	startedThread = true;
