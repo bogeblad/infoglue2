@@ -9,11 +9,13 @@ function initJavaScript() {
 }
 
 //initiates the first data query
-function receiveChatText() {
-	if (httpReceiveChat.readyState == 4 || httpReceiveChat.readyState == 0) {
-  	httpReceiveChat.open("GET",GetChaturl + '?lastId=' + lastId + '&rand='+Math.floor(Math.random() * 1000000), true);
-    httpReceiveChat.onreadystatechange = handlehHttpReceiveChat; 
-  	httpReceiveChat.send(null);
+function receiveChatText() 
+{
+	if (httpReceiveChat.readyState == 4 || httpReceiveChat.readyState == 0) 
+	{
+	  	httpReceiveChat.open("GET",GetChaturl + '?lastId=' + lastId + '&rand='+Math.floor(Math.random() * 1000000), true);
+	    httpReceiveChat.onreadystatechange = handlehHttpReceiveChat; 
+	  	httpReceiveChat.send(null);
 	}
 }
 
@@ -32,7 +34,7 @@ function handlehHttpReceiveChat()
 			    lastId = results[i];
 			    userName = results[i+1];
 			    message = results[i+2];
-			
+			    
 				//alert("lastId:" + lastId);
 				insertNewContent(userName, message); //inserts the new content into the page
 				i = i + 3;
@@ -72,7 +74,7 @@ function sendComment() {
   		httpSendChat.onreadystatechange = handlehHttpSendChat;
   		httpSendChat.send(param);
   		document.getElementById("message").value = '';
-  		document.getElementById("isSystemMessage").checked = false;
+  		//document.getElementById("isSystemMessage").checked = false;
 	} 
 	else 
 	{

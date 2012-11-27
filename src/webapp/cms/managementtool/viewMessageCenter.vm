@@ -33,7 +33,7 @@
 		<form id="chatForm" name="chatForm" onsubmit="return false;" action=""> 
 			<strong>$ui.getString("tool.managementtool.yourMessage.label"):</strong><br/>
 		  	<textarea id="message" name="message" class="normaltextfield" style="width:65%; height: 50px; border: 1px solid #333333;"/></textarea><br/>
-		  	<input type="checkbox" id="isSystemMessage" name="isSystemMessage" value="true" checked="1"/> $ui.getString("tool.managementtool.isSystemMessage.label")<br/>
+		  	<input type="checkbox" id="isSystemMessage" name="isSystemMessage" value="true" checked="checked"/> $ui.getString("tool.managementtool.isSystemMessage.label")<br/>
 		  	<input id="submit" type="button" value="$ui.getString("tool.managementtool.sendMessage.label")" onclick="sendComment();"/>
 	  	</form>
 	</p>

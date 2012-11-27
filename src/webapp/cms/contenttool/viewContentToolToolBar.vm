@@ -41,7 +41,9 @@
 		
 		function compareVersions(entityName)
 		{
-			var listForm = parent.frames["main"].document.listForm;
+			var mainFrame = parent.frames["main"];
+			var document = mainFrame.contentDocument || mainFrame.document;
+			var listForm = document.listForm;
 			var selectedObjects = getSelectedContentVersions(listForm, entityName);
 			var selectedTexts = getSelectedTexts(listForm);
 			//alert("selectedObjects:" + selectedObjects.length);
