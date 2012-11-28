@@ -151,7 +151,12 @@ public class ContentTypeDefinitionController extends BaseController
 		}
 
 		List contentTypeDefinitionVOList = getAllVOObjects(ContentTypeDefinitionImpl.class, "contentTypeDefinitionId");
-
+		for(ContentTypeDefinitionVO ctdVO : (List<ContentTypeDefinitionVO>)contentTypeDefinitionVOList)
+		{
+			String itemKey = "" + ctdVO.getId();
+			CacheController.cacheObject("contentTypeDefinitionCache", itemKey, ctdVO);
+		}
+			
 		CacheController.cacheObject("contentTypeDefinitionCache", key, contentTypeDefinitionVOList);
 
 		return contentTypeDefinitionVOList;

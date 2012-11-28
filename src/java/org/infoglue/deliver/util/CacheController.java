@@ -308,6 +308,9 @@ public class CacheController extends Thread
 	{
 		Timer t = new Timer();
 		
+		ContentTypeDefinitionController.getController().getContentTypeDefinitionVOList();
+		logger.warn("pre cache content types took:" + t.getElapsedTime());
+
 		ComponentController.getController().preCacheComponents(-1);
 		logger.warn("preCacheComponents took:" + t.getElapsedTime());
 		
@@ -336,6 +339,9 @@ public class CacheController extends Thread
 	{
 		Timer t = new Timer();
 
+		ContentTypeDefinitionController.getController().getContentTypeDefinitionVOList();
+		logger.warn("pre cache content types took:" + t.getElapsedTime());
+		
 		ComponentController.getController().preCacheComponents(-1);
 		logger.warn("preCacheComponents took:" + t.getElapsedTime());
 
