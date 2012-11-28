@@ -2242,14 +2242,11 @@ public class CacheController extends Thread
 										    			oldContentVersionVO = null;
 										    			//System.out.println("SHIT - same version allready - must find other");
 											    		List<SmallestContentVersionVO> contentVersionVOList = ContentVersionController.getContentVersionController().getSmallestContentVersionVOList(new Integer(contentId));
-											    		//List<ContentVersionVO> contentVersionVOList = ContentVersionController.getContentVersionController().getContentVersionVOList(new Integer(contentId));
 												    	for(SmallestContentVersionVO cvVO : contentVersionVOList)
 												    	{
-												    		//System.out.println("cvVO:" + cvVO.getId() + ":" + cvVO.getLanguageId());
 												    		if(!cvVO.getId().equals(newContentVersionVO.getId()) && cvVO.getStateId().equals(new Integer(CmsPropertyHandler.getOperatingMode())) && cvVO.getLanguageId().equals(newContentVersionVO.getLanguageId()) && cvVO.getIsActive() && (oldContentVersionVO == null || oldContentVersionVO.getId() < cvVO.getId()))
 												    		{
 												    			oldContentVersionVO = ContentVersionController.getContentVersionController().getContentVersionVOWithId(cvVO.getId());
-												    			//oldContentVersionVO = cvVO;
 												    		}
 												    	}
 										    		}
@@ -2382,12 +2379,13 @@ public class CacheController extends Thread
 										    			debug += "newContentVersionVO:" + newContentVersionVO.getId() + "\n";
 											    		oldContentVersionVO = null;
 											    		debug += "SHIT - same version allready - must find other";
-											    		List<ContentVersionVO> contentVersionVOList = ContentVersionController.getContentVersionController().getContentVersionVOList(new Integer(contentId));
-												    	for(ContentVersionVO cvVO : contentVersionVOList)
+											    		List<SmallestContentVersionVO> contentVersionVOList = ContentVersionController.getContentVersionController().getSmallestContentVersionVOList(new Integer(contentId));
+												    	for(SmallestContentVersionVO cvVO : contentVersionVOList)
 												    	{
-												    		//System.out.println("cvVO:" + cvVO.getId() + ":" + cvVO.getLanguageId());
 												    		if(!cvVO.getId().equals(newContentVersionVO.getId()) && cvVO.getStateId().equals(new Integer(CmsPropertyHandler.getOperatingMode())) && cvVO.getLanguageId().equals(newContentVersionVO.getLanguageId()) && cvVO.getIsActive() && (oldContentVersionVO == null || oldContentVersionVO.getId() < cvVO.getId()))
-												    			oldContentVersionVO = cvVO;
+												    		{
+												    			oldContentVersionVO = ContentVersionController.getContentVersionController().getContentVersionVOWithId(cvVO.getId());
+												    		}
 												    	}
 										    			debug += "oldContentVersionVO:" + (oldContentVersionVO == null ? "null" : oldContentVersionVO.getId()) + "\n";
 										    		}

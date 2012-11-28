@@ -679,7 +679,7 @@ public class SelectiveLivePublicationThread extends PublicationThread
 									}
 									else
 									{
-										logger.error("Could not find publication in database. It may be a replication delay issue but now it's been very long so we have to abort.");
+										logger.warn("Could not find publication in database. It may be a replication delay issue but now it's been very long so we have to abort.");
 									}
 								}
 							}
