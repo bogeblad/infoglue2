@@ -1903,6 +1903,9 @@ public class ContentVersionController extends BaseController
 	public List<String> getAttributeNames(ContentVersionVO contentVersionVO1)
 	{
 		List<String> attributeNames = new ArrayList<String>();
+		if(contentVersionVO1 == null)
+			return attributeNames;
+		
 		try
 		{
 			String xml = contentVersionVO1.getVersionValue();
