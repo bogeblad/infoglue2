@@ -226,8 +226,33 @@ public class RepositoryController extends BaseController
 		}
 		else
 		{
-			repositoryVO = (RepositoryVO) getVOWithId(RepositoryImpl.class, repositoryId, db);        
-		
+			try
+			{
+				repositoryVO = (RepositoryVO) getVOWithId(RepositoryImpl.class, repositoryId, db);        
+			}
+			catch (SystemException e) 
+			{
+				if(e.getMessage().indexOf("No lock to release") > -1)
+				{
+					logger.warn("An sync issue arose on: " + repositoryId + ":" + e.getMessage());
+					for(int i=0; i<5; i++)
+					{
+						try
+						{
+							Thread.sleep(10);
+							repositoryVO = (RepositoryVO) getVOWithId(RepositoryImpl.class, repositoryId, db); 
+							logger.warn("It worked out: " + repositoryId);
+							break;
+						}
+						catch (Exception e2) 
+						{
+							logger.warn("Still an issue with loading the repo " + repositoryId + ":" + e2.getMessage());
+						}
+					}
+				}
+				else
+					throw e;
+			}
 			CacheController.cacheObject("repositoryCache", key, repositoryVO);
 		}
 		
