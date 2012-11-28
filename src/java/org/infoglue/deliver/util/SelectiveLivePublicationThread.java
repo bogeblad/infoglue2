@@ -47,6 +47,7 @@ import org.infoglue.cms.entities.content.Content;
 import org.infoglue.cms.entities.content.ContentVO;
 import org.infoglue.cms.entities.content.ContentVersion;
 import org.infoglue.cms.entities.content.ContentVersionVO;
+import org.infoglue.cms.entities.content.SmallestContentVersionVO;
 import org.infoglue.cms.entities.content.impl.simple.ContentImpl;
 import org.infoglue.cms.entities.content.impl.simple.ContentVersionImpl;
 import org.infoglue.cms.entities.content.impl.simple.DigitalAssetImpl;
@@ -552,6 +553,17 @@ public class SelectiveLivePublicationThread extends PublicationThread
 												ContentVersionVO metaInfoContentVersionVO = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(previousSiteNodeVO.getMetaInfoContentId(), masterLanguageVO.getId(), db);
 												addCacheUpdateDirective(ContentVersionImpl.class.getName(), metaInfoContentVersionVO.getId().toString(), allIGCacheCalls);
 												
+												List contentVersionIds = new ArrayList();
+												if(previousSiteNodeVO.getMetaInfoContentId() != null)
+												{
+													List<SmallestContentVersionVO> contentVersionVOList = ContentVersionController.getContentVersionController().getSmallestContentVersionVOList(previousSiteNodeVO.getMetaInfoContentId(), db);
+													for(SmallestContentVersionVO cvVO : contentVersionVOList)
+													{
+														contentVersionIds.add(cvVO.getId());
+														logger.info("We clear the meta info contentVersion " + cvVO.getId());
+													}
+												}
+												/*
 												Content content = ContentController.getContentController().getReadOnlyContentWithId(previousSiteNodeVO.getMetaInfoContentId(), db);
 												List contentVersionIds = new ArrayList();
 												Iterator contentVersionIterator = content.getContentVersions().iterator();
@@ -562,6 +574,7 @@ public class SelectiveLivePublicationThread extends PublicationThread
 													contentVersionIds.add(contentVersion.getId());
 													logger.info("We clear the meta info contentVersion " + contentVersion.getId());
 												}
+												*/
 			
 												db.rollback();
 			
@@ -580,7 +593,7 @@ public class SelectiveLivePublicationThread extends PublicationThread
 													//addCacheUpdateDirective(ContentVersionImpl.class.getName(), contentVersionId.toString(), allIGCacheCalls);
 												}
 												
-												logger.info("After:" + content.getContentVersions().size());
+												logger.info("After:" + contentVersionIds.size());
 			
 												SiteNodeVersionVO previousSiteNodeVersionVO = SiteNodeVersionController.getController().getPreviousActiveSiteNodeVersionVO(siteNodeVersionVO.getSiteNodeId(), siteNodeVersionVO.getId(), new Integer(CmsPropertyHandler.getOperatingMode()));
 												//logger.info("previousSiteNodeVersionVO:" + previousSiteNodeVersionVO.getId());
@@ -658,7 +671,7 @@ public class SelectiveLivePublicationThread extends PublicationThread
 									if(diff < 1000*60)
 									{
 										processedInterupted = true;
-										logger.error("Could not find publication in database. It may be a replication delay issue - lets try again.");
+										logger.warn("Could not find publication in database. It may be a replication delay issue - lets try again.");
 										synchronized(CacheController.notifications)
 								        {
 									    	CacheController.notifications.add(cacheEvictionBean);
@@ -1047,11 +1060,12 @@ public class SelectiveLivePublicationThread extends PublicationThread
 						SiteNodeVO siteNodeVO = SiteNodeController.getController().getSiteNodeVOWithId(siteNodeId, db);
 						if(siteNodeVO.getMetaInfoContentId() != null)
 						{
+							/*
 							getObjectWithId(ContentImpl.class, new Integer(siteNodeVO.getMetaInfoContentId()), db);
 							getObjectWithId(SmallContentImpl.class, new Integer(siteNodeVO.getMetaInfoContentId()), db);
 							getObjectWithId(SmallishContentImpl.class, new Integer(siteNodeVO.getMetaInfoContentId()), db);
 							getObjectWithId(MediumContentImpl.class, new Integer(siteNodeVO.getMetaInfoContentId()), db);
-
+							
 							Content content = ContentController.getContentController().getReadOnlyContentWithId(siteNodeVO.getMetaInfoContentId(), db);
 							Iterator contentVersionIterator = content.getContentVersions().iterator();
 							logger.info("Versions:" + content.getContentVersions().size());
@@ -1062,6 +1076,7 @@ public class SelectiveLivePublicationThread extends PublicationThread
 								getObjectWithId(SmallContentVersionImpl.class, new Integer(contentVersion.getId()), db);
 								getObjectWithId(SmallestContentVersionImpl.class, new Integer(contentVersion.getId()), db);
 							}
+							*/
 						}
 					}
 					

@@ -67,6 +67,7 @@ import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeController;
 import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeVersionController;
 import org.infoglue.cms.entities.content.ContentVO;
 import org.infoglue.cms.entities.content.ContentVersionVO;
+import org.infoglue.cms.entities.content.SmallestContentVersionVO;
 import org.infoglue.cms.entities.content.impl.simple.ContentCategoryImpl;
 import org.infoglue.cms.entities.content.impl.simple.ContentImpl;
 import org.infoglue.cms.entities.content.impl.simple.ContentRelationImpl;
@@ -2240,12 +2241,16 @@ public class CacheController extends Thread
 										    		{
 										    			oldContentVersionVO = null;
 										    			//System.out.println("SHIT - same version allready - must find other");
-											    		List<ContentVersionVO> contentVersionVOList = ContentVersionController.getContentVersionController().getContentVersionVOList(new Integer(contentId));
-												    	for(ContentVersionVO cvVO : contentVersionVOList)
+											    		List<SmallestContentVersionVO> contentVersionVOList = ContentVersionController.getContentVersionController().getSmallestContentVersionVOList(new Integer(contentId));
+											    		//List<ContentVersionVO> contentVersionVOList = ContentVersionController.getContentVersionController().getContentVersionVOList(new Integer(contentId));
+												    	for(SmallestContentVersionVO cvVO : contentVersionVOList)
 												    	{
 												    		//System.out.println("cvVO:" + cvVO.getId() + ":" + cvVO.getLanguageId());
 												    		if(!cvVO.getId().equals(newContentVersionVO.getId()) && cvVO.getStateId().equals(new Integer(CmsPropertyHandler.getOperatingMode())) && cvVO.getLanguageId().equals(newContentVersionVO.getLanguageId()) && cvVO.getIsActive() && (oldContentVersionVO == null || oldContentVersionVO.getId() < cvVO.getId()))
-												    			oldContentVersionVO = cvVO;
+												    		{
+												    			oldContentVersionVO = ContentVersionController.getContentVersionController().getContentVersionVOWithId(cvVO.getId());
+												    			//oldContentVersionVO = cvVO;
+												    		}
 												    	}
 										    		}
 										    		
@@ -2331,7 +2336,7 @@ public class CacheController extends Thread
 										    					}
 										    					catch (Exception ex) 
 										    					{
-																	logger.error("Got error trying to update cache:" + ex.getMessage());
+																	//logger.error("Got error trying to update cache:" + ex.getMessage());
 													    			logger.warn("Got error trying to update cache:" + ex.getMessage(), ex);
 
 													    			clearFileCacheForGroup(cacheInstance, "content_" + contentId + "_" + changedAttributeName);
@@ -2493,7 +2498,7 @@ public class CacheController extends Thread
 																}
 																catch(Exception ex)
 																{
-																	logger.error("Got error trying to update cache:" + ex.getMessage());
+																	//logger.error("Got error trying to update cache:" + ex.getMessage());
 													    			logger.warn("Got error trying to update cache:" + ex.getMessage(), ex);
 													    			
 													    			try
