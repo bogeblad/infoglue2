@@ -1698,7 +1698,7 @@ public class CmsPropertyHandler
 				String deliverUrl = null;
 				while((deliverUrl = properties.getProperty("" + i)) != null)
 				{ 
-					logger.warn("deliverUrl:" + deliverUrl);
+					logger.info("deliverUrl:" + deliverUrl);
 					if(deliverUrl.startsWith("unless["))
 					{
 						String unlessIP = deliverUrl.substring(7, deliverUrl.indexOf("]"));
@@ -1759,7 +1759,7 @@ public class CmsPropertyHandler
 				while((deliverUrl = properties.getProperty("" + i)) != null)
 				{ 
 					urls.add(deliverUrl);
-				    logger.warn("deliverUrl:" + deliverUrl);
+				    logger.info("deliverUrl:" + deliverUrl);
 					i++;
 				}	
 

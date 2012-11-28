@@ -219,7 +219,7 @@ public class CASBasicAuthenticationModule extends AuthenticationModule//, Author
 			
 			try
 			{
-				logger.info("userName:" + j_userName + "=" + j_password);
+				logger.info("userName:" + j_userName + "=**********");
 				String allowedDirectLoginNames = CmsPropertyHandler.getAllowedDirectLoginNames();
 				logger.info("allowedDirectLoginNames:" + allowedDirectLoginNames);
 				String[] allowedDirectLoginNamesArray = allowedDirectLoginNames.split(",");
@@ -815,11 +815,8 @@ public class CASBasicAuthenticationModule extends AuthenticationModule//, Author
 			
 			try
 			{
-				logger.info("userName:" + j_userName + "=" + j_password);
-				System.out.println("userName:" + j_userName + "=" + j_password);
 				String allowedDirectLoginNames = CmsPropertyHandler.getAllowedDirectLoginNames();
 				logger.info("allowedDirectLoginNames:" + allowedDirectLoginNames);
-				System.out.println("allowedDirectLoginNames:" + allowedDirectLoginNames);
 				String[] allowedDirectLoginNamesArray = allowedDirectLoginNames.split(",");
 				for(String allowedUserName : allowedDirectLoginNamesArray)
 				{
@@ -827,10 +824,8 @@ public class CASBasicAuthenticationModule extends AuthenticationModule//, Author
 					if(allowedUserName.equalsIgnoreCase(j_userName))
 					{
 						logger.info("Was allowed - let's try to authenticate:" + allowedUserName);
-						System.out.println("Was allowed - let's try to authenticate:" + allowedUserName);
 						SystemUserVO systemUserVO = SystemUserController.getController().getSystemUserVO(allowedUserName, j_password);
 						logger.info("Was it found:" + systemUserVO);
-						System.out.println("Was it found:" + systemUserVO);
 						if(systemUserVO != null)
 							return systemUserVO.getUserName();
 					}
