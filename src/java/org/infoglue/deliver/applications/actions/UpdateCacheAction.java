@@ -403,17 +403,36 @@ public class UpdateCacheAction extends InfoGlueAbstractAction
 			    Integer publicationId = -1;
 			    if(className.indexOf(PublicationImpl.class.getName()) > -1)
 			    	publicationId = Integer.parseInt(objectId);
-			    	
-		    	CacheEvictionBean cacheEvictionBean = new CacheEvictionBean(publicationId, userName, timestamp, className, typeId, objectId, objectName, changedAttributeNames);
-		    	newNotificationList.add(cacheEvictionBean);
-		    	/*
-		    	synchronized(CacheController.notifications)
-		        {
-				    CacheController.notifications.add(cacheEvictionBean);
-		        }
-		        */
-			    logger.info("Added a cacheEvictionBean " + cacheEvictionBean.getClassName() + ":" + cacheEvictionBean.getTypeId() + ":" + cacheEvictionBean.getObjectName() + ":" + cacheEvictionBean.getObjectId());
 			    
+			    boolean skip = false;
+			    if(timestamp != null && !timestamp.equals(""))
+			    {
+			    	try
+			    	{
+			    		long ts = Long.parseLong(timestamp);
+			    		if(ts < CmsPropertyHandler.getStartupTime().getTime())
+			    			skip = true;
+			    	}
+			    	catch (Exception e) 
+			    	{
+			    		logger.error("Could not read timestamp:" + timestamp);
+					}
+			    }
+			    if(!skip)
+			    {
+			    	CacheEvictionBean cacheEvictionBean = new CacheEvictionBean(publicationId, userName, timestamp, className, typeId, objectId, objectName, changedAttributeNames);
+			    	newNotificationList.add(cacheEvictionBean);
+			    	/*
+			    	synchronized(CacheController.notifications)
+			        {
+					    CacheController.notifications.add(cacheEvictionBean);
+			        }
+			        */
+				    logger.info("Added a cacheEvictionBean " + cacheEvictionBean.getClassName() + ":" + cacheEvictionBean.getTypeId() + ":" + cacheEvictionBean.getObjectName() + ":" + cacheEvictionBean.getObjectId());
+			    }
+			    else
+				    logger.warn("Skipped a cacheEvictionBean as it's timestamp was earlier than the server start");
+			    	
 			    i++;
 			    userName 	= this.getRequest().getParameter(i + ".userName");
 			    timestamp 	= this.getRequest().getParameter(i + ".timestamp");
@@ -444,16 +463,36 @@ public class UpdateCacheAction extends InfoGlueAbstractAction
 			    if(className.indexOf(PublicationImpl.class.getName()) > -1)
 			    	publicationId = Integer.parseInt(objectId);
 
-			    CacheEvictionBean cacheEvictionBean = new CacheEvictionBean(publicationId, userName, timestamp, className, typeId, objectId, objectName, changedAttributeNames);
-			    newNotificationList.add(cacheEvictionBean);
-			    /*
-			    synchronized(CacheController.notifications)
-		        {
-			    	CacheController.notifications.add(cacheEvictionBean);
-		        }
-			    logger.warn("Added an oldSchool cacheEvictionBean " + cacheEvictionBean.getClassName() + ":" + cacheEvictionBean.getTypeId() + ":" + cacheEvictionBean.getObjectName() + ":" + cacheEvictionBean.getObjectId());
-		        */
-			    
+			    boolean skip = false;
+			    if(timestamp != null && !timestamp.equals(""))
+			    {
+			    	try
+			    	{
+			    		long ts = Long.parseLong(timestamp);
+			    		if(ts < CmsPropertyHandler.getStartupTime().getTime())
+			    			skip = true;
+			    	}
+			    	catch (Exception e) 
+			    	{
+			    		logger.error("Could not read timestamp:" + timestamp);
+					}
+			    }
+			    if(!skip)
+			    {
+				    CacheEvictionBean cacheEvictionBean = new CacheEvictionBean(publicationId, userName, timestamp, className, typeId, objectId, objectName, changedAttributeNames);
+				    newNotificationList.add(cacheEvictionBean);
+				    /*
+				    synchronized(CacheController.notifications)
+			        {
+				    	CacheController.notifications.add(cacheEvictionBean);
+			        }
+				    logger.warn("Added an oldSchool cacheEvictionBean " + cacheEvictionBean.getClassName() + ":" + cacheEvictionBean.getTypeId() + ":" + cacheEvictionBean.getObjectName() + ":" + cacheEvictionBean.getObjectId());
+			        */
+				    logger.info("Added a cacheEvictionBean " + cacheEvictionBean.getClassName() + ":" + cacheEvictionBean.getTypeId() + ":" + cacheEvictionBean.getObjectName() + ":" + cacheEvictionBean.getObjectId());
+			    }
+			    else
+				    logger.warn("Skipped a cacheEvictionBean as it's timestamp was earlier than the server start");
+   
 		    }
 		    
 		    /*
