@@ -883,7 +883,6 @@ public class PublicationController extends BaseController
         }
         catch(Exception e)
         {
-            logger.error("We could not find publication in database:" + e.getMessage());
             logger.warn("We could not find publication in database:" + e.getMessage(), e);
         }
 
