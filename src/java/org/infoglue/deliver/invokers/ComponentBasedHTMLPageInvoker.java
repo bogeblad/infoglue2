@@ -1834,7 +1834,17 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 				try
 				{
 					template = ContentDeliveryController.getContentDeliveryController().getContentAttribute(getDatabase(), contentId, templateController.getLanguageId(), templateController.getTemplateAttributeName(), templateController.getSiteNodeId(), true, templateController.getDeliveryContext(), templateController.getPrincipal(), false);				
-		    	}
+					if(template == null)
+					{
+						logger.warn("This cannot be right. Let's check the content master language");
+						ContentVO contentVO = ContentDeliveryController.getContentDeliveryController().getContentVO(getDatabase(), contentId, templateController.getDeliveryContext());
+						logger.warn("contentVO:" + contentVO);
+						Integer contentMasterLanguageId = LanguageDeliveryController.getLanguageDeliveryController().getMasterLanguageForRepository(getDatabase(), contentVO.getRepositoryId()).getLanguageId();
+						logger.warn("contentMasterLanguageId:" + contentMasterLanguageId);
+						template = ContentDeliveryController.getContentDeliveryController().getContentAttribute(getDatabase(), contentId, contentMasterLanguageId, templateController.getTemplateAttributeName(), templateController.getSiteNodeId(), true, templateController.getDeliveryContext(), templateController.getPrincipal(), false);				
+						logger.warn("template:" + template);
+					}
+				}
 		    	catch(Exception e)
 				{
 					if(templateController.getComponentLogic() != null && templateController.getComponentLogic().getInfoGlueComponent() != null)
@@ -1843,9 +1853,12 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 						logger.warn("\nError on url: " + templateController.getOriginalFullURL() + "\n    ComponentName=[ null - how? ]\nAn error occurred trying to get attributeName=" + templateController.getTemplateAttributeName() + " on content " + contentId + "\nReason:" + e.getMessage());
 				}
 		    }
+
 		    
 			if(template == null)
-				throw new SystemException("There was no template available on the content with id " + contentId + ". Check so that the templates language are active on your site.");	
+			{
+				throw new SystemException("There was no template available on the content with id " + contentId + ". Check so that the templates language are active on your site.\n OrginialUrl: " + templateController.getOriginalFullURL());	
+			}
 		}
 		catch(Exception e)
 		{
