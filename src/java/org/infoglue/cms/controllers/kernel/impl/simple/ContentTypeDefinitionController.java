@@ -52,7 +52,9 @@ import org.infoglue.cms.entities.management.ContentTypeAttributeParameterValue;
 import org.infoglue.cms.entities.management.ContentTypeAttributeValidator;
 import org.infoglue.cms.entities.management.ContentTypeDefinition;
 import org.infoglue.cms.entities.management.ContentTypeDefinitionVO;
+import org.infoglue.cms.entities.management.RepositoryVO;
 import org.infoglue.cms.entities.management.impl.simple.ContentTypeDefinitionImpl;
+import org.infoglue.cms.entities.management.impl.simple.RepositoryImpl;
 import org.infoglue.cms.exception.Bug;
 import org.infoglue.cms.exception.ConstraintException;
 import org.infoglue.cms.exception.SystemException;
@@ -120,7 +122,35 @@ public class ContentTypeDefinitionController extends BaseController
 			return cachedContentTypeDefinitionVO;
 		}
 
-		cachedContentTypeDefinitionVO = (ContentTypeDefinitionVO) getVOWithId(ContentTypeDefinitionImpl.class, contentTypeDefinitionId, db);
+		try
+		{
+			cachedContentTypeDefinitionVO = (ContentTypeDefinitionVO) getVOWithId(ContentTypeDefinitionImpl.class, contentTypeDefinitionId, db);
+		}
+		catch (SystemException e) 
+		{
+			if(e.getMessage().indexOf("No lock to release") > -1 || e.getMessage().indexOf("lock without first acquiring the lock") > -1)
+			{
+				logger.warn("An sync issue arose on ctd: " + contentTypeDefinitionId + ":" + e.getMessage());
+				for(int i=0; i<5; i++)
+				{
+					try
+					{
+						Thread.sleep(10);
+						cachedContentTypeDefinitionVO = (ContentTypeDefinitionVO) getVOWithId(ContentTypeDefinitionImpl.class, contentTypeDefinitionId, db);
+						logger.warn("It worked out for ctd: " + contentTypeDefinitionId);
+						break;
+					}
+					catch (Exception e2) 
+					{
+						logger.warn("Still an issue with loading the ctd " + contentTypeDefinitionId + ":" + e2.getMessage());
+					}
+				}
+				if(cachedContentTypeDefinitionVO == null)
+					throw e;
+			}
+			else
+				throw e;
+		}
 
 		CacheController.cacheObject("contentTypeDefinitionCache", key, cachedContentTypeDefinitionVO);
 

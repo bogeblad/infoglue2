@@ -78,6 +78,7 @@ import org.infoglue.cms.util.CmsPropertyHandler;
 import org.infoglue.cms.util.ConstraintExceptionBuffer;
 import org.infoglue.cms.util.DateHelper;
 import org.infoglue.deliver.util.CacheController;
+import org.infoglue.deliver.util.NullObject;
 import org.infoglue.deliver.util.RequestAnalyser;
 import org.infoglue.deliver.util.Timer;
 import org.w3c.dom.CDATASection;
@@ -561,13 +562,57 @@ public class ContentVersionController extends BaseController
     
 	public ContentVersionVO getLatestActiveContentVersionVO(Integer contentId, Integer languageId, Integer stateId, Database db) throws SystemException, Bug, Exception
 	{
+		Timer t = new Timer();
+		
     	ContentVersionVO contentVersionVO = null;
-
-       	ContentVersion contentVersion = getLatestActiveContentVersionReadOnly(contentId, languageId, stateId, db);
-            
-        if(contentVersion != null)
-            contentVersionVO = contentVersion.getValueObject();
     	
+	    String versionKey = "" + contentId + "_" + languageId + "_" + stateId + "_contentVersionVO";
+
+		Object object = CacheController.getCachedObjectFromAdvancedCache("contentVersionCache", versionKey);
+		if(object instanceof NullObject)
+		{
+			logger.info("There was an cached contentVersionVO but it was null:" + object);
+		}
+		else if(object != null)
+		{
+			if(object instanceof SmallestContentVersionVO)
+			{
+				logger.warn("Object was instanceof SmallestContentVersionVO for key:" + versionKey);
+				contentVersionVO = (ContentVersionVO)getVOWithId(SmallContentVersionImpl.class, ((SmallestContentVersionVO)object).getId(), db);
+				CacheController.cacheObjectInAdvancedCache("contentVersionCache", versionKey, contentVersionVO, new String[]{CacheController.getPooledString(2, contentVersionVO.getId()), CacheController.getPooledString(1, contentVersionVO.getContentId())}, true);
+			}
+			else
+			{
+				contentVersionVO = (ContentVersionVO)object;
+			}
+		}
+		else
+		{
+			OQLQuery oql = db.getOQLQuery( "SELECT cv FROM org.infoglue.cms.entities.content.impl.simple.SmallContentVersionImpl cv WHERE cv.contentId = $1 AND cv.languageId = $2 AND cv.stateId >= $3 AND cv.isActive = $4 ORDER BY cv.contentVersionId desc");
+	    	oql.bind(contentId);
+	    	oql.bind(languageId);
+	    	oql.bind(stateId);
+	    	oql.bind(true);
+	
+	    	QueryResults results = oql.execute(Database.ReadOnly);
+	    	
+			if (results.hasMore()) 
+	        {
+				ContentVersion contentVersion = (ContentVersion)results.next();
+	        	contentVersionVO = contentVersion.getValueObject();
+	
+				CacheController.cacheObjectInAdvancedCache("contentVersionCache", versionKey, contentVersionVO, new String[]{CacheController.getPooledString(2, contentVersionVO.getId()), CacheController.getPooledString(1, contentVersionVO.getContentId())}, true);
+	        }
+			/*
+	       	ContentVersion contentVersion = getLatestActiveContentVersionReadOnly(contentId, languageId, stateId, db);
+	            
+	        if(contentVersion != null)
+	            contentVersionVO = contentVersion.getValueObject();
+	    	*/
+		}
+		
+        RequestAnalyser.getRequestAnalyser().registerComponentStatistics("getLatestActiveContentVersionVO new", t.getElapsedTime());
+
 		return contentVersionVO;
     }
 
