@@ -78,6 +78,7 @@ import org.infoglue.cms.util.CmsPropertyHandler;
 import org.infoglue.cms.util.ConstraintExceptionBuffer;
 import org.infoglue.cms.util.DateHelper;
 import org.infoglue.deliver.util.CacheController;
+import org.infoglue.deliver.util.RequestAnalyser;
 import org.infoglue.deliver.util.Timer;
 import org.w3c.dom.CDATASection;
 import org.w3c.dom.Document;
@@ -754,6 +755,8 @@ public class ContentVersionController extends BaseController
     
 	public ContentVersion getLatestActiveContentVersionReadOnly(Integer contentId, Integer languageId, Integer stateId, Database db) throws SystemException, Bug
 	{
+		Timer t = new Timer();
+		
 		ContentVersion contentVersion = null;
     	
 		Content content = ContentController.getContentController().getReadOnlyMediumContentWithId(contentId, db);
@@ -784,6 +787,8 @@ public class ContentVersionController extends BaseController
 					contentVersion = currentContentVersion;
 			}
 		}
+        
+        RequestAnalyser.getRequestAnalyser().registerComponentStatistics("getLatestActiveContentVersionReadOnly", t.getElapsedTime());
         
 		return contentVersion;
 	}

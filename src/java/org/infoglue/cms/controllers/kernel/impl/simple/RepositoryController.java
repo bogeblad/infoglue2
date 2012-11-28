@@ -232,7 +232,7 @@ public class RepositoryController extends BaseController
 			}
 			catch (SystemException e) 
 			{
-				if(e.getMessage().indexOf("No lock to release") > -1)
+				if(e.getMessage().indexOf("No lock to release") > -1 || e.getMessage().indexOf("lock without first acquiring the lock") > -1)
 				{
 					logger.warn("An sync issue arose on: " + repositoryId + ":" + e.getMessage());
 					for(int i=0; i<5; i++)
@@ -249,6 +249,8 @@ public class RepositoryController extends BaseController
 							logger.warn("Still an issue with loading the repo " + repositoryId + ":" + e2.getMessage());
 						}
 					}
+					if(repositoryVO == null)
+						throw e;
 				}
 				else
 					throw e;

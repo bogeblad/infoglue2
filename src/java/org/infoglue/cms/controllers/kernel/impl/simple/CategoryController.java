@@ -20,7 +20,7 @@
  *
  * ===============================================================================
  *
- * $Id: CategoryController.java,v 1.20.4.4 2012/11/28 19:05:46 mattias Exp $
+ * $Id: CategoryController.java,v 1.20.4.5 2012/11/28 22:21:22 mattias Exp $
  */
 package org.infoglue.cms.controllers.kernel.impl.simple;
 
@@ -35,7 +35,9 @@ import org.infoglue.cms.entities.kernel.BaseEntityVO;
 import org.infoglue.cms.entities.management.Category;
 import org.infoglue.cms.entities.management.CategoryVO;
 import org.infoglue.cms.entities.management.ContentTypeDefinitionVO;
+import org.infoglue.cms.entities.management.RepositoryVO;
 import org.infoglue.cms.entities.management.impl.simple.CategoryImpl;
+import org.infoglue.cms.entities.management.impl.simple.RepositoryImpl;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.security.InfoGluePrincipal;
 import org.infoglue.deliver.util.CacheController;
@@ -306,9 +308,42 @@ public class CategoryController extends BaseController
 	 */
 	public List<CategoryVO> findByParent(Integer parentId, Database db) throws SystemException
 	{
+		List<CategoryVO> list = null;
+
 		List params = new ArrayList();
 		params.add(parentId);
-		return toVOList(executeQueryReadOnly(findByParent, params, db));
+		
+		try
+		{
+			list = toVOList(executeQueryReadOnly(findByParent, params, db));
+		}
+		catch (Exception e) 
+		{
+			if(e.getMessage().indexOf("No lock to release") > -1 || e.getMessage().indexOf("lock without first acquiring the lock") > -1)
+			{
+				logger.warn("An sync issue arose on: " + parentId + ":" + e.getMessage());
+				for(int i=0; i<5; i++)
+				{
+					try
+					{
+						Thread.sleep(10);
+						list = toVOList(executeQueryReadOnly(findByParent, params, db));
+						logger.warn("It worked out for category: " + parentId);
+						break;
+					}
+					catch (Exception e2) 
+					{
+						logger.warn("Still an issue with loading the category " + parentId + ":" + e2.getMessage());
+					}
+				}
+				if(list == null)
+					throw new SystemException("An error occurred when we repeatably tried to fetch categories. Reason:" + e.getMessage(), e);    
+			}
+			else
+				throw new SystemException("An error occurred when we tried to fetch a list of categories. Reason:" + e.getMessage(), e);    
+		}
+		
+		return list;
 	}
 
 	/**

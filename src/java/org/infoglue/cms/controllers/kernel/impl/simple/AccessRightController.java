@@ -53,9 +53,11 @@ import org.infoglue.cms.entities.management.AccessRightUserVO;
 import org.infoglue.cms.entities.management.AccessRightVO;
 import org.infoglue.cms.entities.management.InterceptionPoint;
 import org.infoglue.cms.entities.management.InterceptionPointVO;
+import org.infoglue.cms.entities.management.RepositoryVO;
 import org.infoglue.cms.entities.management.TableCount;
 import org.infoglue.cms.entities.management.impl.simple.AccessRightGroupImpl;
 import org.infoglue.cms.entities.management.impl.simple.AccessRightImpl;
+import org.infoglue.cms.entities.management.impl.simple.RepositoryImpl;
 import org.infoglue.cms.entities.management.impl.simple.SmallAccessRightImpl;
 import org.infoglue.cms.entities.management.impl.simple.AccessRightRoleImpl;
 import org.infoglue.cms.entities.management.impl.simple.AccessRightUserImpl;
@@ -557,7 +559,45 @@ public class AccessRightController extends BaseController
 		}
 		catch(Exception e)
 		{
-			throw new SystemException("An error occurred when we tried to fetch a list of Access rights. Reason:" + e.getMessage(), e);    
+			if(e.getMessage().indexOf("No lock to release") > -1 || e.getMessage().indexOf("lock without first acquiring the lock") > -1)
+			{
+				logger.warn("An sync issue arose on access rights for: " + interceptionPointId + ":" + e.getMessage());
+				for(int i=0; i<5; i++)
+				{
+					try
+					{
+						Thread.sleep(10);
+						accessRightList = new ArrayList();
+						
+						OQLQuery oql = null;
+						
+				    	oql = db.getOQLQuery("SELECT f FROM org.infoglue.cms.entities.management.impl.simple.AccessRightImpl f WHERE f.interceptionPoint = $1 ORDER BY f.accessRightId");
+						oql.bind(interceptionPointId);
+						
+						QueryResults results = oql.execute(Database.ReadOnly);
+						while (results.hasMore()) 
+						{
+							AccessRight accessRight = (AccessRight)results.next();
+							accessRightList.add(accessRight);
+						}
+						
+						results.close();
+						oql.close();
+						
+						logger.warn("It worked out for access rights for ip: " + interceptionPointId);
+						break;
+					}
+					catch (Exception e2) 
+					{
+						accessRightList = null;
+						logger.warn("Still an issue with loading access rights for ip " + interceptionPointId + ":" + e2.getMessage());
+					}
+				}
+				if(accessRightList == null)
+					throw new SystemException("An error occurred when we repeatably tried to fetch a list of Access rights. Reason:" + e.getMessage(), e);    
+			}
+			else
+				throw new SystemException("An error occurred when we tried to fetch a list of Access rights. Reason:" + e.getMessage(), e);    
 		}
 		
 		return accessRightList;		
