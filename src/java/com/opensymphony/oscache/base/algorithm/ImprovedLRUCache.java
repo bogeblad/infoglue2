@@ -22,7 +22,7 @@ import java.util.*;
  * <code>AbstractConcurrentReadCache</code> already takes care of any
  * synchronization requirements.</p>
  *
- * @version        $Revision: 1.2.4.1 $
+ * @version        $Revision: 1.2.4.2 $
  * @author <a href="mailto:salaman@teknos.com">Victor Salaman</a>
  * @author <a href="mailto:fbeauregard@pyxis-tech.com">Francois Beauregard</a>
  * @author <a href="mailto:abergevin@pyxis-tech.com">Alain Bergevin</a>
@@ -105,7 +105,7 @@ public class ImprovedLRUCache extends AbstractConcurrentReadCache
      * @return The key of whichever item was removed.
      */
     protected Object removeItem() {
-    	//System.out.println("this.getGroupsForReading().size():" + this.getGroupsForReading().size());
+    	//logger.info("this.getGroupsForReading().size():" + this.getGroupsForReading().size());
     	if(this.getGroupsForReading().size() > maxGroups)
     		maxGroups = this.getGroupsForReading().size();
 
@@ -170,16 +170,6 @@ public class ImprovedLRUCache extends AbstractConcurrentReadCache
         		groups = newGroups;
         		maxGroups = 0;
         	}
-        	/*
-        	System.out.println("Key: " + this.keySet().iterator().next());
-            System.out.println("Removing: " + toRemove + " from " + this.getClass());
-            System.out.println("maxGroups:" + maxGroups);
-            System.out.println("list.size():" + list.size());
-            System.out.println("Info:" + this.count);
-            System.out.println("Info:" + this.loadFactor());
-            System.out.println("Info:" + this.size());
-            System.out.println("Info:" + this.getGroupsForReading().size());
-            */
     	}
 
         return toRemove;

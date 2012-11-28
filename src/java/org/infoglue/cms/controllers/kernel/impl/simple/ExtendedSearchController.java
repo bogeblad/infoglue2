@@ -194,7 +194,7 @@ public class ExtendedSearchController extends BaseController
 			}
 		    if(logger.isDebugEnabled())
 		    	logger.debug("sql:" + sqlBuilder.getSQL());
-		    //System.out.println("sql:" + sqlBuilder.getSQL());
+		    System.out.println("sql:" + sqlBuilder.getSQL());
 		    
 			final OQLQuery oql = db.getOQLQuery(sqlBuilder.getSQL());
 			for(Iterator i=sqlBuilder.getBindings().iterator(); i.hasNext(); )
@@ -358,7 +358,7 @@ class SqlBuilder
 	/**
 	 *
 	 */
-	public SqlBuilder(final ExtendedSearchCriterias criterias) 
+	public SqlBuilder(final ExtendedSearchCriterias criterias)  throws Exception
 	{
 		super();
 		this.criterias = criterias;
@@ -374,7 +374,7 @@ class SqlBuilder
 	/**
 	 *
 	 */
-	public SqlBuilder(final ExtendedSearchCriterias criterias, final boolean sortByDate) 
+	public SqlBuilder(final ExtendedSearchCriterias criterias, final boolean sortByDate)  throws Exception
 	{
 		super();
 		this.criterias = criterias;
@@ -409,7 +409,7 @@ class SqlBuilder
 	/**
 	 * 
 	 */
-	private String generateSortByDate() 
+	private String generateSortByDate() throws Exception
 	{
 		if(ExtendedSearchController.useFull())
 			return "CALL SQL" + SPACE + (ExtendedSearchController.useFull() ? generateSelectClause() : generateSelectClauseShort(false)) + SPACE + generateFromClause() + SPACE + generateWhereClause(true) + SPACE + (ExtendedSearchController.useFull() ? generateOrderByDateClause() : generateOrderByDateClauseShort()) + generateLimitClause() + SPACE + "AS " + SmallContentImpl.class.getName();
@@ -418,7 +418,11 @@ class SqlBuilder
 			//String likeTerm = "";
 			//if(criterias.hasFreetextCritera())
 			//	likeTerm = getFreetextWhereClause(true) + " AND ";
-			String whereClause = "" + (criterias.hasFreetextCritera() ? getFreetextWhereClause(true) + " AND" : "") + (criterias.getMaximumNumberOfItems() != null ? " ROWNUM <= " + criterias.getMaximumNumberOfItems() + "" : "");
+			String andTerm = "";
+			if(criterias.hasFreetextCritera() && criterias.getMaximumNumberOfItems() != null)
+				andTerm = " AND ";
+			
+			String whereClause = "" + (criterias.hasFreetextCritera() ? getFreetextWhereClause(true) : "") + andTerm + (criterias.getMaximumNumberOfItems() != null ? " ROWNUM <= " + criterias.getMaximumNumberOfItems() + "" : "");
 			if(!whereClause.trim().equals(""))
 				whereClause = " WHERE " + whereClause;
 			
@@ -437,7 +441,7 @@ class SqlBuilder
 	}
 	*/
 	
-	private String generate() 
+	private String generate()  throws Exception
 	{
 		if(ExtendedSearchController.useFull())
 			return "CALL SQL" + SPACE + (ExtendedSearchController.useFull() ? generateSelectClause() : generateSelectClauseShort(false)) + SPACE + generateFromClause() + SPACE + generateWhereClause(true) + SPACE + (ExtendedSearchController.useFull() ? generateOrderByClause() : generateOrderByClauseShort()) + generateLimitClause() + SPACE + "AS " + SmallContentImpl.class.getName();
@@ -446,7 +450,11 @@ class SqlBuilder
 			//String likeTerm = "";
 			//if(criterias.hasFreetextCritera())
 			//	likeTerm = getFreetextWhereClause(true) + " AND ";
-			String whereClause = "" + (criterias.hasFreetextCritera() ? getFreetextWhereClause(true) + " AND" : "") +  (criterias.getMaximumNumberOfItems() != null ? " ROWNUM <= " + criterias.getMaximumNumberOfItems() + "" : "");
+			String andTerm = "";
+			if(criterias.hasFreetextCritera() && criterias.getMaximumNumberOfItems() != null)
+				andTerm = " AND ";
+			
+			String whereClause = "" + (criterias.hasFreetextCritera() ? getFreetextWhereClause(true) : "") + andTerm + (criterias.getMaximumNumberOfItems() != null ? " ROWNUM <= " + criterias.getMaximumNumberOfItems() + "" : "");
 			if(!whereClause.trim().equals(""))
 				whereClause = " WHERE " + whereClause;
 
@@ -508,11 +516,17 @@ class SqlBuilder
 	/**
 	 * 
 	 */
-	private String generateWhereClause(boolean includeFreeText) 
+	private String generateWhereClause(boolean includeFreeText) throws Exception
 	{
 		final List clauses = new ArrayList();
 		clauses.addAll(getContentWhereClauses());
-		clauses.add(getContentTypeDefinitionWhereClauses());
+		
+		String contentTypeDefinitionWhereClauses = getContentTypeDefinitionWhereClauses();
+		if(contentTypeDefinitionWhereClauses != null && !contentTypeDefinitionWhereClauses.equals(""))
+			clauses.add(contentTypeDefinitionWhereClauses);
+		else
+			throw new Exception("It is not permitted to do a search without a content type");
+		
 		if(criterias.getRepositoryIdList() != null && criterias.getRepositoryIdList().size() > 0)
 		{
 			clauses.add(getContentRepositoryWhereClauses());
@@ -521,7 +535,9 @@ class SqlBuilder
 		{
 			if(criterias.hasFreetextCritera())
 			{
-				clauses.add(getFreetextWhereClause(false));
+				String text = getFreetextWhereClause(false);
+				if(text != null && !text.equals(""))
+					clauses.add(text);
 			}
 		}
 		clauses.addAll(getCategoriesWhereClauses());
@@ -620,7 +636,7 @@ class SqlBuilder
 	private String getContentTypeDefinitionWhereClauses() 
 	{
 		final List expressions = new ArrayList();
-		if(criterias.hasContentTypeDefinitionVOsCriteria())
+		if(criterias.hasContentTypeDefinitionVOsCriteria() && criterias.getContentTypeDefinitions().size() > 0)
 		{
 			logger.debug(" CRITERA[content type definition]");
 			for(final Iterator i=criterias.getContentTypeDefinitions().iterator(); i.hasNext(); ) 
@@ -629,8 +645,9 @@ class SqlBuilder
 				expressions.add(MessageFormat.format(getC_CONTENT_TYPE_CLAUSE(), new Object[] { getBindingVariable() }));
 				bindings.add(contentTypeDefinitionVO.getId());
 			}
+			return "(" + joinCollection(expressions, SPACE + OR + SPACE) + ")";
 		}
-		return "(" + joinCollection(expressions, SPACE + OR + SPACE) + ")";
+		return "";
 	}
 
 	/**
@@ -747,8 +764,9 @@ class SqlBuilder
 				bindings.add(freeTextVariable);
 				expressions.add(freeTextExpression);
 			}
+			return "(" + joinCollection(expressions, SPACE + OR + SPACE) + ")";
 		}
-		return "(" + joinCollection(expressions, SPACE + OR + SPACE) + ")";
+		return "";
 	}
 	
 	/**

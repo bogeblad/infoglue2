@@ -671,7 +671,7 @@ public class ComponentLogic
 			}
 			catch (Exception e) 
 			{
-				logger.error("Error getting propertyValue on + " + propertyName + ":" + e.getMessage(), e);
+				logger.error("Error getting propertyValue on " + propertyName + ":" + e.getMessage(), e);
 			}
 		}
 				
@@ -710,7 +710,7 @@ public class ComponentLogic
 			}
 			catch (Exception e) 
 			{
-				logger.error("Error getting propertyValue on + " + propertyName + ":" + e.getMessage(), e);
+				logger.error("Error getting propertyValue on " + propertyName + ":" + e.getMessage(), e);
 			}
 		}
 
@@ -756,7 +756,7 @@ public class ComponentLogic
 			}
 			catch (Exception e) 
 			{
-				logger.error("Error getting propertyValue on + " + propertyName + ":" + e.getMessage(), e);
+				logger.error("Error getting propertyValue on " + propertyName + ":" + e.getMessage(), e);
 			}
 		}
 
@@ -802,7 +802,7 @@ public class ComponentLogic
 			}
 			catch (Exception e) 
 			{
-				logger.error("Error getting propertyValue on + " + propertyName + ":" + e.getMessage(), e);
+				logger.error("Error getting propertyValue on " + propertyName + ":" + e.getMessage(), e);
 			}
 		}
 
@@ -1603,8 +1603,8 @@ public class ComponentLogic
 			if(propertyName.equalsIgnoreCase("MiniArticleShortcuts") || propertyName.equalsIgnoreCase("GUFlashImages"))
 				this.templateController.getDeliveryContext().addDebugInformation("DEBUG INFO ERROR: " + propertyName + " (Thread" + Thread.currentThread().getId() + ")" + e.getMessage() + "\n");
 
-			logger.error("Error getting propertyValue on + " + siteNodeId + ":" + propertyName + ":" + e.getMessage());
-			logger.warn("Error getting propertyValue on + " + siteNodeId + ":" + propertyName + ":" + e.getMessage(), e);
+			logger.error("Error getting propertyValue on " + siteNodeId + ":" + propertyName + ":" + e.getMessage());
+			logger.warn("Error getting propertyValue on " + siteNodeId + ":" + propertyName + ":" + e.getMessage(), e);
 		}
 		
 		return null;
@@ -3254,19 +3254,21 @@ public class ComponentLogic
 		NodeDeliveryController ndc = NodeDeliveryController.getNodeDeliveryController(siteNodeId, languageId, contentId);
 		ContentVO contentVO = ndc.getBoundContent(templateController.getDatabase(), templateController.getPrincipal(), siteNodeId, languageId, true, "Meta information", templateController.getDeliveryContext());
 		
-			this.templateController.getDeliveryContext().addDebugInformation("DEBUG INFO getting XML: " + contentVO + " (Thread" + Thread.currentThread().getId() + ").\n");
+		this.templateController.getDeliveryContext().addDebugInformation("DEBUG INFO getting XML: " + contentVO + " (Thread" + Thread.currentThread().getId() + ").\n");
+		logger.info("contentVO:" + contentVO);
 
 		if(contentVO == null)
 			throw new SystemException("There was no Meta Information bound to this page [" + siteNodeId + "] which makes it impossible to render.");	
 		
 		SiteNodeVO siteNodeVO = ndc.getSiteNodeVO(templateController.getDatabase(), siteNodeId);
 		Integer masterLanguageId = LanguageDeliveryController.getLanguageDeliveryController().getMasterLanguageForRepository(templateController.getDatabase(), siteNodeVO.getRepositoryId()).getId();
+		logger.info("masterLanguageId:" + masterLanguageId);
 		//Integer masterLanguageId = LanguageDeliveryController.getLanguageDeliveryController().getMasterLanguageForSiteNode(templateController.getDatabase(), siteNodeId).getId();
 		pageComponentsString = templateController.getContentAttributeWithReturningId(contentVO.getContentId(), masterLanguageId, "ComponentStructure", true, usedContentVersionId, usedContentEntities);
 		pageComponentsString = appendPagePartTemplates(pageComponentsString, templateController);
 
 		if(pageComponentsString == null)
-			throw new SystemException("There was no Meta Information bound to this page [" + siteNodeId + "] which makes it impossible to render.");	
+			throw new SystemException("There was no pageComponentsString on this page meta info [" + siteNodeId + "] which makes it impossible to render.");	
 	
 		CacheController.cacheObjectInAdvancedCache(cacheName, cacheKey, pageComponentsString, null, false);
 		
