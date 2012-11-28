@@ -1513,7 +1513,7 @@ public class GroupPropertiesController extends BaseController
 					}
 					else
 					{
-						System.out.println("Reading the hard way for:" + key);
+						logger.warn("Reading the hard way for:" + key);
 	
 				    	List propertiesCategoryList = PropertiesCategoryController.getController().findByPropertiesAttributeReadOnly(attribute, GroupProperties.class.getName(), groupPropertyVO.getId(), db);
 		
