@@ -20,7 +20,7 @@
  *
  * ===============================================================================
  *
- * $Id: CategoryController.java,v 1.20.4.3 2012/11/14 23:08:25 mattias Exp $
+ * $Id: CategoryController.java,v 1.20.4.4 2012/11/28 19:05:46 mattias Exp $
  */
 package org.infoglue.cms.controllers.kernel.impl.simple;
 
@@ -119,7 +119,7 @@ public class CategoryController extends BaseController
 	 */
 	public CategoryVO findVOById(Integer id, Database db) throws SystemException
 	{
-		return (CategoryVO) getVOWithId(CategoryImpl.class, id);
+		return (CategoryVO) getVOWithId(CategoryImpl.class, id, db);
 	}
 
 	/**

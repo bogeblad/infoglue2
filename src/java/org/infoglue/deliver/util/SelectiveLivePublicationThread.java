@@ -433,207 +433,220 @@ public class SelectiveLivePublicationThread extends PublicationThread
 										else if(Class.forName(publicationDetailVO.getEntityClass()).getName().equals(ContentVersion.class.getName()))
 										{
 											logger.info("We clear all caches having references to contentVersion: " + publicationDetailVO.getEntityId());
-											Integer contentId = ContentVersionController.getContentVersionController().getContentIdForContentVersion(publicationDetailVO.getEntityId());
-										    
-										    ContentVO previousContentVO = ContentController.getContentController().getContentVOWithId(contentId);
-										    Integer previousParentContentId = previousContentVO.getParentContentId();
-										    logger.info("previousParentContentId:" + previousParentContentId);
-
-										    addCacheUpdateDirective(publicationDetailVO.getEntityClass(), publicationDetailVO.getEntityId().toString(), allIGCacheCalls);
-										    //CacheController.clearCaches(publicationDetailVO.getEntityClass(), publicationDetailVO.getEntityId().toString(), null);
-										    
-											CacheController.clearCache(SmallContentVersionImpl.class, new Integer[]{new Integer(publicationDetailVO.getEntityId())});
-											CacheController.clearCache(SmallestContentVersionImpl.class, new Integer[]{new Integer(publicationDetailVO.getEntityId())});
-
-											logger.info("We clear all small contents as well " + contentId);
-											CacheController.clearCache(ContentImpl.class, new Integer[]{contentId});
-											CacheController.clearCache(SmallContentImpl.class, new Integer[]{contentId});
-											CacheController.clearCache(SmallishContentImpl.class, new Integer[]{contentId});
-											CacheController.clearCache(MediumContentImpl.class, new Integer[]{contentId});
-											CacheController.clearCache(SmallSiteNodeVersionImpl.class, new Integer[]{new Integer(objectId)});		
-											
-											logger.info("Handling parents....");
-											
-											ContentVO contentVOAfter = ContentController.getContentController().getContentVOWithId(contentId);
-										    Integer currentParentContentId = contentVOAfter.getParentContentId();
-										    logger.info("previousParentContentId:" + previousParentContentId);
-										    logger.info("currentParentContentId:" + currentParentContentId);
-
-										    logger.info("We should also clear the parents...");
-											if(currentParentContentId != null)
+											try
 											{
-												logger.info("contentVOAfter - clear the new:" + contentVOAfter.getName() + " / " + currentParentContentId);
-												//CacheController.clearCaches(Content.class.getName(), currentParentContentId.toString(), null);
-												addCacheUpdateDirective(Content.class.getName(), currentParentContentId.toString(), allIGCacheCalls);
+												Integer contentId = ContentVersionController.getContentVersionController().getContentIdForContentVersion(publicationDetailVO.getEntityId());
+											    
+											    ContentVO previousContentVO = ContentController.getContentController().getContentVOWithId(contentId);
+											    Integer previousParentContentId = previousContentVO.getParentContentId();
+											    logger.info("previousParentContentId:" + previousParentContentId);
+	
+											    addCacheUpdateDirective(publicationDetailVO.getEntityClass(), publicationDetailVO.getEntityId().toString(), allIGCacheCalls);
+											    //CacheController.clearCaches(publicationDetailVO.getEntityClass(), publicationDetailVO.getEntityId().toString(), null);
+											    
+												CacheController.clearCache(SmallContentVersionImpl.class, new Integer[]{new Integer(publicationDetailVO.getEntityId())});
+												CacheController.clearCache(SmallestContentVersionImpl.class, new Integer[]{new Integer(publicationDetailVO.getEntityId())});
+	
+												logger.info("We clear all small contents as well " + contentId);
+												CacheController.clearCache(ContentImpl.class, new Integer[]{contentId});
+												CacheController.clearCache(SmallContentImpl.class, new Integer[]{contentId});
+												CacheController.clearCache(SmallishContentImpl.class, new Integer[]{contentId});
+												CacheController.clearCache(MediumContentImpl.class, new Integer[]{contentId});
+												CacheController.clearCache(SmallSiteNodeVersionImpl.class, new Integer[]{new Integer(objectId)});		
 												
-											    logger.info("We clear all small siteNodes as well " + currentParentContentId);
-												CacheController.clearCache(ContentImpl.class, new Integer[]{currentParentContentId});
-												CacheController.clearCache(SmallContentImpl.class, new Integer[]{currentParentContentId});
-												CacheController.clearCache(SmallishContentImpl.class, new Integer[]{currentParentContentId});
-												CacheController.clearCache(MediumContentImpl.class, new Integer[]{currentParentContentId});
+												logger.info("Handling parents....");
+												
+												ContentVO contentVOAfter = ContentController.getContentController().getContentVOWithId(contentId);
+											    Integer currentParentContentId = contentVOAfter.getParentContentId();
+											    logger.info("previousParentContentId:" + previousParentContentId);
+											    logger.info("currentParentContentId:" + currentParentContentId);
+	
+											    logger.info("We should also clear the parents...");
+												if(currentParentContentId != null)
+												{
+													logger.info("contentVOAfter - clear the new:" + contentVOAfter.getName() + " / " + currentParentContentId);
+													//CacheController.clearCaches(Content.class.getName(), currentParentContentId.toString(), null);
+													addCacheUpdateDirective(Content.class.getName(), currentParentContentId.toString(), allIGCacheCalls);
+													
+												    logger.info("We clear all small siteNodes as well " + currentParentContentId);
+													CacheController.clearCache(ContentImpl.class, new Integer[]{currentParentContentId});
+													CacheController.clearCache(SmallContentImpl.class, new Integer[]{currentParentContentId});
+													CacheController.clearCache(SmallishContentImpl.class, new Integer[]{currentParentContentId});
+													CacheController.clearCache(MediumContentImpl.class, new Integer[]{currentParentContentId});
+												}
+	
+												if(currentParentContentId != null && previousParentContentId != null && !previousParentContentId.equals(previousParentContentId))
+												{
+													logger.info("contentVOAfter - clear the new:" + contentVOAfter.getName() + " / " + currentParentContentId);
+													//CacheController.clearCaches(Content.class.getName(), previousParentContentId.toString(), null);
+													addCacheUpdateDirective(Content.class.getName(), previousParentContentId.toString(), allIGCacheCalls);
+													
+												    logger.info("We clear all small siteNodes as well " + previousParentContentId);
+													CacheController.clearCache(ContentImpl.class, new Integer[]{previousParentContentId});
+													CacheController.clearCache(SmallContentImpl.class, new Integer[]{previousParentContentId});
+													CacheController.clearCache(SmallishContentImpl.class, new Integer[]{previousParentContentId});
+													CacheController.clearCache(MediumContentImpl.class, new Integer[]{previousParentContentId});
+												}
 											}
-
-											if(currentParentContentId != null && previousParentContentId != null && !previousParentContentId.equals(previousParentContentId))
+											catch(Exception e)
 											{
-												logger.info("contentVOAfter - clear the new:" + contentVOAfter.getName() + " / " + currentParentContentId);
-												//CacheController.clearCaches(Content.class.getName(), previousParentContentId.toString(), null);
-												addCacheUpdateDirective(Content.class.getName(), previousParentContentId.toString(), allIGCacheCalls);
-												
-											    logger.info("We clear all small siteNodes as well " + previousParentContentId);
-												CacheController.clearCache(ContentImpl.class, new Integer[]{previousParentContentId});
-												CacheController.clearCache(SmallContentImpl.class, new Integer[]{previousParentContentId});
-												CacheController.clearCache(SmallishContentImpl.class, new Integer[]{previousParentContentId});
-												CacheController.clearCache(MediumContentImpl.class, new Integer[]{previousParentContentId});
+												logger.warn("An error occurred handling content version from publication " + publicationVO.getId() + ":" + e.getMessage());
 											}
-											
 										}
 										else if(Class.forName(publicationDetailVO.getEntityClass()).getName().equals(SiteNodeVersion.class.getName()))
 										{
-											SiteNodeVersionVO siteNodeVersionVO = SiteNodeVersionController.getController().getSiteNodeVersionVOWithId(publicationDetailVO.getEntityId());
-											//logger.info("siteNodeVersionVO:" + siteNodeVersionVO.getId());
-											Integer siteNodeId = siteNodeVersionVO.getSiteNodeId();
-											
-											CacheController.clearCache("pageCacheLatestSiteNodeVersions", "" + siteNodeId);
-											String versionKey = "" + siteNodeId + "_" + CmsPropertyHandler.getOperatingMode() + "_siteNodeVersionVO";		
-										    CacheController.clearCache("latestSiteNodeVersionCache", versionKey);
-											
-										    logger.info("We also clear the meta info content..");
-
-										    SiteNodeVO previousSiteNodeVO = SiteNodeController.getController().getSiteNodeVOWithId(siteNodeId);
-										    Integer previousParentSiteNodeId = previousSiteNodeVO.getParentSiteNodeId();
-										    logger.info("previousParentSiteNodeId:" + previousParentSiteNodeId);
-										    Object previousParentSiteNodeIdCandidate = CacheController.getCachedObject("parentSiteNodeCache", "" + siteNodeId);
-										    logger.info("previousParentSiteNodeIdCandidate:" + previousParentSiteNodeIdCandidate);
-										    if(previousParentSiteNodeIdCandidate != null && !(previousParentSiteNodeIdCandidate instanceof NullObject))
-										    	previousParentSiteNodeId = ((SiteNodeVO)previousParentSiteNodeIdCandidate).getId();
-										    logger.info("previousParentSiteNodeId:" + previousParentSiteNodeId);
-										    	
-										    //CacheController.clearCaches(publicationDetailVO.getEntityClass(), publicationDetailVO.getEntityId().toString(), null);
-											//if(siteNodeId != null)
-											//	CacheController.clearCaches(SiteNode.class.getName(), siteNodeId.toString(), null);
-										    
-										    logger.info("We clear all small siteNodes as well " + siteNodeId);
-											CacheController.clearCache(SiteNodeImpl.class, new Integer[]{siteNodeId});
-											CacheController.clearCache(SmallSiteNodeImpl.class, new Integer[]{siteNodeId});
-											CacheController.clearCache(SmallSiteNodeVersionImpl.class, new Integer[]{new Integer(publicationDetailVO.getEntityId())});		
-
-											logger.info("We clear all contents as well " + previousSiteNodeVO.getMetaInfoContentId());
-											Class metaInfoContentExtra = ContentImpl.class;
-											Object[] idsMetaInfoContentExtra = {previousSiteNodeVO.getMetaInfoContentId()};
-											CacheController.clearCache(metaInfoContentExtra, idsMetaInfoContentExtra);
-											
-											logger.info("We clear all small contents as well " + previousSiteNodeVO.getMetaInfoContentId());
-											Class metaInfoContentExtraSmall = SmallContentImpl.class;
-											CacheController.clearCache(metaInfoContentExtraSmall, idsMetaInfoContentExtra);
-											
-											logger.info("We clear all smallish contents as well " + previousSiteNodeVO.getMetaInfoContentId());
-											Class metaInfoContentExtraSmallish = SmallishContentImpl.class;
-											CacheController.clearCache(metaInfoContentExtraSmallish, idsMetaInfoContentExtra);
-		
-											logger.info("We clear all medium contents as well " + previousSiteNodeVO.getMetaInfoContentId());
-											Class metaInfoContentExtraMedium = MediumContentImpl.class;
-											CacheController.clearCache(metaInfoContentExtraMedium, idsMetaInfoContentExtra);
-											
-											//CacheController.clearCaches(ContentImpl.class.getName(), previousSiteNodeVO.getMetaInfoContentId().toString(), null);
-											addCacheUpdateDirective(ContentImpl.class.getName(), previousSiteNodeVO.getMetaInfoContentId().toString(), allIGCacheCalls);
-		
-											Database db = CastorDatabaseService.getDatabase();
-											db.begin();
-											
-											LanguageVO masterLanguageVO = LanguageController.getController().getMasterLanguage(previousSiteNodeVO.getRepositoryId(), db);
-											ContentVersionVO metaInfoContentVersionVO = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(previousSiteNodeVO.getMetaInfoContentId(), masterLanguageVO.getId(), db);
-											addCacheUpdateDirective(ContentVersionImpl.class.getName(), metaInfoContentVersionVO.getId().toString(), allIGCacheCalls);
-											
-											Content content = ContentController.getContentController().getReadOnlyContentWithId(previousSiteNodeVO.getMetaInfoContentId(), db);
-											List contentVersionIds = new ArrayList();
-											Iterator contentVersionIterator = content.getContentVersions().iterator();
-											logger.info("Versions:" + content.getContentVersions().size());
-											while(contentVersionIterator.hasNext())
+											try
 											{
-												ContentVersion contentVersion = (ContentVersion)contentVersionIterator.next();
-												contentVersionIds.add(contentVersion.getId());
-												logger.info("We clear the meta info contentVersion " + contentVersion.getId());
-											}
-		
-											db.rollback();
-		
-											db.close();
-											
-											Iterator contentVersionIdsIterator = contentVersionIds.iterator();
-											logger.info("Versions:" + contentVersionIds.size());
-											while(contentVersionIdsIterator.hasNext())
-											{
-												Integer contentVersionId = (Integer)contentVersionIdsIterator.next();
-												logger.info("We clear the meta info contentVersion " + contentVersionId);
-												Class metaInfoContentVersionExtra = ContentVersionImpl.class;
-												Object[] idsMetaInfoContentVersionExtra = {contentVersionId};
-												CacheController.clearCache(metaInfoContentVersionExtra, idsMetaInfoContentVersionExtra);
-												//CacheController.clearCaches(ContentVersionImpl.class.getName(), contentVersionId.toString(), null);
-												//addCacheUpdateDirective(ContentVersionImpl.class.getName(), contentVersionId.toString(), allIGCacheCalls);
-											}
-											
-											logger.info("After:" + content.getContentVersions().size());
-		
-											SiteNodeVersionVO previousSiteNodeVersionVO = SiteNodeVersionController.getController().getPreviousActiveSiteNodeVersionVO(siteNodeVersionVO.getSiteNodeId(), siteNodeVersionVO.getId(), new Integer(CmsPropertyHandler.getOperatingMode()));
-											//logger.info("previousSiteNodeVersionVO:" + previousSiteNodeVersionVO.getId());
-
-											addCacheUpdateDirective(publicationDetailVO.getEntityClass(), publicationDetailVO.getEntityId().toString(), allIGCacheCalls);
-											if(siteNodeId != null)
-											{
-												//logger.info("What really happened.... let's find out");
-												boolean anyRealDifferences = isThereAnyRealDifferencesBetweenSiteNodeVersions(siteNodeVersionVO, previousSiteNodeVersionVO);
-												//logger.info("anyRealDifferences:" + anyRealDifferences);
-												if(anyRealDifferences)
-													addCacheUpdateDirective(SiteNode.class.getName(), siteNodeId.toString(), allIGCacheCalls);
-												else
+												SiteNodeVersionVO siteNodeVersionVO = SiteNodeVersionController.getController().getSiteNodeVersionVOWithId(publicationDetailVO.getEntityId());
+												//logger.info("siteNodeVersionVO:" + siteNodeVersionVO.getId());
+												Integer siteNodeId = siteNodeVersionVO.getSiteNodeId();
+												
+												CacheController.clearCache("pageCacheLatestSiteNodeVersions", "" + siteNodeId);
+												String versionKey = "" + siteNodeId + "_" + CmsPropertyHandler.getOperatingMode() + "_siteNodeVersionVO";		
+											    CacheController.clearCache("latestSiteNodeVersionCache", versionKey);
+												
+											    logger.info("We also clear the meta info content..");
+	
+											    SiteNodeVO previousSiteNodeVO = SiteNodeController.getController().getSiteNodeVOWithId(siteNodeId);
+											    Integer previousParentSiteNodeId = previousSiteNodeVO.getParentSiteNodeId();
+											    logger.info("previousParentSiteNodeId:" + previousParentSiteNodeId);
+											    Object previousParentSiteNodeIdCandidate = CacheController.getCachedObject("parentSiteNodeCache", "" + siteNodeId);
+											    logger.info("previousParentSiteNodeIdCandidate:" + previousParentSiteNodeIdCandidate);
+											    if(previousParentSiteNodeIdCandidate != null && !(previousParentSiteNodeIdCandidate instanceof NullObject))
+											    	previousParentSiteNodeId = ((SiteNodeVO)previousParentSiteNodeIdCandidate).getId();
+											    logger.info("previousParentSiteNodeId:" + previousParentSiteNodeId);
+											    	
+											    //CacheController.clearCaches(publicationDetailVO.getEntityClass(), publicationDetailVO.getEntityId().toString(), null);
+												//if(siteNodeId != null)
+												//	CacheController.clearCaches(SiteNode.class.getName(), siteNodeId.toString(), null);
+											    
+											    logger.info("We clear all small siteNodes as well " + siteNodeId);
+												CacheController.clearCache(SiteNodeImpl.class, new Integer[]{siteNodeId});
+												CacheController.clearCache(SmallSiteNodeImpl.class, new Integer[]{siteNodeId});
+												CacheController.clearCache(SmallSiteNodeVersionImpl.class, new Integer[]{new Integer(publicationDetailVO.getEntityId())});		
+	
+												logger.info("We clear all contents as well " + previousSiteNodeVO.getMetaInfoContentId());
+												Class metaInfoContentExtra = ContentImpl.class;
+												Object[] idsMetaInfoContentExtra = {previousSiteNodeVO.getMetaInfoContentId()};
+												CacheController.clearCache(metaInfoContentExtra, idsMetaInfoContentExtra);
+												
+												logger.info("We clear all small contents as well " + previousSiteNodeVO.getMetaInfoContentId());
+												Class metaInfoContentExtraSmall = SmallContentImpl.class;
+												CacheController.clearCache(metaInfoContentExtraSmall, idsMetaInfoContentExtra);
+												
+												logger.info("We clear all smallish contents as well " + previousSiteNodeVO.getMetaInfoContentId());
+												Class metaInfoContentExtraSmallish = SmallishContentImpl.class;
+												CacheController.clearCache(metaInfoContentExtraSmallish, idsMetaInfoContentExtra);
+			
+												logger.info("We clear all medium contents as well " + previousSiteNodeVO.getMetaInfoContentId());
+												Class metaInfoContentExtraMedium = MediumContentImpl.class;
+												CacheController.clearCache(metaInfoContentExtraMedium, idsMetaInfoContentExtra);
+												
+												//CacheController.clearCaches(ContentImpl.class.getName(), previousSiteNodeVO.getMetaInfoContentId().toString(), null);
+												addCacheUpdateDirective(ContentImpl.class.getName(), previousSiteNodeVO.getMetaInfoContentId().toString(), allIGCacheCalls);
+			
+												Database db = CastorDatabaseService.getDatabase();
+												db.begin();
+												
+												LanguageVO masterLanguageVO = LanguageController.getController().getMasterLanguage(previousSiteNodeVO.getRepositoryId(), db);
+												ContentVersionVO metaInfoContentVersionVO = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(previousSiteNodeVO.getMetaInfoContentId(), masterLanguageVO.getId(), db);
+												addCacheUpdateDirective(ContentVersionImpl.class.getName(), metaInfoContentVersionVO.getId().toString(), allIGCacheCalls);
+												
+												Content content = ContentController.getContentController().getReadOnlyContentWithId(previousSiteNodeVO.getMetaInfoContentId(), db);
+												List contentVersionIds = new ArrayList();
+												Iterator contentVersionIterator = content.getContentVersions().iterator();
+												logger.info("Versions:" + content.getContentVersions().size());
+												while(contentVersionIterator.hasNext())
 												{
-													//logger.info("We'll skip it and assume that this was just a meta info update...");
+													ContentVersion contentVersion = (ContentVersion)contentVersionIterator.next();
+													contentVersionIds.add(contentVersion.getId());
+													logger.info("We clear the meta info contentVersion " + contentVersion.getId());
 												}
-											}
-
-											//Handling access rights...
-											if(siteNodeVersionVO.getIsProtected().intValue() != SiteNodeVersionVO.INHERITED || (previousSiteNodeVersionVO != null && previousSiteNodeVersionVO.getIsProtected().intValue() != SiteNodeVersionVO.INHERITED))
-											{
-										        CacheController.clearCache(AccessRightImpl.class);
-										        CacheController.clearCache(AccessRightRoleImpl.class);
-										        CacheController.clearCache(AccessRightGroupImpl.class);
-										        CacheController.clearCache(AccessRightUserImpl.class);
-
-									    		CacheController.clearCache("personalAuthorizationCache");
-											}
-											
-											logger.info("Handling parents....");
-											
-											SiteNodeVO siteNodeVOAfter = SiteNodeController.getController().getSiteNodeVOWithId(siteNodeId);
-										    Integer currentParentSiteNodeId = siteNodeVOAfter.getParentSiteNodeId();
-										    logger.info("previousParentSiteNodeId:" + previousParentSiteNodeId);
-										    logger.info("currentParentSiteNodeId:" + currentParentSiteNodeId);
-
-										    logger.info("We should also clear the parents...");
-											if(currentParentSiteNodeId != null)
-											{
-												if(previousSiteNodeVersionVO == null)
+			
+												db.rollback();
+			
+												db.close();
+												
+												Iterator contentVersionIdsIterator = contentVersionIds.iterator();
+												logger.info("Versions:" + contentVersionIds.size());
+												while(contentVersionIdsIterator.hasNext())
 												{
-													//logger.info("Looks to be first version - let's update parent as well");
-													logger.info("siteNodeVOAfter - clear the new:" + siteNodeVOAfter.getName() + " / " + currentParentSiteNodeId);
+													Integer contentVersionId = (Integer)contentVersionIdsIterator.next();
+													logger.info("We clear the meta info contentVersion " + contentVersionId);
+													Class metaInfoContentVersionExtra = ContentVersionImpl.class;
+													Object[] idsMetaInfoContentVersionExtra = {contentVersionId};
+													CacheController.clearCache(metaInfoContentVersionExtra, idsMetaInfoContentVersionExtra);
+													//CacheController.clearCaches(ContentVersionImpl.class.getName(), contentVersionId.toString(), null);
+													//addCacheUpdateDirective(ContentVersionImpl.class.getName(), contentVersionId.toString(), allIGCacheCalls);
+												}
+												
+												logger.info("After:" + content.getContentVersions().size());
+			
+												SiteNodeVersionVO previousSiteNodeVersionVO = SiteNodeVersionController.getController().getPreviousActiveSiteNodeVersionVO(siteNodeVersionVO.getSiteNodeId(), siteNodeVersionVO.getId(), new Integer(CmsPropertyHandler.getOperatingMode()));
+												//logger.info("previousSiteNodeVersionVO:" + previousSiteNodeVersionVO.getId());
+	
+												addCacheUpdateDirective(publicationDetailVO.getEntityClass(), publicationDetailVO.getEntityId().toString(), allIGCacheCalls);
+												if(siteNodeId != null)
+												{
+													//logger.info("What really happened.... let's find out");
+													boolean anyRealDifferences = isThereAnyRealDifferencesBetweenSiteNodeVersions(siteNodeVersionVO, previousSiteNodeVersionVO);
+													//logger.info("anyRealDifferences:" + anyRealDifferences);
+													if(anyRealDifferences)
+														addCacheUpdateDirective(SiteNode.class.getName(), siteNodeId.toString(), allIGCacheCalls);
+													else
+													{
+														//logger.info("We'll skip it and assume that this was just a meta info update...");
+													}
+												}
+	
+												//Handling access rights...
+												if(siteNodeVersionVO.getIsProtected().intValue() != SiteNodeVersionVO.INHERITED || (previousSiteNodeVersionVO != null && previousSiteNodeVersionVO.getIsProtected().intValue() != SiteNodeVersionVO.INHERITED))
+												{
+											        CacheController.clearCache(AccessRightImpl.class);
+											        CacheController.clearCache(AccessRightRoleImpl.class);
+											        CacheController.clearCache(AccessRightGroupImpl.class);
+											        CacheController.clearCache(AccessRightUserImpl.class);
+	
+										    		CacheController.clearCache("personalAuthorizationCache");
+												}
+												
+												logger.info("Handling parents....");
+												
+												SiteNodeVO siteNodeVOAfter = SiteNodeController.getController().getSiteNodeVOWithId(siteNodeId);
+											    Integer currentParentSiteNodeId = siteNodeVOAfter.getParentSiteNodeId();
+											    logger.info("previousParentSiteNodeId:" + previousParentSiteNodeId);
+											    logger.info("currentParentSiteNodeId:" + currentParentSiteNodeId);
+	
+											    logger.info("We should also clear the parents...");
+												if(currentParentSiteNodeId != null)
+												{
+													if(previousSiteNodeVersionVO == null)
+													{
+														//logger.info("Looks to be first version - let's update parent as well");
+														logger.info("siteNodeVOAfter - clear the new:" + siteNodeVOAfter.getName() + " / " + currentParentSiteNodeId);
+														addCacheUpdateDirective(SiteNode.class.getName(), currentParentSiteNodeId.toString(), allIGCacheCalls);
+													}
+													
+												    logger.info("We clear all small siteNodes as well " + currentParentSiteNodeId);
+													CacheController.clearCache(SiteNodeImpl.class, new Integer[]{currentParentSiteNodeId});
+													CacheController.clearCache(SmallSiteNodeImpl.class, new Integer[]{currentParentSiteNodeId});
+												}
+	
+												if(currentParentSiteNodeId != null && previousParentSiteNodeId != null && !previousParentSiteNodeId.equals(currentParentSiteNodeId))
+												{
+													logger.info("siteNodeVOAfter was not the same - lets clear the old:" + siteNodeVOAfter.getName() + " / " + currentParentSiteNodeId);
+													//CacheController.clearCaches(SiteNode.class.getName(), previousParentSiteNodeId.toString(), null);
 													addCacheUpdateDirective(SiteNode.class.getName(), currentParentSiteNodeId.toString(), allIGCacheCalls);
+													addCacheUpdateDirective(SiteNode.class.getName(), previousParentSiteNodeId.toString(), allIGCacheCalls);
+													
+												    logger.info("We clear all small siteNodes as well " + previousParentSiteNodeId);
+													CacheController.clearCache(SiteNodeImpl.class, new Integer[]{previousParentSiteNodeId});
+													CacheController.clearCache(SmallSiteNodeImpl.class, new Integer[]{previousParentSiteNodeId});
 												}
-												
-											    logger.info("We clear all small siteNodes as well " + currentParentSiteNodeId);
-												CacheController.clearCache(SiteNodeImpl.class, new Integer[]{currentParentSiteNodeId});
-												CacheController.clearCache(SmallSiteNodeImpl.class, new Integer[]{currentParentSiteNodeId});
 											}
-
-											if(currentParentSiteNodeId != null && previousParentSiteNodeId != null && !previousParentSiteNodeId.equals(currentParentSiteNodeId))
+											catch (Exception e) 
 											{
-												logger.info("siteNodeVOAfter was not the same - lets clear the old:" + siteNodeVOAfter.getName() + " / " + currentParentSiteNodeId);
-												//CacheController.clearCaches(SiteNode.class.getName(), previousParentSiteNodeId.toString(), null);
-												addCacheUpdateDirective(SiteNode.class.getName(), currentParentSiteNodeId.toString(), allIGCacheCalls);
-												addCacheUpdateDirective(SiteNode.class.getName(), previousParentSiteNodeId.toString(), allIGCacheCalls);
-												
-											    logger.info("We clear all small siteNodes as well " + previousParentSiteNodeId);
-												CacheController.clearCache(SiteNodeImpl.class, new Integer[]{previousParentSiteNodeId});
-												CacheController.clearCache(SmallSiteNodeImpl.class, new Integer[]{previousParentSiteNodeId});
+												logger.warn("An error occurred handling sitenode version from publication " + publicationVO.getId() + ":" + e.getMessage());
 											}
 										}
 										

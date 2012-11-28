@@ -36,7 +36,6 @@ import java.util.Set;
 import java.util.Vector;
 
 import org.apache.log4j.Category;
-import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.exolab.castor.jdo.Database;
 import org.exolab.castor.jdo.OQLQuery;
@@ -56,26 +55,20 @@ import org.infoglue.cms.entities.content.ContentCategoryVO;
 import org.infoglue.cms.entities.content.ContentVO;
 import org.infoglue.cms.entities.content.ContentVersion;
 import org.infoglue.cms.entities.content.ContentVersionVO;
-import org.infoglue.cms.entities.content.DigitalAsset;
 import org.infoglue.cms.entities.content.DigitalAssetVO;
 import org.infoglue.cms.entities.content.SmallestContentVersion;
 import org.infoglue.cms.entities.content.SmallestContentVersionVO;
 import org.infoglue.cms.entities.content.impl.simple.ContentImpl;
 import org.infoglue.cms.entities.content.impl.simple.ContentVersionImpl;
-import org.infoglue.cms.entities.content.impl.simple.SmallContentVersionImpl;
 import org.infoglue.cms.entities.content.impl.simple.MediumContentImpl;
 import org.infoglue.cms.entities.content.impl.simple.SmallContentImpl;
+import org.infoglue.cms.entities.content.impl.simple.SmallContentVersionImpl;
 import org.infoglue.cms.entities.content.impl.simple.SmallDigitalAssetImpl;
-import org.infoglue.cms.entities.content.impl.simple.SmallishContentImpl;
 import org.infoglue.cms.entities.management.ContentTypeDefinitionVO;
 import org.infoglue.cms.entities.management.LanguageVO;
-import org.infoglue.cms.entities.management.Repository;
 import org.infoglue.cms.entities.management.RepositoryVO;
 import org.infoglue.cms.entities.management.impl.simple.ContentTypeDefinitionImpl;
-import org.infoglue.cms.entities.structure.SiteNode;
 import org.infoglue.cms.entities.structure.SiteNodeVO;
-import org.infoglue.cms.entities.structure.impl.simple.SiteNodeImpl;
-import org.infoglue.cms.entities.structure.impl.simple.SmallSiteNodeImpl;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.security.InfoGluePrincipal;
 import org.infoglue.cms.util.CmsPropertyHandler;
@@ -2909,7 +2902,7 @@ public class ContentDeliveryController extends BaseDeliveryController
 	 * Returns if a content is between dates and has a content version suitable for this delivery mode.
 	 * @throws Exception
 	 */
-	
+
 	public boolean isValidContent(InfoGluePrincipal infoGluePrincipal, ContentVO content, Integer languageId, boolean useLanguageFallBack, boolean includeFolders, Database db, DeliveryContext deliveryContext) throws Exception
 	{
 		//Timer t = new Timer();
@@ -2918,6 +2911,43 @@ public class ContentDeliveryController extends BaseDeliveryController
 		if(infoGluePrincipal == null)
 		    throw new SystemException("There was no anonymous user found in the system. There must be - add the user anonymous/anonymous and try again.");
 		
+		if(metaInfoContentTypeId == null)
+		{
+			ContentTypeDefinitionVO ctdVO = ContentTypeDefinitionController.getController().getContentTypeDefinitionVOWithName("Meta info", db);
+			if(ctdVO != null)
+				metaInfoContentTypeId = ctdVO.getId();
+		}
+
+		if(HTMLTemplateContentTypeId == null)
+		{
+			ContentTypeDefinitionVO ctdVO = ContentTypeDefinitionController.getController().getContentTypeDefinitionVOWithName("HTMLTemplate", db);
+			if(ctdVO != null)
+				HTMLTemplateContentTypeId = ctdVO.getId();
+		}
+
+		if(PagePartTemplateContentTypeId == null)
+		{
+			ContentTypeDefinitionVO ctdVO = ContentTypeDefinitionController.getController().getContentTypeDefinitionVOWithName("PagePartTemplate", db);
+			if(ctdVO != null)
+				PagePartTemplateContentTypeId = ctdVO.getId();
+		}
+
+		if(PageTemplateContentTypeId == null)
+		{
+			ContentTypeDefinitionVO ctdVO = ContentTypeDefinitionController.getController().getContentTypeDefinitionVOWithName("PageTemplate", db);
+			if(ctdVO != null)
+				PageTemplateContentTypeId = ctdVO.getId();
+		}
+
+		if(content.getContentTypeDefinitionId() != null && (content.getContentTypeDefinitionId().equals(metaInfoContentTypeId) ||
+															content.getContentTypeDefinitionId().equals(HTMLTemplateContentTypeId) ||
+															content.getContentTypeDefinitionId().equals(PagePartTemplateContentTypeId) ||
+															content.getContentTypeDefinitionId().equals(PageTemplateContentTypeId)))
+		{
+			return true;
+		}
+
+		/*
 		if(content.getContentTypeDefinitionId() != null)
 		{
 			ContentTypeDefinitionVO ctdVO = ContentTypeDefinitionController.getController().getContentTypeDefinitionVOWithId(content.getContentTypeDefinitionId(), db);
@@ -2927,6 +2957,7 @@ public class ContentDeliveryController extends BaseDeliveryController
 					ctdVO.getName().equalsIgnoreCase("PageTemplate"))
 				return true;
 		}
+		*/
 
 		boolean validateOnDates = true;
 		String operatingMode = CmsPropertyHandler.getOperatingMode();
@@ -3019,6 +3050,8 @@ public class ContentDeliveryController extends BaseDeliveryController
 
 	private static Integer metaInfoContentTypeId = null;
 	private static Integer HTMLTemplateContentTypeId = null;
+	private static Integer PagePartTemplateContentTypeId = null;
+	private static Integer PageTemplateContentTypeId = null;
 	
 	public boolean isValidContent(InfoGluePrincipal infoGluePrincipal, ContentVO content, Integer languageId, boolean useLanguageFallBack, boolean includeFolders, Database db, DeliveryContext deliveryContext, boolean checkVersionExists, boolean checkAccessRights) throws Exception
 	{
@@ -3042,9 +3075,27 @@ public class ContentDeliveryController extends BaseDeliveryController
 				HTMLTemplateContentTypeId = ctdVO.getId();
 		}
 
+		if(PagePartTemplateContentTypeId == null)
+		{
+			ContentTypeDefinitionVO ctdVO = ContentTypeDefinitionController.getController().getContentTypeDefinitionVOWithName("PagePartTemplate", db);
+			if(ctdVO != null)
+				PagePartTemplateContentTypeId = ctdVO.getId();
+		}
+
+		if(PageTemplateContentTypeId == null)
+		{
+			ContentTypeDefinitionVO ctdVO = ContentTypeDefinitionController.getController().getContentTypeDefinitionVOWithName("PageTemplate", db);
+			if(ctdVO != null)
+				PageTemplateContentTypeId = ctdVO.getId();
+		}
+
 		if(content.getContentTypeDefinitionId() != null && (content.getContentTypeDefinitionId().equals(metaInfoContentTypeId) ||
-															content.getContentTypeDefinitionId().equals(HTMLTemplateContentTypeId)))
+															content.getContentTypeDefinitionId().equals(HTMLTemplateContentTypeId) ||
+															content.getContentTypeDefinitionId().equals(PagePartTemplateContentTypeId) ||
+															content.getContentTypeDefinitionId().equals(PageTemplateContentTypeId)))
+		{
 			return true;
+		}
 		/*
 		if(content.getContentTypeDefinitionId() != null && (content.getContentTypeDefinitionId().equals(metaInfoContentTypeId) ||
 															content.getContentTypeDefinitionId().equals(HTMLTemplateContentTypeId)))

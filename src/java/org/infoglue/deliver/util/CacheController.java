@@ -2142,7 +2142,7 @@ public class CacheController extends Thread
 						    				try
 						    				{
 										    	SiteNodeVO snVO = SiteNodeController.getController().getSiteNodeVOWithId(new Integer(entityId));
-										    	if(snVO.getParentSiteNodeId() != null)
+										    	if(snVO != null && snVO.getParentSiteNodeId() != null)
 										    	{
 										    		logger.info("Flushing " + "" + entityId);
 										    		logger.info("Flushing " + "siteNode_" + entityId);
