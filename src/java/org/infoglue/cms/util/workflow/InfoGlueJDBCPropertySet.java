@@ -219,8 +219,6 @@ public class InfoGlueJDBCPropertySet extends JDBCPropertySet
             ArrayList list = new ArrayList();
             ResultSet rs = ps.executeQuery();
             
-            t.printElapsedTime("Executing SQL i getKeys took");
-            
             int rows = 0;
             while (rs.next()) 
             {
@@ -348,7 +346,7 @@ public class InfoGlueJDBCPropertySet extends JDBCPropertySet
                     break;
 
                 default:
-                    logger.error("JDBCPropertySet doesn't support this type yet:" + key + ":" + typeId);
+                    logger.warn("JDBCPropertySet doesn't support this type yet:" + key + ":" + typeId);
                 	//throw new InvalidPropertyTypeException("JDBCPropertySet doesn't support this type yet:" + typeId);
                 }
 
@@ -1158,7 +1156,7 @@ public class InfoGlueJDBCPropertySet extends JDBCPropertySet
 	    		type10Map = null;
 			}
         }    
-        
+                
         instance.allKeysCachedType5 = false;
         instance.allKeysCachedType10 = false;
     }
