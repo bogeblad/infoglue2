@@ -1847,6 +1847,7 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 				}
 		    	catch(Exception e)
 				{
+		    		logger.error("Error getting template. Read more in warning log. Message: " + e.getMessage());
 					if(templateController.getComponentLogic() != null && templateController.getComponentLogic().getInfoGlueComponent() != null)
 						logger.warn("\nError on url: " + templateController.getOriginalFullURL() + "\n    ComponentName=[ " + templateController.getComponentLogic().getInfoGlueComponent().getName() + " ]\nAn error occurred trying to get attributeName=" + templateController.getTemplateAttributeName() + " on content " + contentId + "\nReason:" + e.getMessage());
 					else

@@ -124,6 +124,9 @@ public class ComponentController extends BaseController
 	
 	public void preCacheComponents(long delay, Database db) throws Exception
 	{
+		if(CmsPropertyHandler.getOperatingMode().equals("3"))
+			return;
+		
 		String cacheKey = "allTemplatesAndPagePartMap";
 		Map<String,List<ContentVO>> templatesAndPagePartMap = (Map<String,List<ContentVO>>)CacheController.getCachedObject("componentContentsCache", cacheKey);
 		logger.info("preCaching value:" + preCaching.get());
