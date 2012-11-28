@@ -2681,8 +2681,10 @@ public class ContentDeliveryController extends BaseDeliveryController
 		
 		if(contentId != null && contentId.intValue() > 0)
 		{
-			SmallContentImpl smallContent = (SmallContentImpl)getObjectWithId(SmallContentImpl.class, contentId, db);
-			contentTypeDefinitionVO = (ContentTypeDefinitionVO) getVOWithId(ContentTypeDefinitionImpl.class, smallContent.getContentTypeDefinitionId(), db);
+			ContentVO contentVO = getContentVO(db, contentId, null);
+			contentTypeDefinitionVO = ContentTypeDefinitionController.getController().getContentTypeDefinitionVOWithId(contentVO.getContentTypeDefinitionId(), db);
+			//SmallContentImpl smallContent = (SmallContentImpl)getObjectWithId(SmallContentImpl.class, contentId, db);
+			//contentTypeDefinitionVO = (ContentTypeDefinitionVO) getVOWithId(ContentTypeDefinitionImpl.class, smallContent.getContentTypeDefinitionId(), db);
 			//RequestAnalyser.getRequestAnalyser().registerComponentStatistics("getContentTypeDefinitionVO 1", t.getElapsedTimeNanos() / 1000);
 			/*
 			Content content = (Content)getObjectWithId(ContentImpl.class, contentId, db);
