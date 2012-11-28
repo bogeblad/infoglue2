@@ -2328,20 +2328,7 @@ public class ContentVersionController extends BaseController
 
         try
         {
-            OQLQuery oql = db.getOQLQuery("SELECT cv FROM org.infoglue.cms.entities.content.impl.simple.SmallestContentVersionImpl cv WHERE cv.contentId = $1 ORDER BY cv.contentVersionId desc");
-        	oql.bind(contentId);
-        	
-        	QueryResults results = oql.execute(Database.ReadOnly);
-			
-        	while (results.hasMore())
-            {
-				SmallestContentVersionImpl version = (SmallestContentVersionImpl)results.next();
-				contentVersionsIdList.add(version.getValueObject());
-            }
-            
-			results.close();
-			oql.close();
-
+        	contentVersionsIdList = getSmallestContentVersionVOList(contentId, db);
 			commitTransaction(db);
         }
         catch(Exception e)
@@ -2351,6 +2338,28 @@ public class ContentVersionController extends BaseController
             rollbackTransaction(db);
             throw new SystemException(e.getMessage());
         }
+        
+		return contentVersionsIdList;
+	}
+	
+	
+	public List<SmallestContentVersionVO> getSmallestContentVersionVOList(Integer contentId, Database db) throws SystemException, Exception
+	{
+		List<SmallestContentVersionVO> contentVersionsIdList = new ArrayList();
+
+        OQLQuery oql = db.getOQLQuery("SELECT cv FROM org.infoglue.cms.entities.content.impl.simple.SmallestContentVersionImpl cv WHERE cv.contentId = $1 ORDER BY cv.contentVersionId desc");
+    	oql.bind(contentId);
+    	
+    	QueryResults results = oql.execute(Database.ReadOnly);
+		
+    	while (results.hasMore())
+        {
+			SmallestContentVersionImpl version = (SmallestContentVersionImpl)results.next();
+			contentVersionsIdList.add(version.getValueObject());
+        }
+        
+		results.close();
+		oql.close();
         
 		return contentVersionsIdList;
 	}
