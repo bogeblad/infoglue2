@@ -222,7 +222,7 @@ public class WorkingPublicationThread extends Thread
 					    }
 				    	catch(Exception e2)
 				    	{
-				    		logger.error("Error handling access right update: " + e2.getMessage());
+				    		logger.warn("Error handling access right update: " + e2.getMessage());
 				    	}
 				    	
 				    	if(!accessRightsFlushed)

@@ -1976,7 +1976,7 @@ public class CacheController extends Thread
 									    	}
 							    		}
 							    		else
-							    			logger.warn("skipping clearing components as it seems stupid");
+							    			logger.info("skipping clearing components as it seems stupid");
 						    		}
 						    		catch (Exception e2) 
 						    		{
@@ -1989,7 +1989,7 @@ public class CacheController extends Thread
 						    		cacheInstance.clear();
 						    	}
 						    	else
-						    		logger.warn("skipping clearing this as it seems stupid");
+						    		logger.info("skipping clearing this as it seems stupid");
 						    }
 						}
 						else

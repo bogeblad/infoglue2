@@ -270,7 +270,7 @@ public class SelectiveLivePublicationThread extends PublicationThread
 						    }
 					    	catch(Exception e2)
 					    	{
-					    		logger.error("Error handling access right update: " + e2.getMessage());
+					    		logger.warn("Error handling access right update: " + e2.getMessage());
 					    	}
 					    }
 					    
