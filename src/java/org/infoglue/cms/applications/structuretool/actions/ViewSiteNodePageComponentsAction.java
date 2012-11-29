@@ -1872,10 +1872,10 @@ public class ViewSiteNodePageComponentsAction extends InfoGlueAbstractAction
 		{
 			e.printStackTrace();
 		}
-		
+
 		return bindings;
 	}
-			    
+
 	//Nice code
 	
 	/**
@@ -2633,7 +2633,7 @@ public class ViewSiteNodePageComponentsAction extends InfoGlueAbstractAction
 				if (end == path.length() -1)
 				{
 					// Since the path should end with the substring we want to remove we do not need to give an end id.
-					path = path.substring(0, start);
+					path = path.substring(0, start).trim();
 				}
 				else
 				{
