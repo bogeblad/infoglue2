@@ -388,7 +388,7 @@
 					var assetWrapper = document.createElement("div");
 					assetWrapper.setAttribute("class", "supplementingAssetContainer");
 
-					/* The followin divs will be floatted right so we add them in opposite order. */
+					/* The followin divs will be floated right so we add them in opposite order. */
 					var afterDelimiter = document.createElement("div");
 					afterDelimiter.appendChild(document.createTextNode("]"));
 					afterDelimiter.setAttribute("class", "assetKeyDelimiter");

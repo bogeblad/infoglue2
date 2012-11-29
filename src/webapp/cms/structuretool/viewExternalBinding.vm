@@ -40,6 +40,19 @@
 	
 	<script type="text/javascript">
 	<!-- 
+		function encodeXML(string) 
+		{
+			if(!string)
+				return "";
+			var LT = new RegExp("<", "g");  
+			var GT = new RegExp(">", "g");  
+			var AMP = new RegExp("&", "g");  
+			var APOS = new RegExp('\'', "g");  
+			var QUOT = new RegExp('"', "g");  
+
+			return string.replace(AMP,'&amp;').replace(LT,'&lt;').replace(GT,'&gt;').replace(APOS,'&apos;').replace(QUOT,'&quot;');
+		}
+	
 		var exp;
 	
 		/**
@@ -73,13 +86,17 @@
 			}
 
 
-			if(entityId == '' || entityId == '${select}')
+			if(!entityId || entityId == '' || entityId == '${select}')
 			{
 				alert("You must choose a content to add");
 			}
 			else
 			{
+				#if ( "$!supplementingEntityType" == "")
+				var binding = new Binding("External", entityId, path);
+				#else
 			    var binding = new Binding("External", entityId, path, {});
+			    #end
 				siteNodesVector.addElement(binding);
 				drawList();
 			}
@@ -109,7 +126,7 @@
 					supplementingEntityId = binding.getSupplementingBinding().entityId;
 					supplementingAssetKey = binding.getSupplementingBinding().assetKey;
 					path += " {" + (supplementingAssetKey ? supplementingAssetKey : "") + "}";
-					attributes = (supplementingEntityId ? "supplementingEntityId=\"" + supplementingEntityId + "\"" : "") + " " + (supplementingAssetKey ? "supplementingAssetKey=\"" + supplementingAssetKey + "\"" : "")
+					attributes = (supplementingEntityId ? "supplementingEntityId=\"" + supplementingEntityId + "\"" : "") + " " + (supplementingAssetKey ? "supplementingAssetKey=\"" + encodeXML(supplementingAssetKey) + "\"" : "")
 				}
 				qualifyerXML += "<" + entityName + " " + attributes + ">" + entityId + "</" + entityName + ">";
 			}
@@ -252,7 +269,8 @@
 			{
 				var supplementingBinding = {};
 				supplementingBinding.entityId = entityId;
-				supplementingBinding.assetKey = assetKey;
+				assetKey = assetKey.replace(/\+/g,' ');
+				supplementingBinding.assetKey = decodeURIComponent(assetKey);
 				selectedBinding.setSupplementingBinding(supplementingBinding);
 				drawList();
 				selectedBinding = null;
@@ -265,19 +283,17 @@
 		
 		function openAssetPage(url) {
 			console.log("About to open: " + url);
-			window.open('" + url + "','Assign asset','toolbar=no,status=yes,scrollbars=yes,location=no,menubar=no,directories=no,resizable=no,width=800,height=600,left=5,top=5');
+			window.open('" + url + "','','toolbar=no,status=yes,scrollbars=yes,location=no,menubar=no,directories=no,resizable=no,width=800,height=600,left=5,top=5');
 		}
 
 		function bindSupplementingBinding(index) 
 		{
 			selectedBinding = siteNodesVector.getElementAt(index);
-			console.log("binding", binding);
-			// ${componentEditorUrl}
 			var assignUrl = "ViewContentVersion!viewAssetBrowserForComponentBindingV3.action?languageId=$languageId&repositoryId=$repositoryId";
 			var supplementingBinding = selectedBinding.getSupplementingBinding();
 			assignUrl += "&assignedContentId=" + (supplementingBinding.entityId ? supplementingBinding.entityId : "") + "&assignedAssetKey=" + (supplementingBinding.assetKey ? encodeURIComponent(supplementingBinding.assetKey) : "");
 			
-			window.open(assignUrl,'Assign asset','toolbar=no,status=yes,scrollbars=yes,location=no,menubar=no,directories=no,resizable=no,width=800,height=600,left=5,top=5');
+			window.open(assignUrl,'','toolbar=no,status=yes,scrollbars=yes,location=no,menubar=no,directories=no,resizable=no,width=800,height=600,left=5,top=5');
 		}
 
 		/**
@@ -293,16 +309,20 @@
 			mytable = document.createElement("TABLE");
 			mytable.setAttribute("id", "bindings");
 			mytable.setAttribute("border", "0");
-			mytable.setAttribute("width", "100%");
+			mytable.setAttribute("style", "width:300px;");
 			mytable.setAttribute("cellpadding", "0");
 			mytable.setAttribute("cellspacing", "0");
 	        mytablebody = document.createElement("TBODY");
 
 			var myTR = document.createElement("TR");
 			var bindingTD = document.createElement("TD");
-			bindingTD.setAttribute("width", "100%");
+			bindingTD.setAttribute("style", "width:270px;");
 			var actionTD = document.createElement("TD");
-			actionTD.setAttribute("width", "100");
+			#if ( "$!supplementingEntityType" == "")
+			actionTD.setAttribute("style", "width:55px;");
+			#else
+			actionTD.setAttribute("style", "width:75px;");
+			#end
 						
 			myActionList = document.createElement("ul");
 			myActionList.setAttribute("id", "actions");
@@ -353,14 +373,13 @@
 
 				if (binding.getSupplementingBinding())
 				{
-					var assetDiv = document.createElement("div");
 					var supplementingBindingText;
+					var assetDiv = document.createElement("div");
 					if (binding.getSupplementingBinding().entityId)
 					{
-						var sb = binding.getSupplementingBinding()
-						assetDiv.setAttribute("title", sb.assetKey);
 						var sb = binding.getSupplementingBinding();
 						supplementingBindingText = document.createTextNode(sb.assetKey);
+						assetDiv.setAttribute("title", sb.assetKey);
 					}
 					else
 					{
@@ -376,7 +395,21 @@
 					
 					var assetWrapper = document.createElement("div");
 					assetWrapper.setAttribute("class", "supplementingAssetContainer");
-					assetWrapper.appendChild(supplementingA);
+
+					/* The followin divs will be floated right so we add them in opposite order. */
+					var afterDelimiter = document.createElement("div");
+					afterDelimiter.appendChild(document.createTextNode("]"));
+					afterDelimiter.setAttribute("class", "assetKeyDelimiter");
+					assetWrapper.appendChild(afterDelimiter);
+
+					//assetWrapper.appendChild(supplementingA);
+					assetWrapper.appendChild(assetDiv);
+
+					var beforeDelimiter = document.createElement("div");
+					beforeDelimiter.appendChild(document.createTextNode("["));
+					beforeDelimiter.setAttribute("class", "assetKeyDelimiter");
+					assetWrapper.appendChild(beforeDelimiter);
+
 					wrapperDiv.appendChild(assetWrapper);
 				}
 
@@ -477,9 +510,7 @@
 		{
 			#foreach($binding in $componentBindings)
 				#set( $path = "$formatter.cleanForJavascriptStrings($binding.path)" )
-				console.log("path: $path");
 				#set( $path = "$!this.cleanExternalBindingPath($path)" )
-				console.log("path2: $path");
 				#if( $binding.containsKey("supplementingBinding") )
 				var supplementingBinding = {"entityId":"$!binding.supplementingBinding.entityId","assetKey":"$!binding.supplementingBinding.assetKey"};
 				binding = new Binding("External", "$binding.entityId", "$path", supplementingBinding);
@@ -540,21 +571,20 @@
 			display: inline-block;
 			float: right;
 		}
-		#currentBindings div.supplementingAssetWrapper::before {
-			content: "[";
-		}
-		#currentBindings div.supplementingAssetWrapper::after {
-			content: "]";
-		}
 		#currentBindings div.supplementingBinding {
 			display: inline-block;
 			max-width: 90px;
 			text-overflow: ellipsis;
 			overflow: hidden;
+			height: 14px;
+			float: right;
 		}
 		#currentBindings div.supplementingAssetContainer {
 			width: 100px;
 			display: inline-block;
+		}
+		#currentBindings .assetKeyDelimiter {
+			float: right;
 		}
 	</style>
 </head>
