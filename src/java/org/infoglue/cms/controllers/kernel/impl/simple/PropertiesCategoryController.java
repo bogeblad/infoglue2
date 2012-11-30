@@ -20,7 +20,7 @@
  *
  * ===============================================================================
  *
- * $Id: PropertiesCategoryController.java,v 1.3.4.2 2012/11/13 14:09:10 mattias Exp $
+ * $Id: PropertiesCategoryController.java,v 1.3.4.3 2012/11/30 11:41:51 mattias Exp $
  */
 package org.infoglue.cms.controllers.kernel.impl.simple;
 
@@ -124,7 +124,7 @@ public class PropertiesCategoryController extends BaseController
 
     		results1.close();
     		oql1.close();
-    		t.printElapsedTime("Categories took");
+    		logger.warn("Categories took: " + t.getElapsedTime());
         	//getCastorCategory().setLevel(Level.DEBUG);
     		//getCastorJDOCategory().setLevel(Level.DEBUG);
         	
@@ -182,7 +182,7 @@ public class PropertiesCategoryController extends BaseController
     		
     		CacheController.cacheObject("propertiesCategoryCache", "allValuesCached", true);
     		
-    		t.printElapsedTime("PropCategories took");
+       		logger.warn("PropCategories took: " + t.getElapsedTime());
 			            
             commitTransaction(db);
         }

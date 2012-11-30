@@ -757,7 +757,6 @@ class SqlBuilder
 				String freeTextExpression = MessageFormat.format(getFREETEXT_EXPRESSION(), new Object[] { getBindingVariable() }); 
 				if(excludeCVAlias)
 					freeTextExpression = freeTextExpression.replaceAll(CONTENT_VERSION_ALIAS + "\\.", "");
-				System.out.println("freeTextExpression:" + freeTextExpression);
 				final String freeTextVariable   = MessageFormat.format(getFREETEXT_EXPRESSION_VARIABLE(), new Object[] { xmlAttribute, criterias.getFreetext() }); 
 			
 				bindings.add(freeTextVariable);

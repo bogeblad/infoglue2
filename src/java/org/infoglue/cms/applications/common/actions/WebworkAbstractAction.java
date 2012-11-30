@@ -346,6 +346,10 @@ public abstract class WebworkAbstractAction implements Action, ServletRequestAwa
 
    			RequestAnalyser.getRequestAnalyser().registerComponentStatistics("" + this.getUnencodedCurrentURI(), t.getElapsedTime());
     	} 
+    	catch (NoSuchMethodException e) 
+    	{
+    		logger.warn("No such method in:" + getRequest().getRequestURI() + ":" + e.getMessage());
+		}
     	catch(Exception ie) 
     	{
 			if(ie.getMessage() != null)

@@ -1494,7 +1494,7 @@ public class GroupPropertiesController extends BaseController
 					{
 						preCacheInProgress.set(false);
 					}
-					t.printElapsedTime("preCacheAllPropertiesCategoryVOList took");
+					logger.warn("preCacheAllPropertiesCategoryVOList took: " + t.getElapsedTime());
 				}
 				 
 				String key = "categoryVOList_" + attribute + "_" + GroupProperties.class.getName() + "_" + groupPropertyVO.getId();
