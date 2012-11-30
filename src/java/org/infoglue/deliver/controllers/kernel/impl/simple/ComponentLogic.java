@@ -671,7 +671,8 @@ public class ComponentLogic
 			}
 			catch (Exception e) 
 			{
-				logger.error("Error getting propertyValue on " + propertyName + ":" + e.getMessage(), e);
+				logger.error("Error getting propertyValue on " + propertyName + ":" + e.getMessage());
+				logger.warn("Error getting propertyValue on " + propertyName + ":" + e.getMessage(), e);
 			}
 		}
 				

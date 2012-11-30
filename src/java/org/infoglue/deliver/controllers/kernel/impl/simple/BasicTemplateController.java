@@ -6601,7 +6601,8 @@ public class BasicTemplateController implements TemplateController
 		}
 		catch(Exception e)
 		{
-			logger.error("An error occurred trying to do an include:" + e.getMessage(), e);
+			logger.error("An error occurred trying to do an include:" + e.getMessage());
+			logger.warn("An error occurred trying to do an include:" + e.getMessage(), e);
 		}
 			
 		return result;
@@ -6638,7 +6639,8 @@ public class BasicTemplateController implements TemplateController
 		}
 		catch(Exception e)
 		{
-			logger.error("An error occurred trying to do an include:" + e.getMessage(), e);
+			logger.error("An error occurred trying to do an include:" + e.getMessage());
+			logger.warn("An error occurred trying to do an include:" + e.getMessage(), e);
 		}
 			
 		return result;
@@ -6685,6 +6687,7 @@ public class BasicTemplateController implements TemplateController
 		catch(Exception e)
 		{
 			logger.error("An error occurred trying to do an include:" + e.getMessage());
+			logger.warn("An error occurred trying to do an include:" + e.getMessage(), e);
 			logger.error("Problem URL:" + getOriginalFullURL());
 		}
 		finally
@@ -6759,7 +6762,8 @@ public class BasicTemplateController implements TemplateController
 			}
 			catch(Exception e)
 			{
-				logger.error("An error occurred trying to do an include:" + e.getMessage(), e);
+				logger.error("An error occurred trying to do an include:" + e.getMessage());
+				logger.warn("An error occurred trying to do an include:" + e.getMessage(), e);
 			}
 		}
 		

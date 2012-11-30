@@ -33,6 +33,7 @@ import org.apache.log4j.Logger;
 import org.exolab.castor.jdo.Database;
 import org.exolab.castor.jdo.OQLQuery;
 import org.exolab.castor.jdo.QueryResults;
+import org.infoglue.cms.controllers.kernel.impl.simple.LanguageController;
 import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeController;
 import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeVersionController;
 import org.infoglue.cms.entities.content.ContentVO;
@@ -839,6 +840,11 @@ public class LanguageDeliveryController extends BaseDeliveryController
     	//SiteNode siteNode = (SiteNode)getObjectWithId(SiteNodeImpl.class, siteNodeId, db);
 		SiteNodeVO siteNodeVO = NodeDeliveryController.getNodeDeliveryController(null,null,null).getSiteNodeVO(db, siteNodeId);
         
+		if(siteNodeVO == null || siteNodeVO.getRepositoryId() == null)
+		{
+			logger.error("The sitenode " + siteNodeId + " was requested but either did not exist or had no repo:" + siteNodeVO);
+			return LanguageController.getController().getLanguageVOList(db);
+		}
 		List repositoryLanguages = getAvailableLanguagesForRepository(db, siteNodeVO.getRepositoryId());
 		
 		Iterator languageIterator = repositoryLanguages.iterator();
