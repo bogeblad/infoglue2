@@ -195,13 +195,15 @@ public class ExtendedSearchController extends BaseController
 		    if(logger.isDebugEnabled())
 		    	logger.debug("sql:" + sqlBuilder.getSQL());
 		    
+		    System.out.println("SQL:" + sqlBuilder.getSQL());
+		    
 			final OQLQuery oql = db.getOQLQuery(sqlBuilder.getSQL());
 			for(Iterator i=sqlBuilder.getBindings().iterator(); i.hasNext(); )
 			{
 			    Object o = i.next();
 			    if(logger.isDebugEnabled())
 			    	logger.debug("o:" + o.toString());
-			    //System.out.println("o:" + o.toString());
+			    System.out.println("o:" + o.toString());
 			    oql.bind(o);
 			}
 			
@@ -421,11 +423,13 @@ class SqlBuilder
 			if(criterias.hasFreetextCritera() && criterias.getMaximumNumberOfItems() != null)
 				andTerm = " AND ";
 			
+			String baseSQL = "CALL SQL select ContId,name,publishDateTime,expireDateTime,isBranch,isProtected,creator,contentTypeDefId,repositoryId,parentContId from (" + SPACE + (ExtendedSearchController.useFull() ? generateSelectClause() : generateSelectClauseShort(true)) + SPACE + generateFromClause() + SPACE + generateWhereClause(false) + SPACE + (ExtendedSearchController.useFull() ? generateOrderByDateClause() : generateOrderByDateClauseShort()) + ") contRes ";
+			
 			String whereClause = "" + (criterias.hasFreetextCritera() ? getFreetextWhereClause(true) : "") + andTerm + (criterias.getMaximumNumberOfItems() != null ? " ROWNUM <= " + criterias.getMaximumNumberOfItems() + "" : "");
 			if(!whereClause.trim().equals(""))
 				whereClause = " WHERE " + whereClause;
 			
-			return "CALL SQL select ContId,name,publishDateTime,expireDateTime,isBranch,isProtected,creator,contentTypeDefId,repositoryId,parentContId from (" + SPACE + (ExtendedSearchController.useFull() ? generateSelectClause() : generateSelectClauseShort(true)) + SPACE + generateFromClause() + SPACE + generateWhereClause(false) + SPACE + (ExtendedSearchController.useFull() ? generateOrderByDateClause() : generateOrderByDateClauseShort()) + ") contRes " + whereClause + " ORDER BY contId AS " + SmallContentImpl.class.getName();
+			return baseSQL + whereClause + " ORDER BY contId AS " + SmallContentImpl.class.getName();
 		}
 		//return "CALL SQL select ContId,name,publishDateTime,expireDateTime,isBranch,isProtected,creator,contentTypeDefId,repositoryId,parentContId from (" + SPACE + (ExtendedSearchController.useFull() ? generateSelectClause() : generateSelectClauseShort()) + SPACE + generateFromClause() + SPACE + generateWhereClause(false) + SPACE + (ExtendedSearchController.useFull() ? generateOrderByDateClause() : generateOrderByDateClauseShort()) + generateLimitClause() + SPACE + ") contRes WHERE verValue like '%minne%' AND ROWNUM <= 50 ORDER BY contId AS " + SmallContentImpl.class.getName();
 	}
@@ -453,11 +457,13 @@ class SqlBuilder
 			if(criterias.hasFreetextCritera() && criterias.getMaximumNumberOfItems() != null)
 				andTerm = " AND ";
 			
+			String baseSQL = "CALL SQL select ContId,name,publishDateTime,expireDateTime,isBranch,isProtected,creator,contentTypeDefId,repositoryId,parentContId from (" + SPACE + (ExtendedSearchController.useFull() ? generateSelectClause() : generateSelectClauseShort(true)) + SPACE + generateFromClause() + SPACE + generateWhereClause(false) + SPACE + ") contRes ";
+
 			String whereClause = "" + (criterias.hasFreetextCritera() ? getFreetextWhereClause(true) : "") + andTerm + (criterias.getMaximumNumberOfItems() != null ? " ROWNUM <= " + criterias.getMaximumNumberOfItems() + "" : "");
 			if(!whereClause.trim().equals(""))
 				whereClause = " WHERE " + whereClause;
 
-			return "CALL SQL select ContId,name,publishDateTime,expireDateTime,isBranch,isProtected,creator,contentTypeDefId,repositoryId,parentContId from (" + SPACE + (ExtendedSearchController.useFull() ? generateSelectClause() : generateSelectClauseShort(true)) + SPACE + generateFromClause() + SPACE + generateWhereClause(false) + SPACE + ") contRes " + whereClause + " ORDER BY contId AS " + SmallContentImpl.class.getName();
+			return baseSQL + whereClause + " ORDER BY contId AS " + SmallContentImpl.class.getName();
 		}
 	}
 	
