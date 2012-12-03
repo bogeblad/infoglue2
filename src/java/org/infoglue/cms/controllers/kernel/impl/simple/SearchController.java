@@ -216,6 +216,23 @@ public class SearchController extends BaseController
    			return getContentVersionVOListFromLucene(repositoryId, searchString, maxRows, userName, languageId, contentTypeDefinitionId, caseSensitive, stateId, searchAssets);
    	}
    	
+   	/**
+   	 * 
+   	 * @param repositoryId
+   	 * @param searchString
+   	 * @param maxRows
+   	 * @param userName
+   	 * @param languageId
+   	 * @param contentTypeDefinitionId
+   	 * @param caseSensitive
+   	 * @param stateId
+   	 * @param searchAssets
+   	 * @param modifiedDateTimeStart
+   	 * @param modifiedDateTimeEnd The upper bound for the content version's modified date. This value is inclusive. The time-part of the Date object is ignored and the entire day is included.
+   	 * @return
+   	 * @throws SystemException
+   	 * @throws Bug
+   	 */
    	private List<ContentVersionVO> getContentVersionVOListFromCastor(Integer[] repositoryId, String searchString, int maxRows, String userName, Integer languageId, Integer[] contentTypeDefinitionId, Integer caseSensitive, Integer stateId, boolean searchAssets, Date modifiedDateTimeStart, Date modifiedDateTimeEnd) throws SystemException, Bug
    	{
    		//System.out.println("userName:" + userName);
@@ -323,7 +340,7 @@ public class SearchController extends BaseController
 				{
 					sb.append("    AND versionModifier = $" + index);
 					arguments.add(userName);
-					index++;				
+					index++;
 				}
 				
 				sb.append("    ) ");
@@ -410,10 +427,13 @@ public class SearchController extends BaseController
 				}
 				if(modifiedDateTimeEnd != null)
 				{
+					VisualFormatter formatter = new VisualFormatter();
+					String dateString = formatter.formatDate(modifiedDateTimeEnd, "yyyy-MM-dd 23:59:59");
 					sb.append("    AND cv.modifiedDateTime < $" + index);
-					arguments.add(modifiedDateTimeEnd);
-					index++;				
+					arguments.add(dateString);
+					index++;
 				}
+
 				//System.out.println("userName:" + userName);
 				if(userName != null && !userName.equals(""))
 				{
