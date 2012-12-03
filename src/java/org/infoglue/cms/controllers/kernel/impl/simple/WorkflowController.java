@@ -74,7 +74,7 @@ public class WorkflowController extends BaseController
 	{
 		try
 		{
-			System.out.println("Oh yes....");
+			logger.info("Configuring hibernate workflow store");
 			Configuration config = new Configuration();
 			config.setProperty("hibernate.cglib.use_reflection_optimizer", "false");
 			config.configure();
