@@ -245,35 +245,35 @@ public class ImportContentAction extends InfoGlueAbstractAction
 		}
 	}
 
-	private void importCategories(Collection categories, Category parentCategory, Map categoryIdMap, Database db) throws SystemException
+	private void importCategories(Collection categories, CategoryVO parentCategory, Map categoryIdMap, Database db) throws SystemException
 	{
 		logger.info("We want to create a list of categories if not existing under the parent category " + parentCategory);
 		Iterator categoryIterator = categories.iterator();
 		while(categoryIterator.hasNext())
 		{
 			CategoryVO categoryVO = (CategoryVO)categoryIterator.next();
-			Category newParentCategory = null;
+			CategoryVO newParentCategoryVO = null;
 			
-			List existingCategories = null;
+			List<CategoryVO> existingCategories = null;
 			if(parentCategory != null)
 				existingCategories = CategoryController.getController().findByParent(parentCategory.getCategoryId(), db);
 			else
-				existingCategories = CategoryController.getController().findRootCategories(db);
+				existingCategories = CategoryController.getController().findRootCategoryVOList(db);
 				
-			Iterator existingCategoriesIterator = existingCategories.iterator();
+			Iterator<CategoryVO> existingCategoriesIterator = existingCategories.iterator();
 			while(existingCategoriesIterator.hasNext())
 			{
-				Category existingCategory = (Category)existingCategoriesIterator.next();
+				CategoryVO existingCategory = existingCategoriesIterator.next();
 				logger.info("existingCategory:" + existingCategory.getName());
 				if(existingCategory.getName().equals(categoryVO.getName()))
 				{
 					logger.info("Existed... setting " + existingCategory.getName() + " to new parent category.");
-					newParentCategory = existingCategory;
+					newParentCategoryVO = existingCategory;
 					break;
 				}
 			}
 
-			if(newParentCategory == null)
+			if(newParentCategoryVO == null)
 			{
 				logger.info("No existing category - we create it.");
 				Integer oldId = categoryVO.getId();
@@ -285,14 +285,14 @@ public class ImportContentAction extends InfoGlueAbstractAction
 					
 				Category newCategory = CategoryController.getController().save(categoryVO, db);
 				categoryIdMap.put(oldId, newCategory.getCategoryId());
-				newParentCategory = newCategory;
+				newParentCategoryVO = newCategory.getValueObject();
 			}
 			else
 			{
-				categoryIdMap.put(categoryVO.getId(), newParentCategory.getCategoryId());
+				categoryIdMap.put(categoryVO.getId(), newParentCategoryVO.getCategoryId());
 			}
 				
-			importCategories(categoryVO.getChildren(), newParentCategory, categoryIdMap, db);
+			importCategories(categoryVO.getChildren(), newParentCategoryVO, categoryIdMap, db);
 		}
 	}
 	
@@ -593,7 +593,7 @@ public class ImportContentAction extends InfoGlueAbstractAction
 			}
 		}
 		
-		Collections.sort((List)contentVersions, new ReflectionComparator("id"));
+		//Collections.sort((List)contentVersions, new ReflectionComparator("id"));
 
 		if(logger.isInfoEnabled())
 		{

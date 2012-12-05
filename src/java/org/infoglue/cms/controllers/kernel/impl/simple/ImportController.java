@@ -350,25 +350,25 @@ public class ImportController extends BaseController
 		}
 	}
 
-	private void importCategories(Collection categories, Category parentCategory, Map categoryIdMap, Database db) throws SystemException
+	private void importCategories(Collection categories, CategoryVO parentCategory, Map categoryIdMap, Database db) throws SystemException
 	{
 		logger.info("We want to create a list of categories if not existing under the parent category " + parentCategory);
 		Iterator categoryIterator = categories.iterator();
 		while(categoryIterator.hasNext())
 		{
 			CategoryVO categoryVO = (CategoryVO)categoryIterator.next();
-			Category newParentCategory = null;
+			CategoryVO newParentCategory = null;
 			
-			List existingCategories = null;
+			List<CategoryVO> existingCategories = null;
 			if(parentCategory != null)
 				existingCategories = CategoryController.getController().findByParent(parentCategory.getCategoryId(), db);
 			else
-				existingCategories = CategoryController.getController().findRootCategories(db);
+				existingCategories = CategoryController.getController().findRootCategoryVOList(db);
 				
-			Iterator existingCategoriesIterator = existingCategories.iterator();
+			Iterator<CategoryVO> existingCategoriesIterator = existingCategories.iterator();
 			while(existingCategoriesIterator.hasNext())
 			{
-				Category existingCategory = (Category)existingCategoriesIterator.next();
+				CategoryVO existingCategory = existingCategoriesIterator.next();
 				logger.info("existingCategory:" + existingCategory.getName());
 				if(existingCategory.getName().equals(categoryVO.getName()))
 				{
@@ -390,7 +390,7 @@ public class ImportController extends BaseController
 					
 				Category newCategory = CategoryController.getController().save(categoryVO, db);
 				categoryIdMap.put(oldId, newCategory.getCategoryId());
-				newParentCategory = newCategory;
+				newParentCategory = newCategory.getValueObject();
 			}
 			else
 			{
