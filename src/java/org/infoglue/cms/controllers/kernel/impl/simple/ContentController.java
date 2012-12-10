@@ -98,6 +98,33 @@ public class ContentController extends BaseController
 		return new ContentController();
 	}
 
+   	/**
+	 * This method returns selected active content versions.
+	 */
+    
+	public List<Content> getContentList(Integer repositoryId, Integer minimumId, Integer limit, Database db) throws SystemException, Bug, Exception
+	{
+		List<Content> contentList = new ArrayList<Content>();
+
+        OQLQuery oql = db.getOQLQuery( "SELECT c FROM org.infoglue.cms.entities.content.impl.simple.SmallContentImpl c WHERE c.repositoryId = $1 AND c.contentId > $2 ORDER BY c.contentId LIMIT $3");
+    	oql.bind(repositoryId);
+		oql.bind(minimumId);
+		oql.bind(limit);
+    	
+    	QueryResults results = oql.execute(Database.ReadOnly);
+		while (results.hasMore()) 
+        {
+			Content content = (Content)results.next();
+			contentList.add(content);
+        }
+		
+		results.close();
+		oql.close();
+
+		return contentList;
+	}
+
+	
 	public ContentVO getContentVOWithId(Integer contentId) throws SystemException, Bug
     {
     	return (ContentVO) getVOWithId(SmallContentImpl.class, contentId);
@@ -2359,6 +2386,42 @@ public class ContentController extends BaseController
 		if (includeRepositoryName)
 		{
 			RepositoryVO repositoryVO = RepositoryController.getController().getRepositoryVOWithId(contentVO.getRepositoryId());
+			if(repositoryVO != null)
+				sb.insert(0, repositoryVO.getName() + " - /");
+		}
+		
+		return sb.toString();
+	}
+	
+	/**
+	 * Returns the path to, and including, the supplied content.
+	 * 
+	 * @param contentId the content to 
+	 * 
+	 * @return String the path to, and including, this content "library/library/..."
+	 * 
+	 */
+	public String getContentPath(Integer contentId, boolean includeRootContent, boolean includeRepositoryName, Database db) throws ConstraintException, SystemException, Bug, Exception
+	{
+		StringBuffer sb = new StringBuffer();
+
+		ContentVO contentVO = ContentController.getContentController().getContentVOWithId(contentId, db);
+
+		sb.insert(0, contentVO.getName());
+
+		while (contentVO.getParentContentId() != null)
+		{
+			contentVO = ContentController.getContentController().getContentVOWithId(contentVO.getParentContentId(), db);
+
+			if (includeRootContent || contentVO.getParentContentId() != null)
+			{
+				sb.insert(0, contentVO.getName() + "/");
+			}
+		}
+
+		if (includeRepositoryName)
+		{
+			RepositoryVO repositoryVO = RepositoryController.getController().getRepositoryVOWithId(contentVO.getRepositoryId(), db);
 			if(repositoryVO != null)
 				sb.insert(0, repositoryVO.getName() + " - /");
 		}

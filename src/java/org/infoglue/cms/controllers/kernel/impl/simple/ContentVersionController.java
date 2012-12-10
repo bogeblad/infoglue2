@@ -53,6 +53,7 @@ import org.infoglue.cms.entities.content.DigitalAssetVO;
 import org.infoglue.cms.entities.content.SmallestContentVersionVO;
 import org.infoglue.cms.entities.content.impl.simple.ContentImpl;
 import org.infoglue.cms.entities.content.impl.simple.ContentVersionImpl;
+import org.infoglue.cms.entities.content.impl.simple.ExportContentVersionImpl;
 import org.infoglue.cms.entities.content.impl.simple.MediumDigitalAssetImpl;
 import org.infoglue.cms.entities.content.impl.simple.SmallContentVersionImpl;
 import org.infoglue.cms.entities.content.impl.simple.SmallestContentVersionImpl;
@@ -697,7 +698,7 @@ public class ContentVersionController extends BaseController
 	{
 		List<ContentVersionVO> contentVersionVOList = new ArrayList<ContentVersionVO>();
 
-        OQLQuery oql = db.getOQLQuery( "SELECT cv FROM org.infoglue.cms.entities.content.impl.simple.SmallContentVersionImpl cv WHERE cv.contentId = $1 AND cv.isActive = $2 ORDER BY cv.contentVersionId desc");
+        OQLQuery oql = db.getOQLQuery( "SELECT cv FROM org.infoglue.cms.entities.content.impl.simple.SmallContentVersionImpl cv WHERE cv.contentId = $1 AND cv.isActive = $2 ORDER BY cv.contentVersionId");
     	oql.bind(contentId);
 		oql.bind(true);
     	
@@ -714,6 +715,33 @@ public class ContentVersionController extends BaseController
 		return contentVersionVOList;
 	}
 
+   	/**
+	 * This method returns selected active content versions.
+	 */
+    
+	public List<ExportContentVersionImpl> getContentVersionList(Integer repositoryId, Integer minimumId, Integer limit, Boolean onlyPublishedVersions, Database db) throws SystemException, Bug, Exception
+	{
+		List<ExportContentVersionImpl> contentVersionList = new ArrayList<ExportContentVersionImpl>();
+
+        OQLQuery oql = db.getOQLQuery( "SELECT cv FROM org.infoglue.cms.entities.content.impl.simple.ExportContentVersionImpl cv WHERE cv.owningContent.repositoryId = $1 AND cv.isActive = $2 AND cv.contentVersionId > $3 " + (onlyPublishedVersions ? " AND cv.stateId = 3 " : "") + " ORDER BY cv.contentVersionId LIMIT $4");
+    	oql.bind(repositoryId);
+		oql.bind(true);
+		oql.bind(minimumId);
+		oql.bind(limit);
+    	
+    	QueryResults results = oql.execute(Database.ReadOnly);
+		while (results.hasMore()) 
+        {
+			ExportContentVersionImpl contentVersion = (ExportContentVersionImpl)results.next();
+			contentVersionList.add(contentVersion);
+        }
+		
+		results.close();
+		oql.close();
+
+		return contentVersionList;
+	}
+	
    	/**
 	 * This method returns the latest active content version.
 	 */

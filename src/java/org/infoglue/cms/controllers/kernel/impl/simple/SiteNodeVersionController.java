@@ -77,6 +77,33 @@ public class SiteNodeVersionController extends BaseController
 		return new SiteNodeVersionController();
 	}
 	
+   	/**
+	 * This method returns selected active content versions.
+	 */
+    
+	public List<SiteNodeVersion> getSiteNodeVersionList(Integer repositoryId, Integer minimumId, Integer limit, Boolean onlyPublishedVersions, Database db) throws SystemException, Bug, Exception
+	{
+		List<SiteNodeVersion> siteNodeVersionList = new ArrayList<SiteNodeVersion>();
+
+        OQLQuery oql = db.getOQLQuery( "SELECT snv FROM org.infoglue.cms.entities.structure.impl.simple.SiteNodeVersionImpl snv WHERE snv.owningSiteNode.repository = $1 AND snv.isActive = $2 AND snv.siteNodeVersionId > $3 " + (onlyPublishedVersions ? " AND snv.stateId = 3 " : "") + " ORDER BY snv.siteNodeVersionId LIMIT $4");
+    	oql.bind(repositoryId);
+		oql.bind(true);
+		oql.bind(minimumId);
+		oql.bind(limit);
+    	
+    	QueryResults results = oql.execute(Database.ReadOnly);
+		while (results.hasMore()) 
+        {
+			SiteNodeVersion siteNodeVersion = (SiteNodeVersion)results.next();
+			siteNodeVersionList.add(siteNodeVersion);
+        }
+		
+		results.close();
+		oql.close();
+
+		return siteNodeVersionList;
+	}
+
     public SiteNodeVersionVO getFullSiteNodeVersionVOWithId(Integer siteNodeVersionId) throws SystemException, Bug
     {
 		return (SiteNodeVersionVO) getVOWithId(SiteNodeVersionImpl.class, siteNodeVersionId);

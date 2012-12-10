@@ -197,5 +197,20 @@ public class SiteNodeControllerProxy extends SiteNodeController
 		moveSiteNode(siteNodeVO, newParentSiteNodeId, infogluePrincipal);
 	}   
 	
+	/**
+	 * This method moves a content after first checking that the user has rights to edit it.
+	 */
+
+	public void acCopySiteNode(InfoGluePrincipal infogluePrincipal, SiteNodeVO siteNodeVO, Integer newParentSiteNodeId) throws ConstraintException, SystemException, Bug, Exception
+	{
+		Map hashMap = new HashMap();
+		
+		hashMap = new HashMap();
+		hashMap.put("siteNodeId", newParentSiteNodeId);
+
+		intercept(hashMap, "SiteNodeVersion.CreateSiteNode", infogluePrincipal);
+
+		copySiteNode(siteNodeVO, newParentSiteNodeId, infogluePrincipal);
+	}   
 
 }
