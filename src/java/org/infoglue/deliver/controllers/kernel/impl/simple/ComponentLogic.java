@@ -64,6 +64,7 @@ import org.infoglue.deliver.applications.databeans.Slot;
 import org.infoglue.deliver.applications.databeans.SupplementedComponentBinding;
 import org.infoglue.deliver.applications.databeans.WebPage;
 import org.infoglue.deliver.util.CacheController;
+import org.infoglue.deliver.util.RequestAnalyser;
 import org.infoglue.deliver.util.Support;
 import org.infoglue.deliver.util.Timer;
 import org.w3c.dom.Document;
@@ -2166,7 +2167,6 @@ public class ComponentLogic
 			if(inheritedPageComponentsXML != null && inheritedPageComponentsXML.length() > 0)
 			{
 				property = parseProperties(inheritedPageComponentsXML, componentId, propertyName, siteNodeId, languageId);
-				
 				int propertyHashCode = getPropertyAsStringHashCode(inheritedPageComponentsXML, componentId, propertyName, siteNodeId, languageId);
 				//System.out.println("propertyHashCode:" + propertyHashCode);
 				SiteNodeVO siteNodeVO = templateController.getSiteNode(siteNodeId);
@@ -2271,17 +2271,21 @@ public class ComponentLogic
 	
 	private Map parseProperties(String inheritedPageComponentsXML, Integer componentId, String propertyName, Integer siteNodeId, Integer languageId) throws Exception
 	{
+		Map property = null;
+		
 		if(parser == null)
 		{
 			parser = CmsPropertyHandler.getPropertiesParser();
 		}
 		
 		if(parser != null && parser.equalsIgnoreCase("xalan"))
-			return parsePropertiesWithXalan(inheritedPageComponentsXML, componentId, propertyName, siteNodeId, languageId);
+			property = parsePropertiesWithXalan(inheritedPageComponentsXML, componentId, propertyName, siteNodeId, languageId);
 		else if(parser != null && parser.equalsIgnoreCase("dom4j"))
-			return parsePropertiesWithDOM4J(inheritedPageComponentsXML, componentId, propertyName, siteNodeId, languageId);
+			property = parsePropertiesWithDOM4J(inheritedPageComponentsXML, componentId, propertyName, siteNodeId, languageId);
 		else
-			return parsePropertiesWithXPP3(inheritedPageComponentsXML, componentId, propertyName, siteNodeId, languageId);
+			property = parsePropertiesWithXPP3(inheritedPageComponentsXML, componentId, propertyName, siteNodeId, languageId);
+
+		return property;
 	}
 
 	private Map parsePropertiesWithXalan(String inheritedPageComponentsXML, Integer componentId, String propertyName, Integer siteNodeId, Integer languageId) throws Exception
@@ -2523,6 +2527,9 @@ public class ComponentLogic
 	
 	private Map parsePropertiesWithXPP3(String inheritedPageComponentsXML, Integer componentId, String propertyName, Integer siteNodeId, Integer languageId) throws Exception
 	{
+		if(inheritedPageComponentsXML.indexOf(propertyName) == -1)
+			return null;
+		
 		Map property = null;
 		
         XmlInfosetBuilder builder = XmlInfosetBuilder.newInstance();
