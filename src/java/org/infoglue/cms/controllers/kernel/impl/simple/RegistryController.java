@@ -526,6 +526,42 @@ public class RegistryController extends BaseController
 	 * This method fetches all inline links from any text.
 	 */
 	
+	public void getInlineSiteNodes(String versionValue, Set<Integer> boundSiteNodeIds, Set<Integer> boundContentIds) throws ConstraintException, SystemException, Exception
+	{
+	    Pattern pattern = Pattern.compile("\\$templateLogic\\.getPageUrl\\(.*?\\)");
+	    Matcher matcher = pattern.matcher(versionValue);
+	    while ( matcher.find() ) 
+	    { 
+	        String match = matcher.group();
+	        logger.info("Adding match to registry after some processing: " + match);
+	        Integer siteNodeId;
+	        
+	        int siteNodeStartIndex = match.indexOf("(");
+	        int siteNodeEndIndex = match.indexOf(",");
+	        if(siteNodeStartIndex > 0 && siteNodeEndIndex > 0 && siteNodeEndIndex > siteNodeStartIndex)
+	        {
+	            String siteNodeIdString = match.substring(siteNodeStartIndex + 1, siteNodeEndIndex); 
+	            try
+	            {
+		            if(siteNodeIdString.indexOf("templateLogic.siteNodeId") == -1)
+		            {
+		            	siteNodeId = new Integer(siteNodeIdString);
+			            logger.info("siteNodeId:" + siteNodeId);
+			            boundSiteNodeIds.add(siteNodeId);
+		            }
+	            }
+	            catch(Exception e)
+	            {
+	                logger.warn("Tried to register inline sitenodes with exception as result:" + e.getMessage(), e);
+	            }
+	        }
+	    }
+	}
+
+	/**
+	 * This method fetches all inline links from any text.
+	 */
+	
 	public void getInlineContents(ContentVersion contentVersion, String versionValue, Database db) throws ConstraintException, SystemException, Exception
 	{
 	    Pattern pattern = Pattern.compile("\\$templateLogic\\.getInlineAssetUrl\\(.*?\\)");
@@ -561,6 +597,35 @@ public class RegistryController extends BaseController
 	    }
 	}	
 
+	/**
+	 * This method fetches all inline links from any text.
+	 */
+	
+	public void getInlineContents(String versionValue, Set<Integer> boundSiteNodeIds, Set<Integer> boundContentIds) throws ConstraintException, SystemException, Exception
+	{
+	    Pattern pattern = Pattern.compile("\\$templateLogic\\.getInlineAssetUrl\\(.*?\\)");
+	    Matcher matcher = pattern.matcher(versionValue);
+	    while ( matcher.find() ) 
+	    { 
+	        String match = matcher.group();
+	        logger.info("Adding match to registry after some processing: " + match);
+	        Integer contentId;
+	        
+	        int contentStartIndex = match.indexOf("(");
+	        int contentEndIndex = match.indexOf(",");
+	        if(contentStartIndex > 0 && contentEndIndex > 0 && contentEndIndex > contentStartIndex)
+	        {
+	        	String contentIdString = match.substring(contentStartIndex + 1, contentEndIndex);
+	            if(contentIdString != null && !contentIdString.equals(""))
+	            {
+		        	contentId = new Integer(contentIdString);
+		            logger.info("contentId:" + contentId);
+		            boundContentIds.add(contentId);
+	            }
+	        }
+	    }
+	}	
+	
 	/**
 	 * This method fetches all inline links from any text.
 	 */
@@ -678,6 +743,36 @@ public class RegistryController extends BaseController
 	        }
 	    }
 	}
+	
+	/**
+	 * This method fetches all components and adds entries to the registry.
+	 */
+	
+	public Set<Integer> getComponents(String versionValue) throws Exception
+	{
+	    Set foundComponents = new HashSet();
+	    
+	    Pattern pattern = Pattern.compile("contentId=\".*?\"");
+	    Matcher matcher = pattern.matcher(versionValue);
+	    while ( matcher.find() ) 
+	    { 
+	        String match = matcher.group();
+	        logger.info("Adding match to registry after some processing: " + match);
+	        Integer contentId;
+	        
+	        int contentStartIndex = match.indexOf("\"");
+	        int contentEndIndex = match.lastIndexOf("\"");
+	        if(contentStartIndex > 0 && contentEndIndex > 0 && contentEndIndex > contentStartIndex)
+	        {
+	            contentId = new Integer(match.substring(contentStartIndex + 1, contentEndIndex));
+	            logger.info("contentId:" + contentId);
+	            
+	            foundComponents.add(contentId);
+	        }
+	    }
+	    
+	    return foundComponents;
+	}
 
 	/**
 	 * This method fetches all components and adds entries to the registry.
@@ -734,6 +829,48 @@ public class RegistryController extends BaseController
 
 			            foundComponents.add(key);
 		            }
+		        }
+	        }
+	    }
+	}
+	
+	/**
+	 * This method fetches all components and adds entries to the registry.
+	 */
+
+	public void getComponentBindings(String versionValue, Set<Integer> boundSiteNodeIds, Set<Integer> boundContentIds) throws Exception
+	{
+	    Pattern pattern = Pattern.compile("<binding.*?entity=\".*?\" entityId=\".*?\">");
+	    Matcher matcher = pattern.matcher(versionValue);
+	    while ( matcher.find() ) 
+	    { 
+	        String match = matcher.group();
+	        logger.info("Adding match to registry after some processing: " + match);
+	        String entityName;
+	        String entityId;
+	        
+	        int entityNameStartIndex = match.indexOf("entity=\"");
+	        int entityNameEndIndex = match.indexOf("\"", entityNameStartIndex + 8);
+	        logger.info("entityNameStartIndex:" + entityNameStartIndex);
+	        logger.info("entityNameEndIndex:" + entityNameEndIndex);
+	        if(entityNameStartIndex > 0 && entityNameEndIndex > 0 && entityNameEndIndex > entityNameStartIndex)
+	        {
+	            entityName = match.substring(entityNameStartIndex + 8, entityNameEndIndex);
+	            logger.info("entityName:" + entityName);
+
+		        int entityIdStartIndex = match.indexOf("entityId=\"", entityNameEndIndex + 1);
+		        int entityIdEndIndex = match.indexOf("\"", entityIdStartIndex + 10);
+		        logger.info("entityIdStartIndex:" + entityIdStartIndex);
+		        logger.info("entityIdEndIndex:" + entityIdEndIndex);
+		        if(entityIdStartIndex > 0 && entityIdEndIndex > 0 && entityIdEndIndex > entityIdStartIndex)
+		        {
+		            entityId = match.substring(entityIdStartIndex + 10, entityIdEndIndex);
+		            logger.info("entityId:" + entityId);
+
+		            if(entityName.indexOf("Content") > -1)
+		            	boundContentIds.add(new Integer(entityId));
+		            else
+		            	boundSiteNodeIds.add(new Integer(entityId));
 		        }
 	        }
 	    }
