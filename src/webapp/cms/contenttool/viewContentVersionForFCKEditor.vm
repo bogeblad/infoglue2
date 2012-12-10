@@ -1181,8 +1181,10 @@
 			#foreach($attribute in $contentTypeAttributes)
    				#if($attribute.inputType != "digitalAsset")
 					versionValue += "<$attribute.name>";
-					versionValue += "<![CDATA[" + getValue("${attribute.name}") + "]]>";
-					//versionValue += "<![CDATA[" + document.editForm.${attribute.name}.value + "]]>";
+					var value = "" + getValue("${attribute.name}");
+					var re = new RegExp("templateLogic\\.languageId,.{0,1}\\)", "g");
+					value = value.replace(re, "templateLogic.languageId, -1)");	
+					versionValue += "<![CDATA[" + value + "]]>";
 					versionValue += "</$attribute.name>";
 				#end
 			#end
@@ -1200,6 +1202,7 @@
 			
 			//alert("versionValue:" + versionValue);				
 			document.editForm.versionValue.value = versionValue;
+			return true;
 		}
 				
 		/*

@@ -1285,12 +1285,13 @@ function saveAttribute(selectedContentId, selectedLanguageId, selectedAttributeN
 	if(type == "textarea")
 	{
 		var enableWYSIWYG = editOnSightAttributeNames["attribute" + selectedContentId + selectedAttributeName + "_enableWYSIWYG"];
-		
 		var value = "";
 		if(enableWYSIWYG == "true")
 		{
 			var oEditor = FCKeditorAPI.GetInstance("attribute" + selectedContentId + selectedAttributeName) ;
 			value = oEditor.GetXHTML( true )
+			var re = new RegExp("templateLogic\\.languageId,.{0,1}\\)", "g");
+			value = value.replace(re, "templateLogic.languageId, -1)");	
 			//alert("Value: " + value);
 			value = Url.encode(value);
 			//alert("Value: " + value);
@@ -1298,6 +1299,8 @@ function saveAttribute(selectedContentId, selectedLanguageId, selectedAttributeN
 		else
 		{
 			value = $("#inputattribute" + selectedContentId + selectedAttributeName).val();
+			var re = new RegExp("templateLogic\\.languageId,.{0,1}\\)", "g");
+			value = value.replace(re, "templateLogic.languageId, -1)");	
 		}
 		
 		var data = "contentId=" + selectedContentId + "&languageId=" + selectedLanguageId + "&attributeName=" + selectedAttributeName + "&" + selectedAttributeName + "=" + value + "&deliverContext=" + currentContext;
