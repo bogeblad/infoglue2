@@ -32,6 +32,7 @@ import org.exolab.castor.jdo.Database;
 import org.infoglue.cms.applications.common.ImageButton;
 import org.infoglue.cms.applications.common.VisualFormatter;
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
+import org.infoglue.cms.controllers.kernel.impl.simple.AccessRightController;
 import org.infoglue.cms.controllers.kernel.impl.simple.CastorDatabaseService;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentVersionController;
 import org.infoglue.cms.controllers.kernel.impl.simple.LanguageController;
@@ -50,7 +51,7 @@ import org.infoglue.deliver.util.CacheController;
 
 /**
  * This class implements the action class for the framed page in the siteNode tool.
- * 
+ *  
  * @author Mattias Bogeblad  
  */
 
@@ -297,7 +298,7 @@ public class ViewStructureToolToolBarAction extends InfoGlueAbstractAction
 			throw new SystemException(e.getMessage());
 		}
 		return buttons;
-	}
+	} 
 
 	private List getBranchSiteNodeButtons(Database db) throws Exception
 	{
@@ -308,8 +309,8 @@ public class ViewStructureToolToolBarAction extends InfoGlueAbstractAction
 		moveButton.getSubButtons().add(getMoveMultipleButton());
 		buttons.add(moveButton);	
 
-		//buttons.add(getMoveButton());	
-		//buttons.add(getMoveMultipleButton());	
+		if(AccessRightController.getController().getIsPrincipalAuthorized(db, this.getInfoGluePrincipal(), "StructureTool.Copy", false, true, false))
+			buttons.add(getCopyMultipleButton());	
 
 		if(!hasPublishedVersion(db))
 		    buttons.add(new ImageButton(this.getCMSBaseUrl() + "/Confirm.action?header=tool.structuretool.deleteSiteNode.header&yesDestination=" + URLEncoder.encode(URLEncoder.encode("DeleteSiteNode.action?siteNodeId=" + this.siteNodeId + "&repositoryId=" + this.repositoryId + "&changeTypeId=4", "UTF-8"), "UTF-8") + "&noDestination=" + URLEncoder.encode(URLEncoder.encode("ViewSiteNode.action?title=SiteNode&siteNodeId=" + this.siteNodeId + "&repositoryId=" + this.repositoryId, "UTF-8"), "UTF-8") + "&message=tool.structuretool.deleteSiteNode.message", getLocalizedString(getSession().getLocale(), "images.structuretool.buttons.deleteSiteNode"), "Delete SiteNode"));
@@ -437,6 +438,11 @@ public class ViewStructureToolToolBarAction extends InfoGlueAbstractAction
 		}
 		
 		return buttons;				
+	}
+
+	private ImageButton getCopyMultipleButton() throws Exception
+	{
+		return new ImageButton(true, "javascript:openPopup('CopyMultipleSiteNodes!input.action?siteNodeId=" + this.siteNodeId + "&repositoryId=" + this.repositoryId + "', 'CopyMultipleSiteNodes', 'width=400,height=640,resizable=no');", getLocalizedString(getSession().getLocale(), "images.structuretool.buttons.copyMultipleSiteNodes"), "tool.structuretool.copyMultipleSiteNodes.header");	
 	}
 
 	private ImageButton getMoveButton() throws Exception

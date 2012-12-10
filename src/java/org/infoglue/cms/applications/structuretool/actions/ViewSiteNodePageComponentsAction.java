@@ -111,6 +111,8 @@ public class ViewSiteNodePageComponentsAction extends InfoGlueAbstractAction
 	private Integer pagePartContentId = null;
 	private boolean hideComponentPropertiesOnLoad = false;
 	private String externalBindingAction;
+	private Boolean regardAsCompatible = true;
+	private Boolean recurseChildPages = false;
 	
 	LanguageVO masterLanguageVO = null;
 	
@@ -1349,6 +1351,21 @@ public class ViewSiteNodePageComponentsAction extends InfoGlueAbstractAction
 
 		Integer newComponentId = new Integer(0);
 
+		changeComponent(siteNodeId, this.recurseChildPages, this.regardAsCompatible);
+		
+		logger.info("newComponentId:" + newComponentId);
+		
+		this.url = getComponentRendererUrl() + getComponentRendererAction() + "?siteNodeId=" + this.siteNodeId + "&languageId=" + this.languageId + "&contentId=" + this.contentId + "&focusElementId=" + this.componentId + "&activatedComponentId=" + newComponentId + "&showSimple=" + this.showSimple;
+		//this.getResponse().sendRedirect(url);		
+		
+		this.url = this.getResponse().encodeURL(url);
+		this.getResponse().sendRedirect(url);
+		
+	    return NONE; 
+	}
+	
+	private void changeComponent(Integer siteNodeId, Boolean recursive, Boolean regardAsCompatible) throws Exception
+	{
 		String componentXML   = getPageComponentsString(siteNodeId, this.masterLanguageVO.getId());			
 		logger.info("componentXML:" + componentXML);
 		
@@ -1373,7 +1390,7 @@ public class ViewSiteNodePageComponentsAction extends InfoGlueAbstractAction
 				newComponentContentVersionVO = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(this.newComponentContentId, contentMasterLanguageVO.getId());
 			}
 			
-			if(newComponentContentVersionVO != null)
+			if(newComponentContentVersionVO != null && !regardAsCompatible)
 			{
 				String template = ContentVersionController.getContentVersionController().getAttributeValue(newComponentContentVersionVO, "Template", false);
 				logger.info("template:" + template);
@@ -1430,15 +1447,12 @@ public class ViewSiteNodePageComponentsAction extends InfoGlueAbstractAction
 			ContentVersionController.getContentVersionController().updateAttributeValue(contentVersionVO.getContentVersionId(), "ComponentStructure", modifiedXML, this.getInfoGluePrincipal());
 		}
 		
-		logger.info("newComponentId:" + newComponentId);
-		
-		this.url = getComponentRendererUrl() + getComponentRendererAction() + "?siteNodeId=" + this.siteNodeId + "&languageId=" + this.languageId + "&contentId=" + this.contentId + "&focusElementId=" + this.componentId + "&activatedComponentId=" + newComponentId + "&showSimple=" + this.showSimple;
-		//this.getResponse().sendRedirect(url);		
-		
-		this.url = this.getResponse().encodeURL(url);
-		this.getResponse().sendRedirect(url);
-		
-	    return NONE; 
+		if(recursive)
+		{
+			List<SiteNodeVO> childSiteNodeVOList = SiteNodeController.getController().getSiteNodeChildrenVOList(siteNodeId);
+			for(SiteNodeVO childSiteNodeVO : childSiteNodeVOList)
+				changeComponent(childSiteNodeVO.getId(), recursive, regardAsCompatible);
+		}
 	}
 
 	
@@ -2643,4 +2657,21 @@ public class ViewSiteNodePageComponentsAction extends InfoGlueAbstractAction
 		}
 		return path;
 	}
+	
+	public Boolean getRegardAsCompatible() {
+		return regardAsCompatible;
+	}
+
+	public void setRegardAsCompatible(Boolean regardAsCompatible) {
+		this.regardAsCompatible = regardAsCompatible;
+	}
+
+	public Boolean getRecurseChildPages() {
+		return recurseChildPages;
+	}
+
+	public void setRecurseChildPages(Boolean recurseChildPages) {
+		this.recurseChildPages = recurseChildPages;
+	}
+
 }

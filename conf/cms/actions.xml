@@ -1,4 +1,4 @@
-<!-- $Id: actions.xml,v 1.83.2.9.2.1 2012/11/07 21:47:20 mattias Exp $ -->
+<!-- $Id: actions.xml,v 1.83.2.9.2.2 2012/12/10 00:56:56 mattias Exp $ -->
 <actions>
 
 	<!-- MySettings -->
@@ -1169,6 +1169,13 @@
 	<action name="org.infoglue.cms.applications.structuretool.actions.MoveSiteNodeAction" alias="MoveSiteNode">
 		<view name="input">/cms/structuretool/showConstraintException.vm</view>
 		<view name="success">ViewSiteNode.action</view>
+		<view name="error">/cms/structuretool/error.vm</view>
+		<view name="accessDenied">/cms/structuretool/viewConstraintException.vm</view>
+	</action>
+	<action name="org.infoglue.cms.applications.structuretool.actions.CopyMultipleSiteNodeAction" alias="CopyMultipleSiteNodes">
+		<view name="input">/cms/structuretool/viewCopyMultipleSiteNodesChooseSiteNodes.vm</view>
+		<view name="chooseDestination">/cms/structuretool/viewCopyMultipleSiteNodesChooseDestination.vm</view>
+		<view name="success">/cms/structuretool/viewCopyMultipleSiteNodesFinished.vm</view>
 		<view name="error">/cms/structuretool/error.vm</view>
 		<view name="accessDenied">/cms/structuretool/viewConstraintException.vm</view>
 	</action>
