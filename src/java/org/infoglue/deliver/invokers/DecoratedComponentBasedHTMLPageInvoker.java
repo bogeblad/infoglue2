@@ -2348,6 +2348,8 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 			//logger.info("xml: " + xml);
 			if(xml != null && xml.length() > 0)
 			{
+				xml = xml.replaceAll("<!--igescaped-->", "");
+				
 				componentPropertiesDocument = domBuilder.getDocument(xml);
 				
 				CacheController.cacheObjectInAdvancedCache(cacheName, cacheKey, componentPropertiesDocument);
