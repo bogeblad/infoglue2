@@ -151,6 +151,20 @@
 				#end		
 				</select>
 	 		</p>
+	 		<p>
+				<label for="exportFormat">Export format:</label>
+				<select name="exportFormat">
+					<option value="2">2</option>
+					<option value="3">3 (optimized)</option>
+				</select>
+	 		</p>
+	 		<p>
+				<label for="onlyPublishedVersions">Only published versions:</label>
+				<select name="onlyPublishedVersions">
+					<option value="true">Yes</option>
+					<option value="false">No</option>
+				</select>
+	 		</p>
 			</fieldset><br/>
 		</td>
 	</tr>

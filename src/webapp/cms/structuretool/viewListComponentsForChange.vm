@@ -17,10 +17,10 @@
 	    	//alert("contentId: $!contentId");
 	    	//alert("$slotId: $slotId");
 	    	//alert("componentId:" + componentId);
-	    		
-	    	url = "ViewSiteNodePageComponents!changeComponent.action?siteNodeId=$siteNodeId&languageId=$languageId&contentId=$contentId&componentId=$!componentId&newComponentContentId=" + componentId + "&slotId=$slotId&specifyBaseTemplate=$!specifyBaseTemplate&showSimple=$showSimple";
-		    //alert("url" + url);
-	    	self.opener.location.href = url;
+	    	var regardAsCompatible = document.getElementById("regardAsCompatible").checked;
+	    	var recurseChildPages = document.getElementById("recurseChildPages").checked;
+	    	url = "ViewSiteNodePageComponents!changeComponent.action?siteNodeId=$siteNodeId&languageId=$languageId&contentId=$contentId&componentId=$!componentId&newComponentContentId=" + componentId + "&slotId=$slotId&specifyBaseTemplate=$!specifyBaseTemplate&showSimple=$showSimple&regardAsCompatible=" + regardAsCompatible + "&recurseChildPages=" + recurseChildPages;
+		    self.opener.location.href = url;
 		    window.close();
 	    }
 	
@@ -82,7 +82,16 @@
 			</td>
 		</tr>
 		<tr>
-			<td height="5"><img src="images/trans.gif" width="1" height="15"></td>
+			<td height="5"><img src="images/trans.gif" width="1" height="5"></td>
+		</tr>	
+		<tr>
+			<td colspan="5">
+				Keep other components and properties intact <input type="checkbox" name="regardAsCompatible" id="regardAsCompatible" value="true" checked="checked"/><br/>
+				Recurse all pages below this <input type="checkbox" name="recurseChildPages" id="recurseChildPages" value="true"/><br/>
+			</td>
+		</tr>	
+		<tr>
+			<td height="5"><img src="images/trans.gif" width="1" height="5"></td>
 		</tr>	
 		<tr style="background-color:#F0E1B4; height:20px;">
 			<td height="1" width="50">&nbsp;</td>
