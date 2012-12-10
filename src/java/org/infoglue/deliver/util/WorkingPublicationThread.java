@@ -330,7 +330,6 @@ public class WorkingPublicationThread extends Thread
 							    Class typesExtra = SmallSiteNodeVersionImpl.class;
 								Object[] idsExtra = {new Integer(objectId)};
 								CacheController.clearCache(typesExtra, idsExtra);
-							    t.printElapsedTime("SNV");
 							}
 							else if(Class.forName(className).getName().equals(RepositoryImpl.class.getName()))
 							{

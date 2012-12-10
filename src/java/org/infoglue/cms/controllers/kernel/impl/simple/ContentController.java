@@ -1149,7 +1149,8 @@ public class ContentController extends BaseController
     		//OQLQuery oql = db.getOQLQuery("SELECT c FROM org.infoglue.cms.entities.content.impl.simple.MediumContentImpl c WHERE c.contentTypeDefinition.name = $1 ORDER BY c.contentId");
         	oql.bind(contentTypeDefinitionName);
         	QueryResults results = oql.execute(Database.ReadOnly);
-        	t.printElapsedTime("Query for " + contentTypeDefinitionName);
+        	if(logger.isInfoEnabled())
+        		t.printElapsedTime("Query for " + contentTypeDefinitionName);
 			
 			while(results.hasMore()) 
             {
@@ -1157,7 +1158,8 @@ public class ContentController extends BaseController
             	SmallContentImpl content = (SmallContentImpl)results.next();
             	contents.add(content.getValueObject());
             }
-        	t.printElapsedTime("Getting all for " + contentTypeDefinitionName + ":" + contents.size());
+			if(logger.isInfoEnabled())
+				t.printElapsedTime("Getting all for " + contentTypeDefinitionName + ":" + contents.size());
 			
 			results.close();
 			oql.close();

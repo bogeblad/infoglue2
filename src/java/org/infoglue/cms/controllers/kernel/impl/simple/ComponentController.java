@@ -291,7 +291,8 @@ public class ComponentController extends BaseController
 		{
 			Timer t = new Timer();
 		    components = getComponents(allowedComponentNames, disallowedComponentNames, allowedComponentGroupNames, principal, db);
-		    t.printElapsedTime("getComponents");
+		    if(logger.isInfoEnabled())
+		    	t.printElapsedTime("getComponents");
 		    /*
 		    Iterator componentsIterator = components.iterator();
 			while(componentsIterator.hasNext())
@@ -525,7 +526,8 @@ public class ComponentController extends BaseController
 		            }
 		        }
 			}
-			t.printElapsedTime("Collecting from groups took");
+			if(logger.isInfoEnabled())
+				t.printElapsedTime("Collecting from groups took");
 			return results;
 		}
 		else
