@@ -1244,7 +1244,6 @@ public class ViewApplicationStateAction extends InfoGlueAbstractAction
 
     public Object getCacheMap()
     {
-    	System.out.println("this.cacheMap in getter:" + this.cacheMap);
     	return this.cacheMap;
     }
     

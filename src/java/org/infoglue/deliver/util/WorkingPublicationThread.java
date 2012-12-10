@@ -312,7 +312,6 @@ public class WorkingPublicationThread extends Thread
 								Class typesExtraSmallest = SmallestContentVersionImpl.class;
 								Object[] idsExtraSmallest = {new Integer(objectId)};
 								CacheController.clearCache(typesExtraSmallest, idsExtraSmallest);
-							    t.printElapsedTime("CV");
 							}
 							else if(Class.forName(className).getName().equals(AvailableServiceBindingImpl.class.getName()))
 							{
