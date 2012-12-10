@@ -534,6 +534,11 @@ public class LanguageController extends BaseController
 		return languageList;
 	}
 
+    public List getLanguageList(Database db) throws SystemException, Bug
+    {
+    	return getAllObjects(LanguageImpl.class, "languageId", db);
+    }
+
     public List getLanguageVOList(Database db) throws SystemException, Bug
     {
 		String key = "allLanguageVOList";
