@@ -30,8 +30,16 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 
+import org.infoglue.cms.entities.content.Content;
+import org.infoglue.cms.entities.content.ContentVersion;
+import org.infoglue.cms.entities.content.DigitalAsset;
 import org.infoglue.cms.entities.content.impl.simple.ContentImpl;
+import org.infoglue.cms.entities.content.impl.simple.ExportContentVersionImpl;
 import org.infoglue.cms.entities.management.AccessRight;
+import org.infoglue.cms.entities.management.Language;
+import org.infoglue.cms.entities.management.Repository;
+import org.infoglue.cms.entities.structure.SiteNode;
+import org.infoglue.cms.entities.structure.SiteNodeVersion;
 import org.infoglue.cms.entities.structure.impl.simple.SiteNodeImpl;
 
 public class InfoGlueExportImpl
@@ -41,12 +49,19 @@ public class InfoGlueExportImpl
 	private List rootSiteNode = new ArrayList();
 	//private ContentImpl rootContent;
 	//private SiteNodeImpl rootSiteNode;
+	private Collection<Language> languages = new ArrayList<Language>();
 	private Collection contentTypeDefinitions = new ArrayList();
 	private Collection categories = new ArrayList();
+	private Collection<Repository> repositories = new ArrayList<Repository>();
 	private Hashtable<String,String> repositoryProperties = new Hashtable<String,String>();
 	private Hashtable<String,String> contentProperties = new Hashtable<String,String>();
 	private Hashtable<String,String> siteNodeProperties = new Hashtable<String,String>();
 	private Collection<AccessRight> accessRights = new ArrayList<AccessRight>();
+	private Collection<Content> contents = new ArrayList<Content>();
+	private Collection<ExportContentVersionImpl> contentVersions = new ArrayList<ExportContentVersionImpl>();
+	private Collection<SiteNode> siteNodes = new ArrayList<SiteNode>();
+	private Collection<SiteNodeVersion> siteNodeVersions = new ArrayList<SiteNodeVersion>();
+	private Collection<DigitalAsset> digitalAssets = new ArrayList<DigitalAsset>();
 	
 	public Integer getInfoGlueExportId()
 	{
@@ -90,6 +105,16 @@ public class InfoGlueExportImpl
 		return rootSiteNode;
 	}
 
+	public Collection<Language> getLanguages()
+	{
+		return languages;
+	}
+
+	public void setLanguages(Collection<Language> languages)
+	{
+		this.languages = languages;
+	}
+
 	public Collection getContentTypeDefinitions()
 	{
 		return contentTypeDefinitions;
@@ -108,6 +133,16 @@ public class InfoGlueExportImpl
 	public void setCategories(Collection categories)
 	{
 		this.categories = categories;
+	}
+
+	public Collection<Repository> getRepositories()
+	{
+		return repositories;
+	}
+
+	public void setRepositories(Collection<Repository> repositories)
+	{
+		this.repositories = repositories;
 	}
 
 	public Hashtable<String, String> getContentProperties()
@@ -150,4 +185,53 @@ public class InfoGlueExportImpl
 		this.accessRights = accessRights;
 	}
 
+	public Collection<Content> getContents()
+	{
+		return this.contents;
+	}
+
+	public void setContents(Collection<Content> contents)
+	{
+		this.contents = contents;
+	}
+
+	public Collection<ExportContentVersionImpl> getContentVersions()
+	{
+		return contentVersions;
+	}
+
+	public void setContentVersions(Collection<ExportContentVersionImpl> contentVersions)
+	{
+		this.contentVersions = contentVersions;
+	}
+
+	public Collection<SiteNode> getSiteNodes()
+	{
+		return this.siteNodes;
+	}
+
+	public void setSiteNodes(Collection<SiteNode> siteNodes)
+	{
+		this.siteNodes = siteNodes;
+	}
+
+	public Collection<SiteNodeVersion> getSiteNodeVersions()
+	{
+		return siteNodeVersions;
+	}
+
+	public void setSiteNodeVersions(Collection<SiteNodeVersion> siteNodeVersions)
+	{
+		this.siteNodeVersions = siteNodeVersions;
+	}
+
+	public Collection<DigitalAsset> getDigitalAssets()
+	{
+		return digitalAssets;
+	}
+
+	public void setDigitalAssets(Collection<DigitalAsset> digitalAssets)
+	{
+		this.digitalAssets = digitalAssets;
+	}
 }
