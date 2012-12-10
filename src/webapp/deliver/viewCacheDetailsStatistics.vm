@@ -28,6 +28,12 @@
 			font-weight 	 : bold;
 			background-color : #CCCCCC;
 		}
+		.label
+		{
+			font-family		 : arial;
+			font-size		 : 8pt;
+			font-weight 	 : normal;
+		}
 		.labelsub
 		{
 			font-family		 : Tahoma, Arial;
@@ -104,7 +110,7 @@
   </tr>
   #if($cache.class.name == "com.opensymphony.oscache.general.GeneralCacheAdministrator") 
   	  #foreach($cacheEntry in $cacheMap.values())
-	  <tr>
+	  <tr class="value">
 	 	 <td>$cacheEntry.key</td>
 	 	 <td>$this.getLength($cacheEntry.content)</td>
 	 	 <td><a href="javascript:showGroups('$cacheEntry.key');">View groups ($cacheEntry.groups.size() used)</a></td>
