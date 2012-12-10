@@ -71,6 +71,7 @@ public class InterceptionPointController extends BaseController
 	    systemInterceptionPoints.put("MyDesktopTool.Read", new InterceptionPointVO("MyDesktopTool", "MyDesktopTool.Read", "Gives the user access to the mydesktop tool", false));
 	    systemInterceptionPoints.put("PublishingTool.Read", new InterceptionPointVO("PublishingTool", "PublishingTool.Read", "Gives the user access to the publishing tool", false));
 	    systemInterceptionPoints.put("StructureTool.Read", new InterceptionPointVO("StructureTool", "StructureTool.Read", "Gives a user access to the structure tool", false));
+	    systemInterceptionPoints.put("StructureTool.Copy", new InterceptionPointVO("StructureTool", "StructureTool.Copy", "Intercepts the copy feature on pages", false));
 	    
 	    systemInterceptionPoints.put("Category.Read", new InterceptionPointVO("Category", "Category.Read", "This intercepts any read towards a category", true));
 	    
