@@ -226,7 +226,6 @@ public class AccessRightController extends BaseController
 				String key = "" + accessRightVO.getInterceptionPointId() + "_" + accessRightVO.getParameters();
 				logger.info("Was a duplicate accessRightVO " + accessRightVO.getId() + ": " + key);
 				accessRightsMap.put(key, -1);
-				//AAAAA Kommentera fram igen
 			}
 			else
 			{
@@ -649,6 +648,86 @@ public class AccessRightController extends BaseController
 		return accessRightList;		
 	}
 
+	public List<AccessRight> getContentAccessRightListOnlyReadOnly(Integer repositoryId, Database db) throws SystemException, Bug
+	{
+		List<AccessRight> accessRightList = new ArrayList<AccessRight>();
+		
+		try
+		{
+			RequestAnalyser.getRequestAnalyser().incApproximateNumberOfDatabaseQueries();
+
+			String SQL = "CALL SQL select ar.accessRightId, ar.parameters, ar.interceptionPointId from cmAccessRight ar, cmContent c where ar.interceptionPointId in (select interceptionPointId from cmInterceptionPoint where name like 'Content.%') AND ar.parameters = c.contentId AND c.repositoryId = $1 ORDER BY ar.interceptionPointId, ar.parameters AS org.infoglue.cms.entities.management.impl.simple.SmallAccessRightImpl";
+			if(CmsPropertyHandler.getUseShortTableNames().equals("true"))
+				SQL = "CALL SQL select ar.accessRightId, ar.parameters, ar.interceptionPointId from cmAccessRight ar, cmCont c where ar.interceptionPointId in (select interceptionPointId from cmInterceptionPoint where name like 'Content.%') AND ar.parameters = to_char(c.contId) AND c.repositoryId = $1 ORDER BY ar.interceptionPointId, ar.parameters AS org.infoglue.cms.entities.management.impl.simple.SmallAccessRightImpl";
+			
+			OQLQuery oql = db.getOQLQuery(SQL);
+			oql.bind(repositoryId);
+			
+			QueryResults results = oql.execute(Database.ReadOnly);
+			while (results.hasMore()) 
+			{
+				SmallAccessRightImpl smallAccessRight = (SmallAccessRightImpl)results.next();
+				AccessRight accessRight = getAccessRightWithId(smallAccessRight.getAccessRightId(), db);
+				
+				accessRightList.add(accessRight);
+			}
+			
+			results.close();
+			oql.close();
+		}
+		catch(Exception e)
+		{
+			logger.warn("Error getting access rights. Message: " + e.getMessage() + ". Not retrying...");
+			throw new SystemException("An error occurred when we tried to fetch a list of Access rights. Reason:" + e.getMessage(), e);    
+		}
+		finally
+		{
+			RequestAnalyser.getRequestAnalyser().decApproximateNumberOfDatabaseQueries();
+		}
+
+		return accessRightList;		
+	}
+	
+	public List<AccessRight> getSiteNodeAccessRightListOnlyReadOnly(Integer repositoryId, Database db) throws SystemException, Bug
+	{
+		List<AccessRight> accessRightList = new ArrayList<AccessRight>();
+		
+		try
+		{
+			RequestAnalyser.getRequestAnalyser().incApproximateNumberOfDatabaseQueries();
+
+			String SQL = "CALL SQL select ar.accessRightId, ar.parameters, ar.interceptionPointId from cmAccessRight ar, cmSiteNode sn, cmSiteNodeVersion snv where ar.interceptionPointId in (select interceptionPointId from cmInterceptionPoint where name like 'SiteNodeVersion.%') AND ar.parameters = snv.siteNodeVersionId AND snv.siteNodeId = sn.siteNodeId AND sn.repositoryId = $1 ORDER BY ar.interceptionPointId, ar.parameters AS org.infoglue.cms.entities.management.impl.simple.SmallAccessRightImpl";
+			if(CmsPropertyHandler.getUseShortTableNames().equals("true"))
+				SQL = "CALL SQL select ar.accessRightId, ar.parameters, ar.interceptionPointId from cmAccessRight ar, cmSiNo sn, cmSiNoVer snv where ar.interceptionPointId in (select interceptionPointId from cmInterceptionPoint where name like 'SiteNodeVersion.%') AND ar.parameters = to_char(snv.siNoVerId) AND snv.siNoId = sn.siNoId AND sn.repositoryId = $1 ORDER BY ar.interceptionPointId, ar.parameters AS org.infoglue.cms.entities.management.impl.simple.SmallAccessRightImpl";
+				
+			OQLQuery oql = db.getOQLQuery(SQL);
+			oql.bind(repositoryId);
+			
+			QueryResults results = oql.execute(Database.ReadOnly);
+			while (results.hasMore()) 
+			{
+				SmallAccessRightImpl smallAccessRight = (SmallAccessRightImpl)results.next();
+				AccessRight accessRight = getAccessRightWithId(smallAccessRight.getAccessRightId(), db);
+				
+				accessRightList.add(accessRight);
+			}
+			
+			results.close();
+			oql.close();
+		}
+		catch(Exception e)
+		{
+			logger.warn("Error getting access rights. Message: " + e.getMessage() + ". Not retrying...");
+			throw new SystemException("An error occurred when we tried to fetch a list of Access rights. Reason:" + e.getMessage(), e);    
+		}
+		finally
+		{
+			RequestAnalyser.getRequestAnalyser().decApproximateNumberOfDatabaseQueries();
+		}
+
+		return accessRightList;		
+	}
+	
 	public List<AccessRightRoleVO> getAccessRightRoleVOList(Integer interceptionPointId, String parameters, Database db) throws SystemException, Bug
 	{
 		List<AccessRightRoleVO> accessRightRoleList = new ArrayList<AccessRightRoleVO>();
@@ -2268,7 +2347,7 @@ public class AccessRightController extends BaseController
 		if(infoGluePrincipal.getIsAdministrator())
 			return true;
 			
-		String key = "" + infoGluePrincipal.getName() + "_" + interceptionPointName + "_" + returnSuccessIfInterceptionPointNotDefined;
+		String key = "" + infoGluePrincipal.getName() + "_" + interceptionPointName + "_" + returnSuccessIfInterceptionPointNotDefined + "_" + returnFailureIfInterceptionPointNotDefined;
 		logger.info("key:" + key);
 		//Boolean cachedIsPrincipalAuthorized = (Boolean)CacheController.getCachedObject("authorizationCache", key);
 		Boolean cachedIsPrincipalAuthorized = (Boolean)CacheController.getCachedObjectFromAdvancedCache("personalAuthorizationCache", key);
@@ -2314,7 +2393,7 @@ public class AccessRightController extends BaseController
 		if(infoGluePrincipal.getIsAdministrator())
 			return true;
 			
-		String key = "" + infoGluePrincipal.getName() + "_" + interceptionPointName + "_" + returnSuccessIfInterceptionPointNotDefined;
+		String key = "" + infoGluePrincipal.getName() + "_" + interceptionPointName + "_" + returnSuccessIfInterceptionPointNotDefined + "_false_true";
 		logger.info("key:" + key);
 		//Boolean cachedIsPrincipalAuthorized = (Boolean)CacheController.getCachedObject("authorizationCache", key);
 		Boolean cachedIsPrincipalAuthorized = (Boolean)CacheController.getCachedObjectFromAdvancedCache("personalAuthorizationCache", key);
@@ -2444,7 +2523,7 @@ public class AccessRightController extends BaseController
 	    if(infoGluePrincipal.getIsAdministrator())
 			return true;
 
-	    String key = "" + infoGluePrincipal.getName() + "_" + interceptionPointName + "_" + returnTrueIfNoAccessRightsDefined;
+	    String key = "" + infoGluePrincipal.getName() + "_" + interceptionPointName + "_" + returnTrueIfNoAccessRightsDefined + "_" + returnFailureIfInterceptionPointNotDefined + "_" + returnTrueIfNoAccessRightsDefined;
 
 		Boolean cachedIsPrincipalAuthorized = (Boolean)CacheController.getCachedObjectFromAdvancedCache("personalAuthorizationCache", key);
 		if(cachedIsPrincipalAuthorized != null)

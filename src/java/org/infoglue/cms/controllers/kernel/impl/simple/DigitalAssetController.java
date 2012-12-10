@@ -66,6 +66,7 @@ import org.infoglue.cms.entities.management.LanguageVO;
 import org.infoglue.cms.entities.management.RoleProperties;
 import org.infoglue.cms.entities.management.TableCount;
 import org.infoglue.cms.entities.management.UserProperties;
+import org.infoglue.cms.entities.structure.SiteNodeVersion;
 import org.infoglue.cms.exception.Bug;
 import org.infoglue.cms.exception.ConstraintException;
 import org.infoglue.cms.exception.SystemException;
@@ -92,8 +93,71 @@ public class DigitalAssetController extends BaseController
     {
         return singelton;
     }
+    
+    
+	public List<DigitalAssetVO> dumpDigitalAssetList(Integer repositoryId, Integer minimumId, Integer limit, Integer assetFileSizeLimit, Boolean onlyPublishedVersions, String filePath) throws SystemException, Bug, Exception
+	{
+		List<DigitalAssetVO> digitalAssetList = new ArrayList<DigitalAssetVO>();
+   	
+    	Database db = CastorDatabaseService.getDatabase();
+
+	    beginTransaction(db);
+
+        try
+        {
+        	digitalAssetList = dumpDigitalAssetList(repositoryId, minimumId, limit, assetFileSizeLimit, onlyPublishedVersions, filePath, db);
+    		
+            commitTransaction(db);
+        }
+        catch(Exception e)
+        {
+            logger.info("An error occurred so we should not completes the transaction:" + e, e);
+            rollbackTransaction(db);
+            throw new SystemException(e.getMessage());
+        }
+        
+        return digitalAssetList;
+    }
+
 
     
+   	/**
+	 * This method returns selected active content versions.
+	 */
+    
+	public List<DigitalAssetVO> dumpDigitalAssetList(Integer repositoryId, Integer minimumId, Integer limit, Integer assetFileSizeLimit, Boolean onlyPublishedVersions, String filePath, Database db) throws SystemException, Bug, Exception
+	{
+		List<DigitalAssetVO> digitalAssetList = new ArrayList<DigitalAssetVO>();
+
+    	OQLQuery oql = db.getOQLQuery("CALL SQL SELECT distinct(da.digitalAssetId), da.assetFileName, da.assetKey, da.assetFilePath, da.assetContentType, da.assetFileSize FROM cmDigitalAsset da, cmContentVersionDigitalAsset cvda, cmContentVersion cv, cmContent c where cvda.digitalAssetId = da.digitalAssetId AND cvda.contentVersionId = cv.contentVersionId " + (onlyPublishedVersions ? "AND cv.stateId = 3" : "") + " AND cv.contentId = c.contentId AND c.repositoryId = $1 AND da.digitalAssetId > $2 AND da.assetFileSize < $3 ORDER BY da.digitalAssetId LIMIT $4 AS org.infoglue.cms.entities.content.impl.simple.SmallDigitalAssetImpl");
+    	if(CmsPropertyHandler.getUseShortTableNames() != null && CmsPropertyHandler.getUseShortTableNames().equalsIgnoreCase("true"))
+    		oql = db.getOQLQuery("CALL SQL select * from (SELECT distinct(da.DigAssetId), da.assetFileName, da.assetKey, da.assetFilePath, da.assetContentType, da.assetFileSize FROM cmDigAsset da, cmContVerDigAsset cvda, cmContVer cv, cmCont c where cvda.DigAssetId = da.DigAssetId AND cvda.contVerId = cv.contVerId " + (onlyPublishedVersions ? "AND cv.stateId = 3" : "") + " AND cv.contId = c.contId AND c.repositoryId = $1 AND da.DigAssetId > $2 AND da.assetFileSize < $3 ORDER BY da.DigAssetId) where rownum < $4 AS org.infoglue.cms.entities.content.impl.simple.SmallDigitalAssetImpl");
+
+    	oql.bind(repositoryId);
+    	oql.bind(minimumId);
+    	if(assetFileSizeLimit < 1)
+    		assetFileSizeLimit = 100000000;
+    	oql.bind(assetFileSizeLimit);
+    	oql.bind(limit);
+    	
+    	QueryResults results = oql.execute(Database.ReadOnly);
+		
+		while(results.hasMore()) 
+        {
+        	SmallDigitalAssetImpl smallDigitalAsset = (SmallDigitalAssetImpl)results.next();
+        	dumpDigitalAsset(smallDigitalAsset.getValueObject(), smallDigitalAsset.getDigitalAssetId() + ".file", filePath, db);
+        	//DigitalAsset digitalAsset = getDigitalAssetWithId(smallDigitalAsset.getId(), db);
+        	digitalAssetList.add(smallDigitalAsset.getValueObject());
+        }
+		System.out.println("digitalAssetList:" + digitalAssetList.size());
+		
+		results.close();
+		oql.close();
+
+		return digitalAssetList;
+	}
+
+	
    	/**
    	 * returns the digital asset VO
    	 */
@@ -246,6 +310,7 @@ public class DigitalAssetController extends BaseController
         return digitalAsset.getValueObject();
    	}
 
+   	
   	/**
    	 * This method creates a new digital asset in the database and connects it to the contentVersion it belongs to.
    	 * The asset is send in as an InputStream which castor inserts automatically.
@@ -403,6 +468,54 @@ public class DigitalAssetController extends BaseController
 		
 		return digitalAsset.getValueObject();
 	}
+	
+	
+   	/**
+   	 * This method creates a new digital asset in the database and connects it to the contentVersion it belongs to.
+   	 * The asset is send in as an InputStream which castor inserts automatically.
+   	 */
+
+	public void createByCopy(Integer originalContentVersionId, Integer newContentVersionId, Database db) throws ConstraintException, SystemException
+	{
+		logger.info("Creating by copying....");
+		logger.info("originalContentVersionId:" + originalContentVersionId);
+		logger.info("newContentVersionId:" + newContentVersionId);
+		ContentVersion oldContentVersion = ContentVersionController.getContentVersionController().getContentVersionWithId(originalContentVersionId, db);
+		
+		Collection<DigitalAsset> assets = oldContentVersion.getDigitalAssets();
+		logger.info("assets:" + assets);
+		for(DigitalAsset oldDigitalAsset : assets)
+		{
+			ContentVersion contentVersion = ContentVersionController.getContentVersionController().getContentVersionWithId(newContentVersionId, db);
+			Collection contentVersions = new ArrayList();
+			contentVersions.add(contentVersion);
+			logger.info("Added contentVersion:" + contentVersion.getId());
+	   		
+			logger.info("Creating asset for:" + oldDigitalAsset.getAssetKey() + ":" + oldContentVersion.getId() + "/" + contentVersion.getId());
+			DigitalAssetVO digitalAssetVO = new DigitalAssetVO();
+			digitalAssetVO.setAssetContentType(oldDigitalAsset.getAssetContentType());
+			digitalAssetVO.setAssetFileName(oldDigitalAsset.getAssetFileName());
+			digitalAssetVO.setAssetFilePath(oldDigitalAsset.getAssetFilePath());
+			digitalAssetVO.setAssetFileSize(oldDigitalAsset.getAssetFileSize());
+			digitalAssetVO.setAssetKey(oldDigitalAsset.getAssetKey());
+			
+			DigitalAsset digitalAsset = new DigitalAssetImpl();
+			digitalAsset.setValueObject(digitalAssetVO);
+			digitalAsset.setAssetBlob(oldDigitalAsset.getAssetBlob());
+			digitalAsset.setContentVersions(contentVersions);
+			
+			try
+			{
+				db.create(digitalAsset);
+			}
+			catch(Exception e)
+			{
+				logger.error("An error occurred so we should not complete the transaction:" + e, e);
+				throw new SystemException(e.getMessage());
+			}
+		}
+	}
+
 
 	/**
 	 * This method gets a asset with a special key inside the given transaction.
