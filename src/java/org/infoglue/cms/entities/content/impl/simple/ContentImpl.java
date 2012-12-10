@@ -191,7 +191,18 @@ public class ContentImpl implements Content
         if(parentContent != null)
         	this.valueObject.setParentContentId(parentContent.getId());
     }
-      
+    
+    public Integer getParentContentId()
+    {
+        return this.valueObject.getParentContentId();
+    }
+
+	public void setParentContentId(Integer parentContentId)
+	{
+		this.valueObject.setParentContentId(parentContentId);
+	}
+
+    
     public java.util.Collection getContentVersions()
     {
         return this.contentVersions;

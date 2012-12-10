@@ -155,7 +155,12 @@ public class SiteNodeImpl implements SiteNode
         	setParentSiteNodeId(parentSiteNode.getId());
         }
     }
-    
+
+    public Integer getParentSiteNodeId()
+    {
+        return this.valueObject.getParentSiteNodeId();
+    }
+
 	public void setParentSiteNodeId(Integer parentSiteNodeId)
 	{
 		this.valueObject.setParentSiteNodeId(parentSiteNodeId);
@@ -214,6 +219,26 @@ public class SiteNodeImpl implements SiteNode
     	this.siteNodeTypeDefinition = siteNodeTypeDefinition;
         if(siteNodeTypeDefinition != null)
 			this.valueObject.setSiteNodeTypeDefinitionId(siteNodeTypeDefinition.getSiteNodeTypeDefinitionId());
+    }
+
+    public void setSiteNodeTypeDefinitionId(Integer siteNodeTypeDefinitionId)
+    {
+		this.valueObject.setSiteNodeTypeDefinitionId(siteNodeTypeDefinitionId);
+    }
+
+    public Integer getSiteNodeTypeDefinitionId()
+    {
+        return this.valueObject.getSiteNodeTypeDefinitionId();
+    }
+
+    public void setRepositoryId(Integer repositoryId)
+    {
+		this.valueObject.setRepositoryId(repositoryId);
+    }
+
+    public Integer getRepositoryId()
+    {
+        return this.valueObject.getRepositoryId();
     }
 
 	/**
