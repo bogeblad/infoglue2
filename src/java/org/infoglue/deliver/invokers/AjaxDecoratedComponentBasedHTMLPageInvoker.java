@@ -910,7 +910,7 @@ public class AjaxDecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHT
 
 		if(!templateController.getDeliveryContext().getShowSimple())
 	    {
-		    boolean hasAccess = AccessRightController.getController().getIsPrincipalAuthorized(templateController.getDatabase(), principal, "StructureTool.Palette", false, true, true);
+		    boolean hasAccess = AccessRightController.getController().getIsPrincipalAuthorized(templateController.getDatabase(), principal, "StructureTool.Palette", false, true, false);
 		    if(!hasAccess || templateController.getRequestParameter("skipToolbar") != null && templateController.getRequestParameter("skipToolbar").equalsIgnoreCase("true"))
 		        return "";
 	    }
