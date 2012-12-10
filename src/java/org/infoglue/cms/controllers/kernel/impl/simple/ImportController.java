@@ -913,6 +913,14 @@ public class ImportController extends BaseController
             ContentVersion contentVersion = (ContentVersion)contentVersionIterator.next();
             String contentVersionValue = contentVersion.getVersionValue();
 
+            Iterator<String> replaceMapIterator = replaceMap.keySet().iterator();
+            while(replaceMapIterator.hasNext())
+            {
+            	String key = replaceMapIterator.next();
+            	String value = (String)replaceMap.get(key);
+            	contentVersionValue = contentVersionValue.replaceAll(key, value);
+            }
+
             contentVersionValue = contentVersionValue.replaceAll("contentId=\"", "contentId=\"oldContentId_");
             contentVersionValue = contentVersionValue.replaceAll("\\?contentId=", "\\?contentId=oldContentId_");
             contentVersionValue = contentVersionValue.replaceAll("getInlineAssetUrl\\(", "getInlineAssetUrl\\(oldContentId_");
@@ -924,15 +932,7 @@ public class ImportController extends BaseController
             contentVersionValue = contentVersionValue.replaceAll("getPageUrl\\((\\d)", "getPageUrl\\(oldSiteNodeId_$1");
             contentVersionValue = contentVersionValue.replaceAll("entity=\"SiteNode\" entityId=\"", "entity=\"SiteNode\" entityId=\"oldSiteNodeId_");
             //contentVersionValue = contentVersionValue.replaceAll("entity='SiteNode'><id>", "entity='SiteNode'><id>old_");
-            
-            Iterator<String> replaceMapIterator = replaceMap.keySet().iterator();
-            while(replaceMapIterator.hasNext())
-            {
-            	String key = replaceMapIterator.next();
-            	String value = (String)replaceMap.get(key);
-            	contentVersionValue = contentVersionValue.replaceAll(key, value);
-            }
-            
+                        
             contentVersionValue = this.prepareAllRelations(contentVersionValue);
             	            
             

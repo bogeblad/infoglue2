@@ -41,10 +41,22 @@ import org.exolab.castor.jdo.OQLQuery;
 import org.exolab.castor.jdo.QueryResults;
 import org.infoglue.cms.applications.common.VisualFormatter;
 import org.infoglue.cms.entities.content.Content;
+import org.infoglue.cms.entities.content.ContentCategory;
+import org.infoglue.cms.entities.content.ContentCategoryVO;
 import org.infoglue.cms.entities.content.ContentVO;
+import org.infoglue.cms.entities.content.ContentVersion;
 import org.infoglue.cms.entities.content.ContentVersionVO;
 import org.infoglue.cms.entities.content.impl.simple.ContentImpl;
 import org.infoglue.cms.entities.kernel.BaseEntityVO;
+import org.infoglue.cms.entities.management.AccessRight;
+import org.infoglue.cms.entities.management.AccessRightGroup;
+import org.infoglue.cms.entities.management.AccessRightRole;
+import org.infoglue.cms.entities.management.AccessRightUser;
+import org.infoglue.cms.entities.management.AccessRightVO;
+import org.infoglue.cms.entities.management.Category;
+import org.infoglue.cms.entities.management.ContentTypeDefinition;
+import org.infoglue.cms.entities.management.InterceptionPoint;
+import org.infoglue.cms.entities.management.InterceptionPointVO;
 import org.infoglue.cms.entities.management.Language;
 import org.infoglue.cms.entities.management.LanguageVO;
 import org.infoglue.cms.entities.management.Registry;
@@ -53,6 +65,11 @@ import org.infoglue.cms.entities.management.Repository;
 import org.infoglue.cms.entities.management.ServiceDefinition;
 import org.infoglue.cms.entities.management.ServiceDefinitionVO;
 import org.infoglue.cms.entities.management.SiteNodeTypeDefinition;
+import org.infoglue.cms.entities.management.impl.simple.AccessRightGroupImpl;
+import org.infoglue.cms.entities.management.impl.simple.AccessRightImpl;
+import org.infoglue.cms.entities.management.impl.simple.AccessRightRoleImpl;
+import org.infoglue.cms.entities.management.impl.simple.AccessRightUserImpl;
+import org.infoglue.cms.entities.management.impl.simple.ContentTypeDefinitionImpl;
 import org.infoglue.cms.entities.management.impl.simple.RepositoryImpl;
 import org.infoglue.cms.entities.management.impl.simple.SiteNodeTypeDefinitionImpl;
 import org.infoglue.cms.entities.structure.ServiceBindingVO;
@@ -99,6 +116,33 @@ public class SiteNodeController extends BaseController
 		return new SiteNodeController();
 	}
 
+   	/**
+	 * This method returns selected active content versions.
+	 */
+    
+	public List<SiteNode> getSiteNodeList(Integer repositoryId, Integer minimumId, Integer limit, Database db) throws SystemException, Bug, Exception
+	{
+		List<SiteNode> siteNodeList = new ArrayList<SiteNode>();
+
+        OQLQuery oql = db.getOQLQuery( "SELECT sn FROM org.infoglue.cms.entities.structure.impl.simple.SmallSiteNodeImpl sn WHERE sn.repositoryId = $1 AND sn.siteNodeId > $2 ORDER BY sn.siteNodeId LIMIT $3");
+    	oql.bind(repositoryId);
+		oql.bind(minimumId);
+		oql.bind(limit);
+    	
+    	QueryResults results = oql.execute(Database.ReadOnly);
+		while (results.hasMore()) 
+        {
+			SiteNode siteNode = (SiteNode)results.next();
+			siteNodeList.add(siteNode);
+        }
+		
+		results.close();
+		oql.close();
+
+		return siteNodeList;
+	}
+
+	
 	/**
 	 * This method gets the siteNodeVO with the given id
 	 */
@@ -1369,8 +1413,7 @@ public class SiteNodeController extends BaseController
             rollbackTransaction(db);
             throw new SystemException(e.getMessage());
         }
-
-    }       
+    }           
     
 	/**
 	 * Recursively sets the sitenodes repositoryId.
@@ -2197,5 +2240,417 @@ public class SiteNodeController extends BaseController
 
 		db.remove(siteNodeVersion);
 	}
+ 	
+ 	
+ 	//Copy logic
+ 	
+	/**
+	 * This method moves a siteNode after first making a couple of controls that the move is valid.
+	 */
+	
+    public void copySiteNode(SiteNodeVO siteNodeVO, Integer newParentSiteNodeId, InfoGluePrincipal principal) throws ConstraintException, SystemException
+    {
+        Database db = CastorDatabaseService.getDatabase();
+        ConstraintExceptionBuffer ceb = new ConstraintExceptionBuffer();
+
+        SiteNode siteNode          = null;
+		SiteNode newParentSiteNode = null;
+		SiteNode oldParentSiteNode = null;
+		
+        beginTransaction(db);
+
+        try
+        {
+            //Validation that checks the entire object
+            siteNodeVO.validate();
+            
+            if(newParentSiteNodeId == null)
+            {
+            	logger.warn("You must specify the new parent-siteNode......");
+            	throw new ConstraintException("SiteNode.parentSiteNodeId", "3403");
+            }
+
+            if(siteNodeVO.getId().intValue() == newParentSiteNodeId.intValue())
+            {
+            	logger.warn("You cannot have the siteNode as it's own parent......");
+            	throw new ConstraintException("SiteNode.parentSiteNodeId", "3401");
+            }
+            
+            siteNode          = getSiteNodeWithId(siteNodeVO.getSiteNodeId(), db);
+            oldParentSiteNode = siteNode.getParentSiteNode();
+            newParentSiteNode = getSiteNodeWithId(newParentSiteNodeId, db);
+            
+            if(oldParentSiteNode.getId().intValue() == newParentSiteNodeId.intValue())
+            {
+            	logger.warn("You cannot specify the same node as it originally was located in......");
+            	throw new ConstraintException("SiteNode.parentSiteNodeId", "3404");
+            }
+
+			SiteNode tempSiteNode = newParentSiteNode.getParentSiteNode();
+			while(tempSiteNode != null)
+			{
+				if(tempSiteNode.getId().intValue() == siteNode.getId().intValue())
+				{
+					logger.warn("You cannot move the node to a child under it......");
+            		throw new ConstraintException("SiteNode.parentSiteNodeId", "3402");
+				}
+				tempSiteNode = tempSiteNode.getParentSiteNode();
+			}	
+			
+			Map<Integer,Integer> siteNodeIdsMapping = new HashMap<Integer,Integer>();
+			Map<Integer,Integer> contentIdsMapping = new HashMap<Integer,Integer>();
+			List<ContentVersion> versions = new ArrayList<ContentVersion>();
+			
+            copySiteNodeRecursive(siteNode, newParentSiteNode, principal, siteNodeIdsMapping, contentIdsMapping, versions, db);
+            
+            rewireBindingsAndRelations(siteNodeIdsMapping, contentIdsMapping, versions, db);
+            
+            //If any of the validations or setMethods reported an error, we throw them up now before create.
+            ceb.throwIfNotEmpty();
+            
+            commitTransaction(db);
+        }
+        catch(ConstraintException ce)
+        {
+            logger.warn("An error occurred so we should not complete the transaction:" + ce, ce);
+            rollbackTransaction(db);
+            throw ce;
+        }
+        catch(Exception e)
+        {
+			logger.error("An error occurred so we should not complete the transaction: " + e.getMessage());
+			logger.warn("An error occurred so we should not complete the transaction: " + e.getMessage(), e);
+            rollbackTransaction(db);
+            throw new SystemException(e.getMessage());
+        }
+
+    }   
+    
+
+
+	private void copySiteNodeRecursive(SiteNode siteNode, SiteNode newParentSiteNode, InfoGluePrincipal principal, Map<Integer,Integer> siteNodesIdsMapping, Map<Integer,Integer> contentIdsMapping, List<ContentVersion> versions, Database db) throws Exception
+    {
+		if(siteNodesIdsMapping.containsKey(siteNode.getId()))
+		{
+			logger.warn("Returning as this sitenode has allready been copied... no recusion please");
+			return;
+		}
+    	/*
+    	Database db = CastorDatabaseService.getDatabase();
+        ConstraintExceptionBuffer ceb = new ConstraintExceptionBuffer();
+
+        beginTransaction(db);
+
+        try
+        {
+        */
+    		SiteNodeVO oldSiteNodeVO = SiteNodeController.getController().getSiteNodeVOWithId(siteNode.getId(), db);
+            ContentVO oldMetaInfoContentVO = ContentController.getContentController().getContentVOWithId(oldSiteNodeVO.getMetaInfoContentId(), db);
+
+            Language masterLanguage = LanguageController.getController().getMasterLanguage(db, siteNode.getRepository().getId());
+            ContentVersionVO oldCVVO = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(oldMetaInfoContentVO.getId(), masterLanguage.getId(), db);
+
+    		SiteNodeVO newSiteNodeVO = new SiteNodeVO();
+    		newSiteNodeVO.setName(oldSiteNodeVO.getName());
+    		newSiteNodeVO.setIsBranch(oldSiteNodeVO.getIsBranch());
+            newSiteNodeVO.setCreatorName(oldSiteNodeVO.getCreatorName());
+            newSiteNodeVO.setExpireDateTime(oldSiteNodeVO.getExpireDateTime());
+            newSiteNodeVO.setIsProtected(oldSiteNodeVO.getIsProtected());
+            newSiteNodeVO.setPublishDateTime(oldSiteNodeVO.getPublishDateTime());
+            newSiteNodeVO.setStateId(oldSiteNodeVO.getStateId());
+    		
+            SiteNode newSiteNode = SiteNodeControllerProxy.getSiteNodeControllerProxy().acCreate(principal, newParentSiteNode.getId(), siteNode.getSiteNodeTypeDefinition().getId(), newParentSiteNode.getRepository().getId(), newSiteNodeVO, db);
+            
+            Collection<SiteNodeVersionVO> siteNodeVersionVOList = SiteNodeVersionController.getController().getSiteNodeVersionVOList(oldSiteNodeVO.getId());
+			for(SiteNodeVersionVO siteNodeVersionVO : siteNodeVersionVOList)
+			{
+				logger.info("siteNodeVersionVO:" + siteNodeVersionVO.getId());
+				Integer oldSiteNodeVersionId = siteNodeVersionVO.getId();
+				logger.info("oldSiteNodeVersionId:" + oldSiteNodeVersionId);
+				
+				SiteNodeVersion siteNodeVersion = SiteNodeVersionController.getController().create(newSiteNode.getId(), principal, siteNodeVersionVO, db);
+				
+		        Map args = new HashMap();
+			    args.put("globalKey", "infoglue");
+			    PropertySet ps = PropertySetManager.getInstance("jdbc", args);
+
+			    String disabledLanguagesString = ps.getString("siteNode_" + oldSiteNodeVO.getId() + "_disabledLanguages");
+			    String enabledLanguagesString = ps.getString("siteNode_" + oldSiteNodeVO.getId() + "_enabledLanguages");
+			    
+			    logger.info("disabledLanguagesString:" + disabledLanguagesString);
+			    logger.info("enabledLanguagesString:" + enabledLanguagesString);
+			    
+			    if(disabledLanguagesString != null && !disabledLanguagesString.equals(""))
+			    	ps.setString("siteNode_" + newSiteNode.getId() + "_disabledLanguages", disabledLanguagesString);
+			    if(enabledLanguagesString != null && !enabledLanguagesString.equals(""))
+			    	ps.setString("siteNode_" + newSiteNode.getId() + "_enabledLanguages", enabledLanguagesString);
+			
+			    //Copy all access rights...
+			    copyAccessRights(db, oldSiteNodeVersionId.toString(), siteNodeVersion.getId().toString(), "SiteNodeVersion.Read");
+			    copyAccessRights(db, oldSiteNodeVersionId.toString(), siteNodeVersion.getId().toString(), "SiteNodeVersion.Write");
+			    copyAccessRights(db, oldSiteNodeVersionId.toString(), siteNodeVersion.getId().toString(), "SiteNodeVersion.CreateSiteNode");
+			    copyAccessRights(db, oldSiteNodeVersionId.toString(), siteNodeVersion.getId().toString(), "SiteNodeVersion.DeleteSiteNode");
+			    copyAccessRights(db, oldSiteNodeVersionId.toString(), siteNodeVersion.getId().toString(), "SiteNodeVersion.MoveSiteNode");
+			    copyAccessRights(db, oldSiteNodeVersionId.toString(), siteNodeVersion.getId().toString(), "SiteNodeVersion.SubmitToPublish");
+			    copyAccessRights(db, oldSiteNodeVersionId.toString(), siteNodeVersion.getId().toString(), "SiteNodeVersion.ChangeAccessRights");
+			    copyAccessRights(db, oldSiteNodeVersionId.toString(), siteNodeVersion.getId().toString(), "SiteNodeVersion.Publish");
+			}
+            	
+            Content newMetaInfoContent = SiteNodeController.getController().createSiteNodeMetaInfoContent(db, newSiteNode, newParentSiteNode.getRepository().getId(), principal, null);
+            ContentVersion newCV = ContentVersionController.getContentVersionController().getLatestActiveContentVersion(newMetaInfoContent.getId(), masterLanguage.getId(), db);
+
+            logger.info("Adding content version " + newCV);
+            versions.add(newCV);
+
+            logger.info("Mapping siteNode " + oldSiteNodeVO.getId() + " to " + newSiteNode.getId());
+            siteNodesIdsMapping.put(oldSiteNodeVO.getId(), newSiteNode.getId());
+            
+            String versionValue = oldCVVO.getVersionValue();
+            logger.info("A newCV:" + newCV.getVersionValue());
+            newCV.getValueObject().setVersionValue(versionValue);
+            logger.info("A newCV:" + newCV.getVersionValue());
+            
+            getRelatedContents(newParentSiteNode, principal, versionValue, oldSiteNodeVO.getRepositoryId(), newParentSiteNode.getRepository().getId(), principal, siteNodesIdsMapping, contentIdsMapping, versions, db);
+            
+            for(SiteNode childNode : (Collection<SiteNode>)siteNode.getChildSiteNodes())
+            {
+            	copySiteNodeRecursive(childNode, newSiteNode, principal, siteNodesIdsMapping, contentIdsMapping, versions, db);
+            }
+            /*    
+            commitTransaction(db);
+        }
+        catch(Exception e)
+        {
+            logger.error("An error occurred so we should not complete the transaction:" + e, e);
+            rollbackTransaction(db);
+            throw new SystemException(e.getMessage());
+        }
+        */
+    }
+
+	private void getRelatedContents(SiteNode newParentSiteNode, InfoGluePrincipal principal, String versionValue, Integer oldRepositoryId, Integer newRepositoryId, InfoGluePrincipal creator, Map<Integer,Integer> siteNodeIdsMapping, Map<Integer,Integer> contentIdsMapping, List<ContentVersion> versions, Database db) throws Exception
+	{
+		Set<Integer> relatedSiteNodeIds = new HashSet<Integer>();
+		Set<Integer> relatedContentIds = RegistryController.getController().getComponents(versionValue);
+		
+		RegistryController.getController().getComponentBindings(versionValue, relatedSiteNodeIds, relatedContentIds);
+
+		logger.info("A relatedSiteNodeIds:" + relatedSiteNodeIds.size());
+		logger.info("A relatedContentIds:" + relatedContentIds.size());
+		
+		Iterator relatedContentIdsIterator = relatedContentIds.iterator();
+		while(relatedContentIdsIterator.hasNext())
+		{
+			Integer contentId = (Integer)relatedContentIdsIterator.next();
+			
+			ContentVO contentVO = ContentController.getContentController().getContentVOWithId(contentId, db);
+
+			logger.info("The contentVO: " + contentVO.getName() + " from repo " + contentVO.getRepositoryId());
+			if(contentVO.getRepositoryId().intValue() == oldRepositoryId.intValue())
+			{
+				logger.info("The related content was in the old repo as well - let's copy that as well");
+				
+				if(contentIdsMapping.containsKey(contentId))
+				{
+					logger.info("Allready transferred content so skipping:" + contentVO.getName());
+					continue;
+				}
+				
+				String path = ContentController.getContentController().getContentPath(contentId, true, false, db);
+				logger.info("path:" + path);
+				ContentVO copiedContent = ContentController.getContentController().getContentVOWithPath(newRepositoryId, path, true, creator, db);
+				logger.info("copiedContent:" + copiedContent);
+				
+	            logger.info("Mapping content " + contentVO.getId() + " to " + copiedContent.getId());
+	            contentIdsMapping.put(contentVO.getId(), copiedContent.getId());
+				
+				copiedContent.setName(contentVO.getName());
+				copiedContent.setExpireDateTime(contentVO.getExpireDateTime());
+				copiedContent.setIsBranch(contentVO.getIsBranch());
+				copiedContent.setIsProtected(contentVO.getIsProtected());
+				copiedContent.setPublishDateTime(contentVO.getPublishDateTime());
+				copiedContent.setCreatorName(creator.getName());
+				
+			    copyAccessRights(db, contentVO.getId().toString(), copiedContent.getId().toString(), "Content.Read");
+			    copyAccessRights(db, contentVO.getId().toString(), copiedContent.getId().toString(), "Content.Write");
+			    copyAccessRights(db, contentVO.getId().toString(), copiedContent.getId().toString(), "Content.Create");
+			    copyAccessRights(db, contentVO.getId().toString(), copiedContent.getId().toString(), "Content.Delete");
+			    copyAccessRights(db, contentVO.getId().toString(), copiedContent.getId().toString(), "Content.Move");
+			    copyAccessRights(db, contentVO.getId().toString(), copiedContent.getId().toString(), "Content.SubmitToPublish");
+			    copyAccessRights(db, contentVO.getId().toString(), copiedContent.getId().toString(), "Content.ChangeAccessRights");
+			    copyAccessRights(db, contentVO.getId().toString(), copiedContent.getId().toString(), "Content.CreateVersion");
+			    
+				Collection<ContentVersionVO> contentVersionVOList = ContentVersionController.getContentVersionController().getContentVersionVOList(contentVO.getId());
+				for(ContentVersionVO contentVersionVO : contentVersionVOList)
+				{
+					logger.info("contentVersionVO:" + contentVersionVO.getId());
+					Integer oldContentVersionId = contentVersionVO.getId();
+					logger.info("oldContentVersionId:" + oldContentVersionId);
+					//List assets = DigitalAssetController.getDigitalAssetVOList(contentVersionVO.getId());
+					List<ContentCategory> contentCategories = ContentCategoryController.getController().findByContentVersionReadOnly(contentVersionVO.getId(), db);
+					//logger.info("assets:" + assets);
+					logger.info("contentCategories:" + contentCategories);
+					
+					ContentTypeDefinition ctd = ContentTypeDefinitionController.getController().getContentTypeDefinitionWithId(contentVO.getContentTypeDefinitionId(), db);
+					ContentVersion contentVersion = ContentVersionController.getContentVersionController().create(copiedContent.getId(), contentVersionVO.getLanguageId(), contentVersionVO, null, db);
+					contentVersion.getOwningContent().setContentTypeDefinition((ContentTypeDefinitionImpl)ctd);
+					
+					RegistryController.getController().getInlineSiteNodes(contentVersion.getVersionValue(), relatedSiteNodeIds, relatedContentIds);
+					
+		            logger.info("Adding content version " + contentVersion);
+		            versions.add(contentVersion);
+					
+					DigitalAssetController.getController().createByCopy(oldContentVersionId, contentVersion.getId(), db);
+					for(ContentCategory cc : contentCategories)
+					{
+						ContentCategoryVO contentCategoryVO = new ContentCategoryVO();
+						contentCategoryVO.setAttributeName(cc.getAttributeName());
+						ContentCategoryController.getController().createWithDatabase(contentCategoryVO, cc.getCategory(), contentVersion, db);
+					}
+					
+					logger.info("Created contentVersion:" + contentVersion);
+				}
+			}
+			else
+				logger.info("The related content was outside the old repo so we skip it");
+		}
+		
+		Iterator relatedSiteNodeIdsIterator = relatedSiteNodeIds.iterator();
+		while(relatedSiteNodeIdsIterator.hasNext())
+		{
+			Integer siteNodeId = (Integer)relatedSiteNodeIdsIterator.next();
+			
+			SiteNodeVO siteNodeVO = SiteNodeController.getController().getSiteNodeVOWithId(siteNodeId, db);
+
+			logger.info("The siteNodeVO: " + siteNodeVO.getName() + " from repo " + siteNodeVO.getRepositoryId());
+			if(siteNodeVO.getRepositoryId().intValue() == oldRepositoryId.intValue())
+			{
+				logger.info("The related siteNode was in the old repo as well - let's copy that as well - hope we don't get recursive on our ass");
+				if(siteNodeIdsMapping.containsKey(siteNodeId))
+				{
+					logger.info("Allready transferred siteNode so skipping:" + siteNodeVO.getName());
+					continue;
+				}
+				
+	            SiteNode siteNode = getSiteNodeWithId(siteNodeVO.getSiteNodeId(), db);
+	            SiteNode oldParentSiteNode = siteNode.getParentSiteNode();
+	            
+				copySiteNodeRecursive(siteNode, newParentSiteNode, principal, siteNodeIdsMapping, contentIdsMapping, versions, db);
+			}
+			else
+				logger.info("The related content was outside the old repo so we skip it");
+		}		
+	}
+
+	public void copyAccessRights(Database db, String oldParameter, String newParameter, String InterceptionPointName) throws Exception 
+	{
+		InterceptionPoint interceptionPoint = InterceptionPointController.getController().getInterceptionPointWithName(InterceptionPointName, db);
+		List<AccessRight> accessRights = AccessRightController.getController().getAccessRightListOnlyReadOnly(interceptionPoint.getId(), oldParameter, db);
+		for(AccessRight accessRight : accessRights)
+		{		
+			AccessRightImpl arImpl = new AccessRightImpl();
+			arImpl.setInterceptionPoint(interceptionPoint);
+			arImpl.setParameters(newParameter);
+			
+			db.create(arImpl);
+
+			Iterator accessRightRoleIterator = accessRight.getRoles().iterator();
+			while(accessRightRoleIterator.hasNext())
+			{
+				AccessRightRole accessRightRole = (AccessRightRole)accessRightRoleIterator.next();
+
+				AccessRightRoleImpl arrImpl = new AccessRightRoleImpl();
+				arrImpl.setAccessRight(arImpl);
+				arrImpl.setRoleName(accessRightRole.getRoleName());
+				arImpl.getRoles().add(arrImpl);
+
+				db.create(arrImpl);
+			}
+
+			Iterator accessRightGroupIterator = accessRight.getGroups().iterator();
+			while(accessRightGroupIterator.hasNext())
+			{
+				AccessRightGroup accessRightGroup = (AccessRightGroup)accessRightGroupIterator.next();
+
+				AccessRightGroupImpl argImpl = new AccessRightGroupImpl();
+				argImpl.setAccessRight(arImpl);
+				argImpl.setGroupName(accessRightGroup.getGroupName());
+				arImpl.getGroups().add(argImpl);
+
+				db.create(argImpl);
+			}
+
+			Iterator accessRightUserIterator = accessRight.getUsers().iterator();
+			while(accessRightUserIterator.hasNext())
+			{
+				AccessRightUser accessRightUser = (AccessRightUser)accessRightUserIterator.next();
+
+				AccessRightUserImpl aruImpl = new AccessRightUserImpl();
+				aruImpl.setAccessRight(arImpl);
+				aruImpl.setUserName(accessRightUser.getUserName());
+				arImpl.getUsers().add(aruImpl);
+
+				db.create(aruImpl);
+			}
+		}
+	}
+	
+    private void rewireBindingsAndRelations(Map<Integer,Integer> siteNodesIdsMapping, Map<Integer,Integer> contentIdsMapping, List<ContentVersion> versions, Database db) 
+    {
+    	for(ContentVersion version : versions)
+    	{
+    		logger.info("Rewiring version:" + version.getId() + ":" + version.getVersionValue());
+    		String contentVersionValue = version.getVersionValue();
+    		
+	        contentVersionValue = contentVersionValue.replaceAll("contentId=\"", "contentId=\"oldContentId_");
+	        contentVersionValue = contentVersionValue.replaceAll("\\?contentId=", "\\?contentId=oldContentId_");
+	        contentVersionValue = contentVersionValue.replaceAll("getInlineAssetUrl\\(", "getInlineAssetUrl\\(oldContentId_");
+	        contentVersionValue = contentVersionValue.replaceAll("languageId,", "languageId,oldContentId_");
+	        contentVersionValue = contentVersionValue.replaceAll("entity=\"Content\" entityId=\"", "entity=\"Content\" entityId=\"oldContentId_");
+	        //contentVersionValue = contentVersionValue.replaceAll("entity='Content'><id>", "entity='Content'><id>oldContentId_");
+	        contentVersionValue = contentVersionValue.replaceAll("siteNodeId=\"", "siteNodeId=\"oldSiteNodeId_");
+	        contentVersionValue = contentVersionValue.replaceAll("detailSiteNodeId=\"", "detailSiteNodeId=\"oldSiteNodeId_");
+	        contentVersionValue = contentVersionValue.replaceAll("getPageUrl\\((\\d)", "getPageUrl\\(oldSiteNodeId_$1");
+	        contentVersionValue = contentVersionValue.replaceAll("entity=\"SiteNode\" entityId=\"", "entity=\"SiteNode\" entityId=\"oldSiteNodeId_");
+			
+			Iterator<Integer> contentIdMapIterator = contentIdsMapping.keySet().iterator();
+	        while (contentIdMapIterator.hasNext()) 
+	        {
+	            Integer oldContentId = contentIdMapIterator.next();
+	            Integer newContentId = contentIdsMapping.get(oldContentId);
+	            
+	            logger.info("Replacing all:" + oldContentId + " with " + newContentId);
+	            
+	            contentVersionValue = contentVersionValue.replaceAll("contentId=\"oldContentId_" + oldContentId + "\"", "contentId=\"" + newContentId + "\"");
+	            contentVersionValue = contentVersionValue.replaceAll("\\?contentId=oldContentId_" + oldContentId + "&", "\\?contentId=" + newContentId + "&");
+	            contentVersionValue = contentVersionValue.replaceAll("getInlineAssetUrl\\(oldContentId_" + oldContentId + ",", "getInlineAssetUrl\\(" + newContentId + ",");
+	            contentVersionValue = contentVersionValue.replaceAll("languageId,oldContentId_" + oldContentId + "\\)", "languageId," + newContentId + "\\)");
+	            contentVersionValue = contentVersionValue.replaceAll("entity=\"Content\" entityId=\"oldContentId_" + oldContentId + "\"", "entity=\"Content\" entityId=\"" + newContentId + "\"");
+	            contentVersionValue = contentVersionValue.replaceAll("<id>oldContentId_" + oldContentId + "</id>", "<id>" + newContentId + "</id>");
+	        }
+	        
+	        Iterator<Integer> siteNodeIdMapIterator = siteNodesIdsMapping.keySet().iterator();
+	        while (siteNodeIdMapIterator.hasNext()) 
+	        {
+	            Integer oldSiteNodeId = siteNodeIdMapIterator.next();
+	            Integer newSiteNodeId = siteNodesIdsMapping.get(oldSiteNodeId);
+	            
+	            logger.info("Replacing all:" + oldSiteNodeId + " with " + newSiteNodeId);
+	            
+	            contentVersionValue = contentVersionValue.replaceAll("siteNodeId=\"oldSiteNodeId_" + oldSiteNodeId + "\"", "siteNodeId=\"" + newSiteNodeId + "\"");
+	            contentVersionValue = contentVersionValue.replaceAll("detailSiteNodeId=\"oldSiteNodeId_" + oldSiteNodeId + "\"", "detailSiteNodeId=\"" + newSiteNodeId + "\"");
+	            contentVersionValue = contentVersionValue.replaceAll("getPageUrl\\(oldSiteNodeId_" + oldSiteNodeId + ",", "getPageUrl\\(" + newSiteNodeId + ",");
+	            contentVersionValue = contentVersionValue.replaceAll("entity=\"SiteNode\" entityId=\"oldSiteNodeId_" + oldSiteNodeId + "\"", "entity=\"SiteNode\" entityId=\"" + newSiteNodeId + "\"");
+	            contentVersionValue = contentVersionValue.replaceAll("<id>oldSiteNodeId_" + oldSiteNodeId + "</id>", "<id>" + newSiteNodeId + "</id>");
+	        }
+	        
+	        //Now replace all occurrances of old as they are stuff not moved and should be restored.
+	        contentVersionValue = contentVersionValue.replaceAll("oldContentId_", "");
+	        contentVersionValue = contentVersionValue.replaceAll("oldSiteNodeId_", "");
+	        
+	        version.setVersionValue(contentVersionValue);
+    	}
+    }
+ 
 }
  

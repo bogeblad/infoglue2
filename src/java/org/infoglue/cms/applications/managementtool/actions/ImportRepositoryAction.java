@@ -59,6 +59,7 @@ import org.infoglue.cms.controllers.kernel.impl.simple.ContentTypeDefinitionCont
 import org.infoglue.cms.controllers.kernel.impl.simple.ImportController;
 import org.infoglue.cms.controllers.kernel.impl.simple.InterceptionPointController;
 import org.infoglue.cms.controllers.kernel.impl.simple.LanguageController;
+import org.infoglue.cms.controllers.kernel.impl.simple.OptimizedImportController;
 import org.infoglue.cms.controllers.kernel.impl.simple.RepositoryController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ServiceDefinitionController;
 import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeController;
@@ -105,6 +106,7 @@ import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.util.CmsPropertyHandler;
 import org.infoglue.cms.util.FileUploadHelper;
 import org.infoglue.cms.util.handlers.DigitalAssetBytesHandler;
+import org.infoglue.deliver.util.CompressionHelper;
 import org.infoglue.deliver.util.Timer;
 
 import com.opensymphony.module.propertyset.PropertySet;
@@ -164,6 +166,9 @@ public class ImportRepositoryAction extends InfoGlueAbstractAction
 			File file = FileUploadHelper.getUploadedFile(ActionContext.getContext().getMultiPartRequest());
 			if(file == null || !file.exists())
 				throw new SystemException("The file upload must have gone bad as no file reached the import utility.");
+
+			if(file.getName().endsWith(".zip"))
+				return importV3(file);
 			
 			String encoding = "UTF-8";
 			int version = 1;
@@ -319,6 +324,137 @@ public class ImportRepositoryAction extends InfoGlueAbstractAction
     			throw new SystemException("An error occurred when importing a repository: " + e.getMessage(), e);
             }
 			
+			logger.error("An error occurred when importing a repository: " + e.getMessage(), e);
+			throw new SystemException("An error occurred when importing a repository: " + e.getMessage(), e);
+		}
+		
+		return "success";
+	}
+
+	/**
+	 * This handles the actual importing.
+	 */
+	
+	protected String importV3(File file) throws SystemException 
+	{
+		Timer t = new Timer();
+		
+		CompressionHelper ch = new CompressionHelper();
+		String extractFolder = CmsPropertyHandler.getDigitalAssetUploadPath() + File.separator + "ImportArchive_" + System.currentTimeMillis();
+		File importFolder = new File(extractFolder);
+		importFolder.mkdir();
+		ch.unzip(file, importFolder);
+		
+		t.printElapsedTime("Unzip took");
+		
+		try 
+		{
+			String encoding = "UTF-8";
+			
+			Map contentIdMap = new HashMap();
+			Map siteNodeIdMap = new HashMap();
+			List allContentIds = new ArrayList();
+
+			Map<String,String> replaceMap = new HashMap<String,String>();
+			try
+			{
+				boolean isUTF8 = false;
+				boolean hasUnicodeChars = false;
+				if(replacements.indexOf((char)65533) > -1)
+					isUTF8 = true;
+				
+				for(int i=0; i<replacements.length(); i++)
+				{
+					int c = (int)replacements.charAt(i);
+					if(c > 255 && c < 65533)
+						hasUnicodeChars = true;
+				}
+
+				if(!isUTF8 && !hasUnicodeChars)
+				{
+					String fromEncoding = CmsPropertyHandler.getUploadFromEncoding();
+					if(fromEncoding == null)
+						fromEncoding = "iso-8859-1";
+					
+					String toEncoding = CmsPropertyHandler.getUploadToEncoding();
+					if(toEncoding == null)
+						toEncoding = "utf-8";
+					
+					if(replacements.indexOf("å") == -1 && 
+					   replacements.indexOf("ä") == -1 && 
+					   replacements.indexOf("ö") == -1 && 
+					   replacements.indexOf("Å") == -1 && 
+					   replacements.indexOf("Ä") == -1 && 
+					   replacements.indexOf("Ö") == -1)
+					{
+						replacements = new String(replacements.getBytes(fromEncoding), toEncoding);
+					}
+				}
+			}
+			catch(Exception e)
+			{
+				e.printStackTrace();
+			}
+			
+			Properties properties = new Properties();
+			try
+			{
+				properties.load(new ByteArrayInputStream(replacements.getBytes("ISO-8859-1")));
+				
+				Iterator propertySetIterator = properties.keySet().iterator();
+				while(propertySetIterator.hasNext())
+				{
+					String key = (String)propertySetIterator.next();
+					String value = properties.getProperty(key);
+					replaceMap.put(key, value);
+				}
+			}	
+			catch(Exception e)
+			{
+			    logger.error("Error loading properties from string. Reason:" + e.getMessage());
+				e.printStackTrace();
+			}
+
+			logger.info("replaceMap:" + replaceMap);
+			OptimizedImportController.getController().importRepository(importFolder, encoding, onlyLatestVersions, false, contentIdMap, siteNodeIdMap, allContentIds, replaceMap);
+			t.printElapsedTime("importRepository took");
+
+
+			// All ODMG database access requires a transaction
+			Database db = CastorDatabaseService.getDatabase();
+
+			try
+			{
+				db.begin();
+				
+				Iterator allContentIdsIterator = allContentIds.iterator();
+				while(allContentIdsIterator.hasNext())
+				{
+					Integer contentId = (Integer)allContentIdsIterator.next();
+				
+					Content content = ContentController.getContentController().getContentWithId(contentId, db);
+					OptimizedImportController.getController().updateContentVersions(content, contentIdMap, siteNodeIdMap, onlyLatestVersions, replaceMap);
+				}
+				db.commit();
+			}
+			catch(Exception e)
+			{
+				try
+				{
+					db.rollback();
+				}
+				catch(Exception e2) { e2.printStackTrace(); }
+                logger.error("An error occurred when updating content version for content: " + e.getMessage(), e);					
+			}
+			finally
+			{
+				db.close();					
+			}
+			
+			t.printElapsedTime("updateContentVersions took");
+		} 
+		catch ( Exception e) 
+		{
 			logger.error("An error occurred when importing a repository: " + e.getMessage(), e);
 			throw new SystemException("An error occurred when importing a repository: " + e.getMessage(), e);
 		}
