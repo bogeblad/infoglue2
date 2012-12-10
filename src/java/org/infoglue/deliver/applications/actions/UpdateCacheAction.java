@@ -399,7 +399,7 @@ public class UpdateCacheAction extends InfoGlueAbstractAction
 		    
 		    while(className != null && !className.equals(""))
 		    {
-		    	logger.warn("Cache update info:" + className + "/" + objectId);
+		    	logger.info("Cache update info:" + className + "/" + objectId);
 			    Integer publicationId = -1;
 			    if(className.indexOf(PublicationImpl.class.getName()) > -1)
 			    	publicationId = Integer.parseInt(objectId);
