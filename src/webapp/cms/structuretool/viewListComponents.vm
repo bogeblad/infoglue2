@@ -117,12 +117,12 @@
 			#end
 			#set($prevId = $content.id)
 			
-			#set($hasAccessToContent = true)
-			#if($content.isProtected == 1)
-				#set($hasAccessToContent = $this.hasAccessTo("Component.Select", "$content.id"))
-			#end
-			
-			#if($hasAccessToContent && !$duplicate && ($filterRepositoryId == -1 || $content.repositoryId == $filterRepositoryId || $this.getIsPagePartTemplate($content.contentTypeDefinitionId)))
+			##set($hasAccessToContent = true)
+			##if($content.isProtected == 1)
+				##set($hasAccessToContent = $this.hasAccessTo("Component.Select", "$content.id"))
+			##end
+			##if($hasAccessToContent && !$duplicate && ($filterRepositoryId == -1 || $content.repositoryId == $filterRepositoryId || $this.getIsPagePartTemplate($content.contentTypeDefinitionId)))
+			#if(!$duplicate && ($filterRepositoryId == -1 || $content.repositoryId == $filterRepositoryId || $this.getIsPagePartTemplate($content.contentTypeDefinitionId)))
 
 				#if($isOdd)
 					#set($class = "class='lightapricot'")
