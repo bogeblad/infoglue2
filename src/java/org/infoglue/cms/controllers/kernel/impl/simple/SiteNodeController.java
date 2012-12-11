@@ -2250,7 +2250,10 @@ public class SiteNodeController extends BaseController
 	
     public void copySiteNode(SiteNodeVO siteNodeVO, Integer newParentSiteNodeId, InfoGluePrincipal principal) throws ConstraintException, SystemException
     {
-        Database db = CastorDatabaseService.getDatabase();
+    	System.out.println("siteNodeVO:" + siteNodeVO);
+    	System.out.println("newParentSiteNodeId:" + newParentSiteNodeId);
+    	System.out.println("principal:" + principal);
+    	Database db = CastorDatabaseService.getDatabase();
         ConstraintExceptionBuffer ceb = new ConstraintExceptionBuffer();
 
         SiteNode siteNode          = null;
@@ -2409,13 +2412,13 @@ public class SiteNodeController extends BaseController
             logger.info("A newCV:" + newCV.getVersionValue());
             newCV.getValueObject().setVersionValue(versionValue);
             logger.info("A newCV:" + newCV.getVersionValue());
-            
-            getRelatedContents(newParentSiteNode, principal, versionValue, oldSiteNodeVO.getRepositoryId(), newParentSiteNode.getRepository().getId(), principal, siteNodesIdsMapping, contentIdsMapping, versions, db);
-            
+
             for(SiteNode childNode : (Collection<SiteNode>)siteNode.getChildSiteNodes())
             {
             	copySiteNodeRecursive(childNode, newSiteNode, principal, siteNodesIdsMapping, contentIdsMapping, versions, db);
             }
+
+            getRelatedContents(newParentSiteNode, principal, versionValue, oldSiteNodeVO.getRepositoryId(), newParentSiteNode.getRepository().getId(), principal, siteNodesIdsMapping, contentIdsMapping, versions, db);
             /*    
             commitTransaction(db);
         }
@@ -2444,75 +2447,82 @@ public class SiteNodeController extends BaseController
 			Integer contentId = (Integer)relatedContentIdsIterator.next();
 			
 			ContentVO contentVO = ContentController.getContentController().getContentVOWithId(contentId, db);
-
-			logger.info("The contentVO: " + contentVO.getName() + " from repo " + contentVO.getRepositoryId());
-			if(contentVO.getRepositoryId().intValue() == oldRepositoryId.intValue())
+			
+			if(contentVO != null)
 			{
-				logger.info("The related content was in the old repo as well - let's copy that as well");
-				
-				if(contentIdsMapping.containsKey(contentId))
+				logger.info("The contentVO: " + contentVO.getName() + " from repo " + contentVO.getRepositoryId());
+				if(contentVO.getRepositoryId().intValue() == oldRepositoryId.intValue())
 				{
-					logger.info("Allready transferred content so skipping:" + contentVO.getName());
-					continue;
-				}
-				
-				String path = ContentController.getContentController().getContentPath(contentId, true, false, db);
-				logger.info("path:" + path);
-				ContentVO copiedContent = ContentController.getContentController().getContentVOWithPath(newRepositoryId, path, true, creator, db);
-				logger.info("copiedContent:" + copiedContent);
-				
-	            logger.info("Mapping content " + contentVO.getId() + " to " + copiedContent.getId());
-	            contentIdsMapping.put(contentVO.getId(), copiedContent.getId());
-				
-				copiedContent.setName(contentVO.getName());
-				copiedContent.setExpireDateTime(contentVO.getExpireDateTime());
-				copiedContent.setIsBranch(contentVO.getIsBranch());
-				copiedContent.setIsProtected(contentVO.getIsProtected());
-				copiedContent.setPublishDateTime(contentVO.getPublishDateTime());
-				copiedContent.setCreatorName(creator.getName());
-				
-			    copyAccessRights(db, contentVO.getId().toString(), copiedContent.getId().toString(), "Content.Read");
-			    copyAccessRights(db, contentVO.getId().toString(), copiedContent.getId().toString(), "Content.Write");
-			    copyAccessRights(db, contentVO.getId().toString(), copiedContent.getId().toString(), "Content.Create");
-			    copyAccessRights(db, contentVO.getId().toString(), copiedContent.getId().toString(), "Content.Delete");
-			    copyAccessRights(db, contentVO.getId().toString(), copiedContent.getId().toString(), "Content.Move");
-			    copyAccessRights(db, contentVO.getId().toString(), copiedContent.getId().toString(), "Content.SubmitToPublish");
-			    copyAccessRights(db, contentVO.getId().toString(), copiedContent.getId().toString(), "Content.ChangeAccessRights");
-			    copyAccessRights(db, contentVO.getId().toString(), copiedContent.getId().toString(), "Content.CreateVersion");
-			    
-				Collection<ContentVersionVO> contentVersionVOList = ContentVersionController.getContentVersionController().getContentVersionVOList(contentVO.getId());
-				for(ContentVersionVO contentVersionVO : contentVersionVOList)
-				{
-					logger.info("contentVersionVO:" + contentVersionVO.getId());
-					Integer oldContentVersionId = contentVersionVO.getId();
-					logger.info("oldContentVersionId:" + oldContentVersionId);
-					//List assets = DigitalAssetController.getDigitalAssetVOList(contentVersionVO.getId());
-					List<ContentCategory> contentCategories = ContentCategoryController.getController().findByContentVersionReadOnly(contentVersionVO.getId(), db);
-					//logger.info("assets:" + assets);
-					logger.info("contentCategories:" + contentCategories);
+					logger.info("The related content was in the old repo as well - let's copy that as well");
 					
-					ContentTypeDefinition ctd = ContentTypeDefinitionController.getController().getContentTypeDefinitionWithId(contentVO.getContentTypeDefinitionId(), db);
-					ContentVersion contentVersion = ContentVersionController.getContentVersionController().create(copiedContent.getId(), contentVersionVO.getLanguageId(), contentVersionVO, null, db);
-					contentVersion.getOwningContent().setContentTypeDefinition((ContentTypeDefinitionImpl)ctd);
-					
-					RegistryController.getController().getInlineSiteNodes(contentVersion.getVersionValue(), relatedSiteNodeIds, relatedContentIds);
-					
-		            logger.info("Adding content version " + contentVersion);
-		            versions.add(contentVersion);
-					
-					DigitalAssetController.getController().createByCopy(oldContentVersionId, contentVersion.getId(), db);
-					for(ContentCategory cc : contentCategories)
+					if(contentIdsMapping.containsKey(contentId))
 					{
-						ContentCategoryVO contentCategoryVO = new ContentCategoryVO();
-						contentCategoryVO.setAttributeName(cc.getAttributeName());
-						ContentCategoryController.getController().createWithDatabase(contentCategoryVO, cc.getCategory(), contentVersion, db);
+						logger.info("Allready transferred content so skipping:" + contentVO.getName());
+						continue;
 					}
 					
-					logger.info("Created contentVersion:" + contentVersion);
+					String path = ContentController.getContentController().getContentPath(contentId, true, false, db);
+					logger.info("path:" + path);
+					ContentVO copiedContent = ContentController.getContentController().getContentVOWithPath(newRepositoryId, path, true, creator, db);
+					logger.info("copiedContent:" + copiedContent);
+					
+		            logger.info("Mapping content " + contentVO.getId() + " to " + copiedContent.getId());
+		            contentIdsMapping.put(contentVO.getId(), copiedContent.getId());
+					
+					copiedContent.setName(contentVO.getName());
+					copiedContent.setExpireDateTime(contentVO.getExpireDateTime());
+					copiedContent.setIsBranch(contentVO.getIsBranch());
+					copiedContent.setIsProtected(contentVO.getIsProtected());
+					copiedContent.setPublishDateTime(contentVO.getPublishDateTime());
+					copiedContent.setCreatorName(creator.getName());
+					
+				    copyAccessRights(db, contentVO.getId().toString(), copiedContent.getId().toString(), "Content.Read");
+				    copyAccessRights(db, contentVO.getId().toString(), copiedContent.getId().toString(), "Content.Write");
+				    copyAccessRights(db, contentVO.getId().toString(), copiedContent.getId().toString(), "Content.Create");
+				    copyAccessRights(db, contentVO.getId().toString(), copiedContent.getId().toString(), "Content.Delete");
+				    copyAccessRights(db, contentVO.getId().toString(), copiedContent.getId().toString(), "Content.Move");
+				    copyAccessRights(db, contentVO.getId().toString(), copiedContent.getId().toString(), "Content.SubmitToPublish");
+				    copyAccessRights(db, contentVO.getId().toString(), copiedContent.getId().toString(), "Content.ChangeAccessRights");
+				    copyAccessRights(db, contentVO.getId().toString(), copiedContent.getId().toString(), "Content.CreateVersion");
+				    
+					Collection<ContentVersionVO> contentVersionVOList = ContentVersionController.getContentVersionController().getContentVersionVOList(contentVO.getId());
+					for(ContentVersionVO contentVersionVO : contentVersionVOList)
+					{
+						logger.info("contentVersionVO:" + contentVersionVO.getId());
+						Integer oldContentVersionId = contentVersionVO.getId();
+						logger.info("oldContentVersionId:" + oldContentVersionId);
+						//List assets = DigitalAssetController.getDigitalAssetVOList(contentVersionVO.getId());
+						List<ContentCategory> contentCategories = ContentCategoryController.getController().findByContentVersionReadOnly(contentVersionVO.getId(), db);
+						//logger.info("assets:" + assets);
+						logger.info("contentCategories:" + contentCategories);
+						
+						ContentTypeDefinition ctd = ContentTypeDefinitionController.getController().getContentTypeDefinitionWithId(contentVO.getContentTypeDefinitionId(), db);
+						ContentVersion contentVersion = ContentVersionController.getContentVersionController().create(copiedContent.getId(), contentVersionVO.getLanguageId(), contentVersionVO, null, db);
+						contentVersion.getOwningContent().setContentTypeDefinition((ContentTypeDefinitionImpl)ctd);
+						
+			            System.out.println("contentVO.getId():" + contentVO.getId() + "");
+	
+						RegistryController.getController().getInlineSiteNodes(contentVersion.getVersionValue(), relatedSiteNodeIds, relatedContentIds);
+						
+			            logger.info("Adding content version " + contentVersion);
+			            versions.add(contentVersion);
+						
+						DigitalAssetController.getController().createByCopy(oldContentVersionId, contentVersion.getId(), db);
+						for(ContentCategory cc : contentCategories)
+						{
+							ContentCategoryVO contentCategoryVO = new ContentCategoryVO();
+							contentCategoryVO.setAttributeName(cc.getAttributeName());
+							ContentCategoryController.getController().createWithDatabase(contentCategoryVO, cc.getCategory(), contentVersion, db);
+						}
+						
+						logger.info("Created contentVersion:" + contentVersion);
+					}
 				}
+				else
+					logger.info("The related content was outside the old repo so we skip it");
 			}
 			else
-				logger.info("The related content was outside the old repo so we skip it");
+				logger.warn("The related content was not found");
 		}
 		
 		Iterator relatedSiteNodeIdsIterator = relatedSiteNodeIds.iterator();
@@ -2521,24 +2531,29 @@ public class SiteNodeController extends BaseController
 			Integer siteNodeId = (Integer)relatedSiteNodeIdsIterator.next();
 			
 			SiteNodeVO siteNodeVO = SiteNodeController.getController().getSiteNodeVOWithId(siteNodeId, db);
-
-			logger.info("The siteNodeVO: " + siteNodeVO.getName() + " from repo " + siteNodeVO.getRepositoryId());
-			if(siteNodeVO.getRepositoryId().intValue() == oldRepositoryId.intValue())
+			if(siteNodeVO != null)
 			{
-				logger.info("The related siteNode was in the old repo as well - let's copy that as well - hope we don't get recursive on our ass");
-				if(siteNodeIdsMapping.containsKey(siteNodeId))
+				System.out.println("siteNodeVO: " + siteNodeVO + " for " + siteNodeId);
+				logger.info("The siteNodeVO: " + siteNodeVO.getName() + " from repo " + siteNodeVO.getRepositoryId());
+				if(siteNodeVO.getRepositoryId().intValue() == oldRepositoryId.intValue())
 				{
-					logger.info("Allready transferred siteNode so skipping:" + siteNodeVO.getName());
-					continue;
+					logger.info("The related siteNode was in the old repo as well - let's copy that as well - hope we don't get recursive on our ass");
+					if(siteNodeIdsMapping.containsKey(siteNodeId))
+					{
+						logger.info("Allready transferred siteNode so skipping:" + siteNodeVO.getName());
+						continue;
+					}
+					
+		            SiteNode siteNode = getSiteNodeWithId(siteNodeVO.getSiteNodeId(), db);
+		            SiteNode oldParentSiteNode = siteNode.getParentSiteNode();
+		            
+					copySiteNodeRecursive(siteNode, newParentSiteNode, principal, siteNodeIdsMapping, contentIdsMapping, versions, db);
 				}
-				
-	            SiteNode siteNode = getSiteNodeWithId(siteNodeVO.getSiteNodeId(), db);
-	            SiteNode oldParentSiteNode = siteNode.getParentSiteNode();
-	            
-				copySiteNodeRecursive(siteNode, newParentSiteNode, principal, siteNodeIdsMapping, contentIdsMapping, versions, db);
+				else
+					logger.info("The related content was outside the old repo so we skip it");
 			}
 			else
-				logger.info("The related content was outside the old repo so we skip it");
+				logger.warn("Skipping related sitenode as it was missing.");
 		}		
 	}
 

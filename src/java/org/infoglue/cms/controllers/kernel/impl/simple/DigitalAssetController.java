@@ -491,22 +491,35 @@ public class DigitalAssetController extends BaseController
 			contentVersions.add(contentVersion);
 			logger.info("Added contentVersion:" + contentVersion.getId());
 	   		
-			logger.info("Creating asset for:" + oldDigitalAsset.getAssetKey() + ":" + oldContentVersion.getId() + "/" + contentVersion.getId());
-			DigitalAssetVO digitalAssetVO = new DigitalAssetVO();
-			digitalAssetVO.setAssetContentType(oldDigitalAsset.getAssetContentType());
-			digitalAssetVO.setAssetFileName(oldDigitalAsset.getAssetFileName());
-			digitalAssetVO.setAssetFilePath(oldDigitalAsset.getAssetFilePath());
-			digitalAssetVO.setAssetFileSize(oldDigitalAsset.getAssetFileSize());
-			digitalAssetVO.setAssetKey(oldDigitalAsset.getAssetKey());
-			
-			DigitalAsset digitalAsset = new DigitalAssetImpl();
-			digitalAsset.setValueObject(digitalAssetVO);
-			digitalAsset.setAssetBlob(oldDigitalAsset.getAssetBlob());
-			digitalAsset.setContentVersions(contentVersions);
-			
 			try
 			{
+				String filePath = getDigitalAssetFilePath(oldDigitalAsset.getValueObject(), db);
+				File oldAssetFile = new File(filePath);
+				
+				logger.info("Creating asset for:" + oldDigitalAsset.getAssetKey() + ":" + oldContentVersion.getId() + "/" + contentVersion.getId());
+				DigitalAssetVO digitalAssetVO = new DigitalAssetVO();
+				digitalAssetVO.setAssetContentType(oldDigitalAsset.getAssetContentType());
+				digitalAssetVO.setAssetFileName(oldDigitalAsset.getAssetFileName());
+				digitalAssetVO.setAssetFilePath(oldDigitalAsset.getAssetFilePath());
+				digitalAssetVO.setAssetFileSize(oldDigitalAsset.getAssetFileSize());
+				digitalAssetVO.setAssetKey(oldDigitalAsset.getAssetKey());
+				
+				DigitalAsset digitalAsset = new DigitalAssetImpl();
+				digitalAsset.setValueObject(digitalAssetVO);
+
+				InputStream is = new FileInputStream(oldAssetFile);
+
+				if(is != null)
+				{
+					digitalAsset.setAssetBlob(is);
+				}
+				else
+					digitalAsset.setAssetBlob(null);
+				//digitalAsset.setAssetBlob(oldDigitalAsset.getAssetBlob());
+
 				db.create(digitalAsset);
+
+				digitalAsset.setContentVersions(contentVersions);
 			}
 			catch(Exception e)
 			{

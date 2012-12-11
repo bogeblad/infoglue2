@@ -469,7 +469,7 @@ public class ComponentController extends BaseController
 		Boolean templatesAndPagePartMapPreCached = (Boolean)CacheController.getCachedObject("componentContentsCache", cacheKey + "_preCacheDone");
 		
 		logger.info("templatesAndPagePartMapPreCached: " + templatesAndPagePartMapPreCached);
-		if(templatesAndPagePartMapPreCached)
+		if(templatesAndPagePartMapPreCached != null && templatesAndPagePartMapPreCached)
 		{
 			Map<String,List<ContentVO>> templatesAndPagePartMap = (Map<String,List<ContentVO>>)CacheController.getCachedObject("componentContentsCache", cacheKey);
 			logger.info("templatesAndPagePartMap: " + templatesAndPagePartMap.size());
@@ -528,7 +528,17 @@ public class ComponentController extends BaseController
 			}
 			if(logger.isInfoEnabled())
 				t.printElapsedTime("Collecting from groups took");
-			return results;
+			
+			List<ContentVO> authorizedComponents = new ArrayList<ContentVO>();
+			for(ContentVO contentVO : results)
+			{
+				boolean hasAccess = AccessRightController.getController().getIsPrincipalAuthorized(db, principal, "Component.Select", "" + contentVO.getId(), false);
+				if(hasAccess)
+					authorizedComponents.add(contentVO);
+			}
+			if(logger.isInfoEnabled())
+				t.printElapsedTime("Checking access rights for components took");
+			return authorizedComponents;
 		}
 		else
 		{

@@ -149,7 +149,7 @@ public class AccessRightController extends BaseController
 		sb.append("CALL SQL select ar.accessRightId, ar.parameters, ar.interceptionPointId from cmAccessRight ar where ");
 		sb.append("ar.interceptionPointId in (select interceptionPointId from cmInterceptionPoint where name like 'ComponentEditor.%' OR name LIKE 'Component.%' OR name = 'ComponentPropertyEditor.EditProperty' OR name like '%.Read' AND name NOT LIKE 'SiteNodeVersion.Read') AND ");
 		sb.append("(ar.accessRightId IN (select accessRightId from cmAccessRightUser where userName = '" + principal.getName() + "') OR ");
-		sb.append("(ar.accessRightId NOT IN (select accessRightId from cmAccessRightRole where ar.accessRightId = accessRightId) OR ");
+		sb.append("((ar.accessRightId NOT IN (select accessRightId from cmAccessRightRole where ar.accessRightId = accessRightId) AND ar.accessRightId NOT IN (select accessRightId from cmAccessRightUser where ar.accessRightId = accessRightId)) OR ");
 		sb.append("(  ar.accessRightId IN ");
 		sb.append("(select accessRightId from cmAccessRightRole where ar.accessRightId = accessRightId AND roleName in ( ");
 		int index = 0;
@@ -179,8 +179,7 @@ public class AccessRightController extends BaseController
 		}
 		sb.append("))) AS org.infoglue.cms.entities.management.impl.simple.SmallAccessRightImpl");
 		
-		//logger.info("SQL::::::::::" + sb.toString());
-		
+		logger.info("SQL::::::::::" + sb.toString());
 		OQLQuery oql = db.getOQLQuery(sb.toString());
 		//t.printElapsedTime("Executed took");
 		
@@ -232,6 +231,15 @@ public class AccessRightController extends BaseController
 				logger.info("Was a duplicate accessRightVO but not harmful" + accessRightVO.getId());
 			}
 		}
+
+		List<AccessRightVO> undefinedAccessRights = getUndefinedAccessRights(db);
+		logger.info("undefinedAccessRights:" + undefinedAccessRights.size() + " took " + t.getElapsedTime());
+		for(AccessRightVO accessRightVO : undefinedAccessRights)
+		{
+			String key = "" + accessRightVO.getInterceptionPointId() + "_" + accessRightVO.getParameters();
+			logger.info("Was a empty accessRightVO " + accessRightVO.getId() + ": " + key);
+			accessRightsMap.put(key, -1);
+		}
 		
 		//CacheController.cacheObjectInAdvancedCache("personalAuthorizationCache", "authorizationMap_" + principal.getName(), accessRightsMap);
 		CacheController.cacheObject("userAccessCache", "authorizationMap_" + principal.getName(), accessRightsMap);
@@ -274,7 +282,7 @@ public class AccessRightController extends BaseController
 		}
 		
 		//Thread.dumpStack();
-		logger.warn("Reading the hard way from an unexpected place:" + interceptionPointName + ":" + parameters);
+		logger.info("Reading the hard way from an unexpected place:" + interceptionPointName + ":" + parameters);
 		
 		List accessRightList = this.getAccessRightListOnlyReadOnly(interceptionPointVO.getId(), parameters, db);
 
@@ -3659,6 +3667,34 @@ public class AccessRightController extends BaseController
 		oql.close();
 	}
 
+	public List<AccessRightVO> getUndefinedAccessRights(Database db) throws SystemException, Bug, Exception
+	{
+		List<AccessRightVO> undefinedAccessRights = new ArrayList<AccessRightVO>();
+		  
+		StringBuilder sb = new StringBuilder();
+		sb.append("CALL SQL select ar.accessRightId, ar.parameters, ar.interceptionPointId from cmAccessRight ar where ");
+		sb.append("ar.interceptionPointId in (select interceptionPointId from cmInterceptionPoint where name like 'ComponentEditor.%' OR name LIKE 'Component.%' OR name = 'ComponentPropertyEditor.EditProperty' OR name like '%.Read' AND name NOT LIKE 'SiteNodeVersion.Read') AND ");
+		sb.append("ar.accessRightId NOT IN (select accessRightId from cmAccessRightUser where ar.accessRightId = accessRightId) AND ");
+		sb.append("ar.accessRightId NOT IN (select accessRightId from cmAccessRightRole where ar.accessRightId = accessRightId) AND ");
+		sb.append("ar.accessRightId NOT IN (select accessRightId from cmAccessRightGroup where ar.accessRightId = accessRightId)  AS org.infoglue.cms.entities.management.impl.simple.SmallAccessRightImpl");
+					
+		System.out.println(sb.toString());
+		OQLQuery oql = db.getOQLQuery(sb.toString());
+		
+		QueryResults results = oql.execute(Database.ReadOnly);
+		while (results.hasMore()) 
+		{
+			AccessRight accessRight = (AccessRight)results.next();
+			AccessRightVO accessRightVO = accessRight.getValueObject();
+			undefinedAccessRights.add(accessRightVO);
+		}
+		
+		results.close();
+		oql.close();
+		
+		return undefinedAccessRights;
+	}
+	
 	public void populateDescription(Database db, AccessRightVO accessRightVO, AccessRight fullAccessRight) 
 	{
 		try

@@ -375,36 +375,8 @@ public class CacheController extends Thread
 		*/
 	}
 
-	public static boolean isObjectCachedInCastor(Class clazz, Object identity)  throws Exception
-	{
-		boolean isCached = false;
-		Database db = CastorDatabaseService.getDatabase();
 	
-		try
-		{
-			db.begin();
-
-		    isCached = db.getCacheManager().isCached(clazz, identity);
-		    
-		    db.rollback();
-		}
-		catch(Exception e)
-		{
-			logger.error("Error checking if object exists in cache for " + clazz.getName() + " (" + identity + "):" + e.getMessage());
-		}
-		finally
-		{
-			try
-			{
-				db.close();
-			}
-			catch (Exception e) 
-			{
-				logger.error("Error closing database: " + e.getMessage());
-			}
-		}
-		return isCached;
-	}
+	
 
 	public void setCacheExpireInterval(int cacheExpireInterval)
 	{
@@ -482,7 +454,7 @@ public class CacheController extends Thread
 		if(cacheName == null || key == null)
 			return null;
 		
-		if(getDefeatCaches().getDefeatCache())
+		if(getDefeatCaches() != null && getDefeatCaches().getDefeatCache())
 			return null;
 		
 		//synchronized(caches)
@@ -589,9 +561,9 @@ public class CacheController extends Thread
 		    	//else if(cacheName != null && cacheName.startsWith("contentAttributeCache"))
 		    	//	cacheCapacity = "1000";
 		    	if(cacheName != null && cacheName.startsWith("pageCache"))
-		    		cacheCapacity = "4000";
+		    		cacheCapacity = "3000";
 		    	if(cacheName != null && cacheName.startsWith("pageCacheExtra"))
-		    		cacheCapacity = "16000";
+		    		cacheCapacity = "12000";
 				if(cacheName != null && cacheName.equalsIgnoreCase("encodedStringsCache"))
 					cacheCapacity = "2000";
 				if(cacheName != null && cacheName.equalsIgnoreCase("importTagResultCache"))
@@ -1166,27 +1138,39 @@ public class CacheController extends Thread
 			String[] allUsedEntitiesCopy = allUsedEntitiesFilteredCopy.toArray(new String[0]);
 			logger.info("allUsedEntitiesCopy:" + allUsedEntitiesCopy.length);
 
-	    	Map cacheSettings = (Map)getCachedObject("serverNodePropertiesCacheSettings", "cacheSettings");
-	    	if(cacheSettings == null)
-	    	{
-	    		cacheSettings = CmsPropertyHandler.getCacheSettings();
-	    		cacheObject("serverNodePropertiesCacheSettings", "cacheSettings", cacheSettings);
-	    	}
-	    	
-	    	String pageCacheExclusionsRegexp = (String)cacheSettings.get("PAGE_CACHE_EXCLUSIONS");
-	    	String pageCacheMaxGroups = (String)cacheSettings.get("PAGE_CACHE_MAX_GROUPS");
-    		logger.info("pageCacheExclusionsRegexp:" + pageCacheExclusionsRegexp);
-	    	if(pageCacheExclusionsRegexp != null && !pageCacheExclusionsRegexp.equals("") && pageKey.matches(pageCacheExclusionsRegexp))
-	    	{
-	    		logger.info("Skipping caching key:" + pageKey);
-	    		return false;
-	    	}
-	    	if(pageCacheMaxGroups != null && !pageCacheMaxGroups.equals("") && Integer.parseInt(pageCacheMaxGroups) < allUsedEntitiesCopy.length)
-	    	{
-	    		logger.info("Skipping caching key:" + pageKey);
-	    		return false;
-	    	}
-	    	
+			try
+			{
+		    	Map cacheSettings = (Map)getCachedObject("serverNodePropertiesCacheSettings", "cacheSettings");
+		    	if(cacheSettings == null)
+		    	{
+		    		cacheSettings = CmsPropertyHandler.getCacheSettings();
+		    		cacheObject("serverNodePropertiesCacheSettings", "cacheSettings", cacheSettings);
+		    	}
+		    	
+		    	if(cacheSettings != null)
+		    	{
+			    	String pageCacheExclusionsRegexp = (String)cacheSettings.get("PAGE_CACHE_EXCLUSIONS");
+			    	String pageCacheMaxGroups = (String)cacheSettings.get("PAGE_CACHE_MAX_GROUPS");
+		    		logger.info("pageCacheExclusionsRegexp:" + pageCacheExclusionsRegexp);
+			    	if(pageCacheExclusionsRegexp != null && !pageCacheExclusionsRegexp.equals("") && pageKey.matches(pageCacheExclusionsRegexp))
+			    	{
+			    		logger.info("Skipping caching key:" + pageKey);
+			    		return false;
+			    	}
+			    	if(pageCacheMaxGroups != null && !pageCacheMaxGroups.equals("") && Integer.parseInt(pageCacheMaxGroups) < allUsedEntitiesCopy.length)
+			    	{
+			    		logger.info("Skipping caching key:" + pageKey);
+			    		return false;
+			    	}
+		    	}
+		    	else
+		    		logger.info("Skipping caching key:" + pageKey);
+			}
+			catch (Exception e) 
+			{
+				logger.warn("cacheSettings was null:" + e.getMessage(), e);
+			}
+			
 			String compressPageCache = CmsPropertyHandler.getCompressPageCache();
 		    if(compressPageCache != null && compressPageCache.equalsIgnoreCase("true"))
 			{
