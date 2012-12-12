@@ -2485,6 +2485,7 @@ public class SiteNodeController extends BaseController
 				    copyAccessRights(db, contentVO.getId().toString(), copiedContent.getId().toString(), "Content.ChangeAccessRights");
 				    copyAccessRights(db, contentVO.getId().toString(), copiedContent.getId().toString(), "Content.CreateVersion");
 				    
+				    Map<Integer,Integer> assetIdMap = new HashMap<Integer,Integer>();
 					Collection<ContentVersionVO> contentVersionVOList = ContentVersionController.getContentVersionController().getContentVersionVOList(contentVO.getId());
 					for(ContentVersionVO contentVersionVO : contentVersionVOList)
 					{
@@ -2507,7 +2508,7 @@ public class SiteNodeController extends BaseController
 			            logger.info("Adding content version " + contentVersion);
 			            versions.add(contentVersion);
 						
-						DigitalAssetController.getController().createByCopy(oldContentVersionId, contentVersion.getId(), db);
+						DigitalAssetController.getController().createByCopy(oldContentVersionId, contentVersion.getId(), assetIdMap, db);
 						for(ContentCategory cc : contentCategories)
 						{
 							ContentCategoryVO contentCategoryVO = new ContentCategoryVO();

@@ -475,7 +475,7 @@ public class DigitalAssetController extends BaseController
    	 * The asset is send in as an InputStream which castor inserts automatically.
    	 */
 
-	public void createByCopy(Integer originalContentVersionId, Integer newContentVersionId, Database db) throws ConstraintException, SystemException
+	public void createByCopy(Integer originalContentVersionId, Integer newContentVersionId, Map<Integer,Integer> assetIdMap, Database db) throws ConstraintException, SystemException
 	{
 		logger.info("Creating by copying....");
 		logger.info("originalContentVersionId:" + originalContentVersionId);
@@ -487,44 +487,54 @@ public class DigitalAssetController extends BaseController
 		for(DigitalAsset oldDigitalAsset : assets)
 		{
 			ContentVersion contentVersion = ContentVersionController.getContentVersionController().getContentVersionWithId(newContentVersionId, db);
-			Collection contentVersions = new ArrayList();
-			contentVersions.add(contentVersion);
-			logger.info("Added contentVersion:" + contentVersion.getId());
-	   		
-			try
+
+			if(assetIdMap.containsKey(oldDigitalAsset.getId()))
 			{
-				String filePath = getDigitalAssetFilePath(oldDigitalAsset.getValueObject(), db);
-				File oldAssetFile = new File(filePath);
-				
-				logger.info("Creating asset for:" + oldDigitalAsset.getAssetKey() + ":" + oldContentVersion.getId() + "/" + contentVersion.getId());
-				DigitalAssetVO digitalAssetVO = new DigitalAssetVO();
-				digitalAssetVO.setAssetContentType(oldDigitalAsset.getAssetContentType());
-				digitalAssetVO.setAssetFileName(oldDigitalAsset.getAssetFileName());
-				digitalAssetVO.setAssetFilePath(oldDigitalAsset.getAssetFilePath());
-				digitalAssetVO.setAssetFileSize(oldDigitalAsset.getAssetFileSize());
-				digitalAssetVO.setAssetKey(oldDigitalAsset.getAssetKey());
-				
-				DigitalAsset digitalAsset = new DigitalAssetImpl();
-				digitalAsset.setValueObject(digitalAssetVO);
-
-				InputStream is = new FileInputStream(oldAssetFile);
-
-				if(is != null)
-				{
-					digitalAsset.setAssetBlob(is);
-				}
-				else
-					digitalAsset.setAssetBlob(null);
-				//digitalAsset.setAssetBlob(oldDigitalAsset.getAssetBlob());
-
-				db.create(digitalAsset);
-
-				digitalAsset.setContentVersions(contentVersions);
+				logger.info("The asset was allready copied by another version - let's just connect the new one");
+				DigitalAsset newDigitalAsset = getDigitalAssetWithId(assetIdMap.get(oldDigitalAsset.getId()), db);
+				newDigitalAsset.getContentVersions().add(contentVersion);
 			}
-			catch(Exception e)
+			else
 			{
-				logger.error("An error occurred so we should not complete the transaction:" + e, e);
-				throw new SystemException(e.getMessage());
+				Collection contentVersions = new ArrayList();
+				contentVersions.add(contentVersion);
+				logger.info("Added contentVersion:" + contentVersion.getId());
+				try
+				{
+					String filePath = getDigitalAssetFilePath(oldDigitalAsset.getValueObject(), db);
+					File oldAssetFile = new File(filePath);
+					
+					logger.info("Creating asset for:" + oldDigitalAsset.getAssetKey() + ":" + oldContentVersion.getId() + "/" + contentVersion.getId());
+					DigitalAssetVO digitalAssetVO = new DigitalAssetVO();
+					digitalAssetVO.setAssetContentType(oldDigitalAsset.getAssetContentType());
+					digitalAssetVO.setAssetFileName(oldDigitalAsset.getAssetFileName());
+					digitalAssetVO.setAssetFilePath(oldDigitalAsset.getAssetFilePath());
+					digitalAssetVO.setAssetFileSize(oldDigitalAsset.getAssetFileSize());
+					digitalAssetVO.setAssetKey(oldDigitalAsset.getAssetKey());
+					
+					DigitalAsset digitalAsset = new DigitalAssetImpl();
+					digitalAsset.setValueObject(digitalAssetVO);
+	
+					InputStream is = new FileInputStream(oldAssetFile);
+	
+					if(is != null)
+					{
+						digitalAsset.setAssetBlob(is);
+					}
+					else
+						digitalAsset.setAssetBlob(null);
+					//digitalAsset.setAssetBlob(oldDigitalAsset.getAssetBlob());
+	
+					db.create(digitalAsset);
+					
+					assetIdMap.put(oldDigitalAsset.getId(), digitalAsset.getId());
+					digitalAsset.setContentVersions(contentVersions);
+				}
+				catch(Exception e)
+				{
+					logger.error("An error occurred so we should not complete the transaction:" + e, e);
+					throw new SystemException(e.getMessage());
+				}
 			}
 		}
 	}
