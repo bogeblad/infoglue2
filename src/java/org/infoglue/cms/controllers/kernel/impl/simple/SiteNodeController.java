@@ -2364,13 +2364,14 @@ public class SiteNodeController extends BaseController
     		
             SiteNode newSiteNode = SiteNodeControllerProxy.getSiteNodeControllerProxy().acCreate(principal, newParentSiteNode.getId(), siteNode.getSiteNodeTypeDefinition().getId(), newParentSiteNode.getRepository().getId(), newSiteNodeVO, db);
             
-            Collection<SiteNodeVersionVO> siteNodeVersionVOList = SiteNodeVersionController.getController().getSiteNodeVersionVOList(oldSiteNodeVO.getId());
-			for(SiteNodeVersionVO siteNodeVersionVO : siteNodeVersionVOList)
+            SiteNodeVersionVO siteNodeVersionVO = SiteNodeVersionController.getController().getLatestActiveSiteNodeVersionVO(oldSiteNodeVO.getId());
+			if(siteNodeVersionVO != null)
 			{
 				logger.info("siteNodeVersionVO:" + siteNodeVersionVO.getId());
 				Integer oldSiteNodeVersionId = siteNodeVersionVO.getId();
 				logger.info("oldSiteNodeVersionId:" + oldSiteNodeVersionId);
 				
+				siteNodeVersionVO.setStateId(0);
 				SiteNodeVersion siteNodeVersion = SiteNodeVersionController.getController().create(newSiteNode.getId(), principal, siteNodeVersionVO, db);
 				
 		        Map args = new HashMap();
@@ -2498,6 +2499,7 @@ public class SiteNodeController extends BaseController
 						logger.info("contentCategories:" + contentCategories);
 						
 						ContentTypeDefinition ctd = ContentTypeDefinitionController.getController().getContentTypeDefinitionWithId(contentVO.getContentTypeDefinitionId(), db);
+						contentVersionVO.setStateId(0);
 						ContentVersion contentVersion = ContentVersionController.getContentVersionController().create(copiedContent.getId(), contentVersionVO.getLanguageId(), contentVersionVO, null, db);
 						contentVersion.getOwningContent().setContentTypeDefinition((ContentTypeDefinitionImpl)ctd);
 						
@@ -2558,9 +2560,16 @@ public class SiteNodeController extends BaseController
 		}		
 	}
 
-	public void copyAccessRights(Database db, String oldParameter, String newParameter, String InterceptionPointName) throws Exception 
+	Map<String,InterceptionPoint> interceptionPoints = new HashMap<String,InterceptionPoint>();
+	public void copyAccessRights(Database db, String oldParameter, String newParameter, String interceptionPointName) throws Exception 
 	{
-		InterceptionPoint interceptionPoint = InterceptionPointController.getController().getInterceptionPointWithName(InterceptionPointName, db);
+		InterceptionPoint interceptionPoint = interceptionPoints.get(interceptionPointName);
+		if(interceptionPoint == null)
+		{			
+			interceptionPoint = InterceptionPointController.getController().getInterceptionPointWithName(interceptionPointName, db);
+			interceptionPoints.put(interceptionPointName, interceptionPoint);
+		}
+		
 		List<AccessRight> accessRights = AccessRightController.getController().getAccessRightListOnlyReadOnly(interceptionPoint.getId(), oldParameter, db);
 		for(AccessRight accessRight : accessRights)
 		{		

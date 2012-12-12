@@ -515,16 +515,24 @@ public class DigitalAssetController extends BaseController
 					DigitalAsset digitalAsset = new DigitalAssetImpl();
 					digitalAsset.setValueObject(digitalAssetVO);
 	
-					InputStream is = new FileInputStream(oldAssetFile);
-	
-					if(is != null)
+					if(oldAssetFile.exists())
 					{
-						digitalAsset.setAssetBlob(is);
+						InputStream is = new FileInputStream(oldAssetFile);
+		
+						if(is != null)
+						{
+							digitalAsset.setAssetBlob(is);
+						}
+						else
+							digitalAsset.setAssetBlob(null);
+						//digitalAsset.setAssetBlob(oldDigitalAsset.getAssetBlob());
 					}
 					else
+					{
+						logger.warn("No asset file found:" + oldAssetFile.getPath());
 						digitalAsset.setAssetBlob(null);
-					//digitalAsset.setAssetBlob(oldDigitalAsset.getAssetBlob());
-	
+					}
+					
 					db.create(digitalAsset);
 					
 					assetIdMap.put(oldDigitalAsset.getId(), digitalAsset.getId());
@@ -532,8 +540,8 @@ public class DigitalAssetController extends BaseController
 				}
 				catch(Exception e)
 				{
-					logger.error("An error occurred so we should not complete the transaction:" + e, e);
-					throw new SystemException(e.getMessage());
+					logger.error("An error occurred when we tried to copy asset:" + e.getMessage());
+					logger.warn("An error occurred when we tried to copy asset:" + e.getMessage(), e);
 				}
 			}
 		}
