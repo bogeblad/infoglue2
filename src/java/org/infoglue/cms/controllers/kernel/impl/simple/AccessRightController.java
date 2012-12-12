@@ -3678,7 +3678,7 @@ public class AccessRightController extends BaseController
 		sb.append("ar.accessRightId NOT IN (select accessRightId from cmAccessRightRole where ar.accessRightId = accessRightId) AND ");
 		sb.append("ar.accessRightId NOT IN (select accessRightId from cmAccessRightGroup where ar.accessRightId = accessRightId)  AS org.infoglue.cms.entities.management.impl.simple.SmallAccessRightImpl");
 					
-		System.out.println(sb.toString());
+		//System.out.println(sb.toString());
 		OQLQuery oql = db.getOQLQuery(sb.toString());
 		
 		QueryResults results = oql.execute(Database.ReadOnly);
