@@ -3292,7 +3292,7 @@ public class CacheController extends Thread
 			    logger.info("evictWaitingCache allready in progress - returning to avoid conflict");
 		        return;
 		    }
-	       	else if(RequestAnalyser.getRequestAnalyser().getBlockRequestTime() < 60000)
+	       	else if(RequestAnalyser.getRequestAnalyser().getBlockRequestTime() > 30000)
 	       		logger.warn("An block must have gone wrong... there has gone over 30 seconds and still not reported done.. let's run anyway.");
 
 	       	RequestAnalyser.getRequestAnalyser().setBlockRequests(true);
