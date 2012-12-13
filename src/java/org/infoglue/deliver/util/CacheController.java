@@ -1088,7 +1088,6 @@ public class CacheController extends Thread
 		boolean isCached = false;
 		
 		String pageCacheExtraName = "pageCacheExtra";
-		
 		if(!pageInvoker.getTemplateController().getIsPageCacheDisabled() && !pageInvoker.getDeliveryContext().getDisablePageCache()) //Caching page if not disabled
 		{
 			Integer newPageCacheTimeout = pageInvoker.getDeliveryContext().getPageCacheTimeout();
@@ -1137,41 +1136,44 @@ public class CacheController extends Thread
 			//System.out.println("allUsedEntitiesFilteredCopy:" + allUsedEntitiesFilteredCopy.size());
 			String[] allUsedEntitiesCopy = allUsedEntitiesFilteredCopy.toArray(new String[0]);
 			logger.info("allUsedEntitiesCopy:" + allUsedEntitiesCopy.length);
-
 			try
 			{
 		    	Map cacheSettings = (Map)getCachedObject("serverNodePropertiesCacheSettings", "cacheSettings");
+		    	logger.info("cacheSettings1:" + cacheSettings);
 		    	if(cacheSettings == null)
 		    	{
 		    		cacheSettings = CmsPropertyHandler.getCacheSettings();
 		    		cacheObject("serverNodePropertiesCacheSettings", "cacheSettings", cacheSettings);
 		    	}
-		    	
+		    	logger.info("cacheSettings1:" + cacheSettings);
 		    	if(cacheSettings != null)
 		    	{
 			    	String pageCacheExclusionsRegexp = (String)cacheSettings.get("PAGE_CACHE_EXCLUSIONS");
 			    	String pageCacheMaxGroups = (String)cacheSettings.get("PAGE_CACHE_MAX_GROUPS");
-		    		logger.info("pageCacheExclusionsRegexp:" + pageCacheExclusionsRegexp);
-			    	if(pageCacheExclusionsRegexp != null && !pageCacheExclusionsRegexp.equals("") && pageKey.matches(pageCacheExclusionsRegexp))
+			    	logger.info("pageCacheExclusionsRegexp:" + pageCacheExclusionsRegexp);
+			    	logger.info("pageCacheMaxGroups:" + pageCacheMaxGroups);
+				    if(pageCacheExclusionsRegexp != null && !pageCacheExclusionsRegexp.equals("") && pageKey.matches(pageCacheExclusionsRegexp))
 			    	{
-			    		logger.info("Skipping caching key:" + pageKey);
+				    	logger.info("Skipping caching key 1:" + pageKey);
 			    		return false;
 			    	}
 			    	if(pageCacheMaxGroups != null && !pageCacheMaxGroups.equals("") && Integer.parseInt(pageCacheMaxGroups) < allUsedEntitiesCopy.length)
 			    	{
-			    		logger.info("Skipping caching key:" + pageKey);
+			    		logger.info("Skipping caching key 2:" + pageKey);
 			    		return false;
 			    	}
 		    	}
 		    	else
-		    		logger.info("Skipping caching key:" + pageKey);
+		    		logger.info("Skipping caching key 3:" + pageKey);
 			}
 			catch (Exception e) 
 			{
 				logger.warn("cacheSettings was null:" + e.getMessage(), e);
 			}
 			
-			String compressPageCache = CmsPropertyHandler.getCompressPageCache();
+			logger.info("Caching:" + pageKey);
+
+	    	String compressPageCache = CmsPropertyHandler.getCompressPageCache();
 		    if(compressPageCache != null && compressPageCache.equalsIgnoreCase("true"))
 			{
 				long startCompression = System.currentTimeMillis();
@@ -3285,11 +3287,13 @@ public class CacheController extends Thread
        	String operatingMode = CmsPropertyHandler.getOperatingMode();
 	    synchronized(RequestAnalyser.getRequestAnalyser()) 
 	    {
-	       	if(RequestAnalyser.getRequestAnalyser().getBlockRequests())
+	       	if(RequestAnalyser.getRequestAnalyser().getBlockRequests() && RequestAnalyser.getRequestAnalyser().getBlockRequestTime() < 30000)
 		    {
 			    logger.info("evictWaitingCache allready in progress - returning to avoid conflict");
 		        return;
 		    }
+	       	else if(RequestAnalyser.getRequestAnalyser().getBlockRequestTime() < 60000)
+	       		logger.warn("An block must have gone wrong... there has gone over 30 seconds and still not reported done.. let's run anyway.");
 
 	       	RequestAnalyser.getRequestAnalyser().setBlockRequests(true);
 		}
@@ -3866,6 +3870,8 @@ public class CacheController extends Thread
 
     public static void clearPageCache(String key)
     {        
+    	clearCache("pageCache", key);
+    	/*
     	try
     	{
         	String firstPart = ("" + key.hashCode()).substring(0, 3);
@@ -3886,7 +3892,7 @@ public class CacheController extends Thread
     	{
     		logger.warn("Problem storing data to file:" + e.getMessage());
 		}
-
+		*/
     }
     
     private static void removeCachedContentInFile(String cacheName, String key)

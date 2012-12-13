@@ -146,7 +146,7 @@ public class UpdateCacheAction extends InfoGlueAbstractAction
 		publicationDetailVO.setDescription(objectDescription);
 		publicationDetailVO.setEntityClass(className);
 		publicationDetailVO.setEntityId(new Integer(objectId));
-		publicationDetailVO.setName("" + objectName);
+		publicationDetailVO.setName("" + objectName);	
 		publicationDetailVO.setTypeId(PublicationDetailVO.PUBLISH);
 		publicationDetailVO.setCreator(publisherName);
 

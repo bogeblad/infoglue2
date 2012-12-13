@@ -793,9 +793,23 @@ public class RemoteContentServiceImpl extends RemoteInfoGlueService
                 contentVersionVO = ContentVersionController.getContentVersionController().getContentVersionVOWithId(contentVersionId);
             else
                 contentVersionVO = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(contentId, languageId);
-
+            
+            if(contentVersionVO != null)
+            {
+            	try
+            	{
+		            logger.info("contentVersionVO:" + contentVersionVO);
+		    		ContentVersion cv = ContentStateController.changeState(contentVersionVO.getId(), ContentVersionVO.WORKING_STATE, "Remote update from deliver", false, this.principal, contentVersionVO.getContentId(), new ArrayList());
+		    		logger.info("cv:" + cv);
+		    		contentVersionVO = cv.getValueObject();
+            	}
+            	catch (Exception e) 
+            	{
+            		logger.error("Error when changing state to working: " + e.getMessage(), e);
+				}
+            }
             logger.info("contentVersionVO:" + contentVersionVO);
-
+            
             if(contentVersionVO == null)
             {
             	logger.info("createVersionIfNotExists:" + createVersionIfNotExists);

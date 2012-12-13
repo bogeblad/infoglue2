@@ -125,7 +125,7 @@ public class SelectiveLivePublicationThread extends PublicationThread
 
 	public synchronized void run()
 	{
-		logger.info("Run in SelectiveLivePublicationThread....");
+		logger.warn("Run in SelectiveLivePublicationThread....");
 		
 		int publicationDelay = 5000;
 	    String publicationThreadDelay = CmsPropertyHandler.getPublicationThreadDelay();
@@ -146,7 +146,7 @@ public class SelectiveLivePublicationThread extends PublicationThread
 			e1.printStackTrace();
 		}
 
-    	logger.info("before cacheEvictionBeans:" + cacheEvictionBeans.size());
+    	logger.warn("before cacheEvictionBeans:" + cacheEvictionBeans.size());
 	    synchronized(notifications)
         {
 	    	cacheEvictionBeans.addAll(notifications);
@@ -154,26 +154,38 @@ public class SelectiveLivePublicationThread extends PublicationThread
 	    	this.notifications = null;
         }
 	    
-	    Iterator cacheEvictionBeansIterator = cacheEvictionBeans.iterator();
 	    boolean processedServerNodeProperties = false;
-	    while(cacheEvictionBeansIterator.hasNext())
+	    try
 	    {
-	    	CacheEvictionBean cacheEvictionBean = (CacheEvictionBean)cacheEvictionBeansIterator.next();
-		    String className = cacheEvictionBean.getClassName();
-		    if(className.equalsIgnoreCase("ServerNodeProperties"))
+		    Iterator cacheEvictionBeansIterator = cacheEvictionBeans.iterator();
+		    while(cacheEvictionBeansIterator.hasNext())
 		    {
-		    	if(processedServerNodeProperties || cacheEvictionBean.getObjectName().equals("MySettings"))
-		    	{
-		    		cacheEvictionBeansIterator.remove();
-		    		//logger.info("Removed one ServerNodeProperties update as it will be processed anyway in this eviction cycle");
-		    	}
-		    	else
-		    	{
-		    		processedServerNodeProperties = true;
-		    	}
+		    	CacheEvictionBean cacheEvictionBean = (CacheEvictionBean)cacheEvictionBeansIterator.next();
+			    String className = cacheEvictionBean.getClassName();
+			    if(className == null)
+			    	logger.error("No className in CacheEvictionBean");
+			    if(cacheEvictionBean.getObjectName() == null)
+			    	logger.error("No objectName in CacheEvictionBean");
+			    	
+			    if(className.equalsIgnoreCase("ServerNodeProperties"))
+			    {
+			    	if(processedServerNodeProperties || cacheEvictionBean.getObjectName().equals("MySettings"))
+			    	{
+			    		cacheEvictionBeansIterator.remove();
+			    		//logger.info("Removed one ServerNodeProperties update as it will be processed anyway in this eviction cycle");
+			    	}
+			    	else
+			    	{
+			    		processedServerNodeProperties = true;
+			    	}
+			    }
 		    }
 	    }
-
+	    catch (Exception e) 
+	    {
+	    	logger.error("Error in selective live publication thread. Could not process eviction beans part 1: " + e.getMessage(), e);
+		}
+		    
 		logger.info("cacheEvictionBeans.size:" + cacheEvictionBeans.size() + ":" + RequestAnalyser.getRequestAnalyser().getBlockRequests());
 		if(cacheEvictionBeans.size() > 0)
 		{
@@ -840,7 +852,7 @@ public class SelectiveLivePublicationThread extends PublicationThread
 			}
 			finally
 			{
-		        logger.info("released block \n\n DONE---");
+		        logger.warn("released block \n\n DONE---");
 				RequestAnalyser.getRequestAnalyser().setBlockRequests(false);
 			}
 		}

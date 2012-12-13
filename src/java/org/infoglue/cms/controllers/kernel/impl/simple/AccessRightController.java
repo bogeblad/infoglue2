@@ -147,7 +147,7 @@ public class AccessRightController extends BaseController
 		
 		StringBuilder sb = new StringBuilder();
 		sb.append("CALL SQL select ar.accessRightId, ar.parameters, ar.interceptionPointId from cmAccessRight ar where ");
-		sb.append("ar.interceptionPointId in (select interceptionPointId from cmInterceptionPoint where name like 'ComponentEditor.%' OR name LIKE 'Component.%' OR name = 'ComponentPropertyEditor.EditProperty' OR name like '%.Read' AND name NOT LIKE 'SiteNodeVersion.Read') AND ");
+		sb.append("ar.interceptionPointId in (select interceptionPointId from cmInterceptionPoint where name like 'ComponentEditor.%' OR name LIKE 'Component.%' OR name = 'ComponentPropertyEditor.EditProperty' OR name like '%.Read%' AND name NOT LIKE 'SiteNodeVersion.Read') AND ");
 		sb.append("(ar.accessRightId IN (select accessRightId from cmAccessRightUser where userName = '" + principal.getName() + "') OR ");
 		sb.append("((ar.accessRightId NOT IN (select accessRightId from cmAccessRightRole where ar.accessRightId = accessRightId) AND ar.accessRightId NOT IN (select accessRightId from cmAccessRightUser where ar.accessRightId = accessRightId)) OR ");
 		sb.append("(  ar.accessRightId IN ");
@@ -1992,7 +1992,7 @@ public class AccessRightController extends BaseController
 			return true;
 		}
 		
-		//ComponentEditor.%' OR name = 'Component.Select' OR name = 'Component.Edit' OR name = 'ComponentPropertyEditor.EditProperty' OR name like '%.Read' AND name NOT LIKE 'SiteNodeVersion.Read
+		//ComponentEditor.%' OR name = 'Component.Select' OR name = 'Component.Edit' OR name = 'ComponentPropertyEditor.EditProperty' OR name like '%.Read%' AND name NOT LIKE 'SiteNodeVersion.Read
 		if((interceptionPointName.indexOf("ComponentEditor.") > -1 || interceptionPointName.indexOf("Component.") > -1 || interceptionPointName.indexOf("ComponentPropertyEditor.EditProperty") > -1 || interceptionPointName.indexOf(".Read") > -1) && interceptionPointName.indexOf("SiteNodeVersion.Read") == -1)
 		{
 			//Map<String,Integer> userAccessRightsMap = (Map<String,Integer>)CacheController.getCachedObjectFromAdvancedCache("personalAuthorizationCache", "authorizationMap_" + infoGluePrincipal.getName());
@@ -3619,9 +3619,9 @@ public class AccessRightController extends BaseController
 
 	public void getAllDuplicates(boolean populateRelated, boolean includeAllDuplicates, List<AccessRightVO> duplicates, List<AccessRightVO> duplicatesEasyToDelete, List<AccessRightVO> duplicatesEasyToMerge, Database db) throws SystemException, Bug, Exception
 	{
-		String SQL = "CALL SQL select max(ar.accessRightId) as accessRightId, ar.parameters, ar.interceptionPointId from cmAccessRight ar where ar.interceptionPointId in (select interceptionPointId from cmInterceptionPoint where name like '%.Read' AND name not like 'SiteNodeVersion.Read') GROUP BY ar.parameters, ar.interceptionPointId HAVING count(*) > 1 ORDER BY ar.interceptionPointId, ar.parameters AS org.infoglue.cms.entities.management.impl.simple.SmallAccessRightImpl";
+		String SQL = "CALL SQL select max(ar.accessRightId) as accessRightId, ar.parameters, ar.interceptionPointId from cmAccessRight ar where ar.interceptionPointId in (select interceptionPointId from cmInterceptionPoint where name like '%.Read%' AND name not like 'SiteNodeVersion.Read') GROUP BY ar.parameters, ar.interceptionPointId HAVING count(*) > 1 ORDER BY ar.interceptionPointId, ar.parameters AS org.infoglue.cms.entities.management.impl.simple.SmallAccessRightImpl";
 		if(includeAllDuplicates)
-			SQL = "CALL SQL select ar.accessRightId, ar.parameters, ar.interceptionPointId from cmAccessRight ar INNER JOIN (select ar2.parameters, ar2.interceptionPointId from cmAccessRight ar2 GROUP BY ar2.parameters, ar2.interceptionPointId HAVING count(*) > 1 ORDER BY ar2.interceptionPointId, ar2.parameters, ar2.accessRightId) derived_ar ON derived_ar.parameters = ar.parameters AND derived_ar.interceptionPointId = ar.interceptionPointId AND derived_ar.interceptionPointId in (select interceptionPointId from cmInterceptionPoint where name like '%.Read' AND name not like 'SiteNodeVersion.Read') order by parameters AS org.infoglue.cms.entities.management.impl.simple.SmallAccessRightImpl";
+			SQL = "CALL SQL select ar.accessRightId, ar.parameters, ar.interceptionPointId from cmAccessRight ar INNER JOIN (select ar2.parameters, ar2.interceptionPointId from cmAccessRight ar2 GROUP BY ar2.parameters, ar2.interceptionPointId HAVING count(*) > 1 ORDER BY ar2.interceptionPointId, ar2.parameters, ar2.accessRightId) derived_ar ON derived_ar.parameters = ar.parameters AND derived_ar.interceptionPointId = ar.interceptionPointId AND derived_ar.interceptionPointId in (select interceptionPointId from cmInterceptionPoint where name like '%.Read%' AND name not like 'SiteNodeVersion.Read') order by parameters AS org.infoglue.cms.entities.management.impl.simple.SmallAccessRightImpl";
 			
 		OQLQuery oql = db.getOQLQuery(SQL);
 		
@@ -3673,7 +3673,7 @@ public class AccessRightController extends BaseController
 		  
 		StringBuilder sb = new StringBuilder();
 		sb.append("CALL SQL select ar.accessRightId, ar.parameters, ar.interceptionPointId from cmAccessRight ar where ");
-		sb.append("ar.interceptionPointId in (select interceptionPointId from cmInterceptionPoint where name like 'ComponentEditor.%' OR name LIKE 'Component.%' OR name = 'ComponentPropertyEditor.EditProperty' OR name like '%.Read' AND name NOT LIKE 'SiteNodeVersion.Read') AND ");
+		sb.append("ar.interceptionPointId in (select interceptionPointId from cmInterceptionPoint where name like 'ComponentEditor.%' OR name LIKE 'Component.%' OR name = 'ComponentPropertyEditor.EditProperty' OR name like '%.Read%' AND name NOT LIKE 'SiteNodeVersion.Read') AND ");
 		sb.append("ar.accessRightId NOT IN (select accessRightId from cmAccessRightUser where ar.accessRightId = accessRightId) AND ");
 		sb.append("ar.accessRightId NOT IN (select accessRightId from cmAccessRightRole where ar.accessRightId = accessRightId) AND ");
 		sb.append("ar.accessRightId NOT IN (select accessRightId from cmAccessRightGroup where ar.accessRightId = accessRightId)  AS org.infoglue.cms.entities.management.impl.simple.SmallAccessRightImpl");

@@ -359,6 +359,11 @@ public class RequestAnalyser
     	Blocker.setBlocking(blockRequests);
     }
 
+    public long getBlockRequestTime()
+    {
+        return Blocker.getBlockRequestTime();
+    }
+
 /*
     public static void setBlockRequests(boolean blockRequests)
     {

@@ -178,7 +178,7 @@ public class InfoGluePrincipalControllerProxy extends BaseController
 			return (String)object;
 		}
 
-	    logger.warn("Reading principalPropertyValue again:" + key);
+	    logger.info("Reading principalPropertyValue again:" + key);
 		String value = "";
 		
 		if(infoGluePrincipal == null || propertyName == null)
