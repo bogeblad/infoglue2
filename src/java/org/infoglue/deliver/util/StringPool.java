@@ -52,10 +52,10 @@ public class StringPool
 		else if(type == 4)
 			map = siteNodeVersionMap;
 		
-		if (map.size() == 100000) 
+		if (map.size() > 150000) 
 		{
-			System.out.println("Many strings in the pool:" + map.size());
-			//map.clear();
+			//logger.warn("Many strings in the pool:" + map.size());
+			map.clear();
 		}
 
 		String canon = map.get(id);

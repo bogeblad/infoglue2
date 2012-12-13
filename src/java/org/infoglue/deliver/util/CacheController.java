@@ -281,7 +281,7 @@ public class CacheController extends Thread
 	{
 		if(type == null || id == null)
 		{
-			logger.warn("Broken was returned from pool:" + type + ":" + id);
+			logger.info("Broken was returned from pool:" + type + ":" + id);
 			return "broken";
 		}
 		
@@ -2009,20 +2009,26 @@ public class CacheController extends Thread
 						    		{
 							    		if(entity.indexOf("ContentVersion") > 0)
 							    		{
-							    			//if(isObjectCachedInCastor(SmallContentVersionImpl.class, new Integer(entityId)))
-							    			//{
-										    	Integer contentId = ContentVersionController.getContentVersionController().getContentIdForContentVersion(new Integer(entityId));
-										    	if(contentId != null)
-										    	{
-										    		ContentVO contentVO = ContentController.getContentController().getContentVOWithId(contentId); 
-										    		ContentTypeDefinitionVO ctdVO = ContentTypeDefinitionController.getController().getContentTypeDefinitionVOWithId(contentVO.getContentTypeDefinitionId());
-										    		if(ctdVO.getName().equals("HTMLTemplate") || ctdVO.getName().equals("PagePartTemplate"))
-										    		{
-										    			cacheInstance.clear();
-										    			ComponentController.getController().preCacheComponentsDelayed();
-										    		}
-										    	}
-										    //}
+									    	Integer contentId = null;
+									    	try
+									    	{
+										    	contentId = ContentVersionController.getContentVersionController().getContentIdForContentVersion(new Integer(entityId));
+									    	}
+									    	catch (Exception e2) 
+									    	{
+									    		logger.info("Error loading content with id " + entityId + ":" + e2.getMessage());
+											}
+									    	
+									    	if(contentId != null)
+									    	{
+									    		ContentVO contentVO = ContentController.getContentController().getContentVOWithId(contentId); 
+									    		ContentTypeDefinitionVO ctdVO = ContentTypeDefinitionController.getController().getContentTypeDefinitionVOWithId(contentVO.getContentTypeDefinitionId());
+									    		if(ctdVO.getName().equals("HTMLTemplate") || ctdVO.getName().equals("PagePartTemplate"))
+									    		{
+									    			cacheInstance.clear();
+									    			ComponentController.getController().preCacheComponentsDelayed();
+									    		}
+									    	}
 							    		}
 							    		else
 							    			logger.info("skipping clearing components as it seems stupid");
@@ -2127,18 +2133,23 @@ public class CacheController extends Thread
 								    	try
 								    	{
 									    	logger.info("BeforesiteNodeVersionVO...");
-									    	/*
+									    	
 									    	SiteNodeVersionVO snvVO = null;
-									    	Integer siteNodeId = null;
-									    	if(isObjectCachedInCastor(SmallSiteNodeVersionImpl.class, new Integer(entityId)))
+									    	Integer siteNodeId = new Integer(entityId);
+									    	try
 									    	{
 									    		snvVO = SiteNodeVersionController.getController().getSiteNodeVersionVOWithId(new Integer(entityId));
 									    		siteNodeId = snvVO.getSiteNodeId();
 									    	}
-									    	*/
-
+									    	catch (Exception e2) 
+									    	{
+									    		logger.info("Error getting siteNodeVersion " + entityId);
+									    	}
+									    	
+									    	/*
 									    	SiteNodeVersionVO snvVO = SiteNodeVersionController.getController().getSiteNodeVersionVOWithId(new Integer(entityId));
 									    	Integer siteNodeId = snvVO.getSiteNodeId();
+									    	*/
 									    	
 									    	if(siteNodeId != null)
 								    		{
@@ -2151,7 +2162,7 @@ public class CacheController extends Thread
 								    				cacheInstance.flushGroup("" + siteNodeId);
 									    		}
 								    			
-								    			if(cacheName.equals("childSiteNodesCache") || cacheName.equals("siteNodeCache"))
+								    			if(snvVO != null && (cacheName.equals("childSiteNodesCache") || cacheName.equals("siteNodeCache")))
 								    			{
 											    	SiteNodeVO snVO = SiteNodeController.getController().getSiteNodeVOWithId(snvVO.getSiteNodeId());
 											    	if(snVO.getParentSiteNodeId() != null)
@@ -2256,10 +2267,15 @@ public class CacheController extends Thread
 								    	//System.out.println("entity:" + entity);
 								    	//System.out.println("entityId:" + entityId);
 								    	
-								    	//if(isObjectCachedInCastor(SmallContentVersionImpl.class, new Integer(entityId)))
-								    	//{
-									    	Integer contentId = ContentVersionController.getContentVersionController().getContentIdForContentVersion(new Integer(entityId));
-	
+								    	Integer contentId = null;
+								    	try
+								    	{
+									    	contentId = ContentVersionController.getContentVersionController().getContentIdForContentVersion(new Integer(entityId));
+								    	}
+								    	catch (Exception e2) 
+								    	{
+								    		logger.info("Error loading content with id " + entityId + ":" + e2.getMessage());
+										}
 											RequestAnalyser.getRequestAnalyser().registerComponentStatistics("Cache 3.5", t.getElapsedTime());
 	
 											if(contentId != null)
@@ -2612,7 +2628,16 @@ public class CacheController extends Thread
 							    	if(isObjectCachedInCastor(SmallContentImpl.class, new Integer(entityId)))
 							    		contentVO = ContentController.getContentController().getContentVOWithId(new Integer(entityId));
 							    	*/
-							    	ContentVO contentVO = ContentController.getContentController().getContentVOWithId(new Integer(entityId));
+							    	ContentVO contentVO = null;
+							    	try
+							    	{
+							    		contentVO = ContentController.getContentController().getContentVOWithId(new Integer(entityId));
+							    	}
+							    	catch (Exception e2) 
+							    	{
+							    		logger.info("Error loading content with id " + entityId + ":" + e2.getMessage());
+									}
+							    	//ContentVO contentVO = ContentController.getContentController().getContentVOWithId(new Integer(entityId));
 							    	
 							    	if(cacheName.equals("pageCacheExtra"))
 							    	{
@@ -2621,7 +2646,8 @@ public class CacheController extends Thread
 							    		try
 								    	{
 							    			//cacheInstance.flushGroup("selectiveCacheUpdateNonApplicable_contentTypeDefinitionId_" + contentVO.getContentTypeDefinitionId());
-								    		clearFileCacheForGroup(cacheInstance, "selectiveCacheUpdateNonApplicable_contentTypeDefinitionId_" + contentVO.getContentTypeDefinitionId());
+								    		if(contentVO != null)
+								    			clearFileCacheForGroup(cacheInstance, "selectiveCacheUpdateNonApplicable_contentTypeDefinitionId_" + contentVO.getContentTypeDefinitionId());
 								    	}
 								    	catch (Exception e2) 
 								    	{
@@ -2652,6 +2678,8 @@ public class CacheController extends Thread
 								    	cacheInstance.flushGroup("selectiveCacheUpdateNonApplicable");
 							    	}
 							    	
+							    	if(contentVO != null)
+							    	{
 							    		//System.out.println("****************************************************************");
 								    	if(contentVO.getIsProtected().intValue() == ContentVO.YES.intValue())
 								    	{
@@ -2666,6 +2694,7 @@ public class CacheController extends Thread
 								    			}
 								    		}
 								    	}
+							    	}
 							    	//System.out.println("************************END************************************");
 
 							    	logger.info("clearing " + e.getKey() + " with group " + "content_" + entityId);

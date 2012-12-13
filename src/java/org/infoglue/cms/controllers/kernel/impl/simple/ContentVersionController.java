@@ -1393,8 +1393,6 @@ public class ContentVersionController extends BaseController
             rollbackTransaction(db);
             throw new SystemException(e.getMessage());
         }
-        if(logger.isInfoEnabled())
-        	t.printElapsedTime("Updating cv took");
         
     	return updatedContentVersionVO; //(ContentVersionVO) updateEntity(ContentVersionImpl.class, realContentVersionVO);
     }        
