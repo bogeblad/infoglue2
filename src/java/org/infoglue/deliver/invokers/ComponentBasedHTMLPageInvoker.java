@@ -500,7 +500,7 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 		Set groups = new HashSet();
 		if(templateController.getDeliveryContext().getUsedPageMetaInfoContentVersionIdSet().size() > 0)
 		{
-			ContentVersionVO contentVersionVO = ContentVersionController.getContentVersionController().getContentVersionVOWithId((Integer)templateController.getDeliveryContext().getUsedPageMetaInfoContentVersionIdSet().toArray()[0], templateController.getDatabase());
+			ContentVersionVO contentVersionVO = ContentVersionController.getContentVersionController().getSmallContentVersionVOWithId((Integer)templateController.getDeliveryContext().getUsedPageMetaInfoContentVersionIdSet().toArray()[0], templateController.getDatabase());
 			groups.add(CacheController.getPooledString(2, contentVersionVO.getId()));
 			groups.add(CacheController.getPooledString(1, contentVersionVO.getContentId()));
 		}
