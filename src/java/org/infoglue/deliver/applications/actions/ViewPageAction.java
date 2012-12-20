@@ -257,6 +257,8 @@ public class ViewPageAction extends InfoGlueAbstractAction
 				protectDeliver = true;
 			else if(protectPreview.equals("true") && CmsPropertyHandler.getOperatingMode().equals("2"))
 				protectDeliver = true;
+			else if(getRequest().getParameter("authenticateUser") != null && getRequest().getParameter("authenticateUser").equals("true"))
+				protectDeliver = true;
 
 			isUserRedirected = handleAccessBasedProtocolRedirect(protectedSiteNodeVersionId, this.repositoryId, forceProtocolChangeSetting, dbWrapper.getDatabase());
 

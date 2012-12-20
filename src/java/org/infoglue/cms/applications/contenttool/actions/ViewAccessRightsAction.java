@@ -139,28 +139,6 @@ public class ViewAccessRightsAction extends InfoGlueAbstractAction
 				Integer siteNodeVersionId = new Integer(extraParameters);
 				
 				SiteNodeControllerProxy.getSiteNodeControllerProxy().testAc(this.getInfoGluePrincipal(), siteNodeVersionId, "SiteNodeVersion.ChangeAccessRights");
-				/*
-				SiteNodeVersionVO siteNodeVersionVO = SiteNodeVersionController.getController().getSiteNodeVersionVOWithId(siteNodeVersionId);
-				if(!siteNodeVersionVO.getVersionModifier().equalsIgnoreCase(this.getInfoGluePrincipal().getName()))
-				{
-					//boolean isSiteNodeVersionProtected = SiteNodeVersionControllerProxy.getSiteNodeVersionControllerProxy().getIsSiteNodeVersionProtected(siteNodeVersionVO.getId());
-					//InterceptionPointVO changeAccessRightsIPVO = InterceptionPointController.getController().getInterceptionPointVOWithName("SiteNodeVersion.ChangeAccessRights");
-					SiteNodeControllerProxy.getSiteNodeControllerProxy().testAc(this.getInfoGluePrincipal(), siteNodeVersionId, "SiteNodeVersion.ChangeAccessRights");
-					
-					Integer protectedSiteNodeVersionId = SiteNodeVersionControllerProxy.getSiteNodeVersionControllerProxy().getProtectedSiteNodeVersionId(siteNodeVersionId, changeAccessRightsIPVO.getId(), db);
-					if(protectedSiteNodeVersionId != null && !AccessRightController.getController().getIsPrincipalAuthorized(this.getInfoGluePrincipal(), "SiteNodeVersion.ChangeAccessRights", siteNodeVersionId.toString()))
-					{
-						InterceptionPointVO changeInterceptionPointVO = InterceptionPointController.getController().getInterceptionPointVOWithName("SiteNodeVersion.ChangeAccessRights");
-						InterceptionPointVO readInterceptionPointVO = InterceptionPointController.getController().getInterceptionPointVOWithName("SiteNodeVersion.Read");
-						List changeAccessRightVOList = AccessRightController.getController().getAccessRightVOListOnly(changeInterceptionPointVO.getId(), "" + siteNodeVersionVO.getId());
-						List readAccessRightVOList = AccessRightController.getController().getAccessRightVOListOnly(readInterceptionPointVO.getId(), "" + siteNodeVersionVO.getId());
-						logger.info("changeAccessRightVOList:" + changeAccessRightVOList.size());
-						logger.info("readAccessRightVOList:" + readAccessRightVOList.size());
-						if(changeAccessRightVOList.size() > 0 && readAccessRightVOList.size() > 0)
-							ceb.add(new AccessConstraintException("SiteNodeVersion.siteNodeId", "1006"));
-					}
-				}
-				*/
 			}
 	
 			this.interceptionPointVOList = InterceptionPointController.getController().getInterceptionPointVOList(interceptionPointCategory);
