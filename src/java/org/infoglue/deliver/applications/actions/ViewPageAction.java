@@ -252,18 +252,22 @@ public class ViewPageAction extends InfoGlueAbstractAction
 			String protectWorking = CmsPropertyHandler.getProtectDeliverWorking();
 			String protectPreview = CmsPropertyHandler.getProtectDeliverPreview();
 			boolean protectDeliver = false;
-
+			
 			if(protectWorking.equals("true") && CmsPropertyHandler.getOperatingMode().equals("0"))
 				protectDeliver = true;
 			else if(protectPreview.equals("true") && CmsPropertyHandler.getOperatingMode().equals("2"))
 				protectDeliver = true;
-			else if(getRequest().getParameter("authenticateUser") != null && getRequest().getParameter("authenticateUser").equals("true"))
-				protectDeliver = true;
-
+						
 			isUserRedirected = handleAccessBasedProtocolRedirect(protectedSiteNodeVersionId, this.repositoryId, forceProtocolChangeSetting, dbWrapper.getDatabase());
 
 			if(!isUserRedirected)
 			{
+				if(getRequest().getParameter("authenticateUser") != null && getRequest().getParameter("authenticateUser").equals("true"))
+					isUserRedirected = authenticateUser(dbWrapper.getDatabase());
+			}
+			
+			if(!isUserRedirected)
+			{				
 				if(logger.isInfoEnabled())
 					logger.info("RemoteAddress:" + getRequest().getRemoteAddr());
 				
@@ -280,7 +284,6 @@ public class ViewPageAction extends InfoGlueAbstractAction
 						logger.info("protectedSiteNodeVersionId:" + protectedSiteNodeVersionId);
 						logger.info("protectDeliver:" + protectDeliver);
 					}
-					
 					isUserRedirected = handleExtranetLogic(dbWrapper.getDatabase(), this.repositoryId, protectedSiteNodeVersionId, protectDeliver, false);
 				}
 				else
@@ -1560,6 +1563,42 @@ public class ViewPageAction extends InfoGlueAbstractAction
 		}
 		
 		return isRedirected;
+	}
+	
+	
+	private boolean authenticateUser(Database db) throws Exception
+	{
+		Map status = new HashMap();
+		status.put("redirected", new Boolean(false));
+		//getRequest().setAttribute("gateway", "" + true);
+		String originalFullURL = this.getOriginalFullURL();
+		
+		int index = originalFullURL.indexOf("&authenticateUser=");
+		if(index > -1)
+			originalFullURL = originalFullURL.substring(0, index);
+		int index2 = originalFullURL.indexOf("?authenticateUser=");
+		if(index2 > -1)
+			originalFullURL = originalFullURL.substring(0, index2);
+		
+		principal = AuthenticationModule.getAuthenticationModule(db, originalFullURL, this.getRequest(), false).loginUser(getRequest(), getResponse(), status);
+		//System.out.println("principal in AAAAA:" + principal);
+		Boolean redirected = (Boolean)status.get("redirected");
+		//System.out.println("principal in AAAAA:" + principal);
+		if(redirected != null && redirected.booleanValue())
+		{
+		    this.getHttpSession().removeAttribute("infogluePrincipal");
+		    this.principal = null;
+		    return true;
+		}
+		else if(principal != null)
+		{
+		    this.getHttpSession().setAttribute("infogluePrincipal", principal);
+			this.getHttpSession().setAttribute("infoglueRemoteUser", principal.getName());
+			this.getHttpSession().setAttribute("cmsUserName", principal.getName());
+			
+		    this.principal = principal;
+		}
+		return redirected;
 	}
 	
 	

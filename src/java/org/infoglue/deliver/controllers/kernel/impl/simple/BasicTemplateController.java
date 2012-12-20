@@ -7174,7 +7174,11 @@ public class BasicTemplateController implements TemplateController
 				
 				if(principal != null)
 				{
-					hasUserPageAccess = AccessRightController.getController().getIsPrincipalAuthorized((InfoGluePrincipal)principal, interceptionPointName, protectedSiteNodeVersionId.toString());
+					if(principal.getName().equals(CmsPropertyHandler.getAnonymousUser()) && interceptionPointName.equals("SiteNodeVersion.Read"))
+						hasUserPageAccess = AccessRightController.getController().getIsPrincipalAuthorized((InfoGluePrincipal)principal, interceptionPointName, protectedSiteNodeVersionId.toString(), false);
+					else
+						hasUserPageAccess = AccessRightController.getController().getIsPrincipalAuthorized((InfoGluePrincipal)principal, interceptionPointName, protectedSiteNodeVersionId.toString());
+					
 					if(!hasUserPageAccess && getIsDecorated() && getDeliveryContext().getConsiderEditorInDecoratedMode())
 				    {
 					    String cmsUserName = (String)getHttpServletRequest().getSession().getAttribute("cmsUserName");
