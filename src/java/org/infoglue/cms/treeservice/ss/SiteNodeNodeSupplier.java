@@ -278,7 +278,7 @@ public class SiteNodeNodeSupplier extends BaseNodeSupplier
 					SiteNodeVersionVO latestSiteNodeVO = SiteNodeVersionController.getController().getLatestActiveSiteNodeVersionVO(db, vo.getId());
 					if(latestSiteNodeVO != null)
 					{
-						if(latestSiteNodeVO.getIsProtected().intValue() == SiteNodeVersionVO.YES.intValue())
+						if(latestSiteNodeVO.getIsProtected().intValue() == SiteNodeVersionVO.YES.intValue() || latestSiteNodeVO.getIsProtected().intValue() == SiteNodeVersionVO.YES_WITH_INHERIT_FALLBACK.intValue())
 							node.getParameters().put("isProtected", "true");
 	
 						if(!latestSiteNodeVO.getStateId().equals(SiteNodeVersionVO.PUBLISHED_STATE))

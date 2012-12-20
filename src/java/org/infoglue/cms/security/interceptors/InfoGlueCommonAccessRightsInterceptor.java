@@ -23,18 +23,23 @@
 
 package org.infoglue.cms.security.interceptors;
 
+import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.exolab.castor.jdo.Database;
 import org.infoglue.cms.controllers.kernel.impl.simple.AccessRightController;
+import org.infoglue.cms.controllers.kernel.impl.simple.CastorDatabaseService;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentControllerProxy;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentVersionControllerProxy;
+import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeController;
 import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeVersionController;
 import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeVersionControllerProxy;
 import org.infoglue.cms.entities.content.ContentVO;
 import org.infoglue.cms.entities.content.ContentVersionVO;
+import org.infoglue.cms.entities.management.AccessRight;
 import org.infoglue.cms.entities.management.InterceptionPointVO;
+import org.infoglue.cms.entities.structure.SiteNodeVO;
 import org.infoglue.cms.entities.structure.SiteNodeVersion;
 import org.infoglue.cms.entities.structure.SiteNodeVersionVO;
 import org.infoglue.cms.exception.AccessConstraintException;
@@ -71,234 +76,254 @@ public class InfoGlueCommonAccessRightsInterceptor implements InfoGlueIntercepto
 
 	public void intercept(InfoGluePrincipal infoGluePrincipal, InterceptionPointVO interceptionPointVO, Map extradata, boolean allowCreatorAccess) throws ConstraintException, SystemException, Exception
 	{
-		logger.info("interceptionPointVO:" + interceptionPointVO.getName());
+		Database db = CastorDatabaseService.getDatabase();
 		
-		AccessConstraintExceptionBuffer ceb = new AccessConstraintExceptionBuffer();
-		
-		if(interceptionPointVO.getName().equalsIgnoreCase("Content.Read"))
-		{
-			Integer contentId = (Integer)extradata.get("contentId");
-			ContentVO contentVO = ContentControllerProxy.getController().getContentVOWithId(contentId);
-			if(!allowCreatorAccess || !contentVO.getCreatorName().equalsIgnoreCase(infoGluePrincipal.getName()))
+        try
+        {
+        	db.begin();
+        	
+			logger.info("interceptionPointVO:" + interceptionPointVO.getName());
+			
+			AccessConstraintExceptionBuffer ceb = new AccessConstraintExceptionBuffer();
+			
+			if(interceptionPointVO.getName().equalsIgnoreCase("Content.Read"))
 			{
-				Integer protectedContentId = ContentControllerProxy.getController().getProtectedContentId(contentId);
-				if(protectedContentId != null && !AccessRightController.getController().getIsPrincipalAuthorized(infoGluePrincipal, "Content.Read", protectedContentId.toString()))
-					ceb.add(new AccessConstraintException("Content.contentId", "1000"));
-			}
-		}
-		else if(interceptionPointVO.getName().equalsIgnoreCase("Component.Select"))
-		{
-			Integer contentId = (Integer)extradata.get("contentId");
-			ContentVO contentVO = ContentControllerProxy.getController().getContentVOWithId(contentId);
-			if(!allowCreatorAccess || !contentVO.getCreatorName().equalsIgnoreCase(infoGluePrincipal.getName()))
-			{
-				Integer protectedContentId = contentId; //ContentControllerProxy.getController().getProtectedContentId(contentId);
-				if(protectedContentId != null && !AccessRightController.getController().getIsPrincipalAuthorized(infoGluePrincipal, "Component.Select", protectedContentId.toString()))
-					ceb.add(new AccessConstraintException("Content.contentId", "1000"));
-			}
-		}
-		else if(interceptionPointVO.getName().equalsIgnoreCase("Content.Write"))
-		{
-			Integer contentId = (Integer)extradata.get("contentId");
-			ContentVO contentVO = ContentControllerProxy.getController().getContentVOWithId(contentId);
-			if(!allowCreatorAccess || !contentVO.getCreatorName().equalsIgnoreCase(infoGluePrincipal.getName()))
-			{
-				Integer protectedContentId = ContentControllerProxy.getController().getProtectedContentId(contentId);
-				if(protectedContentId != null && !AccessRightController.getController().getIsPrincipalAuthorized(infoGluePrincipal, "Content.Write", protectedContentId.toString()))
-					ceb.add(new AccessConstraintException("Content.contentId", "1001"));
-			}
-		}
-		else if(interceptionPointVO.getName().equalsIgnoreCase("Content.Create"))
-		{
-			Integer contentId = (Integer)extradata.get("contentId");
-			ContentVO contentVO = ContentControllerProxy.getController().getContentVOWithId(contentId);
-			if(!allowCreatorAccess || !contentVO.getCreatorName().equalsIgnoreCase(infoGluePrincipal.getName()))
-			{
-				Integer protectedContentId = ContentControllerProxy.getController().getProtectedContentId(contentId);
-				if(protectedContentId != null && !AccessRightController.getController().getIsPrincipalAuthorized(infoGluePrincipal, "Content.Create", protectedContentId.toString()))
-					ceb.add(new AccessConstraintException("Content.contentId", "1002"));
-			}
-		}
-		else if(interceptionPointVO.getName().equalsIgnoreCase("Content.Delete"))
-		{
-			Integer contentId = (Integer)extradata.get("contentId");
-			ContentVO contentVO = ContentControllerProxy.getController().getContentVOWithId(contentId);
-			if(!allowCreatorAccess || !contentVO.getCreatorName().equalsIgnoreCase(infoGluePrincipal.getName()))
-			{
-				Integer protectedContentId = ContentControllerProxy.getController().getProtectedContentId(contentId);
-				if(protectedContentId != null && !AccessRightController.getController().getIsPrincipalAuthorized(infoGluePrincipal, "Content.Delete", protectedContentId.toString()))
-					ceb.add(new AccessConstraintException("Content.contentId", "1003"));
-			}
-		}
-		else if(interceptionPointVO.getName().equalsIgnoreCase("Content.Move"))
-		{
-			Integer contentId = (Integer)extradata.get("contentId");
-			ContentVO contentVO = ContentControllerProxy.getController().getContentVOWithId(contentId);
-			if(!allowCreatorAccess || !contentVO.getCreatorName().equalsIgnoreCase(infoGluePrincipal.getName()))
-			{
-				Integer protectedContentId = ContentControllerProxy.getController().getProtectedContentId(contentId);
-				if(protectedContentId != null && !AccessRightController.getController().getIsPrincipalAuthorized(infoGluePrincipal, "Content.Move", protectedContentId.toString()))
-					ceb.add(new AccessConstraintException("Content.contentId", "1004"));
-			}
-		}
-		else if(interceptionPointVO.getName().equalsIgnoreCase("Content.CreateVersion"))
-		{
-			Integer contentId = (Integer)extradata.get("contentId");
-			ContentVO contentVO = ContentControllerProxy.getController().getContentVOWithId(contentId);
-			if(!allowCreatorAccess || !contentVO.getCreatorName().equalsIgnoreCase(infoGluePrincipal.getName()))
-			{
-				Integer protectedContentId = ContentControllerProxy.getController().getProtectedContentId(contentId);
-				if(ContentVersionControllerProxy.getController().getIsContentProtected(contentId, true) && !AccessRightController.getController().getIsPrincipalAuthorized(infoGluePrincipal, "Content.CreateVersion", protectedContentId.toString()))
-					ceb.add(new AccessConstraintException("Content.contentId", "1002"));
-			}
-		}
-		else if(interceptionPointVO.getName().equalsIgnoreCase("Content.SubmitToPublish"))
-		{
-			Integer contentId = (Integer)extradata.get("contentId");
-			ContentVO contentVO = ContentControllerProxy.getController().getContentVOWithId(contentId);
-			if(!allowCreatorAccess || !contentVO.getCreatorName().equalsIgnoreCase(infoGluePrincipal.getName()))
-			{
-				Integer protectedContentId = ContentControllerProxy.getController().getProtectedContentId(contentId);
-				if(protectedContentId != null && !AccessRightController.getController().getIsPrincipalAuthorized(infoGluePrincipal, "Content.SubmitToPublish", protectedContentId.toString()))
-					ceb.add(new AccessConstraintException("Content.contentId", "1005"));
-			}
-		}
-		else if(interceptionPointVO.getName().equalsIgnoreCase("Content.ChangeAccessRights"))
-		{
-			Integer contentId = (Integer)extradata.get("contentId");
-			ContentVO contentVO = ContentControllerProxy.getController().getContentVOWithId(contentId);
-			if(!allowCreatorAccess || !contentVO.getCreatorName().equalsIgnoreCase(infoGluePrincipal.getName()))
-			{
-				Integer protectedContentId = ContentControllerProxy.getController().getProtectedContentId(contentId);
-				if(protectedContentId != null && !AccessRightController.getController().getIsPrincipalAuthorized(infoGluePrincipal, "Content.ChangeAccessRights", protectedContentId.toString()))
-					ceb.add(new AccessConstraintException("Content.contentId", "1006"));
-			}
-		}
-		else if(interceptionPointVO.getName().equalsIgnoreCase("ContentVersion.Read"))
-		{
-			Integer contentVersionId = (Integer)extradata.get("contentVersionId");
-			ContentVersionVO contentVersionVO = ContentVersionControllerProxy.getController().getContentVersionVOWithId(contentVersionId);
-			if(!allowCreatorAccess || !contentVersionVO.getVersionModifier().equalsIgnoreCase(infoGluePrincipal.getName()))
-			{	
-				if(ContentVersionControllerProxy.getController().getIsContentProtected(contentVersionVO.getContentId(), false) && !AccessRightController.getController().getIsPrincipalAuthorized(infoGluePrincipal, "ContentVersion.Read", contentVersionId.toString()))
+				Integer contentId = (Integer)extradata.get("contentId");
+				ContentVO contentVO = ContentControllerProxy.getController().getContentVOWithId(contentId);
+				if(!allowCreatorAccess || !contentVO.getCreatorName().equalsIgnoreCase(infoGluePrincipal.getName()))
 				{
-					ceb.add(new AccessConstraintException("ContentVersion.contentVersionId", "1000"));
-				}
-				else
-				{
-					Integer protectedContentId = ContentControllerProxy.getController().getProtectedContentId(contentVersionVO.getContentId());
-					if(protectedContentId != null && !AccessRightController.getController().getIsPrincipalAuthorized(infoGluePrincipal, "Content.Read", protectedContentId.toString()))
+					Integer protectedContentId = ContentControllerProxy.getController().getProtectedContentId(contentId);
+					if(protectedContentId != null && !AccessRightController.getController().getIsPrincipalAuthorized(db, infoGluePrincipal, "Content.Read", protectedContentId.toString()))
 						ceb.add(new AccessConstraintException("Content.contentId", "1000"));
 				}
 			}
-		}
-		else if(interceptionPointVO.getName().equalsIgnoreCase("ContentVersion.Write"))
-		{
-			Integer contentVersionId = (Integer)extradata.get("contentVersionId");
-			ContentVersionVO contentVersionVO = ContentVersionControllerProxy.getController().getContentVersionVOWithId(contentVersionId);
-			if(!allowCreatorAccess || !contentVersionVO.getVersionModifier().equalsIgnoreCase(infoGluePrincipal.getName()))
-			{	
-				if(ContentVersionControllerProxy.getController().getIsContentProtected(contentVersionVO.getContentId(), false) && !AccessRightController.getController().getIsPrincipalAuthorized(infoGluePrincipal, "ContentVersion.Write", contentVersionId.toString()))
+			else if(interceptionPointVO.getName().equalsIgnoreCase("Component.Select"))
+			{
+				Integer contentId = (Integer)extradata.get("contentId");
+				ContentVO contentVO = ContentControllerProxy.getController().getContentVOWithId(contentId);
+				if(!allowCreatorAccess || !contentVO.getCreatorName().equalsIgnoreCase(infoGluePrincipal.getName()))
 				{
-					ceb.add(new AccessConstraintException("ContentVersion.contentVersionId", "1001"));
+					Integer protectedContentId = contentId; //ContentControllerProxy.getController().getProtectedContentId(contentId);
+					if(protectedContentId != null && !AccessRightController.getController().getIsPrincipalAuthorized(db, infoGluePrincipal, "Component.Select", protectedContentId.toString()))
+						ceb.add(new AccessConstraintException("Content.contentId", "1000"));
 				}
-				else
+			}
+			else if(interceptionPointVO.getName().equalsIgnoreCase("Content.Write"))
+			{
+				Integer contentId = (Integer)extradata.get("contentId");
+				ContentVO contentVO = ContentControllerProxy.getController().getContentVOWithId(contentId);
+				if(!allowCreatorAccess || !contentVO.getCreatorName().equalsIgnoreCase(infoGluePrincipal.getName()))
 				{
-					Integer protectedContentId = ContentControllerProxy.getController().getProtectedContentId(contentVersionVO.getContentId());
-					if(protectedContentId != null && !AccessRightController.getController().getIsPrincipalAuthorized(infoGluePrincipal, "Content.Write", protectedContentId.toString()))
+					Integer protectedContentId = ContentControllerProxy.getController().getProtectedContentId(contentId);
+					if(protectedContentId != null && !AccessRightController.getController().getIsPrincipalAuthorized(db, infoGluePrincipal, "Content.Write", protectedContentId.toString()))
 						ceb.add(new AccessConstraintException("Content.contentId", "1001"));
 				}
 			}
-		}
-		else if(interceptionPointVO.getName().equalsIgnoreCase("ContentVersion.Delete"))
-		{
-			Integer contentVersionId = (Integer)extradata.get("contentVersionId");
-			ContentVersionVO contentVersionVO = ContentVersionControllerProxy.getController().getContentVersionVOWithId(contentVersionId);
-			if(!allowCreatorAccess || !contentVersionVO.getVersionModifier().equalsIgnoreCase(infoGluePrincipal.getName()))
-			{	
-				if(ContentVersionControllerProxy.getController().getIsContentProtected(contentVersionVO.getContentId(), false) && !AccessRightController.getController().getIsPrincipalAuthorized(infoGluePrincipal, "ContentVersion.Delete", contentVersionId.toString()))
-					ceb.add(new AccessConstraintException("ContentVersion.contentVersionId", "1003"));
-			}
-		}
-		else if(interceptionPointVO.getName().equalsIgnoreCase("SiteNodeVersion.Read"))
-		{
-			Integer siteNodeVersionId = (Integer)extradata.get("siteNodeVersionId");
-			SiteNodeVersionVO siteNodeVersionVO = SiteNodeVersionController.getController().getSiteNodeVersionVOWithId(siteNodeVersionId);
-			if(!allowCreatorAccess || !siteNodeVersionVO.getVersionModifier().equalsIgnoreCase(infoGluePrincipal.getName()))
+			else if(interceptionPointVO.getName().equalsIgnoreCase("Content.Create"))
 			{
-				Integer protectedSiteNodeVersionId = SiteNodeVersionControllerProxy.getSiteNodeVersionControllerProxy().getProtectedSiteNodeVersionId(siteNodeVersionId);
-				if(protectedSiteNodeVersionId != null && !AccessRightController.getController().getIsPrincipalAuthorized(infoGluePrincipal, "SiteNodeVersion.Read", protectedSiteNodeVersionId.toString()))
-					ceb.add(new AccessConstraintException("SiteNodeVersion.siteNodeVersionId", "1000"));
+				Integer contentId = (Integer)extradata.get("contentId");
+				ContentVO contentVO = ContentControllerProxy.getController().getContentVOWithId(contentId);
+				if(!allowCreatorAccess || !contentVO.getCreatorName().equalsIgnoreCase(infoGluePrincipal.getName()))
+				{
+					Integer protectedContentId = ContentControllerProxy.getController().getProtectedContentId(contentId);
+					if(protectedContentId != null && !AccessRightController.getController().getIsPrincipalAuthorized(db, infoGluePrincipal, "Content.Create", protectedContentId.toString()))
+						ceb.add(new AccessConstraintException("Content.contentId", "1002"));
+				}
 			}
-		}
-		else if(interceptionPointVO.getName().equalsIgnoreCase("SiteNodeVersion.Write"))
-		{
-			Integer siteNodeVersionId = (Integer)extradata.get("siteNodeVersionId");
-			SiteNodeVersionVO siteNodeVersionVO = SiteNodeVersionController.getController().getSiteNodeVersionVOWithId(siteNodeVersionId);
-			if(!allowCreatorAccess || !siteNodeVersionVO.getVersionModifier().equalsIgnoreCase(infoGluePrincipal.getName()))
+			else if(interceptionPointVO.getName().equalsIgnoreCase("Content.Delete"))
 			{
-				Integer protectedSiteNodeVersionId = SiteNodeVersionControllerProxy.getSiteNodeVersionControllerProxy().getProtectedSiteNodeVersionId(siteNodeVersionId);
-				if(protectedSiteNodeVersionId != null && !AccessRightController.getController().getIsPrincipalAuthorized(infoGluePrincipal, "SiteNodeVersion.Write", protectedSiteNodeVersionId.toString()))
-					ceb.add(new AccessConstraintException("SiteNodeVersion.siteNodeVersionId", "1001"));
+				Integer contentId = (Integer)extradata.get("contentId");
+				ContentVO contentVO = ContentControllerProxy.getController().getContentVOWithId(contentId);
+				if(!allowCreatorAccess || !contentVO.getCreatorName().equalsIgnoreCase(infoGluePrincipal.getName()))
+				{
+					Integer protectedContentId = ContentControllerProxy.getController().getProtectedContentId(contentId);
+					if(protectedContentId != null && !AccessRightController.getController().getIsPrincipalAuthorized(db, infoGluePrincipal, "Content.Delete", protectedContentId.toString()))
+						ceb.add(new AccessConstraintException("Content.contentId", "1003"));
+				}
 			}
-		}
-		else if(interceptionPointVO.getName().equalsIgnoreCase("SiteNodeVersion.CreateSiteNode"))
-		{
-			Integer parentSiteNodeId = (Integer)extradata.get("siteNodeId");
-			SiteNodeVersionVO siteNodeVersionVO = SiteNodeVersionController.getController().getLatestSiteNodeVersionVO(parentSiteNodeId);
-			if(!allowCreatorAccess || !siteNodeVersionVO.getVersionModifier().equalsIgnoreCase(infoGluePrincipal.getName()))
+			else if(interceptionPointVO.getName().equalsIgnoreCase("Content.Move"))
 			{
-				Integer protectedSiteNodeVersionId = SiteNodeVersionControllerProxy.getSiteNodeVersionControllerProxy().getProtectedSiteNodeVersionId(siteNodeVersionVO.getId());
-				if(protectedSiteNodeVersionId != null && !AccessRightController.getController().getIsPrincipalAuthorized(infoGluePrincipal, "SiteNodeVersion.CreateSiteNode", protectedSiteNodeVersionId.toString()))
-					ceb.add(new AccessConstraintException("SiteNodeVersion.siteNodeId", "1002"));
+				Integer contentId = (Integer)extradata.get("contentId");
+				ContentVO contentVO = ContentControllerProxy.getController().getContentVOWithId(contentId);
+				if(!allowCreatorAccess || !contentVO.getCreatorName().equalsIgnoreCase(infoGluePrincipal.getName()))
+				{
+					Integer protectedContentId = ContentControllerProxy.getController().getProtectedContentId(contentId);
+					if(protectedContentId != null && !AccessRightController.getController().getIsPrincipalAuthorized(db, infoGluePrincipal, "Content.Move", protectedContentId.toString()))
+						ceb.add(new AccessConstraintException("Content.contentId", "1004"));
+				}
 			}
-		}
-		else if(interceptionPointVO.getName().equalsIgnoreCase("SiteNodeVersion.DeleteSiteNode"))
-		{
-			Integer siteNodeId = (Integer)extradata.get("siteNodeId");
-			SiteNodeVersionVO siteNodeVersionVO = SiteNodeVersionController.getController().getLatestSiteNodeVersionVO(siteNodeId);
-			if(!allowCreatorAccess || !siteNodeVersionVO.getVersionModifier().equalsIgnoreCase(infoGluePrincipal.getName()))
+			else if(interceptionPointVO.getName().equalsIgnoreCase("Content.CreateVersion"))
 			{
-				Integer protectedSiteNodeVersionId = SiteNodeVersionControllerProxy.getSiteNodeVersionControllerProxy().getProtectedSiteNodeVersionId(siteNodeVersionVO.getId());
-				if(protectedSiteNodeVersionId != null && !AccessRightController.getController().getIsPrincipalAuthorized(infoGluePrincipal, "SiteNodeVersion.DeleteSiteNode", protectedSiteNodeVersionId.toString()))
-					ceb.add(new AccessConstraintException("SiteNodeVersion.siteNodeId", "1003"));
+				Integer contentId = (Integer)extradata.get("contentId");
+				ContentVO contentVO = ContentControllerProxy.getController().getContentVOWithId(contentId);
+				if(!allowCreatorAccess || !contentVO.getCreatorName().equalsIgnoreCase(infoGluePrincipal.getName()))
+				{
+					Integer protectedContentId = ContentControllerProxy.getController().getProtectedContentId(contentId);
+					if(ContentVersionControllerProxy.getController().getIsContentProtected(contentId, true) && !AccessRightController.getController().getIsPrincipalAuthorized(db, infoGluePrincipal, "Content.CreateVersion", protectedContentId.toString()))
+						ceb.add(new AccessConstraintException("Content.contentId", "1002"));
+				}
 			}
-		}
-		else if(interceptionPointVO.getName().equalsIgnoreCase("SiteNodeVersion.MoveSiteNode"))
-		{
-			Integer siteNodeId = (Integer)extradata.get("siteNodeId");
-			SiteNodeVersionVO siteNodeVersionVO = SiteNodeVersionController.getController().getLatestSiteNodeVersionVO(siteNodeId);
-			if(!allowCreatorAccess || !siteNodeVersionVO.getVersionModifier().equalsIgnoreCase(infoGluePrincipal.getName()))
+			else if(interceptionPointVO.getName().equalsIgnoreCase("Content.SubmitToPublish"))
 			{
-				Integer protectedSiteNodeVersionId = SiteNodeVersionControllerProxy.getSiteNodeVersionControllerProxy().getProtectedSiteNodeVersionId(siteNodeVersionVO.getId());
-				if(protectedSiteNodeVersionId != null && !AccessRightController.getController().getIsPrincipalAuthorized(infoGluePrincipal, "SiteNodeVersion.MoveSiteNode", protectedSiteNodeVersionId.toString()))
-					ceb.add(new AccessConstraintException("SiteNodeVersion.siteNodeId", "1004"));
+				Integer contentId = (Integer)extradata.get("contentId");
+				ContentVO contentVO = ContentControllerProxy.getController().getContentVOWithId(contentId);
+				if(!allowCreatorAccess || !contentVO.getCreatorName().equalsIgnoreCase(infoGluePrincipal.getName()))
+				{
+					Integer protectedContentId = ContentControllerProxy.getController().getProtectedContentId(contentId);
+					if(protectedContentId != null && !AccessRightController.getController().getIsPrincipalAuthorized(db, infoGluePrincipal, "Content.SubmitToPublish", protectedContentId.toString()))
+						ceb.add(new AccessConstraintException("Content.contentId", "1005"));
+				}
 			}
-		}
-		else if(interceptionPointVO.getName().equalsIgnoreCase("SiteNodeVersion.SubmitToPublish"))
-		{
-			Integer siteNodeVersionId = (Integer)extradata.get("siteNodeVersionId");
-			SiteNodeVersionVO siteNodeVersionVO = SiteNodeVersionController.getController().getSiteNodeVersionVOWithId(siteNodeVersionId);
-			if(!allowCreatorAccess || !siteNodeVersionVO.getVersionModifier().equalsIgnoreCase(infoGluePrincipal.getName()))
+			else if(interceptionPointVO.getName().equalsIgnoreCase("Content.ChangeAccessRights"))
 			{
-				Integer protectedSiteNodeVersionId = SiteNodeVersionControllerProxy.getSiteNodeVersionControllerProxy().getProtectedSiteNodeVersionId(siteNodeVersionId);
-				if(protectedSiteNodeVersionId != null && !AccessRightController.getController().getIsPrincipalAuthorized(infoGluePrincipal, "SiteNodeVersion.SubmitToPublish", protectedSiteNodeVersionId.toString()))
-					ceb.add(new AccessConstraintException("SiteNodeVersion.siteNodeId", "1005"));
+				Integer contentId = (Integer)extradata.get("contentId");
+				ContentVO contentVO = ContentControllerProxy.getController().getContentVOWithId(contentId);
+				if(!allowCreatorAccess || !contentVO.getCreatorName().equalsIgnoreCase(infoGluePrincipal.getName()))
+				{
+					Integer protectedContentId = ContentControllerProxy.getController().getProtectedContentId(contentId);
+					if(protectedContentId != null && !AccessRightController.getController().getIsPrincipalAuthorized(db, infoGluePrincipal, "Content.ChangeAccessRights", protectedContentId.toString()))
+						ceb.add(new AccessConstraintException("Content.contentId", "1006"));
+				}
 			}
-		}
-		else if(interceptionPointVO.getName().equalsIgnoreCase("SiteNodeVersion.ChangeAccessRights"))
-		{
-			Integer siteNodeVersionId = (Integer)extradata.get("siteNodeVersionId");
-			SiteNodeVersionVO siteNodeVersionVO = SiteNodeVersionController.getController().getSiteNodeVersionVOWithId(siteNodeVersionId);
-			if(!allowCreatorAccess || !siteNodeVersionVO.getVersionModifier().equalsIgnoreCase(infoGluePrincipal.getName()))
+			else if(interceptionPointVO.getName().equalsIgnoreCase("ContentVersion.Read"))
 			{
-				Integer protectedSiteNodeVersionId = SiteNodeVersionControllerProxy.getSiteNodeVersionControllerProxy().getProtectedSiteNodeVersionId(siteNodeVersionId);
-				if(protectedSiteNodeVersionId != null && !AccessRightController.getController().getIsPrincipalAuthorized(infoGluePrincipal, "SiteNodeVersion.ChangeAccessRights", protectedSiteNodeVersionId.toString()))
-					ceb.add(new AccessConstraintException("SiteNodeVersion.siteNodeId", "1006"));
+				Integer contentVersionId = (Integer)extradata.get("contentVersionId");
+				ContentVersionVO contentVersionVO = ContentVersionControllerProxy.getController().getContentVersionVOWithId(contentVersionId);
+				if(!allowCreatorAccess || !contentVersionVO.getVersionModifier().equalsIgnoreCase(infoGluePrincipal.getName()))
+				{	
+					if(ContentVersionControllerProxy.getController().getIsContentProtected(contentVersionVO.getContentId(), false) && !AccessRightController.getController().getIsPrincipalAuthorized(db, infoGluePrincipal, "ContentVersion.Read", contentVersionId.toString()))
+					{
+						ceb.add(new AccessConstraintException("ContentVersion.contentVersionId", "1000"));
+					}
+					else
+					{
+						Integer protectedContentId = ContentControllerProxy.getController().getProtectedContentId(contentVersionVO.getContentId());
+						if(protectedContentId != null && !AccessRightController.getController().getIsPrincipalAuthorized(db, infoGluePrincipal, "Content.Read", protectedContentId.toString()))
+							ceb.add(new AccessConstraintException("Content.contentId", "1000"));
+					}
+				}
 			}
-		}
-		
-		ceb.throwIfNotEmpty();
+			else if(interceptionPointVO.getName().equalsIgnoreCase("ContentVersion.Write"))
+			{
+				Integer contentVersionId = (Integer)extradata.get("contentVersionId");
+				ContentVersionVO contentVersionVO = ContentVersionControllerProxy.getController().getContentVersionVOWithId(contentVersionId);
+				if(!allowCreatorAccess || !contentVersionVO.getVersionModifier().equalsIgnoreCase(infoGluePrincipal.getName()))
+				{	
+					if(ContentVersionControllerProxy.getController().getIsContentProtected(contentVersionVO.getContentId(), false) && !AccessRightController.getController().getIsPrincipalAuthorized(db, infoGluePrincipal, "ContentVersion.Write", contentVersionId.toString()))
+					{
+						ceb.add(new AccessConstraintException("ContentVersion.contentVersionId", "1001"));
+					}
+					else
+					{
+						Integer protectedContentId = ContentControllerProxy.getController().getProtectedContentId(contentVersionVO.getContentId());
+						if(protectedContentId != null && !AccessRightController.getController().getIsPrincipalAuthorized(db, infoGluePrincipal, "Content.Write", protectedContentId.toString()))
+							ceb.add(new AccessConstraintException("Content.contentId", "1001"));
+					}
+				}
+			}
+			else if(interceptionPointVO.getName().equalsIgnoreCase("ContentVersion.Delete"))
+			{
+				Integer contentVersionId = (Integer)extradata.get("contentVersionId");
+				ContentVersionVO contentVersionVO = ContentVersionControllerProxy.getController().getContentVersionVOWithId(contentVersionId);
+				if(!allowCreatorAccess || !contentVersionVO.getVersionModifier().equalsIgnoreCase(infoGluePrincipal.getName()))
+				{	
+					if(ContentVersionControllerProxy.getController().getIsContentProtected(contentVersionVO.getContentId(), false) && !AccessRightController.getController().getIsPrincipalAuthorized(db, infoGluePrincipal, "ContentVersion.Delete", contentVersionId.toString()))
+						ceb.add(new AccessConstraintException("ContentVersion.contentVersionId", "1003"));
+				}
+			}
+			else if(interceptionPointVO.getName().equalsIgnoreCase("SiteNodeVersion.Read"))
+			{
+				Integer siteNodeVersionId = (Integer)extradata.get("siteNodeVersionId");
+				SiteNodeVersionVO siteNodeVersionVO = SiteNodeVersionController.getController().getSiteNodeVersionVOWithId(siteNodeVersionId);
+				if(!allowCreatorAccess || !siteNodeVersionVO.getVersionModifier().equalsIgnoreCase(infoGluePrincipal.getName()))
+				{
+					Integer protectedSiteNodeVersionId = SiteNodeVersionControllerProxy.getSiteNodeVersionControllerProxy().getProtectedSiteNodeVersionId(siteNodeVersionId, interceptionPointVO.getId(), false, db);
+					if(protectedSiteNodeVersionId != null && !AccessRightController.getController().getIsPrincipalAuthorized(db, infoGluePrincipal, "SiteNodeVersion.Read", protectedSiteNodeVersionId.toString()))
+						ceb.add(new AccessConstraintException("SiteNodeVersion.siteNodeVersionId", "1000"));
+				}
+			}
+			else if(interceptionPointVO.getName().equalsIgnoreCase("SiteNodeVersion.Write"))
+			{
+				Integer siteNodeVersionId = (Integer)extradata.get("siteNodeVersionId");
+				SiteNodeVersionVO siteNodeVersionVO = SiteNodeVersionController.getController().getSiteNodeVersionVOWithId(siteNodeVersionId);
+				if(!allowCreatorAccess || !siteNodeVersionVO.getVersionModifier().equalsIgnoreCase(infoGluePrincipal.getName()))
+				{
+					Integer protectedSiteNodeVersionId = SiteNodeVersionControllerProxy.getSiteNodeVersionControllerProxy().getProtectedSiteNodeVersionId(siteNodeVersionId, interceptionPointVO.getId(), db);
+					if(protectedSiteNodeVersionId != null && !AccessRightController.getController().getIsPrincipalAuthorized(db, infoGluePrincipal, "SiteNodeVersion.Write", protectedSiteNodeVersionId.toString()))
+						ceb.add(new AccessConstraintException("SiteNodeVersion.siteNodeVersionId", "1001"));
+				}
+			}
+			else if(interceptionPointVO.getName().equalsIgnoreCase("SiteNodeVersion.CreateSiteNode"))
+			{
+				Integer parentSiteNodeId = (Integer)extradata.get("siteNodeId");
+				SiteNodeVersionVO siteNodeVersionVO = SiteNodeVersionController.getController().getLatestSiteNodeVersionVO(parentSiteNodeId);
+				if(!allowCreatorAccess || !siteNodeVersionVO.getVersionModifier().equalsIgnoreCase(infoGluePrincipal.getName()))
+				{
+					Integer protectedSiteNodeVersionId = SiteNodeVersionControllerProxy.getSiteNodeVersionControllerProxy().getProtectedSiteNodeVersionId(siteNodeVersionVO.getId(), interceptionPointVO.getId(), db);
+					if(protectedSiteNodeVersionId != null && !AccessRightController.getController().getIsPrincipalAuthorized(db, infoGluePrincipal, "SiteNodeVersion.CreateSiteNode", protectedSiteNodeVersionId.toString()))
+						ceb.add(new AccessConstraintException("SiteNodeVersion.siteNodeId", "1002"));
+				}
+			}
+			else if(interceptionPointVO.getName().equalsIgnoreCase("SiteNodeVersion.DeleteSiteNode"))
+			{
+				Integer siteNodeId = (Integer)extradata.get("siteNodeId");
+				SiteNodeVersionVO siteNodeVersionVO = SiteNodeVersionController.getController().getLatestSiteNodeVersionVO(siteNodeId);
+				if(!allowCreatorAccess || !siteNodeVersionVO.getVersionModifier().equalsIgnoreCase(infoGluePrincipal.getName()))
+				{
+					Integer protectedSiteNodeVersionId = SiteNodeVersionControllerProxy.getSiteNodeVersionControllerProxy().getProtectedSiteNodeVersionId(siteNodeVersionVO.getId(), interceptionPointVO.getId(), db);
+					if(protectedSiteNodeVersionId != null && !AccessRightController.getController().getIsPrincipalAuthorized(db, infoGluePrincipal, "SiteNodeVersion.DeleteSiteNode", protectedSiteNodeVersionId.toString()))
+						ceb.add(new AccessConstraintException("SiteNodeVersion.siteNodeId", "1003"));
+				}
+			}
+			else if(interceptionPointVO.getName().equalsIgnoreCase("SiteNodeVersion.MoveSiteNode"))
+			{
+				Integer siteNodeId = (Integer)extradata.get("siteNodeId");
+				SiteNodeVersionVO siteNodeVersionVO = SiteNodeVersionController.getController().getLatestSiteNodeVersionVO(siteNodeId);
+				if(!allowCreatorAccess || !siteNodeVersionVO.getVersionModifier().equalsIgnoreCase(infoGluePrincipal.getName()))
+				{
+					Integer protectedSiteNodeVersionId = SiteNodeVersionControllerProxy.getSiteNodeVersionControllerProxy().getProtectedSiteNodeVersionId(siteNodeVersionVO.getId(), interceptionPointVO.getId(), db);
+					if(protectedSiteNodeVersionId != null && !AccessRightController.getController().getIsPrincipalAuthorized(db, infoGluePrincipal, "SiteNodeVersion.MoveSiteNode", protectedSiteNodeVersionId.toString()))
+						ceb.add(new AccessConstraintException("SiteNodeVersion.siteNodeId", "1004"));
+				}
+			}
+			else if(interceptionPointVO.getName().equalsIgnoreCase("SiteNodeVersion.SubmitToPublish"))
+			{
+				Integer siteNodeVersionId = (Integer)extradata.get("siteNodeVersionId");
+				SiteNodeVersionVO siteNodeVersionVO = SiteNodeVersionController.getController().getSiteNodeVersionVOWithId(siteNodeVersionId);
+				if(!allowCreatorAccess || !siteNodeVersionVO.getVersionModifier().equalsIgnoreCase(infoGluePrincipal.getName()))
+				{
+					Integer protectedSiteNodeVersionId = SiteNodeVersionControllerProxy.getSiteNodeVersionControllerProxy().getProtectedSiteNodeVersionId(siteNodeVersionId, interceptionPointVO.getId(), db);
+					if(protectedSiteNodeVersionId != null && !AccessRightController.getController().getIsPrincipalAuthorized(db, infoGluePrincipal, "SiteNodeVersion.SubmitToPublish", protectedSiteNodeVersionId.toString()))
+						ceb.add(new AccessConstraintException("SiteNodeVersion.siteNodeId", "1005"));
+				}
+			}
+			else if(interceptionPointVO.getName().equalsIgnoreCase("SiteNodeVersion.ChangeAccessRights"))
+			{
+				Integer siteNodeVersionId = (Integer)extradata.get("siteNodeVersionId");
+				SiteNodeVersionVO siteNodeVersionVO = SiteNodeVersionController.getController().getSiteNodeVersionVOWithId(siteNodeVersionId);
+				if(!allowCreatorAccess || !siteNodeVersionVO.getVersionModifier().equalsIgnoreCase(infoGluePrincipal.getName()))
+				{
+					Integer protectedSiteNodeVersionId = SiteNodeVersionControllerProxy.getSiteNodeVersionControllerProxy().getProtectedSiteNodeVersionId(siteNodeVersionId, interceptionPointVO.getId(), db);
+					if(protectedSiteNodeVersionId != null && !AccessRightController.getController().getIsPrincipalAuthorized(db, infoGluePrincipal, "SiteNodeVersion.ChangeAccessRights", protectedSiteNodeVersionId.toString()))
+						ceb.add(new AccessConstraintException("SiteNodeVersion.siteNodeId", "1006"));
+				}
+			}
+
+			ceb.throwIfNotEmpty();
+
+			db.commit();
+	    }
+	    catch(Exception e)
+	    {
+			logger.error("An error occurred so we should not complete the transaction: " + e.getMessage());
+			logger.warn("An error occurred so we should not complete the transaction: " + e.getMessage(), e);
+	        db.rollback();
+	        throw e;
+	    }
+	    finally
+	    {
+	    	try { db.close(); } catch (Exception e) {}
+	    }
 	}
 
 	
@@ -443,7 +468,7 @@ public class InfoGlueCommonAccessRightsInterceptor implements InfoGlueIntercepto
 			SiteNodeVersionVO siteNodeVersionVO = SiteNodeVersionController.getController().getLatestSiteNodeVersionVO(db, parentSiteNodeId);
 			if(!allowCreatorAccess || !siteNodeVersionVO.getVersionModifier().equalsIgnoreCase(infoGluePrincipal.getName()))
 			{
-				Integer protectedSiteNodeVersionId = SiteNodeVersionControllerProxy.getSiteNodeVersionControllerProxy().getProtectedSiteNodeVersionId(siteNodeVersionVO.getId(), db);
+				Integer protectedSiteNodeVersionId = SiteNodeVersionControllerProxy.getSiteNodeVersionControllerProxy().getProtectedSiteNodeVersionId(siteNodeVersionVO.getId(), interceptionPointVO.getId(), db);
 				if(protectedSiteNodeVersionId != null && !AccessRightController.getController().getIsPrincipalAuthorized(db, infoGluePrincipal, "SiteNodeVersion.CreateSiteNode", protectedSiteNodeVersionId.toString()))
 					ceb.add(new AccessConstraintException("SiteNodeVersion.siteNodeId", "1002"));
 			}
@@ -455,7 +480,7 @@ public class InfoGlueCommonAccessRightsInterceptor implements InfoGlueIntercepto
 			//SiteNodeVersion siteNodeVersion = SiteNodeVersionController.getController().getSiteNodeVersionWithId(siteNodeVersionId, db);
 			if(!allowCreatorAccess || !siteNodeVersionVO.getVersionModifier().equalsIgnoreCase(infoGluePrincipal.getName()))
 			{
-				Integer protectedSiteNodeVersionId = SiteNodeVersionControllerProxy.getSiteNodeVersionControllerProxy().getProtectedSiteNodeVersionId(siteNodeVersionId, db);
+				Integer protectedSiteNodeVersionId = SiteNodeVersionControllerProxy.getSiteNodeVersionControllerProxy().getProtectedSiteNodeVersionId(siteNodeVersionId, interceptionPointVO.getId(), false, db);
 				if(protectedSiteNodeVersionId != null && !AccessRightController.getController().getIsPrincipalAuthorized(db, infoGluePrincipal, "SiteNodeVersion.Read", protectedSiteNodeVersionId.toString()))
 					ceb.add(new AccessConstraintException("SiteNodeVersion.siteNodeVersionId", "1000"));
 			}
@@ -464,10 +489,9 @@ public class InfoGlueCommonAccessRightsInterceptor implements InfoGlueIntercepto
 		{
 			Integer siteNodeVersionId = (Integer)extradata.get("siteNodeVersionId");
 			SiteNodeVersionVO siteNodeVersionVO = SiteNodeVersionController.getController().getSiteNodeVersionVOWithId(siteNodeVersionId, db);
-			//SiteNodeVersion siteNodeVersion = SiteNodeVersionController.getController().getSiteNodeVersionWithId(siteNodeVersionId, db);
 			if(!allowCreatorAccess || !siteNodeVersionVO.getVersionModifier().equalsIgnoreCase(infoGluePrincipal.getName()))
 			{
-				Integer protectedSiteNodeVersionId = SiteNodeVersionControllerProxy.getSiteNodeVersionControllerProxy().getProtectedSiteNodeVersionId(siteNodeVersionId, db);
+				Integer protectedSiteNodeVersionId = SiteNodeVersionControllerProxy.getSiteNodeVersionControllerProxy().getProtectedSiteNodeVersionId(siteNodeVersionId, interceptionPointVO.getId(), db);
 				if(protectedSiteNodeVersionId != null && !AccessRightController.getController().getIsPrincipalAuthorized(db, infoGluePrincipal, "SiteNodeVersion.Write", protectedSiteNodeVersionId.toString()))
 					ceb.add(new AccessConstraintException("SiteNodeVersion.siteNodeVersionId", "1001"));
 			}

@@ -258,6 +258,12 @@ public class CreateSiteNodeAction extends InfoGlueAbstractAction
             
             commitTransaction(db);
         }
+        catch(ConstraintException ce)
+		{
+			logger.info("An error occurred so we should not complete the transaction:" + ce, ce);
+			rollbackTransaction(db);
+			throw ce;
+		}
         catch(Exception e)
         {
             logger.error("An error occurred so we should not complete the transaction:" + e, e);
@@ -271,13 +277,20 @@ public class CreateSiteNodeAction extends InfoGlueAbstractAction
 
     public String doInput() throws Exception
     {
-    	AccessConstraintExceptionBuffer ceb = new AccessConstraintExceptionBuffer();
-		
-		Integer protectedSiteNodeVersionId = SiteNodeControllerProxy.getController().getProtectedSiteNodeVersionId(parentSiteNodeId);
-		if(protectedSiteNodeVersionId != null && !AccessRightController.getController().getIsPrincipalAuthorized(this.getInfoGluePrincipal(), "SiteNodeVersion.CreateSiteNode", protectedSiteNodeVersionId.toString()))
-			ceb.add(new AccessConstraintException("SiteNode.siteNodeId", "1002"));
-		
-		ceb.throwIfNotEmpty();
+        try
+        {
+            SiteNodeControllerProxy.getSiteNodeControllerProxy().testAc(this.getInfoGluePrincipal(), this.parentSiteNodeId, "SiteNodeVersion.CreateSiteNode");
+        }
+        catch(ConstraintException ce)
+		{
+			logger.info("An error occurred so we should not complete the transaction:" + ce, ce);
+			throw ce;
+		}
+        catch(Exception e)
+        {
+            logger.error("An error occurred so we should not complete the transaction:" + e, e);
+            throw new SystemException(e.getMessage());
+        }
 		
 		return "input";
     }

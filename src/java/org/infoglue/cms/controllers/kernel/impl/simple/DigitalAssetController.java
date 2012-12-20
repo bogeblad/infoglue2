@@ -1965,6 +1965,31 @@ public class DigitalAssetController extends BaseController
 		return digitalAssetVO;
 	}
 
+	
+	public static DigitalAssetVO getLatestDigitalAssetVO(Integer contentVersionId, String assetKey) throws Exception
+	{
+    	Database db = CastorDatabaseService.getDatabase();
+
+    	DigitalAssetVO assetVO = null;
+
+        beginTransaction(db);
+
+        try
+        {
+        	assetVO = getLatestDigitalAssetVO(contentVersionId, assetKey, db);
+			            
+			rollbackTransaction(db);
+        }
+        catch(Exception e)
+        {
+            logger.info("An error occurred when we tried to cache and show the digital asset:" + e);
+            rollbackTransaction(db);
+            throw new SystemException(e.getMessage());
+        }
+    	
+		return assetVO;
+	}
+	
 	/**
 	 * Returns the latest digital asset for a contentversion.
 	 */

@@ -133,7 +133,7 @@ public class ContentVersionController extends BaseController
     	Integer contentId = (Integer)contentMap.get(contentVersionId);
     	if(contentId == null)
     	{
-    		ContentVersionVO ContentVersionVO = getContentVersionVOWithId(contentVersionId, db);
+    		ContentVersionVO ContentVersionVO = getSmallContentVersionVOWithId(contentVersionId, db);
     		//ContentVersionVO ContentVersionVO = (ContentVersionVO) getVOWithId(ContentVersionImpl.class, contentVersionId, db);
     		contentId = ContentVersionVO.getContentId();
     		contentMap.put(contentVersionId, contentId);

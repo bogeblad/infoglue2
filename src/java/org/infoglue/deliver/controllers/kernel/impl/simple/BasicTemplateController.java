@@ -75,6 +75,7 @@ import org.infoglue.cms.controllers.kernel.impl.simple.ExtendedSearchCriterias;
 import org.infoglue.cms.controllers.kernel.impl.simple.GroupControllerProxy;
 import org.infoglue.cms.controllers.kernel.impl.simple.GroupPropertiesController;
 import org.infoglue.cms.controllers.kernel.impl.simple.InfoGluePrincipalControllerProxy;
+import org.infoglue.cms.controllers.kernel.impl.simple.InterceptionPointController;
 import org.infoglue.cms.controllers.kernel.impl.simple.RegistryController;
 import org.infoglue.cms.controllers.kernel.impl.simple.RepositoryController;
 import org.infoglue.cms.controllers.kernel.impl.simple.RoleControllerProxy;
@@ -89,6 +90,7 @@ import org.infoglue.cms.entities.content.ContentVersionVO;
 import org.infoglue.cms.entities.content.DigitalAssetVO;
 import org.infoglue.cms.entities.management.ContentTypeAttribute;
 import org.infoglue.cms.entities.management.ContentTypeDefinitionVO;
+import org.infoglue.cms.entities.management.InterceptionPointVO;
 import org.infoglue.cms.entities.management.LanguageVO;
 import org.infoglue.cms.entities.management.RepositoryVO;
 import org.infoglue.cms.entities.structure.SiteNode;
@@ -686,7 +688,7 @@ public class BasicTemplateController implements TemplateController
 
 		try
 		{
-		    contentVersionVO = ContentVersionController.getContentVersionController().getContentVersionVOWithId(contentVersionId, getDatabase());
+		    contentVersionVO = ContentVersionController.getContentVersionController().getSmallContentVersionVOWithId(contentVersionId, getDatabase());
 		}
 		catch(Exception e)
 		{
@@ -7077,7 +7079,7 @@ public class BasicTemplateController implements TemplateController
 		
 		try
 		{
-		    Integer protectedSiteNodeVersionId = this.nodeDeliveryController.getProtectedSiteNodeVersionId(getDatabase(), siteNodeId);
+		    Integer protectedSiteNodeVersionId = this.nodeDeliveryController.getProtectedSiteNodeVersionId(getDatabase(), siteNodeId, interceptionPointName);
 			if(protectedSiteNodeVersionId == null)
 			{
 				logger.info("The page was not protected...");
@@ -7108,7 +7110,7 @@ public class BasicTemplateController implements TemplateController
 		
 		try 
 		{
-		    Integer protectedSiteNodeVersionId = this.nodeDeliveryController.getProtectedSiteNodeVersionId(getDatabase(), siteNodeId);
+		    Integer protectedSiteNodeVersionId = this.nodeDeliveryController.getProtectedSiteNodeVersionId(getDatabase(), siteNodeId, "SiteNodeVersion.Read");
 			if(protectedSiteNodeVersionId == null)
 			{
 				logger.info("The page was not protected...");
@@ -7158,7 +7160,7 @@ public class BasicTemplateController implements TemplateController
 		
 		try 
 		{
-		    Integer protectedSiteNodeVersionId = this.nodeDeliveryController.getProtectedSiteNodeVersionId(getDatabase(), siteNodeId);
+			Integer protectedSiteNodeVersionId = this.nodeDeliveryController.getProtectedSiteNodeVersionId(getDatabase(), siteNodeId, interceptionPointName);
 			if(protectedSiteNodeVersionId == null)
 			{
 				logger.info("The page was not protected...");
@@ -7172,9 +7174,8 @@ public class BasicTemplateController implements TemplateController
 				
 				if(principal != null)
 				{
-					//SiteNodeVersionVO siteNodeVersionVO = this.nodeDeliveryController.getActiveSiteNodeVersionVO(siteNodeId);
 					hasUserPageAccess = AccessRightController.getController().getIsPrincipalAuthorized((InfoGluePrincipal)principal, interceptionPointName, protectedSiteNodeVersionId.toString());
-				    if(!hasUserPageAccess && getIsDecorated() && getDeliveryContext().getConsiderEditorInDecoratedMode())
+					if(!hasUserPageAccess && getIsDecorated() && getDeliveryContext().getConsiderEditorInDecoratedMode())
 				    {
 					    String cmsUserName = (String)getHttpServletRequest().getSession().getAttribute("cmsUserName");
 					    if(cmsUserName != null)
@@ -7293,7 +7294,7 @@ public class BasicTemplateController implements TemplateController
 		
 		try 
 		{
-		    Integer protectedSiteNodeVersionId = this.nodeDeliveryController.getProtectedSiteNodeVersionId(getDatabase(), siteNodeId);
+		    Integer protectedSiteNodeVersionId = this.nodeDeliveryController.getProtectedSiteNodeVersionId(getDatabase(), siteNodeId, "SiteNodeVersion.Write");
 			if(protectedSiteNodeVersionId == null)
 			{
 				logger.info("The page was not protected...");
@@ -7339,6 +7340,7 @@ public class BasicTemplateController implements TemplateController
 		
 		try 
 		{
+			
 			if(!AccessRightController.getController().getIsPrincipalAuthorized(infoGluePrincipal, interceptionPointName, extraParameters))
 			{
 			    hasUserContentAccess = false;

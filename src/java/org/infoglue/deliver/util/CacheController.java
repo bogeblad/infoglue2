@@ -44,7 +44,9 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -165,6 +167,8 @@ import com.opensymphony.oscache.general.GeneralCacheAdministrator;
 
 public class CacheController extends Thread
 { 
+	private static long readLockTimeout = 5;
+	private static long writeLockTimeout = 50;
     public final static Logger logger = Logger.getLogger(CacheController.class.getName());
 	private static VisualFormatter formatter = new VisualFormatter();
 
@@ -394,6 +398,7 @@ public class CacheController extends Thread
 		        synchronized(cacheInstance)
 		        {
 		            caches.put(newCacheName, cacheInstance);
+		            locksCache.put(newCacheName, new ReentrantReadWriteLock());
 		            caches.remove(cacheName);
 		        }
 		    }
@@ -627,6 +632,7 @@ public class CacheController extends Thread
 				//cacheAdministrator.getCache().addCacheEventListener(cacheEntryEventListener, CacheEntryEventListener.class);
 				//cacheAdministrator.getCache().addCacheEventListener(cacheMapAccessEventListener, CacheMapAccessEventListener.class);
 				caches.put(cacheName, cacheAdministrator);
+				locksCache.put(cacheName, new ReentrantReadWriteLock());
 				//eventListeners.put(cacheName + "_cacheEntryEventListener", cacheEntryEventListener);
 				//eventListeners.put(cacheName + "_cacheMapAccessEventListener", cacheMapAccessEventListener);
 		    }
@@ -682,8 +688,31 @@ public class CacheController extends Thread
 			//TODO
 			if(CmsPropertyHandler.getUseSynchronizationOnCaches())
 			{
-				synchronized(cacheAdministrator)
-				{
+				synchronized(cacheAdministrator) //Back
+	    		{
+				/*
+				Timer t = new Timer();
+	    		ReentrantReadWriteLock rwl = locksCache.get(cacheName);
+	    		boolean lockSuccess = false;
+	    		try {
+					lockSuccess = rwl.writeLock().tryLock(writeLockTimeout, TimeUnit.MILLISECONDS);
+				} catch (InterruptedException e1) {
+					System.out.println("########Returned null because of lock error...:" + e1.getMessage());
+					printLockDebug(rwl);
+					return;
+				}
+	    		//rwl.writeLock().lock();
+	            try
+	            {
+	            	if(!lockSuccess)
+	            	{
+	            		System.out.println("######Returned null because of lock timeout...");
+						printLockDebug(rwl);
+	            		return;
+	            	}
+
+	            	RequestAnalyser.getRequestAnalyser().registerComponentStatistics("Getting lock 6 on " + cacheName, t.getElapsedTime());
+		    	*/	
 					try
 					{
 						if(useGroups)
@@ -705,7 +734,15 @@ public class CacheController extends Thread
 					{
 						logger.warn("Error putting in cache:" + e.getMessage());
 					}
+	            	//RequestAnalyser.getRequestAnalyser().registerComponentStatistics("Putting object in " + cacheName, t.getElapsedTime());
 				}
+				/*
+	            finally
+	            {
+	            	if(lockSuccess)
+	            		rwl.writeLock().unlock();
+	            }
+	            */
 			}
 			else
 			{
@@ -759,6 +796,14 @@ public class CacheController extends Thread
 
 		
 		//logger.info("Done cacheObjectInAdvancedCache");
+	}
+	public static void printLockDebug(ReentrantReadWriteLock rwl) {
+		System.out.println("CurrentThread hasLock: " + rwl.writeLock().isHeldByCurrentThread());
+		System.out.println("CurrentThread getWriteHoldCount: " + rwl.getWriteHoldCount());
+		System.out.println("CurrentThread getWriteHoldCount: " + rwl.getReadLockCount());
+		System.out.println("CurrentThread getQueueLength: " + rwl.getQueueLength());
+		System.out.println("CurrentThread hasQueuedThreads: " + rwl.hasQueuedThreads());
+		System.out.println("CurrentThread isWriteLocked: " + rwl.isWriteLocked());
 	}	
 	
 	
@@ -801,6 +846,7 @@ public class CacheController extends Thread
 			//cacheAdministrator.getCache().addCacheEventListener(cacheEntryEventListener, CacheEntryEventListener.class);
 			//cacheAdministrator.getCache().addCacheEventListener(cacheMapAccessEventListener, CacheMapAccessEventListener.class);
 	        caches.put(cacheName, cacheAdministrator);
+	        locksCache.put(cacheName, new ReentrantReadWriteLock());
 	        //eventListeners.put(cacheName + "_cacheEntryEventListener", cacheEntryEventListener);
 	        //eventListeners.put(cacheName + "_cacheMapAccessEventListener", cacheMapAccessEventListener);
 	    }
@@ -809,8 +855,31 @@ public class CacheController extends Thread
 			
 		if(CmsPropertyHandler.getUseSynchronizationOnCaches())
 		{
-			synchronized(cacheAdministrator)
-			{
+    		synchronized(cacheAdministrator) //Back
+    		{
+			/*
+			Timer t = new Timer();
+    		ReentrantReadWriteLock rwl = locksCache.get(cacheName);
+    		boolean lockSuccess = false;
+    		try {
+				lockSuccess = rwl.writeLock().tryLock(writeLockTimeout, TimeUnit.MILLISECONDS);
+			} catch (InterruptedException e1) {
+				System.out.println("Returned null because of lock error...:" + e1.getMessage());
+				printLockDebug(rwl);
+				return;
+			}
+    		//rwl.writeLock().lock();
+            try
+            {
+            	if(!lockSuccess)
+            	{
+            		System.out.println("Returned null because of lock timeout...");
+					printLockDebug(rwl);
+            		return;
+            	}
+            	
+            	RequestAnalyser.getRequestAnalyser().registerComponentStatistics("Getting lock for " + cacheName, t.getElapsedTime());
+			*/
 				try
 				{
 					if(CmsPropertyHandler.getUseHashCodeInCaches())
@@ -822,7 +891,16 @@ public class CacheController extends Thread
 				{
 					logger.warn("Error putting in cache:" + e.getMessage());
 				}
+
+            	//RequestAnalyser.getRequestAnalyser().registerComponentStatistics("Putting object 2 to " + cacheName, t.getElapsedTime());
 			}
+    		/*
+            finally
+            {
+            	if(lockSuccess)
+            		rwl.writeLock().unlock();
+            }
+            */
 		}
 		else
 		{
@@ -848,6 +926,8 @@ public class CacheController extends Thread
 		return getCachedObjectFromAdvancedCache(cacheName, key, false, "UTF-8", false);
 	}
 
+	private static Map<String,ReentrantReadWriteLock> locksCache = new HashMap<String,ReentrantReadWriteLock>();
+	
 	public static Object getCachedObjectFromAdvancedCache(String cacheName, String key, boolean useFileCacheFallback, String fileCacheCharEncoding, boolean cacheFileResultInMemory)
 	{
 		if(cacheName == null || key == null || key.length() == 0)
@@ -869,13 +949,35 @@ public class CacheController extends Thread
 				{
 		    		synchronized(cacheAdministrator) //Back
 		    		{
+		    		/*
+		    		Timer t = new Timer();
+		    		ReentrantReadWriteLock rwl = locksCache.get(cacheName);
+		    		boolean lockSuccess = false;
+		    		try {
+						lockSuccess = rwl.readLock().tryLock(readLockTimeout, TimeUnit.MILLISECONDS);
+					} catch (InterruptedException e1) {
+						RequestAnalyser.getRequestAnalyser().registerComponentStatistics("Error getting lock 3 on " + cacheName, t.getElapsedTime());
+						printLockDebug(rwl);
+						return null;
+					}
+		            try
+		            {
+		            	if(!lockSuccess)
+		            	{
+							RequestAnalyser.getRequestAnalyser().registerComponentStatistics("Timeout getting lock 3 on " + cacheName, t.getElapsedTime());
+							printLockDebug(rwl);
+		            		return null;
+		            	}
+					*/
+		            	
 					    try 
 					    {
 					    	if(CmsPropertyHandler.getUseHashCodeInCaches())
 								value = (cacheAdministrator == null) ? null : cacheAdministrator.getFromCache("" + key.hashCode(), CacheEntry.INDEFINITE_EXPIRY);
 							else
 								value = (cacheAdministrator == null) ? null : cacheAdministrator.getFromCache(key, CacheEntry.INDEFINITE_EXPIRY);
-					    	
+
+					    	//RequestAnalyser.getRequestAnalyser().registerComponentStatistics("Getting from cache on " + cacheName, t.getElapsedTime());
 					    } 
 					    catch (NeedsRefreshException nre) 
 					    {
@@ -895,8 +997,17 @@ public class CacheController extends Thread
 					    	{
 					    		logger.error("Error:" + e.getMessage());
 							}
+
+					    	//RequestAnalyser.getRequestAnalyser().registerComponentStatistics("Getting object 3 part 2 from " + cacheName, t.getElapsedTime());
 						}
-		    		}
+			    	}
+		    		/*
+		            finally
+		            {
+		            	if(lockSuccess)
+		            		rwl.readLock().unlock();
+		            }
+					*/
 				}
 		    	else
 		    	{
@@ -998,16 +1109,20 @@ public class CacheController extends Thread
 	        //cacheAdministrator.getCache().addCacheEventListener(cacheEntryEventListener, CacheEntryEventListener.class);
 			//cacheAdministrator.getCache().addCacheEventListener(cacheMapAccessEventListener, CacheMapAccessEventListener.class);
 			caches.put(cacheName, cacheAdministrator);
+			locksCache.put(cacheName, new ReentrantReadWriteLock());
 			//eventListeners.put(cacheName + "_cacheEntryEventListener", cacheEntryEventListener);
 			//eventListeners.put(cacheName + "_cacheMapAccessEventListener", cacheMapAccessEventListener);
 	    }
 	    
-	    
+	    /*
 	    if(cacheAdministrator != null)
 	    {		    	
 		    try 
 		    {
-		    	value = (cacheAdministrator == null) ? null : cacheAdministrator.getFromCache(pageKey, CacheEntry.INDEFINITE_EXPIRY);
+		    	//synchronized (cacheAdministrator) 
+		    	//{
+			    	value = (cacheAdministrator == null) ? null : cacheAdministrator.getFromCache(pageKey, CacheEntry.INDEFINITE_EXPIRY);
+			    	//}
 		    	//System.out.println("SUCCESS hit pageCache on url:" + pageInvoker.getTemplateController().getOriginalFullURL());
 		    } 
 		    catch (NeedsRefreshException nre) 
@@ -1046,7 +1161,20 @@ public class CacheController extends Thread
 				}
 			}
 	    }
-	    
+	    */
+	    value = getCachedObjectFromAdvancedCache(cacheName, pageKey, CacheEntry.INDEFINITE_EXPIRY);
+		if(value == null)
+		{
+		    String result = (String)m.invoke(o, args);
+			//logger.info("result:" + result);
+			value = result;
+			if(result != null)
+			{
+		    	 cacheNewResult(pageInvoker, cacheAdministrator, pageKey, result);
+			}
+	    	value = result;
+		}
+		
 	    if(value instanceof byte[])
 	    	value = compressionHelper.decompress((byte[])value);
 	    
@@ -1095,7 +1223,7 @@ public class CacheController extends Thread
 				newPageCacheTimeout = pageInvoker.getTemplateController().getPageCacheTimeout();
 			
 			//String[] allUsedEntitiesCopy = pageInvoker.getDeliveryContext().getAllUsedEntities().clone();
-			Set<String> allUsedEntitiesSet = pageInvoker.getDeliveryContext().getAllUsedEntitiesAsSet();
+			List<String> allUsedEntitiesSet = pageInvoker.getDeliveryContext().getAllUsedEntitiesAsSet();
 			//String[] allUsedEntitiesCopy = allUsedEntitiesSet.toArray(new String[0]);
 			//System.out.println("allUsedEntitiesSet:" + allUsedEntitiesSet.size());
 			Object extraData = pageInvoker.getDeliveryContext().getExtraData();
@@ -1173,6 +1301,9 @@ public class CacheController extends Thread
 			
 			logger.info("Caching:" + pageKey);
 
+			synchronized (cacheAdministrator) 
+			{
+				
 	    	String compressPageCache = CmsPropertyHandler.getCompressPageCache();
 		    if(compressPageCache != null && compressPageCache.equalsIgnoreCase("true"))
 			{
@@ -1243,6 +1374,7 @@ public class CacheController extends Thread
 					CacheController.cacheObjectInAdvancedCache(pageCacheExtraName, pageKey + "_entities", allUsedEntitiesCopy, null, false);    
 		    	}
 		    }
+			}
 		}
 		else
 		{
@@ -1279,8 +1411,29 @@ public class CacheController extends Thread
 		    	//TODO
 		    	if(CmsPropertyHandler.getUseSynchronizationOnCaches())
 		    	{
-		    		synchronized(cacheAdministrator)
-		    		{
+		    		//synchronized(cacheAdministrator) //Back
+		    		//{
+		    		/*
+		    		Timer t = new Timer();
+		    		ReentrantReadWriteLock rwl = locksCache.get(cacheName);
+		    		boolean lockSuccess = false;
+		    		try {
+						lockSuccess = rwl.readLock().tryLock(readLockTimeout, TimeUnit.MILLISECONDS);
+					} catch (InterruptedException e1) {
+						RequestAnalyser.getRequestAnalyser().registerComponentStatistics("Error getting lock 2 on " + cacheName, t.getElapsedTime());
+						printLockDebug(rwl);
+						return null;
+					}
+		    		//rwl.readLock().lock();
+		            try
+		            {
+		            	if(!lockSuccess)
+		            	{
+							RequestAnalyser.getRequestAnalyser().registerComponentStatistics("Timeout getting lock 2 on " + cacheName, t.getElapsedTime());
+							printLockDebug(rwl);
+		            		return null;
+		            	}
+					*/
 					    try 
 					    {
 					        if(CmsPropertyHandler.getUseHashCodeInCaches())
@@ -1300,7 +1453,15 @@ public class CacheController extends Thread
 					        else
 					        	cacheAdministrator.cancelUpdate(key);
 						}
-		    		}
+				    	//RequestAnalyser.getRequestAnalyser().registerComponentStatistics("Putting object 4 in " + cacheName, t.getElapsedTime());
+		    		//}
+		    		/*
+		            finally
+		            {
+		            	if(lockSuccess)
+		            		rwl.readLock().unlock();
+		            }
+		            */
 		    	}
 		    	else
 		    	{
@@ -1376,7 +1537,7 @@ public class CacheController extends Thread
 					{
 						//System.out.println("personalCache contains:" + ((Map)personalCache).containsKey(accessRightKey));
 						//((Map) personalCache).remove(accessRightKey);
-						((Map) personalCache).put(accessRightKey, -1);
+						((Map) personalCache).put(accessRightKey, -1);	
 						//System.out.println("personalCache contains after:" + ((Map)personalCache).containsKey(accessRightKey));
 					}
 				}
@@ -1405,10 +1566,40 @@ public class CacheController extends Thread
 				else
 				{
 				    GeneralCacheAdministrator cacheInstance = (GeneralCacheAdministrator)object;
-					synchronized(cacheInstance)
-					{
-						cacheSize = cacheInstance.getCache().getSize();
+		    		synchronized(cacheInstance) //Back
+		    		{
+				    /*
+		    		Timer t = new Timer();
+		    		ReentrantReadWriteLock rwl = locksCache.get(cacheName);
+		    		boolean lockSuccess = false;
+		    		try {
+		    			System.out.println("YAAAAAAAAAAAAA 2");
+						lockSuccess = rwl.readLock().tryLock(readLockTimeout, TimeUnit.SECONDS);
+					} catch (InterruptedException e1) {
+						RequestAnalyser.getRequestAnalyser().registerComponentStatistics("Error getting lock in getCacheSize on " + cacheName, t.getElapsedTime());
+						printLockDebug(rwl);
+						return 0;
 					}
+		    		//rwl.readLock().lock();
+		            try
+		            {
+		            	if(!lockSuccess)
+		            	{
+							RequestAnalyser.getRequestAnalyser().registerComponentStatistics("Timeout getting lock in getCacheSize on " + cacheName, t.getElapsedTime());
+		            		return 0;
+		            	}
+			    	*/	
+						cacheSize = cacheInstance.getCache().getSize();
+						
+				    	//RequestAnalyser.getRequestAnalyser().registerComponentStatistics("Getting getCacheSize on " + cacheName, t.getElapsedTime());
+					}
+		    		/*
+		            finally
+		            {
+		            	if(lockSuccess)
+		            		rwl.readLock().unlock();
+		            }
+		            */
 				}
 			}
 		}
@@ -1436,10 +1627,42 @@ public class CacheController extends Thread
 				else
 				{
 				    GeneralCacheAdministrator cacheInstance = (GeneralCacheAdministrator)object;
-					synchronized(cacheInstance)
-					{
-						cacheInstance.flushAll();
+				    synchronized(cacheInstance) //Back
+		    		{
+				    /*	
+		    		Timer t = new Timer();
+		    		ReentrantReadWriteLock rwl = locksCache.get(cacheName);
+		    		boolean lockSuccess = false;
+		    		try {
+		    			System.out.println("EAAAAAAAAAAAAAAAAAA");
+						lockSuccess = rwl.writeLock().tryLock(writeLockTimeout, TimeUnit.SECONDS);
+						printLockDebug(rwl);
+					} catch (InterruptedException e1) {
+						return;
 					}
+		    		//rwl.writeLock().lock();
+		            try
+		            {
+		            	if(!lockSuccess)
+		            	{
+							printLockDebug(rwl);
+		            		return;
+		            	}
+				    	
+				    	RequestAnalyser.getRequestAnalyser().registerComponentStatistics("Getting lock for flushing " + cacheName, t.getElapsedTime());
+		            	*/
+						
+						cacheInstance.flushAll();
+
+				    	//RequestAnalyser.getRequestAnalyser().registerComponentStatistics("Flushing " + cacheName, t.getElapsedTime());
+					}
+				    /*
+		            finally
+		            {
+		            	if(lockSuccess)
+		            		rwl.writeLock().unlock();
+		            }
+		            */
 				}
 		    	caches.remove(cacheName);
 			    eventListeners.remove(cacheName + "_cacheEntryEventListener");
@@ -1469,10 +1692,41 @@ public class CacheController extends Thread
 				else
 				{
 				    GeneralCacheAdministrator cacheInstance = (GeneralCacheAdministrator)object;
-					synchronized(cacheInstance)
-					{
-						cacheInstance.flushAll();
+		    		synchronized(cacheInstance) //Back
+		    		{
+				    /*
+				    Timer t = new Timer();
+		    		ReentrantReadWriteLock rwl = locksCache.get(cacheName);
+		    		boolean lockSuccess = false;
+		    		try {
+		    			System.out.println("ddddddddddddddddddd");
+		    			lockSuccess = rwl.writeLock().tryLock(writeLockTimeout, TimeUnit.SECONDS);
+					} catch (InterruptedException e1) {
+						printLockDebug(rwl);
+						return;
 					}
+		    		//rwl.writeLock().lock();
+		            try
+		            {
+		            	if(!lockSuccess)
+		            	{
+							printLockDebug(rwl);
+		            		return;
+		            	}
+
+				    	RequestAnalyser.getRequestAnalyser().registerComponentStatistics("Getting lock for flushing " + cacheName, t.getElapsedTime());
+						*/ 
+						cacheInstance.flushAll();
+						
+				    	//RequestAnalyser.getRequestAnalyser().registerComponentStatistics("Flushing " + cacheName, t.getElapsedTime());
+					}
+		    		/*
+		            finally
+		            {
+		            	if(lockSuccess)
+		            		rwl.writeLock().unlock();
+		            }
+		            */
 				}
 		    	//caches.remove(cacheName);
 			    //eventListeners.remove(cacheName + "_cacheEntryEventListener");
@@ -1501,10 +1755,41 @@ public class CacheController extends Thread
 				else
 				{
 				    GeneralCacheAdministrator cacheInstance = (GeneralCacheAdministrator)object;
-					synchronized(cacheInstance)
-					{
-						cacheInstance.flushEntry(key);
+		    		synchronized(cacheInstance) //Back
+		    		{
+				    /*
+				    Timer t = new Timer();
+		    		ReentrantReadWriteLock rwl = locksCache.get(cacheName);
+		    		boolean lockSuccess = false;
+		    		try {
+		    			System.out.println("qwqwwfwefwefwefwe");
+						lockSuccess = rwl.writeLock().tryLock(writeLockTimeout, TimeUnit.SECONDS);
+					} catch (InterruptedException e1) {
+						printLockDebug(rwl);
+						return;
 					}
+		    		//rwl.writeLock().lock();
+		            try
+		            {
+		            	if(!lockSuccess)
+		            	{
+							printLockDebug(rwl);
+		            		return;
+		            	}
+
+		            	RequestAnalyser.getRequestAnalyser().registerComponentStatistics("Getting lock for flushing entry in " + cacheName, t.getElapsedTime());
+					*/
+						cacheInstance.flushEntry(key);
+						
+		            	//RequestAnalyser.getRequestAnalyser().registerComponentStatistics("Flushing entry in " + cacheName, t.getElapsedTime());
+					}
+		    		/*
+		            finally
+		            {
+		            	if(lockSuccess)
+		            		rwl.writeLock().unlock();
+		            }
+		            */
 				}
 			}
 		}
@@ -1538,12 +1823,40 @@ public class CacheController extends Thread
 				else
 				{
 				    GeneralCacheAdministrator cacheInstance = (GeneralCacheAdministrator)object;
-					synchronized(cacheInstance)
-					{
-			    		cacheInstance.flushGroup(group);
-						if(logger.isInfoEnabled())
-							logger.info("Clearing cache for group:" + cacheName + " - " + group);
+		    		synchronized(cacheInstance) //Back
+		    		{
+		    		/*	
+				    Timer t = new Timer();
+		    		ReentrantReadWriteLock rwl = locksCache.get(cacheName);
+		    		boolean lockSuccess = false;
+		    		try {
+		    			System.out.println("YEEEEEEEEEEEEEEEEEAAAAAAH");
+						lockSuccess = rwl.writeLock().tryLock(writeLockTimeout, TimeUnit.SECONDS);
+						printLockDebug(rwl);
+					} catch (InterruptedException e1) {
+						return;
 					}
+		    		//rwl.writeLock().lock();
+		            try
+		            {
+		            	if(!lockSuccess)
+		            	{
+		            		return;
+		            	}
+
+				    	RequestAnalyser.getRequestAnalyser().registerComponentStatistics("Getting lock for flushGroup in " + cacheName, t.getElapsedTime());
+					*/
+			    		cacheInstance.flushGroup(group);
+
+				    //	RequestAnalyser.getRequestAnalyser().registerComponentStatistics("FlushGroup on " + cacheName, t.getElapsedTime());
+					}
+		    		/*
+		            finally
+		            {
+		            	if(lockSuccess)
+		            		rwl.writeLock().unlock();
+		            }
+		            */
 				}
 			}
 		}
@@ -3321,7 +3634,7 @@ public class CacheController extends Thread
 			    logger.info("evictWaitingCache allready in progress - returning to avoid conflict");
 		        return;
 		    }
-	       	else if(RequestAnalyser.getRequestAnalyser().getBlockRequestTime() > 30000)
+	       	else if(RequestAnalyser.getRequestAnalyser().getBlockRequests() && RequestAnalyser.getRequestAnalyser().getBlockRequestTime() > 30000)
 	       		logger.warn("An block must have gone wrong... there has gone over 30 seconds and still not reported done.. let's run anyway.");
 
 	       	RequestAnalyser.getRequestAnalyser().setBlockRequests(true);

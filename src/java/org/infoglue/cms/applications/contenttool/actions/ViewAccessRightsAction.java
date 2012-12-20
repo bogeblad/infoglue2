@@ -39,6 +39,7 @@ import org.infoglue.cms.controllers.kernel.impl.simple.ContentControllerProxy;
 import org.infoglue.cms.controllers.kernel.impl.simple.GroupControllerProxy;
 import org.infoglue.cms.controllers.kernel.impl.simple.InterceptionPointController;
 import org.infoglue.cms.controllers.kernel.impl.simple.RoleControllerProxy;
+import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeControllerProxy;
 import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeVersionController;
 import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeVersionControllerProxy;
 import org.infoglue.cms.entities.content.ContentVO;
@@ -52,6 +53,7 @@ import org.infoglue.cms.entities.management.InterceptionPointVO;
 import org.infoglue.cms.entities.structure.SiteNodeVersionVO;
 import org.infoglue.cms.exception.AccessConstraintException;
 import org.infoglue.cms.exception.Bug;
+import org.infoglue.cms.exception.ConstraintException;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.security.InfoGlueRole;
 import org.infoglue.cms.util.AccessConstraintExceptionBuffer;
@@ -101,69 +103,76 @@ public class ViewAccessRightsAction extends InfoGlueAbstractAction
     	
     	AccessConstraintExceptionBuffer ceb = new AccessConstraintExceptionBuffer();
 		
-		if(interceptionPointCategory.equalsIgnoreCase("Content"))
-		{	
-			if(extraParameters == null || extraParameters.equals(""))
-			    throw new SystemException("The content category must have a content id sent in so don't set 'Use extra data for access control' to no for those interception points.");
-			    
-		    Integer contentId = new Integer(extraParameters);
-			ContentVO contentVO = ContentControllerProxy.getController().getContentVOWithId(contentId);
-			
-			if(!contentVO.getCreatorName().equalsIgnoreCase(this.getInfoGluePrincipal().getName()))
-			{
-				if(ContentControllerProxy.getController().getIsContentProtected(contentId) && !AccessRightController.getController().getIsPrincipalAuthorized(this.getInfoGluePrincipal(), "Content.ChangeAccessRights", contentId.toString()))
-				{
-					InterceptionPointVO changeInterceptionPointVO = InterceptionPointController.getController().getInterceptionPointVOWithName("Content.ChangeAccessRights");
-					InterceptionPointVO readInterceptionPointVO = InterceptionPointController.getController().getInterceptionPointVOWithName("Content.Read");
-					List changeAccessRightVOList = AccessRightController.getController().getAccessRightVOListOnly(changeInterceptionPointVO.getId(), "" + contentId);
-					List readAccessRightVOList = AccessRightController.getController().getAccessRightVOListOnly(readInterceptionPointVO.getId(), "" + contentId);
-					logger.info("changeAccessRightVOList:" + changeAccessRightVOList.size());
-					logger.info("readAccessRightVOList:" + readAccessRightVOList.size());
-					if(changeAccessRightVOList.size() > 0 && readAccessRightVOList.size() > 0)
-						ceb.add(new AccessConstraintException("Content.contentId", "1006"));
-				}
-			}
-		}
-		else if(interceptionPointCategory.equalsIgnoreCase("SiteNodeVersion"))
-		{	
-			if(extraParameters == null || extraParameters.equals(""))
-			    throw new SystemException("The sitenode category must have a sitenode id sent in so don't set 'Use extra data for access control' to no for those interception points.");
-
-			Integer siteNodeVersionId = new Integer(extraParameters);
-			SiteNodeVersionVO siteNodeVersionVO = SiteNodeVersionController.getController().getSiteNodeVersionVOWithId(siteNodeVersionId);
-			if(!siteNodeVersionVO.getVersionModifier().equalsIgnoreCase(this.getInfoGluePrincipal().getName()))
-			{
-				boolean isSiteNodeVersionProtected = SiteNodeVersionControllerProxy.getSiteNodeVersionControllerProxy().getIsSiteNodeVersionProtected(siteNodeVersionVO.getId());
-				Integer protectedSiteNodeVersionId = SiteNodeVersionControllerProxy.getSiteNodeVersionControllerProxy().getProtectedSiteNodeVersionId(siteNodeVersionId);
-				if(protectedSiteNodeVersionId != null && !AccessRightController.getController().getIsPrincipalAuthorized(this.getInfoGluePrincipal(), "SiteNodeVersion.ChangeAccessRights", siteNodeVersionId.toString()))
-				{
-					InterceptionPointVO changeInterceptionPointVO = InterceptionPointController.getController().getInterceptionPointVOWithName("SiteNodeVersion.ChangeAccessRights");
-					InterceptionPointVO readInterceptionPointVO = InterceptionPointController.getController().getInterceptionPointVOWithName("SiteNodeVersion.Read");
-					List changeAccessRightVOList = AccessRightController.getController().getAccessRightVOListOnly(changeInterceptionPointVO.getId(), "" + siteNodeVersionVO.getId());
-					List readAccessRightVOList = AccessRightController.getController().getAccessRightVOListOnly(readInterceptionPointVO.getId(), "" + siteNodeVersionVO.getId());
-					logger.info("changeAccessRightVOList:" + changeAccessRightVOList.size());
-					logger.info("readAccessRightVOList:" + readAccessRightVOList.size());
-					if(changeAccessRightVOList.size() > 0 && readAccessRightVOList.size() > 0)
-						ceb.add(new AccessConstraintException("SiteNodeVersion.siteNodeId", "1006"));
-				}
-			}
-		}
-
-		this.interceptionPointVOList = InterceptionPointController.getController().getInterceptionPointVOList(interceptionPointCategory);
-		//t.printElapsedTime("1");
-		this.roleList = RoleControllerProxy.getController().getAllRoles();
-		//t.printElapsedTime("2");
-		this.groupList = GroupControllerProxy.getController().getAllGroups();
-		//t.printElapsedTime("3");
-		
-		this.accessRightsUserRows = AccessRightController.getController().getAccessRightsUserRows(interceptionPointCategory, extraParameters);
-		//t.printElapsedTime("4");
-		
-		Database db = CastorDatabaseService.getDatabase();
+    	Database db = CastorDatabaseService.getDatabase();
         beginTransaction(db);
 
         try
         {
+			if(interceptionPointCategory.equalsIgnoreCase("Content"))
+			{	
+				if(extraParameters == null || extraParameters.equals(""))
+				    throw new SystemException("The content category must have a content id sent in so don't set 'Use extra data for access control' to no for those interception points.");
+				    
+			    Integer contentId = new Integer(extraParameters);
+				ContentVO contentVO = ContentControllerProxy.getController().getContentVOWithId(contentId);
+				
+				if(!contentVO.getCreatorName().equalsIgnoreCase(this.getInfoGluePrincipal().getName()))
+				{
+					if(ContentControllerProxy.getController().getIsContentProtected(contentId) && !AccessRightController.getController().getIsPrincipalAuthorized(this.getInfoGluePrincipal(), "Content.ChangeAccessRights", contentId.toString()))
+					{
+						InterceptionPointVO changeInterceptionPointVO = InterceptionPointController.getController().getInterceptionPointVOWithName("Content.ChangeAccessRights");
+						InterceptionPointVO readInterceptionPointVO = InterceptionPointController.getController().getInterceptionPointVOWithName("Content.Read");
+						List changeAccessRightVOList = AccessRightController.getController().getAccessRightVOListOnly(changeInterceptionPointVO.getId(), "" + contentId);
+						List readAccessRightVOList = AccessRightController.getController().getAccessRightVOListOnly(readInterceptionPointVO.getId(), "" + contentId);
+						logger.info("changeAccessRightVOList:" + changeAccessRightVOList.size());
+						logger.info("readAccessRightVOList:" + readAccessRightVOList.size());
+						if(changeAccessRightVOList.size() > 0 && readAccessRightVOList.size() > 0)
+							ceb.add(new AccessConstraintException("Content.contentId", "1006"));
+					}
+				}
+			}
+			else if(interceptionPointCategory.equalsIgnoreCase("SiteNodeVersion"))
+			{	
+				if(extraParameters == null || extraParameters.equals(""))
+				    throw new SystemException("The sitenode category must have a sitenode id sent in so don't set 'Use extra data for access control' to no for those interception points.");
+	
+				Integer siteNodeVersionId = new Integer(extraParameters);
+				
+				SiteNodeControllerProxy.getSiteNodeControllerProxy().testAc(this.getInfoGluePrincipal(), siteNodeVersionId, "SiteNodeVersion.ChangeAccessRights");
+				/*
+				SiteNodeVersionVO siteNodeVersionVO = SiteNodeVersionController.getController().getSiteNodeVersionVOWithId(siteNodeVersionId);
+				if(!siteNodeVersionVO.getVersionModifier().equalsIgnoreCase(this.getInfoGluePrincipal().getName()))
+				{
+					//boolean isSiteNodeVersionProtected = SiteNodeVersionControllerProxy.getSiteNodeVersionControllerProxy().getIsSiteNodeVersionProtected(siteNodeVersionVO.getId());
+					//InterceptionPointVO changeAccessRightsIPVO = InterceptionPointController.getController().getInterceptionPointVOWithName("SiteNodeVersion.ChangeAccessRights");
+					SiteNodeControllerProxy.getSiteNodeControllerProxy().testAc(this.getInfoGluePrincipal(), siteNodeVersionId, "SiteNodeVersion.ChangeAccessRights");
+					
+					Integer protectedSiteNodeVersionId = SiteNodeVersionControllerProxy.getSiteNodeVersionControllerProxy().getProtectedSiteNodeVersionId(siteNodeVersionId, changeAccessRightsIPVO.getId(), db);
+					if(protectedSiteNodeVersionId != null && !AccessRightController.getController().getIsPrincipalAuthorized(this.getInfoGluePrincipal(), "SiteNodeVersion.ChangeAccessRights", siteNodeVersionId.toString()))
+					{
+						InterceptionPointVO changeInterceptionPointVO = InterceptionPointController.getController().getInterceptionPointVOWithName("SiteNodeVersion.ChangeAccessRights");
+						InterceptionPointVO readInterceptionPointVO = InterceptionPointController.getController().getInterceptionPointVOWithName("SiteNodeVersion.Read");
+						List changeAccessRightVOList = AccessRightController.getController().getAccessRightVOListOnly(changeInterceptionPointVO.getId(), "" + siteNodeVersionVO.getId());
+						List readAccessRightVOList = AccessRightController.getController().getAccessRightVOListOnly(readInterceptionPointVO.getId(), "" + siteNodeVersionVO.getId());
+						logger.info("changeAccessRightVOList:" + changeAccessRightVOList.size());
+						logger.info("readAccessRightVOList:" + readAccessRightVOList.size());
+						if(changeAccessRightVOList.size() > 0 && readAccessRightVOList.size() > 0)
+							ceb.add(new AccessConstraintException("SiteNodeVersion.siteNodeId", "1006"));
+					}
+				}
+				*/
+			}
+	
+			this.interceptionPointVOList = InterceptionPointController.getController().getInterceptionPointVOList(interceptionPointCategory);
+			//t.printElapsedTime("1");
+			this.roleList = RoleControllerProxy.getController().getAllRoles();
+			//t.printElapsedTime("2");
+			this.groupList = GroupControllerProxy.getController().getAllGroups();
+			//t.printElapsedTime("3");
+			
+			this.accessRightsUserRows = AccessRightController.getController().getAccessRightsUserRows(interceptionPointCategory, extraParameters);
+			//t.printElapsedTime("4");
+			
     		for(InterceptionPointVO interceptionPointVO : (List<InterceptionPointVO>)this.interceptionPointVOList)
     		{
     			this.extraAccessRightInfo += getExtraAccessRightText(interceptionPointVO, getExtraParameters(), db);
@@ -206,6 +215,11 @@ public class ViewAccessRightsAction extends InfoGlueAbstractAction
             
             commitTransaction(db);
         }
+        catch(ConstraintException ce)
+		{
+			logger.info("An error occurred so we should not complete the transaction:" + ce, ce);
+			throw ce;
+		}
         catch(Exception e)
         {
             logger.error("An error occurred so we should not complete the transaction:" + e);

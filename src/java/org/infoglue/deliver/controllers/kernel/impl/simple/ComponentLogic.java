@@ -1531,7 +1531,10 @@ public class ComponentLogic
 				}
 				templateController.getDeliveryContext().addDebugInformation("DEBUG property 3:" + property);
 				
-			    Set groups = new HashSet();
+				Set groups = new HashSet();
+				/*
+				Timer t = new Timer();
+				Set groups = new HashSet();
 				Iterator contentVersionIdListIterator = contentVersionIdList.iterator();
 			    while(contentVersionIdListIterator.hasNext())
 			    {
@@ -1539,14 +1542,20 @@ public class ComponentLogic
 					if(contentVersionId != null)
 					{
 						ContentVersionVO contentVersionVO = ContentVersionController.getContentVersionController().getContentVersionVOWithId(contentVersionId, this.templateController.getDatabase());
+						//RequestAnalyser.getRequestAnalyser().registerComponentStatistics("getContentVersionVOWithId", t.getElapsedTimeNanos());
+						//ContentVersionVO contentVersionVO = ContentVersionController.getContentVersionController().getSmallContentVersionVOWithId(contentVersionId, this.templateController.getDatabase());
+						//RequestAnalyser.getRequestAnalyser().registerComponentStatistics("getSmallContentVersionVOWithId", t.getElapsedTimeNanos());
+						
 						groups.add(CacheController.getPooledString(2, contentVersionId));
 					    groups.add(CacheController.getPooledString(1, contentVersionVO.getContentId()));
 					}
 				}
-
+			    RequestAnalyser.getRequestAnalyser().registerComponentStatistics("Getting groups for componentPropertyCache", t.getElapsedTimeNanos());
+			    
 			    //logger.info("Adding group: " + "siteNode_" + templateController.getSiteNodeId());
 			    groups.add(CacheController.getPooledString(3, templateController.getSiteNodeId()));
-			    
+			    */
+				
 			    if(groups.size() < 26)
 			    {
 			    	CacheController.cacheObjectInAdvancedCacheWithGroupsAsSet("componentPropertyCache", key, property, groups, true);
@@ -1811,7 +1820,8 @@ public class ComponentLogic
 					if(property != null && contentVersionIdList.size() > 0)
 			        {
 					    Set groups = new HashSet();
-						Iterator contentVersionIdListIterator = contentVersionIdList.iterator();
+						/*
+					    Iterator contentVersionIdListIterator = contentVersionIdList.iterator();
 					    while(contentVersionIdListIterator.hasNext())
 					    {
 							Integer contentVersionId = (Integer)contentVersionIdListIterator.next();
@@ -1819,7 +1829,8 @@ public class ComponentLogic
 							{
 								if(contentVersionId != null)
 								{
-									ContentVersionVO contentVersionVO = ContentVersionController.getContentVersionController().getContentVersionVOWithId(contentVersionId, this.templateController.getDatabase());
+									//ContentVersionVO contentVersionVO = ContentVersionController.getContentVersionController().getContentVersionVOWithId(contentVersionId, this.templateController.getDatabase());
+									ContentVersionVO contentVersionVO = ContentVersionController.getContentVersionController().getSmallContentVersionVOWithId(contentVersionId, this.templateController.getDatabase());
 								    groups.add(CacheController.getPooledString(2, contentVersionId));
 								    groups.add(CacheController.getPooledString(1, contentVersionVO.getContentId()));
 								}
@@ -1831,6 +1842,7 @@ public class ComponentLogic
 					    }
 					    
 					    groups.add(CacheController.getPooledString(3, templateController.getSiteNodeId()));
+					    */
 					    
 					    if(groups.size() < 20)
 					    {
@@ -1926,14 +1938,22 @@ public class ComponentLogic
 		Map property = (Map)this.infoGlueComponent.getProperties().get(propertyName);
 		if(property != null)
 		{
-			LanguageVO languageVO = LanguageController.getController().getMasterLanguage(this.templateController.getSiteNode().getRepositoryId(), this.templateController.getDatabase());
-			String pageComponentsXML = this.templateController.getContentAttribute(this.templateController.getMetaInformationContentId(), languageVO.getId(), "ComponentStructure", true);
-			int propertyHashCode = getPropertyAsStringHashCode(pageComponentsXML, this.infoGlueComponent.getId(), propertyName, this.templateController.getSiteNodeId(), this.templateController.getLanguageId());
-			//logger.info("propertyHashCode:" + propertyHashCode);
-			this.templateController.getDeliveryContext().addUsedContent("content_" + this.templateController.getMetaInformationContentId() + "_ComponentStructure(" + this.infoGlueComponent.getId() + "," + propertyName + "," + this.templateController.getSiteNodeId() + "," + this.templateController.getLanguageId() + ")=" + propertyHashCode);
-			this.templateController.getDeliveryContext().addUsedContent("content_" + this.templateController.getMetaInformationContentId() + "_ComponentStructureDependency");
-			usedContentEntities.add("content_" + this.templateController.getMetaInformationContentId() + "_ComponentStructure(" + this.infoGlueComponent.getId() + "," + propertyName + "," + this.templateController.getSiteNodeId() + "," + this.templateController.getLanguageId() + ")=" + propertyHashCode);
-			usedContentEntities.add("content_" + this.templateController.getMetaInformationContentId() + "_ComponentStructureDependency");
+			try
+			{
+				LanguageVO languageVO = LanguageController.getController().getMasterLanguage(this.templateController.getSiteNode().getRepositoryId(), this.templateController.getDatabase());
+				String pageComponentsXML = this.templateController.getContentAttribute(this.templateController.getMetaInformationContentId(), languageVO.getId(), "ComponentStructure", true);
+				int propertyHashCode = getPropertyAsStringHashCode(pageComponentsXML, this.infoGlueComponent.getId(), propertyName, this.templateController.getSiteNodeId(), this.templateController.getLanguageId());
+				//logger.info("propertyHashCode:" + propertyHashCode);
+				this.templateController.getDeliveryContext().addUsedContent("content_" + this.templateController.getMetaInformationContentId() + "_ComponentStructure(" + this.infoGlueComponent.getId() + "," + propertyName + "," + this.templateController.getSiteNodeId() + "," + this.templateController.getLanguageId() + ")=" + propertyHashCode);
+				this.templateController.getDeliveryContext().addUsedContent("content_" + this.templateController.getMetaInformationContentId() + "_ComponentStructureDependency");
+				usedContentEntities.add("content_" + this.templateController.getMetaInformationContentId() + "_ComponentStructure(" + this.infoGlueComponent.getId() + "," + propertyName + "," + this.templateController.getSiteNodeId() + "," + this.templateController.getLanguageId() + ")=" + propertyHashCode);
+				usedContentEntities.add("content_" + this.templateController.getMetaInformationContentId() + "_ComponentStructureDependency");
+			}
+			catch (Exception e) 
+			{
+				logger.warn("Error setting relations for propertyName: " + propertyName + ":" + e.getMessage(), e);
+				usedContentEntities.add("content_" + this.templateController.getMetaInformationContentId() + "");
+			}
 		}
     	//Map property = getInheritedComponentProperty(this.templateController, templateController.getSiteNodeId(), this.templateController.getLanguageId(), this.templateController.getContentId(), this.infoGlueComponent.getId(), propertyName, contentVersionIdList);
 		
@@ -1954,14 +1974,22 @@ public class ComponentLogic
 
 				if(property != null)
 				{
-					LanguageVO languageVO = LanguageController.getController().getMasterLanguage(this.templateController.getSiteNode().getRepositoryId(), this.templateController.getDatabase());
-					String pageComponentsXML = this.templateController.getContentAttribute(this.templateController.getMetaInformationContentId(), languageVO.getId(), "ComponentStructure", true);
-					int propertyHashCode = getPropertyAsStringHashCode(pageComponentsXML, parentComponent.getId(), propertyName, this.templateController.getSiteNodeId(), this.templateController.getLanguageId());
-					//System.out.println("propertyHashCode:" + propertyHashCode);
-					this.templateController.getDeliveryContext().addUsedContent("content_" + this.templateController.getMetaInformationContentId() + "_ComponentStructure(" + parentComponent.getId() + "," + propertyName + "," + this.templateController.getSiteNodeId() + "," + this.templateController.getLanguageId() + ")=" + propertyHashCode);
-					this.templateController.getDeliveryContext().addUsedContent("content_" + this.templateController.getMetaInformationContentId() + "_ComponentStructureDependency");
-					usedContentEntities.add("content_" + this.templateController.getMetaInformationContentId() + "_ComponentStructure(" + parentComponent.getId() + "," + propertyName + "," + this.templateController.getSiteNodeId() + "," + this.templateController.getLanguageId() + ")=" + propertyHashCode);
-					usedContentEntities.add("content_" + this.templateController.getMetaInformationContentId() + "_ComponentStructureDependency");
+					try
+					{
+						LanguageVO languageVO = LanguageController.getController().getMasterLanguage(this.templateController.getSiteNode().getRepositoryId(), this.templateController.getDatabase());
+						String pageComponentsXML = this.templateController.getContentAttribute(this.templateController.getMetaInformationContentId(), languageVO.getId(), "ComponentStructure", true);
+						int propertyHashCode = getPropertyAsStringHashCode(pageComponentsXML, parentComponent.getId(), propertyName, this.templateController.getSiteNodeId(), this.templateController.getLanguageId());
+						//System.out.println("propertyHashCode:" + propertyHashCode);
+						this.templateController.getDeliveryContext().addUsedContent("content_" + this.templateController.getMetaInformationContentId() + "_ComponentStructure(" + parentComponent.getId() + "," + propertyName + "," + this.templateController.getSiteNodeId() + "," + this.templateController.getLanguageId() + ")=" + propertyHashCode);
+						this.templateController.getDeliveryContext().addUsedContent("content_" + this.templateController.getMetaInformationContentId() + "_ComponentStructureDependency");
+						usedContentEntities.add("content_" + this.templateController.getMetaInformationContentId() + "_ComponentStructure(" + parentComponent.getId() + "," + propertyName + "," + this.templateController.getSiteNodeId() + "," + this.templateController.getLanguageId() + ")=" + propertyHashCode);
+						usedContentEntities.add("content_" + this.templateController.getMetaInformationContentId() + "_ComponentStructureDependency");
+					}
+					catch (Exception e) 
+					{
+						logger.warn("Error setting relations for propertyName: " + propertyName + ":" + e.getMessage(), e);
+						usedContentEntities.add("content_" + this.templateController.getMetaInformationContentId() + "");
+					}
 				}
 			}
 			
@@ -2135,7 +2163,7 @@ public class ComponentLogic
 					{
 						templateController.getDeliveryContext().addUsedContent(usedContentEntity);
 					}
-		}
+				}
 				catch(Exception e)
 				{
 					logger.warn("Got synchronize error getting inherited component property.");
@@ -2166,14 +2194,22 @@ public class ComponentLogic
 			
 			if(inheritedPageComponentsXML != null && inheritedPageComponentsXML.length() > 0)
 			{
-				property = parseProperties(inheritedPageComponentsXML, componentId, propertyName, siteNodeId, languageId);
-				int propertyHashCode = getPropertyAsStringHashCode(inheritedPageComponentsXML, componentId, propertyName, siteNodeId, languageId);
-				//System.out.println("propertyHashCode:" + propertyHashCode);
-				SiteNodeVO siteNodeVO = templateController.getSiteNode(siteNodeId);
-				this.templateController.getDeliveryContext().addUsedContent("content_" + siteNodeVO.getMetaInfoContentId() + "_ComponentStructure(" + componentId + "," + propertyName + "," + siteNodeId + "," + languageId + ")=" + propertyHashCode);
-				this.templateController.getDeliveryContext().addUsedContent("content_" + siteNodeVO.getMetaInfoContentId() + "_ComponentStructureDependency");
-				usedContentEntities.add("content_" + siteNodeVO.getMetaInfoContentId() + "_ComponentStructure(" + componentId + "," + propertyName + "," + siteNodeId + "," + languageId + ")=" + propertyHashCode);
-				usedContentEntities.add("content_" + siteNodeVO.getMetaInfoContentId() + "_ComponentStructureDependency");
+				try
+				{
+					property = parseProperties(inheritedPageComponentsXML, componentId, propertyName, siteNodeId, languageId);
+					int propertyHashCode = getPropertyAsStringHashCode(inheritedPageComponentsXML, componentId, propertyName, siteNodeId, languageId);
+					//System.out.println("propertyHashCode:" + propertyHashCode);
+					SiteNodeVO siteNodeVO = templateController.getSiteNode(siteNodeId);
+					this.templateController.getDeliveryContext().addUsedContent("content_" + siteNodeVO.getMetaInfoContentId() + "_ComponentStructure(" + componentId + "," + propertyName + "," + siteNodeId + "," + languageId + ")=" + propertyHashCode);
+					this.templateController.getDeliveryContext().addUsedContent("content_" + siteNodeVO.getMetaInfoContentId() + "_ComponentStructureDependency");
+					usedContentEntities.add("content_" + siteNodeVO.getMetaInfoContentId() + "_ComponentStructure(" + componentId + "," + propertyName + "," + siteNodeId + "," + languageId + ")=" + propertyHashCode);
+					usedContentEntities.add("content_" + siteNodeVO.getMetaInfoContentId() + "_ComponentStructureDependency");
+				}
+				catch (Exception e) 
+				{
+					logger.warn("Error setting relations for propertyName: " + propertyName + ":" + e.getMessage(), e);
+					usedContentEntities.add("content_" + templateController.getSiteNode(siteNodeId).getMetaInfoContentId() + "");
+				}
 			}
 			
 			if(propertyName.equals("GUFlashImages") || propertyName.equals("MiniArticleShortcuts"))
@@ -2182,6 +2218,7 @@ public class ComponentLogic
 			if(property != null && contentVersionIdList.size() > 0)
 	        {
 			    Set groups = new HashSet();
+			    /*
 			    Iterator contentVersionIdListIterator = contentVersionIdList.iterator();
 			    while(contentVersionIdListIterator.hasNext())
 			    {
@@ -2190,7 +2227,8 @@ public class ComponentLogic
 					{
 						if(contentVersionId != null)
 						{
-							ContentVersionVO contentVersionVO = ContentVersionController.getContentVersionController().getContentVersionVOWithId(contentVersionId, this.templateController.getDatabase());
+							//ContentVersionVO contentVersionVO = ContentVersionController.getContentVersionController().getContentVersionVOWithId(contentVersionId, this.templateController.getDatabase());
+							ContentVersionVO contentVersionVO = ContentVersionController.getContentVersionController().getSmallContentVersionVOWithId(contentVersionId, this.templateController.getDatabase());
 							groups.add(CacheController.getPooledString(2, contentVersionId));
 							groups.add(CacheController.getPooledString(1, contentVersionVO.getContentId()));
 						}
@@ -2205,7 +2243,7 @@ public class ComponentLogic
 			    			    
 			    groups.add(CacheController.getPooledString(3, templateController.getSiteNodeId()));
 			    groups.add(CacheController.getPooledString(3, siteNodeId));
-
+				*/
 			    //TODO - TEST - NOT SAFE
 			    CacheController.cacheObjectInAdvancedCacheWithGroupsAsSet("componentPropertyCache", key, property, groups, true);
 			    CacheController.cacheObjectInAdvancedCacheWithGroupsAsSet("componentPropertyVersionIdCache", versionKey, contentVersionIdList, groups, true);
@@ -2221,6 +2259,7 @@ public class ComponentLogic
 				if(property == null && contentVersionIdList.size() > 0)
 				{
 				    Set groups = new HashSet();
+				    /*
 					Iterator contentVersionIdListIterator = contentVersionIdList.iterator();
 				    while(contentVersionIdListIterator.hasNext())
 				    {
@@ -2229,7 +2268,8 @@ public class ComponentLogic
 						{
 							if(contentVersionId != null)
 							{
-								ContentVersionVO contentVersionVO = ContentVersionController.getContentVersionController().getContentVersionVOWithId(contentVersionId, this.templateController.getDatabase());
+								//ContentVersionVO contentVersionVO = ContentVersionController.getContentVersionController().getContentVersionVOWithId(contentVersionId, this.templateController.getDatabase());
+								ContentVersionVO contentVersionVO = ContentVersionController.getContentVersionController().getSmallContentVersionVOWithId(contentVersionId, this.templateController.getDatabase());
 								groups.add(CacheController.getPooledString(2, contentVersionId));
 								groups.add(CacheController.getPooledString(1, contentVersionVO.getContentId()));
 							}
@@ -2244,7 +2284,8 @@ public class ComponentLogic
 				    
 				    groups.add(CacheController.getPooledString(3, templateController.getSiteNodeId()));
 				    groups.add(CacheController.getPooledString(3, siteNodeId));
-
+					*/
+				    
 //				  	TODO - TEST - NOT SAFE
 				    //if(propertyName.equals("GUFlashImages") || key.indexOf("MiniArticleShortcuts") > -1)
 				    //	logger.warn("Storing NULL 1:" + templateController.getDeliveryContext().getDebugInformation());
@@ -2904,20 +2945,23 @@ public class ComponentLogic
 			if(properties != null && contentVersionIdList.size() > 0)
 	        {
 			    Set groups = new HashSet();
+			    /*
 				Iterator contentVersionIdListIterator = contentVersionIdList.iterator();
 			    while(contentVersionIdListIterator.hasNext())
 			    {
 					Integer contentVersionId = (Integer)contentVersionIdListIterator.next();
 					if(contentVersionId != null)
 					{
-						ContentVersionVO contentVersionVO = ContentVersionController.getContentVersionController().getContentVersionVOWithId(contentVersionId, this.templateController.getDatabase());
+						//ContentVersionVO contentVersionVO = ContentVersionController.getContentVersionController().getContentVersionVOWithId(contentVersionId, this.templateController.getDatabase());
+						ContentVersionVO contentVersionVO = ContentVersionController.getContentVersionController().getSmallContentVersionVOWithId(contentVersionId, this.templateController.getDatabase());
 						groups.add(CacheController.getPooledString(2, contentVersionId));
 						groups.add(CacheController.getPooledString(1, contentVersionVO.getContentId()));
 					}
 				}
 				
 			    groups.add(CacheController.getPooledString(3, templateController.getSiteNodeId()));
-
+				*/
+			    
 			    if(groups.size() < 20)
 			    {
 				    CacheController.cacheObjectInAdvancedCacheWithGroupsAsSet("componentPropertyCache", key, properties, groups, true);
@@ -3289,7 +3333,8 @@ public class ComponentLogic
 				Integer contentVersionId = (Integer)contentVersionIdListIterator.next();
 				if(contentVersionId != null)
 				{
-					ContentVersionVO contentVersionVO = ContentVersionController.getContentVersionController().getContentVersionVOWithId(contentVersionId, this.templateController.getDatabase());
+					//ContentVersionVO contentVersionVO = ContentVersionController.getContentVersionController().getContentVersionVOWithId(contentVersionId, this.templateController.getDatabase());
+					ContentVersionVO contentVersionVO = ContentVersionController.getContentVersionController().getSmallContentVersionVOWithId(contentVersionId, this.templateController.getDatabase());
 				    groups.add(CacheController.getPooledString(2, contentVersionId));
 				    groups.add(CacheController.getPooledString(1, contentVersionVO.getContentId()));
 				}

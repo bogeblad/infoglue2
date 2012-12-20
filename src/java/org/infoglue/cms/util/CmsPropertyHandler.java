@@ -909,7 +909,12 @@ public class CmsPropertyHandler
 	{
 		return getServerNodeProperty("enableExtranetCookies", true, "false");
 	}
-	
+
+	public static String getUseBrowserLanguage()
+	{
+		return getServerNodeProperty("useBrowserLanguage", true, "true");
+	}
+
 	public static String getUseAlternativeBrowserLanguageCheck()
 	{
 		return getServerNodeProperty("useAlternativeBrowserLanguageCheck", true, "false");

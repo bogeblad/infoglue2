@@ -897,20 +897,42 @@ public class RemoteContentServiceImpl extends RemoteInfoGlueService
 		        {
 		            RemoteAttachment remoteAttachment = (RemoteAttachment)digitalAssetIterator.next();
 	    	        logger.info("digitalAssets in ws:" + remoteAttachment);
-	    	        
+	    	        /*
 	            	DigitalAssetVO newAsset = new DigitalAssetVO();
 					newAsset.setAssetContentType(remoteAttachment.getContentType());
 					newAsset.setAssetKey(remoteAttachment.getName());
 					newAsset.setAssetFileName(remoteAttachment.getFileName());
 					newAsset.setAssetFilePath(remoteAttachment.getFilePath());
 					newAsset.setAssetFileSize(new Integer(new Long(remoteAttachment.getBytes().length).intValue()));
-					InputStream is = new ByteArrayInputStream(remoteAttachment.getBytes());
-	
-	    	        if(updateExistingAssets)
-	    	        	ContentVersionController.getContentVersionController().createOrUpdateDigitalAsset(newAsset, is, contentVersionVO.getContentVersionId(), principal);
+					*/
+	    	        InputStream is = new ByteArrayInputStream(remoteAttachment.getBytes());
+					
+	    	    	DigitalAssetVO existingAssetVO = DigitalAssetController.getLatestDigitalAssetVO(contentVersionVO.getId(), remoteAttachment.getName());
+    	        	if(updateExistingAssets && existingAssetVO != null)
+	    	        {
+						ContentVersionController.getContentVersionController().deleteDigitalAssetRelation(contentVersionVO.getId(), existingAssetVO.getId(), principal);
+	    				
+						DigitalAssetVO digitalAssetVO = new DigitalAssetVO();
+						digitalAssetVO.setAssetContentType(remoteAttachment.getContentType());
+	    				digitalAssetVO.setAssetKey(remoteAttachment.getName());
+	    				digitalAssetVO.setAssetFileName(remoteAttachment.getFileName());
+						digitalAssetVO.setAssetFilePath(remoteAttachment.getFilePath());
+						digitalAssetVO.setAssetFileSize(new Integer(new Long(remoteAttachment.getBytes().length).intValue()));
+
+	    	        	DigitalAssetController.create(digitalAssetVO, is, contentVersionVO.getContentVersionId(), principal);
+	    	        }
 	    	        else
-	    	        DigitalAssetController.create(newAsset, is, contentVersionVO.getContentVersionId(), principal);
-	    	    }
+	    	        {
+	    	        	DigitalAssetVO newAsset = new DigitalAssetVO();
+						newAsset.setAssetContentType(remoteAttachment.getContentType());
+						newAsset.setAssetKey(remoteAttachment.getName());
+						newAsset.setAssetFileName(remoteAttachment.getFileName());
+						newAsset.setAssetFilePath(remoteAttachment.getFilePath());
+						newAsset.setAssetFileSize(new Integer(new Long(remoteAttachment.getBytes().length).intValue()));
+						
+	    	        	DigitalAssetController.create(newAsset, is, contentVersionVO.getContentVersionId(), principal);
+	    	        }
+		        }
             }
             			
 			if(!keepExistingCategories)

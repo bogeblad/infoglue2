@@ -284,6 +284,7 @@ public class ViewServerNodePropertiesAction extends InfoGluePropertiesAbstractAc
 
 	    populate(ps, "logTransactions");
 	    populate(ps, "enableExtranetCookies");
+	    populate(ps, "useBrowserLanguage");
 	    populate(ps, "useAlternativeBrowserLanguageCheck");
 	    populate(ps, "caseSensitiveRedirects");
 	    populate(ps, "useDNSNameInURI");

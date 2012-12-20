@@ -33,6 +33,7 @@ import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.exolab.castor.jdo.Database;
+import org.exolab.castor.jdo.ObjectNotFoundException;
 import org.infoglue.cms.applications.common.VisualFormatter;
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.AvailableServiceBindingController;
@@ -150,6 +151,15 @@ public class ViewSiteNodeAction extends InfoGlueAbstractAction
 	protected void initialize(Integer siteNodeId, Database db) throws Exception
 	{
 		this.siteNodeVO = SiteNodeController.getController().getSiteNodeVOWithId(siteNodeId, db);
+		if(this.siteNodeVO == null)
+		{
+			SiteNode sitenode = SiteNodeController.getController().getSiteNodeWithId(siteNodeId, db);
+			if(sitenode != null)
+			{
+				this.siteNodeVO = sitenode.getValueObject();
+				logger.error("A corrupt node:" + this.siteNodeVO.getName() + "(" + this.siteNodeVO.getId() + ") has no active version at all probably. Must be fixed.");
+			}
+		}
 		LanguageVO masterLanguageVO = LanguageController.getController().getMasterLanguage(this.siteNodeVO.getRepositoryId());
 		this.siteNodeVersionVO = SiteNodeVersionControllerProxy.getSiteNodeVersionControllerProxy().getACLatestActiveSiteNodeVersionVO(this.getInfoGluePrincipal(), siteNodeId, db);
 		ContentVersionVO latestActiveMetaInfoContentVersionVO = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(siteNodeVO.getMetaInfoContentId(), masterLanguageVO.getId());
@@ -168,8 +178,8 @@ public class ViewSiteNodeAction extends InfoGlueAbstractAction
 			if(latestMetaInfoContentVersionVO == null)
 				SiteNodeVersionController.getController().getAndRepairLatestContentVersionVO(siteNodeVO.getMetaInfoContentId(), masterLanguageVO.getId());
 		}
-						
-	    if(this.siteNodeVO.getMetaInfoContentId() == null || this.siteNodeVO.getMetaInfoContentId().intValue() == -1)
+		
+		if(this.siteNodeVO.getMetaInfoContentId() == null || this.siteNodeVO.getMetaInfoContentId().intValue() == -1 || latestActiveMetaInfoContentVersionVO == null)
 	    {
 	        boolean hadMetaInfo = false;
 	        
@@ -182,16 +192,37 @@ public class ViewSiteNodeAction extends InfoGlueAbstractAction
 				ServiceBinding serviceBinding = (ServiceBinding)serviceBindingIterator.next();
 				if(serviceBinding.getValueObject().getAvailableServiceBindingId().intValue() == availableServiceBindingVO.getAvailableServiceBindingId().intValue())
 				{
-					List boundContents = ContentController.getBoundContents(db, serviceBinding.getServiceBindingId()); 			
-					if(boundContents.size() > 0)
+					try
 					{
-						ContentVO contentVO = (ContentVO)boundContents.get(0);
-						hadMetaInfo = true;
-						if(siteNodeVO.getMetaInfoContentId() == null || siteNodeVO.getMetaInfoContentId().intValue() == -1)
-						    SiteNodeController.getController().setMetaInfoContentId(siteNodeVO.getId(), contentVO.getContentId(), db);
-						
-						break;
-					}						
+						List boundContents = ContentController.getBoundContents(db, serviceBinding.getServiceBindingId()); 			
+						if(boundContents.size() > 0)
+						{
+							ContentVO contentVO = (ContentVO)boundContents.get(0);
+							hadMetaInfo = true;
+							if(siteNodeVO.getMetaInfoContentId() == null || siteNodeVO.getMetaInfoContentId().intValue() == -1)
+							    SiteNodeController.getController().setMetaInfoContentId(siteNodeVO.getId(), contentVO.getContentId(), db);
+							
+							break;
+						}						
+					}
+					catch (Exception e) 
+					{
+						logger.error("Could not read metainfo content. Must be broken.");
+						if(this.siteNodeVO.getMetaInfoContentId() != null && this.siteNodeVO.getMetaInfoContentId().intValue() > -1)
+						{
+							try
+							{
+								ContentVO contentVO = ContentController.getContentController().getContentVOWithId(this.siteNodeVO.getMetaInfoContentId(), db);
+							}
+							catch (Exception e2) 
+							{
+								if(e2.getCause() != null && e2.getCause() instanceof ObjectNotFoundException)
+									hadMetaInfo = false;
+								else
+									hadMetaInfo = true;
+							}
+						}
+					}
 				}
 			}
 

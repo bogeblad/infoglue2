@@ -1328,10 +1328,10 @@ public class SiteNodeVersionController extends BaseController
 	        while(relatedEntitiesIterator.hasNext())
 	        {
 	            RegistryVO registryVO = (RegistryVO)relatedEntitiesIterator.next();
-	            if(registryVO.getEntityName().equals(SiteNode.class.getName()) && !checkedSiteNodes.contains(new Integer(registryVO.getEntityId())))
-	            {
-	                try
-	                {
+                try
+                {
+                	if(registryVO.getEntityName().equals(SiteNode.class.getName()) && !checkedSiteNodes.contains(new Integer(registryVO.getEntityId())))
+                	{
 	                    SiteNodeVO relatedSiteNodeVO = SiteNodeController.getController().getSiteNodeVOWithId(new Integer(registryVO.getEntityId()), db);
 	
 	                    //SiteNodeVersion relatedSiteNodeVersion = getLatestActiveSiteNodeVersionIfInState(relatedSiteNode, stateId, db);
@@ -1355,18 +1355,11 @@ public class SiteNodeVersionController extends BaseController
 		    	        {
 		                    siteNodeVersionVOList.add(relatedSiteNodeVersionVO);
 		                }
-	                }
-	                catch(Exception e)
-	                {
-	                    logger.warn("A siteNode referenced by ID:" + registryVO.getEntityId() + " was not found - must be a invalid reference from " + siteNodeVO.getName() + "[" + siteNodeVO.getId() + "].", e);
-	                }
 	
-	    		    checkedSiteNodes.add(new Integer(registryVO.getEntityId()));
-	            }
-	            else if(registryVO.getEntityName().equals(Content.class.getName()) && !checkedContents.contains(new Integer(registryVO.getEntityId())))
-	            {
-	                try
-	                {
+		                checkedSiteNodes.add(new Integer(registryVO.getEntityId()));
+		            }
+		            else if(registryVO.getEntityName().equals(Content.class.getName()) && !checkedContents.contains(new Integer(registryVO.getEntityId())))
+		            {
 		                ContentVO relatedContentVO = ContentController.getContentController().getContentVOWithId(new Integer(registryVO.getEntityId()), db);
 		                ContentTypeDefinitionVO contentTypeDefinitionVO = null;
 		                if(relatedContentVO.getContentTypeDefinitionId() != null)
@@ -1402,15 +1395,14 @@ public class SiteNodeVersionController extends BaseController
 				                }
 			                }
 		                }
-	                }
-	                catch(Exception e)
-	                {
-	                    logger.warn("A content referenced by ID:" + registryVO.getEntityId() + " was not found - must be a invalid reference from " + siteNodeVO.getName() + "[" + siteNodeVO.getId() + "].", e);
-	                }
-	                
-	    		    checkedContents.add(new Integer(registryVO.getEntityId()));
-	            }
-	        //}	    
+		                
+		    		    checkedContents.add(new Integer(registryVO.getEntityId()));
+		            }
+                }
+                catch(Exception e)
+                {
+                    logger.warn("A " + registryVO.getEntityName() + " referenced by ID:" + registryVO.getEntityId() + " was not found - must be a invalid reference from " + siteNodeVO.getName() + "[" + siteNodeVO.getId() + "].", e);
+                }
 			}
 		}
 		

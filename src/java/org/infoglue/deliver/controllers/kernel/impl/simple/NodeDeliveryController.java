@@ -42,13 +42,16 @@ import org.exolab.castor.jdo.OQLQuery;
 import org.exolab.castor.jdo.QueryResults;
 import org.infoglue.cms.controllers.kernel.impl.simple.CastorDatabaseService;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentController;
+import org.infoglue.cms.controllers.kernel.impl.simple.InterceptionPointController;
 import org.infoglue.cms.controllers.kernel.impl.simple.RepositoryController;
 import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeController;
+import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeVersionControllerProxy;
 import org.infoglue.cms.entities.content.Content;
 import org.infoglue.cms.entities.content.ContentVO;
 import org.infoglue.cms.entities.content.impl.simple.ContentImpl;
 import org.infoglue.cms.entities.management.AvailableServiceBinding;
 import org.infoglue.cms.entities.management.AvailableServiceBindingVO;
+import org.infoglue.cms.entities.management.InterceptionPointVO;
 import org.infoglue.cms.entities.management.LanguageVO;
 import org.infoglue.cms.entities.management.RepositoryVO;
 import org.infoglue.cms.entities.management.ServiceDefinitionVO;
@@ -869,11 +872,13 @@ public class NodeDeliveryController extends BaseDeliveryController
 			SiteNodeVersionVO latestSiteNodeVersionVO = getLatestActiveSiteNodeVersionVO(db, siteNodeId);
 			if(latestSiteNodeVersionVO != null && latestSiteNodeVersionVO.getIsProtected() != null)
 			{	
-				if(latestSiteNodeVersionVO.getIsProtected().intValue() == NO.intValue())
+				if(latestSiteNodeVersionVO.getIsProtected().intValue() == SiteNodeVersionVO.NO.intValue())
 					isPageProtected = false;
-				else if(latestSiteNodeVersionVO.getIsProtected().intValue() == YES.intValue())
+				else if(latestSiteNodeVersionVO.getIsProtected().intValue() == SiteNodeVersionVO.YES.intValue())
 					isPageProtected = true;
-				else if(latestSiteNodeVersionVO.getIsProtected().intValue() == INHERITED.intValue())
+				else if(latestSiteNodeVersionVO.getIsProtected().intValue() == SiteNodeVersionVO.YES_WITH_INHERIT_FALLBACK.intValue())
+					isPageProtected = true;
+				else if(latestSiteNodeVersionVO.getIsProtected().intValue() == SiteNodeVersionVO.INHERITED.intValue())
 				{
 					SiteNodeVO parentSiteNode = this.getParentSiteNode(db, siteNodeId);
 					if(parentSiteNode != null)
@@ -935,11 +940,29 @@ public class NodeDeliveryController extends BaseDeliveryController
 	 * This method returns the id of the siteNodeVersion that is protected if any.
 	 */
 	
-	public Integer getProtectedSiteNodeVersionId(Database db, Integer siteNodeId)
+	public Integer getProtectedSiteNodeVersionId(Database db, Integer siteNodeId, String interceptionPointName)
 	{
 		if(siteNodeId != null && this.deliveryContext != null)
 			this.deliveryContext.addUsedSiteNode(CacheController.getPooledString(3, siteNodeId));
 
+		Integer protectedSiteNodeVersionId = null;
+		try
+		{
+			Boolean honourInheritanceFallback = true;
+			if(interceptionPointName.equals("SiteNodeVersion.Read"))
+				honourInheritanceFallback = false;
+			
+			InterceptionPointVO ipVO = InterceptionPointController.getController().getInterceptionPointVOWithName(interceptionPointName, db);
+
+			SiteNodeVersionVO siteNodeVersionVO = getLatestActiveSiteNodeVersionVO(db, siteNodeId);
+			protectedSiteNodeVersionId = SiteNodeVersionControllerProxy.getSiteNodeVersionControllerProxy().getProtectedSiteNodeVersionId(siteNodeVersionVO.getId(), ipVO.getId(), honourInheritanceFallback, db);
+		}
+		catch(Exception e)
+		{
+			logger.warn("An error occurred trying to get if the siteNodeVersion has disabled pageCache:" + e.getMessage(), e);
+		}
+		
+		/*
 		Integer protectedSiteNodeVersionId = null;
 		
 		try
@@ -952,6 +975,8 @@ public class NodeDeliveryController extends BaseDeliveryController
 				if(siteNodeVersionVO.getIsProtected().intValue() == NO.intValue())
 					protectedSiteNodeVersionId = null;
 				else if(siteNodeVersionVO.getIsProtected().intValue() == YES.intValue())
+					protectedSiteNodeVersionId = siteNodeVersionVO.getId();
+				else if(siteNodeVersionVO.getIsProtected().intValue() == SiteNodeVersionVO.YES_WITH_INHERIT_FALLBACK.intValue())
 					protectedSiteNodeVersionId = siteNodeVersionVO.getId();
 				else if(siteNodeVersionVO.getIsProtected().intValue() == INHERITED.intValue())
 				{
@@ -966,6 +991,7 @@ public class NodeDeliveryController extends BaseDeliveryController
 		{
 			logger.warn("An error occurred trying to get if the siteNodeVersion has disabled pageCache:" + e.getMessage(), e);
 		}
+		*/
 				
 		return protectedSiteNodeVersionId;
 	}
@@ -992,6 +1018,8 @@ public class NodeDeliveryController extends BaseDeliveryController
 				if(siteNodeVersionVO.getIsProtected().intValue() == NO.intValue())
 					protectedSiteNodeVersionId = null;
 				else if(siteNodeVersionVO.getIsProtected().intValue() == YES.intValue())
+					protectedSiteNodeVersionId = siteNodeVersionVO.getId();
+				else if(siteNodeVersionVO.getIsProtected().intValue() == SiteNodeVersionVO.YES_WITH_INHERIT_FALLBACK.intValue())
 					protectedSiteNodeVersionId = siteNodeVersionVO.getId();
 				else if(siteNodeVersionVO.getIsProtected().intValue() == INHERITED.intValue())
 				{
@@ -1759,7 +1787,8 @@ public class NodeDeliveryController extends BaseDeliveryController
 	        }
 	        catch (Exception e) 
 	        {
-				logger.error("The site node " + siteNodeVO.getName() + "(" + siteNodeVO.getId() + ") had no valid meta info. Fix this by editing the site node. Should never happen.");
+				logger.error("The site node " + siteNodeVO.getName() + "(" + siteNodeVO.getId() + ") had no valid meta info. Fix this by editing the site node. Should never happen. Message:" + e.getMessage());
+				logger.warn("The site node " + siteNodeVO.getName() + "(" + siteNodeVO.getId() + ") had no valid meta info. Fix this by editing the site node. Should never happen. Message:" + e.getMessage(), e);
 			}
 	        
 	        if(content != null) 

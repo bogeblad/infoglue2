@@ -370,7 +370,7 @@ public class BasicURLComposer extends URLComposer
 			if(deriveProtocolWhenUsingProtocolRedirects.equalsIgnoreCase("true") && CmsPropertyHandler.getOperatingMode().equals("3") && !deliveryContext.getHttpServletRequest().getScheme().equalsIgnoreCase("https"))
 			{
 				NodeDeliveryController nodeDeliveryController = NodeDeliveryController.getNodeDeliveryController(siteNodeId, languageId, contentId);
-		    	Integer protectedSiteNodeVersionId = nodeDeliveryController.getProtectedSiteNodeVersionId(db, siteNodeId);
+		    	Integer protectedSiteNodeVersionId = nodeDeliveryController.getProtectedSiteNodeVersionId(db, siteNodeId, "SiteNodeVersion.Read");
 		    	String originalFullURL = deliveryContext.getOriginalFullURL();
 		    	
 		    	boolean isAnonymousAccepted = true;

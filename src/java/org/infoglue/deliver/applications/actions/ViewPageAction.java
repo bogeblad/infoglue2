@@ -51,6 +51,7 @@ import org.infoglue.cms.controllers.kernel.impl.simple.AccessRightController;
 import org.infoglue.cms.controllers.kernel.impl.simple.CastorDatabaseService;
 import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeController;
 import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeTypeDefinitionController;
+import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeVersionController;
 import org.infoglue.cms.controllers.kernel.impl.simple.UserControllerProxy;
 import org.infoglue.cms.entities.management.LanguageVO;
 import org.infoglue.cms.entities.management.SiteNodeTypeDefinitionVO;
@@ -241,6 +242,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
 				    	
 	    	boolean isUserRedirected = false;
 			Integer protectedSiteNodeVersionId = this.nodeDeliveryController.getProtectedSiteNodeVersionIdForPageCache(dbWrapper.getDatabase(), siteNodeId);
+			logger.info("protectedSiteNodeVersionId:" + protectedSiteNodeVersionId);
 			Integer forceProtocolChangeSetting = this.nodeDeliveryController.getForceProtocolChangeSettingForPageCache(dbWrapper.getDatabase(), siteNodeId);
 			//System.out.println("forceProtocolChangeSetting:" + forceProtocolChangeSetting);
 			
@@ -710,7 +712,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
 			this.integrationDeliveryController	= IntegrationDeliveryController.getIntegrationDeliveryController(this.siteNodeId, this.languageId, this.contentId);
 
 			boolean isUserRedirected = false;
-			Integer protectedSiteNodeVersionId = this.nodeDeliveryController.getProtectedSiteNodeVersionId(dbWrapper.getDatabase(), siteNodeId);
+			Integer protectedSiteNodeVersionId = this.nodeDeliveryController.getProtectedSiteNodeVersionId(dbWrapper.getDatabase(), siteNodeId, "SiteNodeVersion.Read");
 			logger.info("protectedSiteNodeVersionId:" + protectedSiteNodeVersionId);
 
 			boolean protectDeliver = true;
@@ -1085,14 +1087,18 @@ public class ViewPageAction extends InfoGlueAbstractAction
 		{
 		    LanguageVO browserLanguageVO = null;
 
-		    String useAlternativeBrowserLanguageCheck = CmsPropertyHandler.getUseAlternativeBrowserLanguageCheck();
-		    if(useAlternativeBrowserLanguageCheck == null || !useAlternativeBrowserLanguageCheck.equalsIgnoreCase("true"))
-		        browserLanguageVO = LanguageDeliveryController.getLanguageDeliveryController().getLanguageIfSiteNodeSupportsIt(db, browserBean.getLanguageCode(), getSiteNodeId(), (InfoGluePrincipal)this.principal);
-		    else
-		        browserLanguageVO = LanguageDeliveryController.getLanguageDeliveryController().getLanguageIfRepositorySupportsIt(db, browserBean.getLanguageCode(), getSiteNodeId());
+		    String useBrowserLanguage = CmsPropertyHandler.getUseBrowserLanguage();
+		    if(useBrowserLanguage != null && useBrowserLanguage.equals("true"))
+		    {
+			    String useAlternativeBrowserLanguageCheck = CmsPropertyHandler.getUseAlternativeBrowserLanguageCheck();
+			    if(useAlternativeBrowserLanguageCheck == null || !useAlternativeBrowserLanguageCheck.equalsIgnoreCase("true"))
+			        browserLanguageVO = LanguageDeliveryController.getLanguageDeliveryController().getLanguageIfSiteNodeSupportsIt(db, browserBean.getLanguageCode(), getSiteNodeId(), (InfoGluePrincipal)this.principal);
+			    else
+			        browserLanguageVO = LanguageDeliveryController.getLanguageDeliveryController().getLanguageIfRepositorySupportsIt(db, browserBean.getLanguageCode(), getSiteNodeId());
 
-			logger.debug("Checking browser language...");
-
+			    logger.debug("Checking browser language...");
+		    }
+		    
 		    if(browserLanguageVO != null)
 			{
 			    logger.info("The system had browserLanguageVO available:" + browserLanguageVO.getName());
@@ -1235,7 +1241,16 @@ public class ViewPageAction extends InfoGlueAbstractAction
 			if(principal == null && !protectDeliver)
 			{
 				Principal anonymousPrincipal = getAnonymousPrincipal();
-				boolean isAuthorized = AccessRightController.getController().getIsPrincipalAuthorized(db, (InfoGluePrincipal)anonymousPrincipal, "SiteNodeVersion.Read", protectedSiteNodeVersionId.toString());
+				
+				SiteNodeVersionVO siteNodeVersionVO = SiteNodeVersionController.getController().getSiteNodeVersionVOWithId(protectedSiteNodeVersionId, db);
+				boolean isAuthorized = false;
+				if(siteNodeVersionVO.getIsProtected().intValue() == SiteNodeVersionVO.YES_WITH_INHERIT_FALLBACK.intValue())
+					isAuthorized = AccessRightController.getController().getIsPrincipalAuthorized(db, (InfoGluePrincipal)anonymousPrincipal, "SiteNodeVersion.Read", protectedSiteNodeVersionId.toString(), false);
+				else
+					isAuthorized = AccessRightController.getController().getIsPrincipalAuthorized(db, (InfoGluePrincipal)anonymousPrincipal, "SiteNodeVersion.Read", protectedSiteNodeVersionId.toString());
+				
+				logger.info("isAuthorized:" + isAuthorized);
+				
 				if(isAuthorized)
 				{	
 					principal = anonymousPrincipal;
@@ -1406,11 +1421,54 @@ public class ViewPageAction extends InfoGlueAbstractAction
 			    if(alternativePrincipal == null)
 			        alternativePrincipal = loginWithRequestArguments();
 
-			    if(protectedSiteNodeVersionId != null && alternativePrincipal != null && AccessRightController.getController().getIsPrincipalAuthorized(db, (InfoGluePrincipal)alternativePrincipal, "SiteNodeVersion.Read", protectedSiteNodeVersionId.toString()))
+			    //System.out.println("alternativePrincipal:" + alternativePrincipal);
+			    //System.out.println("anonymousPrincipal:" + getAnonymousPrincipal());
+			    //System.out.println("principal:" + principal);
+			    
+			    SiteNodeVersionVO siteNodeVersionVO = null;
+			    boolean isAlternativePrincipalAuthorized = (alternativePrincipal == null);
+				boolean isPrincipalAuthorized = true;
+				boolean isAnonymousPrincipalAuthorized = true;
+				
+			    if(protectedSiteNodeVersionId != null)
+			    {
+			    	siteNodeVersionVO = SiteNodeVersionController.getController().getSiteNodeVersionVOWithId(protectedSiteNodeVersionId, db);
+				
+			    	isAlternativePrincipalAuthorized = false;
+			    	isPrincipalAuthorized = false;
+			    	isAnonymousPrincipalAuthorized = false;
+			    }
+			    
+			    if(siteNodeVersionVO != null && siteNodeVersionVO.getIsProtected().intValue() == SiteNodeVersionVO.YES_WITH_INHERIT_FALLBACK.intValue())
+				{
+					if(alternativePrincipal != null)
+						isAlternativePrincipalAuthorized = AccessRightController.getController().getIsPrincipalAuthorized(db, (InfoGluePrincipal)alternativePrincipal, "SiteNodeVersion.Read", protectedSiteNodeVersionId.toString(), true);
+					if(!isAlternativePrincipalAuthorized && !((InfoGluePrincipal)principal).getName().equals(((InfoGluePrincipal)this.getAnonymousPrincipal()).getName()))
+						isPrincipalAuthorized = AccessRightController.getController().getIsPrincipalAuthorized(db, (InfoGluePrincipal)principal, "SiteNodeVersion.Read", protectedSiteNodeVersionId.toString(), true);
+					else if(!isAlternativePrincipalAuthorized)
+						isAnonymousPrincipalAuthorized = AccessRightController.getController().getIsPrincipalAuthorized(db, (InfoGluePrincipal)this.getAnonymousPrincipal(), "SiteNodeVersion.Read", protectedSiteNodeVersionId.toString(), false);
+				}
+				else if(siteNodeVersionVO != null)
+				{
+				    if(alternativePrincipal != null)
+						isAlternativePrincipalAuthorized = AccessRightController.getController().getIsPrincipalAuthorized(db, (InfoGluePrincipal)alternativePrincipal, "SiteNodeVersion.Read", protectedSiteNodeVersionId.toString(), true);
+					if(!isAlternativePrincipalAuthorized && !((InfoGluePrincipal)principal).getName().equals(((InfoGluePrincipal)this.getAnonymousPrincipal()).getName()))
+						isPrincipalAuthorized = AccessRightController.getController().getIsPrincipalAuthorized(db, (InfoGluePrincipal)principal, "SiteNodeVersion.Read", protectedSiteNodeVersionId.toString(), true);
+					if(!isAlternativePrincipalAuthorized && !isPrincipalAuthorized)
+						isAnonymousPrincipalAuthorized = AccessRightController.getController().getIsPrincipalAuthorized(db, (InfoGluePrincipal)this.getAnonymousPrincipal(), "SiteNodeVersion.Read", protectedSiteNodeVersionId.toString(), false);
+				}
+				
+				//System.out.println("isAlternativePrincipalAuthorized:" + isAlternativePrincipalAuthorized);
+			    //System.out.println("isPrincipalAuthorized:" + isPrincipalAuthorized);
+			    //System.out.println("isAnonymousPrincipalAuthorized:" + isAnonymousPrincipalAuthorized);
+				
+			    //if(protectedSiteNodeVersionId != null && alternativePrincipal != null && AccessRightController.getController().getIsPrincipalAuthorized(db, (InfoGluePrincipal)alternativePrincipal, "SiteNodeVersion.Read", protectedSiteNodeVersionId.toString()))
+				if(protectedSiteNodeVersionId != null && isAlternativePrincipalAuthorized)
 			    {
 			        logger.info("The user " + alternativePrincipal.getName() + " was approved.");
 			    }
-				else if(protectedSiteNodeVersionId != null && !AccessRightController.getController().getIsPrincipalAuthorized(db, (InfoGluePrincipal)principal, "SiteNodeVersion.Read", protectedSiteNodeVersionId.toString()) &&  !AccessRightController.getController().getIsPrincipalAuthorized((InfoGluePrincipal)this.getAnonymousPrincipal(), "SiteNodeVersion.Read", protectedSiteNodeVersionId.toString()))
+				//else if(protectedSiteNodeVersionId != null && !AccessRightController.getController().getIsPrincipalAuthorized(db, (InfoGluePrincipal)principal, "SiteNodeVersion.Read", protectedSiteNodeVersionId.toString()) &&  !AccessRightController.getController().getIsPrincipalAuthorized((InfoGluePrincipal)this.getAnonymousPrincipal(), "SiteNodeVersion.Read", protectedSiteNodeVersionId.toString()))
+				else if(protectedSiteNodeVersionId != null && !isPrincipalAuthorized && !isAnonymousPrincipalAuthorized)
 				{
 					if(logger.isInfoEnabled())
 					{

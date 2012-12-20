@@ -33,6 +33,8 @@ import org.infoglue.cms.controllers.kernel.impl.simple.RegistryController;
 import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeController;
 import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeControllerProxy;
 import org.infoglue.cms.entities.structure.SiteNodeVO;
+import org.infoglue.cms.exception.ConstraintException;
+import org.infoglue.cms.exception.SystemException;
 
 
 /**
@@ -70,6 +72,21 @@ public class DeleteSiteNodeAction extends InfoGlueAbstractAction
 	
 	protected String doExecute() throws Exception 
 	{
+		try
+        {
+            SiteNodeControllerProxy.getSiteNodeControllerProxy().testAc(this.getInfoGluePrincipal(), this.siteNodeVO.getSiteNodeId(), "SiteNodeVersion.DeleteSiteNode");
+        }
+        catch(ConstraintException ce)
+		{
+			logger.info("An error occurred so we should not complete the transaction:" + ce, ce);
+			throw ce;
+		}
+        catch(Exception e)
+        {
+            logger.error("An error occurred so we should not complete the transaction:" + e, e);
+            throw new SystemException(e.getMessage());
+        }
+        
 		this.referenceBeanList = RegistryController.getController().getReferencingObjectsForSiteNode(this.siteNodeVO.getSiteNodeId());
 		if(this.referenceBeanList != null && this.referenceBeanList.size() > 0)
 		{

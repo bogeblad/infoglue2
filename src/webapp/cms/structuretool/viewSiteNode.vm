@@ -175,6 +175,7 @@ function changeSiteNodeState(siteNodeVersionId)
 			$ui.getString("entity.SiteNode.isProtected.label")<br>
 			<input type="radio" name="isProtected" value="0" #if($!isProtected == 0) checked="1" #end $readonly $isProtectedReadonly> $ui.getString("tool.common.no") 
 			<input type="radio" name="isProtected" value="1" #if($!isProtected == 1) checked="1" #end $readonly $isProtectedReadonly> $ui.getString("tool.common.yes")
+			<input type="radio" name="isProtected" value="3" #if($!isProtected == 3) checked="1" #end $readonly $isProtectedReadonly> $ui.getString("tool.common.yesWithInheritanceFallback")
 			<input type="radio" name="isProtected" value="2" #if($!isProtected == 2) checked="1" #end $readonly $isProtectedReadonly> $ui.getString("tool.common.inherit")
 		</td>
 		<td></td>

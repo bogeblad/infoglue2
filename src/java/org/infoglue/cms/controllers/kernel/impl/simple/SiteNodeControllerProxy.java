@@ -110,6 +110,19 @@ public class SiteNodeControllerProxy extends SiteNodeController
 	 * This method creates a siteNode after first checking that the user has rights to create it.
 	 */
 
+	public void testAc(InfoGluePrincipal infogluePrincipal, Integer id, String interceptionPointName) throws ConstraintException, SystemException, Bug, Exception
+	{
+		Map hashMap = new HashMap();
+		hashMap.put("siteNodeId", id);
+		hashMap.put("siteNodeVersionId", id);
+    	
+		intercept(hashMap, interceptionPointName, infogluePrincipal);
+	}   
+
+	/**
+	 * This method creates a siteNode after first checking that the user has rights to create it.
+	 */
+
 	public SiteNodeVO acCreate(InfoGluePrincipal infogluePrincipal, Integer parentSiteNodeId, Integer siteNodeTypeDefinitionId, Integer repositoryId, SiteNodeVO siteNodeVO) throws ConstraintException, SystemException, Bug, Exception
 	{
 		Map hashMap = new HashMap();

@@ -132,7 +132,7 @@ public class AccessRightController extends BaseController
 	public void preCacheUserAccessRightVOList(InfoGluePrincipal principal, Database db) throws Exception
 	{
 		Timer t = new Timer();
-		
+		//System.out.println("Recaching all access rights for " + principal.getName() + " again....");
 		//Iför detta sen också - cachear alla sidor som är skyddade..
 		/*
 		select accessRightId from cmAccessRight ar INNER JOIN
@@ -1173,7 +1173,7 @@ public class AccessRightController extends BaseController
 					SiteNodeVersion siteNodeVersion = SiteNodeVersionController.getController().getSiteNodeVersionWithId(siteNodeVersionId, db);
 					if(logger.isDebugEnabled())
 						logger.debug("It was a siteNodeVersion and there are access rights - set it to true:" + accessRights);
-					if(!siteNodeVersion.getIsProtected().equals(SiteNodeVersionVO.YES))
+					if(!siteNodeVersion.getIsProtected().equals(SiteNodeVersionVO.YES) && !siteNodeVersion.getIsProtected().equals(SiteNodeVersionVO.YES_WITH_INHERIT_FALLBACK))
 						siteNodeVersion.setIsProtected(SiteNodeVersionVO.YES);
 				}
 			}
@@ -1197,10 +1197,8 @@ public class AccessRightController extends BaseController
 						SiteNodeVersion siteNodeVersion = SiteNodeVersionController.getController().getSiteNodeVersionWithId(siteNodeVersionId, db);
 						if(logger.isDebugEnabled())
 							logger.debug("It was a siteNodeVersion and there was no access rights - set it to false:" + accessRights + ":" + siteNodeVersion.getIsProtected());
-						if(siteNodeVersion.getIsProtected().equals(SiteNodeVersionVO.YES))
+						if(siteNodeVersion.getIsProtected().equals(SiteNodeVersionVO.YES) && !siteNodeVersion.getIsProtected().equals(SiteNodeVersionVO.YES_WITH_INHERIT_FALLBACK))
 						{
-							if(logger.isDebugEnabled())
-								logger.debug("YEPPPPPPP");
 							siteNodeVersion.setIsProtected(SiteNodeVersionVO.NO);
 							siteNodeVersion.setModifiedDateTime(DateHelper.getSecondPreciseDate());
 						}

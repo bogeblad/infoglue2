@@ -6,8 +6,11 @@ package com.opensymphony.oscache.base.algorithm;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.infoglue.deliver.util.RequestAnalyser;
 
 import java.util.*;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 /**
  * <p>LRU (Least Recently Used) algorithm for the cache.</p>
@@ -22,7 +25,7 @@ import java.util.*;
  * <code>AbstractConcurrentReadCache</code> already takes care of any
  * synchronization requirements.</p>
  *
- * @version        $Revision: 1.2.4.2 $
+ * @version        $Revision: 1.2.4.3 $
  * @author <a href="mailto:salaman@teknos.com">Victor Salaman</a>
  * @author <a href="mailto:fbeauregard@pyxis-tech.com">Francois Beauregard</a>
  * @author <a href="mailto:abergevin@pyxis-tech.com">Alain Bergevin</a>
@@ -31,8 +34,9 @@ import java.util.*;
 public class ImprovedLRUCache extends AbstractConcurrentReadCache 
 {
 	
-    private static final Log log = LogFactory.getLog(LRUCache.class);
-
+    private static final Log log = LogFactory.getLog(ImprovedLRUCache.class);
+    private ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
+    
     /**
      * Cache queue containing all cache keys.
      */
@@ -78,9 +82,33 @@ public class ImprovedLRUCache extends AbstractConcurrentReadCache
         // We need to synchronize here because AbstractConcurrentReadCache
         // doesn't prevent multiple threads from calling this method simultaneously.
         synchronized (list) {
+	    	list.remove(key);
+	    	list.add(key);
+        }
+        /*
+    	boolean lockSuccess = false;
+		try {
+			lockSuccess = lock.writeLock().tryLock(50, TimeUnit.MILLISECONDS);
+		} catch (InterruptedException e1) {
+			return;
+		}
+        try
+        {
+        	if(!lockSuccess)
+        	{
+            	RequestAnalyser.getRequestAnalyser().registerComponentStatistics("Returned in ImprovedLRUCache because of lock timeout...", 1);
+        		return;
+        	}
+        	
         	list.remove(key);
             list.add(key);
         }
+        finally
+        {
+        	if(lockSuccess)
+        		lock.writeLock().unlock();
+        }
+        */
     }
 
     /**
@@ -91,10 +119,36 @@ public class ImprovedLRUCache extends AbstractConcurrentReadCache
      */
     protected void itemPut(Object key) {
         // Since this entry was just accessed, move it to the back of the list.
+    	
     	synchronized (list) { // A further fix for CACHE-44
     		list.remove(key);
             list.add(key);
         }
+    	
+    	/*
+    	boolean lockSuccess = false;
+		try {
+			lockSuccess = lock.writeLock().tryLock(50, TimeUnit.MILLISECONDS);
+		} catch (InterruptedException e1) {
+			return;
+		}
+        try
+        {
+        	if(!lockSuccess)
+        	{
+            	RequestAnalyser.getRequestAnalyser().registerComponentStatistics("Returned in ImprovedLRUCache because of lock timeout...", 1);
+        		return;
+        	}
+        	
+    		list.remove(key);
+            list.add(key);
+        }
+        finally
+        {
+        	if(lockSuccess)
+        		lock.writeLock().unlock();
+        }
+		*/
     }
 
     /**
@@ -132,7 +186,7 @@ public class ImprovedLRUCache extends AbstractConcurrentReadCache
         } finally {
             removeInProgress = false;
         }
-
+        
         return toRemove;
     }
 
@@ -142,7 +196,7 @@ public class ImprovedLRUCache extends AbstractConcurrentReadCache
      * @param key The cache key of the item that was removed.
      */
     protected void itemRemoved(Object key) {
-        list.remove(key);
+        list.remove(key); 
     }
 
     /**
@@ -154,7 +208,7 @@ public class ImprovedLRUCache extends AbstractConcurrentReadCache
     
     private Object removeFirst() {
     	Object toRemove = null;
-    	
+
     	synchronized (list) { // A further fix for CACHE-44 and CACHE-246
 
         	Iterator it = list.iterator();
@@ -172,6 +226,42 @@ public class ImprovedLRUCache extends AbstractConcurrentReadCache
         	}
     	}
 
+    	/*
+    	boolean lockSuccess = false;
+		try {
+			lockSuccess = lock.writeLock().tryLock(50, TimeUnit.MILLISECONDS);
+		} catch (InterruptedException e1) {
+			return null;
+		}
+        try
+        {
+        	if(!lockSuccess)
+        	{
+            	RequestAnalyser.getRequestAnalyser().registerComponentStatistics("Returned in ImprovedLRUCache.removeFirst because of lock timeout...", 1);
+        		return null;
+        	}
+        	
+        	Iterator it = list.iterator();
+        	toRemove = it.next();
+        	it.remove();
+        	this.remove(toRemove);
+        	
+        	if(maxGroups > 1000 && maxGroups > (this.getGroupsForReading().size() * 5))
+        	{
+        		System.out.println("The group map must be made smaller:" + maxGroups);
+        		HashMap newGroups = new HashMap();
+        		newGroups.putAll(groups);
+        		groups = newGroups;
+        		maxGroups = 0;
+        	}
+        }
+        finally
+        {
+        	if(lockSuccess)
+        		lock.writeLock().unlock();
+        }
+		*/
+    	
         return toRemove;
     }
 }

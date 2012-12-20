@@ -726,6 +726,21 @@ public class SiteNodeController extends BaseController
 	 * This method returns the value-object of the parent of a specific siteNode. 
 	 */
 	
+	public SiteNodeVO getParentSiteNodeVO(Integer siteNodeId, Database db) throws SystemException, Bug, Exception
+	{
+		SiteNodeVO parent = null;
+		
+		SiteNodeVO siteNodeVO = getSiteNodeVOWithId(siteNodeId, db);
+		if(siteNodeVO != null && siteNodeVO.getParentSiteNodeId() != null)
+			parent = getSiteNodeVOWithId(siteNodeVO.getParentSiteNodeId(), db);
+
+		return parent;    	
+	}
+
+	/**
+	 * This method returns the value-object of the parent of a specific siteNode. 
+	 */
+	
 	public static SiteNode getParentSiteNode(Integer siteNodeId, Database db) throws SystemException, Bug
 	{
 		SiteNode siteNode = (SiteNode) getObjectWithId(SiteNodeImpl.class, siteNodeId, db);
@@ -1940,11 +1955,49 @@ public class SiteNodeController extends BaseController
 					protectedSiteNodeVersionId = null;
 				else if(siteNodeVersionVO.getIsProtected().intValue() == YES.intValue())
 					protectedSiteNodeVersionId = siteNodeVersionVO.getId();
+				else if(siteNodeVersionVO.getIsProtected().intValue() == SiteNodeVersionVO.YES_WITH_INHERIT_FALLBACK.intValue())
+					protectedSiteNodeVersionId = siteNodeVersionVO.getId();
 				else if(siteNodeVersionVO.getIsProtected().intValue() == INHERITED.intValue())
 				{
 					SiteNodeVO parentSiteNodeVO = getParentSiteNode(siteNodeId);
 					if(parentSiteNodeVO != null)
 						protectedSiteNodeVersionId = getProtectedSiteNodeVersionId(parentSiteNodeVO.getId()); 
+				}
+			}
+		}
+		catch(Exception e)
+		{
+			logger.warn("An error occurred trying to get which (if any) site node is protected:" + e.getMessage(), e);
+		}
+			
+		return protectedSiteNodeVersionId;
+	}
+
+	/**
+	 * This method returns true if the if the siteNode in question is protected.
+	 */
+    
+	public Integer getProtectedSiteNodeVersionId(Integer siteNodeId, Database db)
+	{
+		Integer protectedSiteNodeVersionId = null;
+	
+		try
+		{
+			SiteNodeVersionVO siteNodeVersionVO = SiteNodeVersionController.getController().getLatestSiteNodeVersionVO(db, siteNodeId);
+
+			if(siteNodeVersionVO.getIsProtected() != null)
+			{	
+				if(siteNodeVersionVO.getIsProtected().intValue() == NO.intValue())
+					protectedSiteNodeVersionId = null;
+				else if(siteNodeVersionVO.getIsProtected().intValue() == YES.intValue())
+					protectedSiteNodeVersionId = siteNodeVersionVO.getId();
+				else if(siteNodeVersionVO.getIsProtected().intValue() == SiteNodeVersionVO.YES_WITH_INHERIT_FALLBACK.intValue())
+					protectedSiteNodeVersionId = siteNodeVersionVO.getId();
+				else if(siteNodeVersionVO.getIsProtected().intValue() == INHERITED.intValue())
+				{
+					SiteNodeVO parentSiteNodeVO = getParentSiteNodeVO(siteNodeId, db);
+					if(parentSiteNodeVO != null)
+						protectedSiteNodeVersionId = getProtectedSiteNodeVersionId(parentSiteNodeVO.getId(), db); 
 				}
 			}
 		}

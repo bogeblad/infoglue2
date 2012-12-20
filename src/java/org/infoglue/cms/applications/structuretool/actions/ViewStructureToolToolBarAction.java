@@ -359,7 +359,7 @@ public class ViewStructureToolToolBarAction extends InfoGlueAbstractAction
 		
 		buttons.add(getExecuteTaskButton());
 
-		if(this.siteNodeVersionVO != null && this.siteNodeVersionVO.getIsProtected().intValue() == SiteNodeVersionVO.YES.intValue())
+		if(this.siteNodeVersionVO != null && (this.siteNodeVersionVO.getIsProtected().intValue() == SiteNodeVersionVO.YES.intValue() || this.siteNodeVersionVO.getIsProtected().intValue() == SiteNodeVersionVO.YES_WITH_INHERIT_FALLBACK.intValue()))
 			buttons.add(getAccessRightsButton());	
 			
 		return buttons;

@@ -539,6 +539,7 @@
 			#editPropertyFieldCSS("ServerNode.property.logPath" "logPath" "$this.getPropertyValue('logPath')" "51" "$!serverNodeId")
 			#yesNoDropDownWithInheritCSS("ServerNode.property.logTransactions" "logTransactions" "$this.getPropertyValue('logTransactions')")
 			#yesNoDropDownWithInheritCSS("ServerNode.property.enableExtranetCookies" "enableExtranetCookies" "$this.getPropertyValue('enableExtranetCookies')")
+			#yesNoDropDownWithInheritCSS("ServerNode.property.useBrowserLanguage" "useBrowserLanguage" "$this.getPropertyValue('useBrowserLanguage')")
 			#yesNoDropDownWithInheritCSS("ServerNode.property.useAlternativeBrowserLanguageCheck" "useAlternativeBrowserLanguageCheck" "$this.getPropertyValue('useAlternativeBrowserLanguageCheck')")
 			#yesNoDropDownWithInheritCSS("ServerNode.property.caseSensitiveRedirects" "caseSensitiveRedirects" "$this.getPropertyValue('caseSensitiveRedirects')")
 			#yesNoDropDownWithInheritCSS("ServerNode.property.useDNSNameInURI" "useDNSNameInURI" "$this.getPropertyValue('useDNSNameInURI')")

@@ -30,6 +30,7 @@ import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.exolab.castor.jdo.Database;
+import org.infoglue.cms.entities.management.AccessRight;
 import org.infoglue.cms.entities.structure.SiteNode;
 import org.infoglue.cms.entities.structure.SiteNodeVO;
 import org.infoglue.cms.entities.structure.SiteNodeVersion;
@@ -257,6 +258,8 @@ public class SiteNodeVersionControllerProxy extends SiteNodeVersionController
 						protectedSiteNodeVersionId = null;
 					else if(siteNodeVersionVO.getIsProtected().intValue() == YES.intValue())
 						protectedSiteNodeVersionId = siteNodeVersionVO.getId();
+					else if(siteNodeVersionVO.getIsProtected().intValue() == SiteNodeVersionVO.YES_WITH_INHERIT_FALLBACK.intValue())
+						protectedSiteNodeVersionId = siteNodeVersionVO.getId();
 					else if(siteNodeVersionVO.getIsProtected().intValue() == INHERITED.intValue())
 					{
 						SiteNodeVO parentSiteNodeVO = SiteNodeController.getParentSiteNode(siteNodeVersionVO.getSiteNodeId());
@@ -278,6 +281,50 @@ public class SiteNodeVersionControllerProxy extends SiteNodeVersionController
 	}
 	
 	/**
+	 * This method returns true if the if the siteNode in question is protected.
+	 */
+
+	public Integer getProtectedSiteNodeVersionId(Integer siteNodeVersionId, Integer interceptionPointId)
+	{
+		logger.info("siteNodeVersionId:" + siteNodeVersionId);
+		Integer protectedSiteNodeVersionId = null;
+		
+		try
+		{
+			SiteNodeVersionVO siteNodeVersionVO = getSiteNodeVersionVOWithId(siteNodeVersionId);
+			logger.info("Is Protected: " + siteNodeVersionVO.getIsProtected());
+			if(siteNodeVersionVO != null)
+			{	
+				if(siteNodeVersionVO.getIsProtected() != null)
+				{	
+					if(siteNodeVersionVO.getIsProtected().intValue() == NO.intValue())
+						protectedSiteNodeVersionId = null;
+					else if(siteNodeVersionVO.getIsProtected().intValue() == YES.intValue())
+						protectedSiteNodeVersionId = siteNodeVersionVO.getId();
+					else if(siteNodeVersionVO.getIsProtected().intValue() == SiteNodeVersionVO.YES_WITH_INHERIT_FALLBACK.intValue())
+						protectedSiteNodeVersionId = siteNodeVersionVO.getId();
+					else if(siteNodeVersionVO.getIsProtected().intValue() == INHERITED.intValue())
+					{
+						SiteNodeVO parentSiteNodeVO = SiteNodeController.getParentSiteNode(siteNodeVersionVO.getSiteNodeId());
+						if(parentSiteNodeVO != null)
+						{
+							siteNodeVersionVO = getLatestSiteNodeVersionVO(parentSiteNodeVO.getSiteNodeId());
+							protectedSiteNodeVersionId = getProtectedSiteNodeVersionId(siteNodeVersionVO.getSiteNodeVersionId());
+						}
+					}
+				}
+			}
+		}
+		catch(Exception e)
+		{
+			logger.warn("An error occurred trying to get if the siteNodeVersion is protected:" + e.getMessage(), e);
+		}
+			
+		return protectedSiteNodeVersionId;
+	}
+	
+
+	/**
 	 * This method returns true if the if the siteNode in question is protected within a transaction.
 	 */
 
@@ -298,6 +345,8 @@ public class SiteNodeVersionControllerProxy extends SiteNodeVersionController
 						protectedSiteNodeVersionId = null;
 					else if(siteNodeVersion.getIsProtected().intValue() == YES.intValue())
 						protectedSiteNodeVersionId = siteNodeVersion.getId();
+					else if(siteNodeVersion.getIsProtected().intValue() == SiteNodeVersionVO.YES_WITH_INHERIT_FALLBACK.intValue())
+						protectedSiteNodeVersionId = siteNodeVersion.getId();
 					else if(siteNodeVersion.getIsProtected().intValue() == INHERITED.intValue())
 					{
 						SiteNode parentSiteNode = SiteNodeController.getParentSiteNode(siteNodeVersion.getSiteNodeId(), db);
@@ -305,7 +354,6 @@ public class SiteNodeVersionControllerProxy extends SiteNodeVersionController
 						if(parentSiteNode != null)
 						{
 							siteNodeVersion = getLatestSiteNodeVersionVO(db, parentSiteNode.getSiteNodeId());
-							//siteNodeVersion = getLatestSiteNodeVersion(db, parentSiteNode.getSiteNodeId(), false);
 							protectedSiteNodeVersionId = getProtectedSiteNodeVersionId(siteNodeVersion.getSiteNodeVersionId(), db);
 						}
 					}
@@ -319,7 +367,79 @@ public class SiteNodeVersionControllerProxy extends SiteNodeVersionController
 			
 		return protectedSiteNodeVersionId;
 	}
+
+
+	/**
+	 * This method returns true if the if the siteNode in question is protected within a transaction.
+	 */
+
+	public Integer getProtectedSiteNodeVersionId(Integer siteNodeVersionId, Integer interceptionPointId, Database db)
+	{
+		return getProtectedSiteNodeVersionId(siteNodeVersionId, interceptionPointId, true, db);
+	}
 	
+	/**
+	 * This method returns true if the if the siteNode in question is protected within a transaction.
+	 */
+
+	public Integer getProtectedSiteNodeVersionId(Integer siteNodeVersionId, Integer interceptionPointId, Boolean honourInheritanceFallback, Database db)
+	{
+		logger.info("siteNodeVersionId:" + siteNodeVersionId);
+		Integer protectedSiteNodeVersionId = null;
+		
+		try
+		{
+			SiteNodeVersionVO siteNodeVersion = getSiteNodeVersionVOWithId(siteNodeVersionId, db);
+			logger.info("Is Protected: " + siteNodeVersion.getIsProtected());
+			if(siteNodeVersion != null)
+			{	
+				if(siteNodeVersion.getIsProtected() != null)
+				{	
+					if(siteNodeVersion.getIsProtected().intValue() == NO.intValue())
+						protectedSiteNodeVersionId = null;
+					else if(siteNodeVersion.getIsProtected().intValue() == YES.intValue())
+						protectedSiteNodeVersionId = siteNodeVersion.getId();
+					else if(siteNodeVersion.getIsProtected().intValue() == SiteNodeVersionVO.YES_WITH_INHERIT_FALLBACK.intValue())
+					{
+						logger.info(honourInheritanceFallback);
+						if(honourInheritanceFallback)
+						{
+							List<AccessRight> accessRights = AccessRightController.getController().getAccessRightListOnlyReadOnly(interceptionPointId, siteNodeVersion.getId().toString(), db);
+							if(accessRights == null || accessRights.size() == 0)
+							{
+								SiteNodeVO siteNodeVO = SiteNodeController.getController().getSiteNodeVOWithId(siteNodeVersion.getSiteNodeId(), db);
+								if(siteNodeVO != null && siteNodeVO.getParentSiteNodeId() != null)
+								{
+									SiteNodeVersionVO siteNodeVersionVO = SiteNodeVersionController.getController().getLatestSiteNodeVersionVO(db, siteNodeVO.getParentSiteNodeId());
+									protectedSiteNodeVersionId = getProtectedSiteNodeVersionId(siteNodeVersionVO.getSiteNodeVersionId(), interceptionPointId, honourInheritanceFallback, db);		
+								}
+							}
+							else
+								protectedSiteNodeVersionId = siteNodeVersion.getId();
+						}
+						else
+							protectedSiteNodeVersionId = siteNodeVersion.getId();
+					}
+					else if(siteNodeVersion.getIsProtected().intValue() == INHERITED.intValue())
+					{
+						SiteNode parentSiteNode = SiteNodeController.getParentSiteNode(siteNodeVersion.getSiteNodeId(), db);
+						//SiteNode parentSiteNode = siteNodeVersion.getOwningSiteNode().getParentSiteNode();
+						if(parentSiteNode != null)
+						{
+							siteNodeVersion = getLatestSiteNodeVersionVO(db, parentSiteNode.getSiteNodeId());
+							protectedSiteNodeVersionId = getProtectedSiteNodeVersionId(siteNodeVersion.getSiteNodeVersionId(), db);
+						}
+					}
+				}
+			}
+		}
+		catch(Exception e)
+		{
+			logger.warn("An error occurred trying to get if the siteNodeVersion is protected:" + e.getMessage(), e);
+		}
+		
+		return protectedSiteNodeVersionId;
+	}
 	/**
 	 * This method returns true if the if the siteNode in question is protected.
 	 */
@@ -340,6 +460,8 @@ public class SiteNodeVersionControllerProxy extends SiteNodeVersionController
 					if(siteNodeVersionVO.getIsProtected().intValue() == NO.intValue())
 						isSiteNodeVersionProtected = false;
 					else if(siteNodeVersionVO.getIsProtected().intValue() == YES.intValue())
+						isSiteNodeVersionProtected = true;
+					else if(siteNodeVersionVO.getIsProtected().intValue() == SiteNodeVersionVO.YES_WITH_INHERIT_FALLBACK.intValue())
 						isSiteNodeVersionProtected = true;
 					else if(siteNodeVersionVO.getIsProtected().intValue() == INHERITED.intValue())
 					{

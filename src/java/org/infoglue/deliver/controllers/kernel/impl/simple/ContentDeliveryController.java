@@ -906,7 +906,10 @@ public class ContentDeliveryController extends BaseDeliveryController
 		boolean isTemplateQuery = false;
 		if(attributeName.equalsIgnoreCase("Template") || attributeName.equalsIgnoreCase("PreTemplate") || attributeName.equalsIgnoreCase("ComponentLabels"))
 			isTemplateQuery = true;
-		
+
+		if(attributeName.equalsIgnoreCase("ComponentStructure"))
+			isMetaInfoQuery = true;
+
 		deliveryContext.addDebugInformation("getContentAttribute with params:");
 		deliveryContext.addDebugInformation("	contentId: " + contentId);
 		deliveryContext.addDebugInformation("	languageId: " + languageId);

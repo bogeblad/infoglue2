@@ -417,9 +417,9 @@ public class DeliveryContext implements UsageListener
         return groups;
     }
     
-    public Set<String> getAllUsedEntitiesAsSet()
+    public List<String> getAllUsedEntitiesAsSet()
     {
-    	Set<String> set = new HashSet<String>();
+    	List<String> set = new ArrayList<String>();
     	set.addAll(this.usedContents);
     	set.addAll(this.usedContentVersions);
     	set.addAll(this.usedSiteNodes);
