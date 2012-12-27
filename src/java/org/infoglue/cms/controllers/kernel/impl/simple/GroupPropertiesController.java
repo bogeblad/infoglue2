@@ -66,6 +66,7 @@ import org.infoglue.cms.util.CmsPropertyHandler;
 import org.infoglue.cms.util.ConstraintExceptionBuffer;
 import org.infoglue.cms.util.dom.DOMBuilder;
 import org.infoglue.deliver.util.CacheController;
+import org.infoglue.deliver.util.NullObject;
 import org.infoglue.deliver.util.RequestAnalyser;
 import org.infoglue.deliver.util.Timer;
 import org.w3c.dom.CDATASection;
@@ -249,48 +250,75 @@ public class GroupPropertiesController extends BaseController
 	{
 	    List groupPropertiesVOList = new ArrayList();
 	    
-		class PreCacheGroupPropertiesTask implements Runnable 
-		{
-			PreCacheGroupPropertiesTask() { }
-	        
-	        public void run() 
-	        {
-				try
-				{
-					Database db = CastorDatabaseService.getDatabase();
-					try 
-					{
-						beginTransaction(db);
-
-						preCacheAllGroupProperties(db);
-						commitTransaction(db);
-					} 
-					catch (Exception e) 
-					{
-						logger.error("Error precaching all group properties: " + e.getMessage(), e);
-						rollbackTransaction(db);
-					}
-				}
-				catch (Exception e) 
-				{
-					logger.error("Could not start PreCacheTask:" + e.getMessage(), e);
-				}
-				finally
-				{
-					inCacheProgress.set(false);
-				}
-	        }
-	    }
-		if(inCacheProgress.compareAndSet(false, true))
-		{
-			Thread thread = new Thread(new PreCacheGroupPropertiesTask());
-		    thread.start();
-		}
-
-	    //preCacheAllGroupProperties(db);
-	    
 		String cacheKey = "" + groupName + "_" + languageId;
 		logger.info("cacheKey:" + cacheKey);
+		
+		Object groupPropertiesVOListCandidate = CacheController.getCachedObject("groupPropertiesCache", cacheKey);
+		if(groupPropertiesVOListCandidate != null && groupPropertiesVOListCandidate instanceof NullObject)
+		{
+			logger.info("NullObject found:" + cacheKey);
+			return groupPropertiesVOList;
+		}
+		else if(groupPropertiesVOListCandidate != null)
+		{
+			logger.info("groupPropertiesVOListCandidate found:" + cacheKey);
+			groupPropertiesVOList =  (List)groupPropertiesVOListCandidate;
+		}
+		else
+		{
+			class PreCacheGroupPropertiesTask implements Runnable 
+			{
+				PreCacheGroupPropertiesTask() { }
+		        
+		        public void run() 
+		        {
+					try
+					{
+						Database db = CastorDatabaseService.getDatabase();
+						try 
+						{
+							beginTransaction(db);
+
+							preCacheAllGroupProperties(db);
+							commitTransaction(db);
+						} 
+						catch (Exception e) 
+						{
+							logger.error("Error precaching all group properties: " + e.getMessage(), e);
+							rollbackTransaction(db);
+						}
+					}
+					catch (Exception e) 
+					{
+						logger.error("Could not start PreCacheTask:" + e.getMessage(), e);
+					}
+					finally
+					{
+						inCacheProgress.set(false);
+					}
+		        }
+		    }
+			if(inCacheProgress.compareAndSet(false, true))
+			{
+				Thread thread = new Thread(new PreCacheGroupPropertiesTask());
+			    thread.start();
+			}
+
+			logger.info("No groupPropertiesVOListCandidate found:" + cacheKey);
+			List groupPropertiesList = getGroupPropertiesList(groupName, languageId, db, true);
+			if(groupPropertiesList != null)
+			{
+			    groupPropertiesVOList = toVOList(groupPropertiesList);
+			    logger.info("Caching:" + cacheKey + "=" + groupPropertiesVOList);
+		    	CacheController.cacheObject("groupPropertiesCache", cacheKey, groupPropertiesVOList);
+			}
+			else
+			{
+				logger.info("Caching nullobject:" + cacheKey);
+				CacheController.cacheObject("groupPropertiesCache", cacheKey, new NullObject());
+			}
+		}
+		/*
 		groupPropertiesVOList = (List)CacheController.getCachedObject("groupPropertiesCache", cacheKey);
 		if(groupPropertiesVOList != null)
 		{
@@ -307,6 +335,7 @@ public class GroupPropertiesController extends BaseController
 			}
 
 		}
+		*/
 		
 		return groupPropertiesVOList;
 	}

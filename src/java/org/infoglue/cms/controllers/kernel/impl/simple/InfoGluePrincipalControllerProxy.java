@@ -39,6 +39,8 @@ import org.dom4j.Node;
 import org.exolab.castor.jdo.Database;
 import org.infoglue.cms.applications.common.VisualFormatter;
 import org.infoglue.cms.entities.kernel.BaseEntityVO;
+import org.infoglue.cms.entities.management.ContentTypeAttribute;
+import org.infoglue.cms.entities.management.ContentTypeDefinitionVO;
 import org.infoglue.cms.entities.management.GroupProperties;
 import org.infoglue.cms.entities.management.GroupPropertiesVO;
 import org.infoglue.cms.entities.management.LanguageVO;
@@ -208,7 +210,23 @@ public class InfoGluePrincipalControllerProxy extends BaseController
 			}
 		}
 		
-		if(value.equals(""))
+		boolean hasPropertyName = false;
+		List<ContentTypeDefinitionVO> roleContentTypes = ContentTypeDefinitionController.getController().getContentTypeDefinitionVOList(ContentTypeDefinitionVO.EXTRANET_ROLE_PROPERTIES, db);
+		for(ContentTypeDefinitionVO ctVO : roleContentTypes)
+		{
+			List<ContentTypeAttribute> attributes = ContentTypeDefinitionController.getController().getContentTypeAttributes(ctVO.getSchemaValue());
+			outer:for(ContentTypeAttribute attribute : attributes)
+			{
+				if(attribute.getName().equals(propertyName))
+				{
+					hasPropertyName = true;
+					break outer;
+				}
+			}
+		}
+		logger.info("Role hasPropertyName:" + hasPropertyName);
+
+		if(value.equals("") && hasPropertyName)
 		{	
 			List roles = infoGluePrincipal.getRoles();
 			String largestValue = "-1";
@@ -218,7 +236,6 @@ public class InfoGluePrincipalControllerProxy extends BaseController
 			while(rolesIterator.hasNext())
 			{
 				InfoGlueRole role = (InfoGlueRole)rolesIterator.next();
-				
 				Collection rolePropertiesList = RolePropertiesController.getController().getRolePropertiesList(role.getName(), languageId, db, true);
 
 				Iterator rolePropertiesListIterator = rolePropertiesList.iterator();
@@ -292,7 +309,23 @@ public class InfoGluePrincipalControllerProxy extends BaseController
 			}
 		}
 		
-		if(value.equals(""))
+		
+		hasPropertyName = false;
+		List<ContentTypeDefinitionVO> groupContentTypes = ContentTypeDefinitionController.getController().getContentTypeDefinitionVOList(ContentTypeDefinitionVO.EXTRANET_GROUP_PROPERTIES, db);
+		for(ContentTypeDefinitionVO ctVO : groupContentTypes)
+		{
+			List<ContentTypeAttribute> attributes = ContentTypeDefinitionController.getController().getContentTypeAttributes(ctVO.getSchemaValue());
+			outer:for(ContentTypeAttribute attribute : attributes)
+			{
+				if(attribute.getName().equals(propertyName))
+				{
+					hasPropertyName = true;
+					break outer;
+				}
+			}
+		}
+		logger.info("Group hasPropertyName:" + hasPropertyName);
+		if(value.equals("") && hasPropertyName)
 		{	
 			//Timer t = new Timer();
 			List groups = infoGluePrincipal.getGroups();
