@@ -70,7 +70,8 @@ public class ComponentController extends BaseController
     private final static Logger logger = Logger.getLogger(ComponentController.class.getName());
 
 	private static AtomicBoolean preCaching = new AtomicBoolean(false);
-
+	private static List<Integer> componentIdsToRecache = new ArrayList<Integer>();
+	
     /**
 	 * Factory method
 	 */
@@ -217,6 +218,113 @@ public class ComponentController extends BaseController
 		}
 	}
 
+	public void reIndexComponentContentsDelayed(Integer contentId) throws Exception
+	{
+		componentIdsToRecache.add(contentId);
+		class ReIndexComponentsTask implements Runnable 
+		{
+	        public void run() 
+	        {
+	        	try
+	        	{
+	        		Thread.sleep(1000);
+		        	Timer t = new Timer();
+		        	List<Integer> localComponentIdsList = new ArrayList<Integer>();
+		        	localComponentIdsList.addAll(componentIdsToRecache);
+		        	componentIdsToRecache.clear();
+		        	for(Integer localComponentContentId : localComponentIdsList)
+		        	{
+		        		reIndexComponentContent(localComponentContentId);
+		        	}
+		        	t.printElapsedTime("ReIndexComponentsTask took");
+	        	}
+	        	catch (Exception e) 
+	        	{
+					logger.warn("Failed to precache components: " + e.getMessage(), e);
+				}
+	        }
+	    }
+	    Thread thread = new Thread(new ReIndexComponentsTask());
+	    thread.start();
+	}
+
+	private void reIndexComponentContent(Integer contentId) throws Exception
+	{
+		if(CmsPropertyHandler.getOperatingMode().equals("3"))
+			return;
+		
+		String cacheKey = "allTemplatesAndPagePartMap";
+		Map<String,List<ContentVO>> templatesAndPagePartMap = (Map<String,List<ContentVO>>)CacheController.getCachedObject("componentContentsCache", cacheKey);
+
+    	synchronized (templatesAndPagePartMap) 
+    	{
+			for(String key : templatesAndPagePartMap.keySet())
+			{
+				List<ContentVO> groupList = templatesAndPagePartMap.get(key);
+				Iterator<ContentVO> groupListIterator = groupList.iterator();
+				while(groupListIterator.hasNext())
+				{
+					ContentVO cvVO = groupListIterator.next();
+					if(cvVO.getId().intValue() == contentId.intValue())
+					{
+						logger.info("Removing " + cvVO.getName() + " from group:" + key);
+						groupListIterator.remove();
+					}
+				}
+			}
+		}
+
+    	ContentVO contentVO = ContentController.getContentController().getContentVOWithId(contentId);
+    	if(contentVO != null)
+    	{
+	    	LanguageVO masterLanguageVO = LanguageController.getController().getMasterLanguage(contentVO.getRepositoryId());
+	    	ContentVersionVO contentVersionVO = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(contentId, masterLanguageVO.getId());
+	
+	    	String groupNameDefault = "Unknown";
+			String descriptionDefault = "Unknown";
+	    	String groupNameAttribute = ContentVersionController.getContentVersionController().getAttributeValue(contentVersionVO, "GroupName", false);
+	    	System.out.println("groupNameAttribute:" + groupNameAttribute);
+	    	String descriptionAttribute = ContentVersionController.getContentVersionController().getAttributeValue(contentVersionVO, "Description", false);
+			contentVO.getExtraProperties().put("GroupName", (groupNameAttribute == null ? groupNameDefault : groupNameAttribute));
+			contentVO.getExtraProperties().put("Description", (descriptionAttribute == null ? descriptionDefault : descriptionAttribute));
+		
+	    	List<ContentVO> allComponents = templatesAndPagePartMap.get("all");
+	    	if(allComponents == null)
+	    	{
+	    		allComponents = new ArrayList<ContentVO>();
+	    		templatesAndPagePartMap.put("all", allComponents);
+	    	}
+	    	allComponents.add(contentVO);
+	    	logger.info("Adding " + contentVO.getName() + " to group " + contentVO.getName());
+	    	
+	    	List<ContentVO> nameComponents = templatesAndPagePartMap.get(contentVO.getName());
+	    	if(nameComponents == null)
+	    	{
+	    		nameComponents = new ArrayList<ContentVO>();
+	    		templatesAndPagePartMap.put(contentVO.getName(), nameComponents);
+	    	}
+	    	nameComponents.add(contentVO);
+	
+	    	logger.info("Adding " + contentVO.getName() + " to group " + contentVO.getName());
+	    	if(groupNameAttribute != null && !groupNameAttribute.equals(""))
+	    	{
+	        	String[] groupNames = groupNameAttribute.split(",");
+		        for(String groupName : groupNames)
+		        {
+		        	logger.info("groupName:" + groupName);
+		        	List<ContentVO> groupComponents = templatesAndPagePartMap.get(groupName.trim());
+		        	if(groupComponents == null)
+		        	{
+		        		groupComponents = new ArrayList<ContentVO>();
+		        		templatesAndPagePartMap.put(groupName.trim(), groupComponents);
+		        	}
+		        	groupComponents.add(contentVO);
+		        	logger.info("Adding " + contentVO.getName() + " to " + groupName.trim());
+		        }
+	    	}
+    	}
+	}
+	
 	/**
 	 * This method returns a sorted list of components.
 	 * @param sortAttribute

@@ -2338,8 +2338,7 @@ public class CacheController extends Thread
 									    		ContentTypeDefinitionVO ctdVO = ContentTypeDefinitionController.getController().getContentTypeDefinitionVOWithId(contentVO.getContentTypeDefinitionId());
 									    		if(ctdVO.getName().equals("HTMLTemplate") || ctdVO.getName().equals("PagePartTemplate"))
 									    		{
-									    			cacheInstance.clear();
-									    			ComponentController.getController().preCacheComponentsDelayed();
+													ComponentController.getController().reIndexComponentContentsDelayed(contentVO.getId());
 									    		}
 									    	}
 							    		}
