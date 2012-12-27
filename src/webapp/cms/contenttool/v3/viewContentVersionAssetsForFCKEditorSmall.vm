@@ -58,9 +58,9 @@
 		function initSub(contentId) 
 		{
 			if(document.referrer != null && document.referrer != '')
-				markAsset(this, '$!contentId', firstAssetKey, firstAssetKey, '');
+				markAsset(this, 1, '$!contentId', firstAssetKey, firstAssetKey, '');
 			else
-				markAsset(this, '$!contentId', lastAssetKey, lastAssetKey, '');
+				markAsset(this, 1, '$!contentId', lastAssetKey, lastAssetKey, '');
 		};
 	
 		function deleteAsset(url, assetKey)
@@ -72,7 +72,7 @@
 			}
 		}
 	
-		$(document).ready(function(){
+		$(document).ready(function() {
 			setTimeout("initSub()", 500);
 			var dimensionsHeight = $(window).height();
 			$(".imgBoxContainer").height(dimensionsHeight - 40);
@@ -167,7 +167,7 @@
 				#set($doubleEncodedAssetKey = "$formatter.encodeURI($formatter.encodeURI($digitalAsset.assetKey, 'utf-8'), 'utf-8')")
 				#set($thumbnailImageUrl = "$this.getDigitalAssetThumbnailUrl($digitalAsset.digitalAssetId, 70, 50, 'ffffff', 'center', 'middle', 70, 50, 75)")
 				<img ondblclick="onOk();" onclick="markAsset(this, $digitalAsset.id, $!contentId, '$singleEncodedAssetKey', '$singleEncodedAssetKey', '$thumbnailImageUrl');" src="$thumbnailImageUrl" alt="$digitalAsset.assetKey ($digitalAsset.assetContentType - $path - $formatter.formatFileSize($digitalAsset.assetFileSize))" />
-             	<p title="$digitalAsset.assetKey - $path - ($digitalAsset.assetContentType - $formatter.formatFileSize($digitalAsset.assetFileSize))" class="assetKeyP"><a class="assetKeyHref" ondblclick="onOk();" href="javascript:markAsset(this, $!contentId, '$doubleEncodedAssetKey', '$doubleEncodedAssetKey', '$thumbnailImageUrl');">#if($digitalAsset.assetKey.length() > 14)$digitalAsset.assetKey.substring(0,14)..#else$digitalAsset.assetKey#end</a></p>
+             	<p title="$digitalAsset.assetKey - $path - ($digitalAsset.assetContentType - $formatter.formatFileSize($digitalAsset.assetFileSize))" class="assetKeyP"><a class="assetKeyHref" ondblclick="onOk();" href="javascript:markAsset(this, $digitalAsset.id, $!contentId, '$doubleEncodedAssetKey', '$doubleEncodedAssetKey', '$thumbnailImageUrl');">#if($digitalAsset.assetKey.length() > 14)$digitalAsset.assetKey.substring(0,14)..#else$digitalAsset.assetKey#end</a></p>
                 #if($showSelectButtonByEachImage)<a href="javascript:markAsset(this, $digitalAsset.id, $!contentId, '$doubleEncodedAssetKey', '$doubleEncodedAssetKey', '$thumbnailImageUrl'); onOk();"><b>Add asset to selection</b></a>#end
 				#if($assetKey == $digitalAsset.assetKey)
 					<script type="text/javascript">

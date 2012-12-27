@@ -234,19 +234,24 @@
 	function onOk(contentId, assetKey, assetUrl)
 	{
 		//alert("Adding contentId:" + contentId + " and assetKey:" + assetKey + " and assetUrl:" + assetUrl);
-		assetKey = assetKey.replace(/\+/g, " ");
-		//alert("assetKey:" + assetKey);
-		var decodedAssetKey = decodeURIComponent(assetKey);
-		//alert("decodedAssetKey:" + decodedAssetKey);
-		if(contentId == '' || contentId == '${select}' || assetKey == '')
-		{
-			alert("You must choose a content and a asset before you can save");
-		}
+		if(isNaN(contentId))
+			alert("You found a bug. Do not save this configuration but contact support.");
 		else
 		{
-			var binding = new AssetBinding(contentId, decodedAssetKey, assetUrl);
-			siteNodesVector.addElement(binding);
-			drawList();
+			assetKey = assetKey.replace(/\+/g, " ");
+			//alert("assetKey:" + assetKey);
+			var decodedAssetKey = decodeURIComponent(assetKey);
+			//alert("decodedAssetKey:" + decodedAssetKey);
+			if(contentId == '' || contentId == '${select}' || assetKey == '')
+			{
+				alert("You must choose a content and a asset before you can save");
+			}
+			else
+			{
+				var binding = new AssetBinding(contentId, decodedAssetKey, assetUrl);
+				siteNodesVector.addElement(binding);
+				drawList();
+			}
 		}
 	}
 	
