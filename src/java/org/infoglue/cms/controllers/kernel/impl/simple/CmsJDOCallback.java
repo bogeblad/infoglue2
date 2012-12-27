@@ -174,6 +174,7 @@ public class CmsJDOCallback implements CallbackInterceptor
 			}
 			else if(object.getClass().getName().equals(CategoryImpl.class.getName()) || object.getClass().getName().equals(ContentTypeDefinitionImpl.class.getName()))
 			{
+				CacheController.clearCache("contentTypeDefinitionCache");
 				CacheController.clearCache("contentTypeCategoryKeysCache");
 			}
 			else if(object.getClass().getName().equals(InterceptionPointImpl.class.getName()))
@@ -209,10 +210,6 @@ public class CmsJDOCallback implements CallbackInterceptor
 				CacheController.clearCache("authorizationCache");
 				CacheController.clearCache("personalAuthorizationCache");
 			}
-			else if(object.getClass().getName().equals(ContentTypeDefinitionImpl.class.getName()))
-			{
-				CacheController.clearCache("contentTypeDefinitionCache");
-			}
 			else if(object.getClass().getName().equals(ContentImpl.class.getName()))
 			{
 				//CacheController.clearCache("childContentCache");
@@ -243,8 +240,7 @@ public class CmsJDOCallback implements CallbackInterceptor
 					   contentVersion.getOwningContent().getContentTypeDefinition().getName().equalsIgnoreCase("HTMLTemplate") ||
 					   contentVersion.getOwningContent().getContentTypeDefinition().getName().equalsIgnoreCase("PagePartTemplate")))
 					{
-						CacheController.clearCache("componentContentsCache");
-		    			ComponentController.getController().preCacheComponentsDelayed();
+						ComponentController.getController().reIndexComponentContentsDelayed(contentVersion.getOwningContent().getId());
 					}
 
 					CacheController.clearCacheForGroup("registryCache", "" + ("org.infoglue.cms.entities.content.ContentVersion_" + getObjectIdentity(object)).hashCode());						
@@ -485,8 +481,9 @@ public class CmsJDOCallback implements CallbackInterceptor
 			{
 				CacheController.clearCache("repositoryCache");
 			}
-			else if(object.getClass().getName().equals(CategoryImpl.class.getName()))
+			else if(object.getClass().getName().equals(CategoryImpl.class.getName()) || object.getClass().getName().equals(ContentTypeDefinitionImpl.class.getName()))
 			{
+				CacheController.clearCache("contentTypeDefinitionCache");
 				CacheController.clearCache("categoriesCache");
 			}
 			else if(object.getClass().getName().equals(InterceptionPointImpl.class.getName()))
@@ -523,10 +520,6 @@ public class CmsJDOCallback implements CallbackInterceptor
 				CacheController.clearCache("authorizationCache");
 				CacheController.clearCache("personalAuthorizationCache");
 			}
-			else if(object.getClass().getName().equals(ContentTypeDefinitionImpl.class.getName()))
-			{
-				CacheController.clearCache("contentTypeDefinitionCache");
-			}
 			else if(object.getClass().getName().equals(ContentImpl.class.getName()))
 			{
 				//CacheController.clearCache("childContentCache");
@@ -542,8 +535,9 @@ public class CmsJDOCallback implements CallbackInterceptor
 				   contentVersion.getOwningContent().getContentTypeDefinition().getName().equalsIgnoreCase("HTMLTemplate") ||
 				   contentVersion.getOwningContent().getContentTypeDefinition().getName().equalsIgnoreCase("PagePartTemplate")))
 				{
-					CacheController.clearCache("componentContentsCache");
-	    			ComponentController.getController().preCacheComponentsDelayed();
+					//CacheController.clearCache("componentContentsCache");
+					//ComponentController.getController().reIndexComponentContent(contentVersion.getOwningContent().getId());
+	    			//ComponentController.getController().preCacheComponentsDelayed();
 				}
 				clearCache(SmallContentVersionImpl.class);
 				clearCache(SmallestContentVersionImpl.class);
@@ -779,8 +773,7 @@ public class CmsJDOCallback implements CallbackInterceptor
 				   contentVersion.getOwningContent().getContentTypeDefinition().getName().equalsIgnoreCase("HTMLTemplate") ||
 				   contentVersion.getOwningContent().getContentTypeDefinition().getName().equalsIgnoreCase("PagePartTemplate")))
 				{
-					CacheController.clearCache("componentContentsCache");
-	    			ComponentController.getController().preCacheComponentsDelayed();
+					ComponentController.getController().reIndexComponentContentsDelayed(contentVersion.getOwningContent().getId());
 				}
 
 				clearCache(SmallContentVersionImpl.class);
