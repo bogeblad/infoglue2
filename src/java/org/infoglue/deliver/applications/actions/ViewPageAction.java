@@ -257,7 +257,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
 				protectDeliver = true;
 			else if(protectPreview.equals("true") && CmsPropertyHandler.getOperatingMode().equals("2"))
 				protectDeliver = true;
-						
+			
 			isUserRedirected = handleAccessBasedProtocolRedirect(protectedSiteNodeVersionId, this.repositoryId, forceProtocolChangeSetting, dbWrapper.getDatabase());
 
 			if(!isUserRedirected)
@@ -267,7 +267,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
 			}
 			
 			if(!isUserRedirected)
-			{				
+			{			
 				if(logger.isInfoEnabled())
 					logger.info("RemoteAddress:" + getRequest().getRemoteAddr());
 				
@@ -291,14 +291,17 @@ public class ViewPageAction extends InfoGlueAbstractAction
 					String forceIdentityCheck = RepositoryDeliveryController.getRepositoryDeliveryController().getExtraPropertyValue(this.repositoryId, "forceIdentityCheck");
 					if(logger.isInfoEnabled())
 						logger.info("forceIdentityCheck:" + forceIdentityCheck);
-					if(CmsPropertyHandler.getForceIdentityCheck().equalsIgnoreCase("true") || (forceIdentityCheck != null && forceIdentityCheck.equalsIgnoreCase("true")))
+					if(this.principal == null || CmsPropertyHandler.getAnonymousUser().equalsIgnoreCase(this.principal.getName()))
 					{
-						boolean isForcedIdentityCheckDisabled = this.nodeDeliveryController.getIsForcedIdentityCheckDisabled(dbWrapper.getDatabase(), this.siteNodeId);
-						if(logger.isInfoEnabled())
-							logger.info("isForcedIdentityCheckDisabled:" + isForcedIdentityCheckDisabled);
-						if(!isForcedIdentityCheckDisabled)
+						if(CmsPropertyHandler.getForceIdentityCheck().equalsIgnoreCase("true") || (forceIdentityCheck != null && forceIdentityCheck.equalsIgnoreCase("true")))
 						{
-							isUserRedirected = handleExtranetLogic(dbWrapper.getDatabase(), true);
+							boolean isForcedIdentityCheckDisabled = this.nodeDeliveryController.getIsForcedIdentityCheckDisabled(dbWrapper.getDatabase(), this.siteNodeId);
+							if(logger.isInfoEnabled())
+								logger.info("isForcedIdentityCheckDisabled:" + isForcedIdentityCheckDisabled);
+							if(!isForcedIdentityCheckDisabled && getHttpSession().getAttribute("ssoChecked") == null && (getRequest().getParameter("skipSSOCheck") == null || !getRequest().getParameter("skipSSOCheck").equals("true")))
+							{
+								isUserRedirected = handleExtranetLogic(dbWrapper.getDatabase(), true);
+							}
 						}
 					}
 				}
@@ -1614,21 +1617,25 @@ public class ViewPageAction extends InfoGlueAbstractAction
 		
 		try
 		{
-			String skipSSOCheck = this.getRequest().getParameter("skipSSOCheck");
-			String ticket = this.getRequest().getParameter("ticket");
-			if((skipSSOCheck != null && !skipSSOCheck.equals("")) && (ticket == null || ticket.equals("")))
+			if(principal == null)
 			{
-				principal = getAnonymousPrincipal();
-				
-				if(principal != null)
+				String skipSSOCheck = this.getRequest().getParameter("skipSSOCheck");
+				String ticket = this.getRequest().getParameter("ticket");
+				if((skipSSOCheck != null && !skipSSOCheck.equals("")) && (ticket == null || ticket.equals("")))
 				{
-					this.getHttpSession().setAttribute("infogluePrincipal", principal);
-					this.getHttpSession().setAttribute("infoglueRemoteUser", principal.getName());
-					this.getHttpSession().setAttribute("cmsUserName", principal.getName());
+					principal = getAnonymousPrincipal();
+					
+					if(principal != null)
+					{
+						this.getHttpSession().setAttribute("infogluePrincipal", principal);
+						this.getHttpSession().setAttribute("infoglueRemoteUser", principal.getName());
+						this.getHttpSession().setAttribute("cmsUserName", principal.getName());
+					}
+					
+					getHttpSession().setAttribute("ssoChecked", "true");
+					return isRedirected;
 				}
-
-				return isRedirected;
-			}
+			}			
 			
 		    String referer = this.getRequest().getHeader("Referer");
 			logger.info("referer:" + referer);
@@ -1638,6 +1645,37 @@ public class ViewPageAction extends InfoGlueAbstractAction
 			
 			Principal principal = (Principal)this.getHttpSession().getAttribute("infogluePrincipal");
 			logger.info("principal:" + principal);
+
+			if((principal == null || principal.getName().equals(CmsPropertyHandler.getAnonymousUser())) && getHttpSession().getAttribute("ssoChecked") == null && (getRequest().getParameter("skipSSOCheck") != null && !getRequest().getParameter("skipSSOCheck").equals("true")))	
+			{
+				logger.info("Nulling user as we want SSO check to be done..");
+			    if(this.getRequest().getUserPrincipal() != null && !(this.getRequest().getUserPrincipal() instanceof InfoGluePrincipal))
+			    {
+					Map status = new HashMap();
+					status.put("redirected", new Boolean(false));
+					getRequest().setAttribute("gateway", "" + gateway);
+					principal = AuthenticationModule.getAuthenticationModule(db, this.getOriginalFullURL(), this.getRequest(), false).loginUser(getRequest(), getResponse(), status);
+					logger.info("principal:" + principal + " after gateway test");
+					Boolean redirected = (Boolean)status.get("redirected");
+					logger.info("redirected:" + redirected);
+					if(redirected != null && redirected.booleanValue())
+					{
+					    this.getHttpSession().removeAttribute("infogluePrincipal");
+					    this.principal = null;
+					    return true;
+					}
+					else if(principal != null)
+					{
+					    this.getHttpSession().setAttribute("infogluePrincipal", principal);
+						this.getHttpSession().setAttribute("infoglueRemoteUser", principal.getName());
+						this.getHttpSession().setAttribute("cmsUserName", principal.getName());
+						
+					    this.principal = principal;
+					}
+			    }
+			    //getHttpSession().setAttribute("ssoChecked", "true");
+			}
+			
 
 			//First we check if the user is logged in to the container context
 			if(principal == null)
