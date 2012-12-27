@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?> 
+ 
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html>
+<head>
+	<title>$ui.getString("tool.managementtool.exportRepository.header")</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	
+	<link rel="stylesheet" type="text/css" href="css/cms.css" /> 
+	<link rel="stylesheet" type="text/css" href="css/infogluecommons.css" /> 
+	
+	<script language="JavaScript" src="script/listview.js"></script>
+	<script type="text/javascript" src="script/infogluecommons.js"></script>
+
+	<meta http-equiv="pragma" CONTENT="no-cache" />
+	<meta http-equiv="expires" CONTENT="-1" />	
+	<meta http-equiv="refresh" content="5">
+</head>
+
+<body class="managementtooledit">
+
+<div class="fullymarginalized">
+
+<h1>Import/Copy status</h1>
+<p>Memory info: $this.memoryUsageAsText</p>
+
+<h3>Finished imports/copies</h3>
+#set($hasFinished = false)
+#foreach($processBean in $processBeans)
+	#if($processBean.status == 2)
+		#set($hasFinished = true)
+		<ol>
+		#if($processBean.processArtifacts.size() > 0)
+			#foreach($artifactKey in $processBean.processArtifacts.keySet())
+				<li>
+					$processBean.processId started $formatter.formatDate($processBean.started, "dd MMM HH:mm:ss") and finished $formatter.formatDate($processBean.finished, "dd MMM HH:mm:ss")<br/>
+					<a class="download" href="$processBean.processArtifacts.get("$artifactKey").url"><img src="images/v3/saveInlineIcon.gif" width="16" height="16" border="0" style="margin-bottom: -2px;"> Download ($formatter.formatFileSize($processBean.processArtifacts.get("$artifactKey").file.length()))</a> | <a href="ImportRepository!deleteProcessBean.action?processId=$processBean.processId"><img src="images/delete.gif" width="12" height="12" border="0"> Remove</a>
+				</li>
+			#end
+		#else
+			<li>
+				$processBean.processId started $formatter.formatDate($processBean.started, "dd MMM HH:mm:ss") and finished $formatter.formatDate($processBean.finished, "dd MMM HH:mm:ss")<br/>
+				<a href="ImportRepository!deleteProcessBean.action?processId=$processBean.processId"><img src="images/delete.gif" width="12" height="12" border="0"> Remove</a>
+			</li>
+		#end
+		</ol>
+	#end
+#end
+#if(!$hasFinished)
+	<p>No finished imports/copies</p>
+#end
+
+<h3>Ongoing imports/copies</h3>
+#set($hasOngoing = false)
+#foreach($processBean in $processBeans)
+	#if($processBean.status < 2)
+		#set($hasOngoing = true)
+		<h4>$processBean.processId started $formatter.formatDate($processBean.started, "dd MMM HH:mm:ss") (<a href="ImportRepository!deleteProcessBean.action?processId=$processBean.processId"><img src="images/delete.gif" width="12" height="12" border="0"> Remove</a>)</h4>
+		<ol>
+		#foreach($processEvents in $processBean.processEvents)
+			<li>$processEvents</li>
+		#end
+		</ol>
+	#end
+#end
+#if(!$hasOngoing)
+	<p>No ongoing imports/copies</p>
+#end
+
+<p>
+	<a href="javascript:window.close();"><img border="0" src="$ui.getString("images.contenttool.buttons.close")" width="50" height="25"></a>
+</p>
+
+</div>
+
+</body>
+</html>

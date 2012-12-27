@@ -50,6 +50,7 @@ import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.Unmarshaller;
 import org.infoglue.cms.applications.common.VisualFormatter;
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
+import org.infoglue.cms.applications.databeans.ProcessBean;
 import org.infoglue.cms.controllers.kernel.impl.simple.AccessRightController;
 import org.infoglue.cms.controllers.kernel.impl.simple.AvailableServiceBindingController;
 import org.infoglue.cms.controllers.kernel.impl.simple.CastorDatabaseService;
@@ -59,6 +60,7 @@ import org.infoglue.cms.controllers.kernel.impl.simple.ContentTypeDefinitionCont
 import org.infoglue.cms.controllers.kernel.impl.simple.ImportController;
 import org.infoglue.cms.controllers.kernel.impl.simple.InterceptionPointController;
 import org.infoglue.cms.controllers.kernel.impl.simple.LanguageController;
+import org.infoglue.cms.controllers.kernel.impl.simple.OptimizedExportController;
 import org.infoglue.cms.controllers.kernel.impl.simple.OptimizedImportController;
 import org.infoglue.cms.controllers.kernel.impl.simple.RepositoryController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ServiceDefinitionController;
@@ -124,12 +126,46 @@ public class ImportRepositoryAction extends InfoGlueAbstractAction
 {
     public final static Logger logger = Logger.getLogger(ImportRepositoryAction.class.getName());
 
-	private String onlyLatestVersions = "true";
 	private Integer repositoryId = null;
 	
+	private String onlyLatestVersions = "true";
 	private String standardReplacement = null;
 	private String replacements = null;
 	
+	private String processId = null;
+	private String exportFormat = "2";
+
+	private VisualFormatter visualFormatter = new VisualFormatter();
+
+	/**
+	 * This deletes a process info bean and related files etc.
+	 * @return
+	 * @throws Exception
+	 */	
+
+	public String doDeleteProcessBean() throws Exception
+	{
+		if(this.processId != null)
+		{
+			ProcessBean pb = ProcessBean.getProcessBean(ImportRepositoryAction.class.getName(), processId);
+			if(pb != null)
+				pb.removeProcess();
+		}
+		
+		return "successRedirectToProcesses";
+	}
+
+	/**
+	 * This refreshes the view.
+	 * @return
+	 * @throws Exception
+	 */	
+
+	public String doShowProcesses() throws Exception
+	{
+		return "successShowProcesses";
+	}
+
 	/**
 	 * This shows the dialog before export.
 	 * @return
@@ -165,8 +201,17 @@ public class ImportRepositoryAction extends InfoGlueAbstractAction
 			//now restore the value and list what we get
 			File file = FileUploadHelper.getUploadedFile(ActionContext.getContext().getMultiPartRequest());
 			if(file == null || !file.exists())
-				throw new SystemException("The file upload must have gone bad as no file reached the import utility.");
-
+			{
+				String filePath = ActionContext.getContext().getMultiPartRequest().getParameter("filePath");
+				logger.info("filePath:" + filePath);
+				if(filePath != null)
+				{
+					file = new File(filePath);
+				}
+				else
+					throw new SystemException("The file upload must have gone bad as no file reached the import utility.");
+			}
+			
 			if(file.getName().endsWith(".zip"))
 				return importV3(file);
 			
@@ -335,131 +380,14 @@ public class ImportRepositoryAction extends InfoGlueAbstractAction
 	 * This handles the actual importing.
 	 */
 	
-	protected String importV3(File file) throws SystemException 
+	protected String importV3(File file) throws Exception 
 	{
-		Timer t = new Timer();
+		String exportId = "Import_" + visualFormatter.formatDate(new Date(), "yyyy-MM-dd_HHmm");
+		ProcessBean processBean = ProcessBean.createProcessBean(ImportRepositoryAction.class.getName(), exportId);
 		
-		CompressionHelper ch = new CompressionHelper();
-		String extractFolder = CmsPropertyHandler.getDigitalAssetUploadPath() + File.separator + "ImportArchive_" + System.currentTimeMillis();
-		File importFolder = new File(extractFolder);
-		importFolder.mkdir();
-		ch.unzip(file, importFolder);
+		OptimizedImportController.importRepositories(file, this.onlyLatestVersions, this.standardReplacement, this.replacements, processBean);
 		
-		t.printElapsedTime("Unzip took");
-		
-		try 
-		{
-			String encoding = "UTF-8";
-			
-			Map contentIdMap = new HashMap();
-			Map siteNodeIdMap = new HashMap();
-			List allContentIds = new ArrayList();
-
-			Map<String,String> replaceMap = new HashMap<String,String>();
-			try
-			{
-				boolean isUTF8 = false;
-				boolean hasUnicodeChars = false;
-				if(replacements.indexOf((char)65533) > -1)
-					isUTF8 = true;
-				
-				for(int i=0; i<replacements.length(); i++)
-				{
-					int c = (int)replacements.charAt(i);
-					if(c > 255 && c < 65533)
-						hasUnicodeChars = true;
-				}
-
-				if(!isUTF8 && !hasUnicodeChars)
-				{
-					String fromEncoding = CmsPropertyHandler.getUploadFromEncoding();
-					if(fromEncoding == null)
-						fromEncoding = "iso-8859-1";
-					
-					String toEncoding = CmsPropertyHandler.getUploadToEncoding();
-					if(toEncoding == null)
-						toEncoding = "utf-8";
-					
-					if(replacements.indexOf("å") == -1 && 
-					   replacements.indexOf("ä") == -1 && 
-					   replacements.indexOf("ö") == -1 && 
-					   replacements.indexOf("Å") == -1 && 
-					   replacements.indexOf("Ä") == -1 && 
-					   replacements.indexOf("Ö") == -1)
-					{
-						replacements = new String(replacements.getBytes(fromEncoding), toEncoding);
-					}
-				}
-			}
-			catch(Exception e)
-			{
-				e.printStackTrace();
-			}
-			
-			Properties properties = new Properties();
-			try
-			{
-				properties.load(new ByteArrayInputStream(replacements.getBytes("ISO-8859-1")));
-				
-				Iterator propertySetIterator = properties.keySet().iterator();
-				while(propertySetIterator.hasNext())
-				{
-					String key = (String)propertySetIterator.next();
-					String value = properties.getProperty(key);
-					replaceMap.put(key, value);
-				}
-			}	
-			catch(Exception e)
-			{
-			    logger.error("Error loading properties from string. Reason:" + e.getMessage());
-				e.printStackTrace();
-			}
-
-			logger.info("replaceMap:" + replaceMap);
-			OptimizedImportController.getController().importRepository(importFolder, encoding, onlyLatestVersions, false, contentIdMap, siteNodeIdMap, allContentIds, replaceMap);
-			t.printElapsedTime("importRepository took");
-
-
-			// All ODMG database access requires a transaction
-			Database db = CastorDatabaseService.getDatabase();
-
-			try
-			{
-				db.begin();
-				
-				Iterator allContentIdsIterator = allContentIds.iterator();
-				while(allContentIdsIterator.hasNext())
-				{
-					Integer contentId = (Integer)allContentIdsIterator.next();
-				
-					Content content = ContentController.getContentController().getContentWithId(contentId, db);
-					OptimizedImportController.getController().updateContentVersions(content, contentIdMap, siteNodeIdMap, onlyLatestVersions, replaceMap);
-				}
-				db.commit();
-			}
-			catch(Exception e)
-			{
-				try
-				{
-					db.rollback();
-				}
-				catch(Exception e2) { e2.printStackTrace(); }
-                logger.error("An error occurred when updating content version for content: " + e.getMessage(), e);					
-			}
-			finally
-			{
-				db.close();					
-			}
-			
-			t.printElapsedTime("updateContentVersions took");
-		} 
-		catch ( Exception e) 
-		{
-			logger.error("An error occurred when importing a repository: " + e.getMessage(), e);
-			throw new SystemException("An error occurred when importing a repository: " + e.getMessage(), e);
-		}
-		
-		return "success";
+		return "successRedirectToProcesses";
 	}
 
 	
@@ -477,7 +405,21 @@ public class ImportRepositoryAction extends InfoGlueAbstractAction
 		{
 			Mapping map = new Mapping();
 			String exportFormat = CmsPropertyHandler.getExportFormat();
+			String requestExportFormat = ""+getRequest().getParameter("exportFormat");
+			
+			if(exportFormat.equalsIgnoreCase("3") || this.exportFormat.equals("3") || requestExportFormat.equals("3"))
+			{
+				String[] repositories = getRequest().getParameterValues("repositoryId");
+				
+				String exportId = "Import_" + visualFormatter.formatDate(new Date(), "yyyy-MM-dd_HHmm");
+				ProcessBean processBean = ProcessBean.createProcessBean(ImportRepositoryAction.class.getName(), exportId);
+				
+				OptimizedExportController.copy(repositories, -1, false, null, processBean, onlyLatestVersions, standardReplacement, replacements);
 
+				return "successRedirectToProcesses";
+			}
+			
+		
 			logger.info("MappingFile:" + CastorDatabaseService.class.getResource("/xml_mapping_site_2.5.xml").toString());
 			map.loadMapping(CastorDatabaseService.class.getResource("/xml_mapping_site_2.5.xml").toString());
 			
@@ -521,7 +463,7 @@ public class ImportRepositoryAction extends InfoGlueAbstractAction
 			siteNodes.add(siteNode);
 			contents.add(content);
 			names = names + "_" + repository.getName();
-			allRepositoryProperties.putAll(ExportRepositoryAction.getRepositoryProperties(ps, repositoryId));
+			allRepositoryProperties.putAll(OptimizedExportController.getRepositoryProperties(ps, repositoryId));
 			
 			List contentTypeDefinitions = ContentTypeDefinitionController.getController().getContentTypeDefinitionList(db);
 			List categories = CategoryController.getController().getAllActiveCategories();
@@ -643,7 +585,8 @@ public class ImportRepositoryAction extends InfoGlueAbstractAction
 		}
 		finally
 		{
-			file.delete();
+			if(file != null)
+				file.delete();
 		}
 		
 		return "success";
@@ -678,4 +621,25 @@ public class ImportRepositoryAction extends InfoGlueAbstractAction
 	{
 		this.replacements = replacements;
 	}
+
+	public String getExportFormat()
+	{
+		return exportFormat;
+	}
+
+	public void setExportFormat(String exportFormat)
+	{
+		this.exportFormat = exportFormat;
+	}
+
+	public void setProcessId(String processId) 
+	{
+		this.processId = processId;
+	}
+
+	public List<ProcessBean> getProcessBeans()
+	{
+		return ProcessBean.getProcessBeans(ImportRepositoryAction.class.getName());
+	}
+
 }

@@ -68,6 +68,12 @@
 	</tr>
 	<tr>
 		<td>
+			Alternative state a file path on the server:<br/>
+			<input style="width: 500px;" name="filePath" id="filePath"/>
+		</td>
+	</tr>
+	<tr>
+		<td>
 			$ui.getString("tool.managementtool.importRepository.replacementsLabel")<br/>
 			<textarea name="replacements" style="width: 500px; height: 200px;">$standardReplacement</textarea>
 		</td>

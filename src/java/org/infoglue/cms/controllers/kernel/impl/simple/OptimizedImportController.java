@@ -25,6 +25,7 @@ package org.infoglue.cms.controllers.kernel.impl.simple;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
@@ -32,10 +33,12 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 
 import org.apache.log4j.Logger;
 import org.exolab.castor.jdo.Database;
@@ -43,6 +46,9 @@ import org.exolab.castor.jdo.PersistenceException;
 import org.exolab.castor.jdo.TransactionNotInProgressException;
 import org.exolab.castor.mapping.Mapping;
 import org.exolab.castor.xml.Unmarshaller;
+import org.infoglue.cms.applications.common.VisualFormatter;
+import org.infoglue.cms.applications.databeans.ProcessBean;
+import org.infoglue.cms.applications.managementtool.actions.ExportRepositoryAction;
 import org.infoglue.cms.applications.managementtool.actions.ImportRepositoryAction;
 import org.infoglue.cms.entities.content.Content;
 import org.infoglue.cms.entities.content.ContentCategory;
@@ -87,6 +93,7 @@ import org.infoglue.cms.exception.Bug;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.util.CmsPropertyHandler;
 import org.infoglue.deliver.util.CacheController;
+import org.infoglue.deliver.util.CompressionHelper;
 import org.infoglue.deliver.util.Timer;
 
 import com.opensymphony.module.propertyset.PropertySet;
@@ -98,121 +105,196 @@ import com.opensymphony.module.propertyset.PropertySetManager;
 * @author mattias
 */
 
-public class OptimizedImportController extends BaseController
+public class OptimizedImportController extends BaseController implements Runnable
 {
     public final static Logger logger = Logger.getLogger(OptimizedImportController.class.getName());
 
+    private File file;
+    private String onlyLatestVersions;
+    private String standardReplacement;
+    private String replacements;
+    private ProcessBean processBean;
+    
+	public synchronized void run()
+	{
+		logger.info("Starting Optimized Import....");
+		try
+		{
+			importFile(file, onlyLatestVersions, standardReplacement, replacements, processBean);
+		}
+		catch (Exception e) 
+		{
+			logger.error("Error in monitor:" + e.getMessage(), e);
+		}
+	}
+	
+	private OptimizedImportController(File file, String onlyLatestVersions, String standardReplacement, String replacements, ProcessBean processBean)
+	{
+		this.file = file;
+		this.onlyLatestVersions = onlyLatestVersions;
+		this.standardReplacement = standardReplacement;
+		this.replacements = replacements;
+		this.processBean = processBean;
+	}
+	
 	/**
 	 * Factory method to get object
 	 */
 	
-	public static OptimizedImportController getController()
+	public static void importRepositories(File file, String onlyLatestVersions, String standardReplacement, String replacements, ProcessBean processBean) throws Exception
 	{
-		return new OptimizedImportController();
+		OptimizedImportController importController = new OptimizedImportController(file, onlyLatestVersions, standardReplacement, replacements, processBean);
+		Thread thread = new Thread(importController);
+		thread.start();
 	}
+	
+	private void importFile(File file, String onlyLatestVersions, String standardReplacement, String replacements, ProcessBean processBean) throws Exception
+	{
+		Timer t = new Timer();
+		processBean.setStatus(ProcessBean.RUNNING);
+		
+		CompressionHelper ch = new CompressionHelper();
+		String extractFolder = CmsPropertyHandler.getDigitalAssetUploadPath() + File.separator + "ImportArchive_" + System.currentTimeMillis();
+		logger.info("Extracting " + file.getPath() + " to " + extractFolder);
+		File importFolder = new File(extractFolder);
+		importFolder.mkdir();
+		ch.unzip(file, importFolder);
+		
+		processBean.updateProcess("Unzip of archive took " + (t.getElapsedTime() / 1000) + " seconds");
+		
+		try 
+		{
+			String encoding = "UTF-8";
+			
+			Map contentIdMap = new HashMap();
+			Map siteNodeIdMap = new HashMap();
+			List allContentIds = new ArrayList();
 
-	public void importRepository(File archiveFolder, String encoding, String onlyLatestVersions, boolean isCopyAction, Map contentIdMap, Map siteNodeIdMap, List allContentIds, Map replaceMap) throws Exception
+			Map<String,String> replaceMap = new HashMap<String,String>();
+			try
+			{
+				boolean isUTF8 = false;
+				boolean hasUnicodeChars = false;
+				if(replacements.indexOf((char)65533) > -1)
+					isUTF8 = true;
+				
+				for(int i=0; i<replacements.length(); i++)
+				{
+					int c = (int)replacements.charAt(i);
+					if(c > 255 && c < 65533)
+						hasUnicodeChars = true;
+				}
+
+				if(!isUTF8 && !hasUnicodeChars)
+				{
+					String fromEncoding = CmsPropertyHandler.getUploadFromEncoding();
+					if(fromEncoding == null)
+						fromEncoding = "iso-8859-1";
+					
+					String toEncoding = CmsPropertyHandler.getUploadToEncoding();
+					if(toEncoding == null)
+						toEncoding = "utf-8";
+					
+					if(replacements.indexOf("å") == -1 && 
+					   replacements.indexOf("ä") == -1 && 
+					   replacements.indexOf("ö") == -1 && 
+					   replacements.indexOf("Å") == -1 && 
+					   replacements.indexOf("Ä") == -1 && 
+					   replacements.indexOf("Ö") == -1)
+					{
+						replacements = new String(replacements.getBytes(fromEncoding), toEncoding);
+					}
+				}
+			}
+			catch(Exception e)
+			{
+				e.printStackTrace();
+			}
+			
+			Properties properties = new Properties();
+			try
+			{
+				properties.load(new ByteArrayInputStream(replacements.getBytes("ISO-8859-1")));
+				
+				Iterator propertySetIterator = properties.keySet().iterator();
+				while(propertySetIterator.hasNext())
+				{
+					String key = (String)propertySetIterator.next();
+					String value = properties.getProperty(key);
+					replaceMap.put(key, value);
+				}
+			}	
+			catch(Exception e)
+			{
+			    logger.error("Error loading properties from string. Reason:" + e.getMessage());
+				e.printStackTrace();
+			}
+
+			logger.info("replaceMap:" + replaceMap);
+			importRepository(importFolder, encoding, onlyLatestVersions, false, contentIdMap, siteNodeIdMap, allContentIds, replaceMap, processBean);
+			
+			processBean.updateProcess("Main import completed in " + (t.getElapsedTime() / 1000) + " seconds");
+
+			// All ODMG database access requires a transaction
+			Database db = CastorDatabaseService.getDatabase();
+
+			try
+			{
+				db.begin();
+				
+				Iterator allContentIdsIterator = allContentIds.iterator();
+				while(allContentIdsIterator.hasNext())
+				{
+					Integer contentId = (Integer)allContentIdsIterator.next();
+				
+					Content content = ContentController.getContentController().getContentWithId(contentId, db);
+					updateContentVersions(content, contentIdMap, siteNodeIdMap, onlyLatestVersions, replaceMap);
+				}
+				db.commit();
+			}
+			catch(Exception e)
+			{
+				try
+				{
+					db.rollback();
+				}
+				catch(Exception e2) { e2.printStackTrace(); }
+                logger.error("An error occurred when updating content version for content: " + e.getMessage(), e);					
+			}
+			finally
+			{
+				db.close();					
+			}
+			
+			processBean.updateProcess("Update of all imported content versions completed in " + (t.getElapsedTime() / 1000) + " seconds");
+
+			Thread.sleep(3000);
+			processBean.setStatus(ProcessBean.FINISHED);
+		} 
+		catch ( Exception e) 
+		{
+			logger.error("An error occurred when importing a repository: " + e.getMessage(), e);
+			throw new SystemException("An error occurred when importing a repository: " + e.getMessage(), e);
+		}
+	}
+	
+	public void importRepository(File archiveFolder, String encoding, String onlyLatestVersions, boolean isCopyAction, Map contentIdMap, Map siteNodeIdMap, List allContentIds, Map replaceMap, ProcessBean processBean) throws Exception
 	{
 		File mainExportFile = null;
-		File contentVersionsFile = null;
-		File contentsFile = null;
-		File siteNodeVersonsFile = null;
-		File siteNodesFile = null;
-		
+
 		File[] files = archiveFolder.listFiles();
 		for(File file : files)
 		{
-			//logger.info("file:" + file.getName());
 			if(file.getName().equals("ExportMain.xml"))
 				mainExportFile = file;
-			if(file.getName().equals("ContentVersions.xml"))
-				contentVersionsFile = file;
-			if(file.getName().equals("Contents.xml"))
-				contentsFile = file;
-			if(file.getName().equals("SiteNodeVersions.xml"))
-				siteNodeVersonsFile = file;
-			if(file.getName().equals("SiteNodes.xml"))
-				siteNodesFile = file;
 		}
 		
 		logger.info("mainExportFile:" + mainExportFile);
-		logger.info("contentVersionsFile:" + contentVersionsFile);
-		logger.info("contentsFile:" + contentsFile);
-		logger.info("siteNodeVersonsFile:" + siteNodeVersonsFile);
-		logger.info("siteNodesFile:" + siteNodesFile);
-		
+
 		if(mainExportFile == null)
 			throw new Exception("No main export file found. Looking for ExportMain.xml in archive");
-		if(contentVersionsFile == null)
-			throw new Exception("No contentVersions file found. Looking for ExportContentVersions.xml in archive");
-		if(contentsFile == null)
-			throw new Exception("No contents file found. Looking for ExportContents.xml in archive");
-		if(siteNodeVersonsFile == null)
-			throw new Exception("No siteNodeVersons file found. Looking for ExportContents.xml in archive");
-		if(siteNodesFile == null)
-			throw new Exception("No siteNodes file found. Looking for ExportSiteNodes.xml in archive");
-			
-		/*
-		Mapping map = new Mapping();
-		logger.info("MappingFile:" + CastorDatabaseService.class.getResource("/xml_mapping_site_3.0.xml").toString());
-		map.loadMapping(CastorDatabaseService.class.getResource("/xml_mapping_site_3.0.xml").toString());
 
-		InfoGlueExportImpl master = getInfoGlueExportImpl(mainExportFile, encoding, map);
-		logger.info("master:" + master);
-		
-
-		float memoryLeft = ((float)Runtime.getRuntime().maxMemory() - (float)Runtime.getRuntime().totalMemory()) / 1024f / 1024f;
-		logger.info("Memory after master-file:" + memoryLeft);
-		System.gc();
-		logger.info("Memory after master-file sleeping:" + memoryLeft);
-		Thread.sleep(10000);
-		
-		Map<Integer,List<ExportContentVersionImpl>> allContentVersions = getAllContentVersionMap(contentVersionsFile, encoding);
-
-		memoryLeft = ((float)Runtime.getRuntime().maxMemory() - (float)Runtime.getRuntime().totalMemory()) / 1024f / 1024f;
-		logger.info("Memory after allContentVersions-file:" + memoryLeft);
-		System.gc();
-		logger.info("Memory after allContentVersions-file sleeping:" + memoryLeft);
-		Thread.sleep(20000);
-
-		
-		InfoGlueExportImpl contentVersions = getInfoGlueExportImpl(contentVersionsFile, encoding, map);
-		logger.info("contentVersions:" + contentVersions);
-
-		memoryLeft = ((float)Runtime.getRuntime().maxMemory() - (float)Runtime.getRuntime().totalMemory()) / 1024f / 1024f;
-		logger.info("Memory after contentVersions-file:" + memoryLeft);
-		System.gc();
-		logger.info("Memory after contentVersions-file sleeping:" + memoryLeft);
-		Thread.sleep(10000);
-		
-		InfoGlueExportImpl contents = getInfoGlueExportImpl(contentsFile, encoding, map);
-		logger.info("contents:" + contents);
-
-		memoryLeft = ((float)Runtime.getRuntime().maxMemory() - (float)Runtime.getRuntime().totalMemory()) / 1024f / 1024f;
-		logger.info("Memory after contents-file:" + memoryLeft);
-		System.gc();
-		logger.info("Memory after contents-file sleeping:" + memoryLeft);
-		Thread.sleep(10000);
-
-		InfoGlueExportImpl siteNodeVersons = getInfoGlueExportImpl(siteNodeVersonsFile, encoding, map);
-		logger.info("siteNodeVersons:" + siteNodeVersons);
-
-		memoryLeft = ((float)Runtime.getRuntime().maxMemory() - (float)Runtime.getRuntime().totalMemory()) / 1024f / 1024f;
-		logger.info("Memory after siteNodeVersons-file:" + memoryLeft);
-		System.gc();
-		logger.info("Memory after siteNodeVersons-file sleeping:" + memoryLeft);
-		Thread.sleep(10000);
-
-		InfoGlueExportImpl siteNodes = getInfoGlueExportImpl(siteNodesFile, encoding, map);
-		logger.info("siteNodes:" + siteNodes);
-
-		memoryLeft = ((float)Runtime.getRuntime().maxMemory() - (float)Runtime.getRuntime().totalMemory()) / 1024f / 1024f;
-		logger.info("Memory after siteNodes-file:" + memoryLeft);
-		System.gc();
-		logger.info("Memory after siteNodes-file sleeping:" + memoryLeft);
-		Thread.sleep(10000);
-		*/
-		copyRepository(archiveFolder, mainExportFile, contentVersionsFile, contentsFile, siteNodeVersonsFile, siteNodesFile, onlyLatestVersions, isCopyAction, contentIdMap, siteNodeIdMap, allContentIds, replaceMap, encoding);
+		copyRepository(archiveFolder, mainExportFile/*, contentVersionsFile, contentsFile, siteNodeVersonsFile, siteNodesFile*/, onlyLatestVersions, isCopyAction, contentIdMap, siteNodeIdMap, allContentIds, replaceMap, encoding, processBean);
 	}
 	
 	private InfoGlueExportImpl getInfoGlueExportImpl(File file, String encoding) throws Exception
@@ -258,8 +340,10 @@ public class OptimizedImportController extends BaseController
 		return allContentVersionMap;
 	}
 	
-	public void copyRepository(File archiveFolder, File mainExportFile, File contentVersionsFile, File contentsFile, File siteNodeVersionsFile, File siteNodesFile, String onlyLatestVersions, boolean isCopyAction, Map contentIdMap, Map siteNodeIdMap, List allContentIds, Map replaceMap, String encoding) throws Exception
+	public void copyRepository(File archiveFolder, File mainExportFile/*, File contentVersionsFile, File contentsFile, File siteNodeVersionsFile, File siteNodesFile*/, String onlyLatestVersions, boolean isCopyAction, Map contentIdMap, Map siteNodeIdMap, List allContentIds, Map replaceMap, String encoding, ProcessBean processBean) throws Exception
 	{
+		Timer t = new Timer();
+		
 		Map categoryIdMap = new HashMap();
 		Map contentTypeIdMap = new HashMap();
 		Map repositoryIdMap = new HashMap();
@@ -281,49 +365,23 @@ public class OptimizedImportController extends BaseController
 		
 		importFoundation(master, encoding, isCopyAction, replaceMap, categoryIdMap, repositoryIdMap);
 
-		logger.info("Foundation imported... memory:" + Runtime.getRuntime().freeMemory());
-		/*
-		System.gc();
-		logger.info("Foundation imported... sleeping with memory:" + Runtime.getRuntime().freeMemory());
-		Thread.sleep(30000);
-		*/
+		processBean.updateProcess("Foundation imported in " + (t.getElapsedTime() / 1000) + " seconds");
 		
-		createContent(contentsFile, contentVersionsFile, encoding, repositoryIdMap, master.getRepositories(), contentIdMap, contentTypeIdMap, allContents, languages, master.getContentTypeDefinitions(), categoryIdMap, allSmallAssets, assetVersionsMap, onlyLatestVersions, isCopyAction, replaceMap);
+		createContent(archiveFolder, /*contentsFile, contentVersionsFile, */encoding, repositoryIdMap, master.getRepositories(), contentIdMap, contentTypeIdMap, allContents, languages, master.getContentTypeDefinitions(), categoryIdMap, allSmallAssets, assetVersionsMap, onlyLatestVersions, isCopyAction, replaceMap);
 
-		logger.info("createContent... memory:" + Runtime.getRuntime().freeMemory());
-		/*
-		System.gc();
-		logger.info("createContent... sleeping with memory:" + Runtime.getRuntime().freeMemory());
-		Thread.sleep(30000);
-		*/
+		processBean.updateProcess("Content created in " + (t.getElapsedTime() / 1000) + " seconds");
 		
-		logger.info("Memory after content:" +Runtime.getRuntime().freeMemory());
-		System.gc();
-		logger.info("Memory:" +Runtime.getRuntime().freeMemory());
 		CacheController.clearCastorCaches();
 		CacheController.clearCache("contentVersionCache");
 		CacheController.clearCache("contentCache");
-		/*
-		System.gc();
-		logger.info("Memory:" +Runtime.getRuntime().freeMemory());
-		Thread.sleep(10000);
-		*/
 		
-		processStructure(siteNodeVersionsFile, siteNodesFile, encoding, onlyLatestVersions, contentIdMap, siteNodeIdMap, replaceMap, repositoryIdMap, siteNodeVersionIdMap, allSiteNodes, readAvailableServiceBindings, master.getRepositories());
+		processStructure(archiveFolder, /*siteNodeVersionsFile, siteNodesFile, */encoding, onlyLatestVersions, contentIdMap, siteNodeIdMap, replaceMap, repositoryIdMap, siteNodeVersionIdMap, allSiteNodes, readAvailableServiceBindings, master.getRepositories());
+
+		processBean.updateProcess("Structure imported in " + (t.getElapsedTime() / 1000) + " seconds");
 		
-		logger.info("Memory after structure:" +Runtime.getRuntime().freeMemory());
-		/*
-		System.gc();
-		logger.info("Memory:" + Runtime.getRuntime().freeMemory());
-		*/
 		CacheController.clearCastorCaches();
 		CacheController.clearCache("siteNodeVersionCache");
 		CacheController.clearCache("siteNodeCache");
-		/*
-		System.gc();
-		logger.info("Memory:" + Runtime.getRuntime().freeMemory());
-		Thread.sleep(10000);
-		*/
 		
 		Database dbStructure = CastorDatabaseService.getDatabase();
 		try
@@ -363,20 +421,12 @@ public class OptimizedImportController extends BaseController
 		{
 			dbStructure.close();
 		}
-		
-		logger.info("Memory after assets:" +Runtime.getRuntime().freeMemory());
-		/*
-		System.gc();
-		logger.info("Memory:" +Runtime.getRuntime().freeMemory());
-		*/
+
+		processBean.updateProcess("Assets imported in " + (t.getElapsedTime() / 1000) + " seconds");
+
 		CacheController.clearCastorCaches();
 		CacheController.clearCache("contentVersionCache");
 		CacheController.clearCache("contentCache");
-		/*
-		System.gc();
-		logger.info("Memory:" +Runtime.getRuntime().freeMemory());
-		Thread.sleep(10000);
-		*/
 		
 		//List allContentIds = new ArrayList();
 		Iterator allContentsIterator = allContents.iterator();
@@ -385,7 +435,6 @@ public class OptimizedImportController extends BaseController
 			Content content = (Content)allContentsIterator.next();
 			allContentIds.add(content.getContentId());
 		}
-
 
 		//TEST
 		Map args = new HashMap();
@@ -446,6 +495,8 @@ public class OptimizedImportController extends BaseController
 			}
 		}
 
+		processBean.updateProcess("Properties imported in " + (t.getElapsedTime() / 1000) + " seconds");
+
 		Database dbAccessRight = CastorDatabaseService.getDatabase();
 		try
 		{
@@ -496,10 +547,15 @@ public class OptimizedImportController extends BaseController
 		{
 			dbAccessRight.close();
 		}
+		
+		processBean.updateProcess("Access rights imported in " + (t.getElapsedTime() / 1000) + " seconds");
 	}
 
-	public void processStructure(File siteNodeVersionsFile, 
+	public void processStructure(File archiveFolder, 
+								 /*
+								 File siteNodeVersionsFile, 
 								 File siteNodesFile, 
+								 */
 								 String encoding, 
 								 String onlyLatestVersions, 
 								 Map contentIdMap,
@@ -508,59 +564,84 @@ public class OptimizedImportController extends BaseController
 								 Map<String, AvailableServiceBinding> readAvailableServiceBindings, Collection<Repository> repositories)
 								 throws Exception 
 	{
-		InfoGlueExportImpl siteNodes = getInfoGlueExportImpl(siteNodesFile, encoding);
-		logger.info("siteNodesFile:" + siteNodesFile.getName());
-		logger.info("siteNodes:" + siteNodes);
-		logger.info("siteNodes:" + siteNodes.getSiteNodes().size());
-
 		Map<String, SiteNode> repositorySiteNodeMap = new HashMap<String, SiteNode>();
 		Map<Integer, SiteNode> siteNodeMap = new HashMap<Integer, SiteNode>();
-		for(SiteNode siteNode : siteNodes.getSiteNodes())
-		{
-			siteNodeMap.put(siteNode.getSiteNodeId(), siteNode);
-			logger.info("putting as parent siteNode on:" + siteNode.getName() + ":" + siteNode.getValueObject().getParentSiteNodeId());
+		Map<Integer,List<SiteNodeVersion>> allSiteNodeVersionMap = new HashMap<Integer,List<SiteNodeVersion>>(); 
 
-			if(siteNode.getValueObject().getParentSiteNodeId() == null)
-			{
-				logger.info("siteNode was root:" + siteNode + ":" + siteNode.getValueObject().getId() + ":" + siteNode.getValueObject().getRepositoryId());
-				repositorySiteNodeMap.put("" + siteNode.getValueObject().getRepositoryId(), siteNode);
-			}
-			//logger.info("readContentCandidate debug...:" + readContentCandidate.getName() + ":" + readContentCandidate.getId() + ":" + readContentCandidate.getRepositoryId());
-		}
-		
-		for(SiteNode siteNode : siteNodes.getSiteNodes())
+		for(Repository repositoryRead : repositories)
 		{
-			if(siteNode.getValueObject().getParentSiteNodeId() != null)
+			Integer oldRepoId = (Integer)repositoryIdMap.get("" + repositoryRead.getId() + "_old");
+
+			File siteNodeVersionsFile = null;
+			File siteNodesFile = null;
+	
+			File[] files = archiveFolder.listFiles();
+			for(File file : files)
 			{
-				logger.info("Looking for parent siteNode on:" + siteNode.getName() + ":" + siteNode.getValueObject().getParentSiteNodeId());
-				SiteNode parentSiteNode = siteNodeMap.get(siteNode.getValueObject().getParentSiteNodeId());
-				parentSiteNode.getChildSiteNodes().add(siteNode);
-				siteNode.setParentSiteNode((SiteNodeImpl)parentSiteNode);
+				if(file.getName().equals("SiteNodeVersions_" + oldRepoId + ".xml"))
+					siteNodeVersionsFile = file;
+				if(file.getName().equals("SiteNodes_" + oldRepoId + ".xml"))
+					siteNodesFile = file;
 			}
 			
-			logger.info("Looking for repo:" + siteNode.getValueObject().getRepositoryId());
-			Repository newRepository = (Repository)repositoryIdMap.get("" + siteNode.getValueObject().getRepositoryId() + "_repository");
-			logger.info("newRepository:" + newRepository);
-			siteNode.setRepository((RepositoryImpl)newRepository);
-			siteNode.getValueObject().setRepositoryId(newRepository.getId());
-			//logger.info("readContentCandidate debug...:" + readContentCandidate.getName() + ":" + readContentCandidate.getId() + ":" + readContentCandidate.getRepositoryId());
-		}
-
-		InfoGlueExportImpl siteNodeVersions = getInfoGlueExportImpl(siteNodeVersionsFile, encoding);
-		logger.info("siteNodeVersions:" + siteNodeVersions);
-
-		Map<Integer,List<SiteNodeVersion>> allSiteNodeVersionMap = new HashMap<Integer,List<SiteNodeVersion>>(); 
-		for(SiteNodeVersion siteNodeVersion : siteNodeVersions.getSiteNodeVersions())
-		{
-			List<SiteNodeVersion> versions = allSiteNodeVersionMap.get(siteNodeVersion.getValueObject().getSiteNodeId());
-			if(versions == null)
+			logger.info("siteNodeVersonsFile:" + siteNodeVersionsFile);
+			logger.info("siteNodesFile:" + siteNodesFile);
+			if(siteNodeVersionsFile == null)
+				throw new Exception("No siteNodeVersons file found. Looking for SiteNodeVersions_" + oldRepoId + ".xml in archive");
+			if(siteNodesFile == null)
+				throw new Exception("No siteNodes file found. Looking for SiteNodes_" + oldRepoId + ".xml in archive");
+		
+			InfoGlueExportImpl siteNodes = getInfoGlueExportImpl(siteNodesFile, encoding);
+			logger.info("siteNodesFile:" + siteNodesFile.getName());
+			logger.info("siteNodes:" + siteNodes);
+			logger.info("siteNodes:" + siteNodes.getSiteNodes().size());
+	
+			for(SiteNode siteNode : siteNodes.getSiteNodes())
 			{
-				versions = new ArrayList<SiteNodeVersion>();
-				logger.info("Creating versions for " + siteNodeVersion.getValueObject().getSiteNodeId());
-				allSiteNodeVersionMap.put(siteNodeVersion.getValueObject().getSiteNodeId(), versions);
+				siteNodeMap.put(siteNode.getSiteNodeId(), siteNode);
+				logger.info("putting as parent siteNode on:" + siteNode.getName() + ":" + siteNode.getValueObject().getParentSiteNodeId());
+	
+				if(siteNode.getValueObject().getParentSiteNodeId() == null)
+				{
+					logger.info("siteNode was root:" + siteNode + ":" + siteNode.getValueObject().getId() + ":" + siteNode.getValueObject().getRepositoryId());
+					repositorySiteNodeMap.put("" + siteNode.getValueObject().getRepositoryId(), siteNode);
+				}
+				//logger.info("readContentCandidate debug...:" + readContentCandidate.getName() + ":" + readContentCandidate.getId() + ":" + readContentCandidate.getRepositoryId());
 			}
-			logger.info("Adding version:" + siteNodeVersion.getValueObject().getSiteNodeVersionId() + ":" + siteNodeVersion.getValueObject().getSiteNodeId());
-			versions.add(siteNodeVersion);
+			
+			for(SiteNode siteNode : siteNodes.getSiteNodes())
+			{
+				if(siteNode.getValueObject().getParentSiteNodeId() != null)
+				{
+					logger.info("Looking for parent siteNode on:" + siteNode.getName() + ":" + siteNode.getValueObject().getParentSiteNodeId());
+					SiteNode parentSiteNode = siteNodeMap.get(siteNode.getValueObject().getParentSiteNodeId());
+					parentSiteNode.getChildSiteNodes().add(siteNode);
+					siteNode.setParentSiteNode((SiteNodeImpl)parentSiteNode);
+				}
+				
+				logger.info("Looking for repo:" + siteNode.getValueObject().getRepositoryId());
+				Repository newRepository = (Repository)repositoryIdMap.get("" + siteNode.getValueObject().getRepositoryId() + "_repository");
+				logger.info("newRepository:" + newRepository);
+				siteNode.setRepository((RepositoryImpl)newRepository);
+				siteNode.getValueObject().setRepositoryId(newRepository.getId());
+				//logger.info("readContentCandidate debug...:" + readContentCandidate.getName() + ":" + readContentCandidate.getId() + ":" + readContentCandidate.getRepositoryId());
+			}
+	
+			InfoGlueExportImpl siteNodeVersions = getInfoGlueExportImpl(siteNodeVersionsFile, encoding);
+			logger.info("siteNodeVersions:" + siteNodeVersions);
+	
+			for(SiteNodeVersion siteNodeVersion : siteNodeVersions.getSiteNodeVersions())
+			{
+				List<SiteNodeVersion> versions = allSiteNodeVersionMap.get(siteNodeVersion.getValueObject().getSiteNodeId());
+				if(versions == null)
+				{
+					versions = new ArrayList<SiteNodeVersion>();
+					logger.info("Creating versions for " + siteNodeVersion.getValueObject().getSiteNodeId());
+					allSiteNodeVersionMap.put(siteNodeVersion.getValueObject().getSiteNodeId(), versions);
+				}
+				logger.info("Adding version:" + siteNodeVersion.getValueObject().getSiteNodeVersionId() + ":" + siteNodeVersion.getValueObject().getSiteNodeId());
+				versions.add(siteNodeVersion);
+			}
 		}
 		
 		for(Repository repositoryRead : repositories)
@@ -597,76 +678,114 @@ public class OptimizedImportController extends BaseController
 		}
 	}
 
-	public void createContent(File contentsFile, File contentVersionsFile, String encoding, Map repositoryIdMap, Collection<Repository> repositories, Map contentIdMap, Map contentTypeIdMap, List allContents, Map<Integer,Language> languages, Collection contentTypeDefinitions, Map categoryIdMap, List<SmallDigitalAssetImpl> allSmallAssets, Map<Integer,List<Integer>> assetVersionsMap, String onlyLatestVersions, boolean isCopyAction, Map<String,String> replaceMap) throws Exception 
+	public void createContent(File archiveFolder, /*File contentsFile, File contentVersionsFile, */String encoding, Map repositoryIdMap, Collection<Repository> repositories, Map contentIdMap, Map contentTypeIdMap, List allContents, Map<Integer,Language> languages, Collection contentTypeDefinitions, Map categoryIdMap, List<SmallDigitalAssetImpl> allSmallAssets, Map<Integer,List<Integer>> assetVersionsMap, String onlyLatestVersions, boolean isCopyAction, Map<String,String> replaceMap) throws Exception 
 	{
-		InfoGlueExportImpl contents = getInfoGlueExportImpl(contentsFile, encoding);
-		logger.info("contents:" + contents);
-
 		Map<String, Content> repositoryContentMap = new HashMap<String, Content>();
 		Map<Integer, Content> contentMap = new HashMap<Integer, Content>();
-		Iterator<Content> contentsIterator = contents.getContents().iterator();
-		while(contentsIterator.hasNext())
+		Map<Integer,List<ExportContentVersionImpl>> allContentVersionMap = new HashMap<Integer,List<ExportContentVersionImpl>>(); 
+
+		for(Repository repositoryRead : repositories)
 		{
-			Content content = contentsIterator.next();
-			contentMap.put(content.getContentId(), content);
-			if(content.getValueObject().getParentContentId() == null)
+			Integer oldRepoId = (Integer)repositoryIdMap.get("" + repositoryRead.getId() + "_old");
+			
+			File contentVersionsFile = null;
+			File contentsFile = null;
+
+			File[] files = archiveFolder.listFiles();
+			for(File file : files)
 			{
-				logger.info("content was root:" + content + ":" + content.getValueObject().getId() + ":" + content.getValueObject().getRepositoryId() + ":" + content.getRepositoryId());
-				repositoryContentMap.put("" + content.getRepositoryId(), content);
-			}
-			//logger.info("readContentCandidate debug...:" + readContentCandidate.getName() + ":" + readContentCandidate.getId() + ":" + readContentCandidate.getRepositoryId());
-		}
-		
-		contentsIterator = contents.getContents().iterator();
-		while(contentsIterator.hasNext())
-		{
-			Content content = contentsIterator.next();
-			if(content.getValueObject().getParentContentId() != null)
-			{
-				Content parentContent = contentMap.get(content.getValueObject().getParentContentId());
-				parentContent.getChildren().add(content);
-				content.setParentContent((ContentImpl)parentContent);
+				//logger.info("file:" + file.getName());
+				if(file.getName().equals("ContentVersions_" + oldRepoId + ".xml"))
+					contentVersionsFile = file;
+				if(file.getName().equals("Contents_" + oldRepoId + ".xml"))
+					contentsFile = file;
 			}
 			
-			logger.info("repositoryIdMap:" + repositoryIdMap);
-			//logger.info("Looking for repo:" + content.getRepositoryId());
-			Repository newRepository = (Repository)repositoryIdMap.get("" + content.getRepositoryId() + "_repository");
-			//logger.info("newRepository:" + newRepository);
-			content.setRepository((RepositoryImpl)newRepository);
-			//logger.info("readContentCandidate debug...:" + readContentCandidate.getName() + ":" + readContentCandidate.getId() + ":" + readContentCandidate.getRepositoryId());
-		}
+			logger.info("archiveFolder:" + archiveFolder);
+			logger.info("contentVersionsFile:" + contentVersionsFile);
+			logger.info("contentsFile:" + contentsFile);
 		
-		InfoGlueExportImpl contentVersions = getInfoGlueExportImpl(contentVersionsFile, encoding);
-		logger.info("contentVersions:" + contentVersions);
-		float memoryLeft = ((float)Runtime.getRuntime().maxMemory() - (float)Runtime.getRuntime().totalMemory()) / 1024f / 1024f;
-		logger.info("Memory after contentVersions-file:" + memoryLeft);
-		
-		Map<Integer,List<ExportContentVersionImpl>> allContentVersionMap = new HashMap<Integer,List<ExportContentVersionImpl>>(); 
-		for(ExportContentVersionImpl contentVersion : contentVersions.getContentVersions())
-		{
-			List<ExportContentVersionImpl> versions = allContentVersionMap.get(contentVersion.getValueObject().getContentId());
-			if(versions == null)
+			if(contentVersionsFile == null)
+				throw new Exception("No contentVersions file found. Looking for ContentVersions_" + oldRepoId + ".xml in archive");
+			if(contentsFile == null)
+				throw new Exception("No contents file found. Looking for Contents_" + oldRepoId + ". in archive");
+
+			InfoGlueExportImpl contents = getInfoGlueExportImpl(contentsFile, encoding);
+			logger.warn("contents:" + contents);
+	
+			Iterator<Content> contentsIterator = contents.getContents().iterator();
+			while(contentsIterator.hasNext())
 			{
-				versions = new ArrayList<ExportContentVersionImpl>();
-				logger.info("Creating versions for " + contentVersion.getValueObject().getContentId());
-				allContentVersionMap.put(contentVersion.getValueObject().getContentId(), versions);
+				Content content = contentsIterator.next();
+				logger.warn("content:" + content + ":" + content.getValueObject().getId() + ":" + content.getValueObject().getRepositoryId() + ":" + content.getRepositoryId());
+				contentMap.put(content.getContentId(), content);
+				if(content.getValueObject().getParentContentId() == null)
+				{
+					logger.warn("content was root:" + content + ":" + content.getValueObject().getId() + ":" + content.getValueObject().getRepositoryId() + ":" + content.getRepositoryId());
+					if(!repositoryContentMap.containsKey("" + content.getRepositoryId()))
+						repositoryContentMap.put("" + content.getRepositoryId(), content);
+					else
+						logger.warn("content was root but skipping as registration allready there:" + content + ":" + content.getValueObject().getId() + ":" + content.getValueObject().getRepositoryId() + ":" + content.getRepositoryId());
+								
+				}
+				//logger.info("readContentCandidate debug...:" + readContentCandidate.getName() + ":" + readContentCandidate.getId() + ":" + readContentCandidate.getRepositoryId());
 			}
-			//logger.info("Adding version:" + contentVersion.getValueObject().getContentVersionId() + ":" + contentVersion.getValueObject().getContentId());
-			versions.add(contentVersion);
-			//logger.info("readContentCandidate debug...:" + readContentCandidate.getName() + ":" + readContentCandidate.getId() + ":" + readContentCandidate.getRepositoryId());
+			
+			contentsIterator = contents.getContents().iterator();
+			while(contentsIterator.hasNext())
+			{
+				Content content = contentsIterator.next();
+				logger.warn("content:" + content.getName() + ":" + content.getValueObject().getParentContentId());
+				
+				if(content.getValueObject().getParentContentId() != null)
+				{
+					Content parentContent = contentMap.get(content.getValueObject().getParentContentId());
+					logger.warn("parentContent:" + parentContent.getName() + ":" + parentContent);
+					parentContent.getChildren().add(content);
+					content.setParentContent((ContentImpl)parentContent);
+					
+					logger.info("Children after: " + parentContent.getChildren());
+				}
+				
+				logger.warn("repositoryIdMap:" + repositoryIdMap);
+				//logger.info("Looking for repo:" + content.getRepositoryId());
+				Repository newRepository = (Repository)repositoryIdMap.get("" + content.getRepositoryId() + "_repository");
+				//logger.info("newRepository:" + newRepository);
+				content.setRepository((RepositoryImpl)newRepository);
+				//logger.info("readContentCandidate debug...:" + readContentCandidate.getName() + ":" + readContentCandidate.getId() + ":" + readContentCandidate.getRepositoryId());
+			}
+			
+			InfoGlueExportImpl contentVersions = getInfoGlueExportImpl(contentVersionsFile, encoding);
+			logger.info("contentVersions:" + contentVersions);
+			float memoryLeft = ((float)Runtime.getRuntime().maxMemory() - (float)Runtime.getRuntime().totalMemory()) / 1024f / 1024f;
+			logger.info("Memory after contentVersions-file:" + memoryLeft);
+			
+			for(ExportContentVersionImpl contentVersion : contentVersions.getContentVersions())
+			{
+				List<ExportContentVersionImpl> versions = allContentVersionMap.get(contentVersion.getValueObject().getContentId());
+				if(versions == null)
+				{
+					versions = new ArrayList<ExportContentVersionImpl>();
+					logger.info("Creating versions for " + contentVersion.getValueObject().getContentId());
+					allContentVersionMap.put(contentVersion.getValueObject().getContentId(), versions);
+				}
+				//logger.info("Adding version:" + contentVersion.getValueObject().getContentVersionId() + ":" + contentVersion.getValueObject().getContentId());
+				versions.add(contentVersion);
+				//logger.info("readContentCandidate debug...:" + readContentCandidate.getName() + ":" + readContentCandidate.getId() + ":" + readContentCandidate.getRepositoryId());
+			}
 		}
 		
 		for(Repository repositoryRead : repositories)
 		{
-			logger.info("Getting root content for: " + repositoryRead.getId());
+			logger.warn("Getting root content for: " + repositoryRead.getId());
 			Content rootContent = (Content)repositoryContentMap.get("" + repositoryRead.getId());
-			logger.info("rootContent: " + rootContent);
+			logger.warn("rootContent: " + rootContent);
 			if(rootContent == null)
 			{
 				Integer oldRepoId = (Integer)repositoryIdMap.get("" + repositoryRead.getId() + "_old");
 				logger.info("Getting root content for: " + oldRepoId);
 				rootContent = (Content)repositoryContentMap.get("" + oldRepoId);
-				logger.info("rootContent: " + rootContent);
+				logger.warn("rootContent: " + rootContent);
 			}
 			
 			Database db = CastorDatabaseService.getDatabase();
@@ -1135,7 +1254,7 @@ public class OptimizedImportController extends BaseController
 	    if(content.getContentTypeDefinition() == null)
 	    	logger.warn("No content type definition for content:" + content.getId());
 	    	
-	    logger.info("Creating content:" + content.getName());
+	    logger.warn("Creating content:" + content.getName());
 
 	    content.setName(substituteStrings(content.getName(), replaceMap));
 	    
@@ -1299,6 +1418,7 @@ public class OptimizedImportController extends BaseController
 		}
 		
 		Collection childContents = content.getChildren();
+		logger.info("childContents:" + childContents);
 		if(childContents != null)
 		{
 			Iterator childContentsIterator = childContents.iterator();
@@ -1306,7 +1426,7 @@ public class OptimizedImportController extends BaseController
 			{
 				Content childContent = (Content)childContentsIterator.next();
 				//childContent.setRepository(content.getRepository());
-				//logger.info("Setting parentContent on child: " + childContent.getName() + " to:" + content.getId());
+				logger.info("Setting parentContent on child: " + childContent.getName() + " to:" + content.getId());
 				childContent.setParentContent((ContentImpl)content);
 				childContent.getValueObject().setParentContentId(content.getValueObject().getContentId());
 				createContents(childContent, allContentVersionMap, idMap, contentTypeDefinitionIdMap, allContents, languages, contentTypeDefinitions, categoryIdMap, allSmallAssets, assetVersionsMap, db, onlyLatestVersions, isCopyAction, replaceMap);
@@ -1526,6 +1646,7 @@ public class OptimizedImportController extends BaseController
         // TODO Auto-generated method stub
         return null;
     }
+
 
 
 }

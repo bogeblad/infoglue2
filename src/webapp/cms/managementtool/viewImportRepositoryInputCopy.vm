@@ -69,6 +69,15 @@
 	</tr>
 	<tr>
 		<td>
+			Export format:<br/>
+			<select name="exportFormat">
+				<option value="3">3 (optimized)</option>
+				<option value="2">2</option>
+			</select>
+		</td>
+	</tr>
+	<tr>
+		<td>
 			$ui.getString("tool.managementtool.importRepositoryCopy.onlyLatestVersionsLabel")<br/>
 			<input type="checkbox" name="onlyLatestVersions" value="true" checked="checked">
 		</td>

@@ -955,5 +955,10 @@ public abstract class InfoGlueAbstractAction extends WebworkAbstractAction
 		return sb.toString();
 	}
 
+	public String getMemoryUsageAsText()
+	{
+		return "" + (((Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) / 1024 / 1024)) + " MB used of " + ((Runtime.getRuntime().maxMemory() / 1024 / 1024)) + " MB";
+	}
+	
 }
 
