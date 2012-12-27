@@ -1,4 +1,4 @@
-<!-- $Id: actions.xml,v 1.83.2.9.2.2 2012/12/10 00:56:56 mattias Exp $ -->
+<!-- $Id: actions.xml,v 1.83.2.9.2.3 2012/12/27 10:29:29 mattias Exp $ -->
 <actions>
 
 	<!-- MySettings -->
@@ -332,12 +332,16 @@
 	<action name="org.infoglue.cms.applications.managementtool.actions.ExportRepositoryAction" alias="ExportRepository">
 		<view name="input">/cms/managementtool/viewExportRepositoryInput.vm</view>
 		<view name="success">/cms/managementtool/viewExportRepositoryFinished.vm</view>
+		<view name="successRedirectToProcesses">org.infoglue.cms.applications.common.actions.ExtendedRedirect.action?url=ExportRepository!showProcesses.action</view>
+		<view name="successShowProcesses">/cms/managementtool/viewExportRepositoryProcesses.vm</view>
 		<view name="error">/cms/managementtool/error.vm</view>
 	</action>
 	<action name="org.infoglue.cms.applications.managementtool.actions.ImportRepositoryAction" alias="ImportRepository">
 		<view name="input">/cms/managementtool/viewImportRepositoryInput.vm</view>
 		<view name="inputCopy">/cms/managementtool/viewImportRepositoryInputCopy.vm</view>
 		<view name="success">/cms/managementtool/viewImportRepositoryFinished.vm</view>
+		<view name="successRedirectToProcesses">org.infoglue.cms.applications.common.actions.ExtendedRedirect.action?url=ImportRepository!showProcesses.action</view>
+		<view name="successShowProcesses">/cms/managementtool/viewImportRepositoryProcesses.vm</view>
 		<view name="error">/cms/managementtool/error.vm</view>
 	</action>
 	<action name="org.infoglue.cms.applications.managementtool.actions.ViewRepositoryPropertiesAction" alias="ViewRepositoryProperties">
