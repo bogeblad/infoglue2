@@ -191,7 +191,7 @@ public class InfoGlueCommonAccessRightsInterceptor implements InfoGlueIntercepto
 				ContentVersionVO contentVersionVO = ContentVersionControllerProxy.getController().getContentVersionVOWithId(contentVersionId);
 				if(!allowCreatorAccess || !contentVersionVO.getVersionModifier().equalsIgnoreCase(infoGluePrincipal.getName()))
 				{	
-					if(ContentVersionControllerProxy.getController().getIsContentProtected(contentVersionVO.getContentId(), false) && !AccessRightController.getController().getIsPrincipalAuthorized(db, infoGluePrincipal, "ContentVersion.Read", contentVersionId.toString()))
+					if(ContentVersionControllerProxy.getController().getIsContentProtected(contentVersionVO.getContentId(), false) && !AccessRightController.getController().getIsPrincipalAuthorized(db, infoGluePrincipal, "ContentVersion.Read", contentVersionId.toString(), true))
 					{
 						ceb.add(new AccessConstraintException("ContentVersion.contentVersionId", "1000"));
 					}
@@ -209,7 +209,7 @@ public class InfoGlueCommonAccessRightsInterceptor implements InfoGlueIntercepto
 				ContentVersionVO contentVersionVO = ContentVersionControllerProxy.getController().getContentVersionVOWithId(contentVersionId);
 				if(!allowCreatorAccess || !contentVersionVO.getVersionModifier().equalsIgnoreCase(infoGluePrincipal.getName()))
 				{	
-					if(ContentVersionControllerProxy.getController().getIsContentProtected(contentVersionVO.getContentId(), false) && !AccessRightController.getController().getIsPrincipalAuthorized(db, infoGluePrincipal, "ContentVersion.Write", contentVersionId.toString()))
+					if(ContentVersionControllerProxy.getController().getIsContentProtected(contentVersionVO.getContentId(), false) && !AccessRightController.getController().getIsPrincipalAuthorized(db, infoGluePrincipal, "ContentVersion.Write", contentVersionId.toString(), true))
 					{
 						ceb.add(new AccessConstraintException("ContentVersion.contentVersionId", "1001"));
 					}
@@ -227,7 +227,7 @@ public class InfoGlueCommonAccessRightsInterceptor implements InfoGlueIntercepto
 				ContentVersionVO contentVersionVO = ContentVersionControllerProxy.getController().getContentVersionVOWithId(contentVersionId);
 				if(!allowCreatorAccess || !contentVersionVO.getVersionModifier().equalsIgnoreCase(infoGluePrincipal.getName()))
 				{	
-					if(ContentVersionControllerProxy.getController().getIsContentProtected(contentVersionVO.getContentId(), false) && !AccessRightController.getController().getIsPrincipalAuthorized(db, infoGluePrincipal, "ContentVersion.Delete", contentVersionId.toString()))
+					if(ContentVersionControllerProxy.getController().getIsContentProtected(contentVersionVO.getContentId(), false) && !AccessRightController.getController().getIsPrincipalAuthorized(db, infoGluePrincipal, "ContentVersion.Delete", contentVersionId.toString(), true))
 						ceb.add(new AccessConstraintException("ContentVersion.contentVersionId", "1003"));
 				}
 			}
