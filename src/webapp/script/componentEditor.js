@@ -520,12 +520,29 @@ function showComponentMenu(event, element, compId, anInsertUrl, anDeleteUrl, anC
 	if(window.parent.name == "PageComponents" && componentEditorInNewWindowDivCompElement)
 		componentEditorInNewWindowDivCompElement.style.display = "none";
 	
+	var modifyOne = false;
+	var modifyTwo = false;
 	if (rightedge < menuDiv.offsetWidth)
+	{
 		clientX = (clientX - menuDiv.offsetWidth);
-	
+		clientX = clientX + 10;
+		clientY = clientY - 10;
+		modifyOne = true;
+	}
 	if (bottomedge < menuDiv.offsetHeight && (clientY - menuDiv.offsetHeight > 0))
+	{
 		clientY = (clientY - menuDiv.offsetHeight);
-		
+		clientX = clientX - 10;
+		clientY = clientY + 10;
+		modifyTwo = true;
+	}
+
+	if(modifyOne && modifyTwo)
+	{
+		clientX = clientX + 10;
+		clientY = clientY + 10;
+	}
+
 	menuDiv.style.left 	= clientX + "px";
 	menuDiv.style.top 	= clientY + "px";
 	
@@ -609,12 +626,29 @@ function showComponentInTreeMenu(event, element, compId, anInsertUrl, anDeleteUr
 		newTop = (document.body.scrollTop + clientY);
 	*/
 	
+	var modifyOne = false;
+	var modifyTwo = false;
 	if (rightedge < menuDiv.offsetWidth)
+	{
 		clientX = (clientX - menuDiv.offsetWidth);
-	
+		clientX = clientX + 10;
+		clientY = clientY - 10;	
+		modifyOne = true;
+	}
 	if (bottomedge < menuDiv.offsetHeight && (clientY - menuDiv.offsetHeight > 0))
+	{
 		clientY = (clientY - menuDiv.offsetHeight);
+		clientX = clientX - 10;
+		clientY = clientY + 10;
+		modifyOne = true;
+	}
 	
+	if(modifyOne && modifyTwo)
+	{
+		clientX = clientX + 10;
+		clientY = clientY + 10;
+	}
+
 	menuDiv.style.left 	= clientX + "px";
 	menuDiv.style.top 	= clientY + "px";
 
@@ -735,23 +769,28 @@ function showEmptySlotMenu(slotId, event, compId, anInsertUrl, slotContentIdVar)
 
 	menuDiv = getActiveMenuDiv();
 	
-	/*
+	var modifyOne = false;
+	var modifyTwo = false;
 	if (rightedge < menuDiv.offsetWidth)
-		newLeft = (document.body.scrollLeft + clientX - menuDiv.offsetWidth);
-	else
-		newLeft = (document.body.scrollLeft + clientX);
-	
-	if (bottomedge < menuDiv.offsetHeight)
-		newTop = (document.body.scrollTop + clientY - menuDiv.offsetHeight);
-	else
-		newTop = (document.body.scrollTop + clientY);
-	*/
-	
-	if (rightedge < menuDiv.offsetWidth)
+	{
 		clientX = (clientX - menuDiv.offsetWidth);
-	
+		clientX = clientX + 10;
+		clientY = clientY - 10;
+		modifyOne = true;
+	}
 	if (bottomedge < menuDiv.offsetHeight && (clientY - menuDiv.offsetHeight > 0))
+	{
 		clientY = (clientY - menuDiv.offsetHeight);
+		clientX = clientX - 10;
+		clientY = clientY + 10;
+		modifyTwo = true;
+	}
+	
+	if(modifyOne && modifyTwo)
+	{
+		clientX = clientX + 10;
+		clientY = clientY + 10;
+	}
 	
 	menuDiv.style.left 	= clientX + "px";
 	menuDiv.style.top 	= clientY + "px";
