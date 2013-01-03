@@ -1331,8 +1331,8 @@ public class CacheController extends Thread
 				{
 					if(s.startsWith("content_") && s.indexOf("_", 8) > -1)
 					{
-						allUsedEntitiesFilteredCopy.add(getPooledString(s.hashCode()));
-						//allUsedEntitiesFilteredCopy.add(s); //(getPooledString(s.hashCode()));
+						//allUsedEntitiesFilteredCopy.add(getPooledString(s.hashCode()));
+						allUsedEntitiesFilteredCopy.add(s); //(getPooledString(s.hashCode()));
 						//System.out.println("Added: " + s);
 					}
 					else if(s.startsWith("siteNode_"))
@@ -1427,6 +1427,11 @@ public class CacheController extends Thread
 					CacheController.cacheObjectInAdvancedCache(pageCacheExtraName, pageKey + "_pageCacheTimeout", newPageCacheTimeout, null, false);    
 					//CacheController.cacheObjectInAdvancedCache(pageCacheExtraName, pageKey + "_entities", allUsedEntitiesCopy, null, false);
 					String allUsedEntitiesCopyAsString = StringUtils.join(allUsedEntitiesCopy, "|");
+					if(logger.isInfoEnabled())
+					{
+						logger.info("pageKey:" + pageKey);
+						logger.info("allUsedEntitiesCopyAsString:" + allUsedEntitiesCopyAsString);
+					}
 					byte[] compressedAllUsedEntitiesCopyAsString = compressionHelper.compress(allUsedEntitiesCopyAsString);
 					CacheController.cacheObjectInAdvancedCache(pageCacheExtraName, pageKey + "_entitiesAsByte", compressedAllUsedEntitiesCopyAsString);
 				}

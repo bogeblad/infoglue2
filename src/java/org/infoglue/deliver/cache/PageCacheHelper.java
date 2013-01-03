@@ -153,7 +153,7 @@ public class PageCacheHelper implements Runnable
 		if(CmsPropertyHandler.getOperatingMode().equals("0"))
 		{
 			Timer t = new Timer();
-			//System.out.println("Forcing clear...");
+			logger.info("Forcing clear for: " + entityString);
 
 			try
 			{
@@ -163,7 +163,7 @@ public class PageCacheHelper implements Runnable
 				//System.out.println("existingPageKeysForEntities:" + existingPageKeysForEntities.size());
 				for(String pageKey : existingPageKeysForEntities)
 				{
-					//System.out.println("Remove pageKey:" + pageKey);
+					logger.info("Disable pageKey:" + pageKey);
 					synchronized (pageKey) 
 					{
 						disabledPages.put(pageKey, new Date());
@@ -279,7 +279,7 @@ public class PageCacheHelper implements Runnable
     {
     	synchronized (disabledPages) 
     	{
-    		//System.out.println("Checking for key in getPageString:" + key);
+    		logger.info("Checking for key in getPageString:" + key);
     		if(disabledPages.get(key) != null)
     		{
     			logger.info("Disabled as it's going to be removed:" + disabledPages.get(key));
