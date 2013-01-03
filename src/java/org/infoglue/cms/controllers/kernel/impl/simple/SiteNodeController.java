@@ -2303,9 +2303,9 @@ public class SiteNodeController extends BaseController
 
     public void copySiteNode(SiteNodeVO siteNodeVO, Integer newParentSiteNodeId, InfoGluePrincipal principal) throws ConstraintException, SystemException
     {
-    	System.out.println("siteNodeVO:" + siteNodeVO);
-    	System.out.println("newParentSiteNodeId:" + newParentSiteNodeId);
-    	System.out.println("principal:" + principal);
+    	logger.info("siteNodeVO:" + siteNodeVO);
+    	logger.info("newParentSiteNodeId:" + newParentSiteNodeId);
+    	logger.info("principal:" + principal);
     	Database db = CastorDatabaseService.getDatabase();
         ConstraintExceptionBuffer ceb = new ConstraintExceptionBuffer();
 
