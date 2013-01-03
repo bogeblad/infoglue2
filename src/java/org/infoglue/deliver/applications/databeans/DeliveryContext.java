@@ -95,13 +95,13 @@ public class DeliveryContext implements UsageListener
 	//This section has control over what contents and sitenodes are used where so the pagecache can be selectively updated.
 	private List usageListeners = new ArrayList();
 	
-	private Set usedContents = new HashSet();
-	private Set usedContentVersions = new HashSet();
-	private Set usedSiteNodes = new HashSet();
-	private Set usedSiteNodeVersions = new HashSet();
+	private Set usedContents = Collections.synchronizedSet(new HashSet());
+	private Set usedContentVersions = Collections.synchronizedSet(new HashSet());
+	private Set usedSiteNodes = Collections.synchronizedSet(new HashSet());
+	private Set usedSiteNodeVersions = Collections.synchronizedSet(new HashSet());
 	
-	private Set usedPageMetaInfoContentVersionIdSet = new HashSet();
-	private Set usedPageComponentsMetaInfoContentVersionIdSet = new HashSet();
+	private Set usedPageMetaInfoContentVersionIdSet = Collections.synchronizedSet(new HashSet());
+	private Set usedPageComponentsMetaInfoContentVersionIdSet = Collections.synchronizedSet(new HashSet());
 	
 	private Date lastModifiedDateTime = null;
 	private boolean registerLastModifiedDate = false;
@@ -329,6 +329,8 @@ public class DeliveryContext implements UsageListener
     public void addUsedContent(String usedContent)
     {
         this.usedContents.add(usedContent);
+        if(usedContent.indexOf("_", 8) > -1)
+        	this.usedContents.add(usedContent.substring(0, usedContent.indexOf("_", 8)));
 
         try
         {
