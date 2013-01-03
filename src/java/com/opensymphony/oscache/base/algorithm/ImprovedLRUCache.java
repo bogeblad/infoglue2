@@ -6,11 +6,10 @@ package com.opensymphony.oscache.base.algorithm;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.infoglue.deliver.util.RequestAnalyser;
+import org.infoglue.deliver.cache.PageCacheHelper;
 
 import java.util.*;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
+//import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 /**
  * <p>LRU (Least Recently Used) algorithm for the cache.</p>
@@ -25,22 +24,23 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
  * <code>AbstractConcurrentReadCache</code> already takes care of any
  * synchronization requirements.</p>
  *
- * @version        $Revision: 1.2.4.3 $
+ * @version        $Revision: 1.2.4.4 $
  * @author <a href="mailto:salaman@teknos.com">Victor Salaman</a>
  * @author <a href="mailto:fbeauregard@pyxis-tech.com">Francois Beauregard</a>
  * @author <a href="mailto:abergevin@pyxis-tech.com">Alain Bergevin</a>
  * @author <a href="&#109;a&#105;&#108;&#116;&#111;:chris&#64;swebtec.&#99;&#111;&#109;">Chris Miller</a>
  */
-public class ImprovedLRUCache extends AbstractConcurrentReadCache 
+public class ImprovedLRUCache extends AbstractConcurrentReadCache //implements Runnable
 {
-	
     private static final Log log = LogFactory.getLog(ImprovedLRUCache.class);
-    private ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
+    //private ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
+    
+    private boolean isPageCache = false;
     
     /**
      * Cache queue containing all cache keys.
      */
-    private Collection list = new LinkedHashSet();
+    protected Collection list = new LinkedHashSet();
 
     /**
      * A flag indicating whether there is a removal operation in progress.
@@ -63,7 +63,8 @@ public class ImprovedLRUCache extends AbstractConcurrentReadCache
         this();
         maxEntries = capacity;
     }
-
+    
+        
     /**
      * An item was retrieved from the list. The LRU implementation moves
      * the retrieved item's key to the front of the list.
@@ -71,6 +72,7 @@ public class ImprovedLRUCache extends AbstractConcurrentReadCache
      * @param key The cache key of the item that was retrieved.
      */
     protected void itemRetrieved(Object key) {
+
     	// Prevent list operations during remove
         while (removeInProgress) {
             try {
@@ -118,6 +120,7 @@ public class ImprovedLRUCache extends AbstractConcurrentReadCache
      * @param key The cache key of the item that was put.
      */
     protected void itemPut(Object key) {
+    	
         // Since this entry was just accessed, move it to the back of the list.
     	
     	synchronized (list) { // A further fix for CACHE-44
@@ -160,9 +163,11 @@ public class ImprovedLRUCache extends AbstractConcurrentReadCache
      */
     protected Object removeItem() {
     	//logger.info("this.getGroupsForReading().size():" + this.getGroupsForReading().size());
+    	/*
     	if(this.getGroupsForReading().size() > maxGroups)
     		maxGroups = this.getGroupsForReading().size();
-
+		*/
+    	
         Object toRemove = null;
 
         removeInProgress = true;
@@ -195,8 +200,24 @@ public class ImprovedLRUCache extends AbstractConcurrentReadCache
      *
      * @param key The cache key of the item that was removed.
      */
-    protected void itemRemoved(Object key) {
+    protected void itemRemoved(Object key) 
+    {
+    	if(isPageCache && key != null)
+    	{
+    		//Object fileName = this.get(key);
+    		//if(fileName != null)
+    			PageCacheHelper.getInstance().notifyKey(""+key);
+    		//else
+    		//	System.out.println("No filename found for : " + key);
+    		//PageCacheHelper.getInstance().clearPageCacheInThread("" + key);
+    	}
+    	
         list.remove(key); 
+        if(size() == 0)
+        {
+            groups.clear();
+            this.list.clear();
+        }
     }
 
     /**
@@ -204,7 +225,6 @@ public class ImprovedLRUCache extends AbstractConcurrentReadCache
      *
      * @return the object that was removed
      */
-    int maxGroups = 0;
     
     private Object removeFirst() {
     	Object toRemove = null;
@@ -215,15 +235,6 @@ public class ImprovedLRUCache extends AbstractConcurrentReadCache
         	toRemove = it.next();
         	it.remove();
         	this.remove(toRemove);
-        	
-        	if(maxGroups > 1000 && maxGroups > (this.getGroupsForReading().size() * 5))
-        	{
-        		System.out.println("The group map must be made smaller:" + maxGroups);
-        		HashMap newGroups = new HashMap();
-        		newGroups.putAll(groups);
-        		groups = newGroups;
-        		maxGroups = 0;
-        	}
     	}
 
     	/*
@@ -264,4 +275,21 @@ public class ImprovedLRUCache extends AbstractConcurrentReadCache
     	
         return toRemove;
     }
+    
+    /**
+	 * @return the cacheName
+	 */
+	public boolean isPageCache() 
+	{
+		return isPageCache;
+	}
+
+	/**
+	 * @param cacheName the cacheName to set
+	 */
+	public void setIsPageCache(boolean isPageCache) 
+	{
+		this.isPageCache = isPageCache;
+	}
+
 }

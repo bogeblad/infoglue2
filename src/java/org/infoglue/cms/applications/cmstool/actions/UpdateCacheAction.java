@@ -58,6 +58,7 @@ import org.infoglue.cms.entities.structure.impl.simple.SiteNodeVersionImpl;
 import org.infoglue.cms.entities.structure.impl.simple.SmallSiteNodeImpl;
 import org.infoglue.cms.entities.structure.impl.simple.SmallSiteNodeVersionImpl;
 import org.infoglue.cms.util.CmsPropertyHandler;
+import org.infoglue.deliver.cache.PageCacheHelper;
 import org.infoglue.deliver.controllers.kernel.impl.simple.DigitalAssetDeliveryController;
 import org.infoglue.deliver.util.CacheController;
 
@@ -212,7 +213,8 @@ public class UpdateCacheAction extends InfoGlueAbstractAction
 			        CacheController.clearServerNodeProperty(true);
 			        CacheController.clearCastorCaches();
 			        CacheController.clearCaches(null, null, null);
-			        CacheController.clearFileCaches("pageCache");
+			        //CacheController.clearFileCaches("pageCache");
+					PageCacheHelper.getInstance().clearPageCache();
 				}
 				if(className.indexOf("AccessRight") > 0 || className.indexOf("SystemUser") > 0 || className.indexOf("Role") > 0  || className.indexOf("Group") > 0 || className.indexOf("Intercept") > 0)
 				{

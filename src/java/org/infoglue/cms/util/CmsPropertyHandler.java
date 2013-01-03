@@ -99,7 +99,8 @@ public class CmsPropertyHandler
 	private static String useAccessBasedProtocolRedirects	= null;
 	private static Boolean useHashCodeInCaches 				= null;
 	private static Boolean useSynchronizationOnCaches 		= null;
-	   
+	private static Map cacheSettings						= null;
+	
 	public static String getDigitalAssetPortletRegistryId()
 	{
 		 return digitalAssetPortletRegistryId;
@@ -241,6 +242,7 @@ public class CmsPropertyHandler
 		String newUseAccessBasedProtocolRedirects = getUseAccessBasedProtocolRedirects(true);
 		Boolean newUseHashCodeInCaches = getUseHashCodeInCaches(true);
 		Boolean newUseSynchronizationOnCaches = getUseSynchronizationOnCaches(true);
+		Map newCacheSettings = getCacheSettings(true);
 		
 		inputCharacterEncoding 				= newInputCharacterEncoding;
 		enforceRigidContentAccess 			= newEnforceRigidContentAccess;
@@ -254,6 +256,7 @@ public class CmsPropertyHandler
 		useAccessBasedProtocolRedirects 	= newUseAccessBasedProtocolRedirects;
 		useHashCodeInCaches 				= newUseHashCodeInCaches;
 		useSynchronizationOnCaches 			= newUseSynchronizationOnCaches;
+		cacheSettings 						= newCacheSettings;
 		
 		logger.info("Done resetting hard cached settings...");
 	}
@@ -606,7 +609,7 @@ public class CmsPropertyHandler
 		if(operatingMode == null)
 			return getProperty("operatingMode");
 		else
-			return operatingMode; //getProperty("operatingMode"); Concurrency issues...
+			return operatingMode; 
 	}
 
 	public static boolean getActuallyBlockOnBlockRequests()
@@ -1952,28 +1955,36 @@ public class CmsPropertyHandler
 	    
 	    return customContentTypeIcons;
 	}
-
+	
 	public static Map getCacheSettings()
 	{
-		Map cacheSettings = new HashMap();
-		
-	    String cacheSettingsString = CmsPropertyHandler.getServerNodeDataProperty(null, "cacheSettings", true, null, true);
-	    if(cacheSettingsString != null && !cacheSettingsString.equals(""))
+		return getCacheSettings(false);
+	}
+	
+	public static Map getCacheSettings(boolean skipCaches)
+	{
+		if(cacheSettings == null || skipCaches)
 		{
-	    	try
+			Map localCacheSettings = new HashMap();
+			
+		    String cacheSettingsString = CmsPropertyHandler.getServerNodeDataProperty(null, "cacheSettings", true, null, skipCaches);
+		    if(cacheSettingsString != null && !cacheSettingsString.equals(""))
 			{
-	    		Properties properties = new Properties();
-				properties.load(new ByteArrayInputStream(cacheSettingsString.getBytes("UTF-8")));
-				cacheSettings = properties;
-			}	
-			catch(Exception e)
-			{
-			    logger.error("Error loading properties from string. Reason:" + e.getMessage());
-				e.printStackTrace();
+		    	try
+				{
+		    		Properties properties = new Properties();
+					properties.load(new ByteArrayInputStream(cacheSettingsString.getBytes("UTF-8")));
+					localCacheSettings = properties;
+				}	
+				catch(Exception e)
+				{
+				    logger.error("Error loading properties from string. Reason:" + e.getMessage(), e);
+				}
 			}
+		    cacheSettings = localCacheSettings;
 		}
-	    
-	    return cacheSettings;
+
+		return cacheSettings; 
 	}
 
 	
