@@ -86,6 +86,7 @@ public class ProcessBean
     public static final int NOT_STARTED = 0;
     public static final int RUNNING = 1;
     public static final int FINISHED = 2;
+    public static final int FAILED = -1;
     
 	//ID can be any string the process decides while processName is a general name for all instances of a certain process.
     private String processName;

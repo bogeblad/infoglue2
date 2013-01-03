@@ -124,6 +124,7 @@ public class OptimizedImportController extends BaseController implements Runnabl
 		}
 		catch (Exception e) 
 		{
+			processBean.setStatus(ProcessBean.FAILED);
 			logger.error("Error in monitor:" + e.getMessage(), e);
 		}
 	}
