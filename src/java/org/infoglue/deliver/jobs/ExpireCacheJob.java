@@ -29,6 +29,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.log4j.Logger;
 import org.infoglue.cms.util.CmsPropertyHandler;
+import org.infoglue.deliver.cache.PageCacheHelper;
 import org.infoglue.deliver.util.CacheController;
 import org.infoglue.deliver.util.RequestAnalyser;
 import org.quartz.Job;
@@ -129,11 +130,13 @@ public class ExpireCacheJob implements Job
 	    			//CacheController.clearCache("componentEditorCache");
 	    			//CacheController.clearCache("componentEditorVersionIdCache");
     			}
+    			/*
     			if(Calendar.getInstance().get(Calendar.HOUR_OF_DAY) == 2)
     			{
 			    	CacheController.clearCache("pageCache");
 	    			CacheController.clearCache("pageCacheExtra");
     			}
+    			*/
     			logger.warn("Done flushing heavy caches..");
     		    lastCacheCleanup = System.currentTimeMillis();
             }
@@ -195,7 +198,9 @@ public class ExpireCacheJob implements Job
 		    			CacheController.cacheCentralCastorCaches();
 		    			
 		    			logger.info("Finally clearing page cache as this was a publishing-update");
-		    		    CacheController.clearFileCaches("pageCache");
+		    		    //CacheController.clearFileCaches("pageCache");
+		    			PageCacheHelper.getInstance().clearPageCache();
+
 		    		    CacheController.clearCache("pageCache");
 		    		    CacheController.clearCache("pageCacheExtra");
 	        	    }
@@ -207,7 +212,8 @@ public class ExpireCacheJob implements Job
 		    			logger.info("clearing all except page cache as we are in publish mode..");
 		    		    CacheController.clearCaches(null, null, null);
 
-		    		    CacheController.clearFileCaches("pageCache");
+		    			PageCacheHelper.getInstance().clearPageCache();
+		    		    //CacheController.clearFileCaches("pageCache");
 	        	    }
                 }
                 catch(Exception e)
@@ -254,7 +260,9 @@ public class ExpireCacheJob implements Job
 		    			CacheController.cacheCentralCastorCaches();
 		    			
 		    			logger.info("Finally clearing page cache as this was a publishing-update");
-		    		    CacheController.clearFileCaches("pageCache");
+		    		    //CacheController.clearFileCaches("pageCache");
+		    			PageCacheHelper.getInstance().clearPageCache();
+
 		    		    CacheController.clearCache("pageCache");
 		    		    CacheController.clearCache("pageCacheExtra");
 	        	    }
@@ -280,9 +288,9 @@ public class ExpireCacheJob implements Job
             synchronized (intervalCount)
 			{
                 intervalCount++;
-	            if(intervalCount > 50)
+	            if(intervalCount > 200)
 	            {
-	                logger.info("Cleaning cache directory as intervalCount:" + intervalCount);
+	                logger.error("Cleaning cache directory as intervalCount:" + intervalCount);
 	                String dir = CmsPropertyHandler.getDigitalAssetPath() + File.separator + "caches";
 	                File dirFile = new File(dir);
 	                if(dirFile.exists())
@@ -293,9 +301,9 @@ public class ExpireCacheJob implements Job
 		                	File subCacheDir = subCaches[i];
 		                	logger.info("subCacheDir:" + subCacheDir.getName());
 	                		int targetDiff = 48;
-	                		if(subCacheDir.getName().equals("pageCache"))
-	                			targetDiff = 6 + (int)(Math.random() * ((12 - 6) + 1));
-	                		logger.info("targetDiff:" + targetDiff);
+	                		//if(subCacheDir.getName().equals("pageCache"))
+	                		//	targetDiff = 6 + (int)(Math.random() * ((12 - 6) + 1));
+	                		logger.warn("targetDiff:" + targetDiff);
 	                		
 		                	if(subCacheDir.isDirectory())
 		                	{
@@ -315,7 +323,7 @@ public class ExpireCacheJob implements Job
 					                		//System.out.println("differensInHours:" + differensInHours);
 					                		if(differensInHours > targetDiff)
 					                		{
-					                			logger.info("Deleting cached file as it was to old:" + differensInHours);
+					                			logger.warn("Deleting cached file as it was to old:" + differensInHours);
 					                			cacheFile.delete();
 					                		}
 					                		else
