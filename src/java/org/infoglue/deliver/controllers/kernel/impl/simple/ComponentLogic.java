@@ -3304,7 +3304,11 @@ public class ComponentLogic
 		String pageComponentsString = null;
     	
 		NodeDeliveryController ndc = NodeDeliveryController.getNodeDeliveryController(siteNodeId, languageId, contentId);
-		ContentVO contentVO = ndc.getBoundContent(templateController.getDatabase(), templateController.getPrincipal(), siteNodeId, languageId, true, "Meta information", templateController.getDeliveryContext());
+		SiteNodeVO siteNodeVO = ndc.getSiteNodeVO(templateController.getDatabase(), siteNodeId);
+		logger.info("siteNodeVO:" + siteNodeVO.getName() + ":" + siteNodeVO.getMetaInfoContentId());
+
+		ContentVO contentVO = templateController.getContent(siteNodeVO.getMetaInfoContentId());
+		//ContentVO contentVO = ndc.getBoundContent(templateController.getDatabase(), templateController.getPrincipal(), siteNodeId, languageId, true, "Meta information", templateController.getDeliveryContext());
 		
 		this.templateController.getDeliveryContext().addDebugInformation("DEBUG INFO getting XML: " + contentVO + " (Thread" + Thread.currentThread().getId() + ").\n");
 		logger.info("contentVO:" + contentVO);
@@ -3312,7 +3316,7 @@ public class ComponentLogic
 		if(contentVO == null)
 			throw new SystemException("There was no Meta Information bound to this page [" + siteNodeId + "] which makes it impossible to render.");	
 		
-		SiteNodeVO siteNodeVO = ndc.getSiteNodeVO(templateController.getDatabase(), siteNodeId);
+		//SiteNodeVO siteNodeVO = ndc.getSiteNodeVO(templateController.getDatabase(), siteNodeId);
 		Integer masterLanguageId = LanguageDeliveryController.getLanguageDeliveryController().getMasterLanguageForRepository(templateController.getDatabase(), siteNodeVO.getRepositoryId()).getId();
 		logger.info("masterLanguageId:" + masterLanguageId);
 		//Integer masterLanguageId = LanguageDeliveryController.getLanguageDeliveryController().getMasterLanguageForSiteNode(templateController.getDatabase(), siteNodeId).getId();

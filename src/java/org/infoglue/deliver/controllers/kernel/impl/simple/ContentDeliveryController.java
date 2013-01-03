@@ -1026,8 +1026,9 @@ public class ContentDeliveryController extends BaseDeliveryController
 				
 				//We don't want to add meta info relations without more data
 				if(!attributeName.equals("ComponentStructure"))
+				{
 					deliveryContext.addUsedContent(CacheController.getPooledString(1, contentId) + "_" + attributeName);
-
+				}
 			}
 	
 			if(usedContentVersionId != null && contentVersionId != null)
