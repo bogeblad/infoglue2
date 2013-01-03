@@ -45,7 +45,17 @@
 			    if (confirm('Are you sure you want to move the content to the folder you have just selected?'))
 				{
 					//alert('Calling:' + url);
-				    self.opener.parent.frames["main"].location.href = url;
+					if ( (typeof self.opener.parent.frames["main"].location) === "string" )
+					{
+						self.opener.parent.frames["main"].contentWindow.location.href = url;
+					}
+					else
+					{
+						self.opener.parent.frames["main"].location.href = url;
+					}
+					
+				    //self.opener.parent.frames["main"].location = url;
+				    //alert("Target:" + self.opener.parent.frames["main"].location);
 				    window.close();
 				    //document.inputForm.submit();
 				}
