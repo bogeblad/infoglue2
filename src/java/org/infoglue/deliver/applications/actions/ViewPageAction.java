@@ -674,8 +674,12 @@ public class ViewPageAction extends InfoGlueAbstractAction
 	public String doRenderDecoratedPage() throws Exception
 	{
 		if(CmsPropertyHandler.getOperatingMode().equals("3"))
-			return doExecute();
-				
+		{
+			this.getResponse().setStatus(301);
+			this.getResponse().setHeader( "Location", getOriginalFullURL().replaceAll("\\!renderDecoratedPage", ""));
+			return NONE; //doExecute();
+		}
+		
         while(CmsPropertyHandler.getActuallyBlockOnBlockRequests() && RequestAnalyser.getRequestAnalyser().getBlockRequests())
         {
         	//System.out.println("Queing up requests as cache eviction are taking place..");
