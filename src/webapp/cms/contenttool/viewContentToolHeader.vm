@@ -93,12 +93,11 @@
 			if(!stringSearch)
 				stringSearch = $('#okButton').hasClass("focus");
 			
-			//alert("stringSearch:" + stringSearch);
-
 			var contentIdSearch = $('#contentIdField').hasClass("focus");
 			if(!contentIdSearch)
 				contentIdSearch = $('#jumpButton').hasClass("focus");
 			
+			//alert("stringSearch:" + stringSearch);
 			//alert("contentIdSearch:" + contentIdSearch);
 
 			if(stringSearch)
@@ -144,23 +143,25 @@
 		
 		$(document).ready(function() {    
 		    $('#searchString').blur(function(){
-		    	$('#searchString').removeClass("focus");
+		    	//$('#searchString').removeClass("focus");
 		    })
 		    .focus(function() {                
+			    $('#contentIdField').removeClass("focus");
 		    	$(this).addClass("focus")
 		    });
 
 			$('#okButton').blur(function(){
 		    	$('#okButton').removeClass("focus");
 		    })
-		    .focus(function() {                
+		    .focus(function() {         
 		    	$(this).addClass("focus")
 		    });
 		    		    		
 		    $('#contentIdField').blur(function(){
-		    	$('#contentIdField').removeClass("focus");
+		    	//$('#contentIdField').removeClass("focus");
 		    })
 		    .focus(function() {                
+		    	$('#searchString').removeClass("focus");
 		    	$(this).addClass("focus")
 		    });
 		
