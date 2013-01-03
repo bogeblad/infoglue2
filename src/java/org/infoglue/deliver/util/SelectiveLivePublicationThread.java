@@ -98,6 +98,7 @@ import org.infoglue.cms.util.CmsPropertyHandler;
 import org.infoglue.cms.util.NotificationMessage;
 import org.infoglue.deliver.applications.databeans.CacheEvictionBean;
 import org.infoglue.deliver.applications.filters.URIMapperCache;
+import org.infoglue.deliver.cache.PageCacheHelper;
 import org.infoglue.deliver.controllers.kernel.impl.simple.ContentDeliveryController;
 import org.infoglue.deliver.controllers.kernel.impl.simple.DigitalAssetDeliveryController;
 import org.infoglue.deliver.controllers.kernel.impl.simple.LanguageDeliveryController;
@@ -750,8 +751,10 @@ public class SelectiveLivePublicationThread extends PublicationThread
 								//CacheController.clearCache("serverNodePropertiesCache");
 								
 							    CacheController.clearCache("boundContentCache");
-						        CacheController.clearFileCaches("pageCache");
-						        CacheController.clearCache("pageCache");
+						        //CacheController.clearFileCaches("pageCache");
+								PageCacheHelper.getInstance().clearPageCache();
+								
+								CacheController.clearCache("pageCache");
 								CacheController.clearCache("pageCacheExtra");
 								CacheController.clearCache("componentCache");
 								CacheController.clearCache("NavigationCache");
@@ -780,7 +783,9 @@ public class SelectiveLivePublicationThread extends PublicationThread
 								CacheController.clearCache("masterRepository");
 								CacheController.clearCache("parentRepository");
 								CacheController.clearCache("componentPropertyCache");
-						        CacheController.clearFileCaches("pageCache");
+						        //CacheController.clearFileCaches("pageCache");
+								PageCacheHelper.getInstance().clearPageCache();
+
 						        CacheController.clearCache("pageCache");
 								CacheController.clearCache("pageCacheExtra");
 								CacheController.clearCache("componentCache");

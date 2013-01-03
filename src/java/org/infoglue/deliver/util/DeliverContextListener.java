@@ -35,6 +35,7 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.RollingFileAppender;
 import org.infoglue.cms.security.InfoGlueAuthenticationFilter;
 import org.infoglue.cms.util.CmsPropertyHandler;
+import org.infoglue.deliver.cache.PageCacheHelper;
 import org.infoglue.deliver.invokers.ComponentBasedHTMLPageInvoker;
 
 import com.opensymphony.oscache.base.OSCacheUtility;
@@ -103,9 +104,10 @@ public final class DeliverContextListener implements ServletContextListener
 				cacheController.setCacheExpireInterval(Integer.parseInt(intervalString));
 			
 			//System.out.println("Clearing previous filebased page cache");
-        	try 
+			try 
         	{
-        		CacheController.clearFileCaches("pageCache");
+        		//CacheController.clearFileCaches("pageCache");
+				PageCacheHelper.getInstance().clearPageCache();
         	}
         	catch (Exception e) 
         	{

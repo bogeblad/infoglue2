@@ -26,6 +26,7 @@ import java.util.Random;
 
 import org.apache.log4j.Logger;
 import org.infoglue.cms.util.CmsPropertyHandler;
+import org.infoglue.deliver.cache.PageCacheHelper;
 
 /**
  * @author mattias
@@ -71,7 +72,9 @@ public class PublicationThread extends Thread
 			logger.info("\n\n\nFinally clearing page cache and other caches as this was a publishing-update\n\n\n");
 			CacheController.clearCache("ServerNodeProperties");
 			CacheController.clearCache("serverNodePropertiesCache");
-		    CacheController.clearFileCaches("pageCache");
+		    //CacheController.clearFileCaches("pageCache");
+			PageCacheHelper.getInstance().clearPageCache();
+
 			CacheController.clearCache("pageCache");
 			CacheController.clearCache("pageCacheExtra");
 		    CacheController.clearCache("componentCache");
