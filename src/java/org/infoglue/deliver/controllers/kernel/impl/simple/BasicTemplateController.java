@@ -7124,7 +7124,11 @@ public class BasicTemplateController implements TemplateController
 				
 				if(principal != null)
 				{
-					hasUserPageAccess = AccessRightController.getController().getIsPrincipalAuthorized((InfoGluePrincipal)principal, "SiteNodeVersion.Read", protectedSiteNodeVersionId.toString());
+					if(principal.getName().equals(CmsPropertyHandler.getAnonymousUser()))
+						hasUserPageAccess = AccessRightController.getController().getIsPrincipalAuthorized((InfoGluePrincipal)principal, "SiteNodeVersion.Read", protectedSiteNodeVersionId.toString(), false);
+					else
+						hasUserPageAccess = AccessRightController.getController().getIsPrincipalAuthorized((InfoGluePrincipal)principal, "SiteNodeVersion.Read", protectedSiteNodeVersionId.toString());
+					
 					if(!hasUserPageAccess && getIsDecorated() && getDeliveryContext().getConsiderEditorInDecoratedMode())
 				    {
 					    String cmsUserName = (String)getHttpServletRequest().getSession().getAttribute("cmsUserName");
@@ -7133,7 +7137,7 @@ public class BasicTemplateController implements TemplateController
 						    InfoGluePrincipal cmsPrincipal = getPrincipal(cmsUserName);
 
 						    if(cmsPrincipal != null)
-						    	hasUserPageAccess = AccessRightController.getController().getIsPrincipalAuthorized((InfoGluePrincipal)principal, "SiteNodeVersion.Read", protectedSiteNodeVersionId.toString());
+						    	hasUserPageAccess = AccessRightController.getController().getIsPrincipalAuthorized((InfoGluePrincipal)principal, "SiteNodeVersion.Read", protectedSiteNodeVersionId.toString(), false);
 					    }
 					}		
 				}

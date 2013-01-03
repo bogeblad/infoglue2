@@ -1345,7 +1345,7 @@ public class ContentVersionController extends BaseController
 				}
 				else
 				{
-		    	    List<String> changedAttributes = getChangedAttributeNames(oldContentVersionVO, contentVersionVO);
+			    	List<String> changedAttributes = getChangedAttributeNames(oldContentVersionVO, contentVersionVO);
 		    	    Map extraInfoMap = new HashMap();
 		    	    String csList = StringUtils.join(changedAttributes.toArray(), ",");
 		    	    //logger.info("csList:" + csList);
@@ -1934,34 +1934,35 @@ public class ContentVersionController extends BaseController
 	public List<String> getChangedAttributeNames(ContentVersionVO contentVersionVO1, ContentVersionVO contentVersionVO2)
 	{
 		List<String> changes = new ArrayList<String>();
-		try{
-		String xml = contentVersionVO1.getVersionValue();
-
-		int attributesStartTagIndex = xml.indexOf("<attributes>");
-		int attributesStopTagIndex = xml.indexOf("</attributes>");
-		
-		String attributes = xml.substring(attributesStartTagIndex+12, attributesStopTagIndex);
-		
-		//logger.info("attributes1:" + attributes);
-		
-		int startTagIndex = attributes.indexOf("<");
-		while(startTagIndex > -1)
+		try
 		{
-			String attributeName = attributes.substring(startTagIndex + 1, attributes.indexOf(">",startTagIndex+1));
-			int endTagEndIndex = attributes.indexOf("</" + attributeName + ">", startTagIndex);
+			String xml = contentVersionVO1.getVersionValue();
+	
+			int attributesStartTagIndex = xml.indexOf("<attributes>");
+			int attributesStopTagIndex = xml.lastIndexOf("</attributes>");
 			
-			//logger.info("attributeName:" + attributeName);
+			String attributes = xml.substring(attributesStartTagIndex+12, attributesStopTagIndex);
 			
-			String value1 = getAttributeValue(contentVersionVO1, attributeName, false);
-			String value2 = getAttributeValue(contentVersionVO2, attributeName, false);
+			//logger.info("attributes1:" + attributes);
 			
-			//logger.info("value1:" + value1);
-			//logger.info("value2:" + value2);
-			if(!value1.equals(value2))
-				changes.add(attributeName);
-			
-			startTagIndex = attributes.indexOf("<", endTagEndIndex + 1);
-		}
+			int loop = 0;
+			int startTagIndex = attributes.indexOf("<");
+			while(startTagIndex > -1 && loop < 50)
+			{
+				String attributeName = attributes.substring(startTagIndex + 1, attributes.indexOf(">",startTagIndex+1));
+				int endTagEndIndex = attributes.indexOf("</" + attributeName + ">", startTagIndex);
+				
+				String value1 = getAttributeValue(contentVersionVO1, attributeName, false);
+				String value2 = getAttributeValue(contentVersionVO2, attributeName, false);
+				
+				//logger.info("value1:" + value1);
+				//logger.info("value2:" + value2);
+				if(!value1.equals(value2))
+					changes.add(attributeName);
+				
+				startTagIndex = attributes.indexOf("<", endTagEndIndex + 1);
+				loop++;
+			}
 		}
 		catch (Exception e) {
 			e.printStackTrace();
