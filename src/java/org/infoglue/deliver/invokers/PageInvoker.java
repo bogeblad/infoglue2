@@ -24,6 +24,7 @@
 package org.infoglue.deliver.invokers;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
@@ -54,6 +55,7 @@ import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.util.CmsPropertyHandler;
 import org.infoglue.deliver.applications.databeans.DatabaseWrapper;
 import org.infoglue.deliver.applications.databeans.DeliveryContext;
+import org.infoglue.deliver.cache.PageCacheHelper;
 import org.infoglue.deliver.controllers.kernel.impl.simple.LanguageDeliveryController;
 import org.infoglue.deliver.controllers.kernel.impl.simple.TemplateController;
 import org.infoglue.deliver.portal.PortalController;
@@ -61,6 +63,8 @@ import org.infoglue.deliver.util.CacheController;
 import org.infoglue.deliver.util.CompressionHelper;
 import org.infoglue.deliver.util.RequestAnalyser;
 import org.infoglue.deliver.util.Timer;
+
+import com.opensymphony.oscache.base.CacheEntry;
 
 /**
  * @author Mattias Bogeblad
@@ -193,27 +197,32 @@ public abstract class PageInvoker
 			if(pageCacheTimeout == null)
 				pageCacheTimeout = this.getTemplateController().getPageCacheTimeout();
 			
-				if(pageCacheTimeout == null)
-				{
-				    //cachedCompressedData = (byte[])CacheController.getCachedObjectFromAdvancedCache(pageCacheName, this.getDeliveryContext().getPageKey());
-					Class[] argsClasses = new Class[2];
-					argsClasses[0] = String.class;
-					argsClasses[1] = String.class;
-					
-					Object[] args = new Object[]{pageCacheName, pageCacheExtraName};
-					
-					this.pageString = (String)CacheController.getCachedObjectFromAdvancedCache(pageCacheName, this.getDeliveryContext().getPageKey(), true, "utf-8", true, this, this.getClass().getMethod("invokeAndDecoratePage", argsClasses), args, this);
-				    cachedExtraData = (Map)CacheController.getCachedObjectFromAdvancedCache(pageCacheExtraName, this.getDeliveryContext().getPageKey());
-				}
-				else
-				{
-				    //cachedCompressedData = (byte[])CacheController.getCachedObjectFromAdvancedCache(pageCacheName, this.getDeliveryContext().getPageKey(), pageCacheTimeout.intValue());
-					this.pageString = (String)CacheController.getCachedObjectFromAdvancedCache(pageCacheName, this.getDeliveryContext().getPageKey(), pageCacheTimeout.intValue(), true, "utf-8", false);
-				    cachedExtraData = (Map)CacheController.getCachedObjectFromAdvancedCache(pageCacheExtraName, this.getDeliveryContext().getPageKey(), pageCacheTimeout.intValue());
-				}
+			if(pageCacheTimeout == null)
+			{
+			    //cachedCompressedData = (byte[])CacheController.getCachedObjectFromAdvancedCache(pageCacheName, this.getDeliveryContext().getPageKey());
+				Class[] argsClasses = new Class[2];
+				argsClasses[0] = String.class;
+				argsClasses[1] = String.class;
 				
-			    if(cachedExtraData != null)
-			    	this.getDeliveryContext().populateExtraData(cachedExtraData);
+				Object[] args = new Object[]{pageCacheName, pageCacheExtraName};
+				
+				this.pageString = (String)CacheController.getCachedObjectFromAdvancedCache(pageCacheName, this.getDeliveryContext().getPageKey(), true, "utf-8", true, this, this.getClass().getMethod("invokeAndDecoratePage", argsClasses), args, this);
+			    cachedExtraData = (Map)CacheController.getCachedObjectFromAdvancedCache(pageCacheExtraName, this.getDeliveryContext().getPageKey());
+			}
+			else
+			{
+			    //cachedCompressedData = (byte[])CacheController.getCachedObjectFromAdvancedCache(pageCacheName, this.getDeliveryContext().getPageKey(), pageCacheTimeout.intValue());
+				//this.pageString = (String)CacheController.getCachedObjectFromAdvancedCache(pageCacheName, this.getDeliveryContext().getPageKey(), pageCacheTimeout.intValue(), true, "utf-8", false);
+				Object pageCacheFileName = CacheController.getCachedObjectFromAdvancedCache(pageCacheName, this.getDeliveryContext().getPageKey(), pageCacheTimeout.intValue(), true, "utf-8", false);
+			    if(pageCacheFileName != null && !pageCacheFileName.equals(""))
+			    	 this.pageString = PageCacheHelper.getInstance().getCachedPageString(this.getDeliveryContext().getPageKey(), new File(pageCacheFileName.toString()));
+			    else
+			    	logger.info("No page file name in memory cache:" + this.getDeliveryContext().getPageKey());
+			    cachedExtraData = (Map)CacheController.getCachedObjectFromAdvancedCache(pageCacheExtraName, this.getDeliveryContext().getPageKey(), pageCacheTimeout.intValue());
+			}
+			
+		    if(cachedExtraData != null)
+		    	this.getDeliveryContext().populateExtraData(cachedExtraData);
 			    	
 			//String invokeAndDecoratePage();
 			/*
