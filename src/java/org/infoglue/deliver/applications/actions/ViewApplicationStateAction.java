@@ -63,6 +63,7 @@ import org.infoglue.cms.util.CmsPropertyHandler;
 import org.infoglue.cms.util.CmsSessionContextListener;
 import org.infoglue.cms.util.sorters.AverageInvokingTimeComparator;
 import org.infoglue.deliver.applications.databeans.CacheEvictionBean;
+import org.infoglue.deliver.cache.PageCacheHelper;
 import org.infoglue.deliver.controllers.kernel.impl.simple.ExtranetController;
 import org.infoglue.deliver.portal.ServletConfigContainer;
 import org.infoglue.deliver.util.CacheController;
@@ -361,7 +362,9 @@ public class ViewApplicationStateAction extends InfoGlueAbstractAction
     		return returnValue;
         
         CacheController.clearCache(cacheName);
-        if(clearFileCache || cacheName.equals("pageCache"))
+        if(cacheName.equals("pageCache"))
+			PageCacheHelper.getInstance().clearPageCache();
+        else if(clearFileCache)
         	CacheController.clearFileCaches(cacheName);
         
         //this.getHttpSession().invalidate();
@@ -460,7 +463,8 @@ public class ViewApplicationStateAction extends InfoGlueAbstractAction
     	if(returnValue != null)
     		return returnValue;
         
-        CacheController.clearFileCaches("pageCache");
+        //CacheController.clearFileCaches("pageCache");
+		PageCacheHelper.getInstance().clearPageCache();
         
         if(this.returnAddress != null && !this.returnAddress.equals(""))
         {
@@ -648,7 +652,9 @@ public class ViewApplicationStateAction extends InfoGlueAbstractAction
         CacheController.clearServerNodeProperty(true);
         CacheController.clearCastorCaches();
         CacheController.clearCaches(null, null, null);
-        CacheController.clearFileCaches("pageCache");
+
+        PageCacheHelper.getInstance().clearPageCache();
+        //CacheController.clearFileCaches("pageCache");
         CacheController.clearPooledString();
         //CacheController.resetSpecial();
         if(clearFileCache)
@@ -1173,9 +1179,9 @@ public class ViewApplicationStateAction extends InfoGlueAbstractAction
 	    	{
 		    	int startLocation = originalSummary.indexOf("Approximate size");
 		    	//System.out.println("startLocation:" + startLocation);
-		    	String size = originalSummary.substring(startLocation + 17, originalSummary.indexOf("KB") + 2);
+		    	//String size = originalSummary.substring(startLocation + 17, originalSummary.indexOf("KB") + 2);
 		    	//System.out.println("size:" + size);
-		    	data.put("estimatedSize", "" + size);
+		    	data.put("estimatedSize", "Unknown");
 		
 		    	int startHitLocation = originalStats.indexOf("Hit count");
 		    	String hits = originalStats.substring(startHitLocation + 12, originalStats.indexOf(",", startHitLocation));
@@ -1193,11 +1199,11 @@ public class ViewApplicationStateAction extends InfoGlueAbstractAction
 		    		int missInt = Integer.parseInt(miss.trim());
 		    		int hitInt = Integer.parseInt(hits.trim());
 		    		if(missInt > 0 && hitInt > 0)
-		    			data.put("hitMissRatio", "" + (int)((float)missInt / (float)hitInt * 100));
+		    			data.put("hitMissRatio", "" + (int)((float)hitInt / (float)((int)missInt + (int)hitInt) * 100));
 		    		else if(missInt == 0)
-		    			data.put("hitMissRatio", "0");
-		    		else if(hitInt == 0)
 		    			data.put("hitMissRatio", "100");
+		    		else if(hitInt == 0)
+		    			data.put("hitMissRatio", "0");
 		    	}
 		    	catch (Exception e) 
 		    	{
