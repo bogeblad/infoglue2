@@ -1840,7 +1840,7 @@ public class AccessRightController extends BaseController
 		Timer t = new Timer();
 		if(!logger.isInfoEnabled())
 			t.setActive(false);
-		
+
 		//Map<String,Integer> cachedPrincipalAuthorizationMap = (Map<String,Integer>)CacheController.getCachedObjectFromAdvancedCache("personalAuthorizationCache", "authorizationMap_" + infoGluePrincipal.getName());
 		Map<String,Integer> cachedPrincipalAuthorizationMap = (Map<String,Integer>)CacheController.getCachedObject("userAccessCache", "authorizationMap_" + infoGluePrincipal.getName());
 		if(!infoGluePrincipal.getIsAdministrator() && cachedPrincipalAuthorizationMap == null && !preCacheInProcessForUsers.contains(infoGluePrincipal.getName()))
@@ -2008,8 +2008,13 @@ public class AccessRightController extends BaseController
 				//	logger.info("hasAccess:" + hasAccess + " on " + acKey);
 				if(hasAccess == null)
 				{
-				    CacheController.cacheObjectInAdvancedCache("personalAuthorizationCache", key, new Boolean(false), new String[]{infoGluePrincipal.getName()}, true);
-					return false;
+					if(returnTrueIfNoAccessRightsDefined && interceptionPointName.indexOf("ContentVersion.") > -1)
+						logger.info("Double checking on access as it's a content version and those are often not protected:" + acKey);
+					else
+					{
+					    CacheController.cacheObjectInAdvancedCache("personalAuthorizationCache", key, new Boolean(false), new String[]{infoGluePrincipal.getName()}, true);
+						return false;
+					}
 				}
 				else if(hasAccess == 1)
 				{
@@ -2181,8 +2186,8 @@ public class AccessRightController extends BaseController
 			logger.info("Principal " + infoGluePrincipal.getName() + " was not allowed to " + interceptionPointName + " on " + extraParameters);
 		}
 		logger.info("Caching " + isPrincipalAuthorized + " on " + interceptionPointName + " on " + extraParameters);
-				
-	    CacheController.cacheObjectInAdvancedCache("personalAuthorizationCache", key, new Boolean(isPrincipalAuthorized), new String[]{infoGluePrincipal.getName()}, true);
+
+		CacheController.cacheObjectInAdvancedCache("personalAuthorizationCache", key, new Boolean(isPrincipalAuthorized), new String[]{infoGluePrincipal.getName()}, true);
 
 		return isPrincipalAuthorized;
 	}
