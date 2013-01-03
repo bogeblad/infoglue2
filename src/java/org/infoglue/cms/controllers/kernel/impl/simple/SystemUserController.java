@@ -612,7 +612,7 @@ public class SystemUserController extends BaseController
 			}
 			catch (Exception e) 
 			{
-				System.out.println("Error generating password:" + e.getMessage());
+				logger.error("Error generating password:" + e.getMessage());
 			}
 		}
     	
@@ -641,7 +641,7 @@ public class SystemUserController extends BaseController
 			}
 			catch (Exception e) 
 			{
-				System.out.println("Error generating password:" + e.getMessage());
+				logger.error("Error generating password:" + e.getMessage());
 			}
 		}
 
@@ -878,27 +878,27 @@ public class SystemUserController extends BaseController
     	{
     		List<String> roleNamesList = new ArrayList<String>();
     		roleNamesList.addAll(Arrays.asList(roleNames));
-    		System.out.println("roleNamesList:" + roleNamesList.size());
+    		logger.info("roleNamesList:" + roleNamesList.size());
     		List<String> keptRoleNamesList = deleteRolesAndReturnExisting(systemUserVO.getUserName(), roleNames, db);
-    		System.out.println("keptRoleNamesList:" + keptRoleNamesList.size());
+    		logger.info("keptRoleNamesList:" + keptRoleNamesList.size());
     		roleNamesList.removeAll(keptRoleNamesList);
     		roleNames = roleNamesList.toArray(new String[roleNamesList.size()]);
-    		System.out.println("roleNames:" + roleNames.length);
+    		logger.info("roleNames:" + roleNames.length);
     	}
 		if(groupNames != null)
 		{
     		List<String> groupNamesList = new ArrayList<String>();
     		groupNamesList.addAll(Arrays.asList(groupNames));
-    		System.out.println("groupNamesList:" + groupNamesList.size());
+    		logger.info("groupNamesList:" + groupNamesList.size());
     		List<String> keptGroupNamesList = deleteGroupsAndReturnExisting(systemUserVO.getUserName(), groupNames, db);
-    		System.out.println("keptGroupNamesList:" + keptGroupNamesList.size());
+    		logger.info("keptGroupNamesList:" + keptGroupNamesList.size());
     		groupNamesList.removeAll(keptGroupNamesList);
     		groupNames = groupNamesList.toArray(new String[groupNamesList.size()]);
-    		System.out.println("groupNames:" + groupNames.length);
+    		logger.info("groupNames:" + groupNames.length);
 		}
 		
-		System.out.println("roleNames:" + roleNames.length);
-		System.out.println("groupNames:" + groupNames.length);
+		logger.info("roleNames:" + roleNames.length);
+		logger.info("groupNames:" + groupNames.length);
 		
         SystemUser systemUser = getSystemUserWithName(systemUserVO.getUserName(), db);
         
@@ -982,27 +982,27 @@ public class SystemUserController extends BaseController
     	{
     		List<String> roleNamesList = new ArrayList<String>();
     		roleNamesList.addAll(Arrays.asList(roleNames));
-    		System.out.println("roleNamesList:" + roleNamesList.size());
+    		logger.info("roleNamesList:" + roleNamesList.size());
     		List<String> keptRoleNamesList = deleteRolesAndReturnExisting(systemUserVO.getUserName(), roleNames, db);
-    		System.out.println("keptRoleNamesList:" + keptRoleNamesList.size());
+    		logger.info("keptRoleNamesList:" + keptRoleNamesList.size());
     		roleNamesList.removeAll(keptRoleNamesList);
     		roleNames = roleNamesList.toArray(new String[roleNamesList.size()]);
-    		System.out.println("roleNames:" + roleNames.length);
+    		logger.info("roleNames:" + roleNames.length);
     	}
 		if(groupNames != null)
 		{
     		List<String> groupNamesList = new ArrayList<String>();
     		groupNamesList.addAll(Arrays.asList(groupNames));
-    		System.out.println("groupNamesList:" + groupNamesList.size());
+    		logger.info("groupNamesList:" + groupNamesList.size());
     		List<String> keptGroupNamesList = deleteGroupsAndReturnExisting(systemUserVO.getUserName(), groupNames, db);
-    		System.out.println("keptGroupNamesList:" + keptGroupNamesList.size());
+    		logger.info("keptGroupNamesList:" + keptGroupNamesList.size());
     		groupNamesList.removeAll(keptGroupNamesList);
     		groupNames = groupNamesList.toArray(new String[groupNamesList.size()]);
-    		System.out.println("groupNames:" + groupNames.length);
+    		logger.info("groupNames:" + groupNames.length);
 		}
 		
-		System.out.println("roleNames:" + roleNames.length);
-		System.out.println("groupNames:" + groupNames.length);
+		logger.info("roleNames:" + roleNames.length);
+		logger.info("groupNames:" + groupNames.length);
 		
     	logger.info("systemUserVO:" + systemUserVO.getUserName());
     	logger.info("oldPassword:" + oldPassword);
@@ -1047,7 +1047,7 @@ public class SystemUserController extends BaseController
 		{
 			for (int i=0; i < groupNames.length; i++)
             {
-				System.out.println("Adding group:" + groupNames[i]);
+				logger.info("Adding group:" + groupNames[i]);
 				GroupController.getController().addUser(groupNames[i], systemUser.getUserName(), db);
             }
 		}
@@ -1096,7 +1096,7 @@ public class SystemUserController extends BaseController
 			}
 			catch (Exception e) 
 			{
-				System.out.println("Error generating password:" + e.getMessage());
+				logger.error("Error generating password:" + e.getMessage());
 			}
 		}
 
@@ -1165,7 +1165,7 @@ public class SystemUserController extends BaseController
 			}
 			catch (Exception e) 
 			{
-				System.out.println("Error generating password:" + e.getMessage());
+				logger.error("Error generating password:" + e.getMessage());
 			}
 		}
 
@@ -1220,7 +1220,7 @@ public class SystemUserController extends BaseController
 			}
 			catch (Exception e) 
 			{
-				System.out.println("Error generating password:" + e.getMessage());
+				logger.error("Error generating password:" + e.getMessage());
 			}
 		}
 

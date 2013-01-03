@@ -129,8 +129,47 @@ public class AccessRightController extends BaseController
 		return this.getAllVOObjects(AccessRightGroupImpl.class, "accessRightGroupId", db);
 	}
 	    
+	public void preCacheUserAccessRightVOList(InfoGluePrincipal principal) throws Exception
+	{
+		if(principal.getIsAdministrator() || preCacheInProcessForUsers.contains(principal.getName()))
+		{
+			logger.warn("No recaching user access rights now as it's in process allready");
+			return;
+		}
+		
+		try
+		{
+			preCacheInProcessForUsers.add(principal.getName());
+			
+			Database db = CastorDatabaseService.getDatabase();
+	
+			try 
+			{
+				beginTransaction(db);
+				
+				preCacheUserAccessRightVOList(principal, db);
+				
+				commitTransaction(db);
+			} 
+			catch (Exception e) 
+			{
+			    logger.info("An error occurred so we should not complete the transaction:" + e);
+				rollbackTransaction(db);
+				throw new SystemException(e.getMessage());					
+			}
+		}
+		finally
+		{
+			preCacheInProcessForUsers.remove(principal.getName());
+		}
+	}
+	
+	
 	public void preCacheUserAccessRightVOList(InfoGluePrincipal principal, Database db) throws Exception
 	{
+		if(!principal.getIsAdministrator() && !preCacheInProcessForUsers.contains(principal.getName()))
+			return;
+		
 		Timer t = new Timer();
 		//System.out.println("Recaching all access rights for " + principal.getName() + " again....");
 		//Iför detta sen också - cachear alla sidor som är skyddade..
@@ -1845,7 +1884,6 @@ public class AccessRightController extends BaseController
 		Map<String,Integer> cachedPrincipalAuthorizationMap = (Map<String,Integer>)CacheController.getCachedObject("userAccessCache", "authorizationMap_" + infoGluePrincipal.getName());
 		if(!infoGluePrincipal.getIsAdministrator() && cachedPrincipalAuthorizationMap == null && !preCacheInProcessForUsers.contains(infoGluePrincipal.getName()))
 		{
-
 			class PreCacheTask implements Runnable 
 			{
 		        InfoGluePrincipal infoGluePrincipal;

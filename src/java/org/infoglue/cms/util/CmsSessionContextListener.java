@@ -39,6 +39,7 @@ import javax.servlet.http.HttpSessionListener;
 
 import org.apache.log4j.Logger;
 import org.infoglue.cms.applications.databeans.SessionInfoBean;
+import org.infoglue.cms.controllers.kernel.impl.simple.AccessRightController;
 import org.infoglue.cms.controllers.kernel.impl.simple.UserControllerProxy;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.security.InfoGlueAuthenticationFilter;
@@ -178,7 +179,7 @@ public class CmsSessionContextListener implements HttpSessionListener
 									InfoGluePrincipal principal = (InfoGluePrincipal)sess.getAttribute(InfoGlueAuthenticationFilter.INFOGLUE_FILTER_USER);
 									if(principal == null)
 										principal = (InfoGluePrincipal)sess.getAttribute("infogluePrincipal");
-									
+									logger.info("principal:" + principal);
 									if(principal != null)
 									{
 										CacheController.clearCache("principalCache");
@@ -186,7 +187,10 @@ public class CmsSessionContextListener implements HttpSessionListener
 										CacheController.clearCache("personalAuthorizationCache");
 
 										InfoGluePrincipal newUser = UserControllerProxy.getController().getUser(principal.getName());
+										logger.info("newUser:" + newUser.getGroups().size());
 										sess.setAttribute(InfoGlueAuthenticationFilter.INFOGLUE_FILTER_USER, newUser);
+
+										AccessRightController.getController().preCacheUserAccessRightVOList(newUser);
 									}
 								}
 								catch (Exception e) 
