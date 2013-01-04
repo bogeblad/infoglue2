@@ -2021,7 +2021,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
 				url = url.replaceAll("authenticateUser%3Dtrue","");
 		}
 		if(url.endsWith("%3F"))
-			url = url.substring(0, url.length() - 1);
+			url = url.substring(0, url.length() - 3);
 		
 		String repositoryLoginUrl = RepositoryDeliveryController.getRepositoryDeliveryController().getExtraPropertyValue(repositoryId, "loginUrl");
 		//System.out.println("repositoryLoginUrl:" + repositoryLoginUrl);
