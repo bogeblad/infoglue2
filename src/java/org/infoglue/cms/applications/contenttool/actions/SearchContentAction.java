@@ -394,7 +394,7 @@ public class SearchContentAction extends InfoGlueAbstractAction
 		{
 			Calendar startCal = Calendar.getInstance();
 			//System.out.println("startCal:" + startCal.getTime());
-			startCal.roll(Calendar.WEEK_OF_YEAR, -1);
+			startCal.add(Calendar.WEEK_OF_YEAR, -1);
 			//System.out.println("startCal:" + startCal.getTime());
 			this.modifiedDateTimeStart = startCal.getTime();
 		}
