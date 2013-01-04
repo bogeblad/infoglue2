@@ -790,7 +790,7 @@ public class CacheController extends Thread
 	    {
 	    	if(logger.isInfoEnabled())
     			logger.info("Caching value to disk also");
-	    	
+		    
 	    	String compressPageCache = CmsPropertyHandler.getCompressPageCache();
 	    	
 	    	//System.out.println("Caching in file...:" + value.toString());
@@ -4414,8 +4414,17 @@ public class CacheController extends Thread
 
 	public static void clearFileCaches()
 	{
-        String dir = CmsPropertyHandler.getDigitalAssetPath() + File.separator + "caches";
+		String dir = CmsPropertyHandler.getDigitalAssetPath() + File.separator + "caches";
         File dirFile = new File(dir);
+        File dirOldFile = new File(dir+"CAN_BE_REMOVED");
+        if(dirFile.exists())
+        	dirFile.renameTo(dirOldFile);
+        
+        new Thread(new Runnable() { public void run() {try {CacheController.clearFileCachesImpl(new File(CmsPropertyHandler.getDigitalAssetPath() + File.separator + "caches_CAN_BE_REMOVED"));} catch (Exception e) {}}}).start();
+	}
+	
+	public static void clearFileCachesImpl(File dirFile)
+	{
         //System.out.println("dirFile:" + dirFile.exists());
         if(dirFile.exists())
         {
@@ -4455,6 +4464,12 @@ public class CacheController extends Thread
 
 	public static void clearFileCaches(String cacheName)
 	{
+		CacheController.clearFileCachesImpl(cacheName);
+        //new Thread(new Runnable() { public void run() {try {CacheController.clearFileCachesImpl(cacheName);} catch (Exception e) {}}}).start();
+	}
+	
+	public static void clearFileCachesImpl(String cacheName)
+	{
         String dir = CmsPropertyHandler.getDigitalAssetPath() + File.separator + "caches";
         File dirFile = new File(dir);
         //System.out.println("dirFile:" + dirFile.exists());
@@ -4465,7 +4480,7 @@ public class CacheController extends Thread
             {
             	File subCacheDir = subCaches[i];
             	//System.out.println("subCacheDir:" + subCacheDir.getName());
-            	if(subCacheDir.isDirectory() && subCacheDir.getName().equals(cacheName))
+            	if(subCacheDir.isDirectory() && subCacheDir.getName().equals(cacheName) || (cacheName.equals("pageCache") && subCacheDir.getName().startsWith(cacheName)))
             	{
             		try
             		{
