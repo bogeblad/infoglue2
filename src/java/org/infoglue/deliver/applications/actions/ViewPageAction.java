@@ -315,7 +315,6 @@ public class ViewPageAction extends InfoGlueAbstractAction
 	    	if(logger.isInfoEnabled())
 	    		logger.info("pageKey:" + pageKey);
 
-	    	System.out.println("this.principal:" + this.principal);
 	    	templateController = getTemplateController(dbWrapper, getSiteNodeId(), getLanguageId(), getContentId(), getRequest(), (InfoGluePrincipal)this.principal, false);
 
 			if(logger.isInfoEnabled())
@@ -373,7 +372,6 @@ public class ViewPageAction extends InfoGlueAbstractAction
 			    {
 			        String invokerClassName = siteNodeTypeDefinitionVO.getInvokerClassName();
 			        PageInvoker pageInvoker = (PageInvoker)Class.forName(invokerClassName).newInstance();
-			        System.out.println("templateController:" + templateController.getPrincipal());
 			        pageInvoker.setParameters(dbWrapper, this.getRequest(), this.getResponse(), templateController, deliveryContext);
 			        pageInvoker.deliverPage();
 
