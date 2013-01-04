@@ -283,7 +283,7 @@ public class ComponentController extends BaseController
 	    	String groupNameDefault = "Unknown";
 			String descriptionDefault = "Unknown";
 	    	String groupNameAttribute = ContentVersionController.getContentVersionController().getAttributeValue(contentVersionVO, "GroupName", false);
-	    	System.out.println("groupNameAttribute:" + groupNameAttribute);
+	    	logger.info("groupNameAttribute:" + groupNameAttribute);
 	    	String descriptionAttribute = ContentVersionController.getContentVersionController().getAttributeValue(contentVersionVO, "Description", false);
 			contentVO.getExtraProperties().put("GroupName", (groupNameAttribute == null ? groupNameDefault : groupNameAttribute));
 			contentVO.getExtraProperties().put("Description", (descriptionAttribute == null ? descriptionDefault : descriptionAttribute));
