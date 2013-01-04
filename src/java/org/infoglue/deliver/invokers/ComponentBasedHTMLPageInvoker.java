@@ -286,7 +286,7 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
    		
    		if(logger.isInfoEnabled())
    			logger.info("\n\nEvaluateFull:" + this.getDeliveryContext().getEvaluateFullPage());
-		if(this.getDeliveryContext().getEvaluateFullPage())
+		if(this.getDeliveryContext().getEvaluateFullPage() && pageContent.length() < 1000000)
 		{
 	   		try
 	   		{
@@ -303,7 +303,10 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 				logger.error("Could not evaluate full page: " + e.getMessage(), e);
 			}
 		}
-
+		else if(pageContent.length() < 1000000)
+			logger.warn("The page:" + this.getTemplateController().getOriginalFullURL() + " was to big to evaluate full:" + pageContent.length());
+			
+   		
 		//pageString = decorateHeadAndPageWithVarsFromComponents(pageString);
 		
 		this.setPageString(pageString);
@@ -1805,7 +1808,7 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 		String template = null;
 
 		templateController.getDeliveryContext().addDebugInformation("Getting component template. ContentID: " + contentId);
-		templateController.getDeliveryContext().addDebugInformation("User: " + templateController.getPrincipal().getName());
+		templateController.getDeliveryContext().addDebugInformation("User: " + templateController.getPrincipal());
 		try
 		{
 		    if(templateController.getDeliveryContext().getShowSimple() == true)

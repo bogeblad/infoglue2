@@ -315,6 +315,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
 	    	if(logger.isInfoEnabled())
 	    		logger.info("pageKey:" + pageKey);
 
+	    	System.out.println("this.principal:" + this.principal);
 	    	templateController = getTemplateController(dbWrapper, getSiteNodeId(), getLanguageId(), getContentId(), getRequest(), (InfoGluePrincipal)this.principal, false);
 
 			if(logger.isInfoEnabled())
@@ -372,6 +373,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
 			    {
 			        String invokerClassName = siteNodeTypeDefinitionVO.getInvokerClassName();
 			        PageInvoker pageInvoker = (PageInvoker)Class.forName(invokerClassName).newInstance();
+			        System.out.println("templateController:" + templateController.getPrincipal());
 			        pageInvoker.setParameters(dbWrapper, this.getRequest(), this.getResponse(), templateController, deliveryContext);
 			        pageInvoker.deliverPage();
 
@@ -1122,7 +1124,6 @@ public class ViewPageAction extends InfoGlueAbstractAction
 				if(masterLanguageVO == null)
 					throw new SystemException("There was no master language for the siteNode " + getSiteNodeId());
 
-				
 				NodeDeliveryController ndc = NodeDeliveryController.getNodeDeliveryController(siteNodeId, languageId, contentId);
 				boolean isMasterLanguageValid = LanguageDeliveryController.getLanguageDeliveryController().getIsValidLanguage(db, ndc, siteNodeId, masterLanguageVO.getId());
 				if(!isMasterLanguageValid)
@@ -1580,12 +1581,19 @@ public class ViewPageAction extends InfoGlueAbstractAction
 		//getRequest().setAttribute("gateway", "" + true);
 		String originalFullURL = this.getOriginalFullURL();
 		
-		int index = originalFullURL.indexOf("&authenticateUser=");
+		int index = originalFullURL.indexOf("authenticateUser=true&");
 		if(index > -1)
-			originalFullURL = originalFullURL.substring(0, index);
-		int index2 = originalFullURL.indexOf("?authenticateUser=");
-		if(index2 > -1)
-			originalFullURL = originalFullURL.substring(0, index2);
+			originalFullURL = originalFullURL.replaceAll("authenticateUser=true&","");
+		else
+		{
+			int index2 = originalFullURL.indexOf("authenticateUser=true");
+			if(index2 > -1)
+				originalFullURL = originalFullURL.replaceAll("authenticateUser=true","");
+		}
+		if(originalFullURL.endsWith("?"))
+			originalFullURL = originalFullURL.substring(0, originalFullURL.length() - 1);
+		
+		//System.out.println("originalFullURL:" + originalFullURL);
 		
 		principal = AuthenticationModule.getAuthenticationModule(db, originalFullURL, this.getRequest(), false).loginUser(getRequest(), getResponse(), status);
 		//System.out.println("principal in AAAAA:" + principal);
@@ -1605,6 +1613,13 @@ public class ViewPageAction extends InfoGlueAbstractAction
 			
 		    this.principal = principal;
 		}
+		else
+		{
+			String redirectUrl = getRedirectUrl(getRequest(), getResponse());								
+			getResponse().sendRedirect(redirectUrl);
+			redirected = true;
+		}
+
 		return redirected;
 	}
 	
@@ -1997,12 +2012,37 @@ public class ViewPageAction extends InfoGlueAbstractAction
   	private String getRedirectUrl(HttpServletRequest request, HttpServletResponse response) throws ServletException, Exception 
   	{
 		String url = AuthenticationModule.getAuthenticationModule(null, this.getOriginalFullURL(), this.getRequest(), false).getLoginDialogUrl(request, response);
+
+		int index = url.indexOf("authenticateUser%3Dtrue%26");
+		if(index > -1)
+			url = url.replaceAll("authenticateUser%3Dtrue%26","");
+		else
+		{
+			int index2 = url.indexOf("authenticateUser%3Dtrue");
+			if(index2 > -1)
+				url = url.replaceAll("authenticateUser%3Dtrue","");
+		}
+		if(url.endsWith("%3F"))
+			url = url.substring(0, url.length() - 1);
 		
 		String repositoryLoginUrl = RepositoryDeliveryController.getRepositoryDeliveryController().getExtraPropertyValue(repositoryId, "loginUrl");
 		//System.out.println("repositoryLoginUrl:" + repositoryLoginUrl);
 		if(repositoryLoginUrl != null && !repositoryLoginUrl.equals(""))
 		{
-			String returnAddress = this.getOriginalFullURL();
+			String originalFullURL = this.getOriginalFullURL();
+			int index2 = originalFullURL.indexOf("authenticateUser=true&");
+			if(index2 > -1)
+				originalFullURL = originalFullURL.replaceAll("authenticateUser=true&","");
+			else
+			{
+				int index3 = originalFullURL.indexOf("authenticateUser=true");
+				if(index3 > -1)
+					originalFullURL = originalFullURL.replaceAll("authenticateUser=true","");
+			}
+			if(originalFullURL.endsWith("?"))
+				originalFullURL = originalFullURL.substring(0, url.length() - 1);
+
+			String returnAddress = originalFullURL;
 			url = repositoryLoginUrl + (repositoryLoginUrl.indexOf("?") > -1 ? "&" : "?") + "returnAddress=" + URLEncoder.encode(returnAddress, "UTF-8");
 		}
 		
