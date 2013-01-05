@@ -106,7 +106,7 @@
     <td>InfoGlue cache name</td>
     <td>Item size in bytes</td>
     <td>Details</td>
-    <td>Actions <a href="ViewApplicationState!clearCaches.action">Clear All</a></td>
+    <td>Actions <a href="ViewApplicationState!clearCache.action?cacheName=$cacheName">Clear All</a></td>
   </tr>
   #if($cache.class.name == "com.opensymphony.oscache.general.GeneralCacheAdministrator") 
   	  #foreach($cacheEntry in $cacheMap.values())
