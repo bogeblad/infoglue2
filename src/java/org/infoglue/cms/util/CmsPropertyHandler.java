@@ -1975,6 +1975,7 @@ public class CmsPropertyHandler
 		    		Properties properties = new Properties();
 					properties.load(new ByteArrayInputStream(cacheSettingsString.getBytes("UTF-8")));
 					localCacheSettings = properties;
+					CacheController.pattern = null;
 				}	
 				catch(Exception e)
 				{

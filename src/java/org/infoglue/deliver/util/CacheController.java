@@ -45,6 +45,8 @@ import java.util.TreeMap;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -184,7 +186,8 @@ public class CacheController extends Thread
 	private boolean expireCacheAutomatically = false;
 	private int cacheExpireInterval = 1800000;
 	private boolean continueRunning = true;
-	
+	public static Pattern pattern = null;
+		
     public static Date expireDateTime = null;
     public static Date publishDateTime = null;
      
@@ -1244,7 +1247,7 @@ public class CacheController extends Thread
 			    			    }
 			    				catch (NeedsRefreshException nre) 
 							    {
-			    					System.out.println("Stale cache entry");
+			    					logger.warn("Stale cache entry");
 							        cacheAdministrator.cancelUpdate(key);
 								}
 			    			}
@@ -1304,7 +1307,10 @@ public class CacheController extends Thread
 			    	String pageCacheMaxGroupsString = (String)cacheSettings.get("PAGE_CACHE_MAX_GROUPS");
 			    	if(pageCacheMaxGroupsString != null)
 			    		pageCacheMaxGroups = new Integer(pageCacheMaxGroupsString);
-		    	}
+			    	
+			    	if(pageCacheExclusionsRegexp != null && !pageCacheExclusionsRegexp.equals(""))
+						pattern = Pattern.compile(pageCacheExclusionsRegexp);
+			    }
 			}
 			catch (Exception e) 
 			{
@@ -1360,22 +1366,28 @@ public class CacheController extends Thread
 			{
 		    	logger.info("pageCacheExclusionsRegexp:" + pageCacheExclusionsRegexp);
 		    	logger.info("pageCacheMaxGroups:" + pageCacheMaxGroups);
-			    if(pageCacheExclusionsRegexp != null && !pageCacheExclusionsRegexp.equals("") && pageKey.matches(pageCacheExclusionsRegexp))
-		    	{
-			    	logger.info("Skipping caching key 1:" + pageKey);
-		    		return false;
-		    	}
-		    	if(pageCacheMaxGroups != null && !pageCacheMaxGroups.equals("") && allUsedEntitiesFilteredCopy.size() > pageCacheMaxGroups)
-		    	{
-		    		logger.info("Skipping caching key 2:" + pageKey);
-		    		return false;
-		    	}
+			
+				if(pattern != null)
+				{
+			        Matcher matcher = pattern.matcher(pageKey);
+			        if(matcher.find())
+			    	{
+				    	logger.info("Skipping caching key 1:" + pageKey);
+			    		return false;
+			    	}
+			    	if(pageCacheMaxGroups != null && !pageCacheMaxGroups.equals("") && allUsedEntitiesFilteredCopy.size() > pageCacheMaxGroups)
+			    	{
+			    		logger.info("Skipping caching key 2:" + pageKey);
+			    		return false;
+			    	}
+			    	matcher.reset();
+				}
 			}
 			catch (Exception e) 
 			{
 				logger.warn("cacheSettings was null:" + e.getMessage(), e);
 			}
-			
+
 			String[] allUsedEntitiesCopy = allUsedEntitiesFilteredCopy.toArray(new String[0]);
 			//System.out.println("allUsedEntitiesCopy:" + allUsedEntitiesCopy.length);
 			logger.info("allUsedEntitiesCopy:" + allUsedEntitiesCopy.length);

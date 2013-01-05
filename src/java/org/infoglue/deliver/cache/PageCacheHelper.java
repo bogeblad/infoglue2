@@ -123,12 +123,12 @@ public class PageCacheHelper implements Runnable
 				
 				if(localFileDeletionQueue.size() > 0)
 				{
-					System.out.println("Deleting queued files");
+					logger.warn("Deleting queued files");
 					for(String pageKey : localFileDeletionQueue)
 					{
 						try
 						{
-							System.out.println("Remove file:" + pageKey);
+							logger.warn("Remove file:" + pageKey);
 							clearPageCache(pageKey);
 						}
 						catch (Exception e) 

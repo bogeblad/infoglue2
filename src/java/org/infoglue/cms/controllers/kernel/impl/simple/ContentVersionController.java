@@ -1310,6 +1310,7 @@ public class ContentVersionController extends BaseController
     
     public ContentVersionVO update(Integer contentId, Integer languageId, ContentVersionVO contentVersionVO, InfoGluePrincipal principal, boolean skipValidate) throws ConstraintException, SystemException
     {
+    	
     	Timer t = new Timer();
         ContentVersionVO updatedContentVersionVO;
 		
@@ -1327,6 +1328,7 @@ public class ContentVersionController extends BaseController
             ceb.throwIfNotEmpty();
             
             ContentVersion contentVersion = null;
+            Integer contentVersionIdToUpdate = contentVersionVO.getId();
             
 			contentVersionVO.setModifiedDateTime(new Date());
 	        if(contentVersionVO.getId() == null)
@@ -1337,7 +1339,8 @@ public class ContentVersionController extends BaseController
 	    	else
 	    	{
 				ContentVersionVO oldContentVersionVO = ContentVersionController.getContentVersionController().getContentVersionVOWithId(contentVersionVO.getId(), db);
-	    	    if(!oldContentVersionVO.getStateId().equals(ContentVersionVO.WORKING_STATE))
+				ContentVersionVO latestContentVersionVO = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(oldContentVersionVO.getContentId(), oldContentVersionVO.getLanguageId(), db);
+	    	    if(!oldContentVersionVO.getStateId().equals(ContentVersionVO.WORKING_STATE) && !latestContentVersionVO.getStateId().equals(ContentVersionVO.WORKING_STATE))
 				{
 					List events = new ArrayList();
 					contentVersion = ContentStateController.changeState(oldContentVersionVO.getId(), ContentVersionVO.WORKING_STATE, (contentVersionVO.getVersionComment().equals("No comment") ? "new working version" : contentVersionVO.getVersionComment()), false, null, principal, oldContentVersionVO.getContentId(), db, events);
@@ -1345,15 +1348,23 @@ public class ContentVersionController extends BaseController
 				}
 				else
 				{
+					if(latestContentVersionVO.getStateId().equals(ContentVersionVO.WORKING_STATE))
+					{
+						oldContentVersionVO = contentVersionVO;
+						contentVersionIdToUpdate = latestContentVersionVO.getId();
+					}
+						
 			    	List<String> changedAttributes = getChangedAttributeNames(oldContentVersionVO, contentVersionVO);
 		    	    Map extraInfoMap = new HashMap();
 		    	    String csList = StringUtils.join(changedAttributes.toArray(), ",");
 		    	    //logger.info("csList:" + csList);
 		    	    extraInfoMap.put("changedAttributeNames", csList);
 		    		CacheController.setExtraInfo(ContentVersionImpl.class.getName(), contentVersionVO.getId().toString(), extraInfoMap);
-					contentVersion = ContentVersionController.getContentVersionController().getContentVersionWithId(contentVersionVO.getId(), db);
+					contentVersion = ContentVersionController.getContentVersionController().getContentVersionWithId(contentVersionIdToUpdate, db);
 					//contentVersionVO.setModifiedDateTime(DateHelper.getSecondPreciseDate());
 					contentVersion.setValueObject(contentVersionVO);
+					contentVersion.setContentVersionId(contentVersionIdToUpdate);
+					contentVersion.setStateId(ContentVersionVO.WORKING_STATE);
 				}
 	    	}
 
