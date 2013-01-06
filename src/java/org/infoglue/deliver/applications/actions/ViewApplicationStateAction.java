@@ -1140,6 +1140,11 @@ public class ViewApplicationStateAction extends InfoGlueAbstractAction
         this.cacheName = cacheName;
     }
 
+    public String getCacheName()
+    {
+        return this.cacheName;
+    }
+
     public void setClearFileCache(boolean clearFileCache)
     {
         this.clearFileCache = clearFileCache;
