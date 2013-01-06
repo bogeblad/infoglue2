@@ -24,6 +24,7 @@
 package org.infoglue.deliver.util;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -238,7 +239,12 @@ public class RequestAnalyser
     {
         return Counter.getPageNumberOfHits(pageUrl);
     }
-    
+
+    public static Date getLastEventDate(String pageUrl)
+    {
+        return Counter.getLastEventDate(pageUrl);
+    }
+
     public static void resetComponentStatistics()
     {
     	Counter.resetComponentStatistics();

@@ -24,6 +24,7 @@ package org.infoglue.deliver.util;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -279,6 +280,7 @@ public class Counter
         	Long oldTotalElapsedTime = (Long)pageStatistics.get("totalElapsedTime");
            	Long totalElapsedTime = new Long(oldTotalElapsedTime.longValue() + elapsedTime);			
         	pageStatistics.put("totalElapsedTime", totalElapsedTime);
+        	pageStatistics.put("lastEventDate", new Date());
 
         	Integer oldTotalNumberOfInvokations = (Integer)pageStatistics.get("totalNumberOfInvokations");
         	Integer totalNumberOfInvokations = new Integer(oldTotalNumberOfInvokations.intValue() + 1);			
@@ -322,6 +324,16 @@ public class Counter
         		return totalElapsedTime.longValue() / oldTotalNumberOfInvokations.intValue();		
         	else
         		return -1;
+		}
+    }
+
+    static Date getLastEventDate(String pageUrl)
+    {
+    	Map pageStatistics = getPageStatistics(pageUrl);
+    	synchronized (pageStatistics) 
+    	{
+        	Date lastEventDate = (Date)pageStatistics.get("lastEventDate");
+        	return lastEventDate;
 		}
     }
 

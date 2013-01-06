@@ -30,6 +30,7 @@ import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -866,6 +867,8 @@ public class ViewApplicationStateAction extends InfoGlueAbstractAction
 		
         states.add(getList("<br/><strong>Individual pages (in milliseconds)</strong>", "&nbsp;"));
         
+        VisualFormatter vf = new VisualFormatter();
+        
         List unsortedPageUrls = new ArrayList();
         Set pageUrls = RequestAnalyser.getAllPageUrls();
         Iterator pageUrlsIterator = pageUrls.iterator();
@@ -874,7 +877,8 @@ public class ViewApplicationStateAction extends InfoGlueAbstractAction
         	String pageUrl = (String)pageUrlsIterator.next();
         	long pageAverageElapsedTime = RequestAnalyser.getPageAverageElapsedTime(pageUrl);
         	int pageNumberOfHits = RequestAnalyser.getPageNumberOfHits(pageUrl);
-        	unsortedPageUrls.add(getList("" + pageUrl + " - " + pageNumberOfHits + " hits - total " + (pageNumberOfHits * pageAverageElapsedTime), new Long(pageAverageElapsedTime)));
+        	Date date = RequestAnalyser.getLastEventDate(pageUrl);
+        	unsortedPageUrls.add(getList("" + pageUrl + " (last accessed " + vf.formatDate(date,"yyyy-MM-dd HH:mm") + ") - " + pageNumberOfHits + " hits - total " + (pageNumberOfHits * pageAverageElapsedTime), new Long(pageAverageElapsedTime)));
         }
 
         Collections.sort(unsortedPageUrls, new AverageInvokingTimeComparator());
