@@ -112,13 +112,25 @@
   </tr>
   #foreach($cacheName in $sortedCaches)
       #set($cache = $caches.get($cacheName))
-	  #set($parsedData = $this.parseData($eventListeners.get("${cacheName}_cacheEntryEventListener").toString(), $eventListeners.get("${cacheName}_cacheMapAccessEventListener").toString()))
+      
+      #if($cache.class.name == "com.opensymphony.oscache.general.GeneralCacheAdministrator") 
+      	#set($elementOne = "")
+      	#set($elementTwo = "")
+      	#foreach($cacheEventListener in $cache.cache.cacheEventListenerList.listenerList)
+      		#if($velocityCount == 2)
+	      		#set($elementOne = "$cacheEventListener")
+      		#else
+      			#set($elementTwo = "$cacheEventListener")
+      		#end
+      	#end
+      	#set($parsedData = $this.parseData("$elementOne", "$elementTwo"))
+	  #end
 	  <tr>
 	    <td style="border-bottom: 1px solid #999999;" class="text" valign="top"><a href="ViewApplicationState!cacheDetailsStatistics.action?cacheName=$cacheName">$cacheName</a></td>
 	    <td style="border-bottom: 1px solid #999999;"  class="text" valign="top">#if($caches.get($cacheName).class.name == "com.opensymphony.oscache.general.GeneralCacheAdministrator") $cache.getCache().getSize() #else $cache.size() #end</td>
 	    <td style="border-bottom: 1px solid #999999;"  class="text" valign="top">
 	    	#if($cache.class.name == "com.opensymphony.oscache.general.GeneralCacheAdministrator") 
-	    		$parsedData.estimatedSize<br/>
+      			$parsedData.estimatedSize<br/>
 		    #end
 	    </td>
 	    <td style="border-bottom: 1px solid #999999;"  class="text" valign="top">

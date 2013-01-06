@@ -1125,11 +1125,6 @@ public class ViewApplicationStateAction extends InfoGlueAbstractAction
 		return applicationCache;
 	}
 
-	public Map getEventListeners()
-	{
-		return CacheController.getEventListeners();
-	}
-
     public List getStates()
     {
         return states;

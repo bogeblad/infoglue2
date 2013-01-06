@@ -7,6 +7,10 @@
 	
 	<style>
 	<!--
+		body
+		{
+			font-size: 10px;
+		}
 		table 
 		{
 			width : 900px;
