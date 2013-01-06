@@ -178,7 +178,6 @@ public class CacheController extends Thread
 
     public static List notifications = Collections.synchronizedList(new ArrayList());
     
-    private static Map eventListeners = new HashMap();
 	//private static Map caches = new HashMap();
 	private static ConcurrentMap caches = new ConcurrentHashMap();
 	
@@ -642,8 +641,6 @@ public class CacheController extends Thread
 				cacheAdministrator.getCache().addCacheEventListener(cacheMapAccessEventListener, CacheMapAccessEventListener.class);
 				caches.put(cacheName, cacheAdministrator);
 				//locksCache.put(cacheName, new ReentrantReadWriteLock());
-				eventListeners.put(cacheName + "_cacheEntryEventListener", cacheEntryEventListener);
-				eventListeners.put(cacheName + "_cacheMapAccessEventListener", cacheMapAccessEventListener);
 		    }
 		    
 			GeneralCacheAdministrator cacheAdministrator = (GeneralCacheAdministrator)caches.get(cacheName);
@@ -1123,8 +1120,6 @@ public class CacheController extends Thread
 			cacheAdministrator.getCache().addCacheEventListener(cacheMapAccessEventListener, CacheMapAccessEventListener.class);
 			caches.put(cacheName, cacheAdministrator);
 			//locksCache.put(cacheName, new ReentrantReadWriteLock());
-			eventListeners.put(cacheName + "_cacheEntryEventListener", cacheEntryEventListener);
-			eventListeners.put(cacheName + "_cacheMapAccessEventListener", cacheMapAccessEventListener);
 	    }
 	    
 	    /*
@@ -1175,8 +1170,11 @@ public class CacheController extends Thread
 			}
 	    }
 	    */
-	    //System.out.println("Getting from file: " + pageKey);
+	    if(logger.isInfoEnabled())
+	    	logger.info("Getting from file: " + pageKey);
 	    Object pageCacheFileName = getCachedObjectFromAdvancedCache(cacheName, pageKey, CacheEntry.INDEFINITE_EXPIRY);
+	    if(logger.isInfoEnabled())
+	    	logger.info("pageCacheFileName:" + pageCacheFileName + " from " + cacheName + " and key: " + pageKey);
 	    if(pageCacheFileName != null && !pageCacheFileName.equals(""))
 	    	value = PageCacheHelper.getInstance().getCachedPageString(pageKey, new File(pageCacheFileName.toString()));
 	    else
@@ -1738,8 +1736,6 @@ public class CacheController extends Thread
 		            */
 				}
 		    	caches.remove(cacheName);
-			    eventListeners.remove(cacheName + "_cacheEntryEventListener");
-			    eventListeners.remove(cacheName + "_cacheMapAccessEventListener");
 	
 			    logger.info("clearCache stop...");
 			}
@@ -2069,7 +2065,6 @@ public class CacheController extends Thread
 							{
 						    	cacheInstance.flushAll();
 							}
-					        eventListeners.clear();
 						}
 						logger.info("Cleared cache:" + e.getKey());
 						
@@ -2543,10 +2538,6 @@ public class CacheController extends Thread
 							    	//Hur lšser vi detta bra?
 							    	if(CmsPropertyHandler.getOperatingMode().equalsIgnoreCase("0"))
 							    	{
-								    	logger.info("Getting eventListeners...");
-								        Object cacheEntryEventListener = eventListeners.get(e.getKey() + "_cacheEntryEventListener");
-							    		Object cacheMapAccessEventListener = eventListeners.get(e.getKey() + "_cacheMapAccessEventListener");
-	
 								    	if(cacheName.equals("pageCacheExtra"))
 								    	{
 									    	PageCacheHelper.getInstance().notify("siteNodeVersion_" + entityId);
@@ -3286,8 +3277,6 @@ public class CacheController extends Thread
 							    	//System.out.println("cacheName:" + cacheName);
 							    	//logger.info("Flushing all:" + cacheName);
 							    	cacheInstance.flushAll();
-							    	eventListeners.remove(cacheName + "_cacheEntryEventListener");
-								    eventListeners.remove(cacheName + "_cacheMapAccessEventListener");
 									logger.info("clearing:" + e.getKey());
 							    }
 							} //BACK
@@ -3786,11 +3775,6 @@ public class CacheController extends Thread
     public static Map getCaches()
     {
         return caches;
-    }
-
-    public static Map getEventListeners()
-    {
-        return eventListeners;
     }
 
     public static void evictWaitingCache() throws Exception
