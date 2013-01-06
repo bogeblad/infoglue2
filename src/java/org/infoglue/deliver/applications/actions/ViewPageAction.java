@@ -443,6 +443,8 @@ public class ViewPageAction extends InfoGlueAbstractAction
 		}
 		catch(Exception e)
 		{
+			logger.warn("Extra warn:" + e.getMessage(), e);
+			
 			String extraInformation = "Original URL: " + getOriginalFullURL() + "\n";
 			extraInformation += "Referer: " + getRequest().getHeader("Referer") + "\n";
 			extraInformation += "UserAgent: " + getRequest().getHeader("User-Agent") + "\n";
