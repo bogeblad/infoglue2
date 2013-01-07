@@ -76,7 +76,7 @@ public class PageCacheHelper implements Runnable
 
 	public synchronized void run()
 	{
-		System.out.println("Starting PageCacheHelper thread....");
+		logger.info("Starting PageCacheHelper thread....");
 		
 		boolean run = true;
 		while(run)
@@ -94,21 +94,21 @@ public class PageCacheHelper implements Runnable
 				
 				if(localPageCacheEvicitionQueue.size() > 0)
 				{
-					System.out.println("Clearing page cache for");
+					logger.info("Clearing page cache for");
 					for(String entity : localPageCacheEvicitionQueue)
 					{
-						System.out.println("entity:" + entity);
+						logger.info("entity:" + entity);
 					}
 					
 					List<String> existingPageKeysForEntities = getMatchingPageKeysForGroups(localPageCacheEvicitionQueue);
-					System.out.println("existingPageKeysForEntities:" + existingPageKeysForEntities.size());
+					logger.info("existingPageKeysForEntities:" + existingPageKeysForEntities.size());
 					for(String pageKey : existingPageKeysForEntities)
 					{
-						System.out.println("Remove pageKey:" + pageKey);
+						logger.info("Remove pageKey:" + pageKey);
 						clearPageCache(pageKey);
 						synchronized (pageKey) 
 						{
-							System.out.println("pageKey in disabled:" + pageKey);
+							logger.info("pageKey in disabled:" + pageKey);
 							disabledPages.remove(pageKey);
 						}
 					}
@@ -123,12 +123,12 @@ public class PageCacheHelper implements Runnable
 				
 				if(localFileDeletionQueue.size() > 0)
 				{
-					logger.warn("Deleting queued files");
+					logger.info("Deleting queued files");
 					for(String pageKey : localFileDeletionQueue)
 					{
 						try
 						{
-							logger.warn("Remove file:" + pageKey);
+							logger.info("Remove file:" + pageKey);
 							clearPageCache(pageKey);
 						}
 						catch (Exception e) 
