@@ -231,7 +231,7 @@ public class PageCacheHelper implements Runnable
     		if(disabledPages.get(key) != null)
     		{
     			logger.info("Disabled as it's going to be removed:" + disabledPages.get(key));
-    			if((System.currentTimeMillis() - disabledPages.get(key).getTime() > 30000))
+    			if((System.currentTimeMillis() - disabledPages.get(key).getTime() > 60000))
     			{
     				logger.warn("This key has been here over 30 seconds. Let's remove it");
     				disabledPages.remove(key);
