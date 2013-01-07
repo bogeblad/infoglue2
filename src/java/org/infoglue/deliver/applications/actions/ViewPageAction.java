@@ -226,8 +226,9 @@ public class ViewPageAction extends InfoGlueAbstractAction
     	
     	RequestAnalyser.getRequestAnalyser().incNumberOfCurrentRequests(tk);
 
-    	long start 			= System.currentTimeMillis();
-    	long elapsedTime 	= 0;
+    	long start 				= System.currentTimeMillis();
+    	long elapsedTime 		= 0;
+    	float startTotalMemory 	= ((float)Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory());
 
     	DatabaseWrapper dbWrapper = new DatabaseWrapper(CastorDatabaseService.getDatabase());
     	
@@ -493,7 +494,13 @@ public class ViewPageAction extends InfoGlueAbstractAction
 			elapsedTime = Math.abs(System.currentTimeMillis() - start);
 			RequestAnalyser.getRequestAnalyser().decNumberOfCurrentRequests(elapsedTime);
 			lastRequestProcessingTime = elapsedTime;
-
+			
+			//This only states how much memory in general has been allocated more than when the thread started. It can well be other threads allocating but a timeframe is nice.
+			float memoryDiff = (((float)Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) - startTotalMemory) / 1024f / 1024f;
+			logger.info("memoryDiff:" + memoryDiff + "(" + startTotalMemory + "-" + ((float)Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) + ")");
+			if(memoryDiff > 150)
+				logger.warn("During the rendering of: " + this.getOriginalFullURL() + " a large amount (" + (int)memoryDiff + "MB) was allocated.");
+			
 		    //System.out.println("The page delivery took " + elapsedTime + "ms for request " + this.getRequest().getRequestURL() + "?" + this.getRequest().getQueryString());
 			if(!memoryWarningSent)
 			{
@@ -712,7 +719,8 @@ public class ViewPageAction extends InfoGlueAbstractAction
     	
    		long start			= System.currentTimeMillis();
 		long elapsedTime 	= 0;
-    			
+		float startTotalMemory 	= ((float)Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory());
+		
 		DatabaseWrapper dbWrapper = new DatabaseWrapper(CastorDatabaseService.getDatabase());
     	//Database db = CastorDatabaseService.getDatabase();
 		
@@ -931,6 +939,12 @@ public class ViewPageAction extends InfoGlueAbstractAction
 		    	
 		    RequestAnalyser.getRequestAnalyser().decNumberOfCurrentRequests(elapsedTime);
 
+		    //This only states how much memory in general has been allocated more than when the thread started. It can well be other threads allocating but a timeframe is nice.
+			float memoryDiff = (((float)Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) - startTotalMemory) / 1024f / 1024f;
+			logger.info("memoryDiff:" + memoryDiff + "(" + startTotalMemory + "-" + ((float)Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) + ")");
+			if(memoryDiff > 150)
+				logger.warn("During the rendering of: " + this.getOriginalFullURL() + " a large amount (" + (int)memoryDiff + "MB) was allocated.");
+			
 			if(!memoryWarningSent)
 			{
 				float memoryLeft = ((float)Runtime.getRuntime().maxMemory() - (float)Runtime.getRuntime().totalMemory()) / 1024f / 1024f;
