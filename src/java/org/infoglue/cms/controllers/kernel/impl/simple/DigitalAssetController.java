@@ -149,7 +149,7 @@ public class DigitalAssetController extends BaseController
         	//DigitalAsset digitalAsset = getDigitalAssetWithId(smallDigitalAsset.getId(), db);
         	digitalAssetList.add(smallDigitalAsset.getValueObject());
         }
-		System.out.println("digitalAssetList:" + digitalAssetList.size());
+		//System.out.println("digitalAssetList:" + digitalAssetList.size());
 		
 		results.close();
 		oql.close();

@@ -1446,7 +1446,7 @@ public class RegistryController extends BaseController
 	            	}
 	            	catch (Exception e) 
 	            	{
-	            		System.out.println("Error getting related sitenode:" + e.getMessage());
+	            		logger.error("Error getting related sitenode:" + e.getMessage());
 					}
 	            }
 	
@@ -1465,7 +1465,6 @@ public class RegistryController extends BaseController
 		
 		//t.printElapsedTime("after registry pullout:" + siteNodeIds.size());
 
-		System.out.println("siteNodeIds:" + siteNodeIds.size());
 		Map<Integer,SiteNodeVO> siteNodeVOMap = SiteNodeController.getController().getSiteNodeVOMap(siteNodeIds.toArray(new Integer[siteNodeIds.size()]), db);
 		
 		//t.printElapsedTime("siteNodeVOMap:" + siteNodeVOMap.size());

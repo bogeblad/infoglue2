@@ -74,7 +74,6 @@ public class ViewPublishingToolStartPageAction extends InfoGlueAbstractAction
     	this.repositories = RepositoryController.getController().getAuthorizedRepositoryVOList(this.getInfoGluePrincipal(), false);
     	
     	this.repoEvents = EventController.getPublicationRepositoryEvents();
-    	System.out.println("repoEvents:" + repoEvents.size());
     	
         return "success";
     }

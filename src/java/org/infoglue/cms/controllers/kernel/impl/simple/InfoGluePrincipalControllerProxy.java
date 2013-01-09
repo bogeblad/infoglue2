@@ -398,7 +398,7 @@ public class InfoGluePrincipalControllerProxy extends BaseController
 				
 				//t.printElapsedTime("group part done:" + largestValue + ":" + prioValue);
 				if(!largestValue.equals("-1") || prioValue != null)
-					System.out.println("FOUND VALUE:" + largestValue + ":" + prioValue);
+					logger.warn("FOUND VALUE:" + largestValue + ":" + prioValue);
 			}
 			
 			if(findLargestValue)

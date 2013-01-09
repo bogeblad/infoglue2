@@ -2168,9 +2168,8 @@ public class NodeDeliveryController extends BaseDeliveryController
         		path = tempNewPath;
         	}
     	}
-    	System.out.println("numberOfPaths:" + numberOfPaths);
-    	System.out.println("path.length:" + path.length);
-        for (int i = numberOfPaths;i < path.length; i++) 
+
+    	for (int i = numberOfPaths;i < path.length; i++) 
         {
             if (i < 0) 
             {

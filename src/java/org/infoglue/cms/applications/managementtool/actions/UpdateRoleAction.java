@@ -58,13 +58,13 @@ public class UpdateRoleAction extends ViewRoleAction //WebworkAbstractAction
 
 		String[] values = getRequest().getParameterValues("userName");
 		String[] contentTypeDefinitionIds = getRequest().getParameterValues("contentTypeDefinitionId");
-		System.out.println("values:" + values);
+		//System.out.println("values:" + values);
 		RoleControllerProxy.getController().updateRole(this.roleVO, values);
-		System.out.println("update done");
+		//System.out.println("update done");
 		
 		if(contentTypeDefinitionIds != null && contentTypeDefinitionIds.length > 0 && !contentTypeDefinitionIds[0].equals(""))
 			RolePropertiesController.getController().updateContentTypeDefinitions(this.getRoleName(), contentTypeDefinitionIds);
-		System.out.println("done");
+		//System.out.println("done");
 		
 		return "success";
 	}
