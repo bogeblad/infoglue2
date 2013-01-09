@@ -2139,13 +2139,14 @@ public class NodeDeliveryController extends BaseDeliveryController
 	        logger.info("numberOfPaths = "+numberOfPaths);
     	}
     
-        String enableNiceURIForLanguage = CmsPropertyHandler.getEnableNiceURIForLanguage();
-	    if(enableNiceURIForLanguage == null || !enableNiceURIForLanguage.equals("inherit") && path[0].length() == 2)
+    	String enableNiceURIForLanguage = CmsPropertyHandler.getEnableNiceURIForLanguage();
+    	if((enableNiceURIForLanguage == null || !enableNiceURIForLanguage.equals("false")) && path.length > 0 && path[0].length() == 2)
 	    {
 	    	LanguageVO language = LanguageDeliveryController.getLanguageDeliveryController().getLanguageWithCode(db, path[0].toLowerCase());
 	    	if(language != null)
 	    		enableNiceURIForLanguage = "true";
 	    }
+	    
     	//logger.info("enableNiceURIForLanguage:" + enableNiceURIForLanguage);
         //logger.info("numberOfPaths:" + numberOfPaths);
     	if(enableNiceURIForLanguage.equalsIgnoreCase("true") && path.length > 0)
@@ -2167,6 +2168,8 @@ public class NodeDeliveryController extends BaseDeliveryController
         		path = tempNewPath;
         	}
     	}
+    	System.out.println("numberOfPaths:" + numberOfPaths);
+    	System.out.println("path.length:" + path.length);
         for (int i = numberOfPaths;i < path.length; i++) 
         {
             if (i < 0) 

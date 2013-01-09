@@ -1324,7 +1324,7 @@ public class CmsPropertyHandler
 
 	public static String getEnableNiceURIForLanguage()
 	{
-		return getServerNodeProperty("enableNiceURIForLanguage", true, "false");
+		return getServerNodeProperty("enableNiceURIForLanguage", true, "inherit");
 	}
 
 	public static String getNiceURIEncoding()
