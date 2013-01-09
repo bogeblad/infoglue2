@@ -1669,8 +1669,11 @@ public class ContentDeliveryController extends BaseDeliveryController
 	{
 	    String assetCacheKey = "" + languageId + "_" + contentId + "_" + siteNodeId + "_" + useLanguageFallback;
 		logger.info("assetCacheKey:" + assetCacheKey);
-		String cacheName = "assetUrlCache";
-		String cachedAssetUrl = (String)CacheController.getCachedObject(cacheName, assetCacheKey);
+
+		//String cacheName = "assetUrlCache";
+		String cacheName = "assetUrlCacheWithGroups";
+		//String cachedAssetUrl = (String)CacheController.getCachedObject(cacheName, assetCacheKey);
+		String cachedAssetUrl = (String)CacheController.getCachedObjectFromAdvancedCache(cacheName, assetCacheKey);
 		if(cachedAssetUrl != null)
 		{
 			logger.info("There was an cached cachedAssetUrl:" + cachedAssetUrl);
@@ -1740,7 +1743,9 @@ public class ContentDeliveryController extends BaseDeliveryController
 			}
         }
             		
-        CacheController.cacheObject(cacheName, assetCacheKey, assetUrl);
+        //CacheController.cacheObject(cacheName, assetCacheKey, assetUrl);
+		//System.out.println("Group:" + "content_" + contentId);
+        CacheController.cacheObjectInAdvancedCache(cacheName, assetCacheKey, assetUrl, new String[]{"content_" + contentId}, true);
         
 		return assetUrl;
 	}
@@ -1829,6 +1834,8 @@ public class ContentDeliveryController extends BaseDeliveryController
 		if(contentId == null || contentId.intValue() < 1)
 			return "";
 
+		Timer t = new Timer();
+		
 		//System.out.println("Adding:" + "content_" + contentId);
 		deliveryContext.addUsedContent(CacheController.getPooledString(1, contentId));
 
@@ -1841,8 +1848,9 @@ public class ContentDeliveryController extends BaseDeliveryController
 	    
 	    assetKey = URLDecoder.decode(assetKey, "utf-8");
 	    
-		String cacheName = "assetUrlCache";
-		String cachedAssetUrl = (String)CacheController.getCachedObject(cacheName, assetCacheKey);
+		String cacheName = "assetUrlCacheWithGroups";
+		//String cachedAssetUrl = (String)CacheController.getCachedObject(cacheName, assetCacheKey);
+		String cachedAssetUrl = (String)CacheController.getCachedObjectFromAdvancedCache(cacheName, assetCacheKey);
 		if(cachedAssetUrl != null)
 		{
 			if(logger.isInfoEnabled())
@@ -1850,7 +1858,7 @@ public class ContentDeliveryController extends BaseDeliveryController
 			
 			return cachedAssetUrl;
 		}
-
+		
 		String assetUrl = "";
 		assetUrl = urlComposer.composeDigitalAssetUrl("", null, "", deliveryContext); 
 		
@@ -2019,7 +2027,12 @@ public class ContentDeliveryController extends BaseDeliveryController
 			}
 		}
 			
-        CacheController.cacheObject(cacheName, assetCacheKey, assetUrl);
+		if(assetUrl == null || assetUrl.equals(""))
+			RequestAnalyser.getRequestAnalyser().registerComponentStatistics("Missed as assetURL was empty", t.getElapsedTime());
+
+        //CacheController.cacheObject(cacheName, assetCacheKey, assetUrl);
+		//System.out.println("Group:" + "content_" + contentId);
+        CacheController.cacheObjectInAdvancedCache(cacheName, assetCacheKey, assetUrl, new String[]{"content_" + contentId}, true);
         
         return assetUrl;
 	}
