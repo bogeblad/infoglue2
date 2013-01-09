@@ -275,10 +275,13 @@ public class ViewPageFilter implements Filter
 	                }
 	                else
 	                    logger.info("Mapped URI " + requestURI + " --> " + siteNodeId + " in " + (end - start) + "ms");
-	                
+	             
 	                Integer contentId = getContentId(httpRequest);
 	                
 	                HttpServletRequest wrappedHttpRequest = prepareRequest(httpRequest, siteNodeId, languageId, contentId);
+	             
+	               	RequestAnalyser.getRequestAnalyser().registerComponentStatistics("ViewPageFilter before ViewPage", t.getElapsedTime());
+	                
 	                wrappedHttpRequest.getRequestDispatcher("/ViewPage.action").forward(wrappedHttpRequest, httpResponse);
 	            } 
 	            catch (SystemException e) 
@@ -310,7 +313,6 @@ public class ViewPageFilter implements Filter
 	        else 
 	        {
 	        	//filterChain.doFilter(httpRequest, httpResponse);
-	        	
 	        	if(!httpResponse.isCommitted())
 	        	{
 	        		try
@@ -322,7 +324,6 @@ public class ViewPageFilter implements Filter
 		        		logger.error("Response was committed - could not continue filter chains:" + e.getMessage());
 		        	}
 	        	}
-	        	
 	        }    
         }
         catch (SystemException se) 
@@ -347,9 +348,6 @@ public class ViewPageFilter implements Filter
 	        else
 	            logger.error("Error and response was committed:" + e.getMessage(), e);
 	    }
-        
-        if(httpRequest.getRequestURL().indexOf("digitalAssets") == -1)
-        	RequestAnalyser.getRequestAnalyser().registerComponentStatistics("ViewPageFilter", t.getElapsedTime());
     }
 
     public void destroy() 

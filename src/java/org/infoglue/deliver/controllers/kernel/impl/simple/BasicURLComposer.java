@@ -558,6 +558,18 @@ public class BasicURLComposer extends URLComposer
     		    	context = context + "/" + repositoryPath;
     		}
 
+		    String enableNiceURIForLanguage = CmsPropertyHandler.getEnableNiceURIForLanguage();
+        	//logger.info("enableNiceURIForLanguage:" + enableNiceURIForLanguage);
+		    if(enableNiceURIForLanguage == null || enableNiceURIForLanguage.equals("false"))
+		    {
+		        String enableNiceURIForLanguageForRepo = RepositoryDeliveryController.getRepositoryDeliveryController().getExtraPropertyValue(siteNode.getRepositoryId(), "enableNiceURIForLanguage");
+				if(enableNiceURIForLanguageForRepo != null && enableNiceURIForLanguageForRepo.equals("true"))
+					enableNiceURIForLanguage = enableNiceURIForLanguageForRepo;
+		    }
+		    
+		    if(enableNiceURIForLanguage.equalsIgnoreCase("true"))
+        		context = context + "/" + LanguageDeliveryController.getLanguageDeliveryController().getLanguageVO(db, languageId).getLanguageCode();
+
     		StringBuilder sb = new StringBuilder(256);
 
             if((deliveryContext.getUseFullUrl() || makeAccessBasedProtocolAdjustments) && context.indexOf("://") == -1)
@@ -623,14 +635,17 @@ public class BasicURLComposer extends URLComposer
 	            	}
 	            }
 
-	            if (languageId != null && languageId.intValue() != -1 && deliveryContext.getLanguageId().intValue() != languageId.intValue())
+	            if(!enableNiceURIForLanguage.equalsIgnoreCase("true"))
 	            {
-	                if(addedContent)
-	                    sb.append(getRequestArgumentDelimiter());
-	                else
-	                    sb.append("?");
-	                    
-	                sb.append("languageId=").append(String.valueOf(languageId));
+	            	if (languageId != null && languageId.intValue() != -1 && deliveryContext.getLanguageId().intValue() != languageId.intValue())
+		            {
+		                if(addedContent)
+		                    sb.append(getRequestArgumentDelimiter());
+		                else
+		                    sb.append("?");
+		                    
+		                sb.append("languageId=").append(String.valueOf(languageId));
+		            }
 	            }
 
 	            url = (!sb.toString().equals("") ? sb.toString() : "/");
@@ -790,7 +805,22 @@ public class BasicURLComposer extends URLComposer
         if(enableNiceURI == null || enableNiceURI.equalsIgnoreCase(""))
         	enableNiceURI = "false";
         
-        if(enableNiceURI.equalsIgnoreCase("true") && !deliveryContext.getDisableNiceUri())
+	    String enableNiceURIForLanguage = CmsPropertyHandler.getEnableNiceURIForLanguage();
+	    if(enableNiceURIForLanguage == null || !enableNiceURIForLanguage.equals("true"))
+	    {
+            SiteNodeVO siteNode = SiteNodeController.getController().getSmallSiteNodeVOWithId(siteNodeId, db);
+        	if(siteNode == null)
+        	{
+	        	logger.warn("composePageUrl was called with siteNodeId which does not exist:" + siteNodeId + " from the page with key: " + deliveryContext.getPageKey());
+	    		return "";
+        	}
+        	
+	        String enableNiceURIForLanguageForRepo = RepositoryDeliveryController.getRepositoryDeliveryController().getExtraPropertyValue(siteNode.getRepositoryId(), "enableNiceURIForLanguage");
+			if(enableNiceURIForLanguageForRepo != null && enableNiceURIForLanguageForRepo.equals("true"))
+				enableNiceURIForLanguage = enableNiceURIForLanguageForRepo;
+	    }
+
+        if(enableNiceURI.equalsIgnoreCase("true") && !deliveryContext.getDisableNiceUri() && !enableNiceURIForLanguage.equalsIgnoreCase("true"))
         {
             if (pageUrl.indexOf("?") == -1) 
 	        {

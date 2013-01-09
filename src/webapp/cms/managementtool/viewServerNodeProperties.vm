@@ -211,6 +211,7 @@
 
 			#yesNoDropDownWithInheritCSS("ServerNode.property.enableNiceURIInWorking" "enableNiceURIInWorking" "$this.getPropertyValue('enableNiceURIInWorking')")
 			#yesNoDropDownWithInheritCSS("ServerNode.property.enableNiceURI" "enableNiceURI" "$this.getPropertyValue('enableNiceURI')")
+			#yesNoDropDownWithInheritCSS("ServerNode.property.enableNiceURIForLanguage" "enableNiceURIForLanguage" "$this.getPropertyValue('enableNiceURIForLanguage')")
 			#editPropertyFieldCSS("ServerNode.property.niceURIEncoding" "niceURIEncoding" "$this.getPropertyValue('niceURIEncoding')" "51" "$!serverNodeId")
 			#editPropertyFieldCSS("ServerNode.property.niceURIAttributeName" "niceURIAttributeName" "$this.getPropertyValue('niceURIAttributeName')" "51" "$!serverNodeId")
 			#editPropertyTextAreaCSS("ServerNode.property.niceURICharacterReplacingMapping" "niceURICharacterReplacingMapping" "$this.getDataPropertyValue('niceURICharacterReplacingMapping')" "40" "6" "righttextarea" "$!serverNodeId")

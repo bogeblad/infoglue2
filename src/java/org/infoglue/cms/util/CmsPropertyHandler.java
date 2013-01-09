@@ -1322,6 +1322,11 @@ public class CmsPropertyHandler
 		return getServerNodeProperty("niceURIDisableNiceURIForContent", true, "false");
 	}
 
+	public static String getEnableNiceURIForLanguage()
+	{
+		return getServerNodeProperty("enableNiceURIForLanguage", true, "false");
+	}
+
 	public static String getNiceURIEncoding()
 	{
 		return getNiceURIEncoding(false);

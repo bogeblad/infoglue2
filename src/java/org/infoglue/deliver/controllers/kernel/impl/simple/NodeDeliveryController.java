@@ -72,6 +72,7 @@ import org.infoglue.cms.services.BaseService;
 import org.infoglue.cms.util.CmsPropertyHandler;
 import org.infoglue.cms.util.ConstraintExceptionBuffer;
 import org.infoglue.deliver.applications.databeans.DeliveryContext;
+import org.infoglue.deliver.applications.filters.FilterConstants;
 import org.infoglue.deliver.applications.filters.URIMapperCache;
 import org.infoglue.deliver.applications.filters.ViewPageFilter;
 import org.infoglue.deliver.controllers.kernel.URLComposer;
@@ -2138,6 +2139,34 @@ public class NodeDeliveryController extends BaseDeliveryController
 	        logger.info("numberOfPaths = "+numberOfPaths);
     	}
     
+        String enableNiceURIForLanguage = CmsPropertyHandler.getEnableNiceURIForLanguage();
+	    if(enableNiceURIForLanguage == null || !enableNiceURIForLanguage.equals("inherit") && path[0].length() == 2)
+	    {
+	    	LanguageVO language = LanguageDeliveryController.getLanguageDeliveryController().getLanguageWithCode(db, path[0].toLowerCase());
+	    	if(language != null)
+	    		enableNiceURIForLanguage = "true";
+	    }
+    	//logger.info("enableNiceURIForLanguage:" + enableNiceURIForLanguage);
+        //logger.info("numberOfPaths:" + numberOfPaths);
+    	if(enableNiceURIForLanguage.equalsIgnoreCase("true") && path.length > 0)
+    	{
+        	//logger.info("path[numberOfPaths]:" + path[numberOfPaths]);
+    		//logger.info("path[0]:" + path[0]);
+    		LanguageVO language = LanguageDeliveryController.getLanguageDeliveryController().getLanguageWithCode(db, path[0].toLowerCase());
+    		//logger.info("language:" + language);
+        	if(language != null)
+        	{
+        		//logger.info("YES - we should consider the first node as a language:" + language);
+                session.setAttribute(FilterConstants.LANGUAGE_ID, language.getId());
+                deliveryContext.setLanguageId(language.getId());
+                languageId = language.getId();
+                
+        		String[] tempNewPath = new String[path.length - 1];
+	    		for(int i=1; i<path.length; i++)
+	    			tempNewPath[i-1] = path[i];
+        		path = tempNewPath;
+        	}
+    	}
         for (int i = numberOfPaths;i < path.length; i++) 
         {
             if (i < 0) 
