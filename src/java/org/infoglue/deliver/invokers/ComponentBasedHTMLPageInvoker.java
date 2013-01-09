@@ -303,7 +303,7 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 				logger.error("Could not evaluate full page: " + e.getMessage(), e);
 			}
 		}
-		else if(pageContent.length() < 1000000)
+		else if(pageContent.length() > 1000000)
 			logger.warn("The page:" + this.getTemplateController().getOriginalFullURL() + " was to big to evaluate full:" + pageContent.length());
 			
    		

@@ -325,12 +325,12 @@ public class ComponentLogic
 	public String getAssetUrl(String propertyName, String assetKey, boolean useInheritance, boolean useRepositoryInheritance, boolean useStructureInheritance) throws Exception
 	{
 		String assetUrl = "";
-		 		
+		
 		Map property = getInheritedComponentProperty(this.infoGlueComponent, propertyName, useInheritance, useRepositoryInheritance, useStructureInheritance);
 		Integer contentId = getContentId(property);
 		if(contentId != null)
 			assetUrl = templateController.getAssetUrl(contentId, assetKey);
-
+		
 		return assetUrl;
 	}
 
@@ -1485,10 +1485,13 @@ public class ComponentLogic
 
 	public Map getInheritedComponentProperty(InfoGlueComponent component, String propertyName, boolean useInheritance, boolean useRepositoryInheritance, boolean useStructureInheritance, boolean useComponentInheritance)
 	{
+		Timer t = new Timer();
+		
 		Map property = null;
 		
 	    Set contentVersionIdList = new HashSet();
 	    Set<String> usedContentEntities = new HashSet<String>();
+	    Set<String> relatedRepositoryIds = new HashSet<String>();
 	    if(templateController.getDeliveryContext().getUsedPageComponentsMetaInfoContentVersionIdSet().size() > 0)
 	    	contentVersionIdList.addAll(templateController.getDeliveryContext().getUsedPageComponentsMetaInfoContentVersionIdSet());
 	    	
@@ -1497,9 +1500,18 @@ public class ComponentLogic
 		    String key = "" + templateController.getSiteNodeId() + "_" + templateController.getLanguageId() + "_" + component.getName() + "_" + component.getSlotName() + "_" + component.getContentId() + "_" + component.getId() + "_" + component.getIsInherited() + "_" + propertyName + "_" + useInheritance + "_" + useRepositoryInheritance + "_" + useStructureInheritance + "_" + useComponentInheritance; 
 		    String versionKey = key + "_contentVersionIds";
 		    String entitiesKey = key + "_usedContentEntities";
+		    
+		    String cacheName = "componentPropertyCacheRepoGroups";
+		    String cacheNameID = "componentPropertyVersionIdCacheRepoGroups";
+		    
+			Object propertyCandidate = CacheController.getCachedObjectFromAdvancedCache(cacheName, key);
+			Set propertyCandidateVersions = (Set)CacheController.getCachedObjectFromAdvancedCache(cacheNameID, versionKey);
+			Set propertyUsedEntities = (Set)CacheController.getCachedObjectFromAdvancedCache(cacheNameID, entitiesKey);
+			/*
 			Object propertyCandidate = CacheController.getCachedObjectFromAdvancedCache("componentPropertyCache", key);
 			Set propertyCandidateVersions = (Set)CacheController.getCachedObjectFromAdvancedCache("componentPropertyVersionIdCache", versionKey);
 			Set propertyUsedEntities = (Set)CacheController.getCachedObjectFromAdvancedCache("componentPropertyVersionIdCache", entitiesKey);
+			*/
 			templateController.getDeliveryContext().addDebugInformation("DEBUG key:" + key + "=" + propertyCandidate);
 			
 			if(propertyCandidate != null)
@@ -1516,7 +1528,7 @@ public class ComponentLogic
 			}
 			else
 			{
-				property = getComponentProperty(propertyName, useInheritance, useStructureInheritance, contentVersionIdList, usedContentEntities, useRepositoryInheritance, useComponentInheritance);
+				property = getComponentProperty(propertyName, useInheritance, useStructureInheritance, contentVersionIdList, usedContentEntities, relatedRepositoryIds, useRepositoryInheritance, useComponentInheritance);
 				templateController.getDeliveryContext().addDebugInformation("DEBUG property 2:" + property);
 				if(property == null)
 				{	
@@ -1556,19 +1568,29 @@ public class ComponentLogic
 			    groups.add(CacheController.getPooledString(3, templateController.getSiteNodeId()));
 			    */
 				
-			    if(groups.size() < 26)
-			    {
-			    	CacheController.cacheObjectInAdvancedCacheWithGroupsAsSet("componentPropertyCache", key, property, groups, true);
+			    //if(groups.size() < 26)
+				//{
+				
+				RequestAnalyser.getRequestAnalyser().registerComponentStatistics("getInheritedComponentProperty with repo groups", t.getElapsedTime());
+
+				//System.out.println("relatedRepositoryIds:" + relatedRepositoryIds.size());
+				groups.addAll(relatedRepositoryIds);
+					CacheController.cacheObjectInAdvancedCacheWithGroupsAsSet(cacheName, key, property, groups, true);
+				    CacheController.cacheObjectInAdvancedCacheWithGroupsAsSet(cacheNameID, versionKey, contentVersionIdList, groups, true);
+				    CacheController.cacheObjectInAdvancedCacheWithGroupsAsSet(cacheNameID, entitiesKey, usedContentEntities, groups, true);
+/*
+					CacheController.cacheObjectInAdvancedCacheWithGroupsAsSet("componentPropertyCache", key, property, groups, true);
 				    CacheController.cacheObjectInAdvancedCacheWithGroupsAsSet("componentPropertyVersionIdCache", versionKey, contentVersionIdList, groups, true);
 				    CacheController.cacheObjectInAdvancedCacheWithGroupsAsSet("componentPropertyVersionIdCache", entitiesKey, usedContentEntities, groups, true);
-			    }
+*/
+				//}
 			}
 		}
 		catch(Exception e)
 		{
 			logger.warn("Error getting property:" + propertyName, e);
 		}
-		
+
 		Iterator contentVersionIdListIterator = contentVersionIdList.iterator();
 		while(contentVersionIdListIterator.hasNext())
 		{
@@ -1933,9 +1955,11 @@ public class ComponentLogic
 	 * This method fetches the component named component property. If not available on the current page metainfo we go up recursive.
 	 */
 	
-	private Map getComponentProperty(String propertyName, boolean useInheritance, boolean useStructureInheritance, Set contentVersionIdList, Set<String> usedContentEntities, boolean useRepositoryInheritance, boolean useComponentInheritance) throws Exception
+	private Map getComponentProperty(String propertyName, boolean useInheritance, boolean useStructureInheritance, Set contentVersionIdList, Set<String> usedContentEntities, Set<String> relatedRepositoryIds, boolean useRepositoryInheritance, boolean useComponentInheritance) throws Exception
 	{
 		Map property = (Map)this.infoGlueComponent.getProperties().get(propertyName);
+		relatedRepositoryIds.add("" + this.templateController.getSiteNode().getRepositoryId());
+
 		if(property != null)
 		{
 			try
@@ -2004,6 +2028,7 @@ public class ComponentLogic
 				    while(property == null && parentSiteNodeVO != null)
 					{				    	
 				    	usedRepositoryIds.add(parentSiteNodeVO.getRepositoryId());
+				    	relatedRepositoryIds.add("" + parentSiteNodeVO.getRepositoryId());
 				    	property = getInheritedComponentProperty(this.templateController, parentSiteNodeVO.getId(), this.templateController.getLanguageId(), this.templateController.getContentId(), this.infoGlueComponent.getId(), propertyName, contentVersionIdList, usedContentEntities);
 				    	if(propertyName.equalsIgnoreCase("MiniArticleShortcuts") || propertyName.equalsIgnoreCase("GUFlashImages"))
 				    		this.templateController.getDeliveryContext().addDebugInformation("property:" + property + " taken from " + parentSiteNodeVO.getId());
@@ -2018,6 +2043,7 @@ public class ComponentLogic
 					    if(newParentSiteNodeVO == null && useRepositoryInheritance)
 						{
 						    Integer parentRepositoryId = this.templateController.getParentRepositoryId(parentSiteNodeVO.getRepositoryId());
+					    	relatedRepositoryIds.add("" + parentRepositoryId);
 						    if(logger.isInfoEnabled())
 						    {
 							    logger.info("parentRepositoryId:" + parentRepositoryId);
