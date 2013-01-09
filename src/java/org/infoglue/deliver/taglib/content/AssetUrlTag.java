@@ -27,6 +27,8 @@ import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspTagException;
 
 import org.infoglue.deliver.taglib.component.ComponentLogicTag;
+import org.infoglue.deliver.util.RequestAnalyser;
+import org.infoglue.deliver.util.Timer;
 
 /**
  * This is an attempt to make an TagLib for attempts to get a AssetUrl:s from a content referenced by a component
@@ -59,6 +61,8 @@ public class AssetUrlTag extends ComponentLogicTag
     
     public int doEndTag() throws JspException
     {
+    	Timer t = new Timer();
+    	
     	boolean oldUseDownloadAction = this.getController().getDeliveryContext().getUseDownloadAction();
     	this.getController().getDeliveryContext().setUseDownloadAction(useDownloadAction);
     	
@@ -67,27 +71,46 @@ public class AssetUrlTag extends ComponentLogicTag
 			if(digitalAssetId != null)
 			{
                 produceResult(getController().getAssetUrlForAssetWithId(digitalAssetId));
+                RequestAnalyser.getRequestAnalyser().registerComponentStatistics("AssetUrlTag (getAssetUrlForAssetWithId)", t.getElapsedTime());
 			}
 			else if(contentId != null)
             {
 	            if(assetKey != null)
+	            {
 	                produceResult(getController().getAssetUrl(contentId, assetKey));
+	                RequestAnalyser.getRequestAnalyser().registerComponentStatistics("AssetUrlTag (getAssetUrl(contentId, assetKey))", t.getElapsedTime());
+	            }
 	            else
-	                produceResult(getController().getAssetUrl(contentId));    
+	            {
+	            	produceResult(getController().getAssetUrl(contentId));    
+	                RequestAnalyser.getRequestAnalyser().registerComponentStatistics("AssetUrlTag (getAssetUrl(contentId))", t.getElapsedTime());
+	            }
             }
             else if(propertyName != null)
             {
 	            if(assetKey != null)
-	                produceResult(getComponentLogic().getAssetUrl(propertyName, assetKey, useInheritance, useRepositoryInheritance, useStructureInheritance));
+	            {
+	            	produceResult(getComponentLogic().getAssetUrl(propertyName, assetKey, useInheritance, useRepositoryInheritance, useStructureInheritance));
+	            	RequestAnalyser.getRequestAnalyser().registerComponentStatistics("AssetUrlTag (getAssetUrl(propertyName, assetKey, useInheritance, useRepositoryInheritance, useStructureInheritance))", t.getElapsedTime());
+	            }
 	            else
+	            {
 	                produceResult(getComponentLogic().getAssetUrl(propertyName, useInheritance, useRepositoryInheritance, useStructureInheritance));                    
-            }
+	            	RequestAnalyser.getRequestAnalyser().registerComponentStatistics("AssetUrlTag (getAssetUrl(propertyName, useInheritance, useRepositoryInheritance, useStructureInheritance))", t.getElapsedTime());
+	            }
+	        }
             else
             {
 	            if(assetKey != null)
+	            {
 	                produceResult(getController().getAssetUrl(getController().getComponentContentId(), assetKey));
+	            	RequestAnalyser.getRequestAnalyser().registerComponentStatistics("AssetUrlTag (getAssetUrl(getController().getComponentContentId(), assetKey))", t.getElapsedTime());
+	            }
 	            else
-	                produceResult(getController().getAssetUrl(getController().getComponentContentId()));    
+	            {
+	            	produceResult(getController().getAssetUrl(getController().getComponentContentId()));    
+	            	RequestAnalyser.getRequestAnalyser().registerComponentStatistics("AssetUrlTag (getAssetUrl(getController().getComponentContentId()))", t.getElapsedTime());
+	            }
             }
         }
         catch(Exception e)
