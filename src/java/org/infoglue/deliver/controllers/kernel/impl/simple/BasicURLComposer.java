@@ -560,7 +560,7 @@ public class BasicURLComposer extends URLComposer
 
 		    String enableNiceURIForLanguage = CmsPropertyHandler.getEnableNiceURIForLanguage();
         	//logger.info("enableNiceURIForLanguage:" + enableNiceURIForLanguage);
-		    if(enableNiceURIForLanguage == null || enableNiceURIForLanguage.equals("false"))
+		    if(enableNiceURIForLanguage == null || !enableNiceURIForLanguage.equals("true"))
 		    {
 		        String enableNiceURIForLanguageForRepo = RepositoryDeliveryController.getRepositoryDeliveryController().getExtraPropertyValue(siteNode.getRepositoryId(), "enableNiceURIForLanguage");
 				if(enableNiceURIForLanguageForRepo != null && enableNiceURIForLanguageForRepo.equals("true"))
