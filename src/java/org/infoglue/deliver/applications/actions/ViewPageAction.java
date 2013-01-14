@@ -1542,7 +1542,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
 							}
 						}
 					}
-					t.printElapsedTime("ssoUserName took");
+					//t.printElapsedTime("ssoUserName took");
 			    }
 			    
 			    //if(protectedSiteNodeVersionId != null && alternativePrincipal != null && AccessRightController.getController().getIsPrincipalAuthorized(db, (InfoGluePrincipal)alternativePrincipal, "SiteNodeVersion.Read", protectedSiteNodeVersionId.toString()))
@@ -1576,7 +1576,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
 						if(ssoUserName != null)
 						{
 							principal = UserControllerProxy.getController().getUser(ssoUserName);
-						    t.printElapsedTime("principal from ssoUserName took");
+						    //t.printElapsedTime("principal from ssoUserName took");
 
 							if(principal != null)
 							{
