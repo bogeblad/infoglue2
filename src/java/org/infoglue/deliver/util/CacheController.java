@@ -191,7 +191,9 @@ public class CacheController extends Thread
     public static Date expireDateTime = null;
     public static Date publishDateTime = null;
      
-	private static CompressionHelper compressionHelper = new CompressionHelper();
+    private static Map<Integer, Integer> assetContentIdMapping = new HashMap<Integer, Integer>();
+
+    private static CompressionHelper compressionHelper = new CompressionHelper();
    
 	private static AtomicInteger numberOfPageCacheFiles = new AtomicInteger(0);
 	
@@ -3236,14 +3238,27 @@ public class CacheController extends Thread
 								}
 							    else if(selectiveCacheUpdate && entity.indexOf("DigitalAsset") > -1)
 							    {
-							    	logger.warn("Asset entity was sent: " + entity + ":" + entityId);
-							    	List<ContentVersionVO> contentVersions = DigitalAssetController.getContentVersionVOListConnectedToAssetWithId(new Integer(entityId));
-							    	Integer contentId = null;
-							    	for(ContentVersionVO contentVersionVO : contentVersions)
+							    	logger.info("Asset entity was sent: " + entity + ":" + entityId);
+							    	Integer contentId = assetContentIdMapping.get(new Integer(entityId));
+							    	if(contentId == null)
 							    	{
-							    		contentId = contentVersionVO.getContentId();
-							    		break;
+							    		logger.info("Checking fot cv for asset:" + entityId);
+							    		List<ContentVersionVO> contentVersions = DigitalAssetController.getContentVersionVOListConnectedToAssetWithId(new Integer(entityId));
+							    		if(contentVersions != null)
+							    		{
+							    			for(ContentVersionVO contentVersionVO : contentVersions)
+									    	{
+									    		contentId = contentVersionVO.getContentId();
+									    		assetContentIdMapping.put(new Integer(entityId), contentId);
+									    		break;
+									    	}
+							    		}
 							    	}
+							    	else
+							    		logger.info("Using read asset");
+							    	
+							    	//Integer contentId = null;
+							    	
 							    	ContentVO contentVO = null;
 							    	try
 							    	{

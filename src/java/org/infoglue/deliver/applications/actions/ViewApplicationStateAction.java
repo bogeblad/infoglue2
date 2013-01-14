@@ -770,6 +770,15 @@ public class ViewApplicationStateAction extends InfoGlueAbstractAction
 
         return list;
     }
+    private List getList(String key, Object value, Object value2)
+    {
+        List list = new ArrayList();
+        list.add(key);
+        list.add(value);
+        list.add(value2);
+
+        return list;
+    }
     
     public String doGC() throws Exception
     {
@@ -835,9 +844,9 @@ public class ViewApplicationStateAction extends InfoGlueAbstractAction
     	if(returnValue != null)
     		return returnValue;
         
-        states.add(getList("Average processing time per request (ms)", "" + RequestAnalyser.getRequestAnalyser().getAverageElapsedTime()));
+        states.add(getList("Average processing time per request (ms)", "&nbsp;", "" + RequestAnalyser.getRequestAnalyser().getAverageElapsedTime()));
 		
-        states.add(getList("<br/><strong>Individual components (in milliseconds)</strong>", "&nbsp;"));
+        states.add(getList("<br/><strong>Individual components (in milliseconds)</strong>", "&nbsp;", "&nbsp;"));
         
         List unsortedComponents = new ArrayList();
         Set componentNames = RequestAnalyser.getAllComponentNames();
@@ -848,7 +857,7 @@ public class ViewApplicationStateAction extends InfoGlueAbstractAction
         	long componentAverageElapsedTime = RequestAnalyser.getComponentAverageElapsedTime(componentName);
         	int componentNumberOfHits = RequestAnalyser.getComponentNumberOfHits(componentName);
         	//states.add(getList("" + componentName + " - " + componentNumberOfHits + " hits", "" + componentAverageElapsedTime));
-        	unsortedComponents.add(getList("" + componentName + " - " + componentNumberOfHits + " hits - total " + (componentNumberOfHits * componentAverageElapsedTime), new Long(componentAverageElapsedTime)));
+        	unsortedComponents.add(getList("" + componentName + " - " + componentNumberOfHits + " hits", new Long(componentNumberOfHits * componentAverageElapsedTime), new Long(componentAverageElapsedTime)));
         }
 
         Collections.sort(unsortedComponents, new AverageInvokingTimeComparator());
