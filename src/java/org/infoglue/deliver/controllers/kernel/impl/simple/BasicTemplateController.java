@@ -5078,7 +5078,12 @@ public class BasicTemplateController implements TemplateController
 	{
 		Timer t = new Timer();
 		if(sortColumn == null || sortColumn.equals(""))
-			sortColumn = "contentId";
+		{
+			if(CmsPropertyHandler.getUseShortTableNames().equals("true"))
+				sortColumn = "contId";
+			else
+				sortColumn = "contentId";
+		}
 		if(sortOrder == null || sortOrder.equals(""))
 			sortOrder = "desc";
 		
