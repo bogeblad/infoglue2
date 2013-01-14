@@ -964,8 +964,33 @@
         	<required>false</required>
 	        <rtexprvalue>true</rtexprvalue>
     	</attribute>
+        <attribute>
+    	    <name>validateAccessRightsAsAnonymous</name>
+        	<required>false</required>
+	        <rtexprvalue>true</rtexprvalue>
+    	</attribute>
+        <attribute>
+    	    <name>scheduleFetch</name>
+        	<required>false</required>
+	        <rtexprvalue>true</rtexprvalue>
+    	</attribute>
+        <attribute>
+    	    <name>scheduleInterval</name>
+        	<required>false</required>
+	        <rtexprvalue>true</rtexprvalue>
+    	</attribute>
     	<attribute>
     	    <name>startNodeId</name>
+        	<required>false</required>
+	        <rtexprvalue>true</rtexprvalue>
+    	</attribute>
+    	<attribute>
+    	    <name>sortColumn</name>
+        	<required>false</required>
+	        <rtexprvalue>true</rtexprvalue>
+    	</attribute>
+    	<attribute>
+    	    <name>sortOrder</name>
         	<required>false</required>
 	        <rtexprvalue>true</rtexprvalue>
     	</attribute>

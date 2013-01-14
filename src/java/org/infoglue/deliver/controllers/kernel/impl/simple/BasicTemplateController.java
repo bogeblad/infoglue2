@@ -34,6 +34,7 @@ import java.net.URLEncoder;
 import java.security.Principal;
 import java.text.NumberFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
@@ -112,6 +113,8 @@ import org.infoglue.deliver.applications.databeans.ComponentProperty;
 import org.infoglue.deliver.applications.databeans.DatabaseWrapper;
 import org.infoglue.deliver.applications.databeans.DeliveryContext;
 import org.infoglue.deliver.applications.databeans.WebPage;
+import org.infoglue.deliver.cache.MatchingContentsQueue;
+import org.infoglue.deliver.cache.MatchingContentsQueueBean;
 import org.infoglue.deliver.controllers.kernel.URLComposer;
 import org.infoglue.deliver.invokers.DecoratedComponentBasedHTMLPageInvoker;
 import org.infoglue.deliver.util.BrowserBean;
@@ -5012,6 +5015,8 @@ public class BasicTemplateController implements TemplateController
 				criterias.setVersionModifier(versionModifier);
 			if(repositoryIdList != null && repositoryIdList.size() > 0)
 				criterias.setRepositoryIdList(repositoryIdList);
+			criterias.setSortColumn("publicationDateTime");
+			criterias.setSortOrder("desc");
 			
 			final Set set;
 			
@@ -5062,8 +5067,21 @@ public class BasicTemplateController implements TemplateController
 	
 	public List getMatchingContents(String contentTypeDefinitionNamesString, String categoryConditionString, String freeText, List freeTextAttributeNames, Date fromDate, Date toDate, Date expireFromDate, Date expireToDate, String versionModifier, Integer maximumNumberOfItems, boolean useLanguageFallback, boolean cacheResult, int cacheInterval, String cacheName, String cacheKey, List<Integer> repositoryIdList, Integer languageId, Boolean skipLanguageCheck, Integer startNodeId)
 	{
+		return getMatchingContents(contentTypeDefinitionNamesString, categoryConditionString, freeText, freeTextAttributeNames, fromDate, toDate, expireFromDate, expireToDate, versionModifier, maximumNumberOfItems, useLanguageFallback, cacheResult, cacheInterval, cacheName, cacheKey, false, -1, repositoryIdList, languageId, skipLanguageCheck, startNodeId, null, null, false, true, false);
+	}
+	
+	/**
+	 * This method searches for all contents matching
+	 */
+	
+	public List getMatchingContents(String contentTypeDefinitionNamesString, String categoryConditionString, String freeText, List freeTextAttributeNames, Date fromDate, Date toDate, Date expireFromDate, Date expireToDate, String versionModifier, Integer maximumNumberOfItems, boolean useLanguageFallback, boolean cacheResult, int cacheInterval, String cacheName, String cacheKey, boolean scheduleFetch, int scheduleInterval, List<Integer> repositoryIdList, Integer languageId, Boolean skipLanguageCheck, Integer startNodeId, String sortColumn, String sortOrder, boolean forceRefetch, boolean validateAccessRightsAsAnonymous, boolean returnOnlyCachedResult)
+	{
 		Timer t = new Timer();
-
+		if(sortColumn == null || sortColumn.equals(""))
+			sortColumn = "contentId";
+		if(sortOrder == null || sortOrder.equals(""))
+			sortOrder = "desc";
+		
 		if(contentTypeDefinitionNamesString != null && !contentTypeDefinitionNamesString.equals(""))
 		{
 			try
@@ -5076,21 +5094,47 @@ public class BasicTemplateController implements TemplateController
 					if(contentTypeDefinitionVO != null)
 					{
 						logger.info("Do not throw page cache on this if it's not a content of type:" + contentTypeDefinitionVO.getName());
-						deliveryContext.addUsedContent("selectiveCacheUpdateNonApplicable_contentTypeDefinitionId_" + contentTypeDefinitionVO.getId());
+						if(deliveryContext != null)
+							deliveryContext.addUsedContent("selectiveCacheUpdateNonApplicable_contentTypeDefinitionId_" + contentTypeDefinitionVO.getId());
 					}
 				}
 			}
 			catch (Exception e) 
 			{
-				logger.error("Could not set correct selectiveCacheUpdateNonApplicable-type: " + e.getMessage());
+				logger.error("Could not set correct selectiveCacheUpdateNonApplicable-type: " + e.getMessage(), e);
 			}
 		}
 		else
-			deliveryContext.addUsedContent("selectiveCacheUpdateNonApplicable");
+		{
+			if(deliveryContext != null)
+				deliveryContext.addUsedContent("selectiveCacheUpdateNonApplicable");
+		}
 		
-		if((freeText != null && !freeText.equals("")) || (freeTextAttributeNames != null && freeTextAttributeNames.size() > 0) || fromDate != null || toDate != null || expireFromDate != null || expireToDate != null || (versionModifier != null && !versionModifier.equals("")) || !deliveryContext.getOperatingMode().equals(CmsPropertyHandler.getOperatingMode()))
+		if(cacheResult == true && toDate != null)
+		{
+			Calendar toDateCalendar = Calendar.getInstance();
+			toDateCalendar.setTime(toDate);
+			toDateCalendar.set(Calendar.MINUTE, 30);
+			toDateCalendar.set(Calendar.SECOND, 30);
+			toDateCalendar.set(Calendar.MILLISECOND, 0);
+			toDate = toDateCalendar.getTime();
+		}
+		if(cacheResult == true && fromDate != null)
+		{
+			Calendar fromDateCalendar = Calendar.getInstance();
+			fromDateCalendar.setTime(fromDate);
+			fromDateCalendar.set(Calendar.MINUTE, 30);
+			fromDateCalendar.set(Calendar.SECOND, 30);
+			fromDateCalendar.set(Calendar.MILLISECOND, 0);
+			fromDate = fromDateCalendar.getTime();
+		}
+		logger.info("toDate:" + toDate);
+		logger.info("fromDate:" + fromDate);
+		
+		if((freeText != null && !freeText.equals("")) || (freeTextAttributeNames != null && freeTextAttributeNames.size() > 0) || expireFromDate != null || expireToDate != null || (versionModifier != null && !versionModifier.equals("")) || !deliveryContext.getOperatingMode().equals(CmsPropertyHandler.getOperatingMode()))
 			cacheResult = false;
-
+		
+		logger.info("cacheResult:" + cacheResult);
 		//TODO - add cache here
 		if(cacheName == null || cacheName.equals(""))
 			cacheName = "matchingContentsCache";
@@ -5106,19 +5150,76 @@ public class BasicTemplateController implements TemplateController
 			while(repositoryIdListIterator.hasNext())
 				repositoryIdString.append("," + repositoryIdListIterator.next());
 		}
-		
-		String key = "sortedMatchingContents" + contentTypeDefinitionNamesString + "_" + categoryConditionString + "_publishDateTime_languageId_" + localLanguageId + "_" + useLanguageFallback + "_" + maximumNumberOfItems + "_" + repositoryIdString + "_" + skipLanguageCheck;
+
+		StringBuffer attributeNamesString = new StringBuffer();
+		if(freeTextAttributeNames != null)
+		{
+			Iterator freeTextAttributeNamesIterator = freeTextAttributeNames.iterator();
+			while(freeTextAttributeNamesIterator.hasNext())
+				attributeNamesString.append("," + freeTextAttributeNamesIterator.next());
+		}
+
+		String userName = this.getPrincipal().getName();
+		if(!CmsPropertyHandler.getOperatingMode().equals("3") || validateAccessRightsAsAnonymous)
+			userName = CmsPropertyHandler.getAnonymousUser();
+
+		String key = "sortedMatchingContents" + contentTypeDefinitionNamesString + "_" + categoryConditionString + "_publishDateTime_languageId_" + localLanguageId + "_" + useLanguageFallback + "_" + maximumNumberOfItems + "_" + repositoryIdString + "_" + skipLanguageCheck + "_" + sortColumn + "_" + sortOrder + "_" + userName + (fromDate != null ? "_" + fromDate.getTime() : "") + (toDate != null ? "_" + toDate.getTime() : "");
 		if(cacheKey != null && !cacheKey.equals(""))
 			key = cacheKey;
 		
+		if(scheduleFetch)
+		{
+			MatchingContentsQueueBean bean = new MatchingContentsQueueBean();
+			bean.setCacheInterval(cacheInterval);
+			bean.setCacheKey(cacheKey);
+			bean.setCacheName(cacheName);
+			bean.setCacheResult(cacheResult);
+			bean.setCategoryCondition(categoryConditionString);
+			bean.setContentTypeDefinitionNames(contentTypeDefinitionNamesString);
+			bean.setExpireFromDate(expireFromDate);
+			bean.setExpireToDate(expireToDate);
+			bean.setFreeText(freeText);
+			bean.setFreeTextAttributeNames(attributeNamesString.toString());
+			bean.setFromDate(fromDate);
+			bean.setToDate(toDate);
+			bean.setLanguageId(languageId);
+			bean.setMaximumNumberOfItems(maximumNumberOfItems);
+			bean.setRepositoryIds(repositoryIdString.toString());
+			bean.setScheduleFetch(scheduleFetch);
+			bean.setScheduleInterval(scheduleInterval);
+			bean.setSkipLanguageCheck(skipLanguageCheck);
+			bean.setStartNodeId(startNodeId);
+			bean.setVersionModifier(versionModifier);
+			bean.setSortColumn(sortColumn);
+			bean.setSortOrder(sortOrder);
+			bean.setValidateAccessRightsAsAnonymous(validateAccessRightsAsAnonymous);
+			bean.setLastFetched(System.currentTimeMillis());
+			
+			//We cache on real username if in published mode - otherwise in anonymous mode
+			if(CmsPropertyHandler.getOperatingMode().equals("3"))
+				bean.setUserName(getPrincipal().getName());
+			else
+				bean.setUserName(CmsPropertyHandler.getAnonymousUser());
+			
+			MatchingContentsQueue.getMatchingContentsQueue().addMatchingContentsQueueBean(key, bean);
+		}
+
+		logger.info("key: " + key);
+		
+		logger.info("forceRefetch:" + forceRefetch);
 		List cachedMatchingContents = (List)CacheController.getCachedObjectFromAdvancedCache(cacheName, key, cacheInterval);
-		if(cachedMatchingContents == null || !cacheResult)
+		logger.info("cachedMatchingContents:" + cachedMatchingContents);
+		logger.info("cacheResult:" + cacheResult);
+		logger.info("forceRefetch:" + forceRefetch);
+		logger.info("returnOnlyCachedResult:" + returnOnlyCachedResult);
+		if((cachedMatchingContents == null || !cacheResult || forceRefetch) && !returnOnlyCachedResult)
 		{
 			logger.info("Getting matching contents from db for key:" + key);
 			
 			try
 			{
 			    List contentTypeDefinitionVOList = new ArrayList();
+			    Set<String> groups = new HashSet<String>();
 			    String[] contentTypeDefinitionNames = contentTypeDefinitionNamesString.split(",");
 			    for(int i=0; i<contentTypeDefinitionNames.length; i++)
 			    {
@@ -5127,7 +5228,9 @@ public class BasicTemplateController implements TemplateController
 			        {
 			        	contentTypeDefinitionVOList.add(contentTypeDefinitionVO);
 			        	logger.info("Do not throw page cache on this if it's not a content of type:" + contentTypeDefinitionVO.getName());
-						deliveryContext.addUsedContent("selectiveCacheUpdateNonApplicable_contentTypeDefinitionId_" + contentTypeDefinitionVO.getId());
+						if(deliveryContext != null)
+							deliveryContext.addUsedContent("selectiveCacheUpdateNonApplicable_contentTypeDefinitionId_" + contentTypeDefinitionVO.getId());
+						groups.add("selectiveCacheUpdateNonApplicable_contentTypeDefinitionId_" + contentTypeDefinitionVO.getId());
 			        }
 			    }
 	
@@ -5149,6 +5252,9 @@ public class BasicTemplateController implements TemplateController
 				if(repositoryIdList != null && repositoryIdList.size() > 0)
 					criterias.setRepositoryIdList(repositoryIdList);
 				
+				criterias.setSortColumn(sortColumn);
+				criterias.setSortOrder(sortOrder);
+				
 				final Set set = ExtendedSearchController.getController().search(criterias, getDatabase());
 				//t.printElapsedTime("AAAAAAAAAAAAAAAAAAAAAA search returning :" + set.size() + ":" + Thread.currentThread().getId());
 				final List result = new ArrayList();
@@ -5156,7 +5262,8 @@ public class BasicTemplateController implements TemplateController
 				{
 					final Content content = (Content) i.next();
 					//if(ContentDeliveryController.getContentDeliveryController().isValidContent(this.getDatabase(), content.getId(), localLanguageId, USE_LANGUAGE_FALLBACK, true, getPrincipal(), this.deliveryContext))
-					if(ContentDeliveryController.getContentDeliveryController().isValidContent(this.getDatabase(), content.getValueObject(), localLanguageId, USE_LANGUAGE_FALLBACK, true, getPrincipal(), this.deliveryContext, false, false))
+					InfoGluePrincipal principal = UserControllerProxy.getController(getDatabase()).getUser(userName);
+					if(ContentDeliveryController.getContentDeliveryController().isValidContent(this.getDatabase(), content.getValueObject(), localLanguageId, USE_LANGUAGE_FALLBACK, true, principal, this.deliveryContext, false, false))
 					{
 						if(startNodeId != null)
 						{
@@ -5175,7 +5282,8 @@ public class BasicTemplateController implements TemplateController
 				//t.printElapsedTime("After check..");
 				
 				if(cacheResult)
-					CacheController.cacheObjectInAdvancedCache(cacheName, key, result, null, false);
+					CacheController.cacheObjectInAdvancedCacheWithGroupsAsSet(cacheName, key, result, groups, true);
+				
 				return result;
 			}
 			catch(Exception e)
