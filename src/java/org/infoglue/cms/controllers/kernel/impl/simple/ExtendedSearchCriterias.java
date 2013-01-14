@@ -142,7 +142,17 @@ public class ExtendedSearchCriterias
 	 * If present, only fetch content version last modified by this author.
 	 */
 	private String versionModifier;
-	
+
+	/**
+	 * If present, used to sort the result.
+	 */
+	private String sortColumn;
+
+	/**
+	 * If present, sort ascending or descending.
+	 */
+	private String sortOrder;
+
 	/**
 	 * If present limit the number of results.
 	 */
@@ -532,4 +542,37 @@ public class ExtendedSearchCriterias
 	{
 		return this.repositoryIdList;
 	}
+	
+	/**
+	 * @return the sortColumn
+	 */
+	public String getSortColumn() 
+	{
+		return sortColumn;
+	}
+
+	/**
+	 * @param sortColumn the sortColumn to set
+	 */
+	public void setSortColumn(String sortColumn) 
+	{
+		this.sortColumn = sortColumn;
+	}
+
+	/**
+	 * @return the sortOrder
+	 */
+	public String getSortOrder() 
+	{
+		return sortOrder;
+	}
+
+	/**
+	 * @param sortOrder the sortOrder to set
+	 */
+	public void setSortOrder(String sortOrder) 
+	{
+		this.sortOrder = sortOrder;
+	}
+
 }

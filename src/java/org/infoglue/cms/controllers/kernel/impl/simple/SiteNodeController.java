@@ -255,6 +255,13 @@ public class SiteNodeController extends BaseController
 			
 			results.close();
 			oql.close();
+			
+			if(siteNodeVO == null)
+			{
+				logger.error("Falling back to old forgiving logic for siteNodeId: " + siteNodeId + ". It must be in trouble.");
+				siteNodeVO = getSiteNodeVOWithIdIfFailed(siteNodeId, db);
+			}
+			
 			RequestAnalyser.getRequestAnalyser().registerComponentStatistics("getSmallestSiteNodeVOWithId", t.getElapsedTime());
 		}
 		
@@ -356,6 +363,21 @@ public class SiteNodeController extends BaseController
 		return getSiteNodeVOWithId(siteNodeId, db); //(SiteNodeVO) getVOWithId(SmallSiteNodeImpl.class, siteNodeId, db);
     }
 
+    /**
+	 * This method gets the siteNodeVO with the given id
+	 */
+	 
+    public SiteNodeVO getSiteNodeVOWithIdIfFailed(Integer siteNodeId, Database db) throws SystemException, Bug, Exception
+    {
+    	try
+    	{
+    		return (SiteNodeVO) getVOWithId(SmallSiteNodeImpl.class, siteNodeId, db);
+    	}
+    	catch (Exception e) 
+    	{
+    		return null;
+		}
+    }
 
     public SiteNode getSiteNodeWithId(Integer siteNodeId, Database db) throws SystemException, Bug
     {
