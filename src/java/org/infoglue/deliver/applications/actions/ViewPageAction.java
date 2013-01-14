@@ -91,6 +91,7 @@ import org.infoglue.deliver.util.RequestAnalyser;
 import org.infoglue.deliver.util.ThreadMonitor;
 import org.infoglue.deliver.util.Timer;
 
+
 import webwork.action.ActionContext;
 
 
@@ -264,7 +265,9 @@ public class ViewPageAction extends InfoGlueAbstractAction
 			if(!isUserRedirected)
 			{
 				if(getRequest().getParameter("authenticateUser") != null && getRequest().getParameter("authenticateUser").equals("true"))
+				{
 					isUserRedirected = authenticateUser(dbWrapper.getDatabase());
+				}
 			}
 			
 			if(!isUserRedirected)
@@ -278,8 +281,21 @@ public class ViewPageAction extends InfoGlueAbstractAction
 						protectDeliver = false;
 				}
 				
-				if(protectedSiteNodeVersionId != null || protectDeliver)
+				boolean isAnonymousAuthorized = true;
+				logger.info("protectedSiteNodeVersionId:" +protectedSiteNodeVersionId);
+				if(protectedSiteNodeVersionId != null)
 				{
+					SiteNodeVersionVO siteNodeVersionVO = SiteNodeVersionController.getController().getSiteNodeVersionVOWithId(protectedSiteNodeVersionId, dbWrapper.getDatabase());
+					if(siteNodeVersionVO.getIsProtected().intValue() == SiteNodeVersionVO.YES_WITH_INHERIT_FALLBACK.intValue())
+						isAnonymousAuthorized = AccessRightController.getController().getIsPrincipalAuthorized(dbWrapper.getDatabase(), (InfoGluePrincipal)this.getAnonymousPrincipal(), "SiteNodeVersion.Read", protectedSiteNodeVersionId.toString(), false);
+					else
+						isAnonymousAuthorized = AccessRightController.getController().getIsPrincipalAuthorized(dbWrapper.getDatabase(), (InfoGluePrincipal)this.getAnonymousPrincipal(), "SiteNodeVersion.Read", protectedSiteNodeVersionId.toString());
+				}
+				logger.info("isAnonymousAuthorized:" + isAnonymousAuthorized);
+				logger.info("URI:" + getOriginalFullURL());
+				if((protectedSiteNodeVersionId != null && !isAnonymousAuthorized) || protectDeliver || getOriginalFullURL().indexOf("ticket=") > -1)
+				{
+					logger.info("Plain login routine which among others looks for ticket....");
 					if(logger.isInfoEnabled())
 					{
 						logger.info("protectedSiteNodeVersionId:" + protectedSiteNodeVersionId);
@@ -298,16 +314,28 @@ public class ViewPageAction extends InfoGlueAbstractAction
 						{
 							boolean isForcedIdentityCheckDisabled = this.nodeDeliveryController.getIsForcedIdentityCheckDisabled(dbWrapper.getDatabase(), this.siteNodeId);
 							if(logger.isInfoEnabled())
+							{
 								logger.info("isForcedIdentityCheckDisabled:" + isForcedIdentityCheckDisabled);
+								logger.info("isForcedIdentityCheckDisabled:" + isForcedIdentityCheckDisabled);
+								logger.info("getHttpSession().getAttribute(ssoChecked):" + getHttpSession().getAttribute("ssoChecked"));
+								logger.info("getRequest().getParameter(skipSSOCheck):" + getRequest().getParameter("skipSSOCheck"));
+							}
 							if(!isForcedIdentityCheckDisabled && getHttpSession().getAttribute("ssoChecked") == null && (getRequest().getParameter("skipSSOCheck") == null || !getRequest().getParameter("skipSSOCheck").equals("true")))
 							{
 								isUserRedirected = handleExtranetLogic(dbWrapper.getDatabase(), true);
+								logger.info("isUserRedirected:" + isUserRedirected);
+							}
+							else if(!isForcedIdentityCheckDisabled && getRequest().getParameter("skipSSOCheck") != null && getRequest().getParameter("skipSSOCheck").equals("true"))
+							{
+								getHttpSession().setAttribute("ssoChecked", "true");
 							}
 						}
 					}
 				}
 			}
-			
+						
+			logger.info("isUserRedirected:" + isUserRedirected);
+			logger.info("principal:" + this.principal);
 			if(!isUserRedirected)
 				isUserRedirected = rewriteUrl();
 
@@ -574,7 +602,6 @@ public class ViewPageAction extends InfoGlueAbstractAction
 			logger.info("Ticket:" + getRequest().getParameter("ticket"));
 			logger.info("URI:" + URI);
 		}
-		
 		if(getRequest().getMethod().equalsIgnoreCase("get") && getRequest().getParameter("ticket") != null && getRequest().getParameter("ticket").length() > 0)
 		{
 			String queryString = getOriginalQueryString();
@@ -1216,6 +1243,8 @@ public class ViewPageAction extends InfoGlueAbstractAction
 	
 	public boolean handleExtranetLogic(Database db, Integer repositoryId, Integer protectedSiteNodeVersionId, boolean protectDeliver, boolean forceCmsUser) throws SystemException, Exception
 	{
+		Timer t = new Timer();
+		
 		boolean isRedirected = false;
 		
 		try
@@ -1269,12 +1298,16 @@ public class ViewPageAction extends InfoGlueAbstractAction
 			{
 				Principal anonymousPrincipal = getAnonymousPrincipal();
 				
-				SiteNodeVersionVO siteNodeVersionVO = SiteNodeVersionController.getController().getSiteNodeVersionVOWithId(protectedSiteNodeVersionId, db);
-				boolean isAuthorized = false;
-				if(siteNodeVersionVO.getIsProtected().intValue() == SiteNodeVersionVO.YES_WITH_INHERIT_FALLBACK.intValue())
-					isAuthorized = AccessRightController.getController().getIsPrincipalAuthorized(db, (InfoGluePrincipal)anonymousPrincipal, "SiteNodeVersion.Read", protectedSiteNodeVersionId.toString(), false);
-				else
-					isAuthorized = AccessRightController.getController().getIsPrincipalAuthorized(db, (InfoGluePrincipal)anonymousPrincipal, "SiteNodeVersion.Read", protectedSiteNodeVersionId.toString());
+				boolean isAuthorized = true;
+				if(protectedSiteNodeVersionId != null)
+				{
+					isAuthorized = false;
+					SiteNodeVersionVO siteNodeVersionVO = SiteNodeVersionController.getController().getSiteNodeVersionVOWithId(protectedSiteNodeVersionId, db);
+					if(siteNodeVersionVO.getIsProtected().intValue() == SiteNodeVersionVO.YES_WITH_INHERIT_FALLBACK.intValue())
+						isAuthorized = AccessRightController.getController().getIsPrincipalAuthorized(db, (InfoGluePrincipal)anonymousPrincipal, "SiteNodeVersion.Read", protectedSiteNodeVersionId.toString(), false);
+					else
+						isAuthorized = AccessRightController.getController().getIsPrincipalAuthorized(db, (InfoGluePrincipal)anonymousPrincipal, "SiteNodeVersion.Read", protectedSiteNodeVersionId.toString());
+				}				
 				
 				logger.info("isAuthorized:" + isAuthorized);
 				
@@ -1423,8 +1456,8 @@ public class ViewPageAction extends InfoGlueAbstractAction
 						else
 						{
 							logger.info("SiteNode is protected and user has no access - sending him to no access page.");
-						    String url = "ExtranetLogin!noAccess.action?referer=" + URLEncoder.encode(this.referer, "UTF-8") + "&date=" + System.currentTimeMillis();
-							getResponse().sendRedirect(url);
+						    String noAccessURL = getNoAccessURL();
+							getResponse().sendRedirect(noAccessURL);
 							isRedirected = true;
 						}
 					}
@@ -1485,17 +1518,40 @@ public class ViewPageAction extends InfoGlueAbstractAction
 						isAnonymousPrincipalAuthorized = AccessRightController.getController().getIsPrincipalAuthorized(db, (InfoGluePrincipal)this.getAnonymousPrincipal(), "SiteNodeVersion.Read", protectedSiteNodeVersionId.toString(), false);
 				}
 				
-				//System.out.println("isAlternativePrincipalAuthorized:" + isAlternativePrincipalAuthorized);
-			    //System.out.println("isPrincipalAuthorized:" + isPrincipalAuthorized);
-			    //System.out.println("isAnonymousPrincipalAuthorized:" + isAnonymousPrincipalAuthorized);
+			    logger.info("isAlternativePrincipalAuthorized:" + isAlternativePrincipalAuthorized);
+			    logger.info("isPrincipalAuthorized:" + isPrincipalAuthorized);
+			    logger.info("isAnonymousPrincipalAuthorized:" + isAnonymousPrincipalAuthorized);
+			    logger.info("protectedSiteNodeVersionId:" + protectedSiteNodeVersionId);
+			    logger.info("prinicpal:" + principal.getName());
 				
+			    logger.info("Session ssoChecked:" + getHttpSession().getAttribute("ssoChecked"));
+			    String ssoUserName = null;
+			    if(getHttpSession().getAttribute("ssoChecked") == null || getHttpSession().getAttribute("ssoChecked").equals(""))
+			    {
+					String forceIdentityCheck = RepositoryDeliveryController.getRepositoryDeliveryController().getExtraPropertyValue(this.repositoryId, "forceIdentityCheck");
+					if(this.principal == null || CmsPropertyHandler.getAnonymousUser().equalsIgnoreCase(this.principal.getName()))
+					{
+						if(CmsPropertyHandler.getForceIdentityCheck().equalsIgnoreCase("true") || (forceIdentityCheck != null && forceIdentityCheck.equalsIgnoreCase("true")))
+						{
+							boolean isForcedIdentityCheckDisabled = this.nodeDeliveryController.getIsForcedIdentityCheckDisabled(db, this.siteNodeId);
+							if(!isForcedIdentityCheckDisabled)
+							{
+							    ssoUserName = AuthenticationModule.getAuthenticationModule(null, this.getOriginalFullURL(), this.getRequest(), false).getSSOUserName(getRequest());
+								if(ssoUserName != null)
+									getHttpSession().setAttribute("ssoChecked", "true");
+							}
+						}
+					}
+					t.printElapsedTime("ssoUserName took");
+			    }
+			    
 			    //if(protectedSiteNodeVersionId != null && alternativePrincipal != null && AccessRightController.getController().getIsPrincipalAuthorized(db, (InfoGluePrincipal)alternativePrincipal, "SiteNodeVersion.Read", protectedSiteNodeVersionId.toString()))
 				if(protectedSiteNodeVersionId != null && isAlternativePrincipalAuthorized)
 			    {
 			        logger.info("The user " + alternativePrincipal.getName() + " was approved.");
 			    }
 				//else if(protectedSiteNodeVersionId != null && !AccessRightController.getController().getIsPrincipalAuthorized(db, (InfoGluePrincipal)principal, "SiteNodeVersion.Read", protectedSiteNodeVersionId.toString()) &&  !AccessRightController.getController().getIsPrincipalAuthorized((InfoGluePrincipal)this.getAnonymousPrincipal(), "SiteNodeVersion.Read", protectedSiteNodeVersionId.toString()))
-				else if(protectedSiteNodeVersionId != null && !isPrincipalAuthorized && !isAnonymousPrincipalAuthorized)
+				else if(protectedSiteNodeVersionId != null && !isPrincipalAuthorized && !isAnonymousPrincipalAuthorized || (principal.getName().equals(CmsPropertyHandler.getAnonymousUser()) && ssoUserName != null))
 				{
 					if(logger.isInfoEnabled())
 					{
@@ -1516,11 +1572,12 @@ public class ViewPageAction extends InfoGlueAbstractAction
 
 					if(principal.getName().equals(CmsPropertyHandler.getAnonymousUser()))
 					{
-						String ssoUserName = AuthenticationModule.getAuthenticationModule(null, this.getOriginalFullURL(), this.getRequest(), false).getSSOUserName(getRequest());
-						//System.out.println("ssoUserName:" + ssoUserName);
+						//String ssoUserName = AuthenticationModule.getAuthenticationModule(null, this.getOriginalFullURL(), this.getRequest(), false).getSSOUserName(getRequest());
 						if(ssoUserName != null)
 						{
 							principal = UserControllerProxy.getController().getUser(ssoUserName);
+						    t.printElapsedTime("principal from ssoUserName took");
+
 							if(principal != null)
 							{
 								this.principal = principal;
@@ -1532,9 +1589,9 @@ public class ViewPageAction extends InfoGlueAbstractAction
 								// Check if the principal is authorized to view this page.
 								// If not, redirect him to the unauthorized.jsp page.
 								//---------------------------------------------------------
-								if (!AccessRightController.getController().getIsPrincipalAuthorized((InfoGluePrincipal)principal, "SiteNodeVersion.Read", protectedSiteNodeVersionId.toString()))
+								if (protectedSiteNodeVersionId != null && !AccessRightController.getController().getIsPrincipalAuthorized((InfoGluePrincipal)principal, "SiteNodeVersion.Read", protectedSiteNodeVersionId.toString()))
 								{
-									String url = "ExtranetLogin!noAccess.action?referer=" + URLEncoder.encode(this.referer, "UTF-8") + "&date=" + System.currentTimeMillis();
+									String url = getNoAccessURL();
 									getResponse().sendRedirect(url);
 									isRedirected = true;
 								}
@@ -1555,8 +1612,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
 					else
 					{
 						logger.info("SiteNode is protected and neither " + principal + " or " + this.getAnonymousPrincipal() + " has access - sending him to no access page.");
-						String url = "ExtranetLogin!noAccess.action?referer=" + URLEncoder.encode(this.referer, "UTF-8") + "&date=" + System.currentTimeMillis();
-
+						String url = getNoAccessURL();
 						getResponse().sendRedirect(url);
 						isRedirected = true;
 					}
@@ -1585,6 +1641,42 @@ public class ViewPageAction extends InfoGlueAbstractAction
 		}
 		
 		return isRedirected;
+	}
+
+	/**
+	 * This method gets an no access url and has some logic about it. First it defaults to a standard url. If a different is stated in a repo property called noAccessURL 
+	 * it uses that and if the url there is $referer it uses the http referer header and just adds a parameter.
+	 * @return
+	 * @throws Exception
+	 */
+	public String getNoAccessURL() throws Exception
+	{
+		String noAccessURL = "ExtranetLogin!noAccess.action?referer=" + URLEncoder.encode(this.referer, "UTF-8") + "&date=" + System.currentTimeMillis();
+	    
+		try
+		{
+		    String repositoryNoAccessURL = RepositoryDeliveryController.getRepositoryDeliveryController().getExtraPropertyValue(this.repositoryId, "noAccessURL");
+			if(repositoryNoAccessURL != null && !repositoryNoAccessURL.equals(""))
+			{
+				if(repositoryNoAccessURL.equalsIgnoreCase("$referer") && this.referer != null && !this.referer.equals(""))
+					repositoryNoAccessURL = this.referer + "?noAccess=true&date=" + System.currentTimeMillis();
+				else
+				{
+					if(repositoryNoAccessURL.indexOf("?") > -1)
+						repositoryNoAccessURL = repositoryNoAccessURL + "&noAccess=true&referer=" + URLEncoder.encode(this.referer, "UTF-8") + "&date=" + System.currentTimeMillis();
+					else
+						repositoryNoAccessURL = repositoryNoAccessURL + "?noAccess=true&referer=" + URLEncoder.encode(this.referer, "UTF-8") + "&date=" + System.currentTimeMillis();
+				}
+				
+				noAccessURL = repositoryNoAccessURL;
+			}
+		}
+		catch (Exception e) 
+		{
+			logger.warn("Problem reading repo specific noAccessURL: " + e.getMessage(), e);
+		}
+		
+		return noAccessURL;
 	}
 	
 	
@@ -1615,12 +1707,15 @@ public class ViewPageAction extends InfoGlueAbstractAction
 		//System.out.println("principal in AAAAA:" + principal);
 		if(redirected != null && redirected.booleanValue())
 		{
-		    this.getHttpSession().removeAttribute("infogluePrincipal");
+			logger.info("Redirected....");
+			this.getHttpSession().removeAttribute("ssoChecked");
+			this.getHttpSession().removeAttribute("infogluePrincipal");
 		    this.principal = null;
 		    return true;
 		}
 		else if(principal != null)
 		{
+			logger.info("NOT Redirected....");
 		    this.getHttpSession().setAttribute("infogluePrincipal", principal);
 			this.getHttpSession().setAttribute("infoglueRemoteUser", principal.getName());
 			this.getHttpSession().setAttribute("cmsUserName", principal.getName());
@@ -1650,12 +1745,14 @@ public class ViewPageAction extends InfoGlueAbstractAction
 		
 		try
 		{
+			logger.info("principal: " + principal);
 			if(principal == null)
 			{
 				String skipSSOCheck = this.getRequest().getParameter("skipSSOCheck");
 				String ticket = this.getRequest().getParameter("ticket");
 				if((skipSSOCheck != null && !skipSSOCheck.equals("")) && (ticket == null || ticket.equals("")))
 				{
+					logger.info("Setting user to anonymous....");
 					principal = getAnonymousPrincipal();
 					
 					if(principal != null)
@@ -1678,7 +1775,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
 			
 			Principal principal = (Principal)this.getHttpSession().getAttribute("infogluePrincipal");
 			logger.info("principal:" + principal);
-
+			
 			if((principal == null || principal.getName().equals(CmsPropertyHandler.getAnonymousUser())) && getHttpSession().getAttribute("ssoChecked") == null && (getRequest().getParameter("skipSSOCheck") != null && !getRequest().getParameter("skipSSOCheck").equals("true")))	
 			{
 				logger.info("Nulling user as we want SSO check to be done..");

@@ -457,7 +457,7 @@ class SqlBuilder
 			if(criterias.hasFreetextCritera() && criterias.getMaximumNumberOfItems() != null)
 				andTerm = " AND ";
 			
-			String baseSQL = "CALL SQL select ContId,name,publishDateTime,expireDateTime,isBranch,isProtected,creator,contentTypeDefId,repositoryId,parentContId from (" + SPACE + (ExtendedSearchController.useFull() ? generateSelectClause() : generateSelectClauseShort(true)) + SPACE + generateFromClause() + SPACE + generateWhereClause(false) + SPACE + ") contRes ";
+			String baseSQL = "CALL SQL select ContId,name,publishDateTime,expireDateTime,isBranch,isProtected,creator,contentTypeDefId,repositoryId,parentContId from (" + SPACE + (ExtendedSearchController.useFull() ? generateSelectClause() : generateSelectClauseShort(true)) + SPACE + generateFromClause() + SPACE + generateWhereClause(false) + SPACE + (ExtendedSearchController.useFull() ? generateOrderByClause() : generateOrderByClauseShort()) + ") contRes ";
 
 			String whereClause = "" + (criterias.hasFreetextCritera() ? getFreetextWhereClause(true) : "") + andTerm + (criterias.getMaximumNumberOfItems() != null ? " ROWNUM <= " + criterias.getMaximumNumberOfItems() + "" : "");
 			if(!whereClause.trim().equals(""))
@@ -595,7 +595,10 @@ class SqlBuilder
 	 */
 	private String generateOrderByClauseShort() 
 	{
-		return "ORDER BY " + CONTENT_ALIAS + ".ContId";
+		if(criterias.getSortColumn() != null && criterias.getSortOrder() != null)
+			return "ORDER BY " + CONTENT_ALIAS + "." + criterias.getSortColumn() + " " + criterias.getSortOrder() + ""; //"ORDER BY " + CONTENT_ALIAS + ".contentId";
+		else
+			return "ORDER BY " + CONTENT_ALIAS + ".ContId";
 	}
 	
 	private String generateOrderByDateClauseShort() 
@@ -623,7 +626,10 @@ class SqlBuilder
 	 */
 	private String generateOrderByClause() 
 	{
-		return "ORDER BY " + CONTENT_ALIAS + ".contentId";
+		if(criterias.getSortColumn() != null && criterias.getSortOrder() != null)
+			return "ORDER BY " + CONTENT_ALIAS + "." + criterias.getSortColumn() + " " + criterias.getSortOrder() + ""; //"ORDER BY " + CONTENT_ALIAS + ".contentId";
+		else
+			return "ORDER BY " + CONTENT_ALIAS + ".contentId";
 	}
 	
 	/**
