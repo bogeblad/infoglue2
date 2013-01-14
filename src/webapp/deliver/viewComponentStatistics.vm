@@ -89,23 +89,25 @@
 
 <table cellpadding="4" cellspacing="0">
   <tr>
-    <td colspan="4" class="header">InfoGlue Component Statistics ($serverName)</td>
+    <td colspan="3" class="header">InfoGlue Component Statistics ($serverName)</td>
   </tr>
   <tr>
-    <td colspan="4" class="text">&nbsp;</td>
+    <td colspan="3" class="text">&nbsp;</td>
   </tr>
   <tr class="label">
     <td>Item</td>
-    <td colspan="3">Value</td>
+    <td>Total time</td>
+    <td>Average time</td>
   </tr>
   #foreach($state in $states)
   <tr>
     <td class="text">$state.get(0)</td>
-    <td class="text" colspan="3">$state.get(1)</td>
+    <td class="text"">$state.get(1)</td>
+    <td class="text">$state.get(2)</td>
   </tr>
   #end
   <tr>
-    <td class="text" colspan="4"><a href="ViewApplicationState!resetComponentStatistics.action">Reset component stats</a></td>
+    <td class="text" colspan="3"><a href="ViewApplicationState!resetComponentStatistics.action">Reset component stats</a></td>
   </tr>
   
 </table>
