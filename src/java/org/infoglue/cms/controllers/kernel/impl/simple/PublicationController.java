@@ -1091,13 +1091,20 @@ public class PublicationController extends BaseController
 			for(PublicationVO publication : publicationsToCheck)
 			{
 				boolean found = false;
-				for(CacheEvictionBean bean : latestPublications)
+				if(publication.getName().equals("Infoglue Calendar publication"))
 				{
-					if(bean.getPublicationId().equals(publication.getId()))
-						found = true;
+					found = true;
 				}
-				if(!found)
-					failedPublications.add(publication);
+				else
+				{
+					for(CacheEvictionBean bean : latestPublications)
+					{
+						if(bean.getPublicationId().equals(publication.getId()))
+							found = true;
+					}
+					if(!found)
+						failedPublications.add(publication);
+				}
 			}
 		}
 		catch (Exception e) 
