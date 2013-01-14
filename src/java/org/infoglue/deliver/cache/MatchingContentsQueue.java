@@ -286,6 +286,7 @@ public class MatchingContentsQueue implements Runnable
 						}
 						catch (Exception e) 
 						{
+							cacheKeysIterator.remove();
 							dbWrapper.getDatabase().rollback();
 							logger.error("Error in matching contents:" + e.getMessage(), e);
 						}

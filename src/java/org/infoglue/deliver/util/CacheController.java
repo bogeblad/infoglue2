@@ -2309,6 +2309,7 @@ public class CacheController extends Thread
 					if(cacheName.equalsIgnoreCase("matchingContentsCache") && (entity.indexOf("Content") > 0 || entity.indexOf("ContentVersion") > 0 || entity.indexOf("AccessRight") > 0 || entity.indexOf("SystemUser") > 0 || entity.indexOf("Role") > 0  || entity.indexOf("Group") > 0))
 					{
 						clear = true;
+						selectiveCacheUpdate = true;
 					}
 					if(cacheName.equalsIgnoreCase("workflowCache") && entity.indexOf("WorkflowDefinition") > 0)
 					{
@@ -2766,7 +2767,7 @@ public class CacheController extends Thread
 										    	ContentVO contentVO = ContentController.getContentController().getContentVOWithId(contentId);
 	
 									    		logger.info("Before flushGroup2...");
-										    	if(cacheName.equals("pageCacheExtra"))
+									    		if(cacheName.equals("pageCacheExtra"))
 										    	{
 											    	if(contentVO.getIsProtected().intValue() == ContentVO.YES.intValue())
 											    	{
@@ -3209,6 +3210,7 @@ public class CacheController extends Thread
 								    	cacheInstance.flushGroup("content_" + entityId);
 								    	logger.info("clearing " + e.getKey() + " with selectiveCacheUpdateNonApplicable");
 								    	cacheInstance.flushGroup("selectiveCacheUpdateNonApplicable");
+						    			cacheInstance.flushGroup("selectiveCacheUpdateNonApplicable_contentTypeDefinitionId_" + contentVO.getContentTypeDefinitionId());
 							    	}
 							    	
 							    	if(contentVO != null)
