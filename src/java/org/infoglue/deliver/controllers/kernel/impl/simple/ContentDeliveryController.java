@@ -1350,6 +1350,12 @@ public class ContentDeliveryController extends BaseDeliveryController
         	}
         }
 		
+		if(digitalAssetVO == null && useLanguageFallback)
+		{
+			digitalAssetVO = getLanguageIndependentAssetVO(contentId, languageId, siteNodeId, db, assetKey, deliveryContext, infoGluePrincipal);
+		}
+		
+		
 		return digitalAssetVO;
 	}
 
