@@ -236,7 +236,9 @@ public class ComponentController extends BaseController
 		        	{
 		        		reIndexComponentContent(localComponentContentId);
 		        	}
-		        	t.printElapsedTime("ReIndexComponentsTask took");
+		        	long time = t.getElapsedTime();
+		        	if(time > 100)
+		        		logger.warn("ReIndexComponentsTask took a bit to long:" + time);
 	        	}
 	        	catch (Exception e) 
 	        	{
@@ -256,24 +258,32 @@ public class ComponentController extends BaseController
 		String cacheKey = "allTemplatesAndPagePartMap";
 		Map<String,List<ContentVO>> templatesAndPagePartMap = (Map<String,List<ContentVO>>)CacheController.getCachedObject("componentContentsCache", cacheKey);
 
-    	synchronized (templatesAndPagePartMap) 
-    	{
-			for(String key : templatesAndPagePartMap.keySet())
-			{
-				List<ContentVO> groupList = templatesAndPagePartMap.get(key);
-				Iterator<ContentVO> groupListIterator = groupList.iterator();
-				while(groupListIterator.hasNext())
+		if(templatesAndPagePartMap != null)
+		{
+	    	synchronized (templatesAndPagePartMap) 
+	    	{
+				for(String key : templatesAndPagePartMap.keySet())
 				{
-					ContentVO cvVO = groupListIterator.next();
-					if(cvVO.getId().intValue() == contentId.intValue())
+					List<ContentVO> groupList = templatesAndPagePartMap.get(key);
+					Iterator<ContentVO> groupListIterator = groupList.iterator();
+					while(groupListIterator.hasNext())
 					{
-						logger.info("Removing " + cvVO.getName() + " from group:" + key);
-						groupListIterator.remove();
+						ContentVO cvVO = groupListIterator.next();
+						if(cvVO.getId().intValue() == contentId.intValue())
+						{
+							logger.info("Removing " + cvVO.getName() + " from group:" + key);
+							groupListIterator.remove();
+						}
 					}
 				}
 			}
 		}
-
+		else
+		{
+			templatesAndPagePartMap = new HashMap<String,List<ContentVO>>();
+			CacheController.cacheObject("componentContentsCache", cacheKey, templatesAndPagePartMap);
+		}
+		
     	ContentVO contentVO = ContentController.getContentController().getContentVOWithId(contentId);
     	if(contentVO != null)
     	{

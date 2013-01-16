@@ -1250,7 +1250,7 @@ public class CacheController extends Thread
 			    			    }
 			    				catch (NeedsRefreshException nre) 
 							    {
-			    					logger.warn("Stale cache entry");
+			    					logger.info("Stale cache entry");
 							        cacheAdministrator.cancelUpdate(key);
 								}
 			    			}
@@ -3243,10 +3243,10 @@ public class CacheController extends Thread
 							    	if(contentId == null)
 							    	{
 							    		logger.info("Checking fot cv for asset:" + entityId);
-							    		List<ContentVersionVO> contentVersions = DigitalAssetController.getContentVersionVOListConnectedToAssetWithId(new Integer(entityId));
+							    		List<SmallestContentVersionVO> contentVersions = DigitalAssetController.getContentVersionVOListConnectedToAssetWithId(new Integer(entityId));
 							    		if(contentVersions != null)
 							    		{
-							    			for(ContentVersionVO contentVersionVO : contentVersions)
+							    			for(SmallestContentVersionVO contentVersionVO : contentVersions)
 									    	{
 									    		contentId = contentVersionVO.getContentId();
 									    		assetContentIdMapping.put(new Integer(entityId), contentId);

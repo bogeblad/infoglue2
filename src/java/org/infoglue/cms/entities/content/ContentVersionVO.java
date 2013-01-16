@@ -98,7 +98,7 @@ public class ContentVersionVO implements BaseEntityVO
     
     public String getVersionValue()
     {
-        return this.versionValue;
+    	return this.versionValue;
     }
                 
     public void setVersionValue(String versionValue)

@@ -57,10 +57,12 @@ import org.infoglue.cms.entities.content.ContentVersion;
 import org.infoglue.cms.entities.content.ContentVersionVO;
 import org.infoglue.cms.entities.content.DigitalAsset;
 import org.infoglue.cms.entities.content.DigitalAssetVO;
+import org.infoglue.cms.entities.content.SmallestContentVersionVO;
 import org.infoglue.cms.entities.content.impl.simple.DigitalAssetImpl;
 import org.infoglue.cms.entities.content.impl.simple.MediumDigitalAssetImpl;
 import org.infoglue.cms.entities.content.impl.simple.SmallContentVersionImpl;
 import org.infoglue.cms.entities.content.impl.simple.SmallDigitalAssetImpl;
+import org.infoglue.cms.entities.content.impl.simple.SmallestContentVersionImpl;
 import org.infoglue.cms.entities.kernel.BaseEntityVO;
 import org.infoglue.cms.entities.management.GroupProperties;
 import org.infoglue.cms.entities.management.LanguageVO;
@@ -183,9 +185,9 @@ public class DigitalAssetController extends BaseController
 		return (DigitalAsset) getObjectWithId(DigitalAssetImpl.class, digitalAssetId, db);
     }
 
-    public static List<ContentVersionVO> getContentVersionVOListConnectedToAssetWithId(Integer digitalAssetId) throws SystemException, Bug
+    public static List<SmallestContentVersionVO> getContentVersionVOListConnectedToAssetWithId(Integer digitalAssetId) throws SystemException, Bug
     {
-    	List<ContentVersionVO> versions = new ArrayList<ContentVersionVO>();
+    	List<SmallestContentVersionVO> versions = new ArrayList<SmallestContentVersionVO>();
     	
     	Database db = CastorDatabaseService.getDatabase();
 
@@ -194,9 +196,9 @@ public class DigitalAssetController extends BaseController
         try
         {
         	//Timer t = new Timer();
-        	OQLQuery oql = db.getOQLQuery("CALL SQL select cv.contentVersionId, cv.stateId, cv.modifiedDateTime, cv.versionComment, cv.isCheckedOut, cv.isActive, cv.contentId, cv.languageId, cv.versionModifier, '' as versionValue FROM cmContentVersion cv, cmContentVersionDigitalAsset cvda where cvda.contentVersionId = cv.contentVersionId AND cvda.digitalAssetId = $1 AS org.infoglue.cms.entities.content.impl.simple.SmallContentVersionImpl");
+        	OQLQuery oql = db.getOQLQuery("CALL SQL select cv.contentVersionId, cv.stateId, cv.modifiedDateTime, cv.versionComment, cv.isCheckedOut, cv.isActive, cv.contentId, cv.languageId, cv.versionModifier as versionValue FROM cmContentVersion cv, cmContentVersionDigitalAsset cvda where cvda.contentVersionId = cv.contentVersionId AND cvda.digitalAssetId = $1 AS org.infoglue.cms.entities.content.impl.simple.SmallestContentVersionImpl");
         	if(CmsPropertyHandler.getUseShortTableNames() != null && CmsPropertyHandler.getUseShortTableNames().equalsIgnoreCase("true"))
-        		oql = db.getOQLQuery("CALL SQL select cv.contVerId, cv.stateId, cv.modifiedDateTime, cv.verComment, cv.isCheckedOut, cv.isActive, cv.contId, cv.languageId, cv.versionModifier, '' as verValue FROM cmContVer cv, cmContVerDigAsset cvda where cvda.ContVerId = cv.ContVerId AND cvda.DigAssetId = $1 AS org.infoglue.cms.entities.content.impl.simple.SmallContentVersionImpl");
+        		oql = db.getOQLQuery("CALL SQL select cv.contVerId, cv.stateId, cv.modifiedDateTime, cv.verComment, cv.isCheckedOut, cv.isActive, cv.contId, cv.languageId, cv.versionModifier as verValue FROM cmContVer cv, cmContVerDigAsset cvda where cvda.ContVerId = cv.ContVerId AND cvda.DigAssetId = $1 AS org.infoglue.cms.entities.content.impl.simple.SmallestContentVersionImpl");
 
         	oql.bind(digitalAssetId);
         	
@@ -204,7 +206,7 @@ public class DigitalAssetController extends BaseController
     		
     		while(results.hasMore()) 
             {
-            	SmallContentVersionImpl cv = (SmallContentVersionImpl)results.next();
+            	SmallestContentVersionImpl cv = (SmallestContentVersionImpl)results.next();
             	versions.add(cv.getValueObject());
             }
     		//t.printElapsedTime("getContentVersionVOListConnectedToAssetWithId:" + versions.size());

@@ -36,6 +36,7 @@ import org.infoglue.cms.controllers.kernel.impl.simple.CastorDatabaseService;
 import org.infoglue.cms.controllers.kernel.impl.simple.DigitalAssetController;
 import org.infoglue.cms.controllers.kernel.impl.simple.InterceptionPointController;
 import org.infoglue.cms.entities.content.ContentVersionVO;
+import org.infoglue.cms.entities.content.SmallestContentVersionVO;
 import org.infoglue.cms.entities.content.impl.simple.ContentImpl;
 import org.infoglue.cms.entities.content.impl.simple.DigitalAssetImpl;
 import org.infoglue.cms.entities.content.impl.simple.MediumContentImpl;
@@ -372,13 +373,15 @@ public class WorkingPublicationThread extends Thread
 									DigitalAssetDeliveryController.getDigitalAssetDeliveryController().deleteDigitalAssets(new Integer(objectId));
 								}
 								
-								List<ContentVersionVO> contentVersionVOList = DigitalAssetController.getContentVersionVOListConnectedToAssetWithId(new Integer(objectId));	
-					    		Iterator<ContentVersionVO> contentVersionVOListIterator = contentVersionVOList.iterator();
+								List<SmallestContentVersionVO> contentVersionVOList = DigitalAssetController.getContentVersionVOListConnectedToAssetWithId(new Integer(objectId));	
+					    		Iterator<SmallestContentVersionVO> contentVersionVOListIterator = contentVersionVOList.iterator();
 					    		while(contentVersionVOListIterator.hasNext())
 					    		{
-					    			ContentVersionVO contentVersionVO = contentVersionVOListIterator.next();
+					    			SmallestContentVersionVO contentVersionVO = contentVersionVOListIterator.next();
 					    			logger.info("Invoking clearCaches for ContentVersionImpl with id:" + contentVersionVO.getId());
-						    		CacheController.clearCaches(ContentVersionImpl.class.getName(), contentVersionVO.getId().toString(), null);					    			
+						    		CacheController.clearCaches(ContentVersionImpl.class.getName(), contentVersionVO.getId().toString(), null);		    			
+						    		CacheController.clearCaches(SmallContentVersionImpl.class.getName(), contentVersionVO.getId().toString(), null);					    			
+						    		CacheController.clearCaches(SmallestContentVersionImpl.class.getName(), contentVersionVO.getId().toString(), null);					    			
 					    		}
 							}
 							else if(Class.forName(className).getName().equals(SystemUserImpl.class.getName()))
