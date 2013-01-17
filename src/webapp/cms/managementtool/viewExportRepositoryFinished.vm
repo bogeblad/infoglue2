@@ -6,46 +6,120 @@
 <head>
 	<title>$ui.getString("tool.managementtool.exportRepository.header")</title>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-	
-	<link rel="stylesheet" type="text/css" href="css/cms.css" /> 
-	<link rel="stylesheet" type="text/css" href="css/infogluecommons.css" /> 
-	
+
+	<link rel="stylesheet" type="text/css" href="css/cms.css" />
+	<link rel="stylesheet" type="text/css" href="css/infogluecommons.css" />
+
 	<script language="JavaScript" src="script/listview.js"></script>
 	<script type="text/javascript" src="script/infogluecommons.js"></script>
+	<script type="text/javascript" src="script/jquery/jquery-1.3.2.min.js"></script>
+	
+	<style type="text/css">
+		div.fullymarginalized {
+			height: 100%;
+			width: 350px;
+			margin: 130px auto 0 auto;
+		}
+		h3 {
+			text-align: center;
+		}
+		img {
+			display: block;
+			margin: 0 auto;
+		}
+		.closeButton {
+			display: table;
+			margin: 0 auto;
+		}
+		/*
+		#[[
+		*/ 
+		#exportMessage {
+			margin: 25px auto;
+			text-align: center;
+			text-align: center;
+		}
+		#exportMessage span {
+			white-space:nowrap;
+		}
+		#exportFileWrapper {
+			text-align: center;
+			font-weight: bold;
+			font-size: 12px;
+			padding: 15px 0;
+		}
+		/*
+		]]# 
+		*/
+	</style>
 
 	<META HTTP-EQUIV="pragma" CONTENT="no-cache" />
-	<META HTTP-EQUIV="expires" CONTENT="-1" />	
+	<META HTTP-EQUIV="expires" CONTENT="-1" />
 </head>
 
 <body class="managementtooledit">
+	<div class="fullymarginalized">
+		<h3 id="exportHeader">$ui.getString("tool.managementtool.exportRepository.headerRunning")</h3>
 
-<div class="fullymarginalized">
+		<div>
+			<img id="loading" src="images/loading.gif"/>
+			<p id="exportMessage">
+				$ui.getString("tool.managementtool.exportRepository.status.exportWorkingPreparing", $this.getCurrentDateTime())
+			</p>
+			<p id="exportFileWrapper"><a id="exportFile" href=""></a></p>
+		</div>
+		<script type="text/javascript">
+			function getPrettyFileSize(bytes) {
+			    var sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
+			    if (bytes == 0) return 'n/a';
+			    var i = parseInt(Math.floor(Math.log(bytes) / Math.log(1024)));
+			    return Math.round(bytes / Math.pow(1024, i), 2) + ' ' + sizes[i];
+			};
 
-<table width="300">
-	<tr>
-		<td class="biglabel">
-			$ui.getString("tool.managementtool.exportRepository.headerFinished")
-		</td>
-	</tr>		
-	<tr>
-		<td>
-			$ui.getString("tool.managementtool.exportRepository.finishedText")<br/><br/>
-		</td>
-	</tr>		
-	<tr>
-		<td>
-			<a href="$fileUrl">$fileName</a><br/><br/>
-		</td>
-	</tr>		
-	<tr>
-		<td>
-			<a href="javascript:window.close();"><img border="0" src="$ui.getString("images.contenttool.buttons.close")" width="50" height="25"></a>
-		</td>
-	</tr>
+			var statusPoller = setInterval(function() {
+				jQuery.ajax({
+				  url: 'ExportRepository!exportStatus.action?exportId=$exportId',
+				  dataType: 'json',
+				  success: successHandler,
+				  error: errorHandler
+				});
+			}, 5000);
 
-	</form>	
-</table>
-</div>
+			function successHandler(data) {
+				if (data) {
+					if (data.error) {
+						jQuery("#exportHeader").text("$ui.getString('tool.managementtool.exportRepository.headerFailed')");
+						jQuery("#exportMessage").text(data.error);
+						jQuery("#loading").remove();
+					} else if (data.info) {
+						if (data.info.fileSize) {
+							jQuery("#exportMessage").html(data.info.message + "<br/>" + "$ui.getString("tool.managementtool.exportRepository.currentFileSize") " + getPrettyFileSize(data.info.fileSize));
+						} else {
+							jQuery("#exportMessage").html(data.info.message);
+						}
+						if (data.info.complete === true) {
+							clearInterval(statusPoller);
+							jQuery("#exportHeader").text("$ui.getString('tool.managementtool.exportRepository.headerFinished')");
+							jQuery("#exportFile").attr("href", data.info.fileUrl);
+							jQuery("#exportFile").text(data.info.fileName);
+							jQuery("#loading").remove();
+						}
+					}
+				}
+			}
 
+			function errorHandler(jqXHR, textStatus, errorThrown) {
+				jQuery("#exportMessage").html("$ui.getString("tool.managementtool.exportRepository.status.httpError")<br/><br/>" + textStatus + "<br/><br/>" + errorThrown);
+				clearInterval(statusPoller);
+			}
+
+		</script>
+
+		##<div onfocus="this.blur();" id="footertoolbar">
+			<div class="closeButton">
+				<input type="button" class="close" value="$ui.getString("tool.common.closeWindowButton.label")" onclick="window.close();"/>
+			</div>
+		##</div>
+	</div>
 </body>
 </html>
