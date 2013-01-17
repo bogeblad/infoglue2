@@ -1271,16 +1271,8 @@ public class RegistryController extends BaseController
                     ContentVO content = ContentController.getContentController().getContentVOWithId(contentVersion.getContentId(), db);
 		    		existingReferenceBean.setName(content.getName());
 		    		existingReferenceBean.setReferencingCompletingObject(content);
-		    		referenceVersionBean.setReferencingObject(contentVersion);
 
-                	/*
-                	ContentVersion contentVersion = ContentVersionController.getContentVersionController().getContentVersionWithId(new Integer(registryVO.getReferencingEntityId()), db);
-		    		existingReferenceBean.setName(contentVersion.getOwningContent().getName());
-		    		existingReferenceBean.setReferencingCompletingObject(contentVersion.getOwningContent().getValueObject());
-		    		referenceVersionBean.setReferencingObject(contentVersion.getValueObject());
-		    		t.printElapsedTime("Before");
-		    		*/
-                	
+		    		referenceVersionBean.setReferencingObject(contentVersion);
 		    		referenceVersionBean.getRegistryVOList().add(registryVO);
                 }
                 catch(Exception e)
@@ -1299,16 +1291,6 @@ public class RegistryController extends BaseController
 		    		existingReferenceBean.setReferencingCompletingObject(siteNode);
 		    		referenceVersionBean.setReferencingObject(siteNodeVersion);
 
-		    		/*
-	                SiteNodeVersion siteNodeVersion = SiteNodeVersionController.getController().getSiteNodeVersionWithId(new Integer(registryVO.getReferencingEntityId()), db);
-		    		logger.info("siteNodeVersion:" + siteNodeVersion.getSiteNodeVersionId());
-		    		logger.info("siteNode:" + siteNodeVersion.getOwningSiteNode().getId());
-		    		existingReferenceBean.setName(siteNodeVersion.getOwningSiteNode().getName());
-		    		existingReferenceBean.setReferencingCompletingObject(siteNodeVersion.getOwningSiteNode().getValueObject());
-		    		
-		    		referenceVersionBean.setReferencingObject(siteNodeVersion.getValueObject());
-		    		t.printElapsedTime("Before");
-		    		*/
 		    		referenceVersionBean.getRegistryVOList().add(registryVO);
                 }
                 catch(Exception e)

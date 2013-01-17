@@ -692,7 +692,7 @@ public class DigitalAssetController extends BaseController
 					if(cachedFile.getName().startsWith("" + digitalAssetId))
 					{
 						//File file = files[i];
-						cachedFile.delete();
+						boolean deleted = cachedFile.delete();
 					}
 				}
 			}
