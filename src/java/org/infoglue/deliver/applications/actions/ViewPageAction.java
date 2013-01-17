@@ -607,7 +607,11 @@ public class ViewPageAction extends InfoGlueAbstractAction
 			String queryString = getOriginalQueryString();
 			if(logger.isInfoEnabled())
 				logger.info("queryString:" + queryString);
+
 			String remainingQueryString = HttpUtilities.removeParameter(queryString, "ticket");
+			if(remainingQueryString.indexOf("noAccess=true") == -1)
+				remainingQueryString = HttpUtilities.removeParameter(remainingQueryString, "referer");
+
 			if(logger.isInfoEnabled())
 				logger.info("remainingQueryString:" + remainingQueryString);
 
@@ -1659,7 +1663,12 @@ public class ViewPageAction extends InfoGlueAbstractAction
 			if(repositoryNoAccessURL != null && !repositoryNoAccessURL.equals(""))
 			{
 				if(repositoryNoAccessURL.equalsIgnoreCase("$referer") && this.referer != null && !this.referer.equals(""))
-					repositoryNoAccessURL = this.referer + "?noAccess=true&date=" + System.currentTimeMillis();
+				{
+					if(this.referer.indexOf("?") > -1)
+						repositoryNoAccessURL = this.referer + "&noAccess=true&date=" + System.currentTimeMillis();
+					else
+						repositoryNoAccessURL = this.referer + "?noAccess=true&date=" + System.currentTimeMillis();
+				}
 				else
 				{
 					if(repositoryNoAccessURL.indexOf("?") > -1)
