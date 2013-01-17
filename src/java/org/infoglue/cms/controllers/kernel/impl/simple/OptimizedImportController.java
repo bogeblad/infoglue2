@@ -124,7 +124,9 @@ public class OptimizedImportController extends BaseController implements Runnabl
 		}
 		catch (Exception e) 
 		{
-			processBean.setStatus(ProcessBean.FAILED);
+//			processBean.setStatus(ProcessBean.FAILED);
+			//TODO: Fix this error message better. Support illegal xml-chars
+			processBean.setError("Something went wrong with the import. Please consult the logfiles.");
 			logger.error("Error in monitor:" + e.getMessage(), e);
 		}
 	}
@@ -741,11 +743,18 @@ public class OptimizedImportController extends BaseController implements Runnabl
 				if(content.getValueObject().getParentContentId() != null)
 				{
 					Content parentContent = contentMap.get(content.getValueObject().getParentContentId());
-					logger.warn("parentContent:" + parentContent.getName() + ":" + parentContent);
-					parentContent.getChildren().add(content);
-					content.setParentContent((ContentImpl)parentContent);
-					
-					logger.info("Children after: " + parentContent.getChildren());
+					if(parentContent != null)
+					{
+						logger.warn("parentContent:" + parentContent.getName() + ":" + parentContent);
+						parentContent.getChildren().add(content);
+						content.setParentContent((ContentImpl)parentContent);
+						
+						logger.info("Children after: " + parentContent.getChildren());
+					}
+					else
+					{
+						logger.error("Something is strange with parent content id:"+content.getValueObject().getParentContentId() +" it doesn't have a parent content id:"+content.getContentId());
+					}
 				}
 				
 				logger.warn("repositoryIdMap:" + repositoryIdMap);
@@ -1235,7 +1244,7 @@ public class OptimizedImportController extends BaseController implements Runnabl
 			    	}
 				
 		    		content.setContentTypeDefinition((ContentTypeDefinitionImpl)contentTypeDefinition);
-
+			    	content.setContentTypeDefinitionId(contentTypeDefinition.getId());
 		    	}
 			    else
 			    {
@@ -1246,6 +1255,7 @@ public class OptimizedImportController extends BaseController implements Runnabl
 			{
 		    	contentTypeDefinition = ContentTypeDefinitionController.getController().getContentTypeDefinitionWithId(contentTypeDefinitionId, db);
 		    	content.setContentTypeDefinition((ContentTypeDefinitionImpl)contentTypeDefinition);
+		    	content.setContentTypeDefinitionId(contentTypeDefinition.getId());
 			}
 	    }
 	    else
@@ -1478,7 +1488,9 @@ public class OptimizedImportController extends BaseController implements Runnabl
 				}
 	
 				if(addLanguageVersion || noLanguageVersionFound)
+				{
 					selectedContentVersions.add(contentVersion);
+				}	
 			}	
 			
 			contentVersions = selectedContentVersions;
@@ -1489,77 +1501,85 @@ public class OptimizedImportController extends BaseController implements Runnabl
         while(contentVersionIterator.hasNext())
         {
             ContentVersion contentVersion = (ContentVersion)contentVersionIterator.next();
-            String contentVersionValue = contentVersion.getVersionValue();
-            
-            contentVersionValue = substituteStrings(contentVersionValue, replaceMap);
-            
-            contentVersionValue = contentVersionValue.replaceAll("contentId=\"", "contentId=\"oldContentId_");
-            contentVersionValue = contentVersionValue.replaceAll("\\?contentId=", "\\?contentId=oldContentId_");
-            contentVersionValue = contentVersionValue.replaceAll("getInlineAssetUrl\\(", "getInlineAssetUrl\\(oldContentId_");
-            contentVersionValue = contentVersionValue.replaceAll("languageId,", "languageId,oldContentId_");
-            contentVersionValue = contentVersionValue.replaceAll("entity=\"Content\" entityId=\"", "entity=\"Content\" entityId=\"oldContentId_");
-            //contentVersionValue = contentVersionValue.replaceAll("entity='Content'><id>", "entity='Content'><id>oldContentId_");
-            contentVersionValue = contentVersionValue.replaceAll("siteNodeId=\"", "siteNodeId=\"oldSiteNodeId_");
-            contentVersionValue = contentVersionValue.replaceAll("detailSiteNodeId=\"", "detailSiteNodeId=\"oldSiteNodeId_");
-            contentVersionValue = contentVersionValue.replaceAll("getPageUrl\\((\\d)", "getPageUrl\\(oldSiteNodeId_$1");
-            contentVersionValue = contentVersionValue.replaceAll("entity=\"SiteNode\" entityId=\"", "entity=\"SiteNode\" entityId=\"oldSiteNodeId_");
-            //contentVersionValue = contentVersionValue.replaceAll("entity='SiteNode'><id>", "entity='SiteNode'><id>old_");
-            
-            Iterator<String> replaceMapIterator = replaceMap.keySet().iterator();
-            while(replaceMapIterator.hasNext())
+            try
             {
-            	String key = replaceMapIterator.next();
-            	String value = (String)replaceMap.get(key);
-            	contentVersionValue = contentVersionValue.replaceAll(key, value);
+	            String contentVersionValue = contentVersion.getVersionValue();
+	            
+	            contentVersionValue = substituteStrings(contentVersionValue, replaceMap);
+	            
+	            contentVersionValue = contentVersionValue.replaceAll("contentId=\"", "contentId=\"oldContentId_");
+	            contentVersionValue = contentVersionValue.replaceAll("\\?contentId=", "\\?contentId=oldContentId_");
+	            contentVersionValue = contentVersionValue.replaceAll("getInlineAssetUrl\\(", "getInlineAssetUrl\\(oldContentId_");
+	            contentVersionValue = contentVersionValue.replaceAll("languageId,", "languageId,oldContentId_");
+	            contentVersionValue = contentVersionValue.replaceAll("entity=\"Content\" entityId=\"", "entity=\"Content\" entityId=\"oldContentId_");
+	            //contentVersionValue = contentVersionValue.replaceAll("entity='Content'><id>", "entity='Content'><id>oldContentId_");
+	            contentVersionValue = contentVersionValue.replaceAll("siteNodeId=\"", "siteNodeId=\"oldSiteNodeId_");
+	            contentVersionValue = contentVersionValue.replaceAll("detailSiteNodeId=\"", "detailSiteNodeId=\"oldSiteNodeId_");
+	            contentVersionValue = contentVersionValue.replaceAll("getPageUrl\\((\\d)", "getPageUrl\\(oldSiteNodeId_$1");
+	            contentVersionValue = contentVersionValue.replaceAll("entity=\"SiteNode\" entityId=\"", "entity=\"SiteNode\" entityId=\"oldSiteNodeId_");
+	            //contentVersionValue = contentVersionValue.replaceAll("entity='SiteNode'><id>", "entity='SiteNode'><id>old_");
+	            
+	            Iterator<String> replaceMapIterator = replaceMap.keySet().iterator();
+	            while(replaceMapIterator.hasNext())
+	            {
+	            	String key = replaceMapIterator.next();
+	            	String value = (String)replaceMap.get(key);
+	            	contentVersionValue = contentVersionValue.replaceAll(key, value);
+	            }
+	            
+	            contentVersionValue = this.prepareAllRelations(contentVersionValue);
+	            	            
+	            
+	            //logger.info("contentVersionValue before:" + contentVersionValue);
+	            
+	            Iterator contentIdMapIterator = contentIdMap.keySet().iterator();
+	            while (contentIdMapIterator.hasNext()) 
+	            {
+	                String oldContentId = (String)contentIdMapIterator.next();
+	                String newContentId = (String)contentIdMap.get(oldContentId);
+	                
+	                //logger.info("Replacing all:" + oldContentId + " with " + newContentId);
+	                
+	                contentVersionValue = contentVersionValue.replaceAll("contentId=\"oldContentId_" + oldContentId + "\"", "contentId=\"" + newContentId + "\"");
+	                contentVersionValue = contentVersionValue.replaceAll("\\?contentId=oldContentId_" + oldContentId + "&", "\\?contentId=" + newContentId + "&");
+	                contentVersionValue = contentVersionValue.replaceAll("getInlineAssetUrl\\(oldContentId_" + oldContentId + ",", "getInlineAssetUrl\\(" + newContentId + ",");
+	                contentVersionValue = contentVersionValue.replaceAll("languageId,oldContentId_" + oldContentId + "\\)", "languageId," + newContentId + "\\)");
+	                contentVersionValue = contentVersionValue.replaceAll("entity=\"Content\" entityId=\"oldContentId_" + oldContentId + "\"", "entity=\"Content\" entityId=\"" + newContentId + "\"");
+	                contentVersionValue = contentVersionValue.replaceAll("<id>oldContentId_" + oldContentId + "</id>", "<id>" + newContentId + "</id>");
+	                //contentVersionValue = contentVersionValue.replaceAll("entity='Content'><id>old_" + oldContentId + "</id>", "entity='Content'><id>" + newContentId + "</id>");
+	                //contentVersionValue = contentVersionValue.replaceAll("<id>" + oldContentId + "</id>", "<id>" + newContentId + "</id>");
+	            }
+	            
+	            Iterator siteNodeIdMapIterator = siteNodeIdMap.keySet().iterator();
+	            while (siteNodeIdMapIterator.hasNext()) 
+	            {
+	                String oldSiteNodeId = (String)siteNodeIdMapIterator.next();
+	                String newSiteNodeId = (String)siteNodeIdMap.get(oldSiteNodeId);
+	                
+	                //logger.info("Replacing all:" + oldSiteNodeId + " with " + newSiteNodeId);
+	                
+	                contentVersionValue = contentVersionValue.replaceAll("siteNodeId=\"oldSiteNodeId_" + oldSiteNodeId + "\"", "siteNodeId=\"" + newSiteNodeId + "\"");
+	                contentVersionValue = contentVersionValue.replaceAll("detailSiteNodeId=\"oldSiteNodeId_" + oldSiteNodeId + "\"", "detailSiteNodeId=\"" + newSiteNodeId + "\"");
+	                contentVersionValue = contentVersionValue.replaceAll("getPageUrl\\(oldSiteNodeId_" + oldSiteNodeId + ",", "getPageUrl\\(" + newSiteNodeId + ",");
+	                contentVersionValue = contentVersionValue.replaceAll("entity=\"SiteNode\" entityId=\"oldSiteNodeId_" + oldSiteNodeId + "\"", "entity=\"SiteNode\" entityId=\"" + newSiteNodeId + "\"");
+	                //contentVersionValue = contentVersionValue.replaceAll("entity='SiteNode'><id>old_" + oldSiteNodeId + "</id>", "entity='SiteNode'><id>" + newSiteNodeId + "</id>");
+	                contentVersionValue = contentVersionValue.replaceAll("<id>oldSiteNodeId_" + oldSiteNodeId + "</id>", "<id>" + newSiteNodeId + "</id>");
+	            }
+	            
+	            //logger.info("contentVersionValue after:" + contentVersionValue);
+	            
+	            //Now replace all occurrances of old as they should never be there.
+	            contentVersionValue = contentVersionValue.replaceAll("oldContentId_", "");
+	            contentVersionValue = contentVersionValue.replaceAll("oldSiteNodeId_", "");
+	
+	            logger.info("new contentVersionValue:" + contentVersionValue);
+	            contentVersion.setVersionValue(contentVersionValue);
+	            contentVersion.getValueObject().setVersionValue(contentVersionValue);
             }
-            
-            contentVersionValue = this.prepareAllRelations(contentVersionValue);
-            	            
-            
-            //logger.info("contentVersionValue before:" + contentVersionValue);
-            
-            Iterator contentIdMapIterator = contentIdMap.keySet().iterator();
-            while (contentIdMapIterator.hasNext()) 
+            catch(Exception e)
             {
-                String oldContentId = (String)contentIdMapIterator.next();
-                String newContentId = (String)contentIdMap.get(oldContentId);
-                
-                //logger.info("Replacing all:" + oldContentId + " with " + newContentId);
-                
-                contentVersionValue = contentVersionValue.replaceAll("contentId=\"oldContentId_" + oldContentId + "\"", "contentId=\"" + newContentId + "\"");
-                contentVersionValue = contentVersionValue.replaceAll("\\?contentId=oldContentId_" + oldContentId + "&", "\\?contentId=" + newContentId + "&");
-                contentVersionValue = contentVersionValue.replaceAll("getInlineAssetUrl\\(oldContentId_" + oldContentId + ",", "getInlineAssetUrl\\(" + newContentId + ",");
-                contentVersionValue = contentVersionValue.replaceAll("languageId,oldContentId_" + oldContentId + "\\)", "languageId," + newContentId + "\\)");
-                contentVersionValue = contentVersionValue.replaceAll("entity=\"Content\" entityId=\"oldContentId_" + oldContentId + "\"", "entity=\"Content\" entityId=\"" + newContentId + "\"");
-                contentVersionValue = contentVersionValue.replaceAll("<id>oldContentId_" + oldContentId + "</id>", "<id>" + newContentId + "</id>");
-                //contentVersionValue = contentVersionValue.replaceAll("entity='Content'><id>old_" + oldContentId + "</id>", "entity='Content'><id>" + newContentId + "</id>");
-                //contentVersionValue = contentVersionValue.replaceAll("<id>" + oldContentId + "</id>", "<id>" + newContentId + "</id>");
+            	logger.error("Problem substituting content ids: " + e.getMessage(), e);
             }
-            
-            Iterator siteNodeIdMapIterator = siteNodeIdMap.keySet().iterator();
-            while (siteNodeIdMapIterator.hasNext()) 
-            {
-                String oldSiteNodeId = (String)siteNodeIdMapIterator.next();
-                String newSiteNodeId = (String)siteNodeIdMap.get(oldSiteNodeId);
-                
-                //logger.info("Replacing all:" + oldSiteNodeId + " with " + newSiteNodeId);
-                
-                contentVersionValue = contentVersionValue.replaceAll("siteNodeId=\"oldSiteNodeId_" + oldSiteNodeId + "\"", "siteNodeId=\"" + newSiteNodeId + "\"");
-                contentVersionValue = contentVersionValue.replaceAll("detailSiteNodeId=\"oldSiteNodeId_" + oldSiteNodeId + "\"", "detailSiteNodeId=\"" + newSiteNodeId + "\"");
-                contentVersionValue = contentVersionValue.replaceAll("getPageUrl\\(oldSiteNodeId_" + oldSiteNodeId + ",", "getPageUrl\\(" + newSiteNodeId + ",");
-                contentVersionValue = contentVersionValue.replaceAll("entity=\"SiteNode\" entityId=\"oldSiteNodeId_" + oldSiteNodeId + "\"", "entity=\"SiteNode\" entityId=\"" + newSiteNodeId + "\"");
-                //contentVersionValue = contentVersionValue.replaceAll("entity='SiteNode'><id>old_" + oldSiteNodeId + "</id>", "entity='SiteNode'><id>" + newSiteNodeId + "</id>");
-                contentVersionValue = contentVersionValue.replaceAll("<id>oldSiteNodeId_" + oldSiteNodeId + "</id>", "<id>" + newSiteNodeId + "</id>");
-            }
-            
-            //logger.info("contentVersionValue after:" + contentVersionValue);
-            
-            //Now replace all occurrances of old as they should never be there.
-            contentVersionValue = contentVersionValue.replaceAll("oldContentId_", "");
-            contentVersionValue = contentVersionValue.replaceAll("oldSiteNodeId_", "");
-
-            logger.info("new contentVersionValue:" + contentVersionValue);
-            contentVersion.setVersionValue(contentVersionValue);
         }
 	}
 

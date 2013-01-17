@@ -31,6 +31,8 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.lang.reflect.Modifier;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -111,6 +113,11 @@ import org.infoglue.cms.util.handlers.DigitalAssetBytesHandler;
 import org.infoglue.deliver.util.CompressionHelper;
 import org.infoglue.deliver.util.Timer;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.reflect.TypeToken;
 import com.opensymphony.module.propertyset.PropertySet;
 import com.opensymphony.module.propertyset.PropertySetManager;
 
@@ -166,6 +173,11 @@ public class ImportRepositoryAction extends InfoGlueAbstractAction
 		return "successShowProcesses";
 	}
 
+	public String doShowProcessesAsJSON() throws Exception
+	{
+		// TODO it would be nice we could write JSON to the OutputStream but we get a content already transmitted exception then.
+		return "successShowProcessesAsJSON";
+	}
 	/**
 	 * This shows the dialog before export.
 	 * @return
@@ -286,12 +298,12 @@ public class ImportRepositoryAction extends InfoGlueAbstractAction
 					if(toEncoding == null)
 						toEncoding = "utf-8";
 					
-					if(replacements.indexOf("å") == -1 && 
-					   replacements.indexOf("ä") == -1 && 
-					   replacements.indexOf("ö") == -1 && 
-					   replacements.indexOf("Å") == -1 && 
-					   replacements.indexOf("Ä") == -1 && 
-					   replacements.indexOf("Ö") == -1)
+					if(replacements.indexOf("ï¿½") == -1 && 
+					   replacements.indexOf("ï¿½") == -1 && 
+					   replacements.indexOf("ï¿½") == -1 && 
+					   replacements.indexOf("ï¿½") == -1 && 
+					   replacements.indexOf("ï¿½") == -1 && 
+					   replacements.indexOf("ï¿½") == -1)
 					{
 						replacements = new String(replacements.getBytes(fromEncoding), toEncoding);
 					}
@@ -411,7 +423,7 @@ public class ImportRepositoryAction extends InfoGlueAbstractAction
 			{
 				String[] repositories = getRequest().getParameterValues("repositoryId");
 				
-				String exportId = "Import_" + visualFormatter.formatDate(new Date(), "yyyy-MM-dd_HHmm");
+				String exportId = "Copy_Import_" + visualFormatter.formatDate(new Date(), "yyyy-MM-dd_HHmm");
 				ProcessBean processBean = ProcessBean.createProcessBean(ImportRepositoryAction.class.getName(), exportId);
 				
 				OptimizedExportController.copy(repositories, -1, false, null, processBean, onlyLatestVersions, standardReplacement, replacements);
@@ -641,5 +653,31 @@ public class ImportRepositoryAction extends InfoGlueAbstractAction
 	{
 		return ProcessBean.getProcessBeans(ImportRepositoryAction.class.getName());
 	}
+	
+	public String getStatusAsJSON()
+	{
+		Gson gson = new GsonBuilder()
+			.excludeFieldsWithModifiers(Modifier.TRANSIENT, Modifier.STATIC)
+			.setDateFormat("dd MMM HH:mm:ss").create();
+		JsonObject object = new JsonObject();
 
+		try
+		{
+			List<ProcessBean> processes = getProcessBeans();
+			Type processBeanListType = new TypeToken<List<ProcessBean>>() {}.getType();
+			JsonElement list = gson.toJsonTree(processes, processBeanListType);
+			object.add("processes", list);
+			object.addProperty("memoryMessage", getMemoryUsageAsText());
+		}
+		catch (Throwable t)
+		{
+			logger.error("Error when generating repository export status report as JSON.", t);
+			JsonObject error = new JsonObject(); 
+			error.addProperty("message", t.getMessage());
+			error.addProperty("type", t.getClass().getSimpleName());
+			object.add("error", error);
+		}
+
+		return gson.toJson(object);
+	}
 }

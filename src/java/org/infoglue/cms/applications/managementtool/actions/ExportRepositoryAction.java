@@ -26,6 +26,8 @@ package org.infoglue.cms.applications.managementtool.actions;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStreamWriter;
+import java.lang.reflect.Modifier;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -63,6 +65,11 @@ import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.util.CmsPropertyHandler;
 import org.infoglue.cms.util.handlers.DigitalAssetBytesHandler;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.reflect.TypeToken;
 import com.opensymphony.module.propertyset.PropertySet;
 import com.opensymphony.module.propertyset.PropertySetManager;
 
@@ -90,6 +97,7 @@ public class ExportRepositoryAction extends InfoGlueAbstractAction
 	private int assetMaxSize = -1;
 	
 	private String processId = null;
+	private int processStatus = -1;
 
 	/**
 	 * This deletes a process info bean and related files etc.
@@ -118,6 +126,13 @@ public class ExportRepositoryAction extends InfoGlueAbstractAction
 	public String doShowProcesses() throws Exception
 	{
 		return "successShowProcesses";
+	}
+
+	
+	public String doShowProcessesAsJSON() throws Exception
+	{
+		// TODO it would be nice we could write JSON to the OutputStream but we get a content already transmitted exception then.
+		return "successShowProcessesAsJSON";
 	}
 
 	/**
@@ -620,9 +635,91 @@ public class ExportRepositoryAction extends InfoGlueAbstractAction
 		this.processId = processId;
 	}
 
+	public void setProcessStatus(String processStatusString) 
+	{
+		if ("running".equals(processStatusString))
+		{
+			this.processStatus = ProcessBean.RUNNING;
+		}
+		else if ("finished".equals(processStatusString))
+		{
+			this.processStatus = ProcessBean.FINISHED;
+		}
+		else if ("error".equals(processStatusString))
+		{
+			this.processStatus = ProcessBean.ERROR;
+		}
+		else if ("notStarted".equals(processStatusString))
+		{
+			this.processStatus = ProcessBean.NOT_STARTED;
+		}
+		else
+		{
+			logger.warn("Got unknown process status parameter. Ignoring value. Parameter: " + processStatusString);
+			this.processStatus = -1;
+		}
+	}
+
 	public List<ProcessBean> getProcessBeans()
 	{
 		return ProcessBean.getProcessBeans(ExportRepositoryAction.class.getName());
+	}
+
+	public List<ProcessBean> getFilteredProcessBeans()
+	{
+		List<ProcessBean> processes = ProcessBean.getProcessBeans(ExportRepositoryAction.class.getName());
+
+		if (logger.isDebugEnabled())
+		{
+			logger.debug("Number of processes before filtering: " + processes.size());
+		}
+		if (this.processStatus != -1)
+		{
+			Iterator<ProcessBean> processIterator = processes.iterator();
+			ProcessBean process;
+			while (processIterator.hasNext())
+			{
+				process = processIterator.next();
+				if (process.getStatus() != this.processStatus)
+				{
+					logger.debug("Removing (filtering) process with Id: " + process.getProcessId());
+					processIterator.remove();
+				}
+			}
+		}
+		if (logger.isDebugEnabled())
+		{
+			logger.debug("Number of processes after filtering: " + processes.size());
+		}
+
+		return processes;
+	}
+
+	public String getStatusAsJSON()
+	{
+		Gson gson = new GsonBuilder()
+			.excludeFieldsWithModifiers(Modifier.TRANSIENT, Modifier.STATIC)
+			.setDateFormat("dd MMM HH:mm:ss").create();
+		JsonObject object = new JsonObject();
+
+		try
+		{
+			List<ProcessBean> processes = getProcessBeans();
+			Type processBeanListType = new TypeToken<List<ProcessBean>>() {}.getType();
+			JsonElement list = gson.toJsonTree(processes, processBeanListType);
+			object.add("processes", list);
+			object.addProperty("memoryMessage", getMemoryUsageAsText());
+		}
+		catch (Throwable t)
+		{
+			logger.error("Error when generating repository export status report as JSON.", t);
+			JsonObject error = new JsonObject(); 
+			error.addProperty("message", t.getMessage());
+			error.addProperty("type", t.getClass().getSimpleName());
+			object.add("error", error);
+		}
+
+		return gson.toJson(object);
 	}
 
 }

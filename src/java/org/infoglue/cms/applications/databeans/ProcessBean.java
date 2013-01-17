@@ -35,6 +35,9 @@ import org.apache.log4j.Logger;
 import org.infoglue.cms.applications.managementtool.actions.ExportRepositoryAction;
 import org.infoglue.cms.security.InfoGluePrincipal;
 
+import com.google.gson.Gson;
+import com.google.gson.annotations.Expose;
+
 /**
  * This bean allows for processes to give information about the process itself and what the status is.
  * The bean has a listener option in which an external class can ask it to report process when it happens (push).
@@ -52,6 +55,15 @@ public class ProcessBean
     {
     	return processBeans;
     }
+    /**
+     * Returns a list of all processes that has he given <em>processName</em>.
+     * 
+     * The returned list is a shallow (filtered) copy of the list holding all processes.
+     * As such changes made to the list will not be reflected in the original list however
+     * changes made to the ProcessBeans in the list <b>will</b> affect the original process object.
+     * @param processName
+     * @return
+     */
     public static List<ProcessBean> getProcessBeans(String processName)
     {
     	List<ProcessBean> processBeansWithName = new ArrayList<ProcessBean>();
@@ -86,16 +98,21 @@ public class ProcessBean
     public static final int NOT_STARTED = 0;
     public static final int RUNNING = 1;
     public static final int FINISHED = 2;
-    public static final int FAILED = -1;
+    /** Indicates that the process has entered an unrecoverable error state. */
+    public static final int ERROR = 3;
     
 	//ID can be any string the process decides while processName is a general name for all instances of a certain process.
     private String processName;
     private String processId;
     private int status = NOT_STARTED;
+    // TODO should the dates really be initiated here? getFinished() will say that the process has finished even though it has not
     private Date started = new Date();
 	private Date finished = new Date();
     
-    private List<ProcessBeanListener> listeners = new ArrayList<ProcessBeanListener>();
+	private String errorMessage;
+	private Throwable exception;
+    
+    private transient List<ProcessBeanListener> listeners = new ArrayList<ProcessBeanListener>();
     private List<String> processEvents = new ArrayList<String>();
     private Map<String,Map<String,Object>> artifacts = new HashMap<String,Map<String,Object>>();
     private List<File> files = new ArrayList<File>();
@@ -118,6 +135,7 @@ public class ProcessBean
     public void updateProcess(String eventDescription)
     {
     	processEvents.add(eventDescription);
+    	// TODO Does this need to be synchronized with adding listeners?
     	for(ProcessBeanListener processBeanListener : listeners)
     	{
     		try
@@ -134,13 +152,14 @@ public class ProcessBean
     /**
      * This method sends the new artifact to all listeners.
      * 
-     * @param eventDescription
+     * 
      */
     public void updateProcessArtifacts(String artifactId, String url, File file)
     {
     	Map<String,Object> artifactDescMap = new HashMap<String,Object>();
     	artifactDescMap.put("url", url);
     	artifactDescMap.put("file", file);
+    	artifactDescMap.put("fileSize", file.length());
     	
     	artifacts.put(artifactId, artifactDescMap);
     	
@@ -175,6 +194,39 @@ public class ProcessBean
 		getProcessBeans().remove(this);
 	}
 
+	/**
+	 * Same as calling {@link #setError(String, Throwable)} with null passed as the
+	 * second parameter.
+	 * @param errorMessage
+	 */
+	public void setError(String errorMessage)
+	{
+		setError(errorMessage, null);
+	}
+
+	/**
+	 * Marks the process as an erroneous processes. Calling this method means that the process has
+	 * terminated but was not successful. This method also sets the state of the process to {@link #ERROR}.
+	 * @param errorMessage
+	 * @param exception The exception that caused the process to fail. May be null if the error was not related to an exception.
+	 */
+	public void setError(String errorMessage, Throwable exception)
+	{
+		this.errorMessage = errorMessage;
+		this.exception = exception;
+		setStatus(ERROR);
+	}
+	
+	public String getErrorMessage()
+	{
+		return this.errorMessage;
+	}
+	
+	public Throwable getException()
+	{
+		return this.exception;
+	}
+
 	public String getProcessName()
 	{
 		return processName;
@@ -200,12 +252,28 @@ public class ProcessBean
 		return finished;
 	}
 
+	/**
+	 * Sets the status of the process.
+	 * 
+	 * Possible values are:
+	 * <ul>
+	 * 	<li>{@linkplain #NOT_STARTED}</li>
+	 * 	<li>{@linkplain #RUNNING}</li>
+	 * 	<li>{@linkplain #FINISHED}</li>
+	 * 	<li>{@linkplain #ERROR}</li>
+	 * </ul>
+	 * 
+	 * While it is allowed to set the state to {@link #ERROR} through this method
+	 * it is encouraged to do it using the {@link #setError(String, Throwable)} method.
+	 * 
+	 * @param status The new status. See available values in text above.
+	 */
     public void setStatus(int status)
     {
     	this.status = status;
     	if(status == RUNNING)
     		this.started = new Date();
-    	else if(status == FINISHED)
+    	else if(status == FINISHED || status == ERROR)
     		this.finished = new Date();
     }
     

@@ -90,7 +90,6 @@ public class OptimizedExportController extends BaseController implements Runnabl
 		}
 		catch (Exception e) 
 		{
-			processBean.setStatus(ProcessBean.FAILED);
 			logger.error("Error in export thread:" + e.getMessage(), e);
 		}
 	}
@@ -143,10 +142,12 @@ public class OptimizedExportController extends BaseController implements Runnabl
 		File folder = new File(folderName);
 		folder.mkdirs();
 
-		Database db = CastorDatabaseService.getDatabase();
+		Database db = null;
 		
 		try 
 		{
+			db = CastorDatabaseService.getDatabase();
+			
 			Mapping map = new Mapping();
 			logger.info("MappingFile:" + CastorDatabaseService.class.getResource("/xml_mapping_site_3.0.xml").toString());
 			map.loadMapping(CastorDatabaseService.class.getResource("/xml_mapping_site_3.0.xml").toString());
@@ -332,8 +333,9 @@ public class OptimizedExportController extends BaseController implements Runnabl
 			
 			processBean.setStatus(ProcessBean.FINISHED);
 		} 
-		catch (Exception e) 
+		catch (Throwable e) 
 		{
+			processBean.setError("An error occured while exporting repository. Error message: " + e.getClass(), e);
 			logger.error("An error was found exporting a repository: " + e.getMessage(), e);
 			db.rollback();
 		}
