@@ -718,7 +718,7 @@ public class SiteNodeController extends BaseController
 	 * This method returns the value-object of the parent of a specific siteNode. 
 	 */
 	
-    public static SiteNodeVO getParentSiteNode(Integer siteNodeId) throws SystemException, Bug
+    public SiteNodeVO getParentSiteNode(Integer siteNodeId) throws SystemException, Bug
     {
     	Database db = CastorDatabaseService.getDatabase();
         ConstraintExceptionBuffer ceb = new ConstraintExceptionBuffer();
@@ -728,10 +728,7 @@ public class SiteNodeController extends BaseController
 
         try
         {
-			SiteNode parent = getParentSiteNode(siteNodeId, db);
-			if(parent != null)
-				parentSiteNodeVO = parent.getValueObject();
-            
+        	parentSiteNodeVO = getParentSiteNodeVO(siteNodeId, db);
             commitTransaction(db);
         }
         catch(Exception e)
@@ -751,25 +748,14 @@ public class SiteNodeController extends BaseController
 	public SiteNodeVO getParentSiteNodeVO(Integer siteNodeId, Database db) throws SystemException, Bug, Exception
 	{
 		SiteNodeVO parent = null;
-		
+		 
 		SiteNodeVO siteNodeVO = getSiteNodeVOWithId(siteNodeId, db);
 		if(siteNodeVO != null && siteNodeVO.getParentSiteNodeId() != null)
 			parent = getSiteNodeVOWithId(siteNodeVO.getParentSiteNodeId(), db);
-
+		
 		return parent;    	
 	}
 
-	/**
-	 * This method returns the value-object of the parent of a specific siteNode. 
-	 */
-	
-	public static SiteNode getParentSiteNode(Integer siteNodeId, Database db) throws SystemException, Bug
-	{
-		SiteNode siteNode = (SiteNode) getObjectWithId(SiteNodeImpl.class, siteNodeId, db);
-		SiteNode parent = siteNode.getParentSiteNode();
-
-		return parent;    	
-	}
     
 	/**
 	 * This method returns a list of the children a siteNode has.
