@@ -84,7 +84,7 @@
 <!--  Mapping for UserProperties  -->
   <class name="org.infoglue.cms.entities.management.impl.simple.UserPropertiesImpl" identity="userPropertiesId" key-generator="IDENTITY">
     <description>UserProperties</description>
-    <cache-type type="unlimited" capacity="1000"/>
+    <cache-type type="none"/>
     <map-to table="cmUserProperties"/>
     <field name="userPropertiesId" type="java.lang.Integer">
       <sql name="userPropertiesId" type="integer" dirty="check" />
@@ -210,7 +210,7 @@
   <!--  Mapping for RoleProperties  -->
   <class name="org.infoglue.cms.entities.management.impl.simple.RolePropertiesImpl" identity="rolePropertiesId" key-generator="IDENTITY">
     <description>RoleProperties</description>
-    <cache-type type="unlimited" capacity="1000"/>
+    <cache-type type="none"/>
     <map-to table="cmRoleProperties"/>
     <field name="rolePropertiesId" type="java.lang.Integer">
       <sql name="rolePropertiesId" type="integer" dirty="check" />
@@ -252,7 +252,7 @@
   <!--  Mapping for GroupProperties  -->
   <class name="org.infoglue.cms.entities.management.impl.simple.GroupPropertiesImpl" identity="groupPropertiesId" key-generator="IDENTITY">
     <description>GroupProperties</description>
-    <cache-type type="unlimited" capacity="1000"/>
+    <cache-type type="none"/>
     <map-to table="cmGroupProperties"/>
     <field name="groupPropertiesId" type="java.lang.Integer">
       <sql name="groupPropertiesId" type="integer" dirty="check" />
