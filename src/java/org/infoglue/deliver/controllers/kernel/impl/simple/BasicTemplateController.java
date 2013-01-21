@@ -5167,7 +5167,7 @@ public class BasicTemplateController implements TemplateController
 		String userName = this.getPrincipal().getName();
 		if(!CmsPropertyHandler.getOperatingMode().equals("3") || validateAccessRightsAsAnonymous)
 			userName = CmsPropertyHandler.getAnonymousUser();
-
+		
 		String key = "sortedMatchingContents" + contentTypeDefinitionNamesString + "_" + categoryConditionString + "_publishDateTime_languageId_" + localLanguageId + "_" + useLanguageFallback + "_" + maximumNumberOfItems + "_" + repositoryIdString + "_" + skipLanguageCheck + "_" + sortColumn + "_" + sortOrder + "_" + userName + (fromDate != null ? "_" + fromDate.getTime() : "") + (toDate != null ? "_" + toDate.getTime() : "");
 		if(cacheKey != null && !cacheKey.equals(""))
 			key = cacheKey;
@@ -5213,10 +5213,15 @@ public class BasicTemplateController implements TemplateController
 		
 		logger.info("forceRefetch:" + forceRefetch);
 		List cachedMatchingContents = (List)CacheController.getCachedObjectFromAdvancedCache(cacheName, key, cacheInterval);
-		logger.info("cachedMatchingContents:" + cachedMatchingContents);
-		logger.info("cacheResult:" + cacheResult);
-		logger.info("forceRefetch:" + forceRefetch);
-		logger.info("returnOnlyCachedResult:" + returnOnlyCachedResult);
+
+		if(logger.isInfoEnabled())
+		{
+			logger.info("cachedMatchingContents:" + cachedMatchingContents.size());
+			logger.info("cacheResult:" + cacheResult);
+			logger.info("forceRefetch:" + forceRefetch);
+			logger.info("returnOnlyCachedResult:" + returnOnlyCachedResult);
+		}
+
 		if((cachedMatchingContents == null || !cacheResult || forceRefetch) && !returnOnlyCachedResult)
 		{
 			logger.info("Getting matching contents from db for key:" + key);
