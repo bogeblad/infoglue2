@@ -240,12 +240,19 @@ public class CacheController extends Thread
     {
     	DefeatCacheParameters defeatCachesValue = new DefeatCacheParameters();
     	defeatCachesValue.setDefeatCache(defeatCache);
-    	defeatCachesValue.getEntities().putAll(entities);
+    	if(entities != null)
+    		defeatCachesValue.getEntities().putAll(entities);
     	
     	if(logger.isInfoEnabled())
     		logger.info("Forcing defeatCaches...");
+
     	defeatCaches.set(defeatCachesValue);
-    	if(defeatCache)
+
+    	boolean skipClearCastor = false;
+    	if(defeatCaches.get().getEntities() == null || defeatCaches.get().getEntities().size() == 0)
+    		skipClearCastor = true;
+
+    	if(defeatCache && defeatCaches.get() != null && !skipClearCastor)
     	{
     		try 
     		{
@@ -255,6 +262,10 @@ public class CacheController extends Thread
     		{
     			logger.error("Error setting defeatCaches:" + e.getMessage(), e);
 			}
+    	}
+    	else if(defeatCache && skipClearCastor)
+    	{
+    		logger.info("Skipping clearCastorCaches as entities was null");
     	}
     }
 
