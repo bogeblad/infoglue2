@@ -473,9 +473,112 @@ public class SiteNodeVersionController extends BaseController
 		return siteNodeVersion;
     }
 
-	public SiteNodeVersionVO getLatestActiveSiteNodeVersionVO(Database db, Integer siteNodeId) throws SystemException, Bug, Exception
+	
+	public SiteNodeVersionVO getLatestSiteNodeVersionVO(Integer siteNodeId) throws SystemException, Bug
     {
 		String key = "" + siteNodeId;
+		SiteNodeVersionVO siteNodeVersionVO = (SiteNodeVersionVO)CacheController.getCachedObjectFromAdvancedCache("latestSiteNodeVersionCache", key);
+		if(siteNodeVersionVO != null)
+		{
+			if(logger.isInfoEnabled())
+				logger.info("There was an cached siteNodeVersionVO:" + siteNodeVersionVO);
+		}
+		else
+		{
+		    SiteNodeVersion siteNodeVersion = null;
+		    
+		    Database db = CastorDatabaseService.getDatabase();
+	        ConstraintExceptionBuffer ceb = new ConstraintExceptionBuffer();
+
+	        beginTransaction(db);
+
+	        try
+	        {
+			    OQLQuery oql = db.getOQLQuery( "SELECT cv FROM org.infoglue.cms.entities.structure.impl.simple.SmallSiteNodeVersionImpl cv WHERE cv.siteNodeId = $1 ORDER BY cv.siteNodeVersionId desc");
+				oql.bind(siteNodeId);
+				
+				QueryResults results = oql.execute(Database.ReadOnly);
+				
+				if (results.hasMore()) 
+			    {
+			    	siteNodeVersion = (SiteNodeVersion)results.next();
+		        }
+		
+				results.close();
+				oql.close();
+		
+			    if(siteNodeVersion != null)
+			    	siteNodeVersionVO = siteNodeVersion.getValueObject();
+			    else
+			    	logger.warn("The siteNode " + siteNodeId + " did not have a latest active siteNodeVersion - very strange.");
+				
+				if(siteNodeVersionVO != null)
+				{
+		        	String groupKey1 = CacheController.getPooledString(4, siteNodeVersionVO.getId());
+		        	String groupKey2 = CacheController.getPooledString(3, siteNodeId);
+		        	CacheController.cacheObjectInAdvancedCache("latestSiteNodeVersionCache", key, siteNodeVersionVO, new String[]{groupKey1, groupKey2}, true);
+				}
+	        	
+				commitTransaction(db);
+	        }
+	        catch(Exception e)
+	        {
+	            logger.error("An error occurred so we should not completes the transaction:" + e, e);
+	            rollbackTransaction(db);
+	            throw new SystemException(e.getMessage());
+	        }
+		}
+	    
+		return siteNodeVersionVO;
+    }
+	
+	public SiteNodeVersionVO getLatestSiteNodeVersionVO(Database db, Integer siteNodeId) throws SystemException, Bug, Exception
+    {
+		String key = "" + siteNodeId;
+		SiteNodeVersionVO siteNodeVersionVO = (SiteNodeVersionVO)CacheController.getCachedObjectFromAdvancedCache("latestSiteNodeVersionCache", key);
+		if(siteNodeVersionVO != null)
+		{
+			if(logger.isInfoEnabled())
+				logger.info("There was an cached siteNodeVersionVO:" + siteNodeVersionVO);
+		}
+		else
+		{
+		    SiteNodeVersion siteNodeVersion = null;
+		    
+		    OQLQuery oql = db.getOQLQuery( "SELECT cv FROM org.infoglue.cms.entities.structure.impl.simple.SmallSiteNodeVersionImpl cv WHERE cv.siteNodeId = $1 ORDER BY cv.siteNodeVersionId desc");
+			oql.bind(siteNodeId);
+			
+			QueryResults results = oql.execute(Database.ReadOnly);
+			
+			if (results.hasMore()) 
+		    {
+		    	siteNodeVersion = (SiteNodeVersion)results.next();
+	        }
+	
+			results.close();
+			oql.close();
+	
+		    if(siteNodeVersion != null)
+		    	siteNodeVersionVO = siteNodeVersion.getValueObject();
+		    else
+		    	logger.warn("The siteNode " + siteNodeId + " did not have a latest active siteNodeVersion - very strange.");
+			
+			if(siteNodeVersionVO != null)
+			{
+	        	String groupKey1 = CacheController.getPooledString(4, siteNodeVersionVO.getId());
+	        	String groupKey2 = CacheController.getPooledString(3, siteNodeId);
+	        	CacheController.cacheObjectInAdvancedCache("latestSiteNodeVersionCache", key, siteNodeVersionVO, new String[]{groupKey1, groupKey2}, true);
+			}
+			
+		}
+	    
+		return siteNodeVersionVO;
+    }
+
+	
+	public SiteNodeVersionVO getLatestActiveSiteNodeVersionVO(Database db, Integer siteNodeId) throws SystemException, Bug, Exception
+    {
+		String key = "" + siteNodeId + "_active";
 		SiteNodeVersionVO siteNodeVersionVO = (SiteNodeVersionVO)CacheController.getCachedObjectFromAdvancedCache("latestSiteNodeVersionCache", key);
 		if(siteNodeVersionVO != null)
 		{
@@ -517,6 +620,7 @@ public class SiteNodeVersionController extends BaseController
 		return siteNodeVersionVO;
     }
 
+	/*
 	public SiteNodeVersionVO getLatestSiteNodeVersionVO(Integer siteNodeId) throws SystemException, Bug
     {
     	Database db = CastorDatabaseService.getDatabase();
@@ -542,7 +646,7 @@ public class SiteNodeVersionController extends BaseController
             
 			results.close();
 			oql.close();
-
+        	
 			commitTransaction(db);
         }
         catch(Exception e)
@@ -554,8 +658,9 @@ public class SiteNodeVersionController extends BaseController
     	
 		return siteNodeVersionVO;
     }
+    */
     
-	
+	/*
 	public SiteNodeVersionVO getLatestSiteNodeVersionVO(Database db, Integer siteNodeId) throws SystemException, Bug, Exception
     {
     	SiteNodeVersionVO siteNodeVersionVO = null;
@@ -577,11 +682,12 @@ public class SiteNodeVersionController extends BaseController
 
 		return siteNodeVersionVO;
     }
+    */
 
 	/**
 	 * This is a method used to get the latest site node version of a sitenode within a given transaction.
 	 */
-
+	
 	public SiteNodeVersion getLatestSiteNodeVersion(Database db, Integer siteNodeId, boolean ReadOnly) throws SystemException, Bug
 	{
 		ConstraintExceptionBuffer ceb = new ConstraintExceptionBuffer();
