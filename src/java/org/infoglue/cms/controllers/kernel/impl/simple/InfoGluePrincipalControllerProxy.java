@@ -47,6 +47,7 @@ import org.infoglue.cms.entities.management.LanguageVO;
 import org.infoglue.cms.entities.management.RoleProperties;
 import org.infoglue.cms.entities.management.UserProperties;
 import org.infoglue.cms.entities.management.UserPropertiesVO;
+import org.infoglue.cms.entities.content.ContentVersionVO;
 import org.infoglue.cms.entities.content.DigitalAssetVO;
 import org.infoglue.cms.exception.ConstraintException;
 import org.infoglue.cms.exception.SystemException;
@@ -185,7 +186,7 @@ public class InfoGluePrincipalControllerProxy extends BaseController
 		
 		if(infoGluePrincipal == null || propertyName == null)
 			return null;
-	
+		
 	    Collection userPropertiesList = UserPropertiesController.getController().getUserPropertiesList(infoGluePrincipal.getName(), languageId, db, true);
 		Iterator userPropertiesListIterator = userPropertiesList.iterator();
 		while(userPropertiesListIterator.hasNext())
@@ -195,18 +196,26 @@ public class InfoGluePrincipalControllerProxy extends BaseController
 			if(userProperties != null && userProperties.getLanguage().getLanguageId().equals(languageId) && userProperties.getValue() != null && propertyName != null)
 			{
 				String propertyXML = userProperties.getValue();
+			    if(propertyXML != null && propertyXML.indexOf(propertyName) > -1)
+			    {
+					value = getAttributeValue(propertyXML, propertyName, escapeSpecialCharacters);
+				    if(value != null && !value.equals(""))
+				    	break;
+			    }
+			    /*
 				DOMBuilder domBuilder = new DOMBuilder();
 				Document document = domBuilder.getDocument(propertyXML);
-	
 				Node node = document.getRootElement().selectSingleNode("attributes/" + propertyName);
-				if(node != null)
+			    if(node != null)
 				{
 					value = node.getStringValue();
 					logger.info("Getting value: " + value);
 					if(value != null && escapeSpecialCharacters)
 						value = new VisualFormatter().escapeHTML(value);
+				    t.printElapsedTime("2:" + value);
 					break;
 				}
+				*/
 			}
 		}
 		
@@ -426,6 +435,7 @@ public class InfoGluePrincipalControllerProxy extends BaseController
 	    else
 	        CacheController.cacheObject("principalPropertyValueCache", key, new NullObject());
 		
+		
 		return value;
 	}	
 	
@@ -576,6 +586,31 @@ public class InfoGluePrincipalControllerProxy extends BaseController
 		return new InfoGluePrincipal("TestUser", "none", "none", "none", new ArrayList(), new ArrayList(), true, null);
 	}
 	
+	/**
+	 * Returns an attribute value from the ContentVersionVO
+	 *
+	 * @param contentVersionVO The version on which to find the value
+	 * @param attributeName THe name of the attribute whose value is wanted
+	 * @param escapeHTML A boolean indicating if the result should be escaped
+	 * @return The String vlaue of the attribute, or blank if it doe snot exist.
+	 */
+	public String getAttributeValue(String xml, String attributeName, boolean escapeHTML)
+	{
+		String value = "";
+
+		int startTagIndex = xml.indexOf("<" + attributeName + ">");
+		int endTagIndex   = xml.indexOf("]]></" + attributeName + ">");
+
+		if(startTagIndex > 0 && startTagIndex < xml.length() && endTagIndex > startTagIndex && endTagIndex <  xml.length())
+		{
+			value = xml.substring(startTagIndex + attributeName.length() + 11, endTagIndex);
+			if(escapeHTML)
+				value = new VisualFormatter().escapeHTML(value);
+		}		
+
+		return value;
+	}
+
 	
 	public BaseEntityVO getNewVO()
 	{
