@@ -67,11 +67,7 @@ public class PrincipalPropertyTag extends TemplateControllerTag
         boolean previousDefeatCaches = getController().getDeliveryContext().getDefeatCaches();
 		try
 		{
-	        Map<Class, List<Object>> entities = new HashMap<Class, List<Object>>();
-	        entities.put(UserPropertiesImpl.class, Collections.EMPTY_LIST);
-	        entities.put(GroupPropertiesImpl.class, Collections.EMPTY_LIST);
-	        entities.put(RolePropertiesImpl.class, Collections.EMPTY_LIST);
-	        getController().getDeliveryContext().setDefeatCaches(defeatCaches, entities);
+	        getController().getDeliveryContext().setDefeatCaches(defeatCaches, null/* entities*/);
 
 		    if(userName != null && !userName.equals(""))
 		    {
