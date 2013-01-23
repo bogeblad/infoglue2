@@ -382,7 +382,7 @@
 			#editPropertyFieldCSS("ServerNode.property.serverName" "serverName" "$this.getPropertyValue('serverName')" "51" "$!serverNodeId")
 			#editPropertyFieldCSS("ServerNode.property.authConstraint" "authConstraint" "$this.getPropertyValue('authConstraint')" "51" "$!serverNodeId")
 			##editPropertyFieldCSS("ServerNode.property.extraParametersFile" "extraParametersFile" "$this.getPropertyValue('extraParametersFile')" "51" "$!serverNodeId")
-			#editPropertyTextAreaCSS("ServerNode.property.extraSecurityParameters" "extraSecurityParameters" "$this.getDataPropertyValue('extraSecurityParameters')" "50" "10" "normaltextarea" "$!serverNodeId")
+			#editPropertyTextAreaCSS("ServerNode.property.extraSecurityParameters" "extraSecurityParameters" "$this.getDataPropertyValue('extraSecurityParameters')" "50" "10" "smalltextarea" "$!serverNodeId")
 			#editPropertyFieldCSS("ServerNode.property.casValidateUrl" "casValidateUrl" "$this.getPropertyValue('casValidateUrl')" "51" "$!serverNodeId")
 			#editPropertyFieldCSS("ServerNode.property.casProxyValidateUrl" "casProxyValidateUrl" "$this.getPropertyValue('casProxyValidateUrl')" "51" "$!serverNodeId")
 			#editPropertyFieldCSS("ServerNode.property.casServiceUrl" "casServiceUrl" "$this.getPropertyValue('casServiceUrl')" "51" "$!serverNodeId")
@@ -409,11 +409,13 @@
 			#editPropertyFieldCSS("ServerNode.property.authConstraint" "deliver_authConstraint" "$this.getPropertyValue('deliver', 'authConstraint')" "51" "$!serverNodeId")
 			#editPropertyFieldCSS("ServerNode.property.security.anonymous.username" "deliver_security.anonymous.username" "$this.getPropertyValue('deliver', 'security.anonymous.username')" "51" "$!serverNodeId")
 			#editPropertyFieldCSS("ServerNode.property.security.anonymous.password" "deliver_security.anonymous.password" "$this.getPropertyValue('deliver', 'security.anonymous.password')" "51" "$!serverNodeId")
-			#editPropertyTextAreaCSS("ServerNode.property.extraSecurityParameters" "deliver_extraSecurityParameters" "$this.getDataPropertyValue('deliver', 'extraSecurityParameters')" "50" "10" "normaltextarea" "$!serverNodeId")
+			#editPropertyTextAreaCSS("ServerNode.property.extraSecurityParameters" "deliver_extraSecurityParameters" "$this.getDataPropertyValue('deliver', 'extraSecurityParameters')" "50" "10" "smalltextarea" "$!serverNodeId")
 			#editPropertyFieldCSS("ServerNode.property.casValidateUrl" "deliver_casValidateUrl" "$this.getPropertyValue('deliver', 'casValidateUrl')" "51" "$!serverNodeId")
 			#editPropertyFieldCSS("ServerNode.property.casProxyValidateUrl" "deliver_casProxyValidateUrl" "$this.getPropertyValue('deliver', 'casProxyValidateUrl')" "51" "$!serverNodeId")
 			#editPropertyFieldCSS("ServerNode.property.casServiceUrl" "deliver_casServiceUrl" "$this.getPropertyValue('deliver', 'casServiceUrl')" "51" "$!serverNodeId")
 			#editPropertyFieldCSS("ServerNode.property.casLogoutUrl" "deliver_casLogoutUrl" "$this.getPropertyValue('deliver', 'casLogoutUrl')" "51" "$!serverNodeId")
+			#editPropertyTextAreaCSS("ServerNode.property.userAgentsSkippingSSOCheck" "deliver_userAgentsSkippingSSOCheck" "$this.getDataPropertyValue('deliver', 'userAgentsSkippingSSOCheck')" "50" "5" "smalltextarea" "$!serverNodeId")
+			#editPropertyTextAreaCSS("ServerNode.property.ipNumbersSkippingSSOCheck" "deliver_ipNumbersSkippingSSOCheck" "$this.getDataPropertyValue('deliver', 'ipNumbersSkippingSSOCheck')" "50" "5" "smalltextarea" "$!serverNodeId")
 			<div class="buttonRow">
 				<input type="image" src="$ui.getString("images.managementtool.buttons.save")" width="50" height="25" style="width: 50px;">
 				<a href="javascript:saveAndExit(document.editForm, 'ViewServerNodeProperties!saveAndExit.action');"><img src="$ui.getString("images.managementtool.buttons.saveAndExit")" width="80" height="25" border="0"></a>
