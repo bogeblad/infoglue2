@@ -40,10 +40,8 @@ import java.util.Random;
 import javax.servlet.ServletException;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletRequestWrapper;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.log4j.Logger;
 import org.exolab.castor.jdo.Database;
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
@@ -313,6 +311,41 @@ public class ViewPageAction extends InfoGlueAbstractAction
 						if(CmsPropertyHandler.getForceIdentityCheck().equalsIgnoreCase("true") || (forceIdentityCheck != null && forceIdentityCheck.equalsIgnoreCase("true")))
 						{
 							boolean isForcedIdentityCheckDisabled = this.nodeDeliveryController.getIsForcedIdentityCheckDisabled(dbWrapper.getDatabase(), this.siteNodeId);
+							if(!isForcedIdentityCheckDisabled && getHttpSession().getAttribute("ssoChecked") == null && (getRequest().getParameter("skipSSOCheck") == null || !getRequest().getParameter("skipSSOCheck").equals("true")))
+							{
+								Timer t = new Timer();
+								logger.info("Let's check for IP:s and user agents to skip redirect for...");
+								String userAgentsRegexp = CmsPropertyHandler.getUserAgentsSkippingSSOCheck();
+								String ipAddressesRegexp = CmsPropertyHandler.getIpNumbersSkippingSSOCheck();
+								
+								logger.info("userAgentsRegexp:" + userAgentsRegexp);
+								if(userAgentsRegexp != null && !userAgentsRegexp.equals("") && getBrowserBean() != null && getBrowserBean().getUseragent() != null)
+								{
+									if(getBrowserBean().getUseragent().matches(userAgentsRegexp))
+							    	{
+										logger.info("Skipping SSO check for this useragent: " + getBrowserBean().getUseragent());
+										isForcedIdentityCheckDisabled = true;
+							    	}
+								}
+								
+								logger.info("isForcedIdentityCheckDisabled:" + isForcedIdentityCheckDisabled);
+								if(!isForcedIdentityCheckDisabled)
+								{
+									logger.info("ipAddressesRegexp:" + ipAddressesRegexp);
+									if(ipAddressesRegexp != null && !ipAddressesRegexp.equals("") && getRequest().getRemoteAddr() != null)
+									{
+										logger.info("IP:" + getRequest().getRemoteAddr());
+										if(getRequest().getRemoteAddr().matches(ipAddressesRegexp))
+								    	{
+											logger.info("Skipping SSO check for this ip address: " + getRequest().getRemoteAddr());
+											isForcedIdentityCheckDisabled = true;
+								    	}
+									}
+								}
+								if(logger.isInfoEnabled())
+									logger.info("Checking ip and useragent took: " + t.getElapsedTime());
+							}
+
 							if(logger.isInfoEnabled())
 							{
 								logger.info("isForcedIdentityCheckDisabled:" + isForcedIdentityCheckDisabled);
@@ -1141,7 +1174,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
 	    {
 			throw new PageNotFoundException("There is no page with the requested specification. SiteNodeId:" + getSiteNodeId());
 	    }
-		
+
 		if(getLanguageId() == null)
 		{
 		    LanguageVO browserLanguageVO = null;
@@ -1158,6 +1191,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
 			    logger.debug("Checking browser language...");
 		    }
 		    
+		    logger.info("browserLanguageVO: " + browserLanguageVO);
 		    if(browserLanguageVO != null)
 			{
 			    logger.info("The system had browserLanguageVO available:" + browserLanguageVO.getName());
@@ -1166,6 +1200,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
 			else
 			{
 				LanguageVO masterLanguageVO = LanguageDeliveryController.getLanguageDeliveryController().getMasterLanguageForSiteNode(db, this.getSiteNodeId());
+			    logger.info("masterLanguageVO: " + masterLanguageVO);
 				if(masterLanguageVO == null)
 					throw new SystemException("There was no master language for the siteNode " + getSiteNodeId());
 
