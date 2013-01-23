@@ -2171,6 +2171,20 @@ public class CmsPropertyHandler
 		return getServerNodeProperty("ipAddressesToFallbackToBasicAuth", true, "");
 	}
 
+	public static String getUserAgentsSkippingSSOCheck()
+	{
+		String userAgentsSkippingSSOCheckString = CmsPropertyHandler.getServerNodeDataProperty("deliver", "userAgentsSkippingSSOCheck", true, null);
+	    
+	    return userAgentsSkippingSSOCheckString;
+	}
+
+	public static String getIpNumbersSkippingSSOCheck()
+	{
+		String ipNumbersSkippingSSOCheckString = CmsPropertyHandler.getServerNodeDataProperty("deliver", "ipNumbersSkippingSSOCheck", true, null);
+		
+	    return ipNumbersSkippingSSOCheckString;
+	}
+
 	public static boolean getDisableDecoratedFinalRendering()
 	{
 		String disableDecoratedFinalRendering = getServerNodeProperty("disableDecoratedFinalRendering", true, "false");
