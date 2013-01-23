@@ -3110,7 +3110,6 @@ public class BasicTemplateController implements TemplateController
 	}
 
 	
-	
 	/**
 	 * This method gets a List of related contents defined in an attribute as an xml-definition.
 	 * This is an ugly method right now. Later we should have xmlDefinitions that are fully qualified so it can be
@@ -3119,14 +3118,25 @@ public class BasicTemplateController implements TemplateController
 	
 	public List getRelatedContents(Integer contentId, String attributeName)
 	{
+		return getRelatedContents(contentId, attributeName, false, false);
+	}
+	
+	/**
+	 * This method gets a List of related contents defined in an attribute as an xml-definition.
+	 * This is an ugly method right now. Later we should have xmlDefinitions that are fully qualified so it can be
+	 * used to access other systems than our own.
+	 */
+	
+	public List getRelatedContents(Integer contentId, String attributeName, boolean checkHasVersion, boolean checkHasAccess)
+	{
 		List relatedContentVOList = new ArrayList();
 		
 		try
 		{
 			logger.info("contentId " + this.contentId + " with relationName " + attributeName);
-		    String qualifyerXML = this.getContentAttribute(contentId, attributeName, true);
-		    
-			relatedContentVOList = getRelatedContentsFromXML(qualifyerXML);
+			String qualifyerXML = this.getContentAttribute(contentId, attributeName, true);
+
+			relatedContentVOList = getRelatedContentsFromXML(qualifyerXML, checkHasVersion, checkHasVersion);
 		}
 		catch(Exception e)
 		{
@@ -3198,13 +3208,16 @@ public class BasicTemplateController implements TemplateController
 	private String idAttribute1End = "\"";
 	private String idAttribute2Start = "id='";
 	private String idAttribute2End = "'";
-	
+
 	private List getRelatedContentsFromXML(String qualifyerXML)
+	{
+		return getRelatedContentsFromXML(qualifyerXML, false, false);
+	}
+	
+	private List getRelatedContentsFromXML(String qualifyerXML, boolean checkHasVersion, boolean checkHasAccess)
 	{
 		if(logger.isInfoEnabled())
 			logger.info("qualifyerXML:" + qualifyerXML);
-		
-		Timer t = new Timer();
 		
 		List relatedContentVOList = new ArrayList();
 
@@ -3243,6 +3256,15 @@ public class BasicTemplateController implements TemplateController
 						Integer contentId = new Integer(id);
 						if(ContentDeliveryController.getContentDeliveryController().isValidContent(this.getDatabase(), contentId, this.languageId, USE_LANGUAGE_FALLBACK, true, getPrincipal(), this.deliveryContext))
 							relatedContentVOList.add(this.getContent(contentId));
+						/*
+						ContentVO content = getContent(contentId);
+						if(ContentDeliveryController.getContentDeliveryController().isValidContent(infoGluePrincipal, content, languageId, USE_LANGUAGE_FALLBACK, true, this.getDatabase(), deliveryContext, checkHasVersion, checkHasAccess))
+						{
+							relatedContentVOList.add(content);
+						}
+						*/
+						//else
+						//	System.out.println("content " + content.getName() + " was not valid");
 					}
 					catch(Exception e)
 					{
@@ -5076,7 +5098,55 @@ public class BasicTemplateController implements TemplateController
 	
 	public List getMatchingContents(String contentTypeDefinitionNamesString, String categoryConditionString, String freeText, List freeTextAttributeNames, Date fromDate, Date toDate, Date expireFromDate, Date expireToDate, String versionModifier, Integer maximumNumberOfItems, boolean useLanguageFallback, boolean cacheResult, int cacheInterval, String cacheName, String cacheKey, boolean scheduleFetch, int scheduleInterval, List<Integer> repositoryIdList, Integer languageId, Boolean skipLanguageCheck, Integer startNodeId, String sortColumn, String sortOrder, boolean forceRefetch, boolean validateAccessRightsAsAnonymous, boolean returnOnlyCachedResult)
 	{
+		//System.out.println("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
 		Timer t = new Timer();
+		/*
+		try 
+		{
+			List<Integer> contentIds = new ArrayList<Integer>();
+			contentIds.add(1040839);
+			contentIds.add(1040803);
+			contentIds.add(1040630);
+			contentIds.add(1040611);
+			contentIds.add(1040612);
+
+			ContentVersionController.getContentVersionController().preCacheContentVersionVOList(contentIds, languageId, new Integer(CmsPropertyHandler.getOperatingMode()), deliveryContext, getDatabase());
+		} 
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+		t.printElapsedTime("Fetching content versions in batch took");
+
+		try 
+		{
+			List<Integer> contentIds = new ArrayList<Integer>();
+			contentIds.add(1040839);
+			ContentVersionController.getContentVersionController().preCacheContentVersionVOList(contentIds, languageId, new Integer(CmsPropertyHandler.getOperatingMode()), deliveryContext, getDatabase());
+
+			contentIds = new ArrayList<Integer>();
+			contentIds.add(1040803);
+			ContentVersionController.getContentVersionController().preCacheContentVersionVOList(contentIds, languageId, new Integer(CmsPropertyHandler.getOperatingMode()), deliveryContext, getDatabase());
+			
+			contentIds = new ArrayList<Integer>();
+			contentIds.add(1040630);
+			ContentVersionController.getContentVersionController().preCacheContentVersionVOList(contentIds, languageId, new Integer(CmsPropertyHandler.getOperatingMode()), deliveryContext, getDatabase());
+			
+			contentIds = new ArrayList<Integer>();
+			contentIds.add(1040611);
+			ContentVersionController.getContentVersionController().preCacheContentVersionVOList(contentIds, languageId, new Integer(CmsPropertyHandler.getOperatingMode()), deliveryContext, getDatabase());
+
+			contentIds = new ArrayList<Integer>();
+			contentIds.add(1040612);
+			ContentVersionController.getContentVersionController().preCacheContentVersionVOList(contentIds, languageId, new Integer(CmsPropertyHandler.getOperatingMode()), deliveryContext, getDatabase());
+		} 
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+		t.printElapsedTime("Fetching content versions one by one took");
+		*/
+
 		if(sortColumn == null || sortColumn.equals(""))
 		{
 			if(CmsPropertyHandler.getUseShortTableNames().equals("true"))
@@ -5271,6 +5341,10 @@ public class BasicTemplateController implements TemplateController
 				for(Iterator i = set.iterator(); i.hasNext(); ) 
 				{
 					final Content content = (Content) i.next();
+					/*
+					String contentKey = "" + content.getValueObject().getId();
+					CacheController.cacheObjectInAdvancedCache("contentCache", contentKey, content.getValueObject(), new String[]{CacheController.getPooledString(1, content.getValueObject().getId())}, true);
+					*/
 					//if(ContentDeliveryController.getContentDeliveryController().isValidContent(this.getDatabase(), content.getId(), localLanguageId, USE_LANGUAGE_FALLBACK, true, getPrincipal(), this.deliveryContext))
 					InfoGluePrincipal principal = UserControllerProxy.getController(getDatabase()).getUser(userName);
 					if(ContentDeliveryController.getContentDeliveryController().isValidContent(this.getDatabase(), content.getValueObject(), localLanguageId, USE_LANGUAGE_FALLBACK, true, principal, this.deliveryContext, false, false))
