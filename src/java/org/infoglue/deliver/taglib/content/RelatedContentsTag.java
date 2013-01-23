@@ -15,6 +15,8 @@ public class RelatedContentsTag extends TemplateControllerTag {
 	private Integer contentId;
 	private boolean onlyFirst;
 	private String attributeName;
+	private boolean checkHasVersion = true;
+	private boolean checkHasAccess = true;
 
 	public RelatedContentsTag()
 	{
@@ -24,12 +26,16 @@ public class RelatedContentsTag extends TemplateControllerTag {
     public int doEndTag() throws JspException
     {
 		produceResult(getRelatedContents());
+		
+		this.checkHasVersion = true;
+		this.checkHasAccess = true;
+		
         return EVAL_PAGE;
     }
 
 	private Object getRelatedContents() throws JspException
 	{
-		final List related = getController().getRelatedContents(contentId, attributeName);
+		final List related = getController().getRelatedContents(contentId, attributeName, checkHasVersion, checkHasAccess);
 		if(onlyFirst)
 			return related.isEmpty() ? null : related.get(0);
 		return related;
@@ -43,6 +49,16 @@ public class RelatedContentsTag extends TemplateControllerTag {
     public void setOnlyFirst(boolean onlyFirst)
     {
         this.onlyFirst = onlyFirst;
+    }
+
+    public void setCheckHasVersion(boolean checkHasVersion)
+    {
+        this.checkHasVersion = checkHasVersion;
+    }
+
+    public void setCheckHasAccess(boolean checkHasAccess)
+    {
+        this.checkHasAccess = checkHasAccess;
     }
 
     public void setAttributeName(String attributeName)
