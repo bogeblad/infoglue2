@@ -229,6 +229,8 @@ public class ViewServerNodePropertiesAction extends InfoGluePropertiesAbstractAc
 	    populate(ps, "deliver_casProxyValidateUrl");
 	    populate(ps, "deliver_casServiceUrl");
 	    populate(ps, "deliver_casLogoutUrl");
+	    populateData(ps, "deliver_userAgentsSkippingSSOCheck");
+	    populateData(ps, "deliver_ipNumbersSkippingSSOCheck");
 
 	    populate(ps, "workingStyleInformation");
 	    populate(ps, "finalStyleInformation");
