@@ -50,6 +50,7 @@ import javax.servlet.http.HttpSession;
 import org.apache.log4j.Logger;
 import org.exolab.castor.jdo.Database;
 import org.infoglue.cms.controllers.kernel.impl.simple.CastorDatabaseService;
+import org.infoglue.cms.controllers.kernel.impl.simple.LanguageController;
 import org.infoglue.cms.controllers.kernel.impl.simple.RedirectController;
 import org.infoglue.cms.entities.management.LanguageVO;
 import org.infoglue.cms.entities.management.RepositoryVO;
@@ -205,6 +206,22 @@ public class ViewPageFilter implements Filter
 			            	{
 			            		nodeNameList.add(nodeName);
 			            	}
+			            	/*
+			            	boolean add = true;
+			            	
+			            	if(i == 0 && nodeName.length() < 4)
+			            	{
+			            		System.out.println("Checking for language...:" + nodeName);
+			            		LanguageVO languageVO = LanguageController.getController().getLanguageVOWithCode(nodeName);
+			            		if(languageVO != null)
+			            			add = false;
+			            	}
+			            	
+			            	if(nodeName.indexOf(".cid") == -1 && add)
+			            	{
+			            		nodeNameList.add(nodeName);
+			            	}
+			            	*/
 			            }
 
 	            		nodeNames = new String[nodeNameList.size()];
@@ -243,11 +260,15 @@ public class ViewPageFilter implements Filter
 		                while(repositorVOListIterator.hasNext())
 		                {
 		                    RepositoryVO repositoryVO = (RepositoryVO)repositorVOListIterator.next();
-		                    logger.info("Getting node from:" + repositoryVO.getName());
+		                    //logger.warn("Getting node from:" + repositoryVO.getName());
+		                    //for(String nodeName : nodeNames)
+		                    //	System.out.println("nodeName:" + nodeName);
+		                    
 		                    //TODO
 		                    DeliveryContext deliveryContext = DeliveryContext.getDeliveryContext();
 	                    	siteNodeId = NodeDeliveryController.getSiteNodeIdFromPath(db, infoGluePrincipal, repositoryVO, nodeNames, attributeName, deliveryContext, httpSession, languageId);
-		                    //siteNodeId = NodeDeliveryController.getSiteNodeIdFromPath(db, infoGluePrincipal, repositoryVO, nodeNames, attributeName, languageId, DeliveryContext.getDeliveryContext());
+	                    	//System.out.println("siteNodeId:" + siteNodeId);
+	                    	//siteNodeId = NodeDeliveryController.getSiteNodeIdFromPath(db, infoGluePrincipal, repositoryVO, nodeNames, attributeName, languageId, DeliveryContext.getDeliveryContext());
 		                    if(siteNodeId != null)
 		                        break;
 		                }
@@ -381,6 +402,19 @@ public class ViewPageFilter implements Filter
         logger.info("serverName:" + serverName);
         logger.info("repositoryName:" + repositoryName);
         String firstPath = requestURI.replaceAll(request.getContextPath(), "").replaceAll("//", "/");
+
+        /*
+        //System.out.println("firstPath:" + firstPath);
+        
+        List<LanguageVO> languageVOList = LanguageController.getController().getLanguageVOList(db);
+        for(LanguageVO languageVO : languageVOList)
+        {
+        	if(firstPath.startsWith("/" + languageVO.getLanguageCode() + "/"))
+        		firstPath = firstPath.replaceFirst("/" + languageVO.getLanguageCode() + "/", "/");
+        }
+        //System.out.println("firstPath:" + firstPath);
+        */
+        
         logger.info("firstPath:" + firstPath);
         if(firstPath.startsWith("/"))
         	firstPath = firstPath.substring(1);
@@ -399,10 +433,10 @@ public class ViewPageFilter implements Filter
         
         Timer t = new Timer();
         Set<RepositoryVO> repositories = RepositoryDeliveryController.getRepositoryDeliveryController().getRepositoryVOListFromServerName(db, serverName, portNumber, repositoryName, requestURI);
+        //System.out.println("repositories:" + repositories);
         if(logger.isInfoEnabled())
-        logger.info("repositories:" + repositories);
-                
-
+        	logger.info("repositories:" + repositories);
+        
         if (repositories.size() == 0)
         {
             String redirectUrl = RedirectController.getController().getRedirectUrl(request);
@@ -461,16 +495,19 @@ public class ViewPageFilter implements Filter
             repositoryId = ((RepositoryVO)repositoryVOList.toArray()[0]).getId();
         
         logger.info("Looking for languageId for repository " + repositoryId);
-        Locale requestLocale = request.getLocale();
-       
+
         if(repositoryId == null)
         	return null;
-        
+
+        Locale requestLocale = request.getLocale();
+
         try 
         {
             List availableLanguagesForRepository = LanguageDeliveryController.getLanguageDeliveryController().getAvailableLanguagesForRepository(db, repositoryId);
-
-            if (requestLocale != null) 
+            
+            String useBrowserLanguage = CmsPropertyHandler.getUseBrowserLanguage();
+            logger.info("useBrowserLanguage:" + useBrowserLanguage);
+            if (requestLocale != null && useBrowserLanguage != null && useBrowserLanguage.equals("true")) 
             {
                 for (int i = 0; i < availableLanguagesForRepository.size(); i++) 
                 {
