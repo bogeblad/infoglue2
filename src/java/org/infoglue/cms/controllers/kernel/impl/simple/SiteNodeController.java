@@ -258,7 +258,7 @@ public class SiteNodeController extends BaseController
 			
 			if(siteNodeVO == null)
 			{
-				logger.warn("Falling back to old forgiving logic for siteNodeId: " + siteNodeId + ". It must be in trouble.");
+				logger.info("Falling back to old forgiving logic for siteNodeId: " + siteNodeId + ". It must be in trouble.");
 				siteNodeVO = getSiteNodeVOWithIdIfFailed(siteNodeId, db);
 			}
 			
