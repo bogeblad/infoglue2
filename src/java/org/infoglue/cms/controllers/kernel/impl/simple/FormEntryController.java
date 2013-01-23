@@ -344,7 +344,7 @@ public class FormEntryController extends BaseController
 					values = new ArrayList();
 					formEntryAssetsMap.put(fea.getFormEntry().getFormEntryId(), values);
 				}
-				values.add(((FormEntryAssetImpl)results.next()).getValueObject());
+				values.add(fea.getValueObject());
 			}
 			
 			//System.out.println("formEntryAssetsMap:" + formEntryAssetsMap);
@@ -402,11 +402,37 @@ public class FormEntryController extends BaseController
 	 * @throws Bug
 	 */
 	
-	public String getFormEntryAssetUrl(Integer formEntryAssetId, DeliveryContext deliveryContext) throws SystemException, Bug
+	public String getFormEntryAssetUrl(Database db, Integer formEntryAssetId, DeliveryContext deliveryContext) throws SystemException, Bug, Exception
 	{
 		String assetUrl = "";
 		assetUrl = URLComposer.getURLComposer().composeDigitalAssetUrl("", null, "", deliveryContext); 
+
+		FormEntryAsset formEntryAsset = getFormEntryAssetWithId(formEntryAssetId, db);
 		
+		String fileName = formEntryAsset.getId() + "_" + formEntryAsset.getFileName();
+		String filePath = CmsPropertyHandler.getDigitalAssetPath();
+		
+		dumpDigitalAsset(formEntryAsset, fileName, filePath);
+		
+		SiteNodeVO siteNodeVO = NodeDeliveryController.getNodeDeliveryController(deliveryContext.getSiteNodeId(), deliveryContext.getLanguageId(), deliveryContext.getContentId()).getSiteNodeVO(db, deliveryContext.getSiteNodeId());
+		String dnsName = CmsPropertyHandler.getWebServerAddress();
+		if(siteNodeVO != null)
+		{
+			RepositoryVO repositoryVO = RepositoryController.getController().getRepositoryVOWithId(siteNodeVO.getRepositoryId(), db);
+			if(repositoryVO.getDnsName() != null && !repositoryVO.getDnsName().equals(""))
+				dnsName = repositoryVO.getDnsName();
+		}
+
+		assetUrl = URLComposer.getURLComposer().composeDigitalAssetUrl(dnsName, null, fileName, deliveryContext); 
+
+		return assetUrl;	
+	}
+	
+	public String getFormEntryAssetUrl(Integer formEntryAssetId, DeliveryContext deliveryContext) throws SystemException, Bug, Exception
+	{
+		String assetUrl = "";
+		assetUrl = URLComposer.getURLComposer().composeDigitalAssetUrl("", null, "", deliveryContext); 
+
 		Database db = CastorDatabaseService.getDatabase();
 
 		try 
@@ -428,24 +454,17 @@ public class FormEntryController extends BaseController
 				if(repositoryVO.getDnsName() != null && !repositoryVO.getDnsName().equals(""))
 					dnsName = repositoryVO.getDnsName();
 			}
-			/*
-			SiteNode siteNode = NodeDeliveryController.getNodeDeliveryController(deliveryContext.getSiteNodeId(), deliveryContext.getLanguageId(), deliveryContext.getContentId()).getSiteNode(db, deliveryContext.getSiteNodeId());
-			String dnsName = CmsPropertyHandler.getWebServerAddress();
-			if(siteNode != null && siteNode.getRepository().getDnsName() != null && !siteNode.getRepository().getDnsName().equals(""))
-				dnsName = siteNode.getRepository().getDnsName();
-			*/
 			assetUrl = URLComposer.getURLComposer().composeDigitalAssetUrl(dnsName, null, fileName, deliveryContext); 
-			//System.out.println("assetUrl:" + assetUrl);
-			
-			commitTransaction(db);
+
+			rollbackTransaction(db);
 		} 
 		catch (Exception e) 
 		{
-			logger.error("An error occurred so we should not complete the transaction:" + e);
+			logger.error("An error occurred so we should not complete the transaction:" + e.getMessage(), e);
 			rollbackTransaction(db);
 			throw new SystemException(e.getMessage());
 		}
-		
+
 		return assetUrl;	
 	}
 
