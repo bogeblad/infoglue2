@@ -36,7 +36,6 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.xerces.parsers.DOMParser;
 import org.exolab.castor.jdo.Database;
@@ -78,6 +77,7 @@ import org.infoglue.cms.security.InfoGluePrincipal;
 import org.infoglue.cms.util.CmsPropertyHandler;
 import org.infoglue.cms.util.ConstraintExceptionBuffer;
 import org.infoglue.cms.util.DateHelper;
+import org.infoglue.deliver.applications.databeans.DeliveryContext;
 import org.infoglue.deliver.util.CacheController;
 import org.infoglue.deliver.util.NullObject;
 import org.infoglue.deliver.util.RequestAnalyser;
@@ -2936,5 +2936,68 @@ public class ContentVersionController extends BaseController
     	    
     	return digitalAssetVO;
     }
+
+	
+	/**
+	 * This method gets a contentVersion with a state and a language which is active.
+	 */
+
+	public void preCacheContentVersionVOList(Collection contentList, Integer languageId, Integer operatingMode, DeliveryContext deliveryContext, Database db) throws Exception
+    {
+		List<Content> localContentList = new ArrayList<Content>();
+		localContentList.addAll(contentList);
+
+		while(localContentList != null && localContentList.size() > 0)
+		{
+			List<Content> localContentSubList = new ArrayList<Content>();
+			if(localContentList.size() > 50)
+			{
+				localContentSubList.addAll(localContentList.subList(0, 50));
+				localContentList = localContentList.subList(50, localContentList.size()-1);
+			}
+			else
+			{
+				localContentSubList.addAll(localContentList);
+				localContentList.clear();
+			}
+			
+			StringBuffer contentIds = new StringBuffer();
+			for(Object localContent : localContentSubList)
+			{
+				if(contentIds.length() > 0)
+					contentIds.append(",");
+				if(localContent instanceof Integer)
+					contentIds.append(localContent);
+				else if(localContent instanceof ContentVO)
+					contentIds.append(((ContentVO)localContent).getId());
+				else if(localContent instanceof Content)
+					contentIds.append(((Content)localContent).getId());
+			}
+			//System.out.println("contentIds:" + contentIds);
+			
+		    //logger.info("Querying for verson: " + versionKey); 
+			OQLQuery oql = db.getOQLQuery( "SELECT cv FROM org.infoglue.cms.entities.content.impl.simple.SmallContentVersionImpl cv WHERE cv.contentId IN LIST (" + contentIds + ") AND cv.languageId = $1 AND cv.stateId >= $2 AND cv.isActive = $3 ORDER BY cv.contentVersionId desc");
+	    	oql.bind(languageId);
+	    	oql.bind(operatingMode);
+	    	oql.bind(true);
+
+	    	QueryResults results = oql.execute(Database.ReadOnly);
+	    	
+			while(results.hasMore()) 
+	        {
+				ContentVersion contentVersion = (ContentVersion)results.next();
+	        	ContentVersionVO contentVersionVO = contentVersion.getValueObject();
+
+	        	String versionKey = "" + contentVersionVO.getContentId() + "_" + languageId + "_" + operatingMode + "_contentVersionVO";
+	        	CacheController.cacheObjectInAdvancedCache("contentVersionCache", versionKey, contentVersionVO, new String[]{CacheController.getPooledString(2, contentVersionVO.getId()), CacheController.getPooledString(1, contentVersionVO.getContentId())}, true);
+	        }
+			
+			results.close();
+			oql.close();
+		
+			break;
+		}
+    }
+
 
 }
