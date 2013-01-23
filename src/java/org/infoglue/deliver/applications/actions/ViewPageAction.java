@@ -642,8 +642,10 @@ public class ViewPageAction extends InfoGlueAbstractAction
 				logger.info("queryString:" + queryString);
 
 			String remainingQueryString = HttpUtilities.removeParameter(queryString, "ticket");
+			System.out.println("remainingQueryString:" + remainingQueryString);
 			if(remainingQueryString.indexOf("noAccess=true") == -1)
 				remainingQueryString = HttpUtilities.removeParameter(remainingQueryString, "referer");
+			System.out.println("remainingQueryString after:" + remainingQueryString);
 
 			if(logger.isInfoEnabled())
 				logger.info("remainingQueryString:" + remainingQueryString);
@@ -1293,6 +1295,8 @@ public class ViewPageAction extends InfoGlueAbstractAction
 			
 			if(referer == null || referer.indexOf("ViewStructureToolToolBar.action") != -1)
 				referer = "/"; 
+			
+			System.out.println("referer A:" + referer);
 			
 			Principal principal = (Principal)this.getHttpSession().getAttribute("infogluePrincipal");
 			logger.info("principal:" + principal);
@@ -2382,6 +2386,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
 
 	public void setReferer(String referer)
 	{
+		System.out.println("Referer was set:" + referer);
 		this.referer = referer;
 	}
 
