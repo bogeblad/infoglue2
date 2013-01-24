@@ -642,11 +642,9 @@ public class ViewPageAction extends InfoGlueAbstractAction
 				logger.info("queryString:" + queryString);
 
 			String remainingQueryString = HttpUtilities.removeParameter(queryString, "ticket");
-			System.out.println("remainingQueryString:" + remainingQueryString);
 			if(remainingQueryString.indexOf("noAccess=true") == -1)
 				remainingQueryString = HttpUtilities.removeParameter(remainingQueryString, "referer");
-			System.out.println("remainingQueryString after:" + remainingQueryString);
-
+			
 			if(logger.isInfoEnabled())
 				logger.info("remainingQueryString:" + remainingQueryString);
 
@@ -1296,7 +1294,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
 			if(referer == null || referer.indexOf("ViewStructureToolToolBar.action") != -1)
 				referer = "/"; 
 			
-			System.out.println("referer A:" + referer);
+			logger.info("referer after:" + referer);
 			
 			Principal principal = (Principal)this.getHttpSession().getAttribute("infogluePrincipal");
 			logger.info("principal:" + principal);
@@ -1699,7 +1697,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
 		try
 		{
 		    String repositoryNoAccessURL = RepositoryDeliveryController.getRepositoryDeliveryController().getExtraPropertyValue(this.repositoryId, "noAccessURL");
-		    System.out.println("repositoryNoAccessURL:" + repositoryNoAccessURL);
+		    logger.info("repositoryNoAccessURL:" + repositoryNoAccessURL);
 			if(repositoryNoAccessURL != null && !repositoryNoAccessURL.equals(""))
 			{
 				if(repositoryNoAccessURL.equalsIgnoreCase("$referer") && this.referer != null && !this.referer.equals(""))
@@ -1708,8 +1706,8 @@ public class ViewPageAction extends InfoGlueAbstractAction
 						repositoryNoAccessURL = this.referer + "&noAccess=true&date=" + System.currentTimeMillis();
 					else
 						repositoryNoAccessURL = this.referer + "?noAccess=true&date=" + System.currentTimeMillis();
-					System.out.println("this.referer:" + this.referer);
-				    System.out.println("repositoryNoAccessURL 2:" + repositoryNoAccessURL);
+					logger.info("this.referer:" + this.referer);
+					logger.info("repositoryNoAccessURL 2:" + repositoryNoAccessURL);
 				}
 				else
 				{
@@ -1717,17 +1715,16 @@ public class ViewPageAction extends InfoGlueAbstractAction
 						repositoryNoAccessURL = repositoryNoAccessURL + "&noAccess=true&referer=" + URLEncoder.encode(this.referer, "UTF-8") + "&date=" + System.currentTimeMillis();
 					else
 						repositoryNoAccessURL = repositoryNoAccessURL + "?noAccess=true&referer=" + URLEncoder.encode(this.referer, "UTF-8") + "&date=" + System.currentTimeMillis();
-					System.out.println("2 this.referer:" + this.referer);
-				    System.out.println("2 repositoryNoAccessURL 2:" + repositoryNoAccessURL);
+					logger.info("2 this.referer:" + this.referer);
+					logger.info("2 repositoryNoAccessURL 2:" + repositoryNoAccessURL);
 				}
 				
 				noAccessURL = repositoryNoAccessURL;
-			    System.out.println("noAccessURL:" + noAccessURL);
+				logger.info("noAccessURL:" + noAccessURL);
 			}
 		}
 		catch (Exception e) 
 		{
-		    System.out.println("Error noAccessURL:" + noAccessURL);
 			logger.warn("Problem reading repo specific noAccessURL: " + e.getMessage(), e);
 		}
 		
@@ -2386,7 +2383,6 @@ public class ViewPageAction extends InfoGlueAbstractAction
 
 	public void setReferer(String referer)
 	{
-		System.out.println("Referer was set:" + referer);
 		this.referer = referer;
 	}
 

@@ -172,7 +172,6 @@ public class AccessRightController extends BaseController
 		
 		Timer t = new Timer();
 		//System.out.println("Recaching all access rights for " + principal.getName() + " again....");
-		//Iför detta sen också - cachear alla sidor som är skyddade..
 		/*
 		select accessRightId from cmAccessRight ar INNER JOIN
 		(  
@@ -1301,15 +1300,31 @@ public class AccessRightController extends BaseController
 	}
 	
 	/**
-	 * Adds a user to have access
-	 * 
-	 * @param accessRightId
-	 * @param parameters
-	 * @param userName
-	 * @throws ConstraintException
-	 * @throws SystemException
-	 */
-	
+	* Adds a user to have access.
+	* 
+	* This method looks through the provided request's parameters for to determine what access to give to the provided user (userName).
+	* The expected parameter format is:
+	* <dl>
+	* <dt>[Id]_InterceptionPointId</dt>
+	* <dd>Where 'Id' is a counter (that has to start at zero)</dd>
+	* <dt>[Id]_hasAccess</dt>
+	* <dd>Where 'Id' is an interception point id in the system.</dd>
+	* </dl>
+	* 
+	* The two values are dependent of each other and have to come in matching pairs. The first parameter should identify a corresponding second parameter
+	* 
+	* The method first clears all access rights for the user in the provided <em>parameters</em> and the provided <em>interceptionPointCategory</em>. Then new
+	* access rights are added based on the provided <em>request</em>. Notice that the <em>interceptionPointCategory</em> is not used when adding access rights.
+	* The <em>interceptionPointCategory</em> is also used for some auxiliary logic. For the method to function properly it is still important the the correct
+	* value is proved. The behavior otherwise is undefined.
+	* 
+	* @param interceptionPointCategory The interception point category to work with in the request
+	* @param parameters Access right parameters
+	* @param userName The name of the System user to add access rights to
+	* @param request Parameters from the request will be used to determine the access rights to set. See method documentation for more details
+	* @throws ConstraintException
+	* @throws SystemException
+	*/
 	public void addUser(String interceptionPointCategory, String parameters, String userName, HttpServletRequest request) throws ConstraintException, SystemException
 	{
 		Database db = CastorDatabaseService.getDatabase();

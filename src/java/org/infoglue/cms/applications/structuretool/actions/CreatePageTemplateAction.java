@@ -27,6 +27,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Locale;
@@ -35,12 +36,14 @@ import org.apache.log4j.Logger;
 import org.infoglue.cms.applications.common.VisualFormatter;
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.applications.contenttool.actions.ViewContentTreeActionInterface;
+import org.infoglue.cms.controllers.kernel.impl.simple.AccessRightController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentControllerProxy;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentStateController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentTypeDefinitionController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentVersionController;
 import org.infoglue.cms.controllers.kernel.impl.simple.DigitalAssetController;
+import org.infoglue.cms.controllers.kernel.impl.simple.InterceptionPointController;
 import org.infoglue.cms.controllers.kernel.impl.simple.LanguageController;
 import org.infoglue.cms.controllers.kernel.impl.simple.PublicationController;
 import org.infoglue.cms.controllers.kernel.impl.simple.RepositoryController;
@@ -49,12 +52,14 @@ import org.infoglue.cms.entities.content.ContentVersion;
 import org.infoglue.cms.entities.content.ContentVersionVO;
 import org.infoglue.cms.entities.content.DigitalAssetVO;
 import org.infoglue.cms.entities.management.ContentTypeDefinitionVO;
+import org.infoglue.cms.entities.management.InterceptionPointVO;
 import org.infoglue.cms.entities.management.RepositoryVO;
 import org.infoglue.cms.entities.publishing.PublicationVO;
 import org.infoglue.cms.exception.Bug;
 import org.infoglue.cms.exception.ConstraintException;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.io.FileHelper;
+import org.infoglue.cms.security.InfoGluePrincipal;
 import org.infoglue.cms.util.CmsPropertyHandler;
 import org.infoglue.cms.util.ConstraintExceptionBuffer;
 import org.infoglue.cms.util.XMLHelper;
@@ -91,6 +96,9 @@ public class CreatePageTemplateAction extends InfoGlueAbstractAction implements 
 	private Integer siteNodeId;
 	private String name;
 	private String groupName = "";
+	private String[] roleNames = null;
+	private String[] groupNames = null;
+	private String[] userNames = null;
 	
 	private String returnAddress;
 
@@ -147,6 +155,30 @@ public class CreatePageTemplateAction extends InfoGlueAbstractAction implements 
 		contentVO.setRepositoryId(this.repositoryId);
 
 		contentVO = ContentControllerProxy.getController().create(parentContentId, contentTypeDefinitionVO.getId(), this.repositoryId, contentVO);
+		
+		try
+		{
+			List<InterceptionPointVO> interceptionPointList = InterceptionPointController.getController().getInterceptionPointVOList("Component");
+			if (interceptionPointList != null && interceptionPointList.size() > 0)
+			{
+				InfoGluePrincipal principal = getInfoGluePrincipal();
+				String[] interceptionPoints = new String[interceptionPointList.size()];
+				for (int i = 0; i < interceptionPoints.length; i++)
+				{
+					interceptionPoints[i] = interceptionPointList.get(i).getName();
+				}
+				if (logger.isDebugEnabled())
+				{
+					logger.debug("Adding Interception points (" + Arrays.toString(interceptionPoints) + ") to user: '" + principal.getName() + "' to content with id: " + contentVO.getContentId());
+				}
+				AccessRightController.getController().addUserRights(interceptionPoints, "" + contentVO.getContentId(), principal);
+			}
+		}
+		catch (Throwable t)
+		{
+			logger.error("Failed to add Interception points to PagePartTemplate for user. The form will be created without any access rights set");
+			logger.warn("Failed to add Interception points to PagePartTemplate for user. The form will be created without any access rights set", t);
+		}
 		
 		String componentStructure = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><components></components>";
 		
@@ -251,8 +283,6 @@ public class CreatePageTemplateAction extends InfoGlueAbstractAction implements 
 			catch(Exception e){}
 		}
 
-		
-		
         return Action.SUCCESS;
     }
     

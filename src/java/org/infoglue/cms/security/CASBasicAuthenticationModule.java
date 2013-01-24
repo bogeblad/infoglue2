@@ -597,11 +597,12 @@ public class CASBasicAuthenticationModule extends AuthenticationModule//, Author
 		  	+ "parameters: edu.yale.its.tp.cas.client.filter.serviceUrl or "
 		  	+ "edu.yale.its.tp.cas.client.filter.serverName");
 
-		if(this.casServiceUrl.equals("$currentUrl"))
+	  	String referer = request.getHeader("referer");
+	  	logger.info("referer:" + referer);
+	  	
+	  	if(this.casServiceUrl.equals("$currentUrl"))
 		{
-		  	String originalFullURL = getCurrentURL(request);
-		  	
-		  	String referer = request.getHeader("Referer");
+		  	String originalFullURL = getCurrentURL(request, true);
 		  	
 		  	logger.info("originalFullURL:" + originalFullURL);
 		  	this.casServiceUrl = originalFullURL;
@@ -620,11 +621,13 @@ public class CASBasicAuthenticationModule extends AuthenticationModule//, Author
 					casServiceUrl = casServiceUrl + "&skipSSOCheck=true";	
 			}
 			
-			returnUrl = URLEncoder.encode(casServiceUrl, "UTF-8");
+			returnUrl = URLEncoder.encode(casServiceUrl + (referer != null ? (casServiceUrl.indexOf("?") == -1 ? "?" : "&") + "referer=" + URLEncoder.encode(referer, "UTF-8") : ""), "UTF-8");
 		}
 	  	else
 	  		returnUrl = Util.getService(request, serverName);
-					
+		
+		logger.info("returnUrl:" + returnUrl);
+		
 		return returnUrl;
 		/*
 		if (casServiceUrl != null && casServiceUrl.length() > 0)
@@ -634,9 +637,9 @@ public class CASBasicAuthenticationModule extends AuthenticationModule//, Author
 		*/
 	} 
 
-	public String getCurrentURL(HttpServletRequest request)
+	public String getCurrentURL(HttpServletRequest request, boolean includeReferer)
 	{
-		return request.getRequestURL() + (request.getQueryString() == null ? "" : "?" + request.getQueryString());
+		return request.getRequestURL() + (request.getQueryString() == null ? "" + (includeReferer ? "?referer=" + request.getHeader("referer") : "") : "?" + request.getQueryString() + (includeReferer ? "&referer=" + request.getHeader("referer") : ""));
 	}
 
 	public String getAuthenticatorClass()
