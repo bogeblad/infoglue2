@@ -156,29 +156,29 @@ public class CreatePageTemplateAction extends InfoGlueAbstractAction implements 
 
 		contentVO = ContentControllerProxy.getController().create(parentContentId, contentTypeDefinitionVO.getId(), this.repositoryId, contentVO);
 		
-		try
-		{
-			List<InterceptionPointVO> interceptionPointList = InterceptionPointController.getController().getInterceptionPointVOList("Component");
-			if (interceptionPointList != null && interceptionPointList.size() > 0)
-			{
-				InfoGluePrincipal principal = getInfoGluePrincipal();
-				String[] interceptionPoints = new String[interceptionPointList.size()];
-				for (int i = 0; i < interceptionPoints.length; i++)
-				{
-					interceptionPoints[i] = interceptionPointList.get(i).getName();
-				}
-				if (logger.isDebugEnabled())
-				{
-					logger.debug("Adding Interception points (" + Arrays.toString(interceptionPoints) + ") to user: '" + principal.getName() + "' to content with id: " + contentVO.getContentId());
-				}
-				AccessRightController.getController().addUserRights(interceptionPoints, "" + contentVO.getContentId(), principal);
-			}
-		}
-		catch (Throwable t)
-		{
-			logger.error("Failed to add Interception points to PagePartTemplate for user. The form will be created without any access rights set");
-			logger.warn("Failed to add Interception points to PagePartTemplate for user. The form will be created without any access rights set", t);
-		}
+//		try
+//		{
+//			List<InterceptionPointVO> interceptionPointList = InterceptionPointController.getController().getInterceptionPointVOList("Component");
+//			if (interceptionPointList != null && interceptionPointList.size() > 0)
+//			{
+//				InfoGluePrincipal principal = getInfoGluePrincipal();
+//				String[] interceptionPoints = new String[interceptionPointList.size()];
+//				for (int i = 0; i < interceptionPoints.length; i++)
+//				{
+//					interceptionPoints[i] = interceptionPointList.get(i).getName();
+//				}
+//				if (logger.isDebugEnabled())
+//				{
+//					logger.debug("Adding Interception points (" + Arrays.toString(interceptionPoints) + ") to user: '" + principal.getName() + "' to content with id: " + contentVO.getContentId());
+//				}
+//				AccessRightController.getController().addUserRights(interceptionPoints, "" + contentVO.getContentId(), principal);
+//			}
+//		}
+//		catch (Throwable t)
+//		{
+//			logger.error("Failed to add Interception points to PagePartTemplate for user. The form will be created without any access rights set");
+//			logger.warn("Failed to add Interception points to PagePartTemplate for user. The form will be created without any access rights set", t);
+//		}
 		
 		String componentStructure = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><components></components>";
 		
