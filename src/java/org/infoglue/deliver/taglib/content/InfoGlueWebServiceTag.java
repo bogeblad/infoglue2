@@ -88,6 +88,10 @@ public abstract class InfoGlueWebServiceTag extends TemplateControllerTag
             e.printStackTrace();
             throw new JspTagException(e.getMessage());
         }
+        finally
+        {
+        	this.principal = null;
+        }
     }
 
     protected void invokeOperation(String name, Object argument, Class returnType, String nameSpace) throws JspException
@@ -117,6 +121,10 @@ public abstract class InfoGlueWebServiceTag extends TemplateControllerTag
         {
             e.printStackTrace();
             throw new JspTagException(e.getMessage());
+        }
+        finally
+        {
+        	this.principal = null;
         }
     }
 
