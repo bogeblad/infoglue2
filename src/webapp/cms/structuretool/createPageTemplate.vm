@@ -194,6 +194,8 @@
 	<input type="hidden" name="path" value="">
 	<input type="hidden" name="contentId" value="$contentId">
 	<input type="hidden" name="componentId" value="$!componentId">
+	<input type="hidden" name="accessRightCategory" value="Content">
+	<input type="hidden" name="protectNewTemplate" value="true">
 </form>
 
 </body>
