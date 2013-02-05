@@ -897,9 +897,6 @@ public class SystemUserController extends BaseController
     		logger.info("groupNames:" + groupNames.length);
 		}
 		
-		logger.info("roleNames:" + roleNames.length);
-		logger.info("groupNames:" + groupNames.length);
-		
         SystemUser systemUser = getSystemUserWithName(systemUserVO.getUserName(), db);
         
     	systemUserVO.setUserName(systemUser.getUserName());
