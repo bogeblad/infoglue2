@@ -70,6 +70,10 @@ public class SiteNodeVersionVO implements BaseEntityVO
   	
     private Integer siteNodeId			= null;
 	private String siteNodeName			= "";
+	
+	//Fields only here for performance - not allways populated, only in some views
+    private String versionModifierDisplayName = null;
+	private String path = null;
   
     public java.lang.Integer getSiteNodeVersionId()
     {
@@ -275,6 +279,39 @@ public class SiteNodeVersionVO implements BaseEntityVO
 	{
 		this.siteNodeName = siteNodeName;
 	}
+
+    /**
+	 * @return the versionModifierDisplayName if set by the view. Not allways populated so do not depend on it.
+	 */
+	public String getVersionModifierDisplayName() 
+	{
+		return (versionModifierDisplayName != null ? versionModifierDisplayName : versionModifier);
+	}
+
+	/**
+	 * @param versionModifierDisplayName the versionModifierDisplayName to set
+	 */
+	public void setVersionModifierDisplayName(String versionModifierDisplayName) 
+	{
+		this.versionModifierDisplayName = versionModifierDisplayName;
+	}
+
+	/**
+	 * @return the path
+	 */
+	public String getPath() 
+	{
+		return path;
+	}
+
+	/**
+	 * @param path the path to set
+	 */
+	public void setPath(String path) 
+	{
+		this.path = path;
+	}
+
 
 	public String toString()
 	{

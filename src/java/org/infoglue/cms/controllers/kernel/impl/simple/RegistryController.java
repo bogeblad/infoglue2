@@ -1606,7 +1606,41 @@ public class RegistryController extends BaseController
 			results.close();
 			oql.close();
 		}
+
+		return matchingRegistryVOList;		
+	}
+	
+	
+	/**
+	 * Gets matching references
+	 */
+	public List<RegistryVO> getMatchingRegistryVOListForReferencingEntities(String referencingEntityName, List<Integer> referencingEntityIds, Database db) throws SystemException, Exception
+	{
+		List<RegistryVO> matchingRegistryVOList = new ArrayList<RegistryVO>();
+		   
+		StringBuilder variables = new StringBuilder();
+	    for(int i=0; i<referencingEntityIds.size(); i++)
+	    	variables.append("$" + (i+2) + (i+1!=referencingEntityIds.size() ? "," : ""));
+
+	    OQLQuery oql = db.getOQLQuery("CALL SQL SELECT registryId, entityName, entityId, referenceType, referencingEntityName, referencingEntityId, referencingEntityComplName, referencingEntityComplId FROM cmRegistry WHERE referencingEntityName = $1 AND referencingEntityId IN (" + variables + ") order by registryId AS org.infoglue.cms.entities.management.impl.simple.RegistryImpl");
+		oql.bind(referencingEntityName);
+		System.out.println("referencingEntityIds:" + referencingEntityIds);
+		for(Integer entityId : referencingEntityIds)
+			oql.bind(entityId.toString());
 		
+		QueryResults results = oql.execute(Database.ReadOnly);
+		
+		while (results.hasMore()) 
+        {
+            Registry registry = (Registry)results.next();
+            RegistryVO registryVO = registry.getValueObject();
+    	    //logger.info("found match:" + registryVO.getEntityName() + ":" + registryVO.getEntityId());
+            
+            matchingRegistryVOList.add(registryVO);
+        }       
+		
+		results.close();
+		oql.close();
 
 		return matchingRegistryVOList;		
 	}

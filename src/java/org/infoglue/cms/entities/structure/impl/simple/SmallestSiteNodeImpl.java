@@ -169,6 +169,17 @@ public class SmallestSiteNodeImpl extends SiteNodeImpl
         this.valueObject.setChildCount(childCount);
     }
 
+    public Integer getSiteNodeVersionId()
+    {
+        return this.valueObject.getSiteNodeVersionId();
+    }
+            
+    public void setSiteNodeVersionId(Integer siteNodeVersionId)
+    {
+    	if(siteNodeVersionId != null)
+    		this.valueObject.setSiteNodeVersionId(siteNodeVersionId);
+    }
+    
     public Integer getStateId()
     {
         return this.valueObject.getStateId();
@@ -202,4 +213,13 @@ public class SmallestSiteNodeImpl extends SiteNodeImpl
     		this.valueObject.setIsProtected(isProtected);
     }
 
+    public String getVersionModifier()
+    {
+        return this.valueObject.getVersionModifier();
+    }
+            
+    public void setVersionModifier(String versionModifier)
+    {
+        this.valueObject.setVersionModifier(versionModifier);
+    }
 }        

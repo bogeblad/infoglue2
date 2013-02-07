@@ -56,6 +56,11 @@ public class ContentVersionVO implements BaseEntityVO
     private String versionModifier				= null;
 	private String versionValue   	 			= "";
 	    
+	//Fields only here for performance - not allways populated, only in some views
+   	private Integer repositoryId				= null;
+    private String versionModifierDisplayName 	= null;
+	private String path = null;
+
     public java.lang.Integer getContentVersionId()
     {
         return this.contentVersionId;
@@ -194,6 +199,50 @@ public class ContentVersionVO implements BaseEntityVO
 		this.versionModifier = versionModifier;
 	}
 
+    /**
+	 * @return the versionModifierDisplayName if set by the view. Not allways populated so do not depend on it.
+	 */
+	public String getVersionModifierDisplayName() 
+	{
+		return (versionModifierDisplayName != null ? versionModifierDisplayName : versionModifier);
+	}
+
+	/**
+	 * @param versionModifierDisplayName the versionModifierDisplayName to set
+	 */
+	public void setVersionModifierDisplayName(String versionModifierDisplayName) 
+	{
+		this.versionModifierDisplayName = versionModifierDisplayName;
+	}
+
+	/**
+	 * @return the path
+	 */
+	public String getPath() 
+	{
+		return path;
+	}
+
+	 /**
+	 * @return the stateId if set by the view. Not allways populated so do not depend on it.
+	 */
+	public Integer getRepositoryId()
+    {
+        return this.repositoryId;
+    }
+                
+    public void setRepositoryId(Integer repositoryId)
+    {
+        this.repositoryId = repositoryId;
+    }
+    
+	/**
+	 * @param path the path to set
+	 */
+	public void setPath(String path) 
+	{
+		this.path = path;
+	}
 
 	public ContentVersionVO copy()
 	{

@@ -660,6 +660,9 @@
     <field name="isProtected" type="java.lang.Integer">
       <sql name="isProtected" type="integer" dirty="check" />
     </field>
+    <field name="versionModifier" type="java.lang.String">
+      <sql name="versionModifier" type="varchar" dirty="check" />
+    </field>
   </class>
 
 
@@ -1950,6 +1953,9 @@
 	    </field>
 		<field name="value5" type="java.lang.String">
 	    	<sql name="value5" type="varchar"/>
+	    </field>
+		<field name="value6" type="java.lang.String">
+	    	<sql name="value6" type="varchar"/>
 	    </field>
     </class>
 

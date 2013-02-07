@@ -47,10 +47,12 @@ public class SiteNodeVO implements BaseEntityVO
   	private java.lang.Integer repositoryId 	= null;    
   	private java.lang.Integer siteNodeTypeDefinitionId = null;  
   	private Integer childCount		= null;
+  	private Integer siteNodeVersionId= null;
   	private Integer stateId			= null;
   	private Integer isProtected 	= null;
   	
   	private String creatorName;
+  	private String versionModifier;
 	private Integer metaInfoContentId 	= new Integer(-1);
 	
 	private Integer parentSiteNodeId 	= null;
@@ -233,6 +235,16 @@ public class SiteNodeVO implements BaseEntityVO
 		this.parentSiteNodeId = parentSiteNodeId;
 	}
 
+    public Integer getSiteNodeVersionId()
+    {
+        return siteNodeVersionId;
+    }
+            
+    public void setSiteNodeVersionId(Integer siteNodeVersionId)
+    {
+        this.siteNodeVersionId = siteNodeVersionId;
+    }
+
     public Integer getStateId()
     {
         return stateId;
@@ -252,5 +264,16 @@ public class SiteNodeVO implements BaseEntityVO
     {
         this.isProtected = isProtected;
     }
+
+    public String getVersionModifier()
+    {
+        return versionModifier;
+    }
+            
+    public void setVersionModifier(String versionModifier)
+    {
+        this.versionModifier = versionModifier;
+    }
+
 }
         

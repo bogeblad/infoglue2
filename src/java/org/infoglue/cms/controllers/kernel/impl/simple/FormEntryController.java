@@ -625,7 +625,7 @@ public class FormEntryController extends BaseController
 		
 		try
 		{
-			OQLQuery oql = db.getOQLQuery("CALL SQL select (select max(fev2.id) from cmFormEntryValue fev2 where fev2.name = fev.name) as id, fev.name as column1Value, '' as column2Value, '' as column3Value, '' as column4Value, '' as column5Value from cmFormEntry fe, cmFormEntryValue fev where fev.formEntryId = fe.id AND fe.formcontentid = $1 group by fev.name AS org.infoglue.cms.entities.management.GeneralOQLResult");
+			OQLQuery oql = db.getOQLQuery("CALL SQL select (select max(fev2.id) from cmFormEntryValue fev2 where fev2.name = fev.name) as id, fev.name as column1Value, '' as column2Value, '' as column3Value, '' as column4Value, '' as column5Value, '' as column6Value from cmFormEntry fe, cmFormEntryValue fev where fev.formEntryId = fe.id AND fe.formcontentid = $1 group by fev.name AS org.infoglue.cms.entities.management.GeneralOQLResult");
 			oql.bind(formContentId);
 			
 			QueryResults results = oql.execute(Database.ReadOnly);
@@ -662,7 +662,7 @@ public class FormEntryController extends BaseController
 		
 		try
 		{
-			OQLQuery oql = db.getOQLQuery("CALL SQL select fe.id as id, fev.value as column1Value, '' as column2Value, '' as column3Value, '' as column4Value, '' as column5Value from cmFormEntry fe, cmFormEntryValue fev where fev.formEntryId = fe.id AND fe.formContentId = $1 AND fev.name = $2 AS org.infoglue.cms.entities.management.GeneralOQLResult");
+			OQLQuery oql = db.getOQLQuery("CALL SQL select fe.id as id, fev.value as column1Value, '' as column2Value, '' as column3Value, '' as column4Value, '' as column5Value, '' as column6Value from cmFormEntry fe, cmFormEntryValue fev where fev.formEntryId = fe.id AND fe.formContentId = $1 AND fev.name = $2 AS org.infoglue.cms.entities.management.GeneralOQLResult");
 			oql.bind(formContentId);
 			oql.bind(name);
 			QueryResults results = oql.execute(Database.ReadOnly);
@@ -699,7 +699,7 @@ public class FormEntryController extends BaseController
 		
 		try
 		{
-			OQLQuery oql = db.getOQLQuery("CALL SQL select formcontentid as id, count(*) as column1Value, '' as column2Value, '' as column3Value, '' as column4Value, '' as column5Value from cmFormEntry group by formContentId AS org.infoglue.cms.entities.management.GeneralOQLResult");
+			OQLQuery oql = db.getOQLQuery("CALL SQL select formcontentid as id, count(*) as column1Value, '' as column2Value, '' as column3Value, '' as column4Value, '' as column5Value, '' as column6Value from cmFormEntry group by formContentId AS org.infoglue.cms.entities.management.GeneralOQLResult");
 			
 			QueryResults results = oql.execute();
 
