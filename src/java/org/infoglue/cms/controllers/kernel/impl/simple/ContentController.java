@@ -31,6 +31,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -124,6 +125,39 @@ public class ContentController extends BaseController
 		return contentList;
 	}
 
+	/**
+	 * Gets matching references
+	 */
+	public List<ContentVO> getContentVOList(Set<Integer> contentIds, Database db) throws SystemException, Exception
+	{
+		List<ContentVO> contentVOList = new ArrayList<ContentVO>();
+		   
+		StringBuilder variables = new StringBuilder();
+	    for(int i=0; i<contentIds.size(); i++)
+	    	variables.append("$" + (i+1) + (i+1!=contentIds.size() ? "," : ""));
+		
+	    OQLQuery oql = null;
+		if(CmsPropertyHandler.getUseShortTableNames().equals("true"))
+			oql = db.getOQLQuery("CALL SQL SELECT c.contId, c.name, c.publishDateTime, c.expireDateTime, c.isBranch, c.isProtected, c.creator, c.contentTypeDefId, c.repositoryId, c.parentContId FROM cmCont c where contId IN (" + variables + ") AS org.infoglue.cms.entities.content.impl.simple.SmallContentImpl");
+		else
+			oql = db.getOQLQuery("CALL SQL SELECT c.contentId, c.name, c.publishDateTime, c.expireDateTime, c.isBranch, c.isProtected, c.creator, c.contentTypeDefinitionId, c.repositoryId, c.parentContentId FROM cmContent c WHERE contentId IN (" + variables + ") AS org.infoglue.cms.entities.content.impl.simple.SmallContentImpl");
+
+		for(Integer entityId : contentIds)
+			oql.bind(entityId.toString());
+		
+		QueryResults results = oql.execute(Database.ReadOnly);
+		
+		while (results.hasMore()) 
+        {
+            SmallContentImpl content = (SmallContentImpl)results.next();
+            contentVOList.add(content.getValueObject());
+        }       
+		
+		results.close();
+		oql.close();
+
+		return contentVOList;		
+	}
 	
 	public ContentVO getContentVOWithId(Integer contentId) throws SystemException, Bug
     {
