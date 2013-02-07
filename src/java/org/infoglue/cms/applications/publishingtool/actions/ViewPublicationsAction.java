@@ -27,12 +27,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
+import org.infoglue.cms.controllers.kernel.impl.simple.ContentVersionController;
 import org.infoglue.cms.controllers.kernel.impl.simple.PublicationController;
 import org.infoglue.cms.controllers.kernel.impl.simple.RepositoryController;
-import org.infoglue.cms.entities.content.ContentVO;
+import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeVersionController;
 import org.infoglue.cms.entities.management.RepositoryVO;
 import org.infoglue.cms.entities.publishing.EditionBrowser;
-import org.infoglue.cms.entities.structure.SiteNodeVO;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.util.CmsPropertyHandler;
 
@@ -72,7 +72,7 @@ public class ViewPublicationsAction extends InfoGlueAbstractAction
 	public void setEditionBrowser(EditionBrowser b)	{ editionBrowser = b; }
 
 	public String getFilter() 						{ return filter; }
-	public void setFilter(String filter) 			
+	public void setFilter(String filter)
 	{ 
 		if(CmsPropertyHandler.getAllowPublicationEventFilter().equalsIgnoreCase("true"))
 		{
@@ -106,7 +106,7 @@ public class ViewPublicationsAction extends InfoGlueAbstractAction
 		repositoryVO		= RepositoryController.getController().getRepositoryVOWithId(repositoryId);
 		publicationEvents	= PublicationController.getPublicationEvents(repositoryId, getInfoGluePrincipal(), filter, true);
 		editionBrowser		= PublicationController.getEditionPage(repositoryId, startIndex);
-					
+
 		return SUCCESS;
 	}
 	
@@ -130,14 +130,14 @@ public class ViewPublicationsAction extends InfoGlueAbstractAction
 		return PublicationController.getController().getPublicationDetailVOList(publicationId);
 	}
 
-	public ContentVO getOwningContent(Integer id) throws SystemException
+	public Integer getOwningContentId(Integer contentVersionId) throws SystemException
 	{
-		return PublicationController.getOwningContentVO(id);
+		return ContentVersionController.getContentVersionController().getContentIdForContentVersion(contentVersionId);
 	}
 
-	public SiteNodeVO getOwningSiteNode(Integer id) throws SystemException
+	public Integer getOwningSiteNodeId(Integer siteNodeVersionId) throws SystemException
 	{
-		return PublicationController.getOwningSiteNodeVO(id);
+		return SiteNodeVersionController.getController().getSiteNodeIdForSiteNodeVersion(siteNodeVersionId);
 	}
 	
 	/**
@@ -157,5 +157,4 @@ public class ViewPublicationsAction extends InfoGlueAbstractAction
     {
         return publicationDetailVOList;
     }
-    
 }

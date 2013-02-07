@@ -28,7 +28,9 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.log4j.Logger;
 import org.exolab.castor.jdo.Database;
@@ -68,6 +70,8 @@ public class SiteNodeVersionController extends BaseController
 
 	private final RegistryController registryController = RegistryController.getController();
 
+	private static Map<Integer, Integer> siteNodeIdMap = new ConcurrentHashMap<Integer, Integer>();
+
 	/**
 	 * Factory method
 	 */
@@ -76,6 +80,31 @@ public class SiteNodeVersionController extends BaseController
 	{
 		return new SiteNodeVersionController();
 	}
+
+	/**
+	 * Gets the Id of the SiteNode the given <em>siteNodeVersionId</em> belongs to. The method utilizes a
+	 * local cache. This means that on subsequent for the same input no look-up of SiteNodeVersionVo will be done.
+	 * @param siteNodeVersionId
+	 * @return The Id of the SiteNode owning the given SiteNodeVersion.
+	 * @throws SystemException
+	 * @throws Bug
+	 */
+	public Integer getSiteNodeIdForSiteNodeVersion(Integer siteNodeVersionId) throws SystemException, Bug
+    {
+    	Integer siteNodeId = null;
+    	if (siteNodeIdMap != null)
+    	{
+    		siteNodeId = (Integer)siteNodeIdMap.get(siteNodeVersionId);
+    	}
+    	if(siteNodeId == null)
+    	{
+    		SiteNodeVersionVO siteNodeVersionVO = getSiteNodeVersionVOWithId(siteNodeVersionId);
+    		siteNodeId = siteNodeVersionVO.getSiteNodeId();
+    		siteNodeIdMap.put(siteNodeVersionId, siteNodeId);
+    	}
+
+    	return siteNodeId;
+    }
 	
    	/**
 	 * This method returns selected active content versions.

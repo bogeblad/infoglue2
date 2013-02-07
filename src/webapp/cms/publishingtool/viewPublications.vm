@@ -63,7 +63,7 @@ function filter(select)
 
 <tr>
 <td valign="top">
-
+## $editionBrowser.editions.size()
 #set($eh = $editionBrowser.editions.size())
 #set($vh = $contentToPublish.size() + $siteNodeToPublish.size())
 
@@ -107,6 +107,9 @@ Filter:
 
 
 ## EVENTS UP FOR REVIEW
+
+<!-- $publicationEvents -->
+
 #foreach ($publicationEvent in $publicationEvents)
 	#set($cId = $publicationEvent.id)
 	#set($q='"')
@@ -116,7 +119,6 @@ Filter:
 	#set($deny="$q$deny$q")
 	#set($denyUrlStart = "<a title='Deny content, $publicationName, and send it back to content provider' href=")
 	#set($denyUrlEnd="><img src=images/deny.gif border=0></a>")
-
 	#set($detailUrl = "")
 
 	#set($extraId = "")
@@ -126,18 +128,18 @@ Filter:
 		#else
 			#set($icon = "<img src='images/tree/contentItem.gif' border=0>")
 		#end
-		#set($owningContent = $this.getOwningContent($publicationEvent.entityId))
-		#set($extraId = "$owningContent.id")
-		#set($detailUrl = "ViewContent.action?contentId=$owningContent.id")
+		#set($owningContentId = $this.getOwningContentId($publicationEvent.entityId))
+		#set($extraId = "$owningContentId")
+		#set($detailUrl = "ViewContent.action?contentId=$owningContentId")
 	#else
 		#if($publicationEvent.typeId == 3)
 			#set($icon = "<img src='images/tree/unpublishSiteNodeItem.gif' border=0>")
 		#else
 			#set($icon = "<img src='images/tree/siteNodeItem.gif' border=0>")
 		#end
-		#set($owningSiteNode = $this.getOwningSiteNode($publicationEvent.entityId))
-		#set($extraId = "$owningSiteNode.id")
-		#set($detailUrl = "ViewSiteNode.action?siteNodeId=$owningSiteNode.id")
+		#set($owningSiteNodeId = $this.getOwningSiteNodeId($publicationEvent.entityId))
+		#set($extraId = "$owningSiteNodeId")
+		#set($detailUrl = "ViewSiteNode.action?siteNodeId=$owningSiteNodeId")
 	#end
 
 	#if($publicationEvent.description.length() > 50)
@@ -156,9 +158,9 @@ Filter:
 	#set($span = "<span onmouseover='return overlib(${fnutt}${formatter.cleanForJavascriptStrings($publicationEvent.description)}${fnutt}, WIDTH, 400, BGCOLOR, ${fnutt}#FFFFFF${fnutt});' onmouseout='return nd();'>($description) ($extraId) - $publicationEvent.entityId</span>")
 	#set( $row = ["$icon <a href='$detailUrl' target='_blank'>$publicationEvent.name</a> $span", "$modifiedDate", "$creatorDisplayName"] )
 	#set($cnt = $cnt + 1)
-
 	#lvAddRow($row $cnt $cId)
 #end
+
 
 
 #if( $cnt==0)
@@ -203,7 +205,7 @@ Filter:
 	#hiddenField("repositoryId" $repositoryId)
 
 
-## Start on odd but dont reset cnt, for rowid´s sake
+## Start on odd but dont reset cnt, for rowidï¿½s sake
 #set( $chk = $cnt % 2)
 #if($chk==1)
 	#set($cnt = $cnt + 1)

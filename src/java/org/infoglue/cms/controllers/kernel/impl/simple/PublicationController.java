@@ -225,12 +225,17 @@ public class PublicationController extends BaseController
         beginTransaction(db);
         try
         {
-            OQLQuery oql = db.getOQLQuery("SELECT c FROM org.infoglue.cms.entities.publishing.impl.simple.PublicationImpl c WHERE c.repositoryId = $1 order by publicationDateTime desc");
-			oql.bind(repositoryId);
+            OQLQuery oql = db.getOQLQuery("SELECT c FROM org.infoglue.cms.entities.publishing.impl.simple.PublicationImpl c WHERE c.repositoryId = $1 AND c.publicationDateTime > $2 order by publicationDateTime desc");
+
+            oql.bind(repositoryId);
+			Calendar publicationDateTimeCalendar = Calendar.getInstance();
+			publicationDateTimeCalendar.add(Calendar.MONTH, -2);
+			oql.bind(publicationDateTimeCalendar.getTime());
+
         	QueryResults results = oql.execute(Database.ReadOnly);
 
 			List allEditions = Collections.list(results);
-			
+
 			List page = allEditions.subList(startIndex, Math.min(startIndex+pageSize, allEditions.size()));
 
 			EditionBrowser browser = new EditionBrowser(allEditions.size(), pageSize, startIndex);
