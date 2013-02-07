@@ -36,9 +36,12 @@ import org.infoglue.cms.controllers.kernel.impl.simple.ContentControllerProxy;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentVersionController;
 import org.infoglue.cms.entities.content.ContentVO;
 import org.infoglue.cms.entities.content.ContentVersionVO;
+import org.infoglue.cms.entities.structure.SiteNodeVersionVO;
 import org.infoglue.cms.exception.AccessConstraintException;
 import org.infoglue.cms.util.AccessConstraintExceptionBuffer;
 import org.infoglue.cms.util.sorters.ReflectionComparator;
+import org.infoglue.deliver.util.RequestAnalyser;
+import org.infoglue.deliver.util.Timer;
 
 /**
  *
@@ -52,8 +55,8 @@ public class ViewListContentVersionAction extends InfoGlueAbstractAction
 {
 	private static final long serialVersionUID = -1767277488570719994L;
 
-	private List contentVersionVOList = new ArrayList();
-	private List siteNodeVersionVOList = new ArrayList();
+	private List<ContentVersionVO> contentVersionVOList = new ArrayList<ContentVersionVO>();
+	private List<SiteNodeVersionVO> siteNodeVersionVOList = new ArrayList<SiteNodeVersionVO>();
 	private Integer contentId;
 	private Integer repositoryId;
 	private String returnAddress = null;
@@ -62,6 +65,7 @@ public class ViewListContentVersionAction extends InfoGlueAbstractAction
 	{
 		if(this.contentId != null)
 		{
+			Timer t = new Timer();
 		    ContentVO contentVO = ContentController.getContentController().getContentVOWithId(this.contentId);
 		    this.repositoryId = contentVO.getRepositoryId();
 		    
@@ -73,10 +77,22 @@ public class ViewListContentVersionAction extends InfoGlueAbstractAction
 			
 			ceb.throwIfNotEmpty();
 
-			ContentVersionController.getContentVersionController().getContentAndAffectedItemsRecursive(this.contentId, ContentVersionVO.WORKING_STATE, this.siteNodeVersionVOList, this.contentVersionVOList, true, true);
+			/*
+			Set<Integer> contentVersionVOSet = new HashSet<Integer>();
+			RequestAnalyser.getRequestAnalyser().registerComponentStatistics("ViewListContentVersion part 1", t.getElapsedTime());
+			
+			ContentVersionController.getContentVersionController().getContentAndAffectedItemsRecursive(this.contentId, ContentVersionVO.WORKING_STATE, this.siteNodeVersionVOList, contentVersionVOSet, true, true);
+			RequestAnalyser.getRequestAnalyser().registerComponentStatistics("ViewListContentVersion getContentAndAffectedItemsRecursive", t.getElapsedTime());
 
-			Set contentVersionVOListSet = new HashSet();
-			contentVersionVOListSet.addAll(contentVersionVOList);
+			Set<ContentVersionVO> contentVersionVOListSet = new HashSet<ContentVersionVO>();
+			for(Integer contentVersionId : contentVersionVOSet)
+			{
+				contentVersionVOListSet.add(ContentVersionController.getContentVersionController().getContentVersionVOWithId(contentVersionId));
+			}
+			
+			RequestAnalyser.getRequestAnalyser().registerComponentStatistics("ViewListContentVersion versions", t.getElapsedTime());
+
+			List contentVersionVOList = new ArrayList();
 			contentVersionVOList.clear();
 			contentVersionVOList.addAll(contentVersionVOListSet);
 
@@ -88,6 +104,9 @@ public class ViewListContentVersionAction extends InfoGlueAbstractAction
 			siteNodeVersionVOList.addAll(siteNodeVersionVOListSet);
 
 		    Collections.sort(siteNodeVersionVOList, Collections.reverseOrder(new ReflectionComparator("modifiedDateTime")));
+			*/
+		    
+		    RequestAnalyser.getRequestAnalyser().registerComponentStatistics("ViewListContentVersion end", t.getElapsedTime());
 		}
 
 	    return "success";

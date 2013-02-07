@@ -26,9 +26,12 @@ package org.infoglue.cms.controllers.kernel.impl.simple;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -40,10 +43,12 @@ import org.infoglue.cms.entities.content.Content;
 import org.infoglue.cms.entities.content.ContentVO;
 import org.infoglue.cms.entities.content.ContentVersion;
 import org.infoglue.cms.entities.content.ContentVersionVO;
+import org.infoglue.cms.entities.content.SmallestContentVersionVO;
 import org.infoglue.cms.entities.kernel.BaseEntityVO;
 import org.infoglue.cms.entities.management.AvailableServiceBinding;
 import org.infoglue.cms.entities.management.AvailableServiceBindingVO;
 import org.infoglue.cms.entities.management.ContentTypeDefinitionVO;
+import org.infoglue.cms.entities.management.GeneralOQLResult;
 import org.infoglue.cms.entities.management.Language;
 import org.infoglue.cms.entities.management.RegistryVO;
 import org.infoglue.cms.entities.structure.ServiceBinding;
@@ -62,6 +67,7 @@ import org.infoglue.cms.util.CmsPropertyHandler;
 import org.infoglue.cms.util.ConstraintExceptionBuffer;
 import org.infoglue.cms.util.DateHelper;
 import org.infoglue.deliver.util.CacheController;
+import org.infoglue.deliver.util.RequestAnalyser;
 import org.infoglue.deliver.util.Timer;
 
 public class SiteNodeVersionController extends BaseController 
@@ -80,7 +86,7 @@ public class SiteNodeVersionController extends BaseController
 	{
 		return new SiteNodeVersionController();
 	}
-
+	
 	/**
 	 * Gets the Id of the SiteNode the given <em>siteNodeVersionId</em> belongs to. The method utilizes a
 	 * local cache. This means that on subsequent for the same input no look-up of SiteNodeVersionVo will be done.
@@ -105,7 +111,7 @@ public class SiteNodeVersionController extends BaseController
 
     	return siteNodeId;
     }
-	
+
    	/**
 	 * This method returns selected active content versions.
 	 */
@@ -133,6 +139,71 @@ public class SiteNodeVersionController extends BaseController
 		return siteNodeVersionList;
 	}
 
+   	/**
+	 * This method returns the latest active content version.
+	 */
+    
+	public List<SiteNodeVO> getLatestSiteNodeVersionIds(Set<Integer> siteNodeIds/*, Integer stateId*/, Database db) throws SystemException, Bug, Exception
+	{
+		List<SiteNodeVO> siteNodeVersionIdSet = new ArrayList<SiteNodeVO>();
+		if(siteNodeIds == null || siteNodeIds.size() == 0)
+			return siteNodeVersionIdSet;
+		
+		List<Integer> siteNodesHandled = new ArrayList<Integer>();
+		
+		StringBuilder variables = new StringBuilder();
+	    for(int i=0; i<siteNodeIds.size(); i++)
+	    	variables.append("$" + (i+2) + (i+1!=siteNodeIds.size() ? "," : ""));
+	    System.out.println("variables:" + variables);
+
+		StringBuilder sb = new StringBuilder();
+		if(CmsPropertyHandler.getUseShortTableNames().equals("true"))
+		{
+			sb.append("select max(snv.siNoVerId) AS id, snv.siNoId as column1Value, max(snv.stateId) as column2Value, sn.repositoryId as column3Value, max(snv.versionModifier) as column4Value, '' as column5Value, '' as column6Value from cmSiNoVer snv, cmSiNo sn where sn.siNoId = snv.siNoId AND snv.isActive = $1 AND snv.siNoId IN (" + variables + ") group by snv.siNoId, sn.repositoryId ");
+		}
+		else
+		{
+			sb.append("select max(snv.siteNodeVersionId) AS id, snv.siteNodeId as column1Value, max(snv.stateId) as column2Value, sn.repositoryId as column3Value, max(snv.versionModifier) as column4Value, '' as column5Value, '' as column6Value from cmSiteNodeVersion snv, cmSiteNode sn where sn.siteNodeId = snv.siteNodeId AND snv.isActive = $1 AND snv.siteNodeId IN (" + variables + ") group by snv.siteNodeId, sn.repositoryId ");
+		}
+		System.out.println("CALL SQL " + sb.toString() + "AS org.infoglue.cms.entities.management.GeneralOQLResult");
+		OQLQuery oql = db.getOQLQuery("CALL SQL " + sb.toString() + "AS org.infoglue.cms.entities.management.GeneralOQLResult");
+
+    	oql.bind(true);
+    	for(Integer entityId : siteNodeIds)
+    	{
+    		//System.out.println("entityId:" + entityId);
+    		oql.bind(entityId.toString());
+    	}
+    	
+    	QueryResults results = oql.execute(Database.ReadOnly);
+		while (results.hasMore()) 
+        {
+			GeneralOQLResult resultBean = (GeneralOQLResult)results.next();
+			Integer siteNodeId = new Integer(resultBean.getValue1());
+			Integer versionStateId = new Integer(resultBean.getValue2());
+			Integer repositoryId = new Integer(resultBean.getValue3());
+			String versionModifier = resultBean.getValue4();
+			//System.out.println(siteNodeId + ":" + versionStateId);
+			if(resultBean.getId() != null && resultBean.getValue1() != null/* && versionStateId.equals(stateId)*/ && !siteNodesHandled.contains(siteNodeId))
+			{
+				SiteNodeVO siteNodeVO = new SiteNodeVO();
+				siteNodeVO.setSiteNodeVersionId(resultBean.getId());
+				siteNodeVO.setSiteNodeId(siteNodeId);
+				siteNodeVO.setStateId(versionStateId);
+				siteNodeVO.setRepositoryId(repositoryId);
+				siteNodeVO.setVersionModifier(versionModifier);
+				
+				siteNodeVersionIdSet.add(siteNodeVO);
+				siteNodesHandled.add(siteNodeId);
+			}
+		}
+		
+		results.close();
+		oql.close();
+
+		return siteNodeVersionIdSet;
+	}
+	
     public SiteNodeVersionVO getFullSiteNodeVersionVOWithId(Integer siteNodeVersionId) throws SystemException, Bug
     {
 		return (SiteNodeVersionVO) getVOWithId(SiteNodeVersionImpl.class, siteNodeVersionId);
@@ -1405,27 +1476,40 @@ public class SiteNodeVersionController extends BaseController
 	 * Recursive methods to get all contentVersions of a given state under the specified parent content.
 	 */ 
 	
-    public void getSiteNodeAndAffectedItemsRecursive(Integer siteNodeId, Integer stateId, Set siteNodeVersionVOList, Set contenteVersionVOList, boolean includeMetaInfo, InfoGluePrincipal principal) throws ConstraintException, SystemException
+    public void getSiteNodeAndAffectedItemsRecursive(Integer siteNodeId, Integer stateId, Set<SiteNodeVersionVO> siteNodeVersionVOList, Set<ContentVersionVO> contentVersionVOList, boolean includeMetaInfo, InfoGluePrincipal principal) throws ConstraintException, SystemException
 	{
-    	getSiteNodeAndAffectedItemsRecursive(siteNodeId, stateId, siteNodeVersionVOList, contenteVersionVOList, includeMetaInfo, true, principal);
+    	getSiteNodeAndAffectedItemsRecursive(siteNodeId, stateId, siteNodeVersionVOList, contentVersionVOList, includeMetaInfo, true, principal);
 	}
 	
 	/**
 	 * Recursive methods to get all contentVersions of a given state under the specified parent content.
 	 */ 
 	
-    public void getSiteNodeAndAffectedItemsRecursive(Integer siteNodeId, Integer stateId, Set siteNodeVersionVOList, Set contenteVersionVOList, boolean includeMetaInfo, boolean recurseSiteNodes, InfoGluePrincipal principal) throws ConstraintException, SystemException
+    public void getSiteNodeAndAffectedItemsRecursive(Integer siteNodeId, Integer stateId, Set<SiteNodeVersionVO> siteNodeVersionVOList, Set<ContentVersionVO> contentVersionVOList, boolean includeMetaInfo, boolean recurseSiteNodes, InfoGluePrincipal principal) throws ConstraintException, SystemException
 	{
+    	Timer t = new Timer();
+    	
         Database db = CastorDatabaseService.getDatabase();
 
 	    beginTransaction(db);
 
         try
         {
-            SiteNodeVO siteNode = SiteNodeController.getController().getSiteNodeVOWithId(siteNodeId, db);
-            //SiteNode siteNode = SiteNodeController.getController().getSiteNodeWithId(siteNodeId, db);
+            SiteNodeVO siteNode = SiteNodeController.getController().getSiteNodeVOWithIdNoStateCheck(siteNodeId, db);
+            List<SiteNodeVersionVO> localSiteNodeVersionVOList = getSiteNodeVersionsRecursive(siteNode, stateId, db, includeMetaInfo, recurseSiteNodes, principal);
+            
+            Set<Integer> localSiteNodeVersionIdSet = new HashSet<Integer>();
+            for(SiteNodeVersionVO snvVO : localSiteNodeVersionVOList)
+    		{
+            	localSiteNodeVersionIdSet.add(snvVO.getSiteNodeVersionId());
+    			if(snvVO.getStateId() == 0)
+    				siteNodeVersionVOList.add(snvVO);
+    		}
+            
+        	RequestAnalyser.getRequestAnalyser().registerComponentStatistics("getSiteNodeAndAffectedItemsRecursive", t.getElapsedTime());
 
-            getSiteNodeAndAffectedItemsRecursive(siteNode, stateId, new ArrayList(), new ArrayList(), db, siteNodeVersionVOList, contenteVersionVOList, includeMetaInfo, recurseSiteNodes, principal);
+        	//Takes the base list of pages in the structure clicked and fetches the relations. Store them in .
+        	getReferencedItemsRecursive(stateId, siteNodeVersionVOList, contentVersionVOList, includeMetaInfo, principal, db, siteNode, localSiteNodeVersionIdSet, new HashSet<Integer>(), 2, 0);
             
             commitTransaction(db);
         }
@@ -1437,122 +1521,199 @@ public class SiteNodeVersionController extends BaseController
         }
 	}
 
-	private void getSiteNodeAndAffectedItemsRecursive(SiteNodeVO siteNodeVO, Integer stateId, List checkedSiteNodes, List checkedContents, Database db, Set<SiteNodeVersionVO> siteNodeVersionVOList, Set<ContentVersionVO> contentVersionVOList, boolean includeMetaInfo, InfoGluePrincipal principal) throws ConstraintException, SystemException, Exception
+	public void getReferencedItemsRecursive(Integer stateId, Set<SiteNodeVersionVO> siteNodeVersionIdList, Set<ContentVersionVO> contentVersionVOList, boolean includeMetaInfo, InfoGluePrincipal principal, Database db, SiteNodeVO siteNode, Set<Integer> relatedSiteNodeVersionIdsToCheck, Set<Integer> relatedContentVersionIdsToCheck, int limit, int currentLevel) throws SystemException, Exception, Bug 
 	{
-		getSiteNodeAndAffectedItemsRecursive(siteNodeVO, stateId, checkedSiteNodes, checkedContents, db, siteNodeVersionVOList, contentVersionVOList, includeMetaInfo, true, principal);
+		Timer t = new Timer();
+		
+		List siteNodeVersionVOListSubList = new ArrayList();
+    	siteNodeVersionVOListSubList.addAll(relatedSiteNodeVersionIdsToCheck);
+    	
+    	List relatedSiteNodes = new ArrayList<Integer>();
+    	List relatedContents = new ArrayList<Integer>();
+    	
+    	int slotSize = 500;
+    	if(siteNodeVersionVOListSubList.size() > 0)
+    	{
+	    	List<Integer> subList = siteNodeVersionVOListSubList.subList(0, (siteNodeVersionVOListSubList.size() > slotSize ? slotSize : siteNodeVersionVOListSubList.size()-1));
+	    	while(subList != null && subList.size() > 0)
+	    	{
+	    		relatedSiteNodes.addAll(RegistryController.getController().getMatchingRegistryVOListForReferencingEntities(SiteNodeVersion.class.getName(), subList, db));
+	    		siteNodeVersionVOListSubList = siteNodeVersionVOListSubList.subList(subList.size()-1, siteNodeVersionVOListSubList.size()-1);
+	    		subList =  siteNodeVersionVOListSubList.subList(0, (siteNodeVersionVOListSubList.size() > slotSize ? slotSize : siteNodeVersionVOListSubList.size()-1));
+	    	}
+    	}
+    	
+    	RequestAnalyser.getRequestAnalyser().registerComponentStatistics("first part", t.getElapsedTime());
+
+		Set<Integer> localRelatedSiteNodeIdsToCheck = new HashSet<Integer>();
+		Set<Integer> localRelatedContentIdsToCheck = new HashSet<Integer>();
+		
+		Iterator<RegistryVO> relatedSiteNodesIterator = relatedSiteNodes.iterator();
+        while(relatedSiteNodesIterator.hasNext())
+        {
+            RegistryVO registryVO = relatedSiteNodesIterator.next();
+        	if(registryVO.getEntityName().equals(SiteNode.class.getName()))
+        	{
+        		localRelatedSiteNodeIdsToCheck.add(new Integer(registryVO.getEntityId()));
+            }
+            else if(registryVO.getEntityName().equals(Content.class.getName()))
+            {
+            	localRelatedContentIdsToCheck.add(new Integer(registryVO.getEntityId()));
+            }
+		}
+		        
+        //Now let's get all related contents
+    	List<Integer> relatedContentVersionIdsToCheckSubList = new ArrayList<Integer>();
+    	relatedContentVersionIdsToCheckSubList.addAll(relatedContentVersionIdsToCheck);
+    	if(relatedContentVersionIdsToCheckSubList.size() > 0)
+    	{
+    		List<Integer> subList = relatedContentVersionIdsToCheckSubList.subList(0, (relatedContentVersionIdsToCheckSubList.size() > slotSize ? slotSize : relatedContentVersionIdsToCheckSubList.size()-1));
+        	while(subList != null && subList.size() > 0)
+        	{
+        		relatedContents.addAll(RegistryController.getController().getMatchingRegistryVOListForReferencingEntities(ContentVersion.class.getName(), subList, db));
+        		relatedContentVersionIdsToCheckSubList = relatedContentVersionIdsToCheckSubList.subList(subList.size()-1, relatedContentVersionIdsToCheckSubList.size() -1);
+        		subList = relatedContentVersionIdsToCheckSubList.subList(0, (relatedContentVersionIdsToCheckSubList.size() > slotSize ? slotSize : relatedContentVersionIdsToCheckSubList.size()-1));
+        	}
+
+			Iterator<RegistryVO> relatedContentsIterator = relatedContents.iterator();
+	        while(relatedContentsIterator.hasNext())
+	        {
+	            RegistryVO registryVO = relatedContentsIterator.next();
+            	if(registryVO.getEntityName().equals(SiteNode.class.getName()))
+            	{
+            		localRelatedSiteNodeIdsToCheck.add(new Integer(registryVO.getEntityId()));
+	            }
+	            else if(registryVO.getEntityName().equals(Content.class.getName()))
+	            {
+	            	localRelatedContentIdsToCheck.add(new Integer(registryVO.getEntityId()));
+	            }
+			}
+    	}
+
+    	RequestAnalyser.getRequestAnalyser().registerComponentStatistics("third part", t.getElapsedTime());
+    	
+		//Set<Integer> relatedContentIds = new HashSet<Integer>();
+		//Set<Integer> relatedSiteNodeIds = new HashSet<Integer>();
+		
+		//Now lets batch fetch the relations for all contents and for all sitenodes. Store them in new Sets. Must be possible recursive.
+		if(currentLevel < limit)
+		{
+			List<SiteNodeVO> localRelatedSiteNodeVersionVOList = SiteNodeVersionController.getController().getLatestSiteNodeVersionIds(localRelatedSiteNodeIdsToCheck, db);
+			List<ContentVersionVO> localRelatedContentVersionVOList = ContentVersionController.getContentVersionController().getLatestContentVersionIdsPerLanguage(localRelatedContentIdsToCheck, db);
+
+	        //Adding it to the full list
+			Set<Integer> localRelatedSiteNodeVersionIdSet = new HashSet<Integer>();
+			Iterator<SiteNodeVO> localRelatedSiteNodeVersionVOListIterator = localRelatedSiteNodeVersionVOList.iterator();
+			while(localRelatedSiteNodeVersionVOListIterator.hasNext())
+			{
+				SiteNodeVO siteNodeVO = localRelatedSiteNodeVersionVOListIterator.next();
+				localRelatedSiteNodeVersionIdSet.add(siteNodeVO.getSiteNodeVersionId());
+				
+                Integer repositoryId = siteNodeVO.getRepositoryId();
+                Integer siteNodeRepositoryId = siteNodeVO.getRepositoryId();
+                boolean allowedSiteNodeVersion = repositoryId.intValue() == siteNodeRepositoryId.intValue();
+                if(CmsPropertyHandler.getAllowCrossSiteSubmitToPublish().equalsIgnoreCase("true"))
+                {
+                	if(AccessRightController.getController().getIsPrincipalAuthorized(db, principal, "Repository.Read", "" + repositoryId) || AccessRightController.getController().getIsPrincipalAuthorized(db, principal, "Repository.Write", "" + repositoryId))
+                	{
+            			Integer protectedSiteNodeVersionId = SiteNodeVersionControllerProxy.getSiteNodeVersionControllerProxy().getProtectedSiteNodeVersionId(siteNodeVO.getSiteNodeVersionId(), db);
+            			if(protectedSiteNodeVersionId == null || AccessRightController.getController().getIsPrincipalAuthorized(db, principal, "SiteNodeVersion.SubmitToPublish", protectedSiteNodeVersionId.toString()))
+	        				allowedSiteNodeVersion = true;
+                	}
+                }
+
+				if(siteNodeVO.getStateId() == 0 && allowedSiteNodeVersion)
+				{
+					SiteNodeVersionVO siteNodeVersionVO = new SiteNodeVersionVO();
+				    siteNodeVersionVO.setSiteNodeVersionId(siteNodeVO.getSiteNodeVersionId());
+				    siteNodeVersionVO.setSiteNodeId(siteNodeVO.getSiteNodeId());
+				    siteNodeVersionVO.setStateId(siteNodeVO.getStateId());
+				    siteNodeVersionVO.setVersionModifier(siteNodeVO.getVersionModifier());
+				    
+					siteNodeVersionIdList.add(siteNodeVersionVO);
+				}
+			}
+			
+			Set<Integer> localRelatedContentVersionIdSet = new HashSet<Integer>();
+			Iterator<ContentVersionVO> localRelatedContentVersionVOListIterator = localRelatedContentVersionVOList.iterator();
+			while(localRelatedContentVersionVOListIterator.hasNext())
+			{
+				ContentVersionVO contentVersionVO = localRelatedContentVersionVOListIterator.next();
+				localRelatedContentVersionIdSet.add(contentVersionVO.getContentVersionId());
+								
+		        ContentTypeDefinitionVO contentTypeDefinitionVO = null;
+		        if(contentVersionVO.getContentTypeDefinitionId() != null)
+		        	contentTypeDefinitionVO = ContentTypeDefinitionController.getController().getContentTypeDefinitionVOWithId(contentVersionVO.getContentTypeDefinitionId(), db);
+		        
+		        if(includeMetaInfo || (!includeMetaInfo && (contentTypeDefinitionVO == null || !contentTypeDefinitionVO.getName().equalsIgnoreCase("Meta info"))))
+		        {
+		            Integer repositoryId = contentVersionVO.getRepositoryId();
+		            Integer siteNodeRepositoryId = siteNode.getRepositoryId();
+		            boolean allowedContent = repositoryId.intValue() == siteNodeRepositoryId.intValue();
+					if(CmsPropertyHandler.getAllowCrossSiteSubmitToPublish().equalsIgnoreCase("true"))
+		            {
+		            	if(AccessRightController.getController().getIsPrincipalAuthorized(db, principal, "Repository.Read", "" + repositoryId) || AccessRightController.getController().getIsPrincipalAuthorized(db, principal, "Repository.Write", "" + repositoryId))
+		            	{
+		                	Integer protectedContentId = ContentControllerProxy.getController().getProtectedContentId(contentVersionVO.getContentId(), db);
+		        			if(protectedContentId == null || AccessRightController.getController().getIsPrincipalAuthorized(db, principal, "Content.SubmitToPublish", protectedContentId.toString()))
+		        				allowedContent = true;
+		            	}
+		            }
+			        
+					if(contentVersionVO.getStateId() == 0 && allowedContent)
+					{
+						contentVersionVOList.add(contentVersionVO);
+					}
+		        }
+			}
+			
+			getReferencedItemsRecursive(stateId, siteNodeVersionIdList, contentVersionVOList, includeMetaInfo, principal, db, siteNode, localRelatedSiteNodeVersionIdSet, localRelatedContentVersionIdSet, limit, currentLevel+1);
+		}
+	}
+
+	private List<SiteNodeVersionVO> getSiteNodeVersionsRecursive(SiteNodeVO siteNodeVO, Integer stateId, Database db, boolean includeMetaInfo, InfoGluePrincipal principal) throws ConstraintException, SystemException, Exception
+	{
+		return getSiteNodeVersionsRecursive(siteNodeVO, stateId, db, includeMetaInfo, true, principal);
 	}
 	
-	private void getSiteNodeAndAffectedItemsRecursive(SiteNodeVO siteNodeVO, Integer stateId, List checkedSiteNodes, List checkedContents, Database db, Set<SiteNodeVersionVO> siteNodeVersionVOList, Set<ContentVersionVO> contentVersionVOList, boolean includeMetaInfo, boolean recurseSiteNodes, InfoGluePrincipal principal) throws ConstraintException, SystemException, Exception
+	private List<SiteNodeVersionVO> getSiteNodeVersionsRecursive(SiteNodeVO siteNodeVO, Integer stateId, Database db, boolean includeMetaInfo, boolean recurseSiteNodes, InfoGluePrincipal principal) throws ConstraintException, SystemException, Exception
 	{
-	    checkedSiteNodes.add(siteNodeVO.getId());
+		Timer t = new Timer();
+		List<SiteNodeVersionVO> siteNodeVersionVOToCheck = new ArrayList<SiteNodeVersionVO>();
         
-		// Get the versions of this siteNode.
-		//SiteNodeVersion siteNodeVersion = getLatestActiveSiteNodeVersionIfInState(siteNode, stateId, db);
-		SiteNodeVersionVO siteNodeVersionVO = getLatestActiveSiteNodeVersionVO(db, siteNodeVO.getId());
-		//SiteNodeVersion siteNodeVersion = getLatestActiveSiteNodeVersion(db, siteNodeVO.getId());
-		if(siteNodeVersionVO != null && siteNodeVersionVO.getStateId().intValue() == stateId.intValue())
-		{			
-		    siteNodeVersionVOList.add(siteNodeVersionVO);
-		}
+	    Integer latestSiteNodeVersionId = siteNodeVO.getSiteNodeVersionId();
+	    Integer knownStateId = siteNodeVO.getStateId();
+	    
+	    SiteNodeVersionVO siteNodeVersionVO = new SiteNodeVersionVO();
+	    siteNodeVersionVO.setSiteNodeVersionId(latestSiteNodeVersionId);
+	    siteNodeVersionVO.setSiteNodeId(siteNodeVO.getSiteNodeId());
+	    siteNodeVersionVO.setStateId(knownStateId);
+	    //siteNodeVersionVO.setRepositoryId(siteNodeVO.getRepositoryId());
+	    siteNodeVersionVO.setVersionModifierDisplayName(siteNodeVO.getVersionModifier());
+	    siteNodeVersionVO.setVersionModifier(siteNodeVO.getVersionModifier());
 		
-		if(siteNodeVersionVO != null)
-		{			
-			List relatedEntities = RegistryController.getController().getMatchingRegistryVOListForReferencingEntity(SiteNodeVersion.class.getName(), siteNodeVersionVO.getId().toString(), db);
-	        Iterator relatedEntitiesIterator = relatedEntities.iterator();
-	        
-	        while(relatedEntitiesIterator.hasNext())
-	        {
-	            RegistryVO registryVO = (RegistryVO)relatedEntitiesIterator.next();
-                try
-                {
-                	if(registryVO.getEntityName().equals(SiteNode.class.getName()) && !checkedSiteNodes.contains(new Integer(registryVO.getEntityId())))
-                	{
-	                    SiteNodeVO relatedSiteNodeVO = SiteNodeController.getController().getSiteNodeVOWithId(new Integer(registryVO.getEntityId()), db);
-	
-	                    //SiteNodeVersion relatedSiteNodeVersion = getLatestActiveSiteNodeVersionIfInState(relatedSiteNode, stateId, db);
-		                SiteNodeVersionVO relatedSiteNodeVersionVO = getLatestActiveSiteNodeVersionVO(db, new Integer(registryVO.getEntityId()));
-		                
-		                Integer repositoryId = relatedSiteNodeVO.getRepositoryId();
-		                Integer siteNodeRepositoryId = siteNodeVO.getRepositoryId();
-		                boolean allowedSiteNodeVersion = repositoryId.intValue() == siteNodeRepositoryId.intValue();
-		                if(CmsPropertyHandler.getAllowCrossSiteSubmitToPublish().equalsIgnoreCase("true"))
-		                {
-		                	if(AccessRightController.getController().getIsPrincipalAuthorized(db, principal, "Repository.Read", "" + repositoryId) || AccessRightController.getController().getIsPrincipalAuthorized(db, principal, "Repository.Write", "" + repositoryId))
-		                	{
-		            			Integer protectedSiteNodeVersionId = SiteNodeVersionControllerProxy.getSiteNodeVersionControllerProxy().getProtectedSiteNodeVersionId(relatedSiteNodeVersionVO.getId(), db);
-		            			if(protectedSiteNodeVersionId == null || AccessRightController.getController().getIsPrincipalAuthorized(db, principal, "SiteNodeVersion.SubmitToPublish", protectedSiteNodeVersionId.toString()))
-			        				allowedSiteNodeVersion = true;
-		                	}
-		                }
-	
-		                //if(relatedSiteNodeVersion != null && relatedSiteNodeVersion.getStateId().intValue() == stateId.intValue() && siteNode.getRepository().getId().intValue() == relatedSiteNodeVersion.getOwningSiteNode().getRepository().getId().intValue())
-		                if(relatedSiteNodeVersionVO != null && allowedSiteNodeVersion && relatedSiteNodeVersionVO.getStateId().intValue() == stateId.intValue())
-		    	        {
-		                    siteNodeVersionVOList.add(relatedSiteNodeVersionVO);
-		                }
-	
-		                checkedSiteNodes.add(new Integer(registryVO.getEntityId()));
-		            }
-		            else if(registryVO.getEntityName().equals(Content.class.getName()) && !checkedContents.contains(new Integer(registryVO.getEntityId())))
-		            {
-		                ContentVO relatedContentVO = ContentController.getContentController().getContentVOWithId(new Integer(registryVO.getEntityId()), db);
-		                ContentTypeDefinitionVO contentTypeDefinitionVO = null;
-		                if(relatedContentVO.getContentTypeDefinitionId() != null)
-		                	contentTypeDefinitionVO = ContentTypeDefinitionController.getController().getContentTypeDefinitionVOWithId(relatedContentVO.getContentTypeDefinitionId(), db);
-
-		                if(includeMetaInfo || (!includeMetaInfo && (contentTypeDefinitionVO == null || !contentTypeDefinitionVO.getName().equalsIgnoreCase("Meta info"))))
-		                {
-			                Integer repositoryId = relatedContentVO.getRepositoryId();
-			                Integer siteNodeRepositoryId = siteNodeVO.getRepositoryId();
-			                boolean allowedContent = repositoryId.intValue() == siteNodeRepositoryId.intValue();
-			                if(CmsPropertyHandler.getAllowCrossSiteSubmitToPublish().equalsIgnoreCase("true"))
-			                {
-			                	if(AccessRightController.getController().getIsPrincipalAuthorized(db, principal, "Repository.Read", "" + repositoryId) || AccessRightController.getController().getIsPrincipalAuthorized(db, principal, "Repository.Write", "" + repositoryId))
-			                	{
-				                	Integer protectedContentId = ContentControllerProxy.getController().getProtectedContentId(relatedContentVO.getId(), db);
-				        			if(protectedContentId == null || AccessRightController.getController().getIsPrincipalAuthorized(db, principal, "Content.SubmitToPublish", protectedContentId.toString()))
-				        				allowedContent = true;
-			                	}
-			                }
-			                
-		                	List relatedContentVersions = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVOIfInState(relatedContentVO.getId(), stateId, db);
-	
-			                Iterator relatedContentVersionsIterator = relatedContentVersions.iterator();
-			                while(relatedContentVersionsIterator.hasNext())
-			                {
-			                    ContentVersionVO relatedContentVersionVO = (ContentVersionVO)relatedContentVersionsIterator.next();
-				                //if(relatedContentVersion != null && siteNode.getRepository().getId().intValue() == relatedContentVersion.getOwningContent().getRepository().getId().intValue())
-					            if(relatedContentVersionVO != null && allowedContent)
-				                {
-				                    contentVersionVOList.add(relatedContentVersionVO);
-				                    logger.info("relatedContentVersion:" + relatedContentVersionVO.getContentName());
-				                    ContentVersionController.getContentVersionController().getContentAndAffectedItemsRecursive(relatedContentVO, ContentVersionVO.WORKING_STATE, checkedSiteNodes, checkedContents, db, siteNodeVersionVOList, contentVersionVOList, true, false, 3, 0);
-				                }
-			                }
-		                }
-		                
-		    		    checkedContents.add(new Integer(registryVO.getEntityId()));
-		            }
-                }
-                catch(Exception e)
-                {
-                    logger.warn("A " + registryVO.getEntityName() + " referenced by ID:" + registryVO.getEntityId() + " was not found - must be a invalid reference from " + siteNodeVO.getName() + "[" + siteNodeVO.getId() + "].", e);
-                }
-			}
-		}
+	    siteNodeVersionVOToCheck.add(siteNodeVersionVO);
+		RequestAnalyser.getRequestAnalyser().registerComponentStatistics("getSiteNodeAndAffectedItemsRecursive.getLatestActiveSiteNodeVersionVO", t.getElapsedTime());
 		
         if(recurseSiteNodes)
         {
 			// Get the children of this siteNode and do the recursion
-        	List childSiteNodeList = SiteNodeController.getController().getSiteNodeChildrenVOList(siteNodeVO.getId(), db);
-			//Collection childSiteNodeList = siteNode.getChildSiteNodes();
-			Iterator cit = childSiteNodeList.iterator();
-			while (cit.hasNext())
-			{
-				SiteNodeVO childSiteNode = (SiteNodeVO) cit.next();
-				getSiteNodeAndAffectedItemsRecursive(childSiteNode, stateId, checkedSiteNodes, checkedContents, db, siteNodeVersionVOList, contentVersionVOList, includeMetaInfo, principal);
-			}
+        	//System.out.println("ChildPages:" + siteNodeVO.getChildCount());
+        	if(siteNodeVO.getChildCount() == null || siteNodeVO.getChildCount() > 0)
+        	{
+	        	List childSiteNodeList = SiteNodeController.getController().getSiteNodeChildrenVOList(siteNodeVO.getId(), db);
+				RequestAnalyser.getRequestAnalyser().registerComponentStatistics("getSiteNodeAndAffectedItemsRecursive.getSiteNodeChildrenVOList", t.getElapsedTime());
+				//Collection childSiteNodeList = siteNode.getChildSiteNodes();
+				Iterator cit = childSiteNodeList.iterator();
+				while (cit.hasNext())
+				{
+					SiteNodeVO childSiteNode = (SiteNodeVO) cit.next();
+					siteNodeVersionVOToCheck.addAll(getSiteNodeVersionsRecursive(childSiteNode, stateId, db, includeMetaInfo, principal));
+				}
+        	}
         }   
+        
+        return siteNodeVersionVOToCheck;
 	}
 
 	/**
