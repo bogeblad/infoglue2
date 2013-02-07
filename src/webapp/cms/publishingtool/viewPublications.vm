@@ -190,7 +190,7 @@ Filter:
 <!--   *****  EDITIONS  *******  -->
 #set( $start = $editionBrowser.startIndex + 1 )
 #set( $end = $editionBrowser.startIndex + $editionBrowser.editions.size() )
-<strong>Previous published editions ($start - $end of $editionBrowser.totalEditions)</strong><br/><br/>
+<strong>Previous published editions (limited to the last two months) ($start - $end of $editionBrowser.totalEditions)</strong><br/><br/>
 
 #set($lvConstraint = 0)
 #lvHead(["Name","Description", "Date"] "" "" "" "")
