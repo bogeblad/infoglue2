@@ -320,6 +320,29 @@ public abstract class InfoGlueAbstractAction extends WebworkAbstractAction
 		return principal;
 	}
 	
+	public Principal getInfoGluePrincipal(String userName, Database db) throws SystemException
+	{
+		Principal principal = null;
+		try
+		{
+			principal = (Principal)CacheController.getCachedObject("userCache", userName);
+			if(principal == null)
+			{
+				principal = UserControllerProxy.getController(db).getUser(userName);
+				
+				if(principal != null)
+					CacheController.cacheObject("userCache", userName, principal);
+			}			
+		}
+		catch(Exception e) 
+		{
+		    logger.warn("There was no anonymous user found in the system. There must be - add the user anonymous/anonymous and try again.", e);
+		    throw new SystemException("There was no anonymous user found in the system. There must be - add the user anonymous/anonymous and try again.", e);
+		}
+
+		return principal;
+	}
+	
 	/**
 	 * Used by the view pages to determine if the current user has sufficient access rights
 	 * to perform the action specific by the interception point name.
@@ -937,6 +960,22 @@ public abstract class InfoGlueAbstractAction extends WebworkAbstractAction
 		
 		return sb.toString();
 	}
+	
+	public String getContentPath(Integer contentId, Database db) throws Exception
+	{
+		StringBuffer sb = new StringBuffer();
+		
+		ContentVO contentVO = ContentController.getContentController().getContentVOWithId(contentId, db);
+		sb.insert(0, contentVO.getName());
+		while(contentVO.getParentContentId() != null)
+		{
+			contentVO = ContentController.getContentController().getContentVOWithId(contentVO.getParentContentId(), db);
+			sb.insert(0, contentVO.getName() + "/");
+		}
+		sb.insert(0, "/");
+		
+		return sb.toString();
+	}
 
 	public String getSiteNodePath(Integer siteNodeId) throws Exception
 	{
@@ -948,6 +987,23 @@ public abstract class InfoGlueAbstractAction extends WebworkAbstractAction
 			sb.insert(0, "/" + siteNodeVO.getName());
 			if(siteNodeVO.getParentSiteNodeId() != null)
 				siteNodeVO = SiteNodeController.getController().getSiteNodeVOWithId(siteNodeVO.getParentSiteNodeId());
+			else
+				siteNodeVO = null;
+		}
+		
+		return sb.toString();
+	}
+
+	public String getSiteNodePath(Integer siteNodeId, Database db) throws Exception
+	{
+		StringBuffer sb = new StringBuffer();
+		
+		SiteNodeVO siteNodeVO = SiteNodeController.getController().getSiteNodeVOWithId(siteNodeId, db);
+		while(siteNodeVO != null)
+		{
+			sb.insert(0, "/" + siteNodeVO.getName());
+			if(siteNodeVO.getParentSiteNodeId() != null)
+				siteNodeVO = SiteNodeController.getController().getSiteNodeVOWithId(siteNodeVO.getParentSiteNodeId(), db);
 			else
 				siteNodeVO = null;
 		}
