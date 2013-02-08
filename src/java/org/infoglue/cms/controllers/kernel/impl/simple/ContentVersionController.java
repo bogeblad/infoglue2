@@ -171,6 +171,11 @@ public class ContentVersionController extends BaseController
 		return (ContentVersion) getObjectWithId(ContentVersionImpl.class, contentVersionId, db);
     }
 
+    public ContentVersion getSmallContentVersionWithId(Integer contentVersionId, Database db) throws SystemException, Bug
+    {
+    	return (ContentVersion) getObjectWithId(SmallContentVersionImpl.class, contentVersionId, db);
+    }
+
     public ContentVersion getReadOnlyContentVersionWithId(Integer contentVersionId, Database db) throws SystemException, Bug
     {
 		return (ContentVersion) getObjectWithIdAsReadOnly(ContentVersionImpl.class, contentVersionId, db);
@@ -1488,7 +1493,9 @@ public class ContentVersionController extends BaseController
 		    	    //logger.info("csList:" + csList);
 		    	    extraInfoMap.put("changedAttributeNames", csList);
 		    		CacheController.setExtraInfo(ContentVersionImpl.class.getName(), contentVersionVO.getId().toString(), extraInfoMap);
-					contentVersion = ContentVersionController.getContentVersionController().getContentVersionWithId(contentVersionIdToUpdate, db);
+		    		// TODO REMOVE OPTMIZ!
+//					contentVersion = ContentVersionController.getContentVersionController().getContentVersionWithId(contentVersionIdToUpdate, db);
+					contentVersion = ContentVersionController.getContentVersionController().getSmallContentVersionWithId(contentVersionIdToUpdate, db);
 					//contentVersionVO.setModifiedDateTime(DateHelper.getSecondPreciseDate());
 					contentVersion.setValueObject(contentVersionVO);
 					contentVersion.setContentVersionId(contentVersionIdToUpdate);
@@ -1513,7 +1520,7 @@ public class ContentVersionController extends BaseController
 				}
 			}
 
-	    	registryController.updateContentVersion(contentVersion, db);
+	    	registryController.updateContentVersion(contentVersion.getValueObject(), db);
 
 	    	updatedContentVersionVO = contentVersion.getValueObject();
 	    	
@@ -1572,7 +1579,7 @@ public class ContentVersionController extends BaseController
 				}
 			}
 
-	    	registryController.updateContentVersion(contentVersion, db);
+	    	registryController.updateContentVersion(contentVersion.getValueObject(), db);
 
 	    	updatedContentVersionVO = contentVersion.getValueObject();
 	    	

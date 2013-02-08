@@ -699,6 +699,37 @@
       <sql name="ServDefId"/>
     </field>
   </class>
+ 
+  <!--  Mapping for SmallServiceBinding  -->
+  <class name="org.infoglue.cms.entities.structure.impl.simple.SmallServiceBindingImpl" identity="serviceBindingId" key-generator="SEQUENCE">
+    <description>ServiceBinding</description>
+    <cache-type type="unlimited" capacity="10000"/>
+    <map-to table="cmServBind"/>
+    <field name="serviceBindingId" type="java.lang.Integer">
+      <sql name="ServBindId" type="integer" dirty="check" />
+    </field>
+    <field name="name" type="java.lang.String">
+      <sql name="name" type="varchar" dirty="check" />
+    </field>
+    <field name="path" type="java.lang.String">
+      <sql name="path" type="varchar" dirty="check" />
+    </field>
+    <field name="bindingTypeId" type="java.lang.Integer">
+      <sql name="BindTypeId" type="integer" dirty="check" />
+    </field>
+    <field name="bindingQualifyers" type="org.infoglue.cms.entities.structure.impl.simple.QualifyerImpl" lazy="false" collection="collection">
+      <sql many-key="ServBindId"/>
+    </field>
+    <field name="siteNodeVersionId" type="java.lang.Integer">
+      <sql name="SiNoVerId" type="integer" dirty="check" />
+    </field>
+    <field name="availableServiceBinding" type="org.infoglue.cms.entities.management.impl.simple.AvailableServiceBindingImpl">
+      <sql name="AvailServBindId"/>
+    </field>
+    <field name="serviceDefinition" type="org.infoglue.cms.entities.management.impl.simple.ServiceDefinitionImpl">
+      <sql name="ServDefId"/>
+    </field>
+  </class>
 
 
 <!--  Mapping for Qualifyer  -->

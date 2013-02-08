@@ -415,7 +415,7 @@ public class PublicationController extends BaseController
 							if(previousSiteNodeVersion != null && event != null)
 								event.setEntityId(previousSiteNodeVersion.getId());
 							SiteNodeVersionController.getController().delete(siteNodeVersion, db);
-							SiteNodeStateController.getController().changeStateOnMetaInfo(db, previousSiteNodeVersion, previousSiteNodeVersion.getStateId(), "Denied publication", true, infoGluePrincipal, new ArrayList());
+							SiteNodeStateController.getController().changeStateOnMetaInfo(db, previousSiteNodeVersion.getValueObject(), previousSiteNodeVersion.getStateId(), "Denied publication", true, infoGluePrincipal, new ArrayList());
 							//db.remove(siteNodeVersion);
 						}
 					}

@@ -31,8 +31,10 @@ import java.util.List;
 import org.apache.log4j.Logger;
 import org.exolab.castor.jdo.Database;
 import org.exolab.castor.jdo.OQLQuery;
+import org.exolab.castor.jdo.PersistenceException;
 import org.exolab.castor.jdo.QueryResults;
 import org.infoglue.cms.entities.content.Content;
+import org.infoglue.cms.entities.content.ContentVersionVO;
 import org.infoglue.cms.entities.kernel.BaseEntityVO;
 import org.infoglue.cms.entities.management.impl.simple.AvailableServiceBindingImpl;
 import org.infoglue.cms.entities.management.impl.simple.ServiceDefinitionImpl;
@@ -118,9 +120,68 @@ public class ServiceBindingController extends BaseController
 		oql.close();
 		
 		return serviceBindings;
-	}       
+	}
 
-    
+	/**
+	 * Returns a list of ServiceBindings that are bound to the given SiteNodeVersion.
+	 * 
+	 * @param siteNodeVersionId
+	 * @return
+	 * @throws SystemException If something goes wrong in the operation (most likely a database related error).
+	 */
+	public List<ServiceBinding> getSmallServiceBindingsListForSiteNodeVersion(Integer siteNodeVersionId) throws SystemException
+	{
+		Database db = null;
+		List<ServiceBinding> serviceBindings = new ArrayList<ServiceBinding>();
+		try
+		{
+			db = CastorDatabaseService.getDatabase();
+			beginTransaction(db);
+
+			serviceBindings = getSmallServiceBindingsListForSiteNodeVersion(siteNodeVersionId, db);
+
+            rollbackTransaction(db);
+        }
+        catch(Exception ex)
+        {
+            logger.error("An error occurred so we should not complete the transaction when getting service bindings for SiteNodeVersion. Message: " + ex.getMessage() + ". Type: " + ex.getClass());
+            logger.warn("An error occurred so we should not complete the transaction when getting service bindings for SiteNodeVersion", ex);
+            rollbackTransaction(db);
+            throw new SystemException(ex.getMessage());
+        }
+
+		return serviceBindings;
+	}
+
+	public List<ServiceBinding> getSmallServiceBindingsListForSiteNodeVersion(Integer siteNodeVersionId, Database db) throws PersistenceException
+	{
+		List<ServiceBinding> serviceBindings = new ArrayList<ServiceBinding>();
+
+		// MATTIAS: Varför sortera
+		OQLQuery oql = db.getOQLQuery( "SELECT sb FROM org.infoglue.cms.entities.structure.impl.simple.SmallServiceBindingImpl sb WHERE sb.siteNodeVersionId = $1 ORDER BY sb.serviceBindingId");
+		oql.bind(siteNodeVersionId);
+
+		QueryResults results = oql.execute();
+		//logger.info("Fetching entity in read/write mode");
+
+		while(results.hasMore())
+		{
+			ServiceBinding serviceBinding = (ServiceBindingImpl)results.next();
+
+			serviceBindings.add(serviceBinding);
+		}
+
+		if (logger.isDebugEnabled())
+		{
+			logger.debug("Lookup of Service bindings for SiteNodeVersion: " + siteNodeVersionId + " got results: " + results.size());
+		}
+
+		results.close();
+		oql.close();
+
+		return serviceBindings;
+	}
+
     public static ServiceBindingVO create(ServiceBindingVO serviceBindingVO, String qualifyerXML, Integer availableServiceBindingId, Integer siteNodeVersionId, Integer serviceDefinitionId) throws ConstraintException, SystemException
     {
     	logger.info("Creating a serviceBinding with the following...");
@@ -156,7 +217,7 @@ public class ServiceBindingController extends BaseController
             
 			siteNodeVersion.getServiceBindings().add(serviceBinding);
 
-            RegistryController.getController().updateSiteNodeVersion(siteNodeVersion, db);
+            RegistryController.getController().updateSiteNodeVersion(siteNodeVersion.getValueObject(), db);
 
             commitTransaction(db);
         }
@@ -207,7 +268,7 @@ public class ServiceBindingController extends BaseController
 			
 			siteNodeVersion.getServiceBindings().add(serviceBinding);
 			
-            RegistryController.getController().updateSiteNodeVersion(siteNodeVersion, db);
+            RegistryController.getController().updateSiteNodeVersion(siteNodeVersion.getValueObject(), db);
 		}
 		catch(Exception e)
 		{
@@ -244,7 +305,7 @@ public class ServiceBindingController extends BaseController
         
         db.create(serviceBinding);
             
-        RegistryController.getController().updateSiteNodeVersion(siteNodeVersion, db);
+        RegistryController.getController().updateSiteNodeVersion(siteNodeVersion.getValueObject(), db);
 
         return serviceBinding;
     }      
@@ -273,7 +334,7 @@ public class ServiceBindingController extends BaseController
 	        Collection newQualifyers = QualifyerController.createQualifyers(qualifyerXML, serviceBinding);
             serviceBinding.setBindingQualifyers(newQualifyers);
             
-            RegistryController.getController().updateSiteNodeVersion(serviceBinding.getSiteNodeVersion(), db);
+            RegistryController.getController().updateSiteNodeVersion(serviceBinding.getSiteNodeVersion().getValueObject(), db);
 
             commitTransaction(db);
         }
@@ -432,7 +493,7 @@ public class ServiceBindingController extends BaseController
         	
         	siteNodeVersion.getServiceBindings().remove(serviceBinding);
         	
-            RegistryController.getController().updateSiteNodeVersion(siteNodeVersion, db);
+            RegistryController.getController().updateSiteNodeVersion(siteNodeVersion.getValueObject(), db);
 
         	commitTransaction(db);
         }
@@ -454,7 +515,7 @@ public class ServiceBindingController extends BaseController
 		
 		db.remove(serviceBinding);
 	
-        RegistryController.getController().updateSiteNodeVersion(serviceBinding.getSiteNodeVersion(), db);
+        RegistryController.getController().updateSiteNodeVersion(serviceBinding.getSiteNodeVersion().getValueObject(), db);
 	}        
 
 	

@@ -94,7 +94,7 @@ public class RebuildRegistryAction extends InfoGlueAbstractAction
 				while(siteNodeVersionsIterator.hasNext())
 				{
 				    SiteNodeVersion siteNodeVersion = (SiteNodeVersion)siteNodeVersionsIterator.next();
-				    registryController.updateSiteNodeVersion(siteNodeVersion, db);
+				    registryController.updateSiteNodeVersion(siteNodeVersion.getValueObject(), db);
 				}
 			}
 
@@ -112,7 +112,7 @@ public class RebuildRegistryAction extends InfoGlueAbstractAction
 				while(versionsIterator.hasNext())
 				{
 				    ContentVersion contentVersion = (ContentVersion)versionsIterator.next();
-				    registryController.updateContentVersion(contentVersion, db);
+				    registryController.updateContentVersion(contentVersion.getValueObject(), db);
 				}
 			}
 						

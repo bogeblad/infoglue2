@@ -86,10 +86,10 @@ public class SiteNodeVersionController extends BaseController
 	{
 		return new SiteNodeVersionController();
 	}
-	
+
 	/**
-	 * Gets the Id of the SiteNode the given <em>siteNodeVersionId</em> belongs to. The method utilizes a
-	 * local cache. This means that on subsequent for the same input no look-up of SiteNodeVersionVo will be done.
+	 * This method calls {@link #getSiteNodeIdForSiteNodeVersion(Integer, Database)} with db set to null.
+	 * 
 	 * @param siteNodeVersionId
 	 * @return The Id of the SiteNode owning the given SiteNodeVersion.
 	 * @throws SystemException
@@ -97,21 +97,55 @@ public class SiteNodeVersionController extends BaseController
 	 */
 	public Integer getSiteNodeIdForSiteNodeVersion(Integer siteNodeVersionId) throws SystemException, Bug
     {
-    	Integer siteNodeId = null;
-    	if (siteNodeIdMap != null)
-    	{
-    		siteNodeId = (Integer)siteNodeIdMap.get(siteNodeVersionId);
-    	}
-    	if(siteNodeId == null)
-    	{
-    		SiteNodeVersionVO siteNodeVersionVO = getSiteNodeVersionVOWithId(siteNodeVersionId);
-    		siteNodeId = siteNodeVersionVO.getSiteNodeId();
-    		siteNodeIdMap.put(siteNodeVersionId, siteNodeId);
-    	}
-
-    	return siteNodeId;
+    	return getSiteNodeIdForSiteNodeVersion(siteNodeVersionId, null);
     }
 
+	/**
+	 * Gets the Id of the SiteNode the given <em>siteNodeVersionId</em> belongs to. The method utilizes a
+	 * local cache. This means that on subsequent for the same input no look-up of SiteNodeVersionVo will be done.
+	 * 
+	 * If null is provided as the <em>db</em>-parameter the request for the <em>SiteNodeVersionVO</em> is done using a database-instance
+	 * created by the {@link #getSiteNodeVersionVOWithId} method.
+	 * 
+	 * @param siteNodeVersionId
+	 * @param db the database to use for the SiteNodeVersionVO lookup. Can be null (see method description above).
+	 * @return The Id of the SiteNode owning the given SiteNodeVersion.
+	 * @throws SystemException
+	 * @throws Bug
+	 */
+	public Integer getSiteNodeIdForSiteNodeVersion(Integer siteNodeVersionId, Database db) throws SystemException, Bug
+	{
+		Integer siteNodeId = null;
+		if (siteNodeIdMap != null)
+		{
+			siteNodeId = (Integer)siteNodeIdMap.get(siteNodeVersionId);
+		}
+		if(siteNodeId == null)
+		{
+			SiteNodeVersionVO siteNodeVersionVO = null;
+			if (db != null)
+			{
+				siteNodeVersionVO = getSiteNodeVersionVOWithId(siteNodeVersionId, db);
+			}
+			else
+			{
+				siteNodeVersionVO = getSiteNodeVersionVOWithId(siteNodeVersionId);
+			}
+			siteNodeId = siteNodeVersionVO.getSiteNodeId();
+
+			if (siteNodeId == null)
+			{
+				logger.warn("SiteNodeId was null for SiteNodeVersionVO. How can this happen? SiteNodeVersion: " + siteNodeVersionVO);
+			}
+			else
+			{
+				siteNodeIdMap.put(siteNodeVersionId, siteNodeId);
+			}
+		}
+
+		return siteNodeId;
+	}
+	
    	/**
 	 * This method returns selected active content versions.
 	 */
@@ -223,6 +257,11 @@ public class SiteNodeVersionController extends BaseController
     {
 		return (SiteNodeVersion) getObjectWithId(SiteNodeVersionImpl.class, siteNodeVersionId, db);
     }
+
+	public SiteNodeVersion getSmallSiteNodeVersionWithId(Integer siteNodeVersionId, Database db) throws SystemException, Bug
+	{
+		return (SiteNodeVersion) getObjectWithId(SmallSiteNodeVersionImpl.class, siteNodeVersionId, db);
+	}
 
     public static SiteNodeVersion getSiteNodeVersionWithIdAsReadOnly(Integer siteNodeVersionId, Database db) throws SystemException, Bug
     {
@@ -1692,9 +1731,9 @@ public class SiteNodeVersionController extends BaseController
 	    siteNodeVersionVO.setVersionModifierDisplayName(siteNodeVO.getVersionModifier());
 	    siteNodeVersionVO.setVersionModifier(siteNodeVO.getVersionModifier());
 		
-	    siteNodeVersionVOToCheck.add(siteNodeVersionVO);
+		siteNodeVersionVOToCheck.add(siteNodeVersionVO);
 		RequestAnalyser.getRequestAnalyser().registerComponentStatistics("getSiteNodeAndAffectedItemsRecursive.getLatestActiveSiteNodeVersionVO", t.getElapsedTime());
-		
+	    
         if(recurseSiteNodes)
         {
 			// Get the children of this siteNode and do the recursion
@@ -1876,7 +1915,8 @@ public class SiteNodeVersionController extends BaseController
 	public SiteNodeVersionVO update(SiteNodeVersionVO siteNodeVersionVO, Database db) throws ConstraintException, SystemException, Exception
 	{
 		SiteNodeVersion siteNodeVersion = getSiteNodeVersionWithId(siteNodeVersionVO.getId(), db);
-    	registryController.updateSiteNodeVersion(siteNodeVersion, db);
+//		SiteNodeVersion siteNodeVersion = getSmallSiteNodeVersionWithId(siteNodeVersionVO.getId(), db);
+    	registryController.updateSiteNodeVersion(siteNodeVersionVO, db);
 
     	siteNodeVersion.setValueObject(siteNodeVersionVO);
     	return siteNodeVersionVO;
