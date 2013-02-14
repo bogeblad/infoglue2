@@ -46,9 +46,11 @@ import org.infoglue.cms.entities.content.ContentVersionVO;
 import org.infoglue.cms.entities.content.impl.simple.ContentImpl;
 import org.infoglue.cms.entities.content.impl.simple.MediumContentImpl;
 import org.infoglue.cms.entities.content.impl.simple.SmallContentImpl;
+import org.infoglue.cms.entities.content.impl.simple.SmallStateContentImpl;
 import org.infoglue.cms.entities.kernel.BaseEntityVO;
 import org.infoglue.cms.entities.management.ContentTypeDefinition;
 import org.infoglue.cms.entities.management.ContentTypeDefinitionVO;
+import org.infoglue.cms.entities.management.GeneralOQLResult;
 import org.infoglue.cms.entities.management.LanguageVO;
 import org.infoglue.cms.entities.management.Repository;
 import org.infoglue.cms.entities.management.RepositoryLanguage;
@@ -59,6 +61,7 @@ import org.infoglue.cms.entities.management.impl.simple.RepositoryImpl;
 import org.infoglue.cms.entities.structure.Qualifyer;
 import org.infoglue.cms.entities.structure.ServiceBinding;
 import org.infoglue.cms.entities.structure.SiteNodeVO;
+import org.infoglue.cms.entities.structure.impl.simple.SmallestSiteNodeImpl;
 import org.infoglue.cms.exception.Bug;
 import org.infoglue.cms.exception.ConstraintException;
 import org.infoglue.cms.exception.SystemException;
@@ -126,6 +129,83 @@ public class ContentController extends BaseController
 	}
 
 	/**
+	 * This method gets the siteNodeVO with the given id
+	 */
+	 
+	public Map<Integer,ContentVO> getContentVOMapWithNoStateCheck(List<Integer> contentVersionIds) throws SystemException, Bug, Exception
+    {
+		Map<Integer,ContentVO> contentVOMap = null;
+    	
+		Database db = CastorDatabaseService.getDatabase();
+        beginTransaction(db);
+		try
+        {	
+			contentVOMap = getContentVOMapWithNoStateCheck(contentVersionIds, db);
+			
+	    	commitTransaction(db);
+        }
+        catch(Exception e)
+        {
+            logger.error("An error occurred so we should not complete the transaction:" + e, e);
+            rollbackTransaction(db);
+            throw new SystemException(e.getMessage());
+        }      
+        
+        return contentVOMap;
+    }        
+	
+	public Map<Integer,ContentVO> getContentVOMapWithNoStateCheck(List<Integer> contentVersionIds, Database db) throws SystemException, Bug, Exception
+	{
+	    Timer t = new Timer();
+	    Map<Integer,ContentVO> siteNodeVOMap = new HashMap<Integer,ContentVO>();
+	    
+	    if(contentVersionIds == null || contentVersionIds.size() == 0)
+	    	return siteNodeVOMap;
+	    
+	    StringBuilder variables = new StringBuilder();
+	    for(int i=0; i<contentVersionIds.size(); i++)
+	    	variables.append("$" + (i+1) + (i+1!=contentVersionIds.size() ? "," : ""));
+	    
+		StringBuilder sql = new StringBuilder();
+		if(CmsPropertyHandler.getUseShortTableNames().equals("true"))
+		{
+			sql.append("select cv.contVerId AS id, c.name as column1Value, c.isProtected as column2Value, c.contentTypeDefId as column3Value, c.repositoryId as column4Value, c.parentContId as column5Value, cv.stateId as column6Value, c.contId as column7Value FROM cmCont c, cmContVer cv where c.contId = cv.contId AND cv.contVerId IN (" + variables + ") ");
+		}
+		else
+		{
+			sql.append("select cv.contentVersionId AS id, c.name as column1Value, c.isProtected as column2Value, c.contentTypeDefinitionId as column3Value, c.repositoryId as column4Value, c.parentContentId as column5Value, cv.stateId as column6Value, c.contentId as column7Value FROM cmContent c, cmContentVersion cv WHERE c.contentId = cv.contentId AND cv.contentVersionId IN (" + variables + ") ");
+		}
+		String SQL = "CALL SQL " + sql.toString() + "AS org.infoglue.cms.entities.management.GeneralOQLResult";
+		
+	    //System.out.println("SQL:" + SQL);
+		OQLQuery oql = db.getOQLQuery(SQL);
+		for(Integer entityId : contentVersionIds)
+			oql.bind(entityId);
+
+		QueryResults results = oql.execute(Database.ReadOnly);
+		while (results.hasMore()) 
+        {
+			GeneralOQLResult resultBean = (GeneralOQLResult)results.next();
+			SmallStateContentImpl content = new SmallStateContentImpl();
+			content.setContentVersionId(resultBean.getId());
+			content.setContentId(new Integer(resultBean.getValue7()));
+			content.setName(resultBean.getValue1());
+			content.setIsProtected(new Integer(resultBean.getValue2()));
+			if(resultBean.getValue3() != null && !resultBean.getValue3().equals(""))
+				content.setContentTypeDefinitionId(new Integer(resultBean.getValue3()));
+			content.setRepositoryId(new Integer(resultBean.getValue4()));
+			content.setParentContentId(new Integer(resultBean.getValue5()));
+			content.setStateId(new Integer(resultBean.getValue6()));
+            siteNodeVOMap.put(content.getValueObject().getContentVersionId(), content.getValueObject());
+        }       
+		results.close();
+		oql.close();
+				
+		return siteNodeVOMap;		
+	}
+	
+	
+	/**
 	 * Gets matching references
 	 */
 	public List<ContentVO> getContentVOList(Set<Integer> contentIds, Database db) throws SystemException, Exception
@@ -159,15 +239,66 @@ public class ContentController extends BaseController
 		return contentVOList;		
 	}
 	
+	public ContentVO getContentVOWithId(Integer contentId, boolean skipCaching) throws SystemException, Bug
+    {
+		String key = "" + contentId;
+		ContentVO contentVO = (ContentVO)CacheController.getCachedObjectFromAdvancedCache("contentCache", key);
+		if(contentVO != null)
+		{
+			//logger.info("There was an cached contentVO:" + contentVO);
+		}
+		else
+		{
+			contentVO = (ContentVO) getVOWithId(SmallContentImpl.class, contentId);
+
+			if(contentVO != null && !skipCaching)
+			{
+				CacheController.cacheObjectInAdvancedCache("contentCache", key, contentVO, new String[]{CacheController.getPooledString(1, contentId)}, true);
+			}
+		}
+		
+		return contentVO;
+    } 
+
 	public ContentVO getContentVOWithId(Integer contentId) throws SystemException, Bug
     {
-    	return (ContentVO) getVOWithId(SmallContentImpl.class, contentId);
+		String key = "" + contentId;
+		ContentVO contentVO = (ContentVO)CacheController.getCachedObjectFromAdvancedCache("contentCache", key);
+		if(contentVO != null)
+		{
+			//logger.info("There was an cached contentVO:" + contentVO);
+		}
+		else
+		{
+			contentVO = (ContentVO) getVOWithId(SmallContentImpl.class, contentId);
+
+			if(contentVO != null)
+			{
+				CacheController.cacheObjectInAdvancedCache("contentCache", key, contentVO, new String[]{CacheController.getPooledString(1, contentId)}, true);
+			}
+		}
+		
+		return contentVO;
     } 
 
 	public ContentVO getContentVOWithId(Integer contentId, Database db) throws SystemException, Bug
     {
-    	return (ContentVO) getVOWithId(SmallContentImpl.class, contentId, db);
-    } 
+		String key = "" + contentId;
+		ContentVO contentVO = (ContentVO)CacheController.getCachedObjectFromAdvancedCache("contentCache", key);
+		if(contentVO != null)
+		{
+			//logger.info("There was an cached contentVO:" + contentVO);
+		}
+		else
+		{
+			contentVO = (ContentVO) getVOWithId(SmallContentImpl.class, contentId, db);
+			if(contentVO != null)
+			{
+				CacheController.cacheObjectInAdvancedCache("contentCache", key, contentVO, new String[]{CacheController.getPooledString(1, contentId)}, true);
+			}
+		}
+		
+		return contentVO;    } 
 
 	public ContentVO getSmallContentVOWithIdDirectly(Integer contentId, Database db) throws SystemException, Bug
     {
@@ -196,7 +327,9 @@ public class ContentController extends BaseController
 		{
 			contentVO = getSmallContentVOWithIdDirectly(contentId, db);
 			if(contentVO != null)
+			{
 				CacheController.cacheObjectInAdvancedCache("contentCache", key, contentVO, new String[]{CacheController.getPooledString(1, contentId)}, true);
+			}
 		}
 		
 		return contentVO;
@@ -590,23 +723,26 @@ public class ContentController extends BaseController
         return content.getValueObject();
     }        
 
-	public List getAvailableLanguagesForContentWithId(Integer contentId, Database db) throws ConstraintException, SystemException, Exception
+	public List<LanguageVO> getAvailableLanguagesForContentWithId(Integer contentId, Database db) throws ConstraintException, SystemException, Exception
 	{
-		List availableLanguageVOList = new ArrayList();
+		List<LanguageVO> availableLanguageVOList = new ArrayList<LanguageVO>();
 		
-		Content content = getContentWithId(contentId, db);
+		ContentVO content = getContentVOWithId(contentId, db);
 		if(content != null)
 		{
-			Repository repository = content.getRepository();
-			if(repository != null)
+			//Repository repository = content.getRepository();
+			if(content.getRepositoryId() != null)
 			{
-			    List availableRepositoryLanguageList = RepositoryLanguageController.getController().getRepositoryLanguageListWithRepositoryId(repository.getId(), db);
+				availableLanguageVOList = LanguageController.getController().getAvailableLanguageVOListForRepository(content.getRepositoryId(), db);
+			    /*
+				List availableRepositoryLanguageList = RepositoryLanguageController.getController().getRepositoryLanguageListWithRepositoryId(content.getRepositoryId(), db);
 				Iterator i = availableRepositoryLanguageList.iterator();
 				while(i.hasNext())
 				{
 					RepositoryLanguage repositoryLanguage = (RepositoryLanguage)i.next();
 					availableLanguageVOList.add(repositoryLanguage.getLanguage().getValueObject());
 				}
+				*/
 			}
 		}
 		
@@ -716,17 +852,20 @@ public class ContentController extends BaseController
 	 * This method returns the value-object of the parent of a specific content. 
 	 */
 	
-    public static ContentVO getParentContent(Integer contentId, Database db) throws SystemException, Bug
+    public ContentVO getSmallParentContent(ContentVO contentVO, Database db) throws SystemException, Bug, Exception
     {
-		ContentVO parentContentVO = null;
+    	if(contentVO.getParentContentId() != null && contentVO.getParentContentId() > -1)
+    		return getSmallContentVOWithId(contentVO.getParentContentId(), db, null);
+    	else 
+    		return null;
 		
-		Content content = (Content) getObjectWithId(ContentImpl.class, contentId, db);
-		logger.info("CONTENT:" + content.getName());
-		Content parent = content.getParentContent();
-		if(parent != null)
-			parentContentVO = parent.getValueObject();
+		//Content content = (Content) getObjectWithId(ContentImpl.class, contentId, db);
+		//logger.info("CONTENT:" + content.getName());
+		//Content parent = content.getParentContent();
+		//if(parent != null)
+		//	parentContentVO = parent.getValueObject();
 
-		return parentContentVO;    	
+		//return parentContentVO;    	
     }
 
     
@@ -1634,9 +1773,9 @@ public class ContentController extends BaseController
 			
 			sb.append(") ");
 			sb.append("AS stateId, ");
-	    	sb.append("(select count(contId) from cmCont where parentContId = c.contId) AS childCount ");
+	    	sb.append("(select count(contId) from cmCont where parentContId = c.contId) AS childCount, cv.contVerId ");
 	    	sb.append("from ");
-	    	sb.append("cmCont c ");
+	    	sb.append("cmCont c LEFT OUTER JOIN cmContVer cv ON c.contId = cv.contId ");
 	    	sb.append("WHERE parentContId = $1 " + contentTypeINClause + " ORDER BY c.contId asc AS org.infoglue.cms.entities.content.impl.simple.SmallStateContentImpl ");
     	}
     	else
@@ -1667,14 +1806,13 @@ public class ContentController extends BaseController
 			sb.append("  group by cv2.contentId order by cv2.contentVersionId desc");
 			sb.append(") ");
 			sb.append("AS stateId, ");
-	    	sb.append("(select count(*) from cmContent where parentContentId = c.contentId) AS childCount ");
+	    	sb.append("(select count(*) from cmContent where parentContentId = c.contentId) AS childCount, cv.contentVersionId ");
 	    	sb.append("from ");
-	    	sb.append("cmContent c ");
+	    	sb.append("cmContent c LEFT OUTER JOIN cmContentVersion cv ON c.contentId = cv.contentId ");
 	    	sb.append("WHERE parentContentId = $1 " + contentTypeINClause + " group by c.contentId ORDER BY c.contentId asc AS org.infoglue.cms.entities.content.impl.simple.SmallStateContentImpl ");
     	}
     	
     	String SQL = sb.toString();
-    	//System.out.println(SQL);
     	//System.out.println(parentContentId);
     	
     	//String SQL = "SELECT content FROM org.infoglue.cms.entities.content.impl.simple.SmallishContentImpl content WHERE content.parentContentId = $1 " + showDeletedItemsClause + contentTypeINClause + " ORDER BY content.contentId";

@@ -221,6 +221,10 @@
 
 <div id="searchLayer" class="fullymarginalized">
 
+#if($wasQuickSearch)
+<p style="color: red">$ui.getString("entity.ServerNode.property.fastSearchWarning.value", $fastSearchIncludedContentTypes)</p>
+#end
+
 <form method="POST" name="editForm" action="SearchContent.action">
 <input type="hidden" id="advancedEnabled" name="advancedEnabled" value="$advancedEnabled">
 <table border="0" cellpadding="0" cellspacing="0">

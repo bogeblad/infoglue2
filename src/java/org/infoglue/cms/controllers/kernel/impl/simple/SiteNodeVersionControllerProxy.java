@@ -38,6 +38,7 @@ import org.infoglue.cms.exception.Bug;
 import org.infoglue.cms.exception.ConstraintException;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.security.InfoGluePrincipal;
+import org.infoglue.deliver.util.Timer;
 
 
 /**
@@ -197,7 +198,7 @@ public class SiteNodeVersionControllerProxy extends SiteNodeVersionController
 		hashMap.put("siteNodeVersionId", siteNodeVersionVO.getId());
     	
 		intercept(hashMap, "SiteNodeVersion.Write", infogluePrincipal, db);
-
+		
 		return update(siteNodeVersionVO, db);
 	}   
 	

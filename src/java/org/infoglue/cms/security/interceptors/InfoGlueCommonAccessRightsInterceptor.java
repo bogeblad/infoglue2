@@ -47,6 +47,7 @@ import org.infoglue.cms.exception.ConstraintException;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.security.InfoGluePrincipal;
 import org.infoglue.cms.util.AccessConstraintExceptionBuffer;
+import org.infoglue.deliver.util.Timer;
 
 
 /**
@@ -76,6 +77,8 @@ public class InfoGlueCommonAccessRightsInterceptor implements InfoGlueIntercepto
 
 	public void intercept(InfoGluePrincipal infoGluePrincipal, InterceptionPointVO interceptionPointVO, Map extradata, boolean allowCreatorAccess) throws ConstraintException, SystemException, Exception
 	{
+		Timer t = new Timer();
+		
 		Database db = CastorDatabaseService.getDatabase();
 		
         try
@@ -89,11 +92,11 @@ public class InfoGlueCommonAccessRightsInterceptor implements InfoGlueIntercepto
 			if(interceptionPointVO.getName().equalsIgnoreCase("Content.Read"))
 			{
 				Integer contentId = (Integer)extradata.get("contentId");
-				ContentVO contentVO = ContentControllerProxy.getController().getContentVOWithId(contentId);
-				if(!allowCreatorAccess || !contentVO.getCreatorName().equalsIgnoreCase(infoGluePrincipal.getName()))
+				ContentVO contentVO = ContentControllerProxy.getController().getSmallContentVOWithId(contentId, db, null);
+	        	if(!allowCreatorAccess || !contentVO.getCreatorName().equalsIgnoreCase(infoGluePrincipal.getName()))
 				{
-					Integer protectedContentId = ContentControllerProxy.getController().getProtectedContentId(contentId);
-					if(protectedContentId != null && !AccessRightController.getController().getIsPrincipalAuthorized(db, infoGluePrincipal, "Content.Read", protectedContentId.toString()))
+					Integer protectedContentId = ContentControllerProxy.getController().getProtectedContentId(contentId, db);
+		        	if(protectedContentId != null && !AccessRightController.getController().getIsPrincipalAuthorized(db, infoGluePrincipal, "Content.Read", protectedContentId.toString()))
 						ceb.add(new AccessConstraintException("Content.contentId", "1000"));
 				}
 			}
@@ -310,7 +313,7 @@ public class InfoGlueCommonAccessRightsInterceptor implements InfoGlueIntercepto
 			}
 
 			ceb.throwIfNotEmpty();
-
+        	
 			db.commit();
 	    }
 	    catch(Exception e)

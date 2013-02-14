@@ -30,9 +30,9 @@ import org.infoglue.cms.entities.structure.ServiceBindingVO;
 public class SmallServiceBindingImpl extends ServiceBindingImpl implements ServiceBinding
 {
     private ServiceBindingVO valueObject = new ServiceBindingVO();
-    private java.util.Collection bindingQualifyers;
+    private java.util.Collection<SmallQualifyerImpl> bindingQualifyers;
     private org.infoglue.cms.entities.management.impl.simple.ServiceDefinitionImpl serviceDefinition;
-    private org.infoglue.cms.entities.structure.impl.simple.SiteNodeVersionImpl siteNodeVersion;
+    //private org.infoglue.cms.entities.structure.impl.simple.SiteNodeVersionImpl siteNodeVersion;
 	private org.infoglue.cms.entities.management.impl.simple.AvailableServiceBindingImpl availableServiceBinding;
 
 	/**

@@ -121,7 +121,7 @@
 	##if(!$isBranch)
 	#if(!$contentVO.contentTypeDefinitionId)
 	<tr>
-		<td colspan="3">
+		<td colspan="7">
 			$ui.getString("tool.contenttool.newContent.contentType")<br/>
 			<select class="contenttypes" name="contentTypeDefinitionId">
 			##if($isBranch)<option value="">Not defined yet</option>#end
@@ -232,26 +232,30 @@
 	##end		
 
 	<tr>
-		<td colspan="7"><img src="images/trans.gif" height="30" width="1"></td>
+		<td colspan="7"><img src="images/trans.gif" height="10" width="1"></td>
 	</tr>
-	</table>
+
+	#if($showReferences == "false")
+	<tr>
+		<td colspan="7"><a href="ViewContent.action?contentId=$contentId&stay=true&showReferences=true&title=tool.contenttool.contentDetailsHeader">Show relations/references</a></td>
+	</tr>
+	#else
 				
-	<table border="0" cellpadding="0" cellspacing="0" width="100%">
 	<tr class="darkgreen">
-		<td class="smalllabel" colspan="3">$ui.getString("tool.contenttool.contentVersionReferences.header")</td>
+		<td class="smalllabel" colspan="7">$ui.getString("tool.contenttool.contentVersionReferences.header")</td>
 	</tr>
 	<tr>
-		<td bgcolor="#EEF7DC" colspan="3" height="1"><img src="images/trans.gif" width="1" height="1"></td>
+		<td bgcolor="#EEF7DC" colspan="7" height="1"><img src="images/trans.gif" width="1" height="1"></td>
 	</tr>
 	<tr>
-		<td bgcolor="#C7D1B3" colspan="3" height="1"><img src="images/trans.gif" width="1" height="1"></td>
+		<td bgcolor="#C7D1B3" colspan="7" height="1"><img src="images/trans.gif" width="1" height="1"></td>
 	</tr>
 	#set($hasContentReferences = false)
 	#set($isOdd = true)
 	#set($count = 0)
 	#foreach ($referenceBean in $referenceBeanList)
 		#if($referenceBean.referencingCompletingObject.class.name.indexOf("Content") > -1)
-			#if($count < 200)
+			#if($count < 100)
 				#set($hasContentReferences = true)
 				#set($lastIndex = $referenceBean.versions.size() - 1)
 				#if($isOdd)
@@ -263,7 +267,7 @@
 				#end
 				<tr $class>
 					<td width="16"><img src="images/tree/contentRoot.gif" width="16" height="16"></td>
-					<td width="100%">
+					<td width="100%" colspan="5">
 						<a href="ViewContentVersion!standalone.action?contentId=$referenceBean.referencingCompletingObject.contentId&languageId=$referenceBean.versions.get($lastIndex).referencingObject.languageId" target="_blank">$referenceBean.name</a>
 	 					- #if($referenceBean.versions.get($lastIndex).registryVOList.size() > 1) $referenceBean.versions.get($lastIndex).registryVOList.size() $ui.getString("tool.contenttool.referencesFound") #end ($referenceBean.versions.size() $ui.getString("tool.contenttool.versions"))
 	 				</td>
@@ -273,7 +277,7 @@
 			#set($count = $count + 1)	
 		#end
 	#end
-	#if($count > 200)
+	#if($count > 100)
 		#if($isOdd)
 			#set($class = "class='lightgreen'")
 			#set($isOdd = false)
@@ -282,33 +286,33 @@
 			#set($isOdd = true)
 		#end
 		<tr $class>
-			<td colspan="3" style="color: red;">$ui.getString("tool.contenttool.moreContentReferencesFound") $count</td>		
+			<td colspan="7" style="color: red;">$ui.getString("tool.contenttool.moreContentReferencesFound")  #if($count < 100) $count #else >100 #end </td>		
 		</tr>	
 	#end
 	
 	#if(!$hasContentReferences)
 		<tr $class>
-			<td colspan="3">$ui.getString("tool.contenttool.noContentReferencesFound")</td>		
+			<td colspan="7">$ui.getString("tool.contenttool.noContentReferencesFound")</td>		
 		</tr>	
 	#end
 	<tr>
-		<td colspan="3"><img src="images/trans.gif" height="10" width="1"></td>
+		<td colspan="7"><img src="images/trans.gif" height="10" width="1"></td>
 	</tr>
 	<tr class="darkgreen">
-		<td class="smalllabel" colspan="3">$ui.getString("tool.contenttool.siteNodeReferences.header")</td>
+		<td class="smalllabel" colspan="7">$ui.getString("tool.contenttool.siteNodeReferences.header")</td>
 	</tr>
 	<tr>
-		<td bgcolor="#EEF7DC" colspan="3" height="1"><img src="images/trans.gif" width="1" height="1"></td>
+		<td bgcolor="#EEF7DC" colspan="7" height="1"><img src="images/trans.gif" width="1" height="1"></td>
 	</tr>
 	<tr>
-		<td bgcolor="#C7D1B3" colspan="3" height="1"><img src="images/trans.gif" width="1" height="1"></td>
+		<td bgcolor="#C7D1B3" colspan="7" height="1"><img src="images/trans.gif" width="1" height="1"></td>
 	</tr>
 	#set($hasPageReferences = false)
 	#set($isOdd = true)
 	#set($count = 0)
 	#foreach ($referenceBean in $referenceBeanList)
 		#if($referenceBean.referencingCompletingObject.class.name.indexOf("SiteNode") > -1)
-			#if($count < 200)
+			#if($count < 100)
 				#set($hasPageReferences = true)
 				#set($lastIndex = $referenceBean.versions.size() - 1)
 				#if($isOdd)
@@ -320,7 +324,7 @@
 				#end
 				<tr $class>
 					<td width="16"><img src="images/tree/structureRoot.gif"></td>
-					<td width="100%">
+					<td width="100%" colspan="5">
 						<a href="${componentRendererUrl}${componentRendererAction}?siteNodeId=$referenceBean.referencingCompletingObject.siteNodeId&contentId=-1" target="_blank">$referenceBean.name</a>
 						- #if($referenceBean.versions.get($lastIndex).registryVOList.size() > 1) $referenceBean.versions.get($lastIndex).registryVOList.size() $ui.getString("tool.structuretool.referencesFound") #end ($referenceBean.versions.size() $ui.getString("tool.structuretool.versions"))
 					</td>
@@ -331,7 +335,7 @@
 		#end
 	#end
 
-	#if($count > 200)
+	#if($count > 100)
 		#if($isOdd)
 			#set($class = "class='lightgreen'")
 			#set($isOdd = false)
@@ -340,18 +344,20 @@
 			#set($isOdd = true)
 		#end
 		<tr $class>
-			<td colspan="3" style="color: red;">$ui.getString("tool.contenttool.morePageReferencesFound") $count</td>		
+			<td colspan="7" style="color: red;">$ui.getString("tool.contenttool.morePageReferencesFound")  #if($count < 100) $count #else >100 #end </td>		
 		</tr>	
 	#end
 
 	#if(!$hasPageReferences)
 		<tr $class>
-			<td colspan="3">$ui.getString("tool.contenttool.noPageReferencesFound")</td>		
+			<td colspan="7">$ui.getString("tool.contenttool.noPageReferencesFound")</td>		
 		</tr>	
 	#end
 	
+	#end
+
 	<tr>
-		<td colspan="3"><img src="images/trans.gif" height="10" width="1"></td>
+		<td colspan="7"><img src="images/trans.gif" height="10" width="1"></td>
 	</tr>
 	<tr>
 		<input type="hidden" name="contentId" value="$!contentId">
@@ -359,12 +365,12 @@
 		<input type="hidden" name="unrefreshedContentId" value="$!contentId">
 		<input type="hidden" name="repositoryId" value="$!repositoryId">
 		<input type="hidden" name="changeTypeId" value="1">
-		<td colspan="3">
+		<td colspan="7">
 			<input type="image" src="$ui.getString("images.contenttool.buttons.save")" width="50" height="25" border="0">
 		</td>
 	</tr>
+	</table>
 	
-</table>
 </div>
 
 #endContentTool()

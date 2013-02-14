@@ -29,7 +29,7 @@ import org.infoglue.cms.entities.content.ContentVersion;
 import org.infoglue.cms.entities.content.ContentVersionVO;
 import org.infoglue.cms.entities.kernel.BaseEntityVO;
 
-public class ContentVersionImpl implements ContentVersion
+public class MediumContentVersionImpl implements ContentVersion
 {
     private ContentVersionVO valueObject = new ContentVersionVO();
      

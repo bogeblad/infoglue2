@@ -34,9 +34,11 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.log4j.Category;
@@ -59,7 +61,10 @@ import org.apache.lucene.search.Searcher;
 import org.apache.xerces.parsers.DOMParser;
 import org.exolab.castor.jdo.Database;
 import org.exolab.castor.jdo.OQLQuery;
+import org.exolab.castor.jdo.PersistenceException;
+import org.exolab.castor.jdo.QueryException;
 import org.exolab.castor.jdo.QueryResults;
+import org.exolab.castor.jdo.TransactionNotInProgressException;
 import org.infoglue.cms.applications.common.VisualFormatter;
 import org.infoglue.cms.entities.content.ContentVO;
 import org.infoglue.cms.entities.content.ContentVersion;
@@ -68,7 +73,9 @@ import org.infoglue.cms.entities.content.DigitalAsset;
 import org.infoglue.cms.entities.content.DigitalAssetVO;
 import org.infoglue.cms.entities.content.impl.simple.MediumDigitalAssetImpl;
 import org.infoglue.cms.entities.content.impl.simple.SmallDigitalAssetImpl;
+import org.infoglue.cms.entities.content.impl.simple.SmallStateContentImpl;
 import org.infoglue.cms.entities.kernel.BaseEntityVO;
+import org.infoglue.cms.entities.management.GeneralOQLResult;
 import org.infoglue.cms.exception.Bug;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.security.InfoGluePrincipal;
@@ -262,7 +269,7 @@ public class SearchController extends BaseController
 			{
 				StringBuilder sb = new StringBuilder();
 				
-				sb.append("CALL SQL select contVerId, stateId, modifiedDateTime, verComment, isCheckedOut, isActive, contId, languageId, versionModifier, verValue from ");
+				sb.append("CALL SQL select * from (select contVerId, stateId, modifiedDateTime, verComment, isCheckedOut, isActive, contId, languageId, versionModifier, verValue from ");
 				sb.append("(");
 				sb.append("  select * from ");
 				sb.append("  (");
@@ -304,6 +311,7 @@ public class SearchController extends BaseController
 					sb.append(")");
 					andTerm = " AND ";
 				}
+				sb.append("    ) ");
 				//sb.append("    ) ");
 				
 				if(stateId != null)
@@ -343,7 +351,6 @@ public class SearchController extends BaseController
 					index++;
 				}
 				
-				sb.append("    ) ");
 				sb.append("  ) CVDYN ");
 				sb.append("  WHERE contVerId = ");
 				sb.append("  (    ");
@@ -357,7 +364,7 @@ public class SearchController extends BaseController
 	
 				String freeTextCondition = ((searchString == null || searchString.equals("")) ? "" : " WHERE verValue LIKE $" + index + "");
 	
-				sb.append(freeTextCondition + " ORDER BY contVerId DESC AS org.infoglue.cms.entities.content.impl.simple.SmallContentVersionImpl");
+				sb.append(freeTextCondition + " ORDER BY contVerId DESC) where rownum <= " + maxRows + " AS org.infoglue.cms.entities.content.impl.simple.SmallContentVersionImpl");
 	
 				sql = sb.toString();
 			}
@@ -408,7 +415,8 @@ public class SearchController extends BaseController
 					andTerm = " AND ";
 				}
 				//sb.append("    ) ");
-				
+				sb.append("    ) ");
+
 				if(stateId != null)
 				{
 					sb.append(andTerm + "  cv.stateId = $" + index);
@@ -441,7 +449,7 @@ public class SearchController extends BaseController
 					arguments.add(userName);
 					index++;				
 				}
-				sb.append("    ) ");
+				//sb.append("    ) ");
 				
 				sb.append("  ) CVDYN ");
 				sb.append("  WHERE contentVersionId = ");
@@ -933,12 +941,29 @@ public class SearchController extends BaseController
 		{
 			beginTransaction(db);
 
+			
+			String assetSQL = "CALL SQL SELECT top " + maxRows + " distinct(da.digitalAssetId),da.assetFileName,da.assetKey,da.assetFilePath,da.assetContentType,da.assetFileSize FROM cmDigitalAsset da, cmContentVersionDigitalAsset cvda, cmContentVersion cv, cmContent c WHERE cvda.digitalAssetId = da.digitalAssetId AND cvda.contentVersionId = cv.contentVersionId AND cv.contentId = c.contentId AND (da.assetKey LIKE $1 OR da.assetFileName LIKE $2) ORDER BY da.digitalAssetId desc AS org.infoglue.cms.entities.content.impl.simple.SmallDigitalAssetImpl";
+			if(CmsPropertyHandler.getDatabaseEngine().equalsIgnoreCase("mysql"))
+			{
+				assetSQL = "CALL SQL SELECT distinct(da.digitalAssetId),da.assetFileName,da.assetKey,da.assetFilePath,da.assetContentType,da.assetFileSize FROM cmDigitalAsset da, cmContentVersionDigitalAsset cvda, cmContentVersion cv, cmContent c WHERE cvda.digitalAssetId = da.digitalAssetId AND cvda.contentVersionId = cv.contentVersionId AND cv.contentId = c.contentId AND (da.assetKey LIKE $1 OR da.assetFileName LIKE $2) ORDER BY da.digitalAssetId desc LIMIT " + maxRows + " AS org.infoglue.cms.entities.content.impl.simple.SmallDigitalAssetImpl";
+			}
+			else if(CmsPropertyHandler.getUseShortTableNames() != null && CmsPropertyHandler.getUseShortTableNames().equalsIgnoreCase("true"))
+				assetSQL = "CALL SQL SELECT * from (select distinct(da.DigAssetId),da.assetFileName,da.assetKey,da.assetFilePath,da.assetContentType,da.assetFileSize FROM cmDigAsset da, cmContVerDigAsset cvda, cmContVer cv, cmCont c WHERE cvda.DigAssetId = da.DigAssetId AND cvda.contVerId = cv.contVerId AND cv.contId = c.contId AND (da.assetKey LIKE $1 OR da.assetFileName LIKE $2) ORDER BY da.DigAssetId desc) where ROWNUM < " + maxRows + " AS org.infoglue.cms.entities.content.impl.simple.SmallDigitalAssetImpl";
+			
+			logger.info("assetSQL:" + assetSQL);
+			
+			OQLQuery assetOQL = db.getOQLQuery(assetSQL);
+			assetOQL.bind("%" + searchString + "%");
+			assetOQL.bind("%" + searchString + "%");
+	        
+			/*
 			String assetSQL = "SELECT da FROM org.infoglue.cms.entities.content.impl.simple.SmallDigitalAssetImpl da WHERE (da.assetKey LIKE $1 OR da.assetFileName LIKE $2) ORDER BY da.digitalAssetId asc";
 			logger.info("assetSQL:" + assetSQL);
 			OQLQuery assetOQL = db.getOQLQuery(assetSQL);
 			assetOQL.bind("%" + searchString + "%");
 			assetOQL.bind("%" + searchString + "%");
-	        
+	        */
+			
 			QueryResults assetResults = assetOQL.execute(Database.ReadOnly);
 			
 			Integer previousContentId  = new Integer(-1);
@@ -951,8 +976,11 @@ public class SearchController extends BaseController
 				//if(smallAsset.getAssetContentType().matches(assetTypeFilter))
 				if(assetTypeFilter.equals("*") || assetTypeFilter.indexOf(smallAsset.getAssetContentType()) > -1)
 				{
+					matchingAssets.add(smallAsset.getValueObject());
+					/*
 					DigitalAsset asset = DigitalAssetController.getMediumDigitalAssetWithId(smallAsset.getId(), db);
 					logger.info("Found a asset matching " + searchString + ":" + asset.getId());
+					
 					Collection versions = asset.getContentVersions();
 					Iterator versionsIterator = versions.iterator();
 					while(versionsIterator.hasNext())
@@ -970,11 +998,14 @@ public class SearchController extends BaseController
 							}
 						}						
 					}
+					*/
 				}
 			}
 			
 			assetResults.close();
 			assetOQL.close();
+			
+			DigitalAssetController.getController().appendContentId(matchingAssets, db);
 			
 			commitTransaction(db);
 		}
@@ -990,6 +1021,8 @@ public class SearchController extends BaseController
 
    	public static List<DigitalAssetVO> getLatestDigitalAssets(Integer[] repositoryId, String assetTypeFilter, int maxRows) throws SystemException, Bug
    	{
+   		Timer t = new Timer();
+   		
    		List<DigitalAssetVO> matchingAssets = new ArrayList<DigitalAssetVO>();
 
 		Database db = CastorDatabaseService.getDatabase();
@@ -1017,9 +1050,13 @@ public class SearchController extends BaseController
 			for(int i=0; i<repositoryId.length; i++)
 				repositoryIdBindingMarkers.append((i>0 ? "," : "") + "$" + (i + 1 + bindIndex));
 			
-			String assetSQL = "CALL SQL SELECT da.digitalAssetId,da.assetFileName,da.assetKey,da.assetFilePath,da.assetContentType,da.assetFileSize FROM cmDigitalAsset da, cmContentVersionDigitalAsset cvda, cmContentVersion cv, cmContent c WHERE cvda.digitalAssetId = da.digitalAssetId AND cvda.contentVersionId = cv.contentVersionId AND cv.contentId = c.contentId " + assetFilterTerm + " AND c.repositoryId IN (" + repositoryIdBindingMarkers + ") ORDER BY da.digitalAssetId desc AS org.infoglue.cms.entities.content.impl.simple.SmallDigitalAssetImpl";
-			if(CmsPropertyHandler.getUseShortTableNames() != null && CmsPropertyHandler.getUseShortTableNames().equalsIgnoreCase("true"))
-				assetSQL = "CALL SQL SELECT da.DigAssetId,da.assetFileName,da.assetKey,da.assetFilePath,da.assetContentType,da.assetFileSize FROM cmDigAsset da, cmContVerDigAsset cvda, cmContVer cv, cmCont c WHERE cvda.DigAssetId = da.DigAssetId AND cvda.contVerId = cv.contVerId AND cv.contId = c.contId  " + assetFilterTerm + " AND c.repositoryId IN (" + repositoryIdBindingMarkers + ") ORDER BY da.DigAssetId desc AS org.infoglue.cms.entities.content.impl.simple.SmallDigitalAssetImpl";
+			String assetSQL = "CALL SQL SELECT top " + maxRows + " distinct(da.digitalAssetId),da.assetFileName,da.assetKey,da.assetFilePath,da.assetContentType,da.assetFileSize FROM cmDigitalAsset da, cmContentVersionDigitalAsset cvda, cmContentVersion cv, cmContent c WHERE cvda.digitalAssetId = da.digitalAssetId AND cvda.contentVersionId = cv.contentVersionId AND cv.contentId = c.contentId " + assetFilterTerm + " AND c.repositoryId IN (" + repositoryIdBindingMarkers + ") ORDER BY da.digitalAssetId desc AS org.infoglue.cms.entities.content.impl.simple.SmallDigitalAssetImpl";
+			if(CmsPropertyHandler.getDatabaseEngine().equalsIgnoreCase("mysql"))
+			{
+				assetSQL = "CALL SQL SELECT distinct(da.digitalAssetId),da.assetFileName,da.assetKey,da.assetFilePath,da.assetContentType,da.assetFileSize FROM cmDigitalAsset da, cmContentVersionDigitalAsset cvda, cmContentVersion cv, cmContent c WHERE cvda.digitalAssetId = da.digitalAssetId AND cvda.contentVersionId = cv.contentVersionId AND cv.contentId = c.contentId " + assetFilterTerm + " AND c.repositoryId IN (" + repositoryIdBindingMarkers + ") ORDER BY da.digitalAssetId desc LIMIT " + maxRows + " AS org.infoglue.cms.entities.content.impl.simple.SmallDigitalAssetImpl";
+			}
+			else if(CmsPropertyHandler.getUseShortTableNames() != null && CmsPropertyHandler.getUseShortTableNames().equalsIgnoreCase("true"))
+				assetSQL = "CALL SQL SELECT * from (select distinct(da.DigAssetId),da.assetFileName,da.assetKey,da.assetFilePath,da.assetContentType,da.assetFileSize FROM cmDigAsset da, cmContVerDigAsset cvda, cmContVer cv, cmCont c WHERE cvda.DigAssetId = da.DigAssetId AND cvda.contVerId = cv.contVerId AND cv.contId = c.contId  " + assetFilterTerm + " AND c.repositoryId IN (" + repositoryIdBindingMarkers + ") ORDER BY da.DigAssetId desc) where ROWNUM < " + maxRows + " AS org.infoglue.cms.entities.content.impl.simple.SmallDigitalAssetImpl";
 			
 			logger.info("assetSQL:" + assetSQL);
 			
@@ -1041,7 +1078,7 @@ public class SearchController extends BaseController
 			}
 			
 			QueryResults assetResults = assetOQL.execute(Database.ReadOnly);
-
+			
 			int currentCount = 0;
 			while(assetResults.hasMore() && currentCount < maxRows)
 			{
@@ -1052,9 +1089,11 @@ public class SearchController extends BaseController
 				matchingAssets.add(smallAsset.getValueObject());
 			    currentCount++;
 			}
-
+			
 			assetResults.close();
 			assetOQL.close();
+			
+		    DigitalAssetController.getController().appendContentId(matchingAssets, db);
 			
 			commitTransaction(db);
 		}
@@ -1086,8 +1125,9 @@ public class SearchController extends BaseController
 			    if(contentVersion.getStateId().intValue() != ContentVersionVO.WORKING_STATE.intValue())
 			    {
 		            List events = new ArrayList();
-			        contentVersion = ContentStateController.changeState(contentVersion.getId(), ContentVersionVO.WORKING_STATE, "Automatic by the replace function", true, null, infoGluePrincipal, null, db, events);
-			        logger.info("Setting the version to working before replacing string...");
+			        ContentVersionVO contentVersionVO = ContentStateController.changeState(contentVersion.getId(), ContentVersionVO.WORKING_STATE, "Automatic by the replace function", true, infoGluePrincipal, null, db, events);
+			        contentVersion = ContentVersionController.getContentVersionController().getContentVersionWithId(contentVersionVO.getId(), db);
+				    logger.info("Setting the version to working before replacing string...");
 			    }
 			    
 			    String value = contentVersion.getVersionValue();

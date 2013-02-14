@@ -213,7 +213,19 @@ public class RepositoryController extends BaseController
 
     public RepositoryVO getRepositoryVOWithId(Integer repositoryId) throws ConstraintException, SystemException, Bug
     {
-		return  (RepositoryVO) getVOWithId(RepositoryImpl.class, repositoryId);        
+		String key = "" + repositoryId;
+		RepositoryVO repositoryVO = (RepositoryVO)CacheController.getCachedObject("repositoryCache", key);
+		if(repositoryVO != null)
+		{
+			return repositoryVO;
+		}
+
+		RepositoryVO rep = (RepositoryVO) getVOWithId(RepositoryImpl.class, repositoryId);
+		
+		if(rep != null)
+			CacheController.cacheObject("repositoryCache", key, rep);
+		
+		return rep;
     }
 	
     public RepositoryVO getRepositoryVOWithId(Integer repositoryId, Database db) throws ConstraintException, SystemException, Bug

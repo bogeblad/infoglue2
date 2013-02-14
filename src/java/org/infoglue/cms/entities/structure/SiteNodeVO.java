@@ -50,6 +50,7 @@ public class SiteNodeVO implements BaseEntityVO
   	private Integer siteNodeVersionId= null;
   	private Integer stateId			= null;
   	private Integer isProtected 	= null;
+  	private Date modifiedDateTime 	= null;
   	
   	private String creatorName;
   	private String versionModifier;
@@ -275,5 +276,14 @@ public class SiteNodeVO implements BaseEntityVO
         this.versionModifier = versionModifier;
     }
 
+    public Date getModifiedDateTime()
+    {
+        return this.modifiedDateTime;
+    }
+                
+    public void setModifiedDateTime(Date modifiedDateTime)
+    {
+        this.modifiedDateTime = modifiedDateTime;
+    }
 }
         

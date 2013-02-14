@@ -38,6 +38,7 @@ public class GeneralOQLResult
 	private String value4;
 	private String value5;
 	private String value6;
+	private String value7;
 
 	public Integer getId() {
 		return id;
@@ -120,5 +121,17 @@ public class GeneralOQLResult
 		this.value6 = value6;
 	}
 
+	/**
+	 * @return the value7
+	 */
+	public String getValue7() {
+		return value7;
+	}
+	/**
+	 * @param value7 the value7 to set
+	 */
+	public void setValue7(String value7) {
+		this.value7 = value7;
+	}
 	
 }        

@@ -63,9 +63,9 @@ public class CastorDatabaseService //extends DatabaseService
     {
         try
         {
-        	//Thread.dumpStack();
-            //System.out.println("Getting new databaseobject....");
-            logger.info("Getting new databaseobject....");
+            //Thread.dumpStack();
+            if(logger.isInfoEnabled())
+            	logger.info("Getting new databaseobject....");
             return getJDO().getDatabase();
         }
         catch(Exception e)

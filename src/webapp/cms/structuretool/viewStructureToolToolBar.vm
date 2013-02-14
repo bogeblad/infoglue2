@@ -20,12 +20,27 @@
 		function openMainArea(url)
 		{
 			//alert('url:' + url);
-			parent.frames["main"].location.href = '' + url;
-			if(url.indexOf("ViewPage") > -1)
+			if(url.indexOf("ViewListSiteNodeVersion.action") > -1)
 			{
-				this.location.href = "$this.getCMSBaseUrl()/ViewStructureToolToolBar.action?title=tool.structuretool.siteNodeComponentsHeader&toolbarKey=tool.structuretool.siteNodeComponentsHeader&siteNodeId=$siteNodeId&repositoryId=$repositoryId&isBranch=true";
-				//document.getElementById("Site Node Components").style.display = "none";
-				//document.getElementById("SiteNode Cover").style.display = "block";
+				//alert('$this.getCMSBaseUrl()/InProcessLoading!executeStructure.action');
+				parent.frames["main"].location.href = 'InProcessLoading!executeStructure.action';
+				
+				setTimeout(function() {
+					parent.frames["main"].invokeURL(url);
+				}, 500);
+				
+				setTimeout(function() {
+					parent.frames["main"].showProcessURL(url.replace("ViewListSiteNodeVersion","ViewListSiteNodeVersion!showProcessesAsJSON"));
+				}, 1000);
+				
+			}
+			else
+			{
+				parent.frames["main"].location.href = '' + url;
+				if(url.indexOf("ViewPage") > -1)
+				{
+					this.location.href = "$this.getCMSBaseUrl()/ViewStructureToolToolBar.action?title=tool.structuretool.siteNodeComponentsHeader&toolbarKey=tool.structuretool.siteNodeComponentsHeader&siteNodeId=$siteNodeId&repositoryId=$repositoryId&isBranch=true";
+				}
 			}
 		}
 

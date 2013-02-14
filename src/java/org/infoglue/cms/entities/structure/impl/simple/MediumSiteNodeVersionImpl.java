@@ -26,15 +26,15 @@ package org.infoglue.cms.entities.structure.impl.simple;
 import java.util.ArrayList;
 
 import org.infoglue.cms.entities.kernel.BaseEntityVO;
+import org.infoglue.cms.entities.kernel.IBaseEntity;
 import org.infoglue.cms.entities.structure.SiteNodeVersion;
 import org.infoglue.cms.entities.structure.SiteNodeVersionVO;
 
-public class SmallSiteNodeVersionImpl extends SiteNodeVersionImpl
+public class MediumSiteNodeVersionImpl implements IBaseEntity //extends SiteNodeVersionImpl
 {
     private SiteNodeVersionVO valueObject = new SiteNodeVersionVO();
 
-	//private org.infoglue.cms.entities.structure.impl.simple.SiteNodeImpl owningSiteNode;
-	//private java.util.Collection serviceBindings = new ArrayList();
+	private java.util.Collection serviceBindings = new ArrayList();
 
      
     /**
@@ -58,7 +58,6 @@ public class SmallSiteNodeVersionImpl extends SiteNodeVersionImpl
 	 */
 	public Integer getId() 
 	{
-		System.out.println("id");
 		return getSiteNodeVersionId();
 	}
 	 
@@ -79,7 +78,6 @@ public class SmallSiteNodeVersionImpl extends SiteNodeVersionImpl
     
     public java.lang.Integer getSiteNodeVersionId()
     {
-		System.out.println("siteNodeVersionId");
         return this.valueObject.getSiteNodeVersionId();
     }
             
@@ -90,7 +88,6 @@ public class SmallSiteNodeVersionImpl extends SiteNodeVersionImpl
       
     public java.lang.Integer getStateId()
     {
-		System.out.println("stateId");
         return this.valueObject.getStateId();
     }
             
@@ -101,7 +98,6 @@ public class SmallSiteNodeVersionImpl extends SiteNodeVersionImpl
       
     public java.lang.Integer getVersionNumber()
     {
-		System.out.println("versionNumber");
         return this.valueObject.getVersionNumber();
     }
             
@@ -112,7 +108,6 @@ public class SmallSiteNodeVersionImpl extends SiteNodeVersionImpl
       
     public java.util.Date getModifiedDateTime()
     {
-		System.out.println("modifiedDateTime");
         return this.valueObject.getModifiedDateTime();
     }
             
@@ -123,7 +118,6 @@ public class SmallSiteNodeVersionImpl extends SiteNodeVersionImpl
       
     public java.lang.String getVersionComment()
     {
-		System.out.println("versionComment");
         return this.valueObject.getVersionComment();
     }
             
@@ -134,8 +128,7 @@ public class SmallSiteNodeVersionImpl extends SiteNodeVersionImpl
       
     public java.lang.Boolean getIsCheckedOut()
     {
-		System.out.println("getIsCheckedOut");
-		return this.valueObject.getIsCheckedOut();
+        return this.valueObject.getIsCheckedOut();
     }
             
     public void setIsCheckedOut(java.lang.Boolean isCheckedOut)
@@ -145,7 +138,6 @@ public class SmallSiteNodeVersionImpl extends SiteNodeVersionImpl
       
     public java.lang.Boolean getIsActive()
     {
-		System.out.println("isActive");
     	return this.valueObject.getIsActive();
 	}
     
@@ -154,26 +146,18 @@ public class SmallSiteNodeVersionImpl extends SiteNodeVersionImpl
 		this.valueObject.setIsActive(isActive);
 	}
 	
-    /*
-    public org.infoglue.cms.entities.structure.impl.simple.SiteNodeImpl getOwningSiteNode()
+    public Integer getSiteNodeId()
     {
-        return this.owningSiteNode;
+        return this.valueObject.getSiteNodeId();
     }
             
-    public void setOwningSiteNode (org.infoglue.cms.entities.structure.impl.simple.SiteNodeImpl owningSiteNode)
+    public void setSiteNodeId(Integer siteNodeId)
     {
-        this.owningSiteNode = owningSiteNode;
-        if(owningSiteNode != null)
-        {	
-	        this.valueObject.setSiteNodeId(owningSiteNode.getSiteNodeId());
-			this.valueObject.setSiteNodeName(owningSiteNode.getName());
-        }
+        this.valueObject.setSiteNodeId(siteNodeId);
     }
-    */
-    
+
     public String getVersionModifier()
     {
-    	System.out.println("versionModifier");
         return this.valueObject.getVersionModifier();
     }
             
@@ -182,7 +166,6 @@ public class SmallSiteNodeVersionImpl extends SiteNodeVersionImpl
         this.valueObject.setVersionModifier(versionModifier);
     }
     
-    /*
     public java.util.Collection getServiceBindings()
     {
     	return this.serviceBindings;
@@ -192,11 +175,9 @@ public class SmallSiteNodeVersionImpl extends SiteNodeVersionImpl
     {
     	this.serviceBindings = serviceBindings;
     }
-    */
 
 	public String getContentType()
 	{
-		System.out.println("contentType");
 		return this.valueObject.getContentType();
 	}
 
@@ -207,7 +188,6 @@ public class SmallSiteNodeVersionImpl extends SiteNodeVersionImpl
 
 	public String getPageCacheKey()
 	{
-		System.out.println("2");
 		return this.valueObject.getPageCacheKey();
 	}
 
@@ -218,7 +198,6 @@ public class SmallSiteNodeVersionImpl extends SiteNodeVersionImpl
 
 	public String getPageCacheTimeout()
 	{
-    	System.out.println("getPageCacheTimeout");
 		return this.valueObject.getPageCacheTimeout();
 	}
 
@@ -287,13 +266,4 @@ public class SmallSiteNodeVersionImpl extends SiteNodeVersionImpl
 		this.valueObject.setForceProtocolChange(forceProtocolChange);
 	}
 
-	public void setSiteNodeId(Integer siteNodeId)
-	{
-		this.valueObject.setSiteNodeId(siteNodeId);
-	}
-
-	public Integer getSiteNodeId()
-	{
-		return this.valueObject.getSiteNodeId();
-	}
 }        

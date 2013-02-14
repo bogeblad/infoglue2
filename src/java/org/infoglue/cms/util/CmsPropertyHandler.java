@@ -604,6 +604,11 @@ public class CmsPropertyHandler
 	    return contextRootPath; //getProperty("contextRootPath"); Concurrency issues...
 	}
 
+	public static String getContextDiskPath()
+	{
+		return getProperty("contextDiskPath");
+	}
+	
 	public static String getOperatingMode()
 	{
 		if(operatingMode == null)
@@ -966,6 +971,11 @@ public class CmsPropertyHandler
 	public static String getInternalSearchEngine()
 	{
 		return getServerNodeProperty("internalSearchEngine", true, "sqlSearch");
+	}
+
+	public static String getFastSearchIncludedContentTypes()
+	{
+		return getServerNodeProperty("fastSearchIncludedContentTypes", true, "Article,Image");
 	}
 
 	public static String getGACode()

@@ -806,10 +806,8 @@ public class RemoteContentServiceImpl extends RemoteInfoGlueService
             	try
             	{
 		            logger.info("contentVersionVO:" + contentVersionVO);
-		    		ContentVersion cv = ContentStateController.changeState(contentVersionVO.getId(), ContentVersionVO.WORKING_STATE, "Remote update from deliver", false, this.principal, contentVersionVO.getContentId(), new ArrayList());
-		    		logger.info("cv:" + cv);
-		    		contentVersionVO = cv.getValueObject();
-            	}
+		            contentVersionVO = ContentStateController.changeState(contentVersionVO.getId(), ContentVersionVO.WORKING_STATE, "Remote update from deliver", false, this.principal, contentVersionVO.getContentId(), new ArrayList());
+		    	}
             	catch (Exception e) 
             	{
             		logger.error("Error when changing state to working: " + e.getMessage(), e);

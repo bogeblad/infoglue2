@@ -63,6 +63,7 @@ import org.infoglue.cms.util.validators.EmailValidator;
 import org.infoglue.cms.util.validators.StringValidator;
 import org.infoglue.deliver.util.CacheController;
 import org.infoglue.deliver.util.RequestAnalyser;
+import org.infoglue.deliver.util.Timer;
 
 import com.opensymphony.module.propertyset.PropertySet;
 import com.opensymphony.module.propertyset.PropertySetManager;
@@ -144,6 +145,7 @@ public abstract class BaseController
 		}
 	}
     
+    Map<String,InfoGlueInterceptor> cachedInterceptors = new HashMap<String,InfoGlueInterceptor>();
     protected void intercept(Map hashMap, String InterceptionPointName, InfoGluePrincipal infogluePrincipal, boolean allowCreatorAccess) throws ConstraintException, SystemException, Bug, Exception
 	{
 		InterceptionPointVO interceptionPointVO = InterceptionPointController.getController().getInterceptionPointVOWithName(InterceptionPointName);
@@ -152,6 +154,7 @@ public abstract class BaseController
 			throw new SystemException("The InterceptionPoint " + InterceptionPointName + " was not found. The system will not work unless you restore it.");
 
 		List interceptors = InterceptionPointController.getController().getInterceptorsVOList(interceptionPointVO.getInterceptionPointId());
+		
 		Iterator interceptorsIterator = interceptors.iterator();
 		while(interceptorsIterator.hasNext())
 		{
@@ -159,7 +162,12 @@ public abstract class BaseController
 			logger.info("Adding interceptorVO:" + interceptorVO.getName());
 			try
 			{
-				InfoGlueInterceptor infoGlueInterceptor = (InfoGlueInterceptor)Class.forName(interceptorVO.getClassName()).newInstance();
+				InfoGlueInterceptor infoGlueInterceptor = cachedInterceptors.get(interceptorVO.getClassName());
+				if(infoGlueInterceptor == null)
+				{
+					infoGlueInterceptor = (InfoGlueInterceptor)Class.forName(interceptorVO.getClassName()).newInstance();
+					cachedInterceptors.put(interceptorVO.getClassName(), infoGlueInterceptor);
+				}
 				infoGlueInterceptor.intercept(infogluePrincipal, interceptionPointVO, hashMap, allowCreatorAccess);
 			}
 			catch(ClassNotFoundException e)
@@ -198,7 +206,13 @@ public abstract class BaseController
 			logger.info("Adding interceptorVO:" + interceptorVO.getName());
 			try
 			{
-				InfoGlueInterceptor infoGlueInterceptor = (InfoGlueInterceptor)Class.forName(interceptorVO.getClassName()).newInstance();
+				InfoGlueInterceptor infoGlueInterceptor = cachedInterceptors.get(interceptorVO.getClassName());
+				if(infoGlueInterceptor == null)
+				{
+					infoGlueInterceptor = (InfoGlueInterceptor)Class.forName(interceptorVO.getClassName()).newInstance();
+					cachedInterceptors.put(interceptorVO.getClassName(), infoGlueInterceptor);
+				}
+				//InfoGlueInterceptor infoGlueInterceptor = (InfoGlueInterceptor)Class.forName(interceptorVO.getClassName()).newInstance();
 				infoGlueInterceptor.intercept(infogluePrincipal, interceptionPointVO, hashMap, db);
 			}
 			catch(ClassNotFoundException e)
@@ -224,7 +238,13 @@ public abstract class BaseController
 			logger.info("Adding interceptorVO:" + interceptorVO.getName());
 			try
 			{
-				InfoGlueInterceptor infoGlueInterceptor = (InfoGlueInterceptor)Class.forName(interceptorVO.getClassName()).newInstance();
+				InfoGlueInterceptor infoGlueInterceptor = cachedInterceptors.get(interceptorVO.getClassName());
+				if(infoGlueInterceptor == null)
+				{
+					infoGlueInterceptor = (InfoGlueInterceptor)Class.forName(interceptorVO.getClassName()).newInstance();
+					cachedInterceptors.put(interceptorVO.getClassName(), infoGlueInterceptor);
+				}
+				//InfoGlueInterceptor infoGlueInterceptor = (InfoGlueInterceptor)Class.forName(interceptorVO.getClassName()).newInstance();
 				infoGlueInterceptor.intercept(infogluePrincipal, interceptionPointVO, hashMap, allowCreatorAccess, db);
 			}
 			catch(ClassNotFoundException e)

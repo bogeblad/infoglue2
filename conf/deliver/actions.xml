@@ -1,4 +1,4 @@
-<!-- $Id: actions.xml,v 1.11.2.2 2012/03/14 22:45:32 mattias Exp $ -->
+<!-- $Id: actions.xml,v 1.11.2.2.2.1 2013/02/14 10:36:31 mattias Exp $ -->
 <actions>
 
 	<!-- InstallationValidator -->
@@ -98,6 +98,51 @@
 		<view name="successStylesXML">/cms/managementtool/viewWYSIWYGStylesXML.vm</view>
 		<view name="error">/cms/managementtool/error.vm</view>
 	</action>
+
+<!-- TEST -->
+	<action name="org.infoglue.cms.applications.contenttool.actions.ViewLinkDialogAction" alias="ViewLinkDialog">
+		<view name="success">/cms/contenttool/viewLinkDialog.vm</view>
+		<view name="viewLinkDialogForFCKEditor">/cms/contenttool/viewLinkDialogForFCKEditor.vm</view>
+		<view name="viewLinkDialogForFCKEditorV3">/cms/contenttool/v3/viewLinkDialogForFCKEditor.vm</view>
+		<view name="error">/cms/contenttool/error.vm</view>
+	</action>
+	<action name="org.infoglue.cms.applications.structuretool.actions.ViewStructureTreeForInlineLinkAction" alias="ViewStructureTreeForInlineLink">
+		<view name="success">/cms/structuretool/viewStructureTreeForInlineLink.vm</view>
+		<view name="successFCKEditor">/cms/structuretool/viewStructureTreeForInlineLinkForFCKEditor.vm</view>
+		<view name="successFCKEditorV3">/cms/structuretool/v3/viewStructureTreeForInlineLinkForFCKEditor.vm</view>
+		<view name="error">/cms/structuretool/error.vm</view>
+	</action>
+	<!-- ContentVersion -->
+	<action name="org.infoglue.cms.applications.contenttool.actions.ViewContentVersionAction" alias="ViewContentVersion">
+		<view name="viewAssetsDialogForFCKEditor">/cms/contenttool/viewContentAssetsForFCKEditor.vm</view>
+		<view name="viewAssetsDialogForFCKEditorV3">/cms/contenttool/v3/viewContentAssetsForFCKEditor.vm</view>
+		<view name="viewAssetBrowserForFCKEditorV3">/cms/contenttool/v3/viewAssetBrowserForFCKEditor.vm</view>
+		<view name="viewSmallAssetBrowserForFCKEditorV3">/cms/contenttool/v3/viewSmallAssetBrowserForFCKEditor.vm</view>
+		<view name="viewAssetBrowserForComponentBindingV3">/cms/contenttool/v3/viewAssetBrowserForComponentBinding.vm</view>
+		<view name="viewAssetBrowserForMultipleComponentBindingV3">/cms/contenttool/v3/viewAssetBrowserForMultipleComponentBinding.vm</view>
+		<view name="viewAssets">/cms/contenttool/viewContentVersionAssets.vm</view>
+		<view name="viewAssetsForFCKEditor">/cms/contenttool/viewContentVersionAssetsForFCKEditor.vm</view>
+		<view name="viewAssetsForFCKEditorV3">/cms/contenttool/v3/viewContentVersionAssetsForFCKEditor.vm</view>
+		<view name="viewAssetsForFCKEditorSmallV3">/cms/contenttool/v3/viewContentVersionAssetsForFCKEditorSmall.vm</view>
+		<view name="viewContentAssetsForFCKEditorV3">/cms/contenttool/v3/viewContentVersionAssetsForFCKEditor.vm</view>
+		<view name="showContentAssetsForComponentBinding">/cms/structuretool/viewContentAssetsForComponentBinding.vm</view>
+		<view name="accessDenied">/cms/contenttool/viewConstraintException.vm</view>
+	</action>
+	<action name="org.infoglue.cms.applications.contenttool.actions.ViewContentToolMenuHtmlAction" alias="ViewContentHtmlTree">
+		<view name="success">/cms/contenttool/viewHtmlTree.vm</view>
+		<view name="successV3">/cms/contenttool/v3/viewHtmlTree.vm</view>
+		<view name="bindingView">/cms/contenttool/viewHtmlTreeForBinding.vm</view>
+		<view name="bindingViewV3">/cms/contenttool/v3/viewHtmlTreeForBinding.vm</view>
+		<view name="error">/cms/contenttool/error.vm</view>
+	</action>
+	<action name="org.infoglue.cms.applications.structuretool.actions.ViewStructureToolMenuHtmlAction" alias="ViewStructureToolMenuHtml">
+		<view name="success">/cms/structuretool/viewStructureToolMenuHTML.vm</view>
+		<view name="successV3">/cms/structuretool/v3/viewStructureToolMenuHTML.vm</view>
+		<view name="bindingView">/cms/structuretool/viewHtmlTreeForBinding.vm</view>
+		<view name="bindingViewV3">/cms/structuretool/v3/viewHtmlTreeForBinding.vm</view>
+		<view name="error">/cms/structuretool/error.vm</view>
+	</action>												
+	
 
 	<!-- Redirect -->
 	<action name="org.infoglue.cms.applications.common.actions.ExtendedRedirect" alias="ExtendedRedirect">

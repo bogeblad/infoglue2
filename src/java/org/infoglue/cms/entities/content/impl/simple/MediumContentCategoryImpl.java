@@ -31,21 +31,21 @@ import org.infoglue.cms.entities.management.impl.simple.CategoryImpl;
 /**
  * @author Frank Febbraro (frank@phase2technology.com)
  */
-public class ContentCategoryImpl implements ContentCategory
+public class MediumContentCategoryImpl implements ContentCategory
 {
     private ContentCategoryVO valueObject = new ContentCategoryVO();
     private CategoryImpl category;
     private ContentVersion contentVersion;
 
-	public ContentCategoryImpl()
+	public MediumContentCategoryImpl()
 	{}
 
-	public ContentCategoryImpl(Integer id)
+	public MediumContentCategoryImpl(Integer id)
 	{
 		setContentCategoryId(id);
 	}
 
-	public ContentCategoryImpl(ContentCategoryVO vo)
+	public MediumContentCategoryImpl(ContentCategoryVO vo)
 	{
 		valueObject = (vo != null)? vo : new ContentCategoryVO();
 	}

@@ -311,6 +311,12 @@ function changeSiteNodeState(siteNodeVersionId)
 	</tr>
 	#end
 	
+	#if($showReferences == "false")
+	<tr>
+		<td colspan="3"><a href="ViewSiteNode.action?siteNodeId=$siteNodeId&repositoryId=$repositoryId&stay=true&showReferences=true">Show relations/references</a></td>
+	</tr>
+	#else
+	
 	<tr class="darkapricot">
 		<td class="smalllabel" colspan="3">$ui.getString("tool.structuretool.contentVersionReferences.header")</td>
 	</tr>
@@ -357,7 +363,7 @@ function changeSiteNodeState(siteNodeVersionId)
 			#set($isOdd = true)
 		#end
 		<tr $class>
-			<td colspan="3" style="color: red;">$ui.getString("tool.contenttool.moreContentReferencesFound") $count</td>		
+			<td colspan="3" style="color: red;">$ui.getString("tool.contenttool.moreContentReferencesFound") #if($count < 100) $count #else >100 #end </td>		
 		</tr>	
 	#end
 	
@@ -414,7 +420,7 @@ function changeSiteNodeState(siteNodeVersionId)
 			#set($isOdd = true)
 		#end
 		<tr $class>
-			<td colspan="3" style="color: red;">$ui.getString("tool.contenttool.morePageReferencesFound") $count</td>		
+			<td colspan="3" style="color: red;">$ui.getString("tool.contenttool.morePageReferencesFound") #if($count < 100) $count #else >100 #end </td>		
 		</tr>	
 	#end
 	
@@ -487,7 +493,7 @@ function changeSiteNodeState(siteNodeVersionId)
 			#set($isOdd = true)
 		#end
 		<tr $class>
-			<td colspan="3" style="color: red;">$ui.getString("tool.contenttool.morePageReferencesFound") $count</td>		
+			<td colspan="3" style="color: red;">$ui.getString("tool.contenttool.morePageReferencesFound")  #if($count < 100) $count #else >100 #end </td>		
 		</tr>	
 	#end
 	
@@ -594,84 +600,86 @@ function changeSiteNodeState(siteNodeVersionId)
 		</td>
 		<td>&nbsp;</td>
 		<td colspan="4" valign="top">
-		<table border="0" cellpadding="0" cellspacing="0" width="100%">
-		<tr>
-			<td colspan="4"><img src="images/trans.gif" height="10" width="1"></td>
-		</tr>
-		<tr class="darkapricot">
-			<td class="smalllabel" nowrap>Structure Bindings</td>
-			<td><img src="images/trans.gif" width="20" height="1"></td>
-			<td class="smalllabel" width="60%">State</td>
-			<td><img src="images/trans.gif" width="20" height="1"></td>
-		</tr>
-		<tr>
-			<td bgcolor="#FEF8D0" colspan="4" height="1"><img src="images/trans.gif" width="300" height="1"></td>
-		</tr>
-		<tr>
-			<td bgcolor="#F0E1B4" colspan="4" height="1"><img src="images/trans.gif" width="1" height="1"></td>
-		</tr>
-		#set($isOdd = true)
-		#foreach ($availableServiceBindingVO in $sortedAvailableStructureServiceBindings)
-			
-			#if($availableServiceBindingVO.name != "Meta information")
-			
-				#if($isOdd)
-					#set($class = "class='lightapricot'")
-					#set($isOdd = false)
-				#else
-					#set($class = "class='white'")
-					#set($isOdd = true)
-				#end
+			<table border="0" cellpadding="0" cellspacing="0" width="100%">
+			<tr>
+				<td colspan="4"><img src="images/trans.gif" height="10" width="1"></td>
+			</tr>
+			<tr class="darkapricot">
+				<td class="smalllabel" nowrap>Structure Bindings</td>
+				<td><img src="images/trans.gif" width="20" height="1"></td>
+				<td class="smalllabel" width="60%">State</td>
+				<td><img src="images/trans.gif" width="20" height="1"></td>
+			</tr>
+			<tr>
+				<td bgcolor="#FEF8D0" colspan="4" height="1"><img src="images/trans.gif" width="300" height="1"></td>
+			</tr>
+			<tr>
+				<td bgcolor="#F0E1B4" colspan="4" height="1"><img src="images/trans.gif" width="1" height="1"></td>
+			</tr>
+			#set($isOdd = true)
+			#foreach ($availableServiceBindingVO in $sortedAvailableStructureServiceBindings)
 				
-				<tr $class>
-					<td>
-						#set($qualifyer = "Undefined")
-						#set($qualifyerFullPath = "")
-						#set($serviceBindingId = 0)
-						#foreach ($serviceBindningVO in $serviceBindings)
-							#if($serviceBindningVO.getAvailableServiceBindingId() == $availableServiceBindingVO.getAvailableServiceBindingId())
-								#set($qualifyerFullPath = "$!serviceBindningVO.path")
-								#set($index = $serviceBindningVO.path.lastIndexOf("/"))
-								#if($index && $index > -1)
-									#set($index = $index + 1)
-									#set($qualifyer = "$serviceBindningVO.path.substring($index)")
-								#else
-									#set($index = $serviceBindningVO.path.indexOf(":"))
+				#if($availableServiceBindingVO.name != "Meta information")
+				
+					#if($isOdd)
+						#set($class = "class='lightapricot'")
+						#set($isOdd = false)
+					#else
+						#set($class = "class='white'")
+						#set($isOdd = true)
+					#end
+					
+					<tr $class>
+						<td>
+							#set($qualifyer = "Undefined")
+							#set($qualifyerFullPath = "")
+							#set($serviceBindingId = 0)
+							#foreach ($serviceBindningVO in $serviceBindings)
+								#if($serviceBindningVO.getAvailableServiceBindingId() == $availableServiceBindingVO.getAvailableServiceBindingId())
+									#set($qualifyerFullPath = "$!serviceBindningVO.path")
+									#set($index = $serviceBindningVO.path.lastIndexOf("/"))
 									#if($index && $index > -1)
-										#set($qualifyer = "$serviceBindningVO.path.substring(0, $index)...")
+										#set($index = $index + 1)
+										#set($qualifyer = "$serviceBindningVO.path.substring($index)")
 									#else
-										#set($qualifyer = "$serviceBindningVO.path")
+										#set($index = $serviceBindningVO.path.indexOf(":"))
+										#if($index && $index > -1)
+											#set($qualifyer = "$serviceBindningVO.path.substring(0, $index)...")
+										#else
+											#set($qualifyer = "$serviceBindningVO.path")
+										#end
 									#end
-								#end
-								#set($serviceBindingId = $serviceBindningVO.getServiceBindingId())
-							#end 
-						#end
-						
-						#if($serviceBindingId > 0 && $readonly == "") 
-							#if($availableServiceBindingVO.visualizationAction.indexOf("MultiSelect") > 0)
-							    <a href="javascript:openPopup('$availableServiceBindingVO.visualizationAction?repositoryId=$repositoryId&siteNodeVersionId=$siteNodeVersion.getSiteNodeVersionId()&availableServiceBindingId=$!availableServiceBindingVO.getAvailableServiceBindingId()&serviceBindingId=$serviceBindingId', 'UpdateBindning', 'width=400,height=525,resizable=no,status=yes,scrollbars=yes');">$availableServiceBindingVO.getName()</a>
-							#else
-								$availableServiceBindingVO.getName()			
+									#set($serviceBindingId = $serviceBindningVO.getServiceBindingId())
+								#end 
 							#end
-						#elseif($readonly == "")
-							<a href="javascript:openPopup('$availableServiceBindingVO.visualizationAction?repositoryId=$repositoryId&siteNodeVersionId=$siteNodeVersion.getSiteNodeVersionId()&availableServiceBindingId=$!availableServiceBindingVO.getAvailableServiceBindingId()', 'CreateBindning', 'width=400,height=525,resizable=no,status=yes,scrollbars=yes');">$availableServiceBindingVO.getName()</a>
-						#else
-							$availableServiceBindingVO.getName()
-						#end
-					</td>
-					<td></td>
-					<td><a title="$qualifyerFullPath">$qualifyer</a></td>
-					<td align="center">
-						#if($serviceBindingId > 0 && $readonly == "") 
-							<a href="javascript:confirmAction('Do you really want to remove the binding to the content $formatter.escapeForJavascripts($qualifyer)?', 'DeleteServiceBinding.action?repositoryId=$repositoryId&siteNodeVersionId=$siteNodeVersion.getSiteNodeVersionId()&serviceBindingId=$serviceBindingId');"><img src="images/delete.gif" border="0"></a>
-						#end	
-					</td>
-				</tr>	
-			#end
-		#end	
+							
+							#if($serviceBindingId > 0 && $readonly == "") 
+								#if($availableServiceBindingVO.visualizationAction.indexOf("MultiSelect") > 0)
+								    <a href="javascript:openPopup('$availableServiceBindingVO.visualizationAction?repositoryId=$repositoryId&siteNodeVersionId=$siteNodeVersion.getSiteNodeVersionId()&availableServiceBindingId=$!availableServiceBindingVO.getAvailableServiceBindingId()&serviceBindingId=$serviceBindingId', 'UpdateBindning', 'width=400,height=525,resizable=no,status=yes,scrollbars=yes');">$availableServiceBindingVO.getName()</a>
+								#else
+									$availableServiceBindingVO.getName()			
+								#end
+							#elseif($readonly == "")
+								<a href="javascript:openPopup('$availableServiceBindingVO.visualizationAction?repositoryId=$repositoryId&siteNodeVersionId=$siteNodeVersion.getSiteNodeVersionId()&availableServiceBindingId=$!availableServiceBindingVO.getAvailableServiceBindingId()', 'CreateBindning', 'width=400,height=525,resizable=no,status=yes,scrollbars=yes');">$availableServiceBindingVO.getName()</a>
+							#else
+								$availableServiceBindingVO.getName()
+							#end
+						</td>
+						<td></td>
+						<td><a title="$qualifyerFullPath">$qualifyer</a></td>
+						<td align="center">
+							#if($serviceBindingId > 0 && $readonly == "") 
+								<a href="javascript:confirmAction('Do you really want to remove the binding to the content $formatter.escapeForJavascripts($qualifyer)?', 'DeleteServiceBinding.action?repositoryId=$repositoryId&siteNodeVersionId=$siteNodeVersion.getSiteNodeVersionId()&serviceBindingId=$serviceBindingId');"><img src="images/delete.gif" border="0"></a>
+							#end	
+						</td>
+					</tr>	
+				#end
+			#end	
 			</table>
 		</td>
 		</tr>
+	#end
+	
 	#end
 	
 	<tr>
@@ -685,7 +693,7 @@ function changeSiteNodeState(siteNodeVersionId)
 		</td>
 	</tr>
 	</table>
-	
+
 	<input type="hidden" name="siteNodeId" value="$!siteNodeId">
 	<input type="hidden" name="isBranch" value="$!isBranch">
 	<input type="hidden" name="repositoryId" value="$!repositoryId">

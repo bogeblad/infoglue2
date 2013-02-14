@@ -159,7 +159,7 @@ public class DeploymentController
 			if(repositoryVO != null)
 			{
 				localParentContent = ContentController.getContentController().getRootContent(db, repositoryVO.getId(), principal.getName(), false);
-				masterLanguageVO = LanguageController.getController().getMasterLanguage(db, localParentContent.getRepositoryId()).getValueObject();
+				masterLanguageVO = LanguageController.getController().getMasterLanguage(localParentContent.getRepositoryId(), db);
 			}
 			
 			newIsRepositoryLevel = true;

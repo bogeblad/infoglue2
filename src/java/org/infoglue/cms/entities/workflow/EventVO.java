@@ -46,7 +46,9 @@ public class EventVO implements BaseEntityVO
     private java.util.Date creationDateTime  = DateHelper.getSecondPreciseDate();
   	private java.lang.Integer typeId         = UNDEFINED;
   	private java.lang.String creator	     = null;
+  	private java.lang.Integer repositoryId	 = null;
   	  
+
 	/**
 	 * The constructor for the object. Empty now.
 	 */
@@ -136,6 +138,15 @@ public class EventVO implements BaseEntityVO
 		this.creator = creator;
 	}
                 	
+	public java.lang.Integer getRepositoryId() 
+	{
+		return repositoryId;
+	}
+
+	public void setRepositoryId(java.lang.Integer repositoryId) 
+	{
+		this.repositoryId = repositoryId;
+	}
 
 	/**
 	 * @see org.infoglue.cms.entities.kernel.BaseEntityVO#getId()

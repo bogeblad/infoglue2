@@ -67,6 +67,7 @@ import org.infoglue.deliver.integration.dataproviders.PropertyOptionsDataProvide
 import org.infoglue.deliver.util.HttpHelper;
 import org.infoglue.deliver.util.NullObject;
 import org.infoglue.deliver.util.CacheController;
+import org.infoglue.deliver.util.Timer;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
@@ -110,7 +111,19 @@ public class ContentTypeDefinitionController extends BaseController
 
     public ContentTypeDefinitionVO getContentTypeDefinitionVOWithId(Integer contentTypeDefinitionId) throws SystemException, Bug
     {
-		return (ContentTypeDefinitionVO) getVOWithId(ContentTypeDefinitionImpl.class, contentTypeDefinitionId);
+    	String key = "" + contentTypeDefinitionId;
+		ContentTypeDefinitionVO cachedContentTypeDefinitionVO = (ContentTypeDefinitionVO)CacheController.getCachedObject("contentTypeDefinitionCache", key);
+		if(cachedContentTypeDefinitionVO != null)
+		{
+			return cachedContentTypeDefinitionVO;
+		}
+		
+		cachedContentTypeDefinitionVO = (ContentTypeDefinitionVO) getVOWithId(ContentTypeDefinitionImpl.class, contentTypeDefinitionId);
+		
+		CacheController.cacheObject("contentTypeDefinitionCache", key, cachedContentTypeDefinitionVO);
+
+		return cachedContentTypeDefinitionVO;
+
     }
 
     public ContentTypeDefinitionVO getContentTypeDefinitionVOWithId(Integer contentTypeDefinitionId, Database db) throws SystemException, Bug
@@ -321,17 +334,24 @@ public class ContentTypeDefinitionController extends BaseController
 
 	public ContentTypeDefinitionVO getContentTypeDefinitionVOWithName(String name) throws SystemException, Bug
 	{
-		ContentTypeDefinitionVO contentTypeDefinitionVO = null;
-
+		String key = "" + name;
+		ContentTypeDefinitionVO cachedContentTypeDefinitionVO = (ContentTypeDefinitionVO)CacheController.getCachedObject("contentTypeDefinitionCache", key);
+		if(cachedContentTypeDefinitionVO != null)
+		{
+			return cachedContentTypeDefinitionVO;
+		}
+		
 		Database db = CastorDatabaseService.getDatabase();
 
 		try
 		{
 			beginTransaction(db);
 
-			ContentTypeDefinition contentTypeDefinition = getContentTypeDefinitionWithName(name, db);
-			if(contentTypeDefinition != null)
-				contentTypeDefinitionVO = contentTypeDefinition.getValueObject();
+			cachedContentTypeDefinitionVO = getContentTypeDefinitionVOWithName(name, db);
+			//if(contentTypeDefinition != null)
+			//	contentTypeDefinitionVO = contentTypeDefinition.getValueObject();
+			CacheController.cacheObject("contentTypeDefinitionCache", key, cachedContentTypeDefinitionVO);
+
 
 			commitTransaction(db);
 		}
@@ -342,7 +362,7 @@ public class ContentTypeDefinitionController extends BaseController
 			throw new SystemException(e.getMessage());
 		}
 
-		return contentTypeDefinitionVO;
+		return cachedContentTypeDefinitionVO;
 	}
 
 	/**
@@ -465,27 +485,43 @@ public class ContentTypeDefinitionController extends BaseController
 
 	public List<ContentTypeDefinitionVO> getContentTypeDefinitionVOList(Integer type, Database db)  throws SystemException, Bug
 	{
-		ArrayList<ContentTypeDefinitionVO> contentTypeDefinitionVOList = new ArrayList<ContentTypeDefinitionVO>();
-		try
+		String key = "contentTypeDefinitionsType_" + type;
+		logger.info("key:" + key);
+		List<ContentTypeDefinitionVO> contentTypeDefinitionVOList = null;
+		Object candidate = CacheController.getCachedObject("contentTypeDefinitionCache", key);
+		if(candidate != null)
 		{
-			OQLQuery oql = db.getOQLQuery("SELECT f FROM org.infoglue.cms.entities.management.impl.simple.ContentTypeDefinitionImpl f WHERE f.type = $1");
-			oql.bind(type);
-
-			QueryResults results = oql.execute(Database.ReadOnly);
-			while (results.hasMore())
+			if(candidate instanceof NullObject)
+				contentTypeDefinitionVOList = new ArrayList<ContentTypeDefinitionVO>();
+			else
+				contentTypeDefinitionVOList = (List<ContentTypeDefinitionVO>)candidate;
+		}
+		else
+		{
+			contentTypeDefinitionVOList = new ArrayList<ContentTypeDefinitionVO>();
+			try
 			{
-				ContentTypeDefinition contentTypeDefinition = (ContentTypeDefinition)results.next();
-				contentTypeDefinitionVOList.add(contentTypeDefinition.getValueObject());
-			}
-			
-			results.close();
-			oql.close();
-		}
-		catch(Exception e)
-		{
-			throw new SystemException("An error occurred when we tried to fetch a list of Function. Reason:" + e.getMessage(), e);
-		}
+				OQLQuery oql = db.getOQLQuery("SELECT f FROM org.infoglue.cms.entities.management.impl.simple.ContentTypeDefinitionImpl f WHERE f.type = $1");
+				oql.bind(type);
+	
+				QueryResults results = oql.execute(Database.ReadOnly);
+				while (results.hasMore())
+				{
+					ContentTypeDefinition contentTypeDefinition = (ContentTypeDefinition)results.next();
+					contentTypeDefinitionVOList.add(contentTypeDefinition.getValueObject());
+				}
 
+				CacheController.cacheObject("contentTypeDefinitionCache", key, contentTypeDefinitionVOList);
+
+				results.close();
+				oql.close();
+			}
+			catch(Exception e)
+			{
+				throw new SystemException("An error occurred when we tried to fetch a list of Function. Reason:" + e.getMessage(), e);
+			}
+		}
+		
 		return contentTypeDefinitionVOList;
 	}
 
@@ -808,6 +844,7 @@ public class ContentTypeDefinitionController extends BaseController
 
 	private List getAttributesWithDOM4J(String schemaValue, boolean addPriorityAttribute, String languageCode, InfoGluePrincipal principal, Database db)
 	{
+		Timer t = new Timer();
 		List attributes = new ArrayList();
 		
 		int i = 0;

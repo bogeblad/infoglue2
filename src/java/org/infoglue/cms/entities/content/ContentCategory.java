@@ -19,7 +19,7 @@
  * Place, Suite 330 / Boston, MA 02111-1307 / USA.
  *
  * ===============================================================================
- * $Id: ContentCategory.java,v 1.3 2006/12/03 19:32:07 mattias Exp $
+ * $Id: ContentCategory.java,v 1.3.4.1 2013/02/14 10:13:43 mattias Exp $
  */
 package org.infoglue.cms.entities.content;
 
@@ -52,7 +52,7 @@ public interface ContentCategory extends IBaseEntity
 	public CategoryImpl getCategory();
 	public void setCategory(CategoryImpl c);
 	
-	public ContentVersionImpl getContentVersion();
-    public void setContentVersion(ContentVersionImpl contentVersion);
+	public ContentVersion getContentVersion();
+    public void setContentVersion(ContentVersion contentVersion);
 }
 

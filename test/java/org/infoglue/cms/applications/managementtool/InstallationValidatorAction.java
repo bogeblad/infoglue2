@@ -374,9 +374,6 @@ public class InstallationValidatorAction extends InfoGlueAbstractAction
 	                {
 		                if(siteNode.getMetaInfoContentId() == null || siteNode.getMetaInfoContentId().intValue() == -1)
 		                {
-		                    Language masterLanguage = LanguageController.getController().getMasterLanguage(db, siteNode.getRepository().getId());
-			    			Integer languageId = masterLanguage.getLanguageId();
-			    			
 			    			Integer metaInfoContentId = null;
 			    			
 			    			SiteNodeVersion siteNodeVersion = SiteNodeVersionController.getController().getLatestActiveSiteNodeVersion(db, siteNode.getId());

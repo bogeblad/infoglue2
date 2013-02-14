@@ -20,7 +20,7 @@
  *
  * ===============================================================================
  *
- * $Id: ContentStateControllerTest.java,v 1.6 2008/06/04 07:19:51 mattias Exp $
+ * $Id: ContentStateControllerTest.java,v 1.6.4.1 2013/02/14 10:33:35 mattias Exp $
  */
 package org.infoglue.cms.controllers;
 
@@ -128,14 +128,13 @@ public class ContentStateControllerTest extends InfoGlueTestCase
 		assertTrue("testContentCategory data not returned", found.contains(testContentCategory));
 
 		List events = new ArrayList();
-		ContentVersion newVersion = ContentStateController.changeState(testContentVersion.getId(), stateId, getName(), false, getAdminPrincipal(), null, events);
-		testEventContentVersion = newVersion.getValueObject();
-
-		List newFound = contentCategoryStore.findByContentVersion(newVersion.getId());
+		ContentVersionVO testEventContentVersion = ContentStateController.changeState(testContentVersion.getId(), stateId, getName(), false, getAdminPrincipal(), null, events);
+		
+		List newFound = contentCategoryStore.findByContentVersion(testEventContentVersion.getId());
 		assertEquals("Wrong number of new ContentCategories returned", found.size(), newFound.size());
 
 		ContentCategoryVO newContentCategory = (ContentCategoryVO)newFound.get(0);
-		assertEquals("Wrong contentVersionId", newVersion.getContentVersionId(), newContentCategory.getContentVersionId());
+		assertEquals("Wrong contentVersionId", testEventContentVersion.getContentVersionId(), newContentCategory.getContentVersionId());
 		assertEquals("Wrong category", testContentCategory.getCategory(), newContentCategory.getCategory());
 		assertEquals("Wrong attribute", testContentCategory.getAttributeName(), newContentCategory.getAttributeName());
 	}

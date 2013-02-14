@@ -2146,7 +2146,7 @@ public class NodeDeliveryController extends BaseDeliveryController
 	    	if(language != null)
 	    		enableNiceURIForLanguage = "true";
 	    }
-	    
+
     	//logger.info("enableNiceURIForLanguage:" + enableNiceURIForLanguage);
         //logger.info("numberOfPaths:" + numberOfPaths);
     	if(enableNiceURIForLanguage.equalsIgnoreCase("true") && path.length > 0)
@@ -2347,7 +2347,7 @@ public class NodeDeliveryController extends BaseDeliveryController
 	        StringBuffer SQL = new StringBuffer();
 	    	if(CmsPropertyHandler.getUseShortTableNames() != null && CmsPropertyHandler.getUseShortTableNames().equalsIgnoreCase("true"))
 	    	{
-		   		SQL.append("CALL SQL select sn.siNoId, sn.name, sn.publishDateTime, sn.expireDateTime, sn.isBranch, sn.parentSiNoId, sn.metaInfoContentId, sn.repositoryId, sn.siNoTypeDefId, sn.creator, (select count(*) from cmSiNo sn2 where sn2.parentSiNoId = sn.siNoId) AS childCount, snv.stateId, snv.isProtected from cmSiNo sn, cmSiNoVer snv ");
+		   		SQL.append("CALL SQL select sn.siNoId, sn.name, sn.publishDateTime, sn.expireDateTime, sn.isBranch, sn.parentSiNoId, sn.metaInfoContentId, sn.repositoryId, sn.siNoTypeDefId, sn.creator, (select count(*) from cmSiNo sn2 where sn2.parentSiNoId = sn.siNoId) AS childCount, snv.siNoVerId, snv.stateId, snv.isProtected, snv.versionModifier, snv.modifiedDateTime from cmSiNo sn, cmSiNoVer snv ");
 		   		SQL.append("where ");
 		   		SQL.append("sn.parentSiNoId = $1 ");
 		   		SQL.append("AND snv.siNoId = sn.siNoId ");
@@ -2361,7 +2361,7 @@ public class NodeDeliveryController extends BaseDeliveryController
 	    	}
 	    	else
 	    	{
-		   		SQL.append("CALL SQL select sn.siteNodeId, sn.name, sn.publishDateTime, sn.expireDateTime, sn.isBranch, sn.parentSiteNodeId, sn.metaInfoContentId, sn.repositoryId, sn.siteNodeTypeDefinitionId, sn.creator, (select count(*) from cmSiteNode sn2 where sn2.parentSiteNodeId = sn.siteNodeId) AS childCount, snv.stateId, snv.isProtected from cmSiteNode sn, cmSiteNodeVersion snv ");
+		   		SQL.append("CALL SQL select sn.siteNodeId, sn.name, sn.publishDateTime, sn.expireDateTime, sn.isBranch, sn.parentSiteNodeId, sn.metaInfoContentId, sn.repositoryId, sn.siteNodeTypeDefinitionId, sn.creator, (select count(*) from cmSiteNode sn2 where sn2.parentSiteNodeId = sn.siteNodeId) AS childCount, snv.siteNodeVersionId, snv.stateId, snv.isProtected, snv.versionModifier, snv.modifiedDateTime from cmSiteNode sn, cmSiteNodeVersion snv ");
 		   		SQL.append("where ");
 		   		SQL.append("sn.parentSiteNodeId = $1 ");
 		   		SQL.append("AND snv.siteNodeId = sn.siteNodeId ");

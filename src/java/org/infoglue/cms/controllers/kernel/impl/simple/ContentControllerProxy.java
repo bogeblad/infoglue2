@@ -362,7 +362,6 @@ public class ContentControllerProxy extends ContentController
 	public Integer getProtectedContentId(Integer contentId)
 	{
 		Integer protectedContentId = null;
-		boolean isContentProtected = false;
 	
 		try
 		{
@@ -397,11 +396,10 @@ public class ContentControllerProxy extends ContentController
 	public Integer getProtectedContentId(Integer contentId, Database db)
 	{
 		Integer protectedContentId = null;
-		boolean isContentProtected = false;
 	
 		try
 		{
-			ContentVO contentVO = ContentController.getContentController().getContentVOWithId(contentId, db);
+			ContentVO contentVO = ContentController.getContentController().getSmallContentVOWithId(contentId, db, null);
 			if(contentVO.getIsProtected() != null)
 			{	
 				if(contentVO.getIsProtected().intValue() == NO.intValue())
@@ -410,7 +408,7 @@ public class ContentControllerProxy extends ContentController
 					protectedContentId = contentVO.getId();
 				else if(contentVO.getIsProtected().intValue() == INHERITED.intValue())
 				{
-					ContentVO parentContentVO = ContentController.getParentContent(contentId, db);
+					ContentVO parentContentVO = ContentController.getContentController().getSmallParentContent(contentVO, db);
 					if(parentContentVO != null)
 						protectedContentId = getProtectedContentId(parentContentVO.getId(), db); 
 				}

@@ -43,6 +43,7 @@ import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.security.InfoGluePrincipal;
 import org.infoglue.cms.util.ConstraintExceptionBuffer;
 import org.infoglue.cms.util.DateHelper;
+import org.infoglue.deliver.util.Timer;
 
 public class UpdateSiteNodeUCCImpl extends BaseUCCController implements UpdateSiteNodeUCC
 {
@@ -108,6 +109,8 @@ public class UpdateSiteNodeUCCImpl extends BaseUCCController implements UpdateSi
 
     public SiteNodeVO updateSiteNode(InfoGluePrincipal infoGluePrincipal, SiteNodeVO siteNodeVO, Integer siteNodeTypeDefinitionId, SiteNodeVersionVO updatedSiteNodeVersionVO) throws AccessConstraintException, ConstraintException, SystemException
     {
+    	Timer t = new Timer();
+    	
         Database db = CastorDatabaseService.getDatabase();
         ConstraintExceptionBuffer ceb = new ConstraintExceptionBuffer();
 
@@ -125,7 +128,7 @@ public class UpdateSiteNodeUCCImpl extends BaseUCCController implements UpdateSi
 	            siteNode.setSiteNodeTypeDefinition((SiteNodeTypeDefinitionImpl)SiteNodeTypeDefinitionController.getController().getSiteNodeTypeDefinitionWithId(siteNodeTypeDefinitionId, db));
 
             
-			SiteNodeVersionVO latestSiteNodeVersionVO = SiteNodeVersionController.getController().getLatestActiveSiteNodeVersion(db, siteNodeVO.getSiteNodeId()).getValueObject();
+			SiteNodeVersionVO latestSiteNodeVersionVO = SiteNodeVersionController.getController().getLatestActiveSiteNodeVersionVO(db, siteNodeVO.getSiteNodeId());
 			
 			latestSiteNodeVersionVO.setContentType(updatedSiteNodeVersionVO.getContentType());
 			latestSiteNodeVersionVO.setPageCacheKey(updatedSiteNodeVersionVO.getPageCacheKey());
@@ -144,7 +147,7 @@ public class UpdateSiteNodeUCCImpl extends BaseUCCController implements UpdateSi
 			latestSiteNodeVersionVO.setDisableForceIdentityCheck(updatedSiteNodeVersionVO.getDisableForceIdentityCheck());
 			latestSiteNodeVersionVO.setForceProtocolChange(updatedSiteNodeVersionVO.getForceProtocolChange());
 			latestSiteNodeVersionVO.setModifiedDateTime(DateHelper.getSecondPreciseDate());
-
+			
 			SiteNodeVersionControllerProxy.getSiteNodeVersionControllerProxy().acUpdate(infoGluePrincipal, latestSiteNodeVersionVO, db);
 
 			//If any of the validations or setMethods reported an error, we throw them up now before create.

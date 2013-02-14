@@ -187,39 +187,44 @@ public class InfoGluePrincipalControllerProxy extends BaseController
 		if(infoGluePrincipal == null || propertyName == null)
 			return null;
 		
-	    Collection userPropertiesList = UserPropertiesController.getController().getUserPropertiesList(infoGluePrincipal.getName(), languageId, db, true);
-		Iterator userPropertiesListIterator = userPropertiesList.iterator();
-		while(userPropertiesListIterator.hasNext())
+		boolean hasPropertyName = false;
+		List<ContentTypeDefinitionVO> userContentTypes = ContentTypeDefinitionController.getController().getContentTypeDefinitionVOList(ContentTypeDefinitionVO.EXTRANET_USER_PROPERTIES, db);
+		for(ContentTypeDefinitionVO ctVO : userContentTypes)
 		{
-			UserProperties userProperties = (UserProperties)userPropertiesListIterator.next();
-
-			if(userProperties != null && userProperties.getLanguage().getLanguageId().equals(languageId) && userProperties.getValue() != null && propertyName != null)
+			List<ContentTypeAttribute> attributes = ContentTypeDefinitionController.getController().getContentTypeAttributes(ctVO.getSchemaValue());
+			outer:for(ContentTypeAttribute attribute : attributes)
 			{
-				String propertyXML = userProperties.getValue();
-			    if(propertyXML != null && propertyXML.indexOf(propertyName) > -1)
-			    {
-					value = getAttributeValue(propertyXML, propertyName, escapeSpecialCharacters);
-				    if(value != null && !value.equals(""))
-				    	break;
-			    }
-			    /*
-				DOMBuilder domBuilder = new DOMBuilder();
-				Document document = domBuilder.getDocument(propertyXML);
-				Node node = document.getRootElement().selectSingleNode("attributes/" + propertyName);
-			    if(node != null)
+				if(attribute.getName().equals(propertyName))
 				{
-					value = node.getStringValue();
-					logger.info("Getting value: " + value);
-					if(value != null && escapeSpecialCharacters)
-						value = new VisualFormatter().escapeHTML(value);
-				    t.printElapsedTime("2:" + value);
-					break;
+					hasPropertyName = true;
+					break outer;
 				}
-				*/
+			}
+		}
+		logger.info("User hasPropertyName:" + hasPropertyName);
+		
+		if(hasPropertyName)
+		{
+		    Collection userPropertiesList = UserPropertiesController.getController().getUserPropertiesList(infoGluePrincipal.getName(), languageId, db, true);
+			Iterator userPropertiesListIterator = userPropertiesList.iterator();
+			while(userPropertiesListIterator.hasNext())
+			{
+				UserProperties userProperties = (UserProperties)userPropertiesListIterator.next();
+	
+				if(userProperties != null && userProperties.getLanguage().getLanguageId().equals(languageId) && userProperties.getValue() != null && propertyName != null)
+				{
+					String propertyXML = userProperties.getValue();
+				    if(propertyXML != null && propertyXML.indexOf(propertyName) > -1)
+				    {
+						value = getAttributeValue(propertyXML, propertyName, escapeSpecialCharacters);
+					    if(value != null && !value.equals(""))
+					    	break;
+				    }
+				}
 			}
 		}
 		
-		boolean hasPropertyName = false;
+		hasPropertyName = false;
 		List<ContentTypeDefinitionVO> roleContentTypes = ContentTypeDefinitionController.getController().getContentTypeDefinitionVOList(ContentTypeDefinitionVO.EXTRANET_ROLE_PROPERTIES, db);
 		for(ContentTypeDefinitionVO ctVO : roleContentTypes)
 		{

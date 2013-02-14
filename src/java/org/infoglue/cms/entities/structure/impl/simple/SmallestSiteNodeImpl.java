@@ -23,6 +23,8 @@
 
 package org.infoglue.cms.entities.structure.impl.simple;
 
+import java.util.Date;
+
 import org.infoglue.cms.entities.kernel.BaseEntityVO;
 import org.infoglue.cms.entities.structure.SiteNodeVO;
 
@@ -221,5 +223,15 @@ public class SmallestSiteNodeImpl extends SiteNodeImpl
     public void setVersionModifier(String versionModifier)
     {
         this.valueObject.setVersionModifier(versionModifier);
+    }
+
+    public Date getModifiedDateTime()
+    {
+        return this.valueObject.getModifiedDateTime();
+    }
+            
+    public void setModifiedDateTime(Date modifiedDateTime)
+    {
+        this.valueObject.setModifiedDateTime(modifiedDateTime);
     }
 }        

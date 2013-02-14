@@ -122,7 +122,10 @@ public class SiteNodeVersionVO implements BaseEntityVO
                 
     public void setModifiedDateTime(Date modifiedDateTime)
     {
-        this.modifiedDateTime = modifiedDateTime;
+    	if(modifiedDateTime != null)
+    		this.modifiedDateTime = modifiedDateTime;
+    	else
+    		Thread.dumpStack();
     }
     
     public java.lang.String getVersionComment()

@@ -1,4 +1,4 @@
-<!-- $Id: actions.xml,v 1.83.2.9.2.4 2013/02/04 12:26:15 mattias Exp $ -->
+<!-- $Id: actions.xml,v 1.83.2.9.2.5 2013/02/14 10:36:31 mattias Exp $ -->
 <actions>
 
 	<!-- MySettings -->
@@ -84,6 +84,12 @@
 	<action name="org.infoglue.cms.applications.structuretool.actions.LoadingAction" alias="Loading">
 		<view name="successStructure">/cms/structuretool/loading.vm</view>
 		<view name="successContent">/cms/contenttool/loading.vm</view>
+	</action>
+
+	<!-- In process status frames -->
+	<action name="org.infoglue.cms.applications.structuretool.actions.LoadingAction" alias="InProcessLoading">
+		<view name="successStructure">/cms/structuretool/inprocessloading.vm</view>
+		<view name="successContent">/cms/structuretool/inprocessloading.vm</view>
 	</action>
 
 	<!-- CMS LOGIN -->
@@ -1235,6 +1241,7 @@
    <action name="org.infoglue.cms.applications.structuretool.actions.ViewListSiteNodeVersionAction" alias="ViewListSiteNodeVersion">
 		<view name="success">/cms/structuretool/viewListSiteNodeVersion.vm</view>
 		<view name="successV3">/cms/structuretool/v3/viewListSiteNodeVersion.vm</view>
+		<view name="successShowProcessesAsJSON">/cms/managementtool/viewExportRepositoryProcessesAsJson.vm</view>
 		<view name="error">/cms/structuretool/error.vm</view>
 		<view name="accessDenied">/cms/structuretool/viewConstraintException.vm</view>
 	</action>

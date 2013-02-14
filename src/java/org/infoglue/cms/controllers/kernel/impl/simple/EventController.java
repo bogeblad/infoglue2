@@ -95,12 +95,9 @@ public class EventController extends BaseController
 	
 	public static EventVO create(EventVO eventVO, Integer repositoryId, InfoGluePrincipal infoGluePrincipal, Database db) throws SystemException
     {
-        //Fetch related entities here if they should be referenced        
-     	Repository repository = RepositoryController.getController().getRepositoryWithId(repositoryId, db);
-     	
         Event event = new EventImpl();
         event.setValueObject(eventVO);				
-        event.setRepository((RepositoryImpl)repository);
+        event.setRepositoryId(repositoryId);
         event.setCreator(infoGluePrincipal.getName());
         
         try
@@ -130,11 +127,9 @@ public class EventController extends BaseController
 		try
         {
 	        //Fetch related entities here if they should be referenced        
-	     	Repository repository = RepositoryController.getController().getRepositoryWithId(repositoryId, db);
-	     	
-	        event = new EventImpl();
+	     	event = new EventImpl();
 	        event.setValueObject(eventVO);				
-	        event.setRepository((RepositoryImpl)repository);
+	        event.setRepositoryId(repositoryId);
             event.setCreator(infoGluePrincipal.getName());
             db.create(event);
     
@@ -268,13 +263,13 @@ public class EventController extends BaseController
 			while (results.hasMore()) 
             {
             	Event event = (Event)results.next();
-            	if(event.getRepository() != null)
+            	if(event.getRepositoryId() != null)
             	{
-	             	List<EventVO> events = repoEvents.get(event.getRepository().getId());
+	             	List<EventVO> events = repoEvents.get(event.getRepositoryId());
 	             	if(events == null)
 	             	{
 	             		events = new ArrayList<EventVO>();
-	             		repoEvents.put(event.getRepository().getId(), events);
+	             		repoEvents.put(event.getRepositoryId(), events);
 	             	}
 	             	events.add(event.getValueObject());
             	}
@@ -311,7 +306,7 @@ public class EventController extends BaseController
         beginTransaction(db);
 		try
         {
-            OQLQuery oql = db.getOQLQuery( "SELECT e FROM org.infoglue.cms.entities.workflow.impl.simple.EventImpl e WHERE (e.typeId = $1 OR e.typeId = $2) AND e.repository.repositoryId = $3 ORDER BY e.eventId desc");
+            OQLQuery oql = db.getOQLQuery( "SELECT e FROM org.infoglue.cms.entities.workflow.impl.simple.EventImpl e WHERE (e.typeId = $1 OR e.typeId = $2) AND e.repositoryId = $3 ORDER BY e.eventId desc");
         	oql.bind(EventVO.PUBLISH);
         	oql.bind(EventVO.UNPUBLISH_LATEST);
         	oql.bind(repositoryId);
@@ -527,7 +522,7 @@ public class EventController extends BaseController
 
         try
         {
-            OQLQuery oql = db.getOQLQuery( "SELECT e FROM org.infoglue.cms.entities.workflow.impl.simple.EventImpl e WHERE (e.typeId = $1 OR e.typeId = $2) AND e.repository.repositoryId = $3 ORDER BY e.eventId desc");
+            OQLQuery oql = db.getOQLQuery( "SELECT e FROM org.infoglue.cms.entities.workflow.impl.simple.EventImpl e WHERE (e.typeId = $1 OR e.typeId = $2) AND e.repositoryId = $3 ORDER BY e.eventId desc");
         	oql.bind(EventVO.PUBLISH);
         	oql.bind(EventVO.UNPUBLISH_LATEST);
         	oql.bind(repositoryId);

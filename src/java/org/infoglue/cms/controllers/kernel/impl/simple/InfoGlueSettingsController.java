@@ -31,18 +31,26 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 import org.dom4j.Document;
 import org.exolab.castor.jdo.Database;
 import org.exolab.castor.jdo.OQLQuery;
 import org.exolab.castor.jdo.QueryResults;
+import org.infoglue.cms.entities.content.Content;
+import org.infoglue.cms.entities.content.ContentVersionVO;
+import org.infoglue.cms.entities.content.impl.simple.SmallStateContentImpl;
 import org.infoglue.cms.entities.kernel.BaseEntityVO;
+import org.infoglue.cms.entities.management.GeneralOQLResult;
 import org.infoglue.cms.entities.management.InfoGlueProperty;
 import org.infoglue.cms.exception.Bug;
+import org.infoglue.cms.exception.ConstraintException;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.util.CmsPropertyHandler;
+import org.infoglue.cms.util.ConstraintExceptionBuffer;
 import org.infoglue.cms.util.DateHelper;
 import org.infoglue.cms.util.dom.DOMBuilder;
 import org.infoglue.common.settings.controllers.CastorSettingsController;
@@ -58,7 +66,7 @@ import com.opensymphony.module.propertyset.PropertySetManager;
 
 public class InfoGlueSettingsController extends BaseController implements CastorSettingsPersister
 {
-	private static Log log = LogFactory.getLog(InfoGlueSettingsController.class);
+    private final static Logger logger = Logger.getLogger(InfoGlueSettingsController.class.getName());
 
 	private DOMBuilder domBuilder = new DOMBuilder();
 	private CastorSettingsController settingsController = null;
@@ -242,7 +250,7 @@ public class InfoGlueSettingsController extends BaseController implements Castor
         	database.close();
     	}
     	
-    	log.debug("Creating property with:" + nameSpace + ":" + name);        
+    	logger.debug("Creating property with:" + nameSpace + ":" + name);        
 
         return property;
     }
@@ -298,6 +306,76 @@ public class InfoGlueSettingsController extends BaseController implements Castor
     {
     	return getPropertyFromPropertySet(key, name, variationId, skipInfoGlueProperty, fallbackToDefault, fallbackToKey, useDerivedValue, database);
     	//return getPropertyFromInfoGlue(key, name, variationId, skipInfoGlueProperty, fallbackToDefault, fallbackToKey, useDerivedValue, database);
+    }
+
+    public static void addInitialLanguageCache(Integer contentId, String languageId)
+    {
+    	if(contentInitialLanguageId != null)
+    		contentInitialLanguageId.put(contentId, languageId);
+    }
+
+    public static void clearInitialLanguageCache()
+    {
+    	contentInitialLanguageId = null;
+    }
+    
+    private static Map<Integer,String> contentInitialLanguageId = null;
+    private static AtomicBoolean caching = new AtomicBoolean(false);
+    public String getInitialLanguageIdFromPropertySet(Integer contentId) throws Exception
+    {
+    	if(contentInitialLanguageId == null && caching.compareAndSet(false, true))
+    	{
+    		try
+    		{
+	    		contentInitialLanguageId = new HashMap<Integer,String>();
+	    	
+	    		Database db = CastorDatabaseService.getDatabase();
+	    		ConstraintExceptionBuffer ceb = new ConstraintExceptionBuffer();
+
+	    		Content content = null;
+
+	    		beginTransaction(db);
+
+	    		try
+	    		{
+		    		StringBuilder sql = new StringBuilder();
+		    		sql.append("select rownum AS ID, entity_key as column1Value, string_val as column2Value, '' as column3Value, '' as column4Value, '' as column5Value, '' as column6Value, '' as column7Value from os_propertyentry where entity_name = 'infoglue' AND key_type = 5 and entity_key like 'content_%_initialLanguageId' AND String_VAL <> '-1' ");
+		    		
+		    		String SQL = "CALL SQL " + sql.toString() + "AS org.infoglue.cms.entities.management.GeneralOQLResult";
+		    		
+		    		OQLQuery oql = db.getOQLQuery(SQL);
+		
+		    		QueryResults results = oql.execute(Database.ReadOnly);
+		    		while (results.hasMore()) 
+		            {
+		    			GeneralOQLResult resultBean = (GeneralOQLResult)results.next();
+		    			Integer rowNum = resultBean.getId();
+		    			String contentKey = resultBean.getValue1().replaceAll("content_", "").replaceAll("_initialLanguageId", "");
+		    			String languageId = resultBean.getValue2();
+		    			System.out.println("" + contentKey + "=" + languageId);
+		    			contentInitialLanguageId.put(new Integer(contentKey), languageId);
+		            }   
+	                
+	    			commitTransaction(db);	
+	    		}
+	    		catch(Exception e)
+	    		{
+	    			logger.warn("An error occurred so we should not complete the transaction:" + e, e);
+	    			rollbackTransaction(db);
+	    		}
+    		}
+    		finally
+    		{
+    			caching.set(false);
+    		}
+    	}
+    	
+    	if(contentInitialLanguageId != null)
+    	{
+    		return contentInitialLanguageId.get(contentId);
+    	}
+    	else
+    		return getProperty("content_" + contentId + "_initialLanguageId", "applicationProperties", null, false, false, false, false, null);
     }
     
     public String getPropertyFromPropertySet(String key, String name, String variationId, boolean skipInfoGlueProperty, boolean fallbackToDefault, boolean fallbackToKey, boolean useDerivedValue, Database database)
@@ -368,7 +446,7 @@ public class InfoGlueSettingsController extends BaseController implements Castor
 	    }
 	    catch(Exception e)
 	    {
-	        log.warn("An property was not found for key: " + key + ": " + e.getMessage(), e);
+	        logger.warn("An property was not found for key: " + key + ": " + e.getMessage(), e);
 	    }
 	    
 	    return property;

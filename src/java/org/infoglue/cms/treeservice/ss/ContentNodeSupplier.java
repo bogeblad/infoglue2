@@ -38,6 +38,7 @@ import org.infoglue.cms.controllers.kernel.impl.simple.ContentControllerProxy;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentTypeDefinitionController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentVersionController;
 import org.infoglue.cms.controllers.kernel.impl.simple.LanguageController;
+import org.infoglue.cms.controllers.kernel.impl.simple.RepositoryLanguageController;
 import org.infoglue.cms.entities.content.ContentVO;
 import org.infoglue.cms.entities.content.ContentVersionVO;
 import org.infoglue.cms.entities.management.ContentTypeDefinitionVO;
@@ -71,14 +72,15 @@ public class ContentNodeSupplier extends BaseNodeSupplier
 	private Integer repositoryId = null;
 	private List languageVOList = null;
 	
-	public ContentNodeSupplier(Integer repositoryId, InfoGluePrincipal infogluePrincipal) throws SystemException
+	public ContentNodeSupplier(Integer repositoryId, InfoGluePrincipal infogluePrincipal) throws SystemException, Exception
 	{
 		ContentVO vo =null;
 		try
 		{
 		    this.infogluePrincipal = infogluePrincipal;
 		    this.repositoryId = repositoryId;
-		    this.languageVOList = LanguageController.getController().getLanguageVOList(repositoryId);
+		    this.languageVOList = RepositoryLanguageController.getController().getAvailableLanguageVOListForRepositoryId(repositoryId);
+		    //this.languageVOList = LanguageController.getController().getLanguageVOList(repositoryId);
 
 			Timer t = new Timer();
 			if(repositoryId != null && repositoryId.intValue() > 0)

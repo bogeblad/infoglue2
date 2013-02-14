@@ -8,24 +8,24 @@
 	<link rel="SHORTCUT ICON" href="images/icons/ig-16.png" />
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 
-<script language="JavaScript" type="text/javascript"> 
-	
-	#if($infoGluePrincipal.isAdministrator)
-		alert("You should only use this account to solve access rights issues etc as this is not a normal user account and some features are disabled because of that.");
-	#end
-	
-	if(window.name.indexOf("CMS") == -1)
-	{
-		/*
-		url = window.location;
-		details = "toolbar=no,status=yes,scrollbars=no,location=no,menubar=no,directories=no,resizable=yes,width=1000,height=740,left=5,top=5";
-		newWin=window.open(url, "CMS", details);
-		newWin.focus();
-		window.close();
-		*/
-	}
-	
-</script> 
+	<script language="JavaScript" type="text/javascript"> 
+		
+		#if($infoGluePrincipal.isAdministrator)
+			alert("You should only use this account to solve access rights issues etc as this is not a normal user account and some features are disabled because of that.");
+		#end
+		
+		if(window.name.indexOf("CMS") == -1)
+		{
+			/*
+			url = window.location;
+			details = "toolbar=no,status=yes,scrollbars=no,location=no,menubar=no,directories=no,resizable=yes,width=1000,height=740,left=5,top=5";
+			newWin=window.open(url, "CMS", details);
+			newWin.focus();
+			window.close();
+			*/
+		}
+
+	</script> 
 </head>
 
 <frameset rows="58,*,30" FRAMESPACING="0" FRAMEBORDER="NO" BORDER="0" >

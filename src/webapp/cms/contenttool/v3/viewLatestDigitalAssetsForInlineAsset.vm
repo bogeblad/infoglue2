@@ -88,7 +88,7 @@
 				#set($singleEncodedAssetKey = "$formatter.encodeURI($digitalAsset.assetKey, 'utf-8')")
 				#set($doubleEncodedAssetKey = "$formatter.encodeURI($formatter.encodeURI($digitalAsset.assetKey, 'utf-8'), 'utf-8')")
 				#set($thumbnailImageUrl = "$this.getDigitalAssetThumbnailUrl($digitalAsset.digitalAssetId, 100, 60, 'ffffff', 'center', 'middle', 100, 60, 75)")
-				#set($contentId = $this.getDigitalAssetContentId($digitalAsset.digitalAssetId))
+				#set($contentId = $digitalAsset.contentId)
 				#set($path = "$this.getContentPath($contentId)")
 				<img ondblclick="onOk();" onclick="markAsset(this, $digitalAsset.id, $!contentId, '$singleEncodedAssetKey', '$singleEncodedAssetKey', '$thumbnailImageUrl');" src="$thumbnailImageUrl" alt="$digitalAsset.assetKey - $path - ($digitalAsset.assetContentType - $formatter.formatFileSize($digitalAsset.assetFileSize))" />
              	<p title="$digitalAsset.assetKey - $path - ($digitalAsset.assetContentType - $formatter.formatFileSize($digitalAsset.assetFileSize))" class="assetKeyP"><a class="assetKeyHref" ondblclick="onOk();" href="javascript:markAsset(this, $digitalAsset.id, $!contentId, '$doubleEncodedAssetKey', '$doubleEncodedAssetKey', '$thumbnailImageUrl');">#if($digitalAsset.assetKey.length() > 18)$digitalAsset.assetKey.substring(0,18)..#else$digitalAsset.assetKey#end</a></p>

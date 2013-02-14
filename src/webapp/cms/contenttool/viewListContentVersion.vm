@@ -171,7 +171,7 @@
 				<td colspan="3"><img src="images/trans.gif" height="10" width="1"></td>
 			</tr>
 			<tr>
-				<td colspan="3">#editTextArea("ContentVersion.versionComment" "xversionComment" $!versionComment "10" "10" "normaltextarea")</td>
+				<td colspan="3">#editTextArea("ContentVersion.versionComment" "xversionComment" $!versionComment "10" "3" "smalltextarea")</td>
 			</tr>		
 			#if($!this.allowOverrideModifyer != "false")
 			<tr>
@@ -237,12 +237,9 @@
 #set($lvChkBoxName = "selContentVersions")
 #set($cnt = 0)
 #foreach($cv in $contentVersionVOList)
-	#set($displayName = "$!this.getInfoGluePrincipal($cv.versionModifier).displayName")
-	#if($displayName == "")
-		#set($displayName = "$cv.versionModifier")
-	#end
+	#set($displayName = "$cv.getVersionModifierDisplayName()")
 	
-	#set( $row = ["<img src='images/tree/contentRoot.gif'> $cv.getContentName() - $cv.getLanguageName() ($cv.getId())", "$formatter.formatDate($cv.modifiedDateTime, 'yyyy-MM-dd')", "$displayName"] )
+	#set( $row = ["<img src='images/tree/contentRoot.gif'> $cv.path - $cv.getLanguageName() ($cv.getId())", "$formatter.formatDate($cv.modifiedDateTime, 'yyyy-MM-dd')", "$displayName"] )
 	#set($cnt = $cnt + 1)
 	
 	#lvAddRow($row $cnt $cv.getId())
@@ -251,12 +248,9 @@
 
 #set($lvChkBoxName = "selSiteNodeVersions")
 #foreach($snv in $siteNodeVersionVOList)
-	#set($displayName = "$!this.getInfoGluePrincipal($snv.versionModifier).displayName")
-	#if($displayName == "")
-		#set($displayName = "$snv.versionModifier")
-	#end
+	#set($displayName = "$snv.getVersionModifierDisplayName()")
 	
-	#set( $row = ["<img src='images/tree/structureRoot.gif'> $snv.getSiteNodeName() ($snv.getId())", "$formatter.formatDate($snv.modifiedDateTime, 'yyyy-MM-dd')", "$displayName"] )
+	#set( $row = ["<img src='images/tree/structureRoot.gif'> $snv.path ($snv.getId())", "$formatter.formatDate($snv.modifiedDateTime, 'yyyy-MM-dd')", "$displayName"] )
 	#set($cnt = $cnt + 1)
 	
 	#lvAddRow($row $cnt $snv.getId())

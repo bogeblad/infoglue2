@@ -478,7 +478,15 @@ public class CacheController extends Thread
 			return null;
 		
 		if(getDefeatCaches() != null && getDefeatCaches().getDefeatCache())
-			return null;
+		{
+			if(!cacheName.equals("serverNodePropertiesCache") &&
+			   !cacheName.equals("contentTypeDefinitionCache")
+			)
+			{
+				logger.warn("Missed cache:" + cacheName + " because of defeat caches");
+				return null;
+			}
+		}
 		
 		//synchronized(caches)
 		//{
@@ -3223,7 +3231,10 @@ public class CacheController extends Thread
 								    	cacheInstance.flushGroup("content_" + entityId);
 								    	logger.info("clearing " + e.getKey() + " with selectiveCacheUpdateNonApplicable");
 								    	cacheInstance.flushGroup("selectiveCacheUpdateNonApplicable");
-						    			cacheInstance.flushGroup("selectiveCacheUpdateNonApplicable_contentTypeDefinitionId_" + contentVO.getContentTypeDefinitionId());
+							    		if(contentVO != null)
+						    			{
+							    			cacheInstance.flushGroup("selectiveCacheUpdateNonApplicable_contentTypeDefinitionId_" + contentVO.getContentTypeDefinitionId());
+						    			}
 							    	}
 							    	
 							    	if(contentVO != null)

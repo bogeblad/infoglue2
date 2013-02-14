@@ -470,14 +470,7 @@ public class LanguageController extends BaseController
 
         try
         {
-			Repository repository = RepositoryController.getController().getRepositoryWithId(repositoryId, db);
-            Collection repositoryLanguageList = repository.getRepositoryLanguages();
-        	Iterator repositoryLanguageIterator = repositoryLanguageList.iterator();
-        	while(repositoryLanguageIterator.hasNext())
-			{
-				RepositoryLanguage repositoryLanguage = (RepositoryLanguage)repositoryLanguageIterator.next();
-				languageVOList.add(repositoryLanguage.getLanguage().getValueObject());
-			}
+        	languageVOList = getLanguageVOList(repositoryId, db);
         	
             //If any of the validations or setMethods reported an error, we throw them up now before create.
             ceb.throwIfNotEmpty();
@@ -502,6 +495,14 @@ public class LanguageController extends BaseController
     
     public List getLanguageVOList(Integer repositoryId, Database db) throws ConstraintException, SystemException
     {
+		String key = "" + repositoryId + "_allLanguages";
+		logger.info("key:" + key);
+		List<LanguageVO> list = (List<LanguageVO>)CacheController.getCachedObject("languageCache", key);
+		if(list != null)
+		{
+			return list;
+		}
+
         List languageVOList = new ArrayList();
 
 		Repository repository = RepositoryController.getController().getRepositoryWithId(repositoryId, db);
@@ -512,15 +513,59 @@ public class LanguageController extends BaseController
 			RepositoryLanguage repositoryLanguage = (RepositoryLanguage)repositoryLanguageIterator.next();
 			languageVOList.add(repositoryLanguage.getLanguage().getValueObject());
 		}
-        	
+        
+    	if(languageVOList != null)
+    		CacheController.cacheObject("languageCache", key, languageVOList);
+    	
         return languageVOList;
     }
 
 
+	/**
+	 * This method returns all languages for a certain repository.
+	 * 
+	 * @param repositoryId
+	 * @return
+	 * @throws SystemException
+	 * @throws Exception
+	 */
 
-	public List getLanguageList(Integer repositoryId, Database db) throws ConstraintException, SystemException
+	public List<LanguageVO> getAvailableLanguageVOListForRepository(Integer repositoryId, Database db) throws SystemException, Exception
+    {
+		String key = "" + repositoryId + "_allLanguages";
+		logger.info("key:" + key);
+		List<LanguageVO> list = (List<LanguageVO>)CacheController.getCachedObject("languageCache", key);
+		if(list != null)
+		{
+			logger.info("There was an cached list:" + list);
+		}
+		else
+		{
+			list = new ArrayList();
+			
+			OQLQuery oql = db.getOQLQuery( "SELECT l FROM org.infoglue.cms.entities.management.impl.simple.LanguageImpl l WHERE l.repositoryLanguages.repository = $1 ORDER BY l.repositoryLanguages.sortOrder, l.languageId");
+			oql.bind(repositoryId);
+			
+	    	QueryResults results = oql.execute(Database.ReadOnly);
+			while(results.hasMore()) 
+	        {
+				Language language = (Language)results.next();
+                list.add(language.getValueObject());
+	        }
+	          
+			results.close();
+			oql.close();
+			
+	        if(list.size() > 0)
+	            CacheController.cacheObject("languageCache", key, list);				
+		}
+	        
+        return list;
+    } 
+	
+	private List<Language> getLanguageList(Integer repositoryId, Database db) throws ConstraintException, SystemException
 	{
-		List languageList = new ArrayList();
+		List<Language> languageList = new ArrayList<Language>();
 
 		Repository repository = RepositoryController.getController().getRepositoryWithId(repositoryId, db);
 		Collection repositoryLanguageList = repository.getRepositoryLanguages();
@@ -561,7 +606,20 @@ public class LanguageController extends BaseController
 
     public List getLanguageVOList() throws SystemException, Bug
     {
-        return getAllVOObjects(LanguageImpl.class, "languageId");
+		String key = "allLanguageVOList";
+		List languageVOList = (List)CacheController.getCachedObject("languageCache", key);
+		if(languageVOList != null)
+		{
+			if(logger.isInfoEnabled())
+				logger.info("There was an cached languageVOList:" + languageVOList.size());
+		}
+		else
+		{
+			languageVOList = getAllVOObjects(LanguageImpl.class, "languageId");
+			CacheController.cacheObject("languageCache", key, languageVOList);				
+		}
+		
+		return languageVOList;
     }
 
 	/**
@@ -651,7 +709,7 @@ public class LanguageController extends BaseController
 	 * This method returns the master language within an transaction. 
 	 */
 	
-	public Language getMasterLanguage(Database db, Integer repositoryId) throws SystemException, Exception
+	private Language getMasterLanguage(Database db, Integer repositoryId) throws SystemException, Exception
 	{ 
 		Language language = null;
 

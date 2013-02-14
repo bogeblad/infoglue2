@@ -943,6 +943,62 @@ public class AccessRightController extends BaseController
 		return accessRightList;		
 	}
 	
+	public List<AccessRight> getAccessRightListForEntity(List<InterceptionPoint> interceptionPointVOList, String parameters, Database db)  throws SystemException, Bug
+	{
+		List accessRightList = new ArrayList();
+		
+		try
+		{
+			OQLQuery oql = null;
+
+			int lastIndex = 0;;
+			StringBuilder variables = new StringBuilder();
+		    for(int i=0; i<interceptionPointVOList.size(); i++)
+		    {
+		    	variables.append("f.interceptionPoint = $" + (i+1) + (i+1!=interceptionPointVOList.size() ? " OR " : ""));
+		    	lastIndex++;
+		    }
+
+			if(parameters == null || parameters.length() == 0)
+			{
+				oql = db.getOQLQuery("SELECT f FROM org.infoglue.cms.entities.management.impl.simple.AccessRightImpl f WHERE (" + variables + ") AND (is_undefined(f.parameters) OR f.parameters = $2) ORDER BY f.accessRightId");
+				for(InterceptionPoint ipVO : interceptionPointVOList)
+					oql.bind(ipVO.getId());
+				oql.bind(parameters);
+			}
+			else
+			{
+				System.out.println("SELECT f FROM org.infoglue.cms.entities.management.impl.simple.AccessRightImpl f WHERE (" + variables + ") AND f.parameters = $" + (lastIndex+1) + " ORDER BY f.accessRightId");
+		    	oql = db.getOQLQuery("SELECT f FROM org.infoglue.cms.entities.management.impl.simple.AccessRightImpl f WHERE (" + variables + ") AND f.parameters = $" + (lastIndex+1) + " ORDER BY f.accessRightId");
+		    	for(InterceptionPoint ipVO : interceptionPointVOList)
+		    	{
+		    		oql.bind(ipVO.getId());
+		    		System.out.println(ipVO.getId());
+		    	}
+				oql.bind(parameters);
+	    		System.out.println(parameters);
+			}
+						
+			QueryResults results = oql.execute();
+			this.logger.info("Fetching entity in read/write mode");
+
+			while (results.hasMore()) 
+			{
+				AccessRight accessRight = (AccessRight)results.next();
+				//logger.info("accessRight:" + accessRight.getAccessRightId());
+				accessRightList.add(accessRight);
+			}
+			
+			results.close();
+			oql.close();
+		}
+		catch(Exception e)
+		{
+			throw new SystemException("An error occurred when we tried to fetch a list of Function. Reason:" + e.getMessage(), e);    
+		}
+		
+		return accessRightList;		
+	}
 	
 	public List getAccessRightList(Integer interceptionPointId, Database db)  throws SystemException, Bug
 	{

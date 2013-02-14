@@ -64,6 +64,7 @@ import org.infoglue.cms.entities.content.impl.simple.SmallContentVersionImpl;
 import org.infoglue.cms.entities.content.impl.simple.SmallDigitalAssetImpl;
 import org.infoglue.cms.entities.content.impl.simple.SmallestContentVersionImpl;
 import org.infoglue.cms.entities.kernel.BaseEntityVO;
+import org.infoglue.cms.entities.management.GeneralOQLResult;
 import org.infoglue.cms.entities.management.GroupProperties;
 import org.infoglue.cms.entities.management.LanguageVO;
 import org.infoglue.cms.entities.management.RoleProperties;
@@ -1860,6 +1861,69 @@ public class DigitalAssetController extends BaseController
     	
 		return assetUrl;
     }
+
+	public void appendContentId(List<DigitalAssetVO> matchingAssets) throws Exception 
+	{
+    	Database db = CastorDatabaseService.getDatabase();
+
+        beginTransaction(db);
+
+        try
+        {
+        	appendContentId(matchingAssets, db);          
+        	
+			rollbackTransaction(db);
+        }
+        catch(Exception e)
+        {
+            logger.info("An error occurred when we tried append contentId:" + e);
+            rollbackTransaction(db);
+            throw new SystemException(e.getMessage());
+        }
+	}
+
+	public void appendContentId(List<DigitalAssetVO> matchingAssets, Database db) throws Exception 
+	{
+		StringBuilder variables = new StringBuilder();
+		for(int i=0; i<matchingAssets.size(); i++)
+			variables.append("$" + (i+1) + (i+1!=matchingAssets.size() ? "," : ""));
+		
+		StringBuilder sql = new StringBuilder();
+		if(CmsPropertyHandler.getUseShortTableNames().equals("true"))
+		{
+			sql.append("select distinct(da.DigAssetId) AS id, cv.contId as column1Value, '' as column2Value, '' as column3Value, '' as column4Value, '' as column5Value, '' as column6Value, '' as column7Value FROM cmDigAsset da, cmContVerDigAsset cvda, cmContVer cv WHERE cvda.DigAssetId = da.DigAssetId AND cvda.contVerId = cv.contVerId AND da.digAssetId IN (" + variables + ") ");
+		}
+		else
+		{
+			sql.append("select distinct(da.digitalAssetId) AS id, cv.contentId as column1Value, '' as column2Value, '' as column3Value, '' as column4Value, '' as column5Value, '' as column6Value, '' as column7Value FROM cmDigitalAsset da, cmContentVersionDigitalAsset cvda, cmContentVersion cv WHERE cvda.digitalAssetId = da.digitalAssetId AND cvda.contentVersionId = cv.contentVersionId AND da.digitalAssetId IN (" + variables + ") ");
+		}
+		String SQL = "CALL SQL " + sql.toString() + "AS org.infoglue.cms.entities.management.GeneralOQLResult";
+		
+		OQLQuery oql = db.getOQLQuery(SQL);
+		for(DigitalAssetVO asset : matchingAssets)
+			oql.bind(asset.getId());
+
+		QueryResults results = oql.execute(Database.ReadOnly);
+		Map<Integer,Integer> idMappingMap = new HashMap<Integer,Integer>();
+		while (results.hasMore()) 
+		{
+			GeneralOQLResult resultBean = (GeneralOQLResult)results.next();
+			Integer digitalAssetId = resultBean.getId();
+			Integer contentId = new Integer(resultBean.getValue1());
+			idMappingMap.put(digitalAssetId, contentId);
+		}      
+		
+		for(DigitalAssetVO asset : matchingAssets)
+		{
+			Integer contentId = idMappingMap.get(asset.getId());
+			if(contentId != null)
+				asset.setContentId(contentId);
+		}
+		
+		results.close();
+		oql.close();
+	}
+
 
 	
 	public Integer getContentId(Integer digitalAssetId) throws Exception
