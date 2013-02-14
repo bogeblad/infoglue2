@@ -42,25 +42,25 @@ import org.infoglue.cms.entities.management.AccessRightRoleVO;
 import org.infoglue.cms.entities.management.AccessRightUser;
 import org.infoglue.cms.entities.management.AccessRightUserVO;
 import org.infoglue.cms.entities.management.AccessRightVO;
-import org.infoglue.cms.entities.management.AvailableServiceBinding;
 import org.infoglue.cms.entities.management.AvailableServiceBindingVO;
 import org.infoglue.cms.entities.management.InterceptionPoint;
-import org.infoglue.cms.entities.management.Language;
-import org.infoglue.cms.entities.structure.Qualifyer;
+import org.infoglue.cms.entities.management.LanguageVO;
 import org.infoglue.cms.entities.structure.QualifyerVO;
 import org.infoglue.cms.entities.structure.ServiceBinding;
 import org.infoglue.cms.entities.structure.ServiceBindingVO;
 import org.infoglue.cms.entities.structure.SiteNodeVO;
 import org.infoglue.cms.entities.structure.SiteNodeVersion;
 import org.infoglue.cms.entities.structure.SiteNodeVersionVO;
-import org.infoglue.cms.entities.structure.impl.simple.QualifyerImpl;
-import org.infoglue.cms.entities.structure.impl.simple.ServiceBindingImpl;
+import org.infoglue.cms.entities.structure.impl.simple.MediumSiteNodeVersionImpl;
+import org.infoglue.cms.entities.structure.impl.simple.SmallQualifyerImpl;
+import org.infoglue.cms.entities.structure.impl.simple.SmallServiceBindingImpl;
 import org.infoglue.cms.entities.workflow.EventVO;
 import org.infoglue.cms.exception.ConstraintException;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.security.InfoGluePrincipal;
-import org.infoglue.cms.util.ConstraintExceptionBuffer;
 import org.infoglue.cms.util.DateHelper;
+import org.infoglue.deliver.util.RequestAnalyser;
+import org.infoglue.deliver.util.Timer;
 
 public class SiteNodeStateController extends BaseController 
 {
@@ -79,9 +79,29 @@ public class SiteNodeStateController extends BaseController
 	 * This method handles versioning and state-control of siteNodes.
 	 * Se inline documentation for further explainations.
 	 */
-    public SiteNodeVersion changeState(Integer oldSiteNodeVersionId, Integer stateId, String versionComment, boolean overrideVersionModifyer, InfoGluePrincipal infoGluePrincipal, Integer siteNodeId, List resultingEvents) throws ConstraintException, SystemException
+
+    public SiteNodeVersionVO changeState(Integer oldSiteNodeVersionId, Integer stateId, String versionComment, boolean overrideVersionModifyer, InfoGluePrincipal infoGluePrincipal, Integer siteNodeId, List<EventVO> resultingEvents) throws ConstraintException, SystemException
     {
     	return changeState(oldSiteNodeVersionId, stateId, versionComment, overrideVersionModifyer, null, infoGluePrincipal, siteNodeId, resultingEvents);
+    }
+
+	/**
+	 * This method handles versioning and state-control of siteNodes.
+	 * Se inline documentation for further explainations.
+	 */
+    public SiteNodeVersionVO changeState(Integer oldSiteNodeVersionId, SiteNodeVO siteNodeVO, Integer stateId, String versionComment, boolean overrideVersionModifyer, InfoGluePrincipal infoGluePrincipal, List<EventVO> resultingEvents) throws ConstraintException, SystemException
+    {
+    	return changeState(oldSiteNodeVersionId, siteNodeVO, stateId, versionComment, overrideVersionModifyer, null, infoGluePrincipal, resultingEvents);
+    }
+
+	/**
+	 * This method handles versioning and state-control of siteNodes.
+	 * Se inline documentation for further explainations.
+	 */
+    public SiteNodeVersionVO changeState(Integer oldSiteNodeVersionId, Integer stateId, String versionComment, boolean overrideVersionModifyer, String recipientFilter, InfoGluePrincipal infoGluePrincipal, Integer siteNodeId, List<EventVO> resultingEvents) throws ConstraintException, SystemException
+    {
+    	SiteNodeVO siteNodeVO = SiteNodeController.getController().getSiteNodeVOWithId(siteNodeId);
+    	return changeState(oldSiteNodeVersionId, siteNodeVO, stateId, versionComment, overrideVersionModifyer, recipientFilter, infoGluePrincipal, resultingEvents);
     }
     
 	/**
@@ -89,22 +109,18 @@ public class SiteNodeStateController extends BaseController
 	 * Se inline documentation for further explainations.
 	 */
 	
-    public SiteNodeVersion changeState(Integer oldSiteNodeVersionId, Integer stateId, String versionComment, boolean overrideVersionModifyer, String recipientFilter, InfoGluePrincipal infoGluePrincipal, Integer siteNodeId, List resultingEvents) throws ConstraintException, SystemException
+    public SiteNodeVersionVO changeState(Integer oldSiteNodeVersionId, SiteNodeVO siteNodeVO, Integer stateId, String versionComment, boolean overrideVersionModifyer, String recipientFilter, InfoGluePrincipal infoGluePrincipal, List<EventVO> resultingEvents) throws ConstraintException, SystemException
     {
-        SiteNodeVersion newSiteNodeVersion = null; 
+        SiteNodeVersionVO newSiteNodeVersionVO = null; 
         
         Database db = CastorDatabaseService.getDatabase();
-        ConstraintExceptionBuffer ceb = new ConstraintExceptionBuffer();
 		
 		beginTransaction(db);
 
 		try
 		{	
-            SiteNodeVersion siteNodeVersion = SiteNodeVersionController.getSiteNodeVersionWithIdAsReadOnly(oldSiteNodeVersionId, db);
-			logger.info("siteNodeVersion:" + siteNodeVersion.getId() + ":" + siteNodeVersion.getStateId());
-            
-			newSiteNodeVersion = changeState(oldSiteNodeVersionId, stateId, versionComment, overrideVersionModifyer, recipientFilter, infoGluePrincipal, siteNodeId, db, resultingEvents);
-        	
+			newSiteNodeVersionVO = changeState(oldSiteNodeVersionId, siteNodeVO, stateId, versionComment, overrideVersionModifyer, recipientFilter, infoGluePrincipal, db, resultingEvents);
+        	 	
         	commitTransaction(db);
         }
         catch(Exception e)
@@ -114,7 +130,7 @@ public class SiteNodeStateController extends BaseController
             throw new SystemException(e.getMessage());
         }
     	
-        return newSiteNodeVersion;
+        return newSiteNodeVersionVO;
     }        
 
 
@@ -123,9 +139,20 @@ public class SiteNodeStateController extends BaseController
 	 * Se inline documentation for further explainations.
 	 */
 
-    public SiteNodeVersion changeState(Integer oldSiteNodeVersionId, Integer stateId, String versionComment, boolean overrideVersionModifyer, InfoGluePrincipal infoGluePrincipal, Integer siteNodeId, Database db, List resultingEvents) throws ConstraintException, SystemException
+    public SiteNodeVersionVO changeState(Integer oldSiteNodeVersionId, SiteNodeVO siteNodeVO, Integer stateId, String versionComment, boolean overrideVersionModifyer, InfoGluePrincipal infoGluePrincipal, Database db, Integer siteNodeId, List<EventVO> resultingEvents) throws ConstraintException, SystemException
     {
-    	return changeState(oldSiteNodeVersionId, stateId, versionComment, overrideVersionModifyer, null, infoGluePrincipal, siteNodeId, db, resultingEvents);
+    	return changeState(oldSiteNodeVersionId, siteNodeVO, stateId, versionComment, overrideVersionModifyer, null, infoGluePrincipal, db, resultingEvents);
+    }
+
+	/**
+	 * This method handles versioning and state-control of siteNodes.
+	 * Se inline documentation for further explainations.
+	 */
+	
+    public SiteNodeVersionVO changeState(Integer oldSiteNodeVersionId, Integer stateId, String versionComment, boolean overrideVersionModifyer, String recipientFilter, InfoGluePrincipal infoGluePrincipal, Database db, Integer siteNodeId, List<EventVO> resultingEvents) throws ConstraintException, SystemException
+    {
+    	SiteNodeVO siteNodeVO = SiteNodeController.getController().getSiteNodeVOWithId(siteNodeId);
+    	return changeState(oldSiteNodeVersionId, siteNodeVO, stateId, versionComment, overrideVersionModifyer, recipientFilter, infoGluePrincipal, db, resultingEvents);
     }
     
 	/**
@@ -133,22 +160,22 @@ public class SiteNodeStateController extends BaseController
 	 * Se inline documentation for further explainations.
 	 */
 	
-    public SiteNodeVersion changeState(Integer oldSiteNodeVersionId, Integer stateId, String versionComment, boolean overrideVersionModifyer, String recipientFilter, InfoGluePrincipal infoGluePrincipal, Integer siteNodeId, Database db, List resultingEvents) throws ConstraintException, SystemException
+    public SiteNodeVersionVO changeState(Integer oldSiteNodeVersionId, SiteNodeVO siteNodeVO, Integer stateId, String versionComment, boolean overrideVersionModifyer, String recipientFilter, InfoGluePrincipal infoGluePrincipal, Database db, List<EventVO> resultingEvents) throws ConstraintException, SystemException
     {
-		SiteNodeVersion newSiteNodeVersion = null;
+    	Timer t = new Timer();
+    	
+		MediumSiteNodeVersionImpl returnSiteNodeVersionImpl = null;
 		
         try
         { 
-			SiteNodeVersion oldSiteNodeVersion = SiteNodeVersionController.getController().getSiteNodeVersionWithId(oldSiteNodeVersionId, db);
-
+			MediumSiteNodeVersionImpl oldMediumSiteNodeVersionImpl = SiteNodeVersionController.getController().getMediumSiteNodeVersionWithId(oldSiteNodeVersionId, db);
+			t.printElapsedTime("oldMediumSiteNodeVersionImpl:" + oldMediumSiteNodeVersionImpl.getSiteNodeId());
+			
             //Here we create a new version if it was a state-change back to working, it's a copy of the publish-version
 	    	if(stateId.intValue() == SiteNodeVersionVO.WORKING_STATE.intValue())
 	    	{
 	    		logger.info("About to create a new working version");
 	    	    
-				if (siteNodeId == null)
-					siteNodeId = new Integer(oldSiteNodeVersion.getOwningSiteNode().getId().intValue());
-
 				SiteNodeVersionVO newSiteNodeVersionVO = new SiteNodeVersionVO();
 		    	newSiteNodeVersionVO.setStateId(stateId);
 				newSiteNodeVersionVO.setVersionComment("New working version");
@@ -156,22 +183,36 @@ public class SiteNodeStateController extends BaseController
 				if(overrideVersionModifyer)
 				    newSiteNodeVersionVO.setVersionModifier(infoGluePrincipal.getName());
 				else
-				    newSiteNodeVersionVO.setVersionModifier(oldSiteNodeVersion.getVersionModifier());
-				    
-				newSiteNodeVersionVO.setContentType(oldSiteNodeVersion.getContentType());
-				newSiteNodeVersionVO.setPageCacheKey(oldSiteNodeVersion.getPageCacheKey());
-				newSiteNodeVersionVO.setPageCacheTimeout(oldSiteNodeVersion.getPageCacheTimeout());
-				newSiteNodeVersionVO.setDisableEditOnSight(oldSiteNodeVersion.getDisableEditOnSight());
-				newSiteNodeVersionVO.setDisableLanguages(oldSiteNodeVersion.getDisableLanguages());
-				newSiteNodeVersionVO.setDisablePageCache(oldSiteNodeVersion.getDisablePageCache());
-				newSiteNodeVersionVO.setIsProtected(oldSiteNodeVersion.getIsProtected());
-				newSiteNodeVersionVO.setDisableForceIdentityCheck(oldSiteNodeVersion.getDisableForceIdentityCheck());
-				newSiteNodeVersionVO.setForceProtocolChange(oldSiteNodeVersion.getForceProtocolChange());
-			    
-				newSiteNodeVersion = SiteNodeVersionController.create(siteNodeId, infoGluePrincipal, newSiteNodeVersionVO, db);
-				copyServiceBindings(oldSiteNodeVersion, newSiteNodeVersion, db);
-				copyAccessRights(oldSiteNodeVersion, newSiteNodeVersion, db);
-	    	}
+				    newSiteNodeVersionVO.setVersionModifier(oldMediumSiteNodeVersionImpl.getVersionModifier());
+				
+				newSiteNodeVersionVO.setContentType(oldMediumSiteNodeVersionImpl.getContentType());
+				newSiteNodeVersionVO.setPageCacheKey(oldMediumSiteNodeVersionImpl.getPageCacheKey());
+				newSiteNodeVersionVO.setPageCacheTimeout(oldMediumSiteNodeVersionImpl.getPageCacheTimeout());
+				newSiteNodeVersionVO.setDisableEditOnSight(oldMediumSiteNodeVersionImpl.getDisableEditOnSight());
+				newSiteNodeVersionVO.setDisableLanguages(oldMediumSiteNodeVersionImpl.getDisableLanguages());
+				newSiteNodeVersionVO.setDisablePageCache(oldMediumSiteNodeVersionImpl.getDisablePageCache());
+				newSiteNodeVersionVO.setIsProtected(oldMediumSiteNodeVersionImpl.getIsProtected());
+				newSiteNodeVersionVO.setDisableForceIdentityCheck(oldMediumSiteNodeVersionImpl.getDisableForceIdentityCheck());
+				newSiteNodeVersionVO.setForceProtocolChange(oldMediumSiteNodeVersionImpl.getForceProtocolChange());
+
+				RequestAnalyser.getRequestAnalyser().registerComponentStatistics("changeState 1", t.getElapsedTime());
+
+				//returnSiteNodeVersionVO = SiteNodeVersionController.createFull(siteNodeId, infoGluePrincipal, newSiteNodeVersionVO, db).getValueObject();
+				returnSiteNodeVersionImpl = SiteNodeVersionController.createSmall(siteNodeVO.getId(), infoGluePrincipal, newSiteNodeVersionVO, db);
+				
+				RequestAnalyser.getRequestAnalyser().registerComponentStatistics("changeState createSmall", t.getElapsedTime());
+				
+				returnSiteNodeVersionImpl.setSiteNodeId(oldMediumSiteNodeVersionImpl.getSiteNodeId());
+				
+				copyServiceBindings(oldMediumSiteNodeVersionImpl, returnSiteNodeVersionImpl, db);
+				RequestAnalyser.getRequestAnalyser().registerComponentStatistics("changeState copyServiceBindings", t.getElapsedTime());
+				
+				if(returnSiteNodeVersionImpl.getIsProtected() == SiteNodeVersionVO.YES)
+				{
+					copyAccessRights(oldMediumSiteNodeVersionImpl.getId(), returnSiteNodeVersionImpl.getId(), db);
+					RequestAnalyser.getRequestAnalyser().registerComponentStatistics("changeState copyAccessRights", t.getElapsedTime());
+				}
+			}
 	
 	    	//If the user changes the state to publish we create a copy and set that copy to publish.
 	    	if(stateId.intValue() == SiteNodeVersionVO.PUBLISH_STATE.intValue())
@@ -179,61 +220,74 @@ public class SiteNodeStateController extends BaseController
 	    		logger.info("About to copy the working copy to a publish-one");
 	    		//First we update the old working-version so it gets a comment
 	    		
-				if (siteNodeId == null)
-					siteNodeId = new Integer(oldSiteNodeVersion.getOwningSiteNode().getId().intValue());
-
-	    		SiteNodeVersionVO oldSiteNodeVersionVO = oldSiteNodeVersion.getValueObject();
-	    	    oldSiteNodeVersion.setVersionComment(versionComment);
+	    		//SiteNodeVersionVO oldSiteNodeVersionVO = oldSiteNodeVersion.getValueObject();
+				oldMediumSiteNodeVersionImpl.setVersionComment(versionComment);
 	
 	    		//Now we create a new version which is basically just a copy of the working-version	    	
 		    	SiteNodeVersionVO newSiteNodeVersionVO = new SiteNodeVersionVO();
+		    	newSiteNodeVersionVO.setSiteNodeId(siteNodeVO.getId());
 		    	newSiteNodeVersionVO.setStateId(stateId);
 		    	newSiteNodeVersionVO.setVersionComment(versionComment);
 				if(overrideVersionModifyer)
 				    newSiteNodeVersionVO.setVersionModifier(infoGluePrincipal.getName());
 				else
-				    newSiteNodeVersionVO.setVersionModifier(oldSiteNodeVersion.getVersionModifier());
+				    newSiteNodeVersionVO.setVersionModifier(oldMediumSiteNodeVersionImpl.getVersionModifier());
 				
 				newSiteNodeVersionVO.setModifiedDateTime(DateHelper.getSecondPreciseDate()); 
 		    	
-				newSiteNodeVersionVO.setContentType(oldSiteNodeVersion.getContentType());
-				newSiteNodeVersionVO.setPageCacheKey(oldSiteNodeVersion.getPageCacheKey());
-				newSiteNodeVersionVO.setPageCacheTimeout(oldSiteNodeVersion.getPageCacheTimeout());
-				newSiteNodeVersionVO.setDisableEditOnSight(oldSiteNodeVersion.getDisableEditOnSight());
-				newSiteNodeVersionVO.setDisableLanguages(oldSiteNodeVersion.getDisableLanguages());
-				newSiteNodeVersionVO.setDisablePageCache(oldSiteNodeVersion.getDisablePageCache());
-				newSiteNodeVersionVO.setIsProtected(oldSiteNodeVersion.getIsProtected());
-				newSiteNodeVersionVO.setDisableForceIdentityCheck(oldSiteNodeVersion.getDisableForceIdentityCheck());
-				newSiteNodeVersionVO.setForceProtocolChange(oldSiteNodeVersion.getForceProtocolChange());
+				newSiteNodeVersionVO.setContentType(oldMediumSiteNodeVersionImpl.getContentType());
+				newSiteNodeVersionVO.setPageCacheKey(oldMediumSiteNodeVersionImpl.getPageCacheKey());
+				newSiteNodeVersionVO.setPageCacheTimeout(oldMediumSiteNodeVersionImpl.getPageCacheTimeout());
+				newSiteNodeVersionVO.setDisableEditOnSight(oldMediumSiteNodeVersionImpl.getDisableEditOnSight());
+				newSiteNodeVersionVO.setDisableLanguages(oldMediumSiteNodeVersionImpl.getDisableLanguages());
+				newSiteNodeVersionVO.setDisablePageCache(oldMediumSiteNodeVersionImpl.getDisablePageCache());
+				newSiteNodeVersionVO.setIsProtected(oldMediumSiteNodeVersionImpl.getIsProtected());
+				newSiteNodeVersionVO.setDisableForceIdentityCheck(oldMediumSiteNodeVersionImpl.getDisableForceIdentityCheck());
+				newSiteNodeVersionVO.setForceProtocolChange(oldMediumSiteNodeVersionImpl.getForceProtocolChange());
 
-		    	newSiteNodeVersion = SiteNodeVersionController.create(siteNodeId, infoGluePrincipal, newSiteNodeVersionVO, db);
-				copyServiceBindings(oldSiteNodeVersion, newSiteNodeVersion, db);
-				copyAccessRights(oldSiteNodeVersion, newSiteNodeVersion, db);
-	    	
+				RequestAnalyser.getRequestAnalyser().registerComponentStatistics("changeState publish1", t.getElapsedTime());
+
+				//returnSiteNodeVersionVO = SiteNodeVersionController.createFull(siteNodeId, infoGluePrincipal, newSiteNodeVersionVO, db).getValueObject();
+				returnSiteNodeVersionImpl = SiteNodeVersionController.createSmall(siteNodeVO.getId(), infoGluePrincipal, newSiteNodeVersionVO, db);
+				RequestAnalyser.getRequestAnalyser().registerComponentStatistics("changeState publish createSmall", t.getElapsedTime());
+
+				//returnSiteNodeVersionVO.setSiteNodeId(oldSiteNodeVersion.getValueObject().getSiteNodeId());
+				//copyServiceBindings(oldSiteNodeVersion, newSiteNodeVersion, db);
+				if(returnSiteNodeVersionImpl.getIsProtected() == SiteNodeVersionVO.YES)
+				{
+					copyAccessRights(oldMediumSiteNodeVersionImpl.getId(), returnSiteNodeVersionImpl.getId(), db);
+					RequestAnalyser.getRequestAnalyser().registerComponentStatistics("changeState publish copyAccessRights", t.getElapsedTime());
+				}
+
 				//Creating the event that will notify the editor...
 				EventVO eventVO = new EventVO();
-				eventVO.setDescription(newSiteNodeVersion.getVersionComment());
+				eventVO.setDescription(returnSiteNodeVersionImpl.getVersionComment());
 				eventVO.setEntityClass(SiteNodeVersion.class.getName());
-				eventVO.setEntityId(new Integer(newSiteNodeVersion.getId().intValue()));
-		        eventVO.setName(newSiteNodeVersion.getOwningSiteNode().getName());
+				eventVO.setEntityId(new Integer(returnSiteNodeVersionImpl.getId().intValue()));
+		        eventVO.setName(siteNodeVO.getName());
 				eventVO.setTypeId(EventVO.PUBLISH);
-				eventVO = EventController.create(eventVO, newSiteNodeVersion.getOwningSiteNode().getRepository().getId(), infoGluePrincipal, db);			
-
+		        eventVO = EventController.create(eventVO, siteNodeVO.getRepositoryId(), infoGluePrincipal, db);			
+		        
+		        eventVO.setName(siteNodeVO.getName());
+				
 				resultingEvents.add(eventVO);
 
 				if(recipientFilter != null && !recipientFilter.equals(""))
-					PublicationController.mailPublishNotification(resultingEvents, newSiteNodeVersion.getOwningSiteNode().getRepository().getId(), infoGluePrincipal, recipientFilter, db);
+					PublicationController.mailPublishNotification(resultingEvents, siteNodeVO.getRepositoryId(), infoGluePrincipal, recipientFilter, db);
+	
+				RequestAnalyser.getRequestAnalyser().registerComponentStatistics("changeState publish create event", t.getElapsedTime());
 	    	}
 	
 	    	if(stateId.intValue() == SiteNodeVersionVO.PUBLISHED_STATE.intValue())
 	    	{
 	    		logger.info("About to publish an existing version");
-	    		oldSiteNodeVersion.setStateId(stateId);
-				oldSiteNodeVersion.setIsActive(new Boolean(true));
-				newSiteNodeVersion = oldSiteNodeVersion;
+	    		oldMediumSiteNodeVersionImpl.setStateId(stateId);
+	    		oldMediumSiteNodeVersionImpl.setIsActive(new Boolean(true));
+	    		returnSiteNodeVersionImpl = oldMediumSiteNodeVersionImpl;
 	    	}
-	    	
-	    	changeStateOnMetaInfo(db, newSiteNodeVersion.getValueObject(), stateId, versionComment, overrideVersionModifyer, infoGluePrincipal, resultingEvents);
+
+	    	changeStateOnMetaInfo(db, siteNodeVO, returnSiteNodeVersionImpl.getValueObject(), stateId, versionComment, overrideVersionModifyer, infoGluePrincipal, resultingEvents);
+			RequestAnalyser.getRequestAnalyser().registerComponentStatistics("changeState changeStateOnMetaInfo", t.getElapsedTime());
         }
         catch(Exception e)
         {
@@ -241,7 +295,7 @@ public class SiteNodeStateController extends BaseController
             throw new SystemException(e.getMessage());
         }    	  
           	
-    	return newSiteNodeVersion;
+    	return returnSiteNodeVersionImpl.getValueObject();
     }        
 
     
@@ -252,21 +306,19 @@ public class SiteNodeStateController extends BaseController
      * @throws SystemException
      * @throws Exception
      */
-    public void changeStateOnMetaInfo(Database db, SiteNodeVersionVO siteNodeVersionVO, Integer stateId, String versionComment, boolean overrideVersionModifyer, InfoGluePrincipal infoGluePrincipal, List events) throws ConstraintException, SystemException, Exception
+    public void changeStateOnMetaInfo(Database db, SiteNodeVO snVO, SiteNodeVersionVO siteNodeVersionVO, Integer stateId, String versionComment, boolean overrideVersionModifyer, InfoGluePrincipal infoGluePrincipal, List events) throws ConstraintException, SystemException, Exception
     {
-    	logger.info("start changeStateOnMetaInfo");
-
-    	SiteNodeVO snVO = SiteNodeController.getController().getSiteNodeVOWithId(siteNodeVersionVO.getSiteNodeId(), db);
-        @SuppressWarnings("unchecked")
-		List<Language> languages = LanguageController.getController().getLanguageList(snVO.getRepositoryId(), db);
-		Language masterLanguage = LanguageController.getController().getMasterLanguage(db, snVO.getRepositoryId());
-
-    	logger.info("after languages");
+    	Timer t = new Timer();
+    	
+        List<LanguageVO> languages = LanguageController.getController().getAvailableLanguageVOListForRepository(snVO.getRepositoryId(), db);
+		RequestAnalyser.getRequestAnalyser().registerComponentStatistics("getAvailableLanguageVOListForRepository..", t.getElapsedTime());
+        LanguageVO masterLanguage = LanguageController.getController().getMasterLanguage(snVO.getRepositoryId(), db);
+		RequestAnalyser.getRequestAnalyser().registerComponentStatistics("getMasterLanguage..", t.getElapsedTime());
 
     	ContentVO contentVO = null;
     	if(snVO.getMetaInfoContentId() != null)
     	{
-    		contentVO = ContentController.getContentController().getContentVOWithId(snVO.getMetaInfoContentId(), db);
+    		contentVO = ContentController.getContentController().getSmallContentVOWithId(snVO.getMetaInfoContentId(), db, null);
     	}
     	else
     	{
@@ -280,12 +332,11 @@ public class SiteNodeStateController extends BaseController
 
         	logger.info("after loading service binding for meta info");
 
-//    		Collection serviceBindings = siteNodeVersionVO.getServiceBindings();
-    		List<ServiceBinding> serviceBindings = ServiceBindingController.getController().getSmallServiceBindingsListForSiteNodeVersion(siteNodeVersionVO.getSiteNodeVersionId(), db);
-    		Iterator<ServiceBinding> serviceBindingIterator = serviceBindings.iterator();
+    		List<SmallServiceBindingImpl> serviceBindings = ServiceBindingController.getController().getSmallServiceBindingsListForSiteNodeVersion(siteNodeVersionVO.getSiteNodeVersionId(), db);
+    		Iterator<SmallServiceBindingImpl> serviceBindingIterator = serviceBindings.iterator();
     		while(serviceBindingIterator.hasNext())
     		{
-    			ServiceBinding serviceBinding = serviceBindingIterator.next();
+    			SmallServiceBindingImpl serviceBinding = serviceBindingIterator.next();
     			if(serviceBinding.getAvailableServiceBinding().getId().intValue() == metaInfoAvailableServiceBindingId.intValue())
     			{
     				serviceBindingId = serviceBinding.getId();
@@ -304,34 +355,22 @@ public class SiteNodeStateController extends BaseController
     			}
     		}
     	}
+		RequestAnalyser.getRequestAnalyser().registerComponentStatistics("getSmallContentVOWithId..", t.getElapsedTime());
 
     	if(contentVO != null)
-    	{
-			Iterator languageIterator = languages.iterator();
+    	{				
+			Iterator<LanguageVO> languageIterator = languages.iterator();
 			while(languageIterator.hasNext())
 			{
-				Language language = (Language)languageIterator.next();
-				// OPTIMZ
-//				ContentVersion contentVersion = ContentVersionController.getContentVersionController().getLatestActiveContentVersion(contentVO.getId(), language.getId(), db);
+				LanguageVO language = languageIterator.next();
 				ContentVersionVO contentVersionVO = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(contentVO.getId(), language.getId(), db);
-
-				logger.info("language:" + language.getId());
-
-				//if(language.getId().equals(masterLanguage.getId()) && contentVersion == null)
-				//	throw new Exception("The contentVersion was null or states did not match.. the version and meta info content should allways match when it comes to master language version...");
-
-				if(contentVersionVO != null)
-				{
-				    logger.info("contentVersion:" + contentVersionVO.getId() + ":" + contentVersionVO.getStateId());
-				    logger.info("State wanted:" + stateId);
-				}
 
 				//if(contentVersion != null && contentVersion.getStateId().intValue() == siteNodeVersion.getStateId().intValue())
 				if(contentVersionVO != null && contentVersionVO.getStateId().intValue() != stateId.intValue())
 				{
-				    logger.info("State on current:" + contentVersionVO.getStateId());
+					logger.info("State on current:" + contentVersionVO.getStateId());
 				    logger.info("changing state on contentVersion:" + contentVersionVO.getId());
-				    ContentVersion contentVersion = ContentStateController.changeState(contentVersionVO.getId(), stateId, versionComment, overrideVersionModifyer, null, infoGluePrincipal, contentVO.getId(), db, events);
+				    ContentVersion contentVersion = ContentStateController.changeState(contentVersionVO.getId(), contentVO, stateId, versionComment, overrideVersionModifyer, null, infoGluePrincipal, contentVO.getId(), db, events);
 				    contentVersionVO = contentVersion.getValueObject();
 				}
 
@@ -339,8 +378,9 @@ public class SiteNodeStateController extends BaseController
 				{
 				    //TODO - lets keep the ref to meta info alive...
 				    //RegistryController.getController().updateSiteNodeVersion(siteNodeVersion, db);
-				    RegistryController.getController().updateContentVersion(contentVersionVO, siteNodeVersionVO, db);
-				}	
+				    //RegistryController.getController().updateContentVersion(contentVersionVO, siteNodeVersionVO, db);
+					RegistryController.getController().updateContentVersionThreaded(contentVersionVO, siteNodeVersionVO);
+				}
 			}
 		}
     }
@@ -433,7 +473,7 @@ public class SiteNodeStateController extends BaseController
 	 * This method copies all serviceBindings a siteNodeVersion has to the new siteNodeVersion.
 	 */
 
-    private static void copyServiceBindings(SiteNodeVersion originalSiteNodeVersion, SiteNodeVersion newSiteNodeVersion, Database db) throws ConstraintException, SystemException, Exception
+    private static void copyServiceBindings(MediumSiteNodeVersionImpl originalSiteNodeVersion, MediumSiteNodeVersionImpl newSiteNodeVersion, Database db) throws ConstraintException, SystemException, Exception
 	{
 		Collection serviceBindings = originalSiteNodeVersion.getServiceBindings();	
 		Iterator iterator = serviceBindings.iterator();
@@ -463,11 +503,11 @@ public class SiteNodeStateController extends BaseController
 		Iterator iterator = qualifyers.iterator();
 		while(iterator.hasNext())
 		{
-			Qualifyer qualifyer = (Qualifyer)iterator.next();
+			SmallQualifyerImpl qualifyer = (SmallQualifyerImpl)iterator.next();
 			QualifyerVO qualifyerVO = qualifyer.getValueObject();
-			Qualifyer newQualifyer = new QualifyerImpl();
+			SmallQualifyerImpl newQualifyer = new SmallQualifyerImpl();
 			newQualifyer.setValueObject(qualifyerVO);
-			newQualifyer.setServiceBinding((ServiceBindingImpl)newServiceBinding);
+			newQualifyer.setServiceBinding((SmallServiceBindingImpl)newServiceBinding);
 			newBindingQualifyers.add(newQualifyer);
 			//QualifyerController.create(newQualifyerVO, newServiceBinding.getServiceBindingId(), db);
 		}
@@ -479,15 +519,20 @@ public class SiteNodeStateController extends BaseController
 	 * This method assigns the same access rights as the old content-version has.
 	 */
 	
-	private static void copyAccessRights(SiteNodeVersion originalSiteNodeVersion, SiteNodeVersion newSiteNodeVersion, Database db) throws ConstraintException, SystemException, Exception
+	private static void copyAccessRights(Integer originalSiteNodeVersionId, Integer newSiteNodeVersionId, Database db) throws ConstraintException, SystemException, Exception
 	{
-		List interceptionPointList = InterceptionPointController.getController().getInterceptionPointList("SiteNodeVersion", db);
+		Timer t = new Timer();
+		
+		List<InterceptionPoint> interceptionPointList = InterceptionPointController.getController().getInterceptionPointList("SiteNodeVersion", db);
+		/*
 		logger.info("interceptionPointList:" + interceptionPointList.size());
 		Iterator interceptionPointListIterator = interceptionPointList.iterator();
 		while(interceptionPointListIterator.hasNext())
 		{
 			InterceptionPoint interceptionPoint = (InterceptionPoint)interceptionPointListIterator.next();
-			List accessRightList = AccessRightController.getController().getAccessRightListForEntity(interceptionPoint.getId(), originalSiteNodeVersion.getId().toString(), db);
+			*/
+			List accessRightList = AccessRightController.getController().getAccessRightListForEntity(interceptionPointList/*interceptionPoint.getId()*/, originalSiteNodeVersionId.toString(), db);
+
 			logger.info("accessRightList:" + accessRightList.size());
 			Iterator accessRightListIterator = accessRightList.iterator();
 			while(accessRightListIterator.hasNext())
@@ -496,41 +541,50 @@ public class SiteNodeStateController extends BaseController
 				logger.info("accessRight:" + accessRight.getId());
 				
 				AccessRightVO copiedAccessRight = accessRight.getValueObject().createCopy();
-				copiedAccessRight.setParameters(newSiteNodeVersion.getId().toString());
-				AccessRight newAccessRight = AccessRightController.getController().create(copiedAccessRight, interceptionPoint, db);
+				copiedAccessRight.setParameters(newSiteNodeVersionId.toString());
 				
-				Iterator groupsIterator = accessRight.getGroups().iterator();
-				while(groupsIterator.hasNext())
+				InterceptionPoint icp = null;
+				for(InterceptionPoint currentICP : interceptionPointList)
 				{
-				    AccessRightGroup accessRightGroup = (AccessRightGroup)groupsIterator.next();
-				    AccessRightGroupVO newAccessRightGroupVO = new AccessRightGroupVO();
-				    newAccessRightGroupVO.setGroupName(accessRightGroup.getGroupName());
-				    AccessRightGroup newAccessRightGroup = AccessRightController.getController().createAccessRightGroup(db, newAccessRightGroupVO, newAccessRight);
-				    newAccessRight.getGroups().add(newAccessRightGroup);
+					if(currentICP.getId().equals(copiedAccessRight.getInterceptionPointId()))
+						icp = currentICP;
 				}
-
-				Iterator rolesIterator = accessRight.getRoles().iterator();
-				while(rolesIterator.hasNext())
+				if(icp != null)
 				{
-				    AccessRightRole accessRightRole = (AccessRightRole)rolesIterator.next();
-				    AccessRightRoleVO newAccessRightRoleVO = new AccessRightRoleVO();
-				    newAccessRightRoleVO.setRoleName(accessRightRole.getRoleName());
-				    AccessRightRole newAccessRightRole = AccessRightController.getController().createAccessRightRole(db, newAccessRightRoleVO, newAccessRight);
-				    newAccessRight.getRoles().add(newAccessRightRole);
+					AccessRight newAccessRight = AccessRightController.getController().create(copiedAccessRight, icp, db);
+					
+					Iterator groupsIterator = accessRight.getGroups().iterator();
+					while(groupsIterator.hasNext())
+					{
+					    AccessRightGroup accessRightGroup = (AccessRightGroup)groupsIterator.next();
+					    AccessRightGroupVO newAccessRightGroupVO = new AccessRightGroupVO();
+					    newAccessRightGroupVO.setGroupName(accessRightGroup.getGroupName());
+					    AccessRightGroup newAccessRightGroup = AccessRightController.getController().createAccessRightGroup(db, newAccessRightGroupVO, newAccessRight);
+					    newAccessRight.getGroups().add(newAccessRightGroup);
+					}
+	
+					Iterator rolesIterator = accessRight.getRoles().iterator();
+					while(rolesIterator.hasNext())
+					{
+					    AccessRightRole accessRightRole = (AccessRightRole)rolesIterator.next();
+					    AccessRightRoleVO newAccessRightRoleVO = new AccessRightRoleVO();
+					    newAccessRightRoleVO.setRoleName(accessRightRole.getRoleName());
+					    AccessRightRole newAccessRightRole = AccessRightController.getController().createAccessRightRole(db, newAccessRightRoleVO, newAccessRight);
+					    newAccessRight.getRoles().add(newAccessRightRole);
+					}
+	
+					Iterator usersIterator = accessRight.getUsers().iterator();
+					while(usersIterator.hasNext())
+					{
+					    AccessRightUser accessRightUser = (AccessRightUser)usersIterator.next();
+					    AccessRightUserVO newAccessRightUserVO = new AccessRightUserVO();
+					    newAccessRightUserVO.setUserName(accessRightUser.getUserName());
+					    AccessRightUser newAccessRightUser = AccessRightController.getController().createAccessRightUser(db, newAccessRightUserVO, newAccessRight);
+					    newAccessRight.getUsers().add(newAccessRightUser);
+					}
 				}
-
-				Iterator usersIterator = accessRight.getUsers().iterator();
-				while(usersIterator.hasNext())
-				{
-				    AccessRightUser accessRightUser = (AccessRightUser)usersIterator.next();
-				    AccessRightUserVO newAccessRightUserVO = new AccessRightUserVO();
-				    newAccessRightUserVO.setUserName(accessRightUser.getUserName());
-				    AccessRightUser newAccessRightUser = AccessRightController.getController().createAccessRightUser(db, newAccessRightUserVO, newAccessRight);
-				    newAccessRight.getUsers().add(newAccessRightUser);
-				}
-
 			}
-		}
+		//}
 	}	
 	
 	/**
