@@ -881,7 +881,7 @@ public class ViewContentVersionAction extends InfoGlueAbstractAction
     		getInheritedDigitalAssetsRecursive(filteredDigitalAssets, this.contentVO.getId(), this.languageId, CmsPropertyHandler.getMaxNumberOfAssetInSearches());
 		else if(this.contentVersionVO != null && this.contentVersionVO.getContentVersionId() != null)
 			getInheritedDigitalAssetsRecursive(filteredDigitalAssets, this.contentVersionVO.getContentId(), this.languageId, CmsPropertyHandler.getMaxNumberOfAssetInSearches());
-			
+		
 		return filteredDigitalAssets;
 	}	
 
@@ -924,6 +924,8 @@ public class ViewContentVersionAction extends InfoGlueAbstractAction
 					getInheritedDigitalAssetsRecursive(filteredDigitalAssets, child.getId(), languageId, maxNumberOfAssets);
 				}
 			}
+
+			DigitalAssetController.getController().appendContentId(filteredDigitalAssets);
 		}
 		catch(Exception e)
 		{

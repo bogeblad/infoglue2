@@ -31,6 +31,7 @@ import org.apache.log4j.Logger;
 import org.infoglue.cms.applications.common.actions.InfoGluePropertiesAbstractAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentTypeDefinitionController;
+import org.infoglue.cms.controllers.kernel.impl.simple.InfoGlueSettingsController;
 import org.infoglue.cms.controllers.kernel.impl.simple.LanguageController;
 import org.infoglue.cms.entities.content.ContentVO;
 import org.infoglue.cms.entities.management.ContentTypeDefinitionVO;
@@ -80,6 +81,7 @@ public class ViewContentPropertiesAction extends InfoGluePropertiesAbstractActio
         }
 	    this.defaultContentTypeName		= ps.getString("content_" + this.getContentId() + "_defaultContentTypeName");
 	    this.initialLanguageId			= ps.getString("content_" + this.getContentId() + "_initialLanguageId");
+	    
 	    logger.info("allowedContentTypeNames:" + allowedContentTypeNames);
 	    logger.info("defaultContentTypeName:" + defaultContentTypeName);
 	    logger.info("initialLanguageId:" + initialLanguageId);
@@ -123,7 +125,10 @@ public class ViewContentPropertiesAction extends InfoGluePropertiesAbstractActio
 	    if(defaultContentTypeName != null)
 	        ps.setString("content_" + this.getContentId() + "_defaultContentTypeName", defaultContentTypeName);
 	    if(initialLanguageId != null)
+	    {
 	        ps.setString("content_" + this.getContentId() + "_initialLanguageId", initialLanguageId);
+            InfoGlueSettingsController.addInitialLanguageCache(this.getContentId(), initialLanguageId);
+	    }
 	    
     	return "save";
     }

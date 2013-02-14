@@ -34,6 +34,7 @@ import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.AccessRightController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentControllerProxy;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentTypeDefinitionController;
+import org.infoglue.cms.controllers.kernel.impl.simple.InfoGlueSettingsController;
 import org.infoglue.cms.entities.content.ContentVO;
 import org.infoglue.cms.exception.AccessConstraintException;
 import org.infoglue.cms.util.AccessConstraintExceptionBuffer;
@@ -202,7 +203,7 @@ public class CreateContentAction extends InfoGlueAbstractAction
             String allowedContentTypeNames  = ps.getString("content_" + this.getParentContentId() + "_allowedContentTypeNames");
             String defaultContentTypeName = ps.getString("content_" + this.getParentContentId() + "_defaultContentTypeName");
             String initialLanguageId  = ps.getString("content_" + this.getParentContentId() + "_initialLanguageId");
-            
+                        
             if ( allowedContentTypeNames != null )
             {
                 ps.setString("content_" + this.getContentId() + "_allowedContentTypeNames", allowedContentTypeNames );
@@ -214,7 +215,9 @@ public class CreateContentAction extends InfoGlueAbstractAction
             if ( initialLanguageId != null )
             {
                 ps.setString("content_" + this.getContentId() + "_initialLanguageId", initialLanguageId );
+                InfoGlueSettingsController.addInitialLanguageCache(this.getParentContentId(), initialLanguageId);
             }
+            
         }        
     	return "success";
     }

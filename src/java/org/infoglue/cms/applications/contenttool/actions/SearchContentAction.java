@@ -51,6 +51,7 @@ import org.infoglue.cms.entities.content.ContentVO;
 import org.infoglue.cms.entities.content.ContentVersionVO;
 import org.infoglue.cms.entities.content.DigitalAssetVO;
 import org.infoglue.cms.entities.kernel.BaseEntityVO;
+import org.infoglue.cms.entities.management.ContentTypeDefinitionVO;
 import org.infoglue.cms.entities.management.LanguageVO;
 import org.infoglue.cms.util.CmsPropertyHandler;
 import org.infoglue.deliver.util.Timer;
@@ -110,6 +111,13 @@ public class SearchContentAction extends InfoGlueAbstractAction
 	private String assetTypeFilter = "*";
 	private boolean allowCaseSensitive = true;
 	
+	private boolean wasQuickSearch = false;
+	
+	public boolean getWasQuickSearch()
+	{
+		return wasQuickSearch;
+	}
+	
 	public boolean getAllowCaseSensitive()
 	{
 		return allowCaseSensitive;
@@ -146,6 +154,7 @@ public class SearchContentAction extends InfoGlueAbstractAction
 	
 	public String doExecute() throws Exception 
 	{
+		Timer t = new Timer();
 	    int maxRows = 100;
 		try
 		{
@@ -180,6 +189,12 @@ public class SearchContentAction extends InfoGlueAbstractAction
 					selectedRepositoryIdList.add(repositoryIdToSearch[i]);
 				}
 			}
+			else
+			{
+				repositoryIdAsIntegerToSearch = new Integer[1];
+				repositoryIdAsIntegerToSearch[0] = new Integer(repositoryId);
+				selectedRepositoryIdList.add(repositoryId);
+			}
 			
 			Integer[] contentTypeDefinitionIdAsInteger = null;
 			if(contentTypeDefinitionId != null)
@@ -191,7 +206,42 @@ public class SearchContentAction extends InfoGlueAbstractAction
 					selectedContentTypeDefinitionIdList.add(contentTypeDefinitionId[i]);
 				}
 			}
+			else
+			{
+				wasQuickSearch = true;
+				//Defaulting to limited search...
+				logger.info("LIMITING SEARCH ON CONTENT TYPES");
+				//String includedContentTypes = "Artikel,GUNyhet,Miniartikel,GU Kontakt information"; //CmsPropertyHandler.getFastSearchIncludedContentTypes();
+				String includedContentTypes = CmsPropertyHandler.getFastSearchIncludedContentTypes();
+				if(includedContentTypes != null && includedContentTypes.equals(""))
+				{
+					String[] contentTypes = includedContentTypes.split(",");
+					List<Integer> contentTypeDefinitionIds = new ArrayList<Integer>();
+					for(String contentType : contentTypes)
+					{
+						try
+						{
+							ContentTypeDefinitionVO ctdVO = ContentTypeDefinitionController.getController().getContentTypeDefinitionVOWithName(contentType);
+							contentTypeDefinitionIds.add(ctdVO.getId());
+						}
+						catch (Exception e) 
+						{
+							logger.warn("Could not find content type:" + contentType + ". Message: " + e.getMessage());
+						}
+					}
+					contentTypeDefinitionIdAsInteger = (Integer[])contentTypeDefinitionIds.toArray(new Integer[contentTypeDefinitionIds.size()]);
+				}
+			}
 
+			if(modifiedDateTimeStart == null)
+			{
+				wasQuickSearch = true;
+				logger.info("LIMITING SEARCH ON DATES");
+				Calendar cal = Calendar.getInstance();
+				cal.add(Calendar.MONTH, -1);
+				modifiedDateTimeStart = cal.getTime();
+			}
+			
 			contentVersionVOList = searchController.getContentVersionVOList(repositoryIdAsIntegerToSearch, this.getSearchString(), maxRows, this.name, languageId, contentTypeDefinitionIdAsInteger, caseSensitive, stateId, includeAssets, modifiedDateTimeStart, modifiedDateTimeEnd);
 		}
 		
@@ -204,7 +254,7 @@ public class SearchContentAction extends InfoGlueAbstractAction
 	    this.availableLanguages = LanguageController.getController().getLanguageVOList(this.repositoryId);
 	    this.contentTypeDefinitions = ContentTypeDefinitionController.getController().getContentTypeDefinitionVOList();
 		this.repositories = RepositoryController.getController().getAuthorizedRepositoryVOList(this.getInfoGluePrincipal(), false);
-
+		
 		return "success";
 	}
 
@@ -291,7 +341,10 @@ public class SearchContentAction extends InfoGlueAbstractAction
 
 	public String doInlineAssetSearchV3() throws Exception 
 	{
+		Timer t = new Timer();
+		
 		int maxRows = 100;
+		/*
 		try
 		{
 			maxRows = Integer.parseInt(CmsPropertyHandler.getMaxRows());
@@ -299,7 +352,7 @@ public class SearchContentAction extends InfoGlueAbstractAction
 		catch(Exception e)
 		{
 		}
-		
+		*/
 		String[] repositoryIdToSearch = this.getRequest().getParameterValues("repositoryIdToSearch");
 		if(repositoryIdToSearch != null)
 		{
@@ -323,6 +376,7 @@ public class SearchContentAction extends InfoGlueAbstractAction
 
 	public String doLatestInlineAssetsV3() throws Exception 
 	{
+		Timer t = new Timer();
 		int maxRows = 20;
 		/*
 		try

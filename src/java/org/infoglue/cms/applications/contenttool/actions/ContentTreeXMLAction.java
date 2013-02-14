@@ -85,7 +85,7 @@ public class ContentTreeXMLAction extends InfoGlueAbstractAction
 	private boolean useTemplate = false;
 	private String[] allowedContentTypeIds = null;
 
-	public INodeSupplier getNodeSupplier() throws SystemException
+	public INodeSupplier getNodeSupplier() throws SystemException, Exception
 	{
 		return new ContentNodeSupplier(getRepositoryId(), this.getInfoGluePrincipal());
 	}

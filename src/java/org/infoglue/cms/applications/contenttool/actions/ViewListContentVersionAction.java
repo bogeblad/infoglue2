@@ -29,15 +29,22 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.log4j.Logger;
+import org.exolab.castor.jdo.Database;
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
+import org.infoglue.cms.applications.structuretool.actions.ViewListSiteNodeVersionAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.AccessRightController;
+import org.infoglue.cms.controllers.kernel.impl.simple.CastorDatabaseService;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentControllerProxy;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentVersionController;
+import org.infoglue.cms.controllers.kernel.impl.simple.LanguageController;
 import org.infoglue.cms.entities.content.ContentVO;
 import org.infoglue.cms.entities.content.ContentVersionVO;
 import org.infoglue.cms.entities.structure.SiteNodeVersionVO;
 import org.infoglue.cms.exception.AccessConstraintException;
+import org.infoglue.cms.exception.SystemException;
+import org.infoglue.cms.security.InfoGluePrincipal;
 import org.infoglue.cms.util.AccessConstraintExceptionBuffer;
 import org.infoglue.cms.util.sorters.ReflectionComparator;
 import org.infoglue.deliver.util.RequestAnalyser;
@@ -54,6 +61,8 @@ import org.infoglue.deliver.util.Timer;
 public class ViewListContentVersionAction extends InfoGlueAbstractAction 
 {
 	private static final long serialVersionUID = -1767277488570719994L;
+
+    private final static Logger logger = Logger.getLogger(ViewListContentVersionAction.class.getName());
 
 	private List<ContentVersionVO> contentVersionVOList = new ArrayList<ContentVersionVO>();
 	private List<SiteNodeVersionVO> siteNodeVersionVOList = new ArrayList<SiteNodeVersionVO>();
@@ -77,24 +86,83 @@ public class ViewListContentVersionAction extends InfoGlueAbstractAction
 			
 			ceb.throwIfNotEmpty();
 
-			/*
 			Set<Integer> contentVersionVOSet = new HashSet<Integer>();
 			RequestAnalyser.getRequestAnalyser().registerComponentStatistics("ViewListContentVersion part 1", t.getElapsedTime());
 			
-			ContentVersionController.getContentVersionController().getContentAndAffectedItemsRecursive(this.contentId, ContentVersionVO.WORKING_STATE, this.siteNodeVersionVOList, contentVersionVOSet, true, true);
-			RequestAnalyser.getRequestAnalyser().registerComponentStatistics("ViewListContentVersion getContentAndAffectedItemsRecursive", t.getElapsedTime());
+			//Set<SiteNodeVersionVO> siteNodeVersionVOList = new HashSet<SiteNodeVersionVO>();
+			//Set<ContentVersionVO> contentVersionVOList = new HashSet<ContentVersionVO>();
 
+			ContentVersionController.getContentVersionController().getContentAndAffectedItemsRecursive(this.contentId, ContentVersionVO.WORKING_STATE, this.siteNodeVersionVOList, this.contentVersionVOList, true, true);
+			RequestAnalyser.getRequestAnalyser().registerComponentStatistics("ViewListContentVersion getContentAndAffectedItemsRecursive", t.getElapsedTime());
+			/*
 			Set<ContentVersionVO> contentVersionVOListSet = new HashSet<ContentVersionVO>();
 			for(Integer contentVersionId : contentVersionVOSet)
 			{
 				contentVersionVOListSet.add(ContentVersionController.getContentVersionController().getContentVersionVOWithId(contentVersionId));
 			}
+			*/
 			
 			RequestAnalyser.getRequestAnalyser().registerComponentStatistics("ViewListContentVersion versions", t.getElapsedTime());
 
-			List contentVersionVOList = new ArrayList();
-			contentVersionVOList.clear();
-			contentVersionVOList.addAll(contentVersionVOListSet);
+			Database db = CastorDatabaseService.getDatabase();
+
+	        beginTransaction(db);
+
+	        try
+	        {
+	        	boolean skipDisplayName = false;
+				for(ContentVersionVO contentVersionVO : contentVersionVOList)
+				{
+					if(contentVersionVO.getStateId() == 0)	
+					{
+						if(!skipDisplayName)
+						{
+							InfoGluePrincipal principal = (InfoGluePrincipal)getInfoGluePrincipal(contentVersionVO.getVersionModifier(), db);
+							if(principal != null)
+							{
+								if(principal.getName().equalsIgnoreCase(principal.getDisplayName()))
+									skipDisplayName = true;
+								
+								contentVersionVO.setVersionModifierDisplayName(principal.getDisplayName());
+							}
+						}
+						contentVersionVO.setPath(getContentPath(contentVersionVO.getContentId(), db));
+						contentVersionVO.setLanguageName(LanguageController.getController().getLanguageVOWithId(contentVersionVO.getLanguageId()).getName());
+					}
+					else
+						logger.info("Not adding contentVersion..");
+				}
+				
+				for(SiteNodeVersionVO snVO : siteNodeVersionVOList)
+				{
+					if(snVO.getStateId() == 0)
+					{
+						if(!skipDisplayName)
+						{
+							InfoGluePrincipal principal = (InfoGluePrincipal)getInfoGluePrincipal(snVO.getVersionModifier(), db);
+							if(principal != null)
+							{
+								if(principal.getName().equalsIgnoreCase(principal.getDisplayName()))
+									skipDisplayName = true;
+								
+								snVO.setVersionModifierDisplayName(principal.getDisplayName());
+							}
+						}
+						snVO.setPath(getSiteNodePath(snVO.getSiteNodeId(), db));
+					}
+					else
+						logger.info("Not adding siteNodeVersion..");
+				}
+				
+				commitTransaction(db);
+	        }
+	        catch(Exception e)
+	        {
+	            logger.error("An error occurred so we should not complete the transaction:" + e);
+	            logger.warn("An error occurred so we should not complete the transaction:" + e, e);
+	            rollbackTransaction(db);
+	            throw new SystemException(e.getMessage());
+	        }
 
 		    Collections.sort(contentVersionVOList, Collections.reverseOrder(new ReflectionComparator("modifiedDateTime")));
 		    		
@@ -104,7 +172,6 @@ public class ViewListContentVersionAction extends InfoGlueAbstractAction
 			siteNodeVersionVOList.addAll(siteNodeVersionVOListSet);
 
 		    Collections.sort(siteNodeVersionVOList, Collections.reverseOrder(new ReflectionComparator("modifiedDateTime")));
-			*/
 		    
 		    RequestAnalyser.getRequestAnalyser().registerComponentStatistics("ViewListContentVersion end", t.getElapsedTime());
 		}

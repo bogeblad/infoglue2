@@ -80,7 +80,7 @@ public abstract class SimpleXmlServiceAction extends InfoGlueAbstractAction
 
     private static final String protectedPropertyFragments = "password,administrator,authorizer,authenticator,masterserver,slaveserver,log";
     
-    protected static final String SERVICEREVISION = "$Revision: 1.24.2.1.2.2 $"; 
+    protected static final String SERVICEREVISION = "$Revision: 1.24.2.1.2.3 $"; 
 	protected static String ENCODING = "UTF-8";
     protected static String TYPE_FOLDER = "Folder";
     protected static String TYPE_ITEM = "Item";
@@ -103,7 +103,7 @@ public abstract class SimpleXmlServiceAction extends InfoGlueAbstractAction
 	protected static Map changeNotificationBuffer = new HashMap();
 
 
-	public abstract INodeSupplier getNodeSupplier() throws SystemException;
+	public abstract INodeSupplier getNodeSupplier() throws SystemException, Exception;
 	
 	protected abstract BaseEntityVO getRootEntityVO(Integer repositoryId, InfoGluePrincipal principal) throws ConstraintException, SystemException;
 	

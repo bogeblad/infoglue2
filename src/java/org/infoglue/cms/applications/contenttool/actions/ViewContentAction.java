@@ -55,6 +55,7 @@ import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.util.AccessConstraintExceptionBuffer;
 import org.infoglue.cms.util.CmsPropertyHandler;
 import org.infoglue.cms.util.sorters.ReflectionComparator;
+import org.infoglue.deliver.util.Timer;
 
 import webwork.action.Action;
 
@@ -75,6 +76,7 @@ public class ViewContentAction extends InfoGlueAbstractAction
    	private String defaultFolderContentTypeName;
    	private Integer languageId 				= null;
    	private String stay 					= null;
+   	private String showReferences 			= "false";
 	private List referenceBeanList 			= new ArrayList();
 
     private ContentVO contentVO;
@@ -92,8 +94,10 @@ public class ViewContentAction extends InfoGlueAbstractAction
     
     protected void initialize(Integer contentId) throws Exception
     {   
+    	Timer t = new Timer();
+
 		this.contentVO = ContentControllerProxy.getController().getACContentVOWithId(this.getInfoGluePrincipal(), contentId);
-        this.contentTypeDefinitionVO = ContentController.getContentController().getContentTypeDefinition(contentId);
+        this.contentTypeDefinitionVO = ContentTypeDefinitionController.getController().getContentTypeDefinitionVOWithId(this.contentVO.getContentTypeDefinitionId());
         this.availableLanguages = RepositoryLanguageController.getController().getAvailableLanguageVOListForRepositoryId(this.contentVO.getRepositoryId());
         
         if(this.repositoryId == null)
@@ -111,23 +115,24 @@ public class ViewContentAction extends InfoGlueAbstractAction
        		this.defaultFolderContentTypeName = InfoGlueSettingsController.getInfoGlueSettingsController().getProperty("repository_" + this.getRepositoryId() + "_defaultFolderContentTypeName", "applicationProperties", null, false, false, false, false, null);
 		}
         
-		this.referenceBeanList = RegistryController.getController().getReferencingObjectsForContent(contentId, 100);
+		if(showReferences.equals("true"))
+			this.referenceBeanList = RegistryController.getController().getReferencingObjectsForContent(contentId, 150);
     } 
 
     public String doExecute() throws Exception
     {
+    	Timer t = new Timer();
         try
         {
 	        ContentVO contentVO = ContentControllerProxy.getController().getACContentVOWithId(this.getInfoGluePrincipal(), getContentId());
-	        
 	        if(contentVO.getRepositoryId() != null && !hasAccessTo("Repository.Read", "" + contentVO.getRepositoryId()) && !hasAccessTo("Repository.Write", "" + contentVO.getRepositoryId()))
 	        {
-	        	logger.error("The user " + this.getInfoGluePrincipal().getName() + " had no access to Repository.Read or Repository.Write and " + this.contentVO.getRepositoryId() + ". Could be an hacker attempt.");
+	        	logger.warn("The user " + this.getInfoGluePrincipal().getName() + " had no access to Repository.Read or Repository.Write and " + this.contentVO.getRepositoryId() + ". Could be an hacker attempt.");
 	    		AccessConstraintExceptionBuffer ceb = new AccessConstraintExceptionBuffer();
 	    		ceb.add(new AccessConstraintException("Content.contentId", "1000"));
 	    		ceb.throwIfNotEmpty();
 	        }
-
+	        
 	        if((this.stay == null || !this.stay.equalsIgnoreCase("true")) && contentVO.getIsBranch().booleanValue() == false && contentVO.getContentTypeDefinitionId() != null && getShowContentVersionFirst().equalsIgnoreCase("true"))
 	        {
 	            if(this.repositoryId == null)
@@ -135,7 +140,7 @@ public class ViewContentAction extends InfoGlueAbstractAction
 	            
 		        //this.languageId = getMasterLanguageVO().getId();
 		        this.languageId = getInitialLanguageVO().getId();
-	            return "viewVersion";
+		        return "viewVersion";
 	        }
 	        else
 	        {
@@ -311,14 +316,12 @@ public class ViewContentAction extends InfoGlueAbstractAction
 		return contentVersionVO;
 	}
 
-
-	
 	public EventVO getContentVersionEvent(Integer contentVersionId)
 	{
 		EventVO eventVO = null;
 		try
 		{
-			ContentVersion contentVersion = ContentVersionController.getContentVersionController().getContentVersionWithId(contentVersionId);
+			ContentVersionVO contentVersion = ContentVersionController.getContentVersionController().getContentVersionVOWithId(contentVersionId);
 			List events = EventController.getEventVOListForEntity(ContentVersion.class.getName(), contentVersion.getId());
 			if(events != null && events.size() > 0)
 				eventVO = (EventVO)events.get(0);
@@ -430,12 +433,15 @@ public class ViewContentAction extends InfoGlueAbstractAction
 
 	public LanguageVO getInitialLanguageVO() throws Exception
 	{
-		String initialLanguageId = InfoGlueSettingsController.getInfoGlueSettingsController().getProperty("content_" + this.getContentId() + "_initialLanguageId", "applicationProperties", null, false, false, false, false, null);
+		Timer t = new Timer();
+		
+		//String initialLanguageId = InfoGlueSettingsController.getInfoGlueSettingsController().getProperty("content_" + this.getContentId() + "_initialLanguageId", "applicationProperties", null, false, false, false, false, null);
+		String initialLanguageId = InfoGlueSettingsController.getInfoGlueSettingsController().getInitialLanguageIdFromPropertySet(this.getContentId());
 		ContentVO parentContentVO = ContentController.getContentController().getParentContent(this.getContentId()); 
 	    while((initialLanguageId == null || initialLanguageId.equalsIgnoreCase("-1")) && parentContentVO != null)
 	    {
-	    	//initialLanguageId = ps.getString("content_" + parentContentVO.getId() + "_initialLanguageId");
-		    initialLanguageId = InfoGlueSettingsController.getInfoGlueSettingsController().getProperty("content_" + parentContentVO.getId() + "_initialLanguageId", "applicationProperties", null, false, false, false, false, null);
+		    //initialLanguageId = InfoGlueSettingsController.getInfoGlueSettingsController().getProperty("content_" + parentContentVO.getId() + "_initialLanguageId", "applicationProperties", null, false, false, false, false, null);
+		    initialLanguageId = InfoGlueSettingsController.getInfoGlueSettingsController().getInitialLanguageIdFromPropertySet(parentContentVO.getId());
 	        parentContentVO = ContentController.getContentController().getParentContent(parentContentVO.getId()); 
 	    }
 	    
@@ -459,7 +465,17 @@ public class ViewContentAction extends InfoGlueAbstractAction
     {
         this.stay = stay;
     }
+
+    public String getShowReferences()
+    {
+        return showReferences;
+    }
     
+    public void setShowReferences(String showReferences)
+    {
+        this.showReferences = showReferences;
+    }
+
     public List getReferenceBeanList()
     {
         return referenceBeanList;

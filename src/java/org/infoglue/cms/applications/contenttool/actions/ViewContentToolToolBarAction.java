@@ -35,12 +35,14 @@ import org.infoglue.cms.controllers.kernel.impl.simple.ContentController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentTypeDefinitionController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentVersionController;
 import org.infoglue.cms.controllers.kernel.impl.simple.InterceptionPointController;
+import org.infoglue.cms.controllers.kernel.impl.simple.LanguageController;
 import org.infoglue.cms.controllers.kernel.impl.simple.RepositoryController;
 import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeController;
 import org.infoglue.cms.entities.content.ContentVO;
 import org.infoglue.cms.entities.content.ContentVersion;
 import org.infoglue.cms.entities.content.ContentVersionVO;
 import org.infoglue.cms.entities.management.ContentTypeDefinitionVO;
+import org.infoglue.cms.entities.management.LanguageVO;
 import org.infoglue.cms.entities.management.RepositoryVO;
 import org.infoglue.cms.entities.structure.SiteNodeVO;
 import org.infoglue.cms.util.CmsPropertyHandler;
@@ -216,8 +218,25 @@ public class ViewContentToolToolBarAction extends InfoGlueAbstractAction
 	{
 		boolean hasPublishedVersion = false;
 		
+		if(lastPublishedContentVersionId != null && lastPublishedContentVersionId > 0)
+			return true;
+		
 		try
 		{
+			ContentVersionVO contentVersionVO = ContentVersionController.getContentVersionController().getLatestPublishedContentVersionVO(this.contentId);
+			if(contentVersionVO != null)
+			{
+				hasPublishedVersion = true;
+				lastPublishedContentVersionId = contentVersionVO.getContentVersionId();
+				ContentVO contentVO = ContentController.getContentController().getContentVOWithId(this.contentId);
+				this.repositoryId = contentVO.getRepositoryId();
+				this.name = contentVO.getName();
+				LanguageVO languageVO = LanguageController.getController().getLanguageVOWithId(contentVersionVO.getLanguageId());
+				this.languageName = languageVO.getName();
+				this.contentId = contentVO.getId();
+				this.languageId = contentVersionVO.getLanguageId();
+			}
+			/*
 			ContentVersion contentVersion = ContentVersionController.getContentVersionController().getLatestPublishedContentVersion(this.contentId);
 			if(contentVersion != null)
 			{
@@ -229,6 +248,7 @@ public class ViewContentToolToolBarAction extends InfoGlueAbstractAction
 				this.contentId = contentVersion.getOwningContent().getId();
 				this.languageId = contentVersion.getLanguage().getId();
 			}
+			*/
 		}
 		catch(Exception e){}
 				
@@ -242,9 +262,26 @@ public class ViewContentToolToolBarAction extends InfoGlueAbstractAction
 	private boolean hasPublishedVersion()
 	{
 		boolean hasPublishedVersion = false;
-		
+		if(lastPublishedContentVersionId != null && lastPublishedContentVersionId > 0)
+			return true;
+
 		try
 		{
+			ContentVersionVO contentVersionVO = ContentVersionController.getContentVersionController().getLatestPublishedContentVersionVO(this.contentId);
+			if(contentVersionVO != null)
+			{
+				hasPublishedVersion = true;
+				lastPublishedContentVersionId = contentVersionVO.getContentVersionId();
+				ContentVO contentVO = ContentController.getContentController().getContentVOWithId(this.contentId);
+				this.repositoryId = contentVO.getRepositoryId();
+				this.name = contentVO.getName();
+				LanguageVO languageVO = LanguageController.getController().getLanguageVOWithId(contentVersionVO.getLanguageId());
+				this.languageName = languageVO.getName();
+				this.contentId = contentVO.getId();
+				this.languageId = contentVersionVO.getLanguageId();
+			}
+			
+			/*
 			ContentVersion contentVersion = ContentVersionController.getContentVersionController().getLatestPublishedContentVersion(this.contentId, this.languageId);
 			if(contentVersion != null)
 			{
@@ -256,6 +293,7 @@ public class ViewContentToolToolBarAction extends InfoGlueAbstractAction
 				this.contentId = contentVersion.getOwningContent().getId();
 				this.languageId = contentVersion.getLanguage().getId();
 			}
+			*/
 		}
 		catch(Exception e){}
 				

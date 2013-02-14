@@ -72,7 +72,7 @@ public class SimpleContentXmlAction extends SimpleXmlServiceAction
 	private Integer languageId;
 	private boolean enableCompression = false;
 
-	public INodeSupplier getNodeSupplier() throws SystemException
+	public INodeSupplier getNodeSupplier() throws SystemException, Exception
 	{
 		ContentNodeSupplier sup =  new ContentNodeSupplier(getRepositoryId(), this.getInfoGluePrincipal());
 		sup.setShowLeafs(showLeafs.compareTo("yes")==0);		

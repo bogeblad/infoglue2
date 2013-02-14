@@ -591,6 +591,11 @@ public abstract class InfoGlueAbstractAction extends WebworkAbstractAction
 	    return CmsPropertyHandler.getAllowOverrideModifyer();
 	}
 
+	public String getFastSearchIncludedContentTypes()
+	{
+	    return CmsPropertyHandler.getFastSearchIncludedContentTypes();
+	}
+
 	public String getGACode()
 	{
 		return CmsPropertyHandler.getGACode();

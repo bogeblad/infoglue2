@@ -92,7 +92,7 @@ public class UpdateAccessRightsAction extends InfoGlueAbstractAction
 				{
 					this.oldParameters = "" + siteNodeVersionId;
 					List events = new ArrayList();
-					siteNodeVersionVO = SiteNodeStateController.getController().changeState(siteNodeVersionVO.getId(), SiteNodeVersionVO.WORKING_STATE, "Access right changes", true, this.getInfoGluePrincipal(), siteNodeVersionVO.getSiteNodeId(), events).getValueObject();
+					siteNodeVersionVO = SiteNodeStateController.getController().changeState(siteNodeVersionVO.getId(), SiteNodeVersionVO.WORKING_STATE, "Access right changes", true, this.getInfoGluePrincipal(), siteNodeVersionVO.getSiteNodeId(), events);
 					this.newParameters = "" + siteNodeVersionVO.getId();
 					this.parameters = "" + siteNodeVersionVO.getId();
 					siteNodeVersionId = siteNodeVersionVO.getId();
@@ -171,7 +171,7 @@ public class UpdateAccessRightsAction extends InfoGlueAbstractAction
 				//System.out.println("We better state change....");
 				List events = new ArrayList();
 				//System.out.println("OLd siteNodeVersionVO:" + siteNodeVersionVO.getId());
-				siteNodeVersionVO = SiteNodeStateController.getController().changeState(siteNodeVersionVO.getId(), SiteNodeVersionVO.WORKING_STATE, "Access right changes", true, this.getInfoGluePrincipal(), siteNodeVersionVO.getSiteNodeId(), events).getValueObject();
+				siteNodeVersionVO = SiteNodeStateController.getController().changeState(siteNodeVersionVO.getId(), SiteNodeVersionVO.WORKING_STATE, "Access right changes", true, this.getInfoGluePrincipal(), siteNodeVersionVO.getSiteNodeId(), events);
 				//System.out.println("New siteNodeVersionVO:" + siteNodeVersionVO.getId());
 				this.newParameters = "" + siteNodeVersionVO.getId();
 				this.parameters = "" + siteNodeVersionVO.getId();
@@ -238,7 +238,7 @@ public class UpdateAccessRightsAction extends InfoGlueAbstractAction
 					//System.out.println("We better state change....");
 					List events = new ArrayList();
 					//System.out.println("OLd siteNodeVersionVO:" + siteNodeVersionVO.getId());
-					siteNodeVersionVO = SiteNodeStateController.getController().changeState(siteNodeVersionVO.getId(), SiteNodeVersionVO.WORKING_STATE, "Access right changes", true, this.getInfoGluePrincipal(), siteNodeVersionVO.getSiteNodeId(), events).getValueObject();
+					siteNodeVersionVO = SiteNodeStateController.getController().changeState(siteNodeVersionVO.getId(), SiteNodeVersionVO.WORKING_STATE, "Access right changes", true, this.getInfoGluePrincipal(), siteNodeVersionVO.getSiteNodeId(), events);
 					//System.out.println("New siteNodeVersionVO:" + siteNodeVersionVO.getId());
 					this.newParameters = "" + siteNodeVersionVO.getId();
 					this.parameters = "" + siteNodeVersionVO.getId();
@@ -314,7 +314,7 @@ public class UpdateAccessRightsAction extends InfoGlueAbstractAction
 					//System.out.println("We better state change....");
 					List events = new ArrayList();
 					//System.out.println("OLd siteNodeVersionVO:" + siteNodeVersionVO.getId());
-					siteNodeVersionVO = SiteNodeStateController.getController().changeState(siteNodeVersionVO.getId(), SiteNodeVersionVO.WORKING_STATE, "Access right changes", true, this.getInfoGluePrincipal(), siteNodeVersionVO.getSiteNodeId(), events).getValueObject();
+					siteNodeVersionVO = SiteNodeStateController.getController().changeState(siteNodeVersionVO.getId(), SiteNodeVersionVO.WORKING_STATE, "Access right changes", true, this.getInfoGluePrincipal(), siteNodeVersionVO.getSiteNodeId(), events);
 					//System.out.println("New siteNodeVersionVO:" + siteNodeVersionVO.getId());
 					this.newParameters = "" + siteNodeVersionVO.getId();
 					this.parameters = "" + siteNodeVersionVO.getId();
