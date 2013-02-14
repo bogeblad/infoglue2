@@ -249,6 +249,7 @@ public class ViewServerNodePropertiesAction extends InfoGluePropertiesAbstractAc
 	    populate(ps, "protectCategories");
 
 	    populate(ps, "internalSearchEngine");
+	    populate(ps, "fastSearchIncludedContentTypes");
 	    populate(ps, "allowOverrideModifyer");
 	    
 	    populate(ps, "maxRows");

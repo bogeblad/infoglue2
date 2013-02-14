@@ -851,13 +851,13 @@ public class ViewSiteNodePageComponentsAction extends InfoGlueAbstractAction
 	public String doMoveComponent() throws Exception
 	{
 		initialize();
-			
+		
 		String componentXML   = getPageComponentsString(siteNodeId, this.masterLanguageVO.getId());			
 		//logger.info("componentXML:" + componentXML);
 		
 		Document document = XMLHelper.readDocumentFromByteArray(componentXML.getBytes("UTF-8"));
 		String componentXPath = "//component[@id=" + this.componentId + "]";
-	
+		
 		NodeList anl = org.apache.xpath.XPathAPI.selectNodeList(document.getDocumentElement(), componentXPath);
 		if(anl.getLength() > 0)
 		{
@@ -935,7 +935,7 @@ public class ViewSiteNodePageComponentsAction extends InfoGlueAbstractAction
 			{
 				String modifiedXML = XMLHelper.serializeDom(document, new StringBuffer()).toString(); 
 				//logger.info("modifiedXML:" + modifiedXML);
-				
+
 				ContentVO contentVO = NodeDeliveryController.getNodeDeliveryController(siteNodeId, languageId, contentId).getBoundContent(this.getInfoGluePrincipal(), siteNodeId, this.masterLanguageVO.getId(), true, "Meta information", DeliveryContext.getDeliveryContext());
 				ContentVersionVO contentVersionVO = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(contentVO.getId(), this.masterLanguageVO.getId());
 				ContentVersionController.getContentVersionController().updateAttributeValue(contentVersionVO.getContentVersionId(), "ComponentStructure", modifiedXML, this.getInfoGluePrincipal());

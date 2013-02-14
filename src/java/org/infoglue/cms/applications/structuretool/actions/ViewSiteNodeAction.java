@@ -100,6 +100,7 @@ public class ViewSiteNodeAction extends InfoGlueAbstractAction
 	
    	private String stay = null;
    	private String dest = "";
+   	private String showReferences 			= "false";
    	
    	private VisualFormatter formatter = new VisualFormatter();
 
@@ -250,16 +251,19 @@ public class ViewSiteNodeAction extends InfoGlueAbstractAction
 
 	protected void initializeSiteNodeCover(Integer siteNodeId) throws Exception
 	{
-		try
+		if(showReferences.equals("true"))
 		{
-		    this.referenceBeanList = RegistryController.getController().getReferencingObjectsForSiteNode(siteNodeId, 100);
-		    this.referencingBeanList = RegistryController.getController().getReferencedObjects(SiteNodeVersion.class.getName(), siteNodeVersionVO.getSiteNodeVersionId().toString());
-		    logger.info("referenceBeanList:" + referenceBeanList.size());
-		    logger.info("referencingBeanList:" + referencingBeanList.size());
-		}
-		catch(Exception e)
-		{
-		    e.printStackTrace();
+			try
+			{
+			    this.referenceBeanList = RegistryController.getController().getReferencingObjectsForSiteNode(siteNodeId, 100);
+			    this.referencingBeanList = RegistryController.getController().getReferencedObjects(SiteNodeVersion.class.getName(), siteNodeVersionVO.getSiteNodeVersionId().toString());
+			    logger.info("referenceBeanList:" + referenceBeanList.size());
+			    logger.info("referencingBeanList:" + referencingBeanList.size());
+			}
+			catch(Exception e)
+			{
+			    e.printStackTrace();
+			}
 		}
 		
 		this.availableLanguages = LanguageController.getController().getLanguageVOList(this.repositoryId);
@@ -311,16 +315,19 @@ public class ViewSiteNodeAction extends InfoGlueAbstractAction
 
 	protected void initializeSiteNodeCover(Integer siteNodeId, Database db) throws Exception
 	{
-		try
+		if(showReferences.equals("true"))
 		{
-		    this.referenceBeanList = RegistryController.getController().getReferencingObjectsForSiteNode(siteNodeId, 100, db);
-		    this.referencingBeanList = RegistryController.getController().getReferencedObjects(SiteNodeVersion.class.getName(), siteNodeVersionVO.getSiteNodeVersionId().toString(), db);
-		    logger.info("referenceBeanList:" + referenceBeanList.size());
-		    logger.info("referencingBeanList:" + referencingBeanList.size());
-		}
-		catch(Exception e)
-		{
-		    e.printStackTrace();
+			try
+			{
+			    this.referenceBeanList = RegistryController.getController().getReferencingObjectsForSiteNode(siteNodeId, 100, db);
+			    this.referencingBeanList = RegistryController.getController().getReferencedObjects(SiteNodeVersion.class.getName(), siteNodeVersionVO.getSiteNodeVersionId().toString(), db);
+			    logger.info("referenceBeanList:" + referenceBeanList.size());
+			    logger.info("referencingBeanList:" + referencingBeanList.size());
+			}
+			catch(Exception e)
+			{
+			    e.printStackTrace();
+			}
 		}
 		
 		this.availableLanguages = LanguageController.getController().getLanguageVOList(this.repositoryId, db);
@@ -454,8 +461,10 @@ public class ViewSiteNodeAction extends InfoGlueAbstractAction
 	    			if(this.siteNodeVersionVO != null && this.siteNodeVersionVO.getStateId().equals(SiteNodeVersionVO.WORKING_STATE) && !isMetaInfoInWorkingState)
 	    			{
 	    				if(metaInfoContentVersionVO != null)
-	    					metaInfoContentVersionVO = ContentStateController.changeState(metaInfoContentVersionVO.getId(), ContentVersionVO.WORKING_STATE, "Automatic", true, null, this.getInfoGluePrincipal(), null, db, new ArrayList()).getValueObject();
-	    				
+	    				{
+    	    				ContentVO metaInfoContentVO = ContentController.getContentController().getContentVOWithId(metaInfoContentId, db);
+    	    				metaInfoContentVersionVO = ContentStateController.changeState(metaInfoContentVersionVO.getId(), metaInfoContentVO, ContentVersionVO.WORKING_STATE, "Automatic", true, null, this.getInfoGluePrincipal(), null, db, new ArrayList()).getValueObject();
+	    				}
 	    				isMetaInfoInWorkingState = true;
 	    			}
 	    				    			
@@ -1040,4 +1049,15 @@ public class ViewSiteNodeAction extends InfoGlueAbstractAction
     {
         return referencingBeanList;
     }
+    
+    public String getShowReferences()
+    {
+        return showReferences;
+    }
+    
+    public void setShowReferences(String showReferences)
+    {
+        this.showReferences = showReferences;
+    }
+
 }

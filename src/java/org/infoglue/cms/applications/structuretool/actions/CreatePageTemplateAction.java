@@ -353,7 +353,7 @@ public class CreatePageTemplateAction extends InfoGlueAbstractAction implements 
 		{
 			List events = new ArrayList();
 
-			ContentVersion contentVersion = ContentStateController.changeState(updateContentVersionVO.getId(), ContentVersionVO.PUBLISH_STATE, "Auto publish", false, null, this.getInfoGluePrincipal(), null, events);
+			ContentVersionVO newContentVersionVO = ContentStateController.changeState(updateContentVersionVO.getId(), ContentVersionVO.PUBLISH_STATE, "Auto publish", false, null, this.getInfoGluePrincipal(), null, events);
 
 		    PublicationVO publicationVO = new PublicationVO();
 		    publicationVO.setName("Direct publication by " + this.getInfoGluePrincipal().getName());

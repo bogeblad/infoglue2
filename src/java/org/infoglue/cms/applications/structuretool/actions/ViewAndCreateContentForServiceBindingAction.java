@@ -47,6 +47,7 @@ import org.infoglue.cms.entities.management.ServiceDefinitionVO;
 import org.infoglue.cms.entities.structure.SiteNode;
 import org.infoglue.cms.entities.structure.SiteNodeVersion;
 import org.infoglue.cms.entities.structure.SiteNodeVersionVO;
+import org.infoglue.cms.entities.workflow.EventVO;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.util.ConstraintExceptionBuffer;
 
@@ -203,7 +204,7 @@ public class ViewAndCreateContentForServiceBindingAction extends InfoGlueAbstrac
 
         try
         {
-            Language masterLanguage = LanguageController.getController().getMasterLanguage(db, this.repositoryId);
+            LanguageVO masterLanguage = LanguageController.getController().getMasterLanguage(this.repositoryId, db);
     		this.languageId = masterLanguage.getLanguageId();
 
     		ContentTypeDefinition contentTypeDefinition = ContentTypeDefinitionController.getController().getContentTypeDefinitionWithName("Meta info", db);
@@ -216,8 +217,8 @@ public class ViewAndCreateContentForServiceBindingAction extends InfoGlueAbstrac
     			SiteNodeVersion siteNodeVersion = SiteNodeVersionController.getController().getLatestActiveSiteNodeVersion(db, this.siteNodeId);
     			if(!siteNodeVersion.getStateId().equals(SiteNodeVersionVO.WORKING_STATE))
     			{
-	    			List events = new ArrayList();
-		    		SiteNodeStateController.getController().changeState(siteNodeVersion.getId(), SiteNodeVersionVO.WORKING_STATE, "Auto", true, this.getInfoGluePrincipal(), this.siteNodeId, db, events);
+	    			List<EventVO> events = new ArrayList<EventVO>();
+		    		SiteNodeStateController.getController().changeState(siteNodeVersion.getId(), siteNode.getValueObject(), SiteNodeVersionVO.WORKING_STATE, "Auto", true, this.getInfoGluePrincipal(), db, this.siteNodeId, events);
     			}
     		}
     		
@@ -309,12 +310,14 @@ public class ViewAndCreateContentForServiceBindingAction extends InfoGlueAbstrac
 	    args.put("globalKey", "infoglue");
 	    PropertySet ps = PropertySetManager.getInstance("jdbc", args);
 
+	    ContentVO contentVO = ContentController.getContentController().getSmallContentVOWithId(contentId, db, null); 
+
 	    String initialLanguageId = ps.getString("content_" + contentId + "_initialLanguageId");
-	    ContentVO parentContentVO = ContentController.getContentController().getParentContent(contentId, db); 
+	    ContentVO parentContentVO = ContentController.getContentController().getSmallParentContent(contentVO, db); 
 	    while((initialLanguageId == null || initialLanguageId.equalsIgnoreCase("-1")) && parentContentVO != null)
 	    {
 	    	initialLanguageId = ps.getString("content_" + parentContentVO.getId() + "_initialLanguageId");
-		    parentContentVO = ContentController.getContentController().getParentContent(parentContentVO.getId(), db); 
+		    parentContentVO = ContentController.getContentController().getSmallParentContent(parentContentVO, db); 
 	    }
 	    
 	    if(initialLanguageId != null && !initialLanguageId.equals("") && !initialLanguageId.equals("-1"))

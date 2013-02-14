@@ -35,6 +35,7 @@ import org.infoglue.cms.controllers.kernel.impl.simple.ContentVersionController;
 import org.infoglue.cms.entities.content.ContentVersionVO;
 import org.infoglue.cms.io.FileHelper;
 import org.infoglue.cms.util.CmsPropertyHandler;
+import org.infoglue.deliver.util.Timer;
 import org.infoglue.deliver.util.VelocityTemplateProcessor;
 
 import com.opensymphony.module.propertyset.PropertySet;
@@ -73,6 +74,7 @@ public class WYSIWYGPropertiesAction extends InfoGlueAbstractAction
 	
 	public String getWYSIWYGProperties() throws Exception
 	{
+		Timer t = new Timer();
 	    try
 	    {
 		    this.WYSIWYGProperties = getPrincipalPropertyValue("WYSIWYGConfig", false, false, true);
@@ -111,7 +113,6 @@ public class WYSIWYGPropertiesAction extends InfoGlueAbstractAction
             {
                 e1.printStackTrace();
             }
-	        
 	    }
 
 	    try
@@ -143,7 +144,7 @@ public class WYSIWYGPropertiesAction extends InfoGlueAbstractAction
 			PrintWriter pw = new PrintWriter(tempString);
 			new VelocityTemplateProcessor().renderTemplate(parameters, pw, this.WYSIWYGProperties, true);
 			this.WYSIWYGProperties = tempString.toString();
-					
+
 		    this.getResponse().setContentType("text/javascript");
 	    }
 	    catch (Exception e1)

@@ -23,6 +23,8 @@
 
 package org.infoglue.cms.applications.structuretool.actions;
 
+import java.lang.reflect.Modifier;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -35,6 +37,8 @@ import org.apache.log4j.Logger;
 import org.exolab.castor.jdo.Database;
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.applications.databeans.LinkBean;
+import org.infoglue.cms.applications.databeans.ProcessBean;
+import org.infoglue.cms.applications.managementtool.actions.ExportRepositoryAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.AccessRightController;
 import org.infoglue.cms.controllers.kernel.impl.simple.CastorDatabaseService;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentControllerProxy;
@@ -50,9 +54,16 @@ import org.infoglue.cms.exception.AccessConstraintException;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.security.InfoGluePrincipal;
 import org.infoglue.cms.util.AccessConstraintExceptionBuffer;
+import org.infoglue.cms.util.DateHelper;
 import org.infoglue.cms.util.sorters.ReflectionComparator;
 import org.infoglue.deliver.util.RequestAnalyser;
 import org.infoglue.deliver.util.Timer;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.reflect.TypeToken;
 
 /**
  *
@@ -83,9 +94,16 @@ public class ViewListSiteNodeVersionAction extends InfoGlueAbstractAction
     private String originalAddress;
    	private String userSessionKey;
    	private String attemptDirectPublishing;
+   	
+	private String processId = null;
+	private int processStatus = -1;
+
 
 	protected String doExecute() throws Exception 
 	{
+		ProcessBean processBean = ProcessBean.createProcessBean(ViewListSiteNodeVersionAction.class.getName(), "" + siteNodeId + "_" + getInfoGluePrincipal().getName());
+		processBean.setStatus(ProcessBean.RUNNING);
+
 		Timer t = new Timer();
 		
 		logger.info("siteNodeId:" + this.siteNodeId);
@@ -130,16 +148,17 @@ public class ViewListSiteNodeVersionAction extends InfoGlueAbstractAction
 				}
 			}
 			RequestAnalyser.getRequestAnalyser().registerComponentStatistics("ViewListSiteNodeVersionAction 3", t.getElapsedTime());
-
+			processBean.updateProcess(getLocalizedString(getLocale(), "tool.structuretool.publicationProcess.gettingItems"));
+			
 			Set<SiteNodeVersionVO> siteNodeVersionVOList = new HashSet<SiteNodeVersionVO>();
 			Set<ContentVersionVO> contentVersionVOList = new HashSet<ContentVersionVO>();
 			
-			SiteNodeVersionController.getController().getSiteNodeAndAffectedItemsRecursive(this.siteNodeId, SiteNodeVersionVO.WORKING_STATE, siteNodeVersionVOList, contentVersionVOList, false, recurseSiteNodes, this.getInfoGluePrincipal());
+			SiteNodeVersionController.getController().getSiteNodeAndAffectedItemsRecursive(this.siteNodeId, SiteNodeVersionVO.WORKING_STATE, siteNodeVersionVOList, contentVersionVOList, false, recurseSiteNodes, this.getInfoGluePrincipal(), processBean, getLocale());
 			RequestAnalyser.getRequestAnalyser().registerComponentStatistics("ViewListContentVersion.getSiteNodeAndAffectedItemsRecursive", t.getElapsedTime());
-
-			//System.out.println("siteNodeVersionVOList:" + siteNodeVersionVOList.size());
-			//System.out.println("contentVersionIdSet:" + contentVersionVOList.size());
-
+			
+			processBean.updateProcess(getLocalizedString(getLocale(), "tool.structuretool.publicationProcess.found", siteNodeVersionVOList.size() + "/" + contentVersionVOList.size()));
+			processBean.updateProcess(getLocalizedString(getLocale(), "tool.structuretool.publicationProcess.gettingMetaData"));
+			
 			Database db = CastorDatabaseService.getDatabase();
 
 	        beginTransaction(db);
@@ -170,7 +189,9 @@ public class ViewListSiteNodeVersionAction extends InfoGlueAbstractAction
 				RequestAnalyser.getRequestAnalyser().registerComponentStatistics("ViewListContentVersion versions", t.getElapsedTime());
 			    this.siteNodeVersionVOList.addAll(siteNodeVersionVOList);
 			    Collections.sort(this.siteNodeVersionVOList, Collections.reverseOrder(new ReflectionComparator("modifiedDateTime")));
-			    
+
+				processBean.updateProcess("Getting modifier and path to found contents.");
+
 				for(ContentVersionVO contentVersionVO : contentVersionVOList)
 				{
 					if(contentVersionVO.getStateId() == 0)	
@@ -195,7 +216,7 @@ public class ViewListSiteNodeVersionAction extends InfoGlueAbstractAction
 				RequestAnalyser.getRequestAnalyser().registerComponentStatistics("ViewListContentVersion versions", t.getElapsedTime());
 			    this.contentVersionVOList.addAll(contentVersionVOList);
 			    Collections.sort(this.contentVersionVOList, Collections.reverseOrder(new ReflectionComparator("modifiedDateTime")));
-
+				
 				commitTransaction(db);
 	        }
 	        catch(Exception e)
@@ -210,7 +231,10 @@ public class ViewListSiteNodeVersionAction extends InfoGlueAbstractAction
 	        //System.out.println("this.contentVersionVOList:" + this.contentVersionVOList.size());
 			RequestAnalyser.getRequestAnalyser().registerComponentStatistics("ViewListSiteNodeVersionAction 4", t.getElapsedTime());
 		}
-
+		
+		processBean.setStatus(ProcessBean.FINISHED);
+		processBean.removeProcess();
+		
 	    return "success";
 	}
 
@@ -338,4 +362,73 @@ public class ViewListSiteNodeVersionAction extends InfoGlueAbstractAction
 		this.attemptDirectPublishing = attemptDirectPublishing;
 	}
 
+
+	public ProcessBean getProcessBean()
+	{
+		return ProcessBean.getProcessBean(ViewListSiteNodeVersionAction.class.getName(), ""+this.siteNodeId + "_" + getInfoGluePrincipal().getName());
+	}
+
+	public String getStatusAsJSON()
+	{
+		StringBuffer sb = new StringBuffer();
+		sb.append("<html><body>");
+		
+		try
+		{
+			ProcessBean processBean = getProcessBean();
+			if(processBean != null && processBean.getStatus() != ProcessBean.FINISHED)
+			{
+				sb.append("<h2>" + getLocalizedString(getLocale(), "tool.structuretool.publicationProcess.publicationProcessInfo") + "</h2>");
+
+				sb.append("<ol>");
+				for(String event : processBean.getProcessEvents())
+					sb.append("<li>" + event + "</li>");
+				sb.append("</ol>");
+				sb.append("<div style='text-align: center'><img src='images/loading.gif' /></div>");
+			}
+			else
+			{
+				sb.append("<script type='text/javascript'>hideProcessStatus();</script>");
+			}
+		}
+		catch (Throwable t)
+		{
+			logger.error("Error when generating repository export status report as JSON.", t);
+			sb.append(t.getMessage());
+		}
+		sb.append("</body></html>");
+				
+		return sb.toString();
+		/*
+		Gson gson = new GsonBuilder()
+			.excludeFieldsWithModifiers(Modifier.TRANSIENT, Modifier.STATIC)
+			.setDateFormat("dd MMM HH:mm:ss").create();
+		JsonObject object = new JsonObject();
+
+		try
+		{
+			List<ProcessBean> processes = getProcessBeans();
+			System.out.println("processes:" + processes);
+			Type processBeanListType = new TypeToken<List<ProcessBean>>() {}.getType();
+			JsonElement list = gson.toJsonTree(processes, processBeanListType);
+			object.add("processes", list);
+			object.addProperty("memoryMessage", getMemoryUsageAsText());
+		}
+		catch (Throwable t)
+		{
+			logger.error("Error when generating repository export status report as JSON.", t);
+			JsonObject error = new JsonObject(); 
+			error.addProperty("message", t.getMessage());
+			error.addProperty("type", t.getClass().getSimpleName());
+			object.add("error", error);
+		}
+
+		return gson.toJson(object);
+		*/
+	}
+	
+	public String doShowProcessesAsJSON() throws Exception
+	{
+		return "successShowProcessesAsJSON";
+	}
 }

@@ -99,7 +99,6 @@ public class RebuildRegistryAction extends InfoGlueAbstractAction
 			}
 
 			//Checks the relations from contents
-			List languages = LanguageController.getController().getLanguageList(this.repositoryId, db);
 			List contents = ContentController.getContentController().getRepositoryContents(this.repositoryId, db);
 			
 			Iterator iterator = contents.iterator();
