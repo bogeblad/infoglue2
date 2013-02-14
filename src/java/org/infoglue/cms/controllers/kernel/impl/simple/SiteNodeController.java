@@ -35,6 +35,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.exolab.castor.jdo.Database;
 import org.exolab.castor.jdo.OQLQuery;
@@ -144,11 +145,6 @@ public class SiteNodeController extends BaseController
 		return siteNodeList;
 	}
 
-	
-	/**
-	 * This method gets the siteNodeVO with the given id
-	 */
-	 
 	public SiteNodeVO getSiteNodeVOWithId(Integer siteNodeId) throws SystemException
     {
     	SiteNodeVO siteNodeVO = null;
@@ -157,7 +153,34 @@ public class SiteNodeController extends BaseController
         beginTransaction(db);
 		try
         {	
-			siteNodeVO = getSiteNodeVOWithId(siteNodeId, db);
+			siteNodeVO = getSiteNodeVOWithId(siteNodeId, db, false);
+			
+	    	commitTransaction(db);
+        }
+        catch(Exception e)
+        {
+            logger.error("An error occurred so we should not complete the transaction:" + e, e);
+            rollbackTransaction(db);
+            throw new SystemException(e.getMessage());
+        }      
+        
+        return siteNodeVO;
+    }        
+
+	
+	/**
+	 * This method gets the siteNodeVO with the given id
+	 */
+	 
+	public SiteNodeVO getSiteNodeVOWithId(Integer siteNodeId, boolean skipCaching) throws SystemException
+    {
+    	SiteNodeVO siteNodeVO = null;
+    	
+		Database db = CastorDatabaseService.getDatabase();
+        beginTransaction(db);
+		try
+        {	
+			siteNodeVO = getSiteNodeVOWithId(siteNodeId, db, skipCaching);
 			
 	    	commitTransaction(db);
         }
@@ -185,12 +208,21 @@ public class SiteNodeController extends BaseController
 		}
 		return null;
 	}
-	
+
 	/**
 	 * This method gets the siteNodeVO with the given id
 	 */
 	 
 	public SiteNodeVO getSiteNodeVOWithId(Integer siteNodeId, Database db) throws SystemException, Bug, Exception
+	{
+		return getSiteNodeVOWithId(siteNodeId, db, false);
+	}
+	
+	/**
+	 * This method gets the siteNodeVO with the given id
+	 */
+	 
+	public SiteNodeVO getSiteNodeVOWithId(Integer siteNodeId, Database db, boolean skipCaching) throws SystemException, Bug, Exception
 	{
 		String key = "" + siteNodeId;
 		SiteNodeVO siteNodeVO = (SiteNodeVO)CacheController.getCachedObjectFromAdvancedCache("siteNodeCache", key);
@@ -208,7 +240,7 @@ public class SiteNodeController extends BaseController
 
 	    	if(CmsPropertyHandler.getUseShortTableNames() != null && CmsPropertyHandler.getUseShortTableNames().equalsIgnoreCase("true"))
 	    	{
-		   		SQL.append("CALL SQL select sn.siNoId, sn.name, sn.publishDateTime, sn.expireDateTime, sn.isBranch, sn.parentSiNoId, sn.metaInfoContentId, sn.repositoryId, sn.siNoTypeDefId, sn.creator, (select count(*) from cmSiNo sn2 where sn2.parentSiNoId = sn.siNoId) AS childCount, snv.siNoVerId, snv.stateId, snv.isProtected, snv.versionModifier from cmSiNo sn, cmSiNoVer snv ");
+		   		SQL.append("CALL SQL select sn.siNoId, sn.name, sn.publishDateTime, sn.expireDateTime, sn.isBranch, sn.parentSiNoId, sn.metaInfoContentId, sn.repositoryId, sn.siNoTypeDefId, sn.creator, (select count(*) from cmSiNo sn2 where sn2.parentSiNoId = sn.siNoId) AS childCount, snv.siNoVerId, snv.stateId, snv.isProtected, snv.versionModifier, snv.modifiedDateTime from cmSiNo sn, cmSiNoVer snv ");
 		   		SQL.append("where ");
 		   		SQL.append("sn.siNoId = $1 ");
 		   		SQL.append("AND snv.siNoId = sn.siNoId ");
@@ -222,7 +254,7 @@ public class SiteNodeController extends BaseController
 	    	}
 	    	else
 	    	{
-		   		SQL.append("CALL SQL select sn.siteNodeId, sn.name, sn.publishDateTime, sn.expireDateTime, sn.isBranch, sn.parentSiteNodeId, sn.metaInfoContentId, sn.repositoryId, sn.siteNodeTypeDefinitionId, sn.creator, (select count(*) from cmSiteNode sn2 where sn2.parentSiteNodeId = sn.siteNodeId) AS childCount, sn.siteNodeId, snv.stateId, snv.isProtected, snv.versionModifier from cmSiteNode sn, cmSiteNodeVersion snv ");
+		   		SQL.append("CALL SQL select sn.siteNodeId, sn.name, sn.publishDateTime, sn.expireDateTime, sn.isBranch, sn.parentSiteNodeId, sn.metaInfoContentId, sn.repositoryId, sn.siteNodeTypeDefinitionId, sn.creator, (select count(*) from cmSiteNode sn2 where sn2.parentSiteNodeId = sn.siteNodeId) AS childCount, sn.siteNodeId, snv.stateId, snv.isProtected, snv.versionModifier, snv.modifiedDateTime from cmSiteNode sn, cmSiteNodeVersion snv ");
 		   		SQL.append("where ");
 		   		SQL.append("sn.siteNodeId = $1 ");
 		   		SQL.append("AND snv.siteNodeId = sn.siteNodeId ");
@@ -250,8 +282,11 @@ public class SiteNodeController extends BaseController
 				SiteNode siteNode = (SiteNode)results.next();
 				siteNodeVO = siteNode.getValueObject();			
 	
-				String siteNodeCacheKey = "" + siteNode.getValueObject().getId();
-				CacheController.cacheObjectInAdvancedCache("siteNodeCache", siteNodeCacheKey, siteNode.getValueObject());
+				if(!skipCaching)
+				{
+					String siteNodeCacheKey = "" + siteNode.getValueObject().getId();
+					CacheController.cacheObjectInAdvancedCache("siteNodeCache", siteNodeCacheKey, siteNode.getValueObject());
+				}
 			}
 			
 			results.close();
@@ -291,7 +326,7 @@ public class SiteNodeController extends BaseController
 
 	    	if(CmsPropertyHandler.getUseShortTableNames() != null && CmsPropertyHandler.getUseShortTableNames().equalsIgnoreCase("true"))
 	    	{
-		   		SQL.append("CALL SQL select sn.siNoId, sn.name, sn.publishDateTime, sn.expireDateTime, sn.isBranch, sn.parentSiNoId, sn.metaInfoContentId, sn.repositoryId, sn.siNoTypeDefId, sn.creator, (select count(*) from cmSiNo sn2 where sn2.parentSiNoId = sn.siNoId) AS childCount, snv.siNoVerId, snv.stateId, snv.isProtected, snv.versionModifier from cmSiNo sn, cmSiNoVer snv ");
+		   		SQL.append("CALL SQL select sn.siNoId, sn.name, sn.publishDateTime, sn.expireDateTime, sn.isBranch, sn.parentSiNoId, sn.metaInfoContentId, sn.repositoryId, sn.siNoTypeDefId, sn.creator, (select count(*) from cmSiNo sn2 where sn2.parentSiNoId = sn.siNoId) AS childCount, snv.siNoVerId, snv.stateId, snv.isProtected, snv.versionModifier, snv.modifiedDateTime from cmSiNo sn, cmSiNoVer snv ");
 		   		SQL.append("where ");
 		   		SQL.append("sn.siNoId = $1 ");
 		   		SQL.append("AND snv.siNoId = sn.siNoId ");
@@ -304,7 +339,7 @@ public class SiteNodeController extends BaseController
 	    	}
 	    	else
 	    	{
-		   		SQL.append("CALL SQL select sn.siteNodeId, sn.name, sn.publishDateTime, sn.expireDateTime, sn.isBranch, sn.parentSiteNodeId, sn.metaInfoContentId, sn.repositoryId, sn.siteNodeTypeDefinitionId, sn.creator, (select count(*) from cmSiteNode sn2 where sn2.parentSiteNodeId = sn.siteNodeId) AS childCount, snv.siteNodeVersionId, snv.stateId, snv.isProtected, snv.versionModifier from cmSiteNode sn, cmSiteNodeVersion snv ");
+		   		SQL.append("CALL SQL select sn.siteNodeId, sn.name, sn.publishDateTime, sn.expireDateTime, sn.isBranch, sn.parentSiteNodeId, sn.metaInfoContentId, sn.repositoryId, sn.siteNodeTypeDefinitionId, sn.creator, (select count(*) from cmSiteNode sn2 where sn2.parentSiteNodeId = sn.siteNodeId) AS childCount, snv.siteNodeVersionId, snv.stateId, snv.isProtected, snv.versionModifier, snv.modifiedDateTime from cmSiteNode sn, cmSiteNodeVersion snv ");
 		   		SQL.append("where ");
 		   		SQL.append("sn.siteNodeId = $1 ");
 		   		SQL.append("AND snv.siteNodeId = sn.siteNodeId ");
@@ -315,8 +350,8 @@ public class SiteNodeController extends BaseController
 		   		SQL.append("	) ");
 		   		SQL.append("order by sn.siteNodeId DESC AS org.infoglue.cms.entities.structure.impl.simple.SmallestSiteNodeImpl");    		
 	    	}
-	    	System.out.println("SQL:" + SQL);
-	    	System.out.println("siteNodeId:" + siteNodeId);
+	    	//System.out.println("SQL:" + SQL);
+	    	//System.out.println("siteNodeId:" + siteNodeId);
 	    	//logger.info("SQL:" + SQL);
 	    	//logger.info("parentSiteNodeId:" + parentSiteNodeId);
 	    	//logger.info("showDeletedItems:" + showDeletedItems);
@@ -328,7 +363,7 @@ public class SiteNodeController extends BaseController
 			if (results.hasMore()) 
 			{
 				SmallestSiteNodeImpl siteNode = (SmallestSiteNodeImpl)results.next();
-				System.out.println("siteNode:" + siteNode.getSiteNodeVersionId() + ":" + siteNode.getValueObject().getSiteNodeVersionId() + ":" + siteNode.getValueObject().getVersionModifier());
+				//System.out.println("siteNode:" + siteNode.getSiteNodeVersionId() + ":" + siteNode.getValueObject().getSiteNodeVersionId() + ":" + siteNode.getValueObject().getVersionModifier() + ":" + siteNode.getValueObject().getModifiedDateTime());
 				siteNodeVO = siteNode.getValueObject();			
 	
 				String siteNodeCacheKey = "" + siteNode.getValueObject().getId();
@@ -382,7 +417,7 @@ public class SiteNodeController extends BaseController
 	    
     	if(CmsPropertyHandler.getUseShortTableNames() != null && CmsPropertyHandler.getUseShortTableNames().equalsIgnoreCase("true"))
     	{
-	   		SQL.append("CALL SQL select sn.siNoId, sn.name, sn.publishDateTime, sn.expireDateTime, sn.isBranch, sn.parentSiNoId, sn.metaInfoContentId, sn.repositoryId, sn.siNoTypeDefId, sn.creator, (select count(*) from cmSiNo sn2 where sn2.parentSiNoId = sn.siNoId) AS childCount, snv.stateId, snv.isProtected from cmSiNo sn, cmSiNoVer snv ");
+	   		SQL.append("CALL SQL select sn.siNoId, sn.name, sn.publishDateTime, sn.expireDateTime, sn.isBranch, sn.parentSiNoId, sn.metaInfoContentId, sn.repositoryId, sn.siNoTypeDefId, sn.creator, (select count(*) from cmSiNo sn2 where sn2.parentSiNoId = sn.siNoId) AS childCount, snv.stateId, snv.isProtected, snv.versionModifier, snv.modifiedDateTime from cmSiNo sn, cmSiNoVer snv ");
 	   		SQL.append("where ");
 	   		SQL.append("snv.siNoId = sn.siNoId ");
 	   		SQL.append("AND snv.siNoVerId = ( ");
@@ -396,7 +431,7 @@ public class SiteNodeController extends BaseController
     	}
     	else
     	{
-	   		SQL.append("CALL SQL select sn.siteNodeId, sn.name, sn.publishDateTime, sn.expireDateTime, sn.isBranch, sn.parentSiteNodeId, sn.metaInfoContentId, sn.repositoryId, sn.siteNodeTypeDefinitionId, sn.creator, (select count(*) from cmSiteNode sn2 where sn2.parentSiteNodeId = sn.siteNodeId) AS childCount, snv.stateId, snv.isProtected from cmSiteNode sn, cmSiteNodeVersion snv ");
+	   		SQL.append("CALL SQL select sn.siteNodeId, sn.name, sn.publishDateTime, sn.expireDateTime, sn.isBranch, sn.parentSiteNodeId, sn.metaInfoContentId, sn.repositoryId, sn.siteNodeTypeDefinitionId, sn.creator, (select count(*) from cmSiteNode sn2 where sn2.parentSiteNodeId = sn.siteNodeId) AS childCount, snv.stateId, snv.isProtected, snv.versionModifier, snv.modifiedDateTime from cmSiteNode sn, cmSiteNodeVersion snv ");
 	   		SQL.append("where ");
 	   		SQL.append("snv.siteNodeId = sn.siteNodeId ");
 	   		SQL.append("AND snv.siteNodeVersionId = ( ");
@@ -435,6 +470,87 @@ public class SiteNodeController extends BaseController
 		return siteNodeVOMap;		
 	}
 
+	/**
+	 * This method gets the siteNodeVO with the given id
+	 */
+	 
+	public Map<Integer,SiteNodeVO> getSiteNodeVOMapWithNoStateCheck(List<Integer> siteNodeIds) throws SystemException, Bug, Exception
+    {
+		Map<Integer,SiteNodeVO> siteNodeVOMap = null;
+    	
+		Database db = CastorDatabaseService.getDatabase();
+        beginTransaction(db);
+		try
+        {	
+			siteNodeVOMap = getSiteNodeVOMapWithNoStateCheck(siteNodeIds, db);
+			
+	    	commitTransaction(db);
+        }
+        catch(Exception e)
+        {
+            logger.error("An error occurred so we should not complete the transaction:" + e, e);
+            rollbackTransaction(db);
+            throw new SystemException(e.getMessage());
+        }      
+        
+        return siteNodeVOMap;
+    }        
+	
+	
+	public Map<Integer,SiteNodeVO> getSiteNodeVOMapWithNoStateCheck(List<Integer> siteNodeVersionIds, Database db) throws SystemException, Bug, Exception
+	{
+	    Timer t = new Timer();
+	    Map<Integer,SiteNodeVO> siteNodeVOMap = new HashMap<Integer,SiteNodeVO>();
+	    if(siteNodeVersionIds == null || siteNodeVersionIds.size() == 0)
+	    	return siteNodeVOMap;
+
+	    //System.out.println("siteNodeVersionIds to really fetch:" + siteNodeVersionIds);
+	    
+	    StringBuilder variables = new StringBuilder();
+	    for(int i=0; i<siteNodeVersionIds.size(); i++)
+	    	variables.append("$" + (i+1) + (i+1!=siteNodeVersionIds.size() ? "," : ""));
+		
+	    //System.out.println("siteNodeIds:" + siteNodeIds.length);
+	    //System.out.println("variables:" + variables);
+
+   		StringBuffer SQL = new StringBuffer();
+	    
+    	if(CmsPropertyHandler.getUseShortTableNames() != null && CmsPropertyHandler.getUseShortTableNames().equalsIgnoreCase("true"))
+    	{
+	   		SQL.append("CALL SQL select sn.siNoId, sn.name, sn.publishDateTime, sn.expireDateTime, sn.isBranch, sn.parentSiNoId, sn.metaInfoContentId, sn.repositoryId, sn.siNoTypeDefId, sn.creator, (select count(*) from cmSiNo sn2 where sn2.parentSiNoId = sn.siNoId) AS childCount, snv.siNoVerId, snv.stateId, snv.isProtected, snv.versionModifier, snv.modifiedDateTime from cmSiNo sn, cmSiNoVer snv ");
+	   		SQL.append("where ");
+	   		SQL.append("snv.siNoId = sn.siNoId ");
+	   		SQL.append("AND snv.siNoVerId IN (" + variables + ") ");
+	   		SQL.append("order by sn.siNoId DESC AS org.infoglue.cms.entities.structure.impl.simple.SmallestSiteNodeImpl");
+    	}
+    	else
+    	{
+	   		SQL.append("CALL SQL select sn.siteNodeId, sn.name, sn.publishDateTime, sn.expireDateTime, sn.isBranch, sn.parentSiteNodeId, sn.metaInfoContentId, sn.repositoryId, sn.siteNodeTypeDefinitionId, sn.creator, (select count(*) from cmSiteNode sn2 where sn2.parentSiteNodeId = sn.siteNodeId) AS childCount, snv.siteNodeVersionId, snv.stateId, snv.isProtected, snv.versionModifier, snv.modifiedDateTime from cmSiteNode sn, cmSiteNodeVersion snv ");
+	   		SQL.append("where ");
+	   		SQL.append("snv.siteNodeId = sn.siteNodeId ");
+	   		SQL.append("AND snv.siteNodeVersionId IN (" + variables + ") ");
+	   		SQL.append("order by sn.siteNodeId DESC AS org.infoglue.cms.entities.structure.impl.simple.SmallestSiteNodeImpl");    		
+    	}
+	
+    	OQLQuery oql = db.getOQLQuery(SQL.toString());
+		for(Integer entityId : siteNodeVersionIds)
+			oql.bind(entityId);
+
+		QueryResults results = oql.execute(Database.ReadOnly);
+		//t.printElapsedTime("Executed query.....");
+		while (results.hasMore()) 
+		{
+			SmallestSiteNodeImpl siteNode = (SmallestSiteNodeImpl)results.next();
+			SiteNodeVO siteNodeVO = siteNode.getValueObject();			
+			siteNodeVOMap.put(siteNodeVO.getSiteNodeVersionId(), siteNodeVO);
+		}
+		t.printElapsedTime("siteNodeVOMap populated:" + siteNodeVOMap.size());
+
+		results.close();
+		oql.close();
+				
+		return siteNodeVOMap;		
+	}
 	
     /**
 	 * This method gets the siteNodeVO with the given id
@@ -921,7 +1037,7 @@ public class SiteNodeController extends BaseController
     	StringBuffer SQL = new StringBuffer();
     	if(CmsPropertyHandler.getUseShortTableNames() != null && CmsPropertyHandler.getUseShortTableNames().equalsIgnoreCase("true"))
     	{
-	   		SQL.append("CALL SQL select sn.siNoId, sn.name, sn.publishDateTime, sn.expireDateTime, sn.isBranch, sn.parentSiNoId, sn.metaInfoContentId, sn.repositoryId, sn.siNoTypeDefId, sn.creator, (select count(*) from cmSiNo sn2 where sn2.parentSiNoId = sn.siNoId) AS childCount, snv.siNoVerId, snv.stateId, snv.isProtected, snv.versionModifier from cmSiNo sn, cmSiNoVer snv ");
+	   		SQL.append("CALL SQL select sn.siNoId, sn.name, sn.publishDateTime, sn.expireDateTime, sn.isBranch, sn.parentSiNoId, sn.metaInfoContentId, sn.repositoryId, sn.siNoTypeDefId, sn.creator, (select count(*) from cmSiNo sn2 where sn2.parentSiNoId = sn.siNoId) AS childCount, snv.siNoVerId, snv.stateId, snv.isProtected, snv.versionModifier, snv.modifiedDateTime from cmSiNo sn, cmSiNoVer snv ");
 	   		SQL.append("where ");
 	   		SQL.append("sn.parentSiNoId = $1 ");
 	   		SQL.append("AND snv.siNoId = sn.siNoId ");
@@ -934,7 +1050,7 @@ public class SiteNodeController extends BaseController
     	}
     	else
     	{
-	   		SQL.append("CALL SQL select sn.siteNodeId, sn.name, sn.publishDateTime, sn.expireDateTime, sn.isBranch, sn.parentSiteNodeId, sn.metaInfoContentId, sn.repositoryId, sn.siteNodeTypeDefinitionId, sn.creator, (select count(*) from cmSiteNode sn2 where sn2.parentSiteNodeId = sn.siteNodeId) AS childCount, snv.siteNodeVersionId, snv.stateId, snv.isProtected, snv.versionModifier from cmSiteNode sn, cmSiteNodeVersion snv ");
+	   		SQL.append("CALL SQL select sn.siteNodeId, sn.name, sn.publishDateTime, sn.expireDateTime, sn.isBranch, sn.parentSiteNodeId, sn.metaInfoContentId, sn.repositoryId, sn.siteNodeTypeDefinitionId, sn.creator, (select count(*) from cmSiteNode sn2 where sn2.parentSiteNodeId = sn.siteNodeId) AS childCount, snv.siteNodeVersionId, snv.stateId, snv.isProtected, snv.versionModifier, snv.modifiedDateTime from cmSiteNode sn, cmSiteNodeVersion snv ");
 	   		SQL.append("where ");
 	   		SQL.append("sn.parentSiteNodeId = $1 ");
 	   		SQL.append("AND snv.siteNodeId = sn.siteNodeId ");
@@ -955,6 +1071,7 @@ public class SiteNodeController extends BaseController
 		while (results.hasMore()) 
 		{
 			SiteNode siteNode = (SiteNode)results.next();
+			//System.out.println("SiteNode:" + siteNode.getValueObject().getModifiedDateTime());
 			childrenVOList.add(siteNode.getValueObject());
 		}
 
@@ -1099,11 +1216,11 @@ public class SiteNodeController extends BaseController
 	public List<SiteNodeVO> getSiteNodeVOList(Integer stateId, Integer limit, Database db) throws Exception
 	{
 		List<SiteNodeVO> childrenVOList = new ArrayList<SiteNodeVO>();
-
+		
    		StringBuffer SQL = new StringBuffer();
    		if(CmsPropertyHandler.getUseShortTableNames() != null && CmsPropertyHandler.getUseShortTableNames().equalsIgnoreCase("true"))
     	{
-	   		SQL.append("CALL SQL select * from (select sn.siNoId, sn.name, sn.publishDateTime, sn.expireDateTime, sn.isBranch, sn.parentSiNoId, sn.metaInfoContentId, sn.repositoryId, sn.siNoTypeDefId, sn.creator, (select count(*) from cmSiNo sn2 where sn2.parentSiNoId = sn.siNoId) AS childCount, snv.stateId, snv.isProtected, snv.versionModifier from cmSiNo sn, cmSiNoVer snv ");
+	   		SQL.append("CALL SQL select * from (select sn.siNoId, sn.name, sn.publishDateTime, sn.expireDateTime, sn.isBranch, sn.parentSiNoId, sn.metaInfoContentId, sn.repositoryId, sn.siNoTypeDefId, sn.creator, (select count(*) from cmSiNo sn2 where sn2.parentSiNoId = sn.siNoId) AS childCount, snv.siNoVerId, snv.stateId, snv.isProtected, snv.versionModifier, snv.modifiedDateTime from cmSiNo sn, cmSiNoVer snv ");
 	   		SQL.append("where ");
 	   		SQL.append("snv.siNoId = sn.siNoId ");
 	   		SQL.append("AND snv.siNoVerId = ( ");
@@ -1116,7 +1233,7 @@ public class SiteNodeController extends BaseController
     	}
     	else
     	{
-	   		SQL.append("CALL SQL select sn.siteNodeId, sn.name, sn.publishDateTime, sn.expireDateTime, sn.isBranch, sn.parentSiteNodeId, sn.metaInfoContentId, sn.repositoryId, sn.siteNodeTypeDefinitionId, sn.creator, (select count(*) from cmSiteNode sn2 where sn2.parentSiteNodeId = sn.siteNodeId) AS childCount, snv.stateId, snv.isProtected, snv.versionModifier from cmSiteNode sn, cmSiteNodeVersion snv ");
+	   		SQL.append("CALL SQL select sn.siteNodeId, sn.name, sn.publishDateTime, sn.expireDateTime, sn.isBranch, sn.parentSiteNodeId, sn.metaInfoContentId, sn.repositoryId, sn.siteNodeTypeDefinitionId, sn.creator, (select count(*) from cmSiteNode sn2 where sn2.parentSiteNodeId = sn.siteNodeId) AS childCount, snv.siteNodeVersionId, snv.stateId, snv.isProtected, snv.versionModifier, snv.modifiedDateTime from cmSiteNode sn, cmSiteNodeVersion snv ");
 	   		SQL.append("where ");
 	   		SQL.append("snv.siteNodeId = sn.siteNodeId ");
 	   		SQL.append("AND snv.siteNodeVersionId = ( ");
@@ -1127,7 +1244,6 @@ public class SiteNodeController extends BaseController
 	   		SQL.append("	) ");
 	   		SQL.append("order by sn.parentSiteNodeId ASC, sn.name ASC, sn.siteNodeId DESC LIMIT $3 AS org.infoglue.cms.entities.structure.impl.simple.SmallestSiteNodeImpl");    		
     	}
-
     	//logger.info("SQL:" + SQL);
     	//logger.info("parentSiteNodeId:" + parentSiteNodeId);
     	//logger.info("showDeletedItems:" + showDeletedItems);
@@ -1171,7 +1287,7 @@ public class SiteNodeController extends BaseController
 				CacheController.cacheObjectInAdvancedCache("siteNodeCache", siteNodeCacheKey, siteNode.getValueObject());
 	   		}
 		}
-		
+
 		logger.info("Clearing last node as we are probably not done with all it's children");
 		CacheController.clearCacheForGroup("childSiteNodesCache", CacheController.getPooledString(3, lastBegunParentSiteNodeId));
 		CacheController.clearCache("siteNodeCache", CacheController.getPooledString(3, lastBegunParentSiteNodeId));
@@ -1737,7 +1853,7 @@ public class SiteNodeController extends BaseController
         path = basePath + path;
         
         SiteNodeVersion siteNodeVersion = SiteNodeVersionController.getController().getLatestSiteNodeVersion(db, newSiteNode.getId(), false);
-        Language masterLanguage 		= LanguageController.getController().getMasterLanguage(db, repositoryId);
+        LanguageVO masterLanguage 		= LanguageController.getController().getMasterLanguage(repositoryId, db);
   	   
         ServiceDefinitionVO singleServiceDefinitionVO 	= null;
         
@@ -1777,7 +1893,7 @@ public class SiteNodeController extends BaseController
         	String componentStructure = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><components></components>";
         	if(pageTemplateContentId != null)
         	{
-        	    Integer masterLanguageId = LanguageController.getController().getMasterLanguage(db, repositoryId).getId();
+        	    Integer masterLanguageId = LanguageController.getController().getMasterLanguage(repositoryId, db).getId();
         		ContentVersionVO contentVersionVO = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(pageTemplateContentId, masterLanguageId, db);
         		
         	    componentStructure = ContentVersionController.getContentVersionController().getAttributeValue(contentVersionVO, "ComponentStructure", false);
@@ -2541,7 +2657,7 @@ public class SiteNodeController extends BaseController
 		SiteNodeVO oldSiteNodeVO = SiteNodeController.getController().getSiteNodeVOWithId(siteNode.getId(), db);
         ContentVO oldMetaInfoContentVO = ContentController.getContentController().getContentVOWithId(oldSiteNodeVO.getMetaInfoContentId(), db);
 
-        Language masterLanguage = LanguageController.getController().getMasterLanguage(db, siteNode.getRepository().getId());
+        LanguageVO masterLanguage = LanguageController.getController().getMasterLanguage(siteNode.getRepository().getId(), db);
         ContentVersionVO oldCVVO = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(oldMetaInfoContentVO.getId(), masterLanguage.getId(), db);
 
 		SiteNodeVO newSiteNodeVO = new SiteNodeVO();
@@ -2563,7 +2679,7 @@ public class SiteNodeController extends BaseController
 			logger.info("oldSiteNodeVersionId:" + oldSiteNodeVersionId);
 			
 			siteNodeVersionVO.setStateId(0);
-			SiteNodeVersion siteNodeVersion = SiteNodeVersionController.getController().create(newSiteNode.getId(), principal, siteNodeVersionVO, db);
+			SiteNodeVersionVO siteNodeVersion = SiteNodeVersionController.getController().createSmall(newSiteNode.getId(), principal, siteNodeVersionVO, db).getValueObject();
 			
 	        Map args = new HashMap();
 		    args.put("globalKey", "infoglue");
