@@ -2341,7 +2341,7 @@ public class CacheController extends Thread
 						if(CmsPropertyHandler.getOperatingMode().equals("0"))
 							clear = true;
 					}
-					if(cacheName.equalsIgnoreCase("siteNodeCache") && entity.indexOf("SiteNode") > 0)
+					if((cacheName.equalsIgnoreCase("siteNodeCache") || cacheName.equalsIgnoreCase("siteNodeVOCache")) && entity.indexOf("SiteNode") > 0)
 					{
 						clear = true;
 						selectiveCacheUpdate = true;
@@ -2670,7 +2670,8 @@ public class CacheController extends Thread
 							    	}
 							    	else
 							    	{
-								    	cacheInstance.flushGroup("" + entityId);
+							    		cacheInstance.flushEntry("" + entityId);
+							    		cacheInstance.flushGroup("" + entityId);
 								    	cacheInstance.flushGroup("siteNode_" + entityId);
 								    	cacheInstance.flushGroup("selectiveCacheUpdateNonApplicable");
 							    	
