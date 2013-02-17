@@ -32,6 +32,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -248,7 +249,9 @@ public class RegistryController extends BaseController
 	 * @param contentVersionVO
 	 * @throws Exception
 	 */
-
+	
+	private static List<Object[]> queuedContentVersions = new ArrayList<Object[]>();
+	private static AtomicBoolean runningUpdateContentVersion = new AtomicBoolean();
 	public void updateContentVersionThreaded(ContentVersionVO contentVersionVO, SiteNodeVersionVO siteNodeVersionVO) throws Exception
 	{
 		class UpdateContentVersionRunnable implements Runnable 
@@ -266,15 +269,25 @@ public class RegistryController extends BaseController
 	        {
 	        	Timer t = new Timer();
 	    		
+    			List<Object[]> localContentVersions = new ArrayList<Object[]>();
+	        	synchronized (queuedContentVersions) 
+	        	{
+	        		localContentVersions.addAll(queuedContentVersions);
+	        		queuedContentVersions.clear();
+				}
+	        	
 				try
 				{
 					Database db = CastorDatabaseService.getDatabase();
 					try 
 					{
 						beginTransaction(db);
-
-						updateContentVersion(contentVersionVO, siteNodeVersionVO, db);
-
+						
+						for(Object[] bean : localContentVersions)
+						{
+							updateContentVersion((ContentVersionVO)bean[0], (SiteNodeVersionVO)bean[1], db);
+						}
+						
 						logger.info("Done refreshing registry took:" + t.getElapsedTime());
 						
 						commitTransaction(db);
@@ -289,10 +302,27 @@ public class RegistryController extends BaseController
 				{
 					logger.error("Could not start PreCacheTask:" + e.getMessage(), e);
 				}
+				finally
+				{
+					runningUpdateContentVersion.set(false);
+				}
 	        }
 	    }
-	    Thread thread = new Thread(new UpdateContentVersionRunnable(contentVersionVO, siteNodeVersionVO));
-	    thread.start();	
+	
+		synchronized (queuedContentVersions) 
+		{
+			queuedContentVersions.add(new Object[]{contentVersionVO, siteNodeVersionVO});
+		}
+	
+		if(runningUpdateContentVersion.compareAndSet(false, true))
+		{
+		    Thread thread = new Thread(new UpdateContentVersionRunnable(contentVersionVO, siteNodeVersionVO));
+		    thread.start();	
+    	}
+    	else
+    	{
+    		logger.warn("Running allready - queing");
+    	}
 	}
 	
 	/**
@@ -383,7 +413,9 @@ public class RegistryController extends BaseController
 	 * @param contentVersionVO
 	 * @throws Exception
 	 */
-
+	private static List<SiteNodeVersionVO> queuedSiteNodeVersions = new ArrayList<SiteNodeVersionVO>();
+	private static AtomicBoolean runningUpdateSiteNodeVersion = new AtomicBoolean();
+	
 	public void updateSiteNodeVersionThreaded(SiteNodeVersionVO siteNodeVersionVO) throws Exception
 	{
 		class UpdateSiteNodeVersionRunnable implements Runnable 
@@ -399,6 +431,14 @@ public class RegistryController extends BaseController
 	        {
 	        	Timer t = new Timer();
 	    		
+	        	List<SiteNodeVersionVO> localContentVersions = new ArrayList<SiteNodeVersionVO>();
+	        	synchronized (queuedSiteNodeVersions) 
+	        	{
+	        		localContentVersions.addAll(queuedSiteNodeVersions);
+	        		queuedSiteNodeVersions.clear();
+				}
+	        	logger.warn("localContentVersions:" + localContentVersions.size());
+	        	
 				try
 				{
 					Database db = CastorDatabaseService.getDatabase();
@@ -406,7 +446,10 @@ public class RegistryController extends BaseController
 					{
 						beginTransaction(db);
 
-						updateSiteNodeVersion(siteNodeVersionVO, db);
+						for(SiteNodeVersionVO siteNodeVersionVO : queuedSiteNodeVersions)
+						{	
+							updateSiteNodeVersion(siteNodeVersionVO, db);
+						}
 
 						logger.warn("Done refreshing page registry took:" + t.getElapsedTime());
 						
@@ -422,10 +465,27 @@ public class RegistryController extends BaseController
 				{
 					logger.error("Could not start PreCacheTask:" + e.getMessage(), e);
 				}
+				finally
+				{
+					runningUpdateSiteNodeVersion.set(false);
+				}
 	        }
 	    }
-	    Thread thread = new Thread(new UpdateSiteNodeVersionRunnable(siteNodeVersionVO));
-	    thread.start();	
+		
+		synchronized (queuedSiteNodeVersions) 
+		{
+			queuedSiteNodeVersions.add(siteNodeVersionVO);
+		}
+	
+		if(runningUpdateSiteNodeVersion.compareAndSet(false, true))
+		{
+		    Thread thread = new Thread(new UpdateSiteNodeVersionRunnable(siteNodeVersionVO));
+		    thread.start();	
+    	}
+    	else
+    	{
+    		logger.warn("Running allready - queing");
+    	}
 	}
 
 	/**
