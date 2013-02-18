@@ -95,15 +95,14 @@ public class ViewListSiteNodeVersionAction extends InfoGlueAbstractAction
    	private String userSessionKey;
    	private String attemptDirectPublishing;
    	
-	private String processId = null;
-	private int processStatus = -1;
-
 
 	protected String doExecute() throws Exception 
 	{
 		ProcessBean processBean = ProcessBean.createProcessBean(ViewListSiteNodeVersionAction.class.getName(), "" + siteNodeId + "_" + getInfoGluePrincipal().getName());
 		processBean.setStatus(ProcessBean.RUNNING);
 
+		try
+		{
 		Timer t = new Timer();
 		
 		logger.info("siteNodeId:" + this.siteNodeId);
@@ -231,9 +230,12 @@ public class ViewListSiteNodeVersionAction extends InfoGlueAbstractAction
 	        //System.out.println("this.contentVersionVOList:" + this.contentVersionVOList.size());
 			RequestAnalyser.getRequestAnalyser().registerComponentStatistics("ViewListSiteNodeVersionAction 4", t.getElapsedTime());
 		}
-		
-		processBean.setStatus(ProcessBean.FINISHED);
-		processBean.removeProcess();
+		}
+		finally
+		{
+			processBean.setStatus(ProcessBean.FINISHED);
+			processBean.removeProcess();
+		}
 		
 	    return "success";
 	}
@@ -399,32 +401,6 @@ public class ViewListSiteNodeVersionAction extends InfoGlueAbstractAction
 		sb.append("</body></html>");
 				
 		return sb.toString();
-		/*
-		Gson gson = new GsonBuilder()
-			.excludeFieldsWithModifiers(Modifier.TRANSIENT, Modifier.STATIC)
-			.setDateFormat("dd MMM HH:mm:ss").create();
-		JsonObject object = new JsonObject();
-
-		try
-		{
-			List<ProcessBean> processes = getProcessBeans();
-			System.out.println("processes:" + processes);
-			Type processBeanListType = new TypeToken<List<ProcessBean>>() {}.getType();
-			JsonElement list = gson.toJsonTree(processes, processBeanListType);
-			object.add("processes", list);
-			object.addProperty("memoryMessage", getMemoryUsageAsText());
-		}
-		catch (Throwable t)
-		{
-			logger.error("Error when generating repository export status report as JSON.", t);
-			JsonObject error = new JsonObject(); 
-			error.addProperty("message", t.getMessage());
-			error.addProperty("type", t.getClass().getSimpleName());
-			object.add("error", error);
-		}
-
-		return gson.toJson(object);
-		*/
 	}
 	
 	public String doShowProcessesAsJSON() throws Exception

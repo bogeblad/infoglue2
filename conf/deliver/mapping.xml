@@ -1288,52 +1288,6 @@
     </field>
   </class>
 
- <!--  Mapping for SaveContentVersion  -->
- <!--  
-  <class name="org.infoglue.cms.entities.content.impl.simple.SaveContentVersionImpl" identity="contentVersionId" key-generator="IDENTITY">
-    <description>ContentVersion</description>
-    <cache-type type="count-limited" capacity="20000"/>
-    <map-to table="cmContentVersion"/>
-    <field name="contentVersionId" type="java.lang.Integer">
-      <sql name="contentVersionId" type="integer" dirty="check" />
-    </field>
-    <field name="stateId" type="java.lang.Integer">
-      <sql name="stateId" type="integer" dirty="check" />
-    </field>
-    <field name="modifiedDateTime" type="java.util.Date">
-      <sql name="modifiedDateTime" type="timestamp" dirty="ignore" />
-    </field>
-    <field name="versionComment" type="java.lang.String">
-      <sql name="versionComment" type="varchar" dirty="check" />
-    </field>
-    <field name="isCheckedOut" type="java.lang.Boolean">
-      <sql name="isCheckedOut" type="integer" dirty="ignore" />
-    </field>
-    <field name="isActive" type="java.lang.Boolean">
-      <sql name="isActive" type="integer" dirty="check" />
-    </field>
-    <field name="contentId" type="java.lang.Integer">
-      <sql name="contentId" type="integer" dirty="ignore"/>
-    </field>
-    <field name="languageId" type="java.lang.Integer">
-      <sql name="languageId" type="integer" dirty="ignore"/>
-    </field>
-    <field name="versionModifier" type="java.lang.String">
-      <sql name="versionModifier" type="varchar" dirty="check" />
-    </field>
-    <field name="digitalAssets" type="org.infoglue.cms.entities.content.impl.simple.DigitalAssetImpl" lazy="true" collection="collection">
-      <sql many-key="contentVersionId" many-table="cmContentVersionDigitalAsset"/>
-    </field>
-    
-    <field name="contentCategories" type="org.infoglue.cms.entities.content.impl.simple.ContentCategoryImpl" lazy="false" collection="collection">
-      <sql many-key="contentVersionId" many-table="cmContentCategory"/>
-    </field>
-    
-    <field name="versionValue" type="java.lang.String">
-      <sql name="versionValue" type="varchar" dirty="ignore" />
-    </field>
-  </class>
--->
   
 <!--  Mapping for ContentVersion  -->
   <class name="org.infoglue.cms.entities.content.impl.simple.MediumContentVersionImpl" identity="contentVersionId" key-generator="IDENTITY">

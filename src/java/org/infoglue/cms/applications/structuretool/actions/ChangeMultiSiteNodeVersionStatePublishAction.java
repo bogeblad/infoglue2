@@ -33,6 +33,7 @@ import java.util.Map.Entry;
 import org.apache.log4j.Logger;
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.applications.databeans.LinkBean;
+import org.infoglue.cms.applications.databeans.ProcessBean;
 import org.infoglue.cms.applications.mydesktoptool.actions.ViewMyDesktopToolStartPageAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentStateController;
@@ -84,112 +85,136 @@ public class ChangeMultiSiteNodeVersionStatePublishAction extends InfoGlueAbstra
 	   
     public String doExecute() throws Exception
     {      
-    	Timer t = new Timer();
-    	
-		setSiteNodeVersionId( getRequest().getParameterValues("selSiteNodeVersions") );
-		//Iterator it = siteNodeVersionId.iterator();
-
-		List events = new ArrayList();
-
-		Map<Integer,SiteNodeVO> newsiteNodeMap = new HashMap<Integer,SiteNodeVO>();
-		Map<Integer,ContentVO> newContentMap = new HashMap<Integer,ContentVO>();
-
-		Map<Integer,SiteNodeVO> siteNodeMap = SiteNodeController.getController().getSiteNodeVOMapWithNoStateCheck(siteNodeVersionId);
-		for(Entry<Integer,SiteNodeVO> entry : siteNodeMap.entrySet())
-		{
-			Integer siteNodeVersionId = entry.getKey();
-			logger.info("Publishing:" + siteNodeVersionId);
-			SiteNodeVersionVO siteNodeVersion = SiteNodeStateController.getController().changeState(siteNodeVersionId, entry.getValue(), SiteNodeVersionVO.PUBLISH_STATE, getVersionComment(), this.overrideVersionModifyer, this.recipientFilter, this.getInfoGluePrincipal(), events);
-			newsiteNodeMap.put(siteNodeVersion.getId(), entry.getValue());
-		}
-		/*
-		while(it.hasNext())
-		{
-			Integer siteNodeVersionId = (Integer)it.next();
-			logger.info("Publishing:" + siteNodeVersionId);
-			SiteNodeVersionVO siteNodeVersion = SiteNodeStateController.getController().changeState(siteNodeVersionId, SiteNodeVersionVO.PUBLISH_STATE, getVersionComment(), this.overrideVersionModifyer, this.recipientFilter, this.getInfoGluePrincipal(), null, events);
-		}
-		*/
+		ProcessBean processBean = ProcessBean.createProcessBean(ChangeMultiSiteNodeVersionStatePublishAction.class.getName(), "" + getInfoGluePrincipal().getName());
+		processBean.setStatus(ProcessBean.RUNNING);
 		
-		setContentVersionId( getRequest().getParameterValues("selContentVersions") );
-		
-		Map<Integer,ContentVO> contentMap = ContentController.getContentController().getContentVOMapWithNoStateCheck(contentVersionId);
-		for(Entry<Integer,ContentVO> entry : contentMap.entrySet())
+		try
 		{
-			Integer contentVersionId = entry.getKey();
-			logger.info("Publishing:" + siteNodeVersionId);
-			ContentVersionVO contentVersion = ContentStateController.changeState(contentVersionId, entry.getValue(), ContentVersionVO.PUBLISH_STATE, getVersionComment(), this.overrideVersionModifyer, this.recipientFilter, this.getInfoGluePrincipal(), null, events);
-			newContentMap.put(contentVersion.getId(), entry.getValue());
-		}
-		/*
-		Iterator contentVersionIdsIterator = contentVersionId.iterator();
-		while(contentVersionIdsIterator.hasNext())
-		{
-			Integer contentVersionId = (Integer)contentVersionIdsIterator.next();
-			logger.info("Publishing:" + contentVersionId);
-			ContentVersionVO contentVersion = ContentStateController.changeState(contentVersionId, ContentVersionVO.PUBLISH_STATE, getVersionComment(), this.overrideVersionModifyer, this.recipientFilter, this.getInfoGluePrincipal(), null, events);
-		}
-		*/
-		
-        RepositoryVO repositoryVO = RepositoryController.getController().getRepositoryVOWithId(repositoryId);
-        String liveAddressBaseUrl = repositoryVO.getLiveBaseUrl() + "";
-
-        String liveAddress = null;
-        if(CmsPropertyHandler.getPublicDeliveryUrls().size() > 0)
-        {
-	        String firstPublicDeliveryUrl = (String)CmsPropertyHandler.getPublicDeliveryUrls().get(0);
-	        logger.debug("firstPublicDeliveryUrl:" + firstPublicDeliveryUrl);
-	        String[] firstPublicDeliveryUrlSplit = firstPublicDeliveryUrl.split("/");
-	        
-	        String context = firstPublicDeliveryUrlSplit[firstPublicDeliveryUrlSplit.length - 1];
-	        logger.debug("context:" + context);
-	        liveAddress = liveAddressBaseUrl + "/" + context + "/ViewPage.action" + "?siteNodeId=" + this.getSiteNodeId() + "&languageId=" + this.languageId;
-        }
-        
-		if(attemptDirectPublishing.equalsIgnoreCase("true"))
-		{
-            setActionMessage(userSessionKey, getLocalizedString(getLocale(), "tool.common.publishing.publishingInlineOperationDoneHeader"));
-        	if(liveAddress != null)
-        		addActionLink(userSessionKey, new LinkBean("publishedPageUrl", getLocalizedString(getLocale(), "tool.common.publishing.publishingInlineOperationViewPublishedPageLinkText"), getLocalizedString(getLocale(), "tool.common.publishing.publishingInlineOperationViewPublishedPageTitleText"), getLocalizedString(getLocale(), "tool.common.publishing.publishingInlineOperationViewPublishedPageTitleText"), liveAddress, false, "", "_blank"));
-        	else
-        		addActionLink(userSessionKey, new LinkBean("publishedPageUrl", "No public servers stated in cms", "No public servers stated in cms", "No public servers stated in cms", "#", false, "", "_blank"));
-        		
-			PublicationVO publicationVO = new PublicationVO();
-		    publicationVO.setName("Direct publication by " + this.getInfoGluePrincipal().getName());
-		    publicationVO.setDescription(getVersionComment());
-		    publicationVO.setRepositoryId(repositoryId);
-		    publicationVO = PublicationController.getController().createAndPublish(publicationVO, events, newsiteNodeMap, newContentMap, overrideVersionModifyer, this.getInfoGluePrincipal());
-		}
-		else
-		{
-            setActionMessage(userSessionKey, getLocalizedString(getLocale(), "tool.common.publishing.submitToPublishingInlineOperationDoneHeader"));
-		}
-
-		if(this.returnAddress != null && !this.returnAddress.equals(""))
-        {
-	        String arguments 	= "userSessionKey=" + userSessionKey + "&attemptDirectPublishing=" + attemptDirectPublishing + "&isAutomaticRedirect=false";
-	        String messageUrl 	= returnAddress + (returnAddress.indexOf("?") > -1 ? "&" : "?") + arguments;
-	        
-	        this.getResponse().sendRedirect(messageUrl);
-	        return NONE;
-        }
-        else
-        {
-        	return SUCCESS;
-        }
-        /*
-		if(this.returnAddress != null && !this.returnAddress.equals(""))
-		{
-			this.returnAddress = this.getResponse().encodeURL(returnAddress);
-			this.getResponse().sendRedirect(returnAddress);
+	    	Timer t = new Timer();
+	    	
+			setSiteNodeVersionId( getRequest().getParameterValues("selSiteNodeVersions") );
+			//Iterator it = siteNodeVersionId.iterator();
 	
-			return NONE;
+			List events = new ArrayList();
+	
+			Map<Integer,SiteNodeVO> newsiteNodeMap = new HashMap<Integer,SiteNodeVO>();
+			Map<Integer,ContentVO> newContentMap = new HashMap<Integer,ContentVO>();
+	
+			Map<Integer,SiteNodeVO> siteNodeMap = SiteNodeController.getController().getSiteNodeVOMapWithNoStateCheck(siteNodeVersionId);
+			processBean.updateProcess("Read " + siteNodeMap.size() + " pages to change state on" /*getLocalizedString(getLocale(), "tool.structuretool.publicationProcess.gettingItems")*/);
+			for(Entry<Integer,SiteNodeVO> entry : siteNodeMap.entrySet())
+			{
+				Integer siteNodeVersionId = entry.getKey();
+				logger.info("Publishing:" + siteNodeVersionId);
+				SiteNodeVersionVO siteNodeVersion = SiteNodeStateController.getController().changeState(siteNodeVersionId, entry.getValue(), SiteNodeVersionVO.PUBLISH_STATE, getVersionComment(), this.overrideVersionModifyer, this.recipientFilter, this.getInfoGluePrincipal(), events);
+				
+				if (events.size() % 50 == 0)
+					processBean.updateProcess("Processed " + events.size() /*getLocalizedString(getLocale(), "tool.structuretool.publicationProcess.gettingItems")*/);
+
+				newsiteNodeMap.put(siteNodeVersion.getId(), entry.getValue());
+			}
+	
+			/*
+			while(it.hasNext())
+			{
+				Integer siteNodeVersionId = (Integer)it.next();
+				logger.info("Publishing:" + siteNodeVersionId);
+				SiteNodeVersionVO siteNodeVersion = SiteNodeStateController.getController().changeState(siteNodeVersionId, SiteNodeVersionVO.PUBLISH_STATE, getVersionComment(), this.overrideVersionModifyer, this.recipientFilter, this.getInfoGluePrincipal(), null, events);
+			}
+			*/
+			
+			setContentVersionId( getRequest().getParameterValues("selContentVersions") );
+			
+			Map<Integer,ContentVO> contentMap = ContentController.getContentController().getContentVOMapWithNoStateCheck(contentVersionId);
+			processBean.updateProcess("Read " + contentMap.size() + " contents to change state on" /*getLocalizedString(getLocale(), "tool.structuretool.publicationProcess.gettingItems")*/);
+			for(Entry<Integer,ContentVO> entry : contentMap.entrySet())
+			{
+				Integer contentVersionId = entry.getKey();
+				logger.info("Publishing:" + siteNodeVersionId);
+				ContentVersionVO contentVersion = ContentStateController.changeState(contentVersionId, entry.getValue(), ContentVersionVO.PUBLISH_STATE, getVersionComment(), this.overrideVersionModifyer, this.recipientFilter, this.getInfoGluePrincipal(), null, events);
+				
+				if (events.size() % 50 == 0)
+					processBean.updateProcess("Processed " + events.size() /*getLocalizedString(getLocale(), "tool.structuretool.publicationProcess.gettingItems")*/);
+
+				newContentMap.put(contentVersion.getId(), entry.getValue());
+			}
+			/*
+			Iterator contentVersionIdsIterator = contentVersionId.iterator();
+			while(contentVersionIdsIterator.hasNext())
+			{
+				Integer contentVersionId = (Integer)contentVersionIdsIterator.next();
+				logger.info("Publishing:" + contentVersionId);
+				ContentVersionVO contentVersion = ContentStateController.changeState(contentVersionId, ContentVersionVO.PUBLISH_STATE, getVersionComment(), this.overrideVersionModifyer, this.recipientFilter, this.getInfoGluePrincipal(), null, events);
+			}
+			*/
+			
+	        RepositoryVO repositoryVO = RepositoryController.getController().getRepositoryVOWithId(repositoryId);
+	        String liveAddressBaseUrl = repositoryVO.getLiveBaseUrl() + "";
+	
+	        String liveAddress = null;
+	        if(CmsPropertyHandler.getPublicDeliveryUrls().size() > 0)
+	        {
+		        String firstPublicDeliveryUrl = (String)CmsPropertyHandler.getPublicDeliveryUrls().get(0);
+		        logger.debug("firstPublicDeliveryUrl:" + firstPublicDeliveryUrl);
+		        String[] firstPublicDeliveryUrlSplit = firstPublicDeliveryUrl.split("/");
+		        
+		        String context = firstPublicDeliveryUrlSplit[firstPublicDeliveryUrlSplit.length - 1];
+		        logger.debug("context:" + context);
+		        liveAddress = liveAddressBaseUrl + "/" + context + "/ViewPage.action" + "?siteNodeId=" + this.getSiteNodeId() + "&languageId=" + this.languageId;
+	        }
+	
+			if(attemptDirectPublishing.equalsIgnoreCase("true"))
+			{
+	            setActionMessage(userSessionKey, getLocalizedString(getLocale(), "tool.common.publishing.publishingInlineOperationDoneHeader"));
+	        	if(liveAddress != null)
+	        		addActionLink(userSessionKey, new LinkBean("publishedPageUrl", getLocalizedString(getLocale(), "tool.common.publishing.publishingInlineOperationViewPublishedPageLinkText"), getLocalizedString(getLocale(), "tool.common.publishing.publishingInlineOperationViewPublishedPageTitleText"), getLocalizedString(getLocale(), "tool.common.publishing.publishingInlineOperationViewPublishedPageTitleText"), liveAddress, false, "", "_blank"));
+	        	else
+	        		addActionLink(userSessionKey, new LinkBean("publishedPageUrl", "No public servers stated in cms", "No public servers stated in cms", "No public servers stated in cms", "#", false, "", "_blank"));
+	        		
+				PublicationVO publicationVO = new PublicationVO();
+			    publicationVO.setName("Direct publication by " + this.getInfoGluePrincipal().getName());
+			    publicationVO.setDescription(getVersionComment());
+			    publicationVO.setRepositoryId(repositoryId);
+			    publicationVO = PublicationController.getController().createAndPublish(publicationVO, events, newsiteNodeMap, newContentMap, overrideVersionModifyer, this.getInfoGluePrincipal());
+	
+			    processBean.updateProcess("Creating publication"/*getLocalizedString(getLocale(), "tool.structuretool.publicationProcess.gettingItems")*/);
+			}
+			else
+			{
+	            setActionMessage(userSessionKey, getLocalizedString(getLocale(), "tool.common.publishing.submitToPublishingInlineOperationDoneHeader"));
+			}
+	
+			if(this.returnAddress != null && !this.returnAddress.equals(""))
+	        {
+		        String arguments 	= "userSessionKey=" + userSessionKey + "&attemptDirectPublishing=" + attemptDirectPublishing + "&isAutomaticRedirect=false";
+		        String messageUrl 	= returnAddress + (returnAddress.indexOf("?") > -1 ? "&" : "?") + arguments;
+		        
+		        this.getResponse().sendRedirect(messageUrl);
+		        return NONE;
+	        }
+	        else
+	        {
+	        	return SUCCESS;
+	        }
+	        /*
+			if(this.returnAddress != null && !this.returnAddress.equals(""))
+			{
+				this.returnAddress = this.getResponse().encodeURL(returnAddress);
+				this.getResponse().sendRedirect(returnAddress);
+		
+				return NONE;
+			}
+			else
+			{
+		       	return "success";
+			}
+			*/
 		}
-		else
+		finally
 		{
-	       	return "success";
+			processBean.setStatus(ProcessBean.FINISHED);
+			processBean.removeProcess();
 		}
-		*/
     }
         
     public java.lang.Integer getSiteNodeId()
@@ -304,5 +329,48 @@ public class ChangeMultiSiteNodeVersionStatePublishAction extends InfoGlueAbstra
 	public void setUserSessionKey(String userSessionKey)
 	{
 		this.userSessionKey = userSessionKey;
+	}
+	
+	public ProcessBean getProcessBean()
+	{
+		return ProcessBean.getProcessBean(ChangeMultiSiteNodeVersionStatePublishAction.class.getName(), "" + getInfoGluePrincipal().getName());
+	}
+
+	public String getStatusAsJSON()
+	{
+		StringBuffer sb = new StringBuffer();
+		sb.append("<html><body>");
+		
+		try
+		{
+			ProcessBean processBean = getProcessBean();
+			if(processBean != null && processBean.getStatus() != ProcessBean.FINISHED)
+			{
+				sb.append("<h2>" + getLocalizedString(getLocale(), "tool.structuretool.publicationProcess.publicationProcessInfo") + "</h2>");
+
+				sb.append("<ol>");
+				for(String event : processBean.getProcessEvents())
+					sb.append("<li>" + event + "</li>");
+				sb.append("</ol>");
+				sb.append("<div style='text-align: center'><img src='images/loading.gif' /></div>");
+			}
+			else
+			{
+				sb.append("<script type='text/javascript'>hideProcessStatus();</script>");
+			}
+		}
+		catch (Throwable t)
+		{
+			logger.error("Error when generating repository export status report as JSON.", t);
+			sb.append(t.getMessage());
+		}
+		sb.append("</body></html>");
+				
+		return sb.toString();
+	}
+	
+	public String doShowProcessesAsJSON() throws Exception
+	{
+		return "successShowProcessesAsJSON";
 	}
 }

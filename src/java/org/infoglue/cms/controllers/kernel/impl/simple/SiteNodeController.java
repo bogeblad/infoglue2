@@ -42,6 +42,7 @@ import org.exolab.castor.jdo.OQLQuery;
 import org.exolab.castor.jdo.ObjectNotFoundException;
 import org.exolab.castor.jdo.QueryResults;
 import org.infoglue.cms.applications.common.VisualFormatter;
+import org.infoglue.cms.applications.databeans.ProcessBean;
 import org.infoglue.cms.entities.content.Content;
 import org.infoglue.cms.entities.content.ContentCategory;
 import org.infoglue.cms.entities.content.ContentCategoryVO;
@@ -1969,12 +1970,12 @@ public class SiteNodeController extends BaseController
 	 * Recursive methods to get all sitenodes under the specific sitenode.
 	 */ 
 	
-    public List getSiteNodeVOWithParentRecursive(Integer siteNodeId) throws ConstraintException, SystemException
+    public List getSiteNodeVOWithParentRecursive(Integer siteNodeId, ProcessBean processBean) throws ConstraintException, SystemException
 	{
-		return getSiteNodeVOWithParentRecursive(siteNodeId, new ArrayList());
+		return getSiteNodeVOWithParentRecursive(siteNodeId, processBean, new ArrayList());
 	}
 	
-	private List getSiteNodeVOWithParentRecursive(Integer siteNodeId, List resultList) throws ConstraintException, SystemException
+	private List getSiteNodeVOWithParentRecursive(Integer siteNodeId, ProcessBean processBean, List resultList) throws ConstraintException, SystemException
 	{
 		// Get the versions of this content.
 		resultList.add(getSiteNodeVOWithId(siteNodeId));
@@ -1985,7 +1986,10 @@ public class SiteNodeController extends BaseController
 		while (cit.hasNext())
 		{
 		    SiteNodeVO siteNodeVO = (SiteNodeVO) cit.next();
-			getSiteNodeVOWithParentRecursive(siteNodeVO.getId(), resultList);
+		    
+		    if (resultList.size() % 50 == 0)
+		    	processBean.updateProcess("Found " + resultList.size() + " pages so far...");
+			getSiteNodeVOWithParentRecursive(siteNodeVO.getId(), processBean, resultList);
 		}
 	
 		return resultList;

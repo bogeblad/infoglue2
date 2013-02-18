@@ -98,6 +98,8 @@
 			}
 			else
 			{
+				parent.showProcessURLDelayed("ChangeMultiSiteNodeVersionStatePublish!showProcessesAsJSON.action");
+			
 				listForm.action = "ChangeMultiSiteNodeVersionStatePublish.action"
 				listForm.versionComment.value = commentElm.value;
 

@@ -7,16 +7,37 @@
 		<script type="text/javascript" src="script/jquery/jquery-1.3.2.min.js"></script>
 		<script type="text/javascript">
 		<!--
+			var refreshStatus = true;
+			
 			function hideProcessStatus()
 			{
+				refreshStatus = false;
 				$('#processInfo').hide('fast');
+			}
+
+			function showProcessStatus()
+			{
+				refreshStatus = true;
+				$('#processInfo').show('fast');
+			}
+
+			function showProcessURLDelayed(url)
+			{
+				showProcessStatus();
+				//alert("showProcessURLDelayed: " + url);
+				setTimeout(function(){showProcessURL(url);}, 1000);
 			}
 
 			function showProcessURL(url)
 			{
-				$('#processInfo').load(url, function() {
-				  	setTimeout(function(){showProcessURL(url);}, 1000);
-				});
+				//alert("showProcessURL: " + url);
+				if(refreshStatus)
+				{
+					refreshStatus = true;
+					$('#processInfo').load(url, function() {
+					  	setTimeout(function(){showProcessURL(url);}, 1000);
+					});
+				}
 			}
 
 			function invokeURL(url)

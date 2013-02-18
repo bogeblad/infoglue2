@@ -81,6 +81,8 @@
 			}
 			else
 			{
+				parent.showProcessURLDelayed("UnpublishSiteNodeVersion!showProcessesAsJSON.action?siteNodeId=$siteNodeId");
+			
 				listForm.action = "UnpublishSiteNodeVersion!unpublishAll.action"
 				listForm.versionComment.value = commentElm.value;
 

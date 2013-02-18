@@ -20,7 +20,8 @@
 		function openMainArea(url)
 		{
 			//alert('url:' + url);
-			if(url.indexOf("ViewListSiteNodeVersion.action") > -1)
+			if(url.indexOf("ViewListSiteNodeVersion.action") > -1
+			|| url.indexOf("UnpublishSiteNodeVersion!inputChooseSiteNodes.action") > -1)
 			{
 				//alert('$this.getCMSBaseUrl()/InProcessLoading!executeStructure.action');
 				parent.frames["main"].location.href = 'InProcessLoading!executeStructure.action';
@@ -30,7 +31,10 @@
 				}, 500);
 				
 				setTimeout(function() {
-					parent.frames["main"].showProcessURL(url.replace("ViewListSiteNodeVersion","ViewListSiteNodeVersion!showProcessesAsJSON"));
+					var convertedURL = url;
+					convertedURL = convertedURL.replace("ViewListSiteNodeVersion","ViewListSiteNodeVersion!showProcessesAsJSON");
+					convertedURL = convertedURL.replace("UnpublishSiteNodeVersion!inputChooseSiteNodes.action","UnpublishSiteNodeVersion!showProcessesAsJSON.action");
+					parent.frames["main"].showProcessURL(convertedURL);
 				}, 1000);
 				
 			}

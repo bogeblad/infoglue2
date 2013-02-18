@@ -232,7 +232,8 @@ public class InfoGlueAuthenticationFilter implements Filter
 							URI.indexOf("Login!logout.action") > -1 || 
 							URL.indexOf(logoutUrl) > -1 || 
 							URI.indexOf("UpdateCache") > -1 || 
-							URI.indexOf("protectedRedirect.jsp") > -1 || 
+							URI.indexOf("protectedRedirect.jsp") > -1 ||
+							URI.indexOf("showProcessesAsJSON") > -1 ||
 							uriMatcher.matches(requestURI)
 					))
 			{

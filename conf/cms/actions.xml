@@ -1,4 +1,4 @@
-<!-- $Id: actions.xml,v 1.83.2.9.2.5 2013/02/14 10:36:31 mattias Exp $ -->
+<!-- $Id: actions.xml,v 1.83.2.9.2.6 2013/02/18 14:04:31 mattias Exp $ -->
 <actions>
 
 	<!-- MySettings -->
@@ -938,6 +938,7 @@
 	</action>
 	<action name="org.infoglue.cms.applications.contenttool.actions.ChangeMultiContentStatePublishAction" alias="ChangeMultiContentStatePublish">
 		<view name="success">ViewContent.action?stay=true</view>
+		<view name="successShowProcessesAsJSON">/cms/managementtool/viewExportRepositoryProcessesAsJson.vm</view>
 		<view name="input">/cms/contenttool/showConstraintException.vm</view>
 		<view name="error">/cms/contenttool/error.vm</view>
 	</action>
@@ -1247,6 +1248,7 @@
 	</action>
 	<action name="org.infoglue.cms.applications.structuretool.actions.ChangeMultiSiteNodeVersionStatePublishAction" alias="ChangeMultiSiteNodeVersionStatePublish">
 		<view name="success">ViewSiteNode.action?stay=true</view>
+		<view name="successShowProcessesAsJSON">/cms/managementtool/viewExportRepositoryProcessesAsJson.vm</view>
 		<view name="error">/cms/structuretool/error.vm</view>
 	</action>
 	<action name="org.infoglue.cms.applications.structuretool.actions.ChangeSiteNodeStateAction" alias="ChangeSiteNodeState">
@@ -1289,6 +1291,7 @@
 	<action name="org.infoglue.cms.applications.structuretool.actions.UnpublishSiteNodeVersionAction" alias="UnpublishSiteNodeVersion">
 		<view name="input">/cms/structuretool/viewListSiteNodeVersionToUnpublish.vm</view>
 		<view name="inputChooseSiteNodes">/cms/structuretool/viewListSiteNodesToUnpublish.vm</view>
+		<view name="successShowProcessesAsJSON">/cms/managementtool/viewExportRepositoryProcessesAsJson.vm</view>
 		<view name="success">ViewSiteNode.action?stay=true</view>
 		<view name="error">/cms/structuretool/error.vm</view>
 		<view name="accessDenied">/cms/structuretool/viewConstraintException.vm</view>
