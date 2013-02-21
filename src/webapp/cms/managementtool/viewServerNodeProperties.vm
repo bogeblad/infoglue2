@@ -437,7 +437,7 @@
 			#set($searchEngineOptions = [$SQLSearch, $luceneSearch]) 
 
 			#selectFieldCSS("ServerNode.property.internalSearchEngine" "internalSearchEngine" $this.getPropertyValue('internalSearchEngine') $searchEngineOptions)
-			#selectFieldCSS("ServerNode.property.fastSearchIncludedContentTypes" "fastSearchIncludedContentTypes" $this.getPropertyValue('fastSearchIncludedContentTypes') $searchEngineOptions)
+			#editPropertyFieldCSS("ServerNode.property.fastSearchIncludedContentTypes" "fastSearchIncludedContentTypes" $this.getPropertyValue('fastSearchIncludedContentTypes') "51" "$!serverNodeId")
 			#editPropertyFieldCSS("ServerNode.property.maxRows" "maxRows" "$this.getPropertyValue('maxRows')" "51" "$!serverNodeId")
 
 			#editPropertyFieldCSS("ServerNode.property.maxNumberOfAssetInSearches" "maxNumberOfAssetInSearches" "$this.getPropertyValue('maxNumberOfAssetInSearches')" "51" "$!serverNodeId")
