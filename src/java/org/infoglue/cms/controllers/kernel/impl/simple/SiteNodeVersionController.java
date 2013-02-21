@@ -1636,7 +1636,7 @@ public class SiteNodeVersionController extends BaseController
 		if(currentLevel < limit)
 		{
 			List<SiteNodeVO> localRelatedSiteNodeVersionVOList = SiteNodeVersionController.getController().getLatestSiteNodeVersionIds(localRelatedSiteNodeIdsToCheck, db);
-			List<ContentVersionVO> localRelatedContentVersionVOList = ContentVersionController.getContentVersionController().getLatestContentVersionIdsPerLanguage(localRelatedContentIdsToCheck, db);
+			List<ContentVersionVO> localRelatedContentVersionVOList = ContentVersionController.getContentVersionController().getLatestContentVersionVOListPerLanguage(localRelatedContentIdsToCheck, db);
 			
 	        //Adding it to the full list
 			Set<Integer> localRelatedSiteNodeVersionIdSet = new HashSet<Integer>();

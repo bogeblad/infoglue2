@@ -40,6 +40,7 @@ import org.exolab.castor.jdo.Database;
 import org.exolab.castor.jdo.OQLQuery;
 import org.exolab.castor.jdo.QueryResults;
 import org.infoglue.cms.controllers.kernel.impl.simple.CastorDatabaseService;
+import org.infoglue.cms.entities.management.LanguageVO;
 import org.infoglue.cms.entities.management.Repository;
 import org.infoglue.cms.entities.management.RepositoryVO;
 import org.infoglue.cms.exception.Bug;
@@ -142,6 +143,7 @@ public class RepositoryDeliveryController extends BaseDeliveryController
 	public Set<RepositoryVO> getRepositoryVOListFromServerName(Database db, String serverName, String portNumber, String repositoryName, String url) throws SystemException, Exception
     {
 		Timer t = new Timer();
+		t.setActive(false);
 		
 	    Set<RepositoryVO> repositories = new HashSet<RepositoryVO>();
 	    
@@ -171,12 +173,16 @@ public class RepositoryDeliveryController extends BaseDeliveryController
 		}
 		
 		//t.printElapsedTime("Repositories " + cachedRepositories.size() + " st took");
+		boolean debug = false;
 		
 		Iterator repositoriesIterator = cachedRepositories.iterator();
         while (repositoriesIterator.hasNext()) 
         {
-            RepositoryVO repositoryVO = (RepositoryVO) repositoriesIterator.next();
+        	RepositoryVO repositoryVO = (RepositoryVO) repositoriesIterator.next();
             logger.info("repository:" + repositoryVO.getDnsName());
+            
+        	if(repositoryVO.getName().equalsIgnoreCase("GU Medarbetarportal2"))
+        		debug = true;
 
             String fullDnsNames = repositoryVO.getDnsName();
 
@@ -198,7 +204,37 @@ public class RepositoryDeliveryController extends BaseDeliveryController
 	            if(livePathEndIndex > -1)
 	            	livePath = livePath.substring(0, livePathEndIndex);
             }
-
+            
+            if(debug)
+            	t.printElapsedTime("Before");
+            try
+            {
+	            String enableNiceURIForLanguage = RepositoryDeliveryController.getRepositoryDeliveryController().getExtraPropertyValue(repositoryVO.getId(), "enableNiceURIForLanguage");
+	            if(debug)
+	            {
+		            //System.out.println("enableNiceURIForLanguage:" + enableNiceURIForLanguage);
+	            	//System.out.println("url:" + url);
+	            }
+			    if(enableNiceURIForLanguage != null && enableNiceURIForLanguage.equals("true"))
+			    {
+			    	List<LanguageVO> languageVOList = LanguageDeliveryController.getLanguageDeliveryController().getAvailableLanguagesForRepository(db, repositoryVO.getId());
+			    	for(LanguageVO languageVO : languageVOList)
+			    	{
+				    	if(url.startsWith("/"+languageVO.getLanguageCode()) || url.startsWith(""+languageVO.getLanguageCode()))
+				    	{
+				    		url = url.substring(url.indexOf(""+languageVO.getLanguageCode()) + languageVO.getLanguageCode().length());
+				    		break;
+				    	}
+			    	}
+			    }
+            }
+            catch (Exception e) 
+            {
+            	e.printStackTrace();
+			}
+            if(debug)
+            	t.printElapsedTime("After: " + url);
+		    
             if(CmsPropertyHandler.getOperatingMode().equals("0"))
             {
             	String workingPathAlternative1 = workingPath;
@@ -222,11 +258,21 @@ public class RepositoryDeliveryController extends BaseDeliveryController
 	            String livePathAlternative2 = livePath;
 	            if(livePathAlternative2 != null)
 	            	livePathAlternative2 = URLEncoder.encode(livePathAlternative2, (niceURIEncoding.indexOf("8859") > -1 ? "utf-8" : "iso-8859-1")).replaceAll("\\+", "%20");
-
+	            
+	            /*
+	            if(debug)
+	            {
+	            	System.out.println("url:" + url);
+	            	System.out.println("livePath:" + livePath);
+	            	System.out.println("livePathAlternative1:" + livePathAlternative1);
+	            	System.out.println("livePathAlternative2" + livePathAlternative2);
+	            }
+	            */
+	            
 	            if(livePath != null && url.indexOf(livePath) == -1 && url.indexOf(livePathAlternative1) == -1 && url.indexOf(livePathAlternative2) == -1)
 	            {
 	            	logger.info("This repo had a live path but the url did not include any sign of it - let's skip it");
-	            	continue;
+		            continue;
 	            }
 	        }
             
@@ -292,7 +338,7 @@ public class RepositoryDeliveryController extends BaseDeliveryController
             	        logger.info("Has to check repositoryName also:" + repositoryVO.getName() + "=" + repositoryName + "=" + serverName);
                         if(repositoryVO.getName().equalsIgnoreCase(repositoryName))
                         {
-                	        logger.info("Adding 1:" + repositoryVO.getName() + "=" + repositoryName);
+                	        logger.warn("Adding 1:" + repositoryVO.getName() + "=" + repositoryName);
                         	repositories.add(repositoryVO);
                         }
             	    }
@@ -302,7 +348,7 @@ public class RepositoryDeliveryController extends BaseDeliveryController
             	    	logger.info("serverName:" + serverName);
                     	if(dnsName.startsWith(serverName))
                 	    {
-                	        logger.info("Adding 2:" + repositoryVO.getName() + "=" + repositoryName + "=" + serverName);
+                	        //logger.warn("Adding 2:" + repositoryVO.getName() + "=" + repositoryName + "=" + serverName);
                         	repositories.add(repositoryVO);
                 	    }
                 	    /*

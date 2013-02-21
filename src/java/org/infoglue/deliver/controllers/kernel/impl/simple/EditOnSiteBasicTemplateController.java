@@ -66,7 +66,7 @@ public class EditOnSiteBasicTemplateController extends BasicTemplateController
 	    {
 			ContentTypeAttribute contentTypeAttribute = null;
 			
-			ContentVO contentVO = this.getContent(contentId);
+			//ContentVO contentVO = this.getContent(contentId);
 			ContentTypeDefinitionVO contentTypeDefinitionVO = getContentTypeDefinitionVO(contentId);
 			Collection attributes = this.getContentTypeDefinitionAttributes(contentTypeDefinitionVO.getSchemaValue());
 			Iterator attributesIterator = attributes.iterator();

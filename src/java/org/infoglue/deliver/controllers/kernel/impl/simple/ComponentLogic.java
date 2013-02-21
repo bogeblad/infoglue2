@@ -3331,6 +3331,10 @@ public class ComponentLogic
     	
 		NodeDeliveryController ndc = NodeDeliveryController.getNodeDeliveryController(siteNodeId, languageId, contentId);
 		SiteNodeVO siteNodeVO = ndc.getSiteNodeVO(templateController.getDatabase(), siteNodeId);
+		if(siteNodeVO == null)
+		{
+			logger.info("siteNodeVO was null:" + siteNodeId);
+		}
 		logger.info("siteNodeVO:" + siteNodeVO.getName() + ":" + siteNodeVO.getMetaInfoContentId());
 
 		ContentVO contentVO = templateController.getContent(siteNodeVO.getMetaInfoContentId());

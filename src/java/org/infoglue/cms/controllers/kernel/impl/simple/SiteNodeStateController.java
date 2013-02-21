@@ -209,7 +209,7 @@ public class SiteNodeStateController extends BaseController
 				
 				if(returnSiteNodeVersionImpl.getIsProtected() == SiteNodeVersionVO.YES)
 				{
-					copyAccessRights(oldMediumSiteNodeVersionImpl.getId(), returnSiteNodeVersionImpl.getId(), db);
+					copyAccessRights("SiteNodeVersion", oldMediumSiteNodeVersionImpl.getId(), returnSiteNodeVersionImpl.getId(), db);
 					RequestAnalyser.getRequestAnalyser().registerComponentStatistics("changeState copyAccessRights", t.getElapsedTime());
 				}
 			}
@@ -255,7 +255,7 @@ public class SiteNodeStateController extends BaseController
 				//copyServiceBindings(oldSiteNodeVersion, newSiteNodeVersion, db);
 				if(returnSiteNodeVersionImpl.getIsProtected() == SiteNodeVersionVO.YES)
 				{
-					copyAccessRights(oldMediumSiteNodeVersionImpl.getId(), returnSiteNodeVersionImpl.getId(), db);
+					copyAccessRights("SiteNodeVersion", oldMediumSiteNodeVersionImpl.getId(), returnSiteNodeVersionImpl.getId(), db);
 					RequestAnalyser.getRequestAnalyser().registerComponentStatistics("changeState publish copyAccessRights", t.getElapsedTime());
 				}
 
@@ -519,72 +519,64 @@ public class SiteNodeStateController extends BaseController
 	 * This method assigns the same access rights as the old content-version has.
 	 */
 	
-	private static void copyAccessRights(Integer originalSiteNodeVersionId, Integer newSiteNodeVersionId, Database db) throws ConstraintException, SystemException, Exception
+	public void copyAccessRights(String interceptionPointCategory, Integer originalSiteNodeVersionId, Integer newSiteNodeVersionId, Database db) throws ConstraintException, SystemException, Exception
 	{
 		Timer t = new Timer();
 		
-		List<InterceptionPoint> interceptionPointList = InterceptionPointController.getController().getInterceptionPointList("SiteNodeVersion", db);
-		/*
-		logger.info("interceptionPointList:" + interceptionPointList.size());
-		Iterator interceptionPointListIterator = interceptionPointList.iterator();
-		while(interceptionPointListIterator.hasNext())
-		{
-			InterceptionPoint interceptionPoint = (InterceptionPoint)interceptionPointListIterator.next();
-			*/
-			List accessRightList = AccessRightController.getController().getAccessRightListForEntity(interceptionPointList/*interceptionPoint.getId()*/, originalSiteNodeVersionId.toString(), db);
+		List<InterceptionPoint> interceptionPointList = InterceptionPointController.getController().getInterceptionPointList(interceptionPointCategory, db);
+		List accessRightList = AccessRightController.getController().getAccessRightListForEntity(interceptionPointList, originalSiteNodeVersionId.toString(), db, true);
 
-			logger.info("accessRightList:" + accessRightList.size());
-			Iterator accessRightListIterator = accessRightList.iterator();
-			while(accessRightListIterator.hasNext())
+		logger.info("accessRightList:" + accessRightList.size());
+		Iterator accessRightListIterator = accessRightList.iterator();
+		while(accessRightListIterator.hasNext())
+		{
+			AccessRight accessRight = (AccessRight)accessRightListIterator.next();
+			logger.info("accessRight:" + accessRight.getId());
+			
+			AccessRightVO copiedAccessRight = accessRight.getValueObject().createCopy();
+			copiedAccessRight.setParameters(newSiteNodeVersionId.toString());
+			
+			InterceptionPoint icp = null;
+			for(InterceptionPoint currentICP : interceptionPointList)
 			{
-				AccessRight accessRight = (AccessRight)accessRightListIterator.next();
-				logger.info("accessRight:" + accessRight.getId());
+				if(currentICP.getId().equals(copiedAccessRight.getInterceptionPointId()))
+					icp = currentICP;
+			}
+			if(icp != null)
+			{
+				AccessRight newAccessRight = AccessRightController.getController().create(copiedAccessRight, icp, db);
 				
-				AccessRightVO copiedAccessRight = accessRight.getValueObject().createCopy();
-				copiedAccessRight.setParameters(newSiteNodeVersionId.toString());
-				
-				InterceptionPoint icp = null;
-				for(InterceptionPoint currentICP : interceptionPointList)
+				Iterator groupsIterator = accessRight.getGroups().iterator();
+				while(groupsIterator.hasNext())
 				{
-					if(currentICP.getId().equals(copiedAccessRight.getInterceptionPointId()))
-						icp = currentICP;
+				    AccessRightGroup accessRightGroup = (AccessRightGroup)groupsIterator.next();
+				    AccessRightGroupVO newAccessRightGroupVO = new AccessRightGroupVO();
+				    newAccessRightGroupVO.setGroupName(accessRightGroup.getGroupName());
+				    AccessRightGroup newAccessRightGroup = AccessRightController.getController().createAccessRightGroup(db, newAccessRightGroupVO, newAccessRight);
+				    newAccessRight.getGroups().add(newAccessRightGroup);
 				}
-				if(icp != null)
+
+				Iterator rolesIterator = accessRight.getRoles().iterator();
+				while(rolesIterator.hasNext())
 				{
-					AccessRight newAccessRight = AccessRightController.getController().create(copiedAccessRight, icp, db);
-					
-					Iterator groupsIterator = accessRight.getGroups().iterator();
-					while(groupsIterator.hasNext())
-					{
-					    AccessRightGroup accessRightGroup = (AccessRightGroup)groupsIterator.next();
-					    AccessRightGroupVO newAccessRightGroupVO = new AccessRightGroupVO();
-					    newAccessRightGroupVO.setGroupName(accessRightGroup.getGroupName());
-					    AccessRightGroup newAccessRightGroup = AccessRightController.getController().createAccessRightGroup(db, newAccessRightGroupVO, newAccessRight);
-					    newAccessRight.getGroups().add(newAccessRightGroup);
-					}
-	
-					Iterator rolesIterator = accessRight.getRoles().iterator();
-					while(rolesIterator.hasNext())
-					{
-					    AccessRightRole accessRightRole = (AccessRightRole)rolesIterator.next();
-					    AccessRightRoleVO newAccessRightRoleVO = new AccessRightRoleVO();
-					    newAccessRightRoleVO.setRoleName(accessRightRole.getRoleName());
-					    AccessRightRole newAccessRightRole = AccessRightController.getController().createAccessRightRole(db, newAccessRightRoleVO, newAccessRight);
-					    newAccessRight.getRoles().add(newAccessRightRole);
-					}
-	
-					Iterator usersIterator = accessRight.getUsers().iterator();
-					while(usersIterator.hasNext())
-					{
-					    AccessRightUser accessRightUser = (AccessRightUser)usersIterator.next();
-					    AccessRightUserVO newAccessRightUserVO = new AccessRightUserVO();
-					    newAccessRightUserVO.setUserName(accessRightUser.getUserName());
-					    AccessRightUser newAccessRightUser = AccessRightController.getController().createAccessRightUser(db, newAccessRightUserVO, newAccessRight);
-					    newAccessRight.getUsers().add(newAccessRightUser);
-					}
+				    AccessRightRole accessRightRole = (AccessRightRole)rolesIterator.next();
+				    AccessRightRoleVO newAccessRightRoleVO = new AccessRightRoleVO();
+				    newAccessRightRoleVO.setRoleName(accessRightRole.getRoleName());
+				    AccessRightRole newAccessRightRole = AccessRightController.getController().createAccessRightRole(db, newAccessRightRoleVO, newAccessRight);
+				    newAccessRight.getRoles().add(newAccessRightRole);
+				}
+
+				Iterator usersIterator = accessRight.getUsers().iterator();
+				while(usersIterator.hasNext())
+				{
+				    AccessRightUser accessRightUser = (AccessRightUser)usersIterator.next();
+				    AccessRightUserVO newAccessRightUserVO = new AccessRightUserVO();
+				    newAccessRightUserVO.setUserName(accessRightUser.getUserName());
+				    AccessRightUser newAccessRightUser = AccessRightController.getController().createAccessRightUser(db, newAccessRightUserVO, newAccessRight);
+				    newAccessRight.getUsers().add(newAccessRightUser);
 				}
 			}
-		//}
+		}
 	}	
 	
 	/**

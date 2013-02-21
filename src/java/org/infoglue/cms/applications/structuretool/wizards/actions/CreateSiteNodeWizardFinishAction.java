@@ -23,6 +23,8 @@
 
 package org.infoglue.cms.applications.structuretool.wizards.actions;
 
+import java.util.ArrayList;
+
 import org.apache.log4j.Logger;
 import org.exolab.castor.jdo.Database;
 import org.infoglue.cms.applications.common.VisualFormatter;
@@ -30,6 +32,7 @@ import org.infoglue.cms.applications.structuretool.actions.CreateSiteNodeAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.CastorDatabaseService;
 import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeController;
 import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeControllerProxy;
+import org.infoglue.cms.entities.content.ContentVersion;
 import org.infoglue.cms.entities.structure.SiteNode;
 import org.infoglue.cms.entities.structure.SiteNodeVO;
 import org.infoglue.cms.exception.SystemException;
@@ -87,7 +90,7 @@ public class CreateSiteNodeWizardFinishAction extends CreateSiteNodeWizardAbstra
 	        	createSiteNodeWizardInfoBean.getSiteNodeVO().setIsBranch(new Boolean(true));
 	            SiteNode newSiteNode = SiteNodeControllerProxy.getSiteNodeControllerProxy().acCreate(this.getInfoGluePrincipal(), createSiteNodeWizardInfoBean.getParentSiteNodeId(), createSiteNodeWizardInfoBean.getSiteNodeTypeDefinitionId(), repositoryId, createSiteNodeWizardInfoBean.getSiteNodeVO(), db);            
 	            newSiteNodeVO = newSiteNode.getValueObject();
-	            SiteNodeController.getController().createSiteNodeMetaInfoContent(db, newSiteNode, repositoryId, this.getInfoGluePrincipal(), createSiteNodeWizardInfoBean.getPageTemplateContentId());
+	            SiteNodeController.getController().createSiteNodeMetaInfoContent(db, newSiteNode.getValueObject(), repositoryId, this.getInfoGluePrincipal(), createSiteNodeWizardInfoBean.getPageTemplateContentId(), new ArrayList<ContentVersion>());
 	            
 	            commitTransaction(db);
 	        }

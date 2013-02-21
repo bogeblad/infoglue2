@@ -317,8 +317,10 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 		    boolean showContentNotifications 	= AccessRightController.getController().getIsPrincipalAuthorized(templateController.getDatabase(), principal, "ComponentEditor.ContentNotifications", "");
 		    boolean showPageNotifications 		= AccessRightController.getController().getIsPrincipalAuthorized(templateController.getDatabase(), principal, "ComponentEditor.PageNotifications", "");
 
-		    String extraHeader 	= FileHelper.getFileAsString(new File(CmsPropertyHandler.getContextRootPath() + "preview/pageComponentEditorHeader.vm"), "iso-8859-1");
-		    String extraBody 	= FileHelper.getFileAsString(new File(CmsPropertyHandler.getContextRootPath() + "preview/pageComponentEditorBody.vm"), "iso-8859-1");
+		    System.out.println(CmsPropertyHandler.getContextRootPath());
+
+		    String extraHeader 	= FileHelper.getFileAsString(new File(CmsPropertyHandler.getContextDiskPath() + "preview/pageComponentEditorHeader.vm"), "iso-8859-1");
+		    String extraBody 	= FileHelper.getFileAsString(new File(CmsPropertyHandler.getContextDiskPath() + "preview/pageComponentEditorBody.vm"), "iso-8859-1");
 		    
 			boolean oldUseFullUrl = this.getTemplateController().getDeliveryContext().getUseFullUrl();
 			this.getTemplateController().getDeliveryContext().setUseFullUrl(true);

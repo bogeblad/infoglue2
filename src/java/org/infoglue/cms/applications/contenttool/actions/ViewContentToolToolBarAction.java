@@ -428,6 +428,8 @@ public class ViewContentToolToolBarAction extends InfoGlueAbstractAction
 			moveButton.getSubButtons().add(getMoveMultipleButton());
 			buttons.add(moveButton);
 			
+			buttons.add(getCopyButton());
+
 			buttons.add(getPublishButton());
 			if(hasAnyPublishedVersion())
 			{

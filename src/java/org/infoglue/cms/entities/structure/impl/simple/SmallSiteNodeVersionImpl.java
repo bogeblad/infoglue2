@@ -58,7 +58,6 @@ public class SmallSiteNodeVersionImpl extends SiteNodeVersionImpl
 	 */
 	public Integer getId() 
 	{
-		System.out.println("id");
 		return getSiteNodeVersionId();
 	}
 	 
@@ -79,7 +78,6 @@ public class SmallSiteNodeVersionImpl extends SiteNodeVersionImpl
     
     public java.lang.Integer getSiteNodeVersionId()
     {
-		System.out.println("siteNodeVersionId");
         return this.valueObject.getSiteNodeVersionId();
     }
             
@@ -90,7 +88,6 @@ public class SmallSiteNodeVersionImpl extends SiteNodeVersionImpl
       
     public java.lang.Integer getStateId()
     {
-		System.out.println("stateId");
         return this.valueObject.getStateId();
     }
             
@@ -101,7 +98,6 @@ public class SmallSiteNodeVersionImpl extends SiteNodeVersionImpl
       
     public java.lang.Integer getVersionNumber()
     {
-		System.out.println("versionNumber");
         return this.valueObject.getVersionNumber();
     }
             
@@ -112,7 +108,6 @@ public class SmallSiteNodeVersionImpl extends SiteNodeVersionImpl
       
     public java.util.Date getModifiedDateTime()
     {
-		System.out.println("modifiedDateTime");
         return this.valueObject.getModifiedDateTime();
     }
             
@@ -123,7 +118,6 @@ public class SmallSiteNodeVersionImpl extends SiteNodeVersionImpl
       
     public java.lang.String getVersionComment()
     {
-		System.out.println("versionComment");
         return this.valueObject.getVersionComment();
     }
             
@@ -134,7 +128,6 @@ public class SmallSiteNodeVersionImpl extends SiteNodeVersionImpl
       
     public java.lang.Boolean getIsCheckedOut()
     {
-		System.out.println("getIsCheckedOut");
 		return this.valueObject.getIsCheckedOut();
     }
             
@@ -145,7 +138,6 @@ public class SmallSiteNodeVersionImpl extends SiteNodeVersionImpl
       
     public java.lang.Boolean getIsActive()
     {
-		System.out.println("isActive");
     	return this.valueObject.getIsActive();
 	}
     
@@ -173,7 +165,6 @@ public class SmallSiteNodeVersionImpl extends SiteNodeVersionImpl
     
     public String getVersionModifier()
     {
-    	System.out.println("versionModifier");
         return this.valueObject.getVersionModifier();
     }
             
@@ -196,7 +187,6 @@ public class SmallSiteNodeVersionImpl extends SiteNodeVersionImpl
 
 	public String getContentType()
 	{
-		System.out.println("contentType");
 		return this.valueObject.getContentType();
 	}
 
@@ -207,7 +197,6 @@ public class SmallSiteNodeVersionImpl extends SiteNodeVersionImpl
 
 	public String getPageCacheKey()
 	{
-		System.out.println("2");
 		return this.valueObject.getPageCacheKey();
 	}
 
@@ -218,8 +207,7 @@ public class SmallSiteNodeVersionImpl extends SiteNodeVersionImpl
 
 	public String getPageCacheTimeout()
 	{
-    	System.out.println("getPageCacheTimeout");
-		return this.valueObject.getPageCacheTimeout();
+    	return this.valueObject.getPageCacheTimeout();
 	}
 
 	public void setPageCacheTimeout(String pageCacheTimeout)

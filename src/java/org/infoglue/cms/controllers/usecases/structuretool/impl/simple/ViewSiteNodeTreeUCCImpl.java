@@ -23,6 +23,7 @@
 
 package org.infoglue.cms.controllers.usecases.structuretool.impl.simple;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -36,6 +37,7 @@ import org.infoglue.cms.controllers.kernel.impl.simple.RepositoryController;
 import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeController;
 import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeTypeDefinitionController;
 import org.infoglue.cms.controllers.usecases.structuretool.ViewSiteNodeTreeUCC;
+import org.infoglue.cms.entities.content.ContentVersion;
 import org.infoglue.cms.entities.management.Repository;
 import org.infoglue.cms.entities.management.SiteNodeTypeDefinition;
 import org.infoglue.cms.entities.structure.SiteNode;
@@ -98,7 +100,7 @@ public class ViewSiteNodeTreeUCCImpl extends BaseUCCController implements ViewSi
 				SiteNodeVO newSiteNodeVO = siteNodeVO;
 				
             	//Also creates an initial meta info for the sitenode.
-				SiteNodeController.getController().createSiteNodeMetaInfoContent(db, siteNode, repositoryId, infoGluePrincipal, null);
+				SiteNodeController.getController().createSiteNodeMetaInfoContent(db, siteNode.getValueObject(), repositoryId, infoGluePrincipal, null, new ArrayList<ContentVersion>());
 			}
 			
 			//results.close();

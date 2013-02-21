@@ -59,6 +59,7 @@ import org.infoglue.cms.entities.content.DigitalAsset;
 import org.infoglue.cms.entities.content.DigitalAssetVO;
 import org.infoglue.cms.entities.content.SmallestContentVersionVO;
 import org.infoglue.cms.entities.content.impl.simple.DigitalAssetImpl;
+import org.infoglue.cms.entities.content.impl.simple.MediumContentVersionImpl;
 import org.infoglue.cms.entities.content.impl.simple.MediumDigitalAssetImpl;
 import org.infoglue.cms.entities.content.impl.simple.SmallContentVersionImpl;
 import org.infoglue.cms.entities.content.impl.simple.SmallDigitalAssetImpl;
@@ -236,9 +237,9 @@ public class DigitalAssetController extends BaseController
         return versions;
     }
     
-    public static DigitalAsset getMediumDigitalAssetWithId(Integer digitalAssetId, Database db) throws SystemException, Bug
+    public static MediumDigitalAssetImpl getMediumDigitalAssetWithId(Integer digitalAssetId, Database db) throws SystemException, Bug
     {
-		return (DigitalAsset) getObjectWithId(MediumDigitalAssetImpl.class, digitalAssetId, db);
+		return (MediumDigitalAssetImpl) getObjectWithId(MediumDigitalAssetImpl.class, digitalAssetId, db);
     }
 
     public static DigitalAsset getMediumDigitalAssetWithIdReadOnly(Integer digitalAssetId, Database db) throws SystemException, Bug
@@ -500,36 +501,36 @@ public class DigitalAssetController extends BaseController
    	 * The asset is send in as an InputStream which castor inserts automatically.
    	 */
 
-	public void createByCopy(Integer originalContentVersionId, Integer newContentVersionId, Map<Integer,Integer> assetIdMap, Database db) throws ConstraintException, SystemException
+	public void createByCopy(Integer originalContentVersionId, MediumContentVersionImpl cv, Map<Integer,Integer> assetIdMap, Database db) throws ConstraintException, SystemException
 	{
 		logger.info("Creating by copying....");
 		logger.info("originalContentVersionId:" + originalContentVersionId);
-		logger.info("newContentVersionId:" + newContentVersionId);
-		ContentVersion oldContentVersion = ContentVersionController.getContentVersionController().getContentVersionWithId(originalContentVersionId, db);
+		//logger.info("newContentVersionId:" + newContentVersionId);
+		ContentVersion oldContentVersion = ContentVersionController.getContentVersionController().getMediumContentVersionWithId(originalContentVersionId, db);
 		
 		Collection<DigitalAsset> assets = oldContentVersion.getDigitalAssets();
 		logger.info("assets:" + assets);
 		for(DigitalAsset oldDigitalAsset : assets)
 		{
-			ContentVersion contentVersion = ContentVersionController.getContentVersionController().getContentVersionWithId(newContentVersionId, db);
+			//ContentVersion contentVersion = ContentVersionController.getContentVersionController().getContentVersionWithId(newContentVersionId, db);
 
 			if(assetIdMap.containsKey(oldDigitalAsset.getId()))
 			{
 				logger.info("The asset was allready copied by another version - let's just connect the new one");
-				DigitalAsset newDigitalAsset = getDigitalAssetWithId(assetIdMap.get(oldDigitalAsset.getId()), db);
-				newDigitalAsset.getContentVersions().add(contentVersion);
+				MediumDigitalAssetImpl newDigitalAsset = getMediumDigitalAssetWithId(assetIdMap.get(oldDigitalAsset.getId()), db);
+				newDigitalAsset.getContentVersions().add(cv);
 			}
 			else
 			{
 				Collection contentVersions = new ArrayList();
-				contentVersions.add(contentVersion);
-				logger.info("Added contentVersion:" + contentVersion.getId());
+				contentVersions.add(cv);
+
 				try
 				{
 					String filePath = getDigitalAssetFilePath(oldDigitalAsset.getValueObject(), db);
 					File oldAssetFile = new File(filePath);
 					
-					logger.info("Creating asset for:" + oldDigitalAsset.getAssetKey() + ":" + oldContentVersion.getId() + "/" + contentVersion.getId());
+					logger.info("Creating asset for:" + oldDigitalAsset.getAssetKey() + ":" + oldContentVersion.getId() + "/" + cv.getId());
 					DigitalAssetVO digitalAssetVO = new DigitalAssetVO();
 					digitalAssetVO.setAssetContentType(oldDigitalAsset.getAssetContentType());
 					digitalAssetVO.setAssetFileName(oldDigitalAsset.getAssetFileName());
@@ -537,7 +538,7 @@ public class DigitalAssetController extends BaseController
 					digitalAssetVO.setAssetFileSize(oldDigitalAsset.getAssetFileSize());
 					digitalAssetVO.setAssetKey(oldDigitalAsset.getAssetKey());
 					
-					DigitalAsset digitalAsset = new DigitalAssetImpl();
+					DigitalAsset digitalAsset = new MediumDigitalAssetImpl();
 					digitalAsset.setValueObject(digitalAssetVO);
 	
 					if(oldAssetFile.exists())
@@ -1307,9 +1308,9 @@ public class DigitalAssetController extends BaseController
 					File originalFile = new File(filePath + File.separator + fileName);
 					if(!originalFile.exists())
 					{
-						logger.info("No file there - let's try getting it again.");
+						logger.warn("No file there - let's try getting it again.");
 						String originalUrl = DigitalAssetController.getController().getDigitalAssetUrl(digitalAsset.getValueObject(), db);
-						logger.info("originalUrl:" + originalUrl);
+						logger.warn("originalUrl:" + originalUrl);
 						originalFile = new File(filePath + File.separator + fileName);
 					}
 					
@@ -2168,13 +2169,13 @@ public class DigitalAssetController extends BaseController
 	 */
 	public static boolean dumpDigitalAsset(DigitalAssetVO digitalAssetVO, String fileName, String filePath, Database db) throws Exception
 	{
-		logger.info("fileName:" + fileName);
+		logger.warn("fileName:" + fileName);
 		File outputFile = new File(filePath + File.separator + fileName);
 		File tmpOutputFile = new File(filePath + File.separator + "tmp_" + Thread.currentThread().getId() + "_" + fileName);
 		if(outputFile.exists())
 		{
-			if(logger.isInfoEnabled())
-				logger.info("The file allready exists so we don't need to dump it again..");
+			//if(logger.isInfoEnabled())
+				logger.warn("The file allready exists so we don't need to dump it again..");
 			
 			return true;
 		}
@@ -2189,8 +2190,11 @@ public class DigitalAssetController extends BaseController
 			DigitalAsset digitalAsset = getDigitalAssetWithId(digitalAssetVO.getDigitalAssetId(), db);
 			
 			InputStream is = digitalAsset.getAssetBlob();
+			System.out.println("getEnableDiskAssets():" + CmsPropertyHandler.getEnableDiskAssets());
+			System.out.println("tmpOutputFile.exists():" + tmpOutputFile.exists());
 			if((CmsPropertyHandler.getEnableDiskAssets().equals("false") || !tmpOutputFile.exists()) && is != null)
 			{
+				System.out.println("IS WAS NOT NULL");
 				synchronized (is)
 				{
 					FileOutputStream fis = new FileOutputStream(tmpOutputFile);
@@ -2209,20 +2213,20 @@ public class DigitalAssetController extends BaseController
 					fis.close();
 					bos.close();
 	
-					logger.info("\n\nExists" + tmpOutputFile.getAbsolutePath() + "=" + tmpOutputFile.exists() + " OR " + outputFile.exists() + ":" + outputFile.length());
+					logger.warn("\n\nExists" + tmpOutputFile.getAbsolutePath() + "=" + tmpOutputFile.exists() + " OR " + outputFile.exists() + ":" + outputFile.length());
 					if(tmpOutputFile.length() == 0 || tmpOutputFile.length() != digitalAsset.getAssetFileSize() || outputFile.exists())
 					{
-						logger.info("outputFile:" + outputFile.getAbsolutePath());	
-						logger.info("written file:" + tmpOutputFile.length() + " - removing temp and not renaming it...");	
+						logger.warn("outputFile:" + outputFile.getAbsolutePath());	
+						logger.warn("written file:" + tmpOutputFile.length() + " - removing temp and not renaming it...");	
 						tmpOutputFile.delete();
 					}
 					else
 					{
 						if(tmpOutputFile.length() == digitalAsset.getAssetFileSize())
 						{
-							logger.info("written file:" + tmpOutputFile.getAbsolutePath() + " - renaming it to " + outputFile.getAbsolutePath());	
+							logger.warn("written file:" + tmpOutputFile.getAbsolutePath() + " - renaming it to " + outputFile.getAbsolutePath());	
 							tmpOutputFile.renameTo(outputFile);
-							logger.info("Renamed to" + outputFile.getAbsolutePath() + "=" + outputFile.exists());
+							logger.warn("Renamed to" + outputFile.getAbsolutePath() + "=" + outputFile.exists());
 						}
 						else
 						{
@@ -2235,7 +2239,7 @@ public class DigitalAssetController extends BaseController
 			{
 				if(logger.isInfoEnabled())
 				{
-					logger.info("Dumping from file - diskassets is on probably.");
+					logger.warn("Dumping from file - diskassets is on probably.");
 					logger.info("Inside the cms-app I think - we should take the file from disk");
 					logger.info("tmpOutputFile:" + tmpOutputFile.getAbsolutePath() + ":" + tmpOutputFile.exists());
 					logger.info("outputFile:" + outputFile.getAbsolutePath() + ":" + outputFile.exists());
@@ -2272,9 +2276,8 @@ public class DigitalAssetController extends BaseController
 			
 			if(logger.isInfoEnabled())
 			{
-				logger.info("Time for dumping file " + fileName + ":" + (System.currentTimeMillis() - timer));
-				logger.info("assetPath in dump:" + filePath + File.separator + fileName);
-				logger.info("Time for dumping file " + fileName + ":" + (System.currentTimeMillis() - timer));
+				logger.warn("Time for dumping file " + fileName + ":" + (System.currentTimeMillis() - timer));
+				logger.warn("assetPath in dump:" + filePath + File.separator + fileName);
 			}
 		}
 		catch (Exception e) 

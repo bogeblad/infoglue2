@@ -943,7 +943,7 @@ public class AccessRightController extends BaseController
 		return accessRightList;		
 	}
 	
-	public List<AccessRight> getAccessRightListForEntity(List<InterceptionPoint> interceptionPointVOList, String parameters, Database db)  throws SystemException, Bug
+	public List<AccessRight> getAccessRightListForEntity(List<InterceptionPoint> interceptionPointVOList, String parameters, Database db, boolean readOnly)  throws SystemException, Bug
 	{
 		List accessRightList = new ArrayList();
 		
@@ -968,18 +968,20 @@ public class AccessRightController extends BaseController
 			}
 			else
 			{
-				System.out.println("SELECT f FROM org.infoglue.cms.entities.management.impl.simple.AccessRightImpl f WHERE (" + variables + ") AND f.parameters = $" + (lastIndex+1) + " ORDER BY f.accessRightId");
 		    	oql = db.getOQLQuery("SELECT f FROM org.infoglue.cms.entities.management.impl.simple.AccessRightImpl f WHERE (" + variables + ") AND f.parameters = $" + (lastIndex+1) + " ORDER BY f.accessRightId");
 		    	for(InterceptionPoint ipVO : interceptionPointVOList)
 		    	{
 		    		oql.bind(ipVO.getId());
-		    		System.out.println(ipVO.getId());
 		    	}
 				oql.bind(parameters);
-	    		System.out.println(parameters);
 			}
 						
-			QueryResults results = oql.execute();
+			QueryResults results;
+			if(readOnly)
+				results = oql.execute(Database.ReadOnly);
+			else
+				results = oql.execute();
+				
 			this.logger.info("Fetching entity in read/write mode");
 
 			while (results.hasMore()) 

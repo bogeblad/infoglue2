@@ -35,6 +35,7 @@ import java.util.Set;
 import org.apache.log4j.Logger;
 import org.exolab.castor.jdo.Database;
 import org.infoglue.cms.applications.databeans.LinkBean;
+import org.infoglue.cms.applications.databeans.ProcessBean;
 import org.infoglue.cms.controllers.kernel.impl.simple.AccessRightController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentControllerProxy;
@@ -1021,5 +1022,48 @@ public abstract class InfoGlueAbstractAction extends WebworkAbstractAction
 		return "" + (((Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) / 1024 / 1024)) + " MB used of " + ((Runtime.getRuntime().maxMemory() / 1024 / 1024)) + " MB";
 	}
 	
+	public ProcessBean getProcessBean()
+	{
+		return ProcessBean.getProcessBean(this.getClass().getName(), ""+getInfoGluePrincipal().getName());
+	}
+	
+	public String getStatusAsJSON()
+	{
+		StringBuffer sb = new StringBuffer();
+		sb.append("<html><head><style>body {font-family: arial; font-size: 11px;}</style></head><body>");
+		
+		try
+		{
+			ProcessBean processBean = getProcessBean();
+			if(processBean != null && processBean.getStatus() != ProcessBean.FINISHED)
+			{
+				sb.append("<h2>" + getLocalizedString(getLocale(), "tool.structuretool.publicationProcess.publicationProcessInfo") + "</h2>");
+
+				sb.append("<ol>");
+				for(String event : processBean.getProcessEvents())
+					sb.append("<li>" + event + "</li>");
+				sb.append("</ol>");
+				sb.append("<div style='position: absolute; top:10px; right: 10px;'><img src='images/v3/loadingAnimation.gif' /></div>");
+			}
+			else
+			{
+				sb.append("<script type='text/javascript'>hideProcessStatus();</script>");
+			}
+		}
+		catch (Throwable t)
+		{
+			logger.error("Error when generating repository export status report as JSON.", t);
+			sb.append(t.getMessage());
+		}
+		sb.append("</body></html>");
+				
+		return sb.toString();
+	}
+
+	public String doShowProcessesAsJSON() throws Exception
+	{
+		return "successShowProcessesAsJSON";
+	}
+
 }
 

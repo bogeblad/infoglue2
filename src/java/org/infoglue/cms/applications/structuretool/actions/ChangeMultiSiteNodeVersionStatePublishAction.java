@@ -85,7 +85,7 @@ public class ChangeMultiSiteNodeVersionStatePublishAction extends InfoGlueAbstra
 	   
     public String doExecute() throws Exception
     {      
-		ProcessBean processBean = ProcessBean.createProcessBean(ChangeMultiSiteNodeVersionStatePublishAction.class.getName(), "" + getInfoGluePrincipal().getName());
+		ProcessBean processBean = ProcessBean.createProcessBean(this.getClass().getName(), "" + getInfoGluePrincipal().getName());
 		processBean.setStatus(ProcessBean.RUNNING);
 		
 		try
@@ -109,7 +109,7 @@ public class ChangeMultiSiteNodeVersionStatePublishAction extends InfoGlueAbstra
 				SiteNodeVersionVO siteNodeVersion = SiteNodeStateController.getController().changeState(siteNodeVersionId, entry.getValue(), SiteNodeVersionVO.PUBLISH_STATE, getVersionComment(), this.overrideVersionModifyer, this.recipientFilter, this.getInfoGluePrincipal(), events);
 				
 				if (events.size() % 50 == 0)
-					processBean.updateProcess("Processed " + events.size() /*getLocalizedString(getLocale(), "tool.structuretool.publicationProcess.gettingItems")*/);
+					processBean.updateLastDescription("Processed " + events.size() /*getLocalizedString(getLocale(), "tool.structuretool.publicationProcess.gettingItems")*/);
 
 				newsiteNodeMap.put(siteNodeVersion.getId(), entry.getValue());
 			}
@@ -127,6 +127,8 @@ public class ChangeMultiSiteNodeVersionStatePublishAction extends InfoGlueAbstra
 			
 			Map<Integer,ContentVO> contentMap = ContentController.getContentController().getContentVOMapWithNoStateCheck(contentVersionId);
 			processBean.updateProcess("Read " + contentMap.size() + " contents to change state on" /*getLocalizedString(getLocale(), "tool.structuretool.publicationProcess.gettingItems")*/);
+			processBean.updateLastDescription("Processing pages");
+
 			for(Entry<Integer,ContentVO> entry : contentMap.entrySet())
 			{
 				Integer contentVersionId = entry.getKey();
@@ -134,7 +136,7 @@ public class ChangeMultiSiteNodeVersionStatePublishAction extends InfoGlueAbstra
 				ContentVersionVO contentVersion = ContentStateController.changeState(contentVersionId, entry.getValue(), ContentVersionVO.PUBLISH_STATE, getVersionComment(), this.overrideVersionModifyer, this.recipientFilter, this.getInfoGluePrincipal(), null, events);
 				
 				if (events.size() % 50 == 0)
-					processBean.updateProcess("Processed " + events.size() /*getLocalizedString(getLocale(), "tool.structuretool.publicationProcess.gettingItems")*/);
+					processBean.updateLastDescription("Processed " + events.size());
 
 				newContentMap.put(contentVersion.getId(), entry.getValue());
 			}
@@ -183,7 +185,7 @@ public class ChangeMultiSiteNodeVersionStatePublishAction extends InfoGlueAbstra
 			{
 	            setActionMessage(userSessionKey, getLocalizedString(getLocale(), "tool.common.publishing.submitToPublishingInlineOperationDoneHeader"));
 			}
-	
+
 			if(this.returnAddress != null && !this.returnAddress.equals(""))
 	        {
 		        String arguments 	= "userSessionKey=" + userSessionKey + "&attemptDirectPublishing=" + attemptDirectPublishing + "&isAutomaticRedirect=false";
@@ -331,46 +333,4 @@ public class ChangeMultiSiteNodeVersionStatePublishAction extends InfoGlueAbstra
 		this.userSessionKey = userSessionKey;
 	}
 	
-	public ProcessBean getProcessBean()
-	{
-		return ProcessBean.getProcessBean(ChangeMultiSiteNodeVersionStatePublishAction.class.getName(), "" + getInfoGluePrincipal().getName());
-	}
-
-	public String getStatusAsJSON()
-	{
-		StringBuffer sb = new StringBuffer();
-		sb.append("<html><body>");
-		
-		try
-		{
-			ProcessBean processBean = getProcessBean();
-			if(processBean != null && processBean.getStatus() != ProcessBean.FINISHED)
-			{
-				sb.append("<h2>" + getLocalizedString(getLocale(), "tool.structuretool.publicationProcess.publicationProcessInfo") + "</h2>");
-
-				sb.append("<ol>");
-				for(String event : processBean.getProcessEvents())
-					sb.append("<li>" + event + "</li>");
-				sb.append("</ol>");
-				sb.append("<div style='text-align: center'><img src='images/loading.gif' /></div>");
-			}
-			else
-			{
-				sb.append("<script type='text/javascript'>hideProcessStatus();</script>");
-			}
-		}
-		catch (Throwable t)
-		{
-			logger.error("Error when generating repository export status report as JSON.", t);
-			sb.append(t.getMessage());
-		}
-		sb.append("</body></html>");
-				
-		return sb.toString();
-	}
-	
-	public String doShowProcessesAsJSON() throws Exception
-	{
-		return "successShowProcessesAsJSON";
-	}
 }

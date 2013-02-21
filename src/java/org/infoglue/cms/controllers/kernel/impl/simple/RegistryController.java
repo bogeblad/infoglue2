@@ -268,6 +268,7 @@ public class RegistryController extends BaseController
 	        public void run() 
 	        {
 	        	Timer t = new Timer();
+	    		try {Thread.currentThread().sleep(30000);} catch (Exception e) {}
 	    		
     			List<Object[]> localContentVersions = new ArrayList<Object[]>();
 	        	synchronized (queuedContentVersions) 
@@ -291,7 +292,7 @@ public class RegistryController extends BaseController
 						logger.info("Done refreshing registry took:" + t.getElapsedTime());
 						
 						commitTransaction(db);
-					} 
+					}  
 					catch (Exception e) 
 					{
 						logger.error("Error precaching all access rights for this user: " + e.getMessage(), e);
@@ -321,7 +322,7 @@ public class RegistryController extends BaseController
     	}
     	else
     	{
-    		logger.warn("Running allready - queing");
+    		logger.info("Running allready - queing");
     	}
 	}
 	
@@ -430,7 +431,8 @@ public class RegistryController extends BaseController
 	        public void run() 
 	        {
 	        	Timer t = new Timer();
-	    		
+	        	try {Thread.currentThread().sleep(30000);} catch (Exception e) {}
+	        	
 	        	List<SiteNodeVersionVO> localContentVersions = new ArrayList<SiteNodeVersionVO>();
 	        	synchronized (queuedSiteNodeVersions) 
 	        	{
@@ -484,7 +486,7 @@ public class RegistryController extends BaseController
     	}
     	else
     	{
-    		logger.warn("Running allready - queing");
+    		logger.info("Running allready - queing");
     	}
 	}
 

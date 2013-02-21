@@ -248,10 +248,12 @@ public class UnpublishSiteNodeVersionAction extends InfoGlueAbstractAction
 			}
 			*/
 	
+			processBean.updateProcess("Processing " + siteNodeIds.length + " pages");
+			
 	        for(int i=0; i < siteNodeIds.length; i++)
 			{
 	        	if (i % 10 == 0)
-	        		processBean.updateProcess("Unpublished " + i + " pages");
+	        		processBean.updateLastDescription("Unpublished " + i + " pages");
 
 	            String siteNodeIdString = siteNodeIds[i];
 		        List siteNodeVersionVOList = SiteNodeVersionController.getController().getPublishedActiveSiteNodeVersionVOList(new Integer(siteNodeIdString));

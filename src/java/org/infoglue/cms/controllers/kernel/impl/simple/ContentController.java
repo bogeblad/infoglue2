@@ -39,6 +39,7 @@ import org.exolab.castor.jdo.Database;
 import org.exolab.castor.jdo.OQLQuery;
 import org.exolab.castor.jdo.QueryResults;
 import org.infoglue.cms.applications.contenttool.wizards.actions.CreateContentWizardInfoBean;
+import org.infoglue.cms.applications.databeans.ProcessBean;
 import org.infoglue.cms.entities.content.Content;
 import org.infoglue.cms.entities.content.ContentVO;
 import org.infoglue.cms.entities.content.ContentVersion;
@@ -453,47 +454,49 @@ public class ContentController extends BaseController
 	 * As castor is lousy at this in my opinion we also add the new entity to the surrounding entities.
 	 */
 	    
-    public /*synchronized*/ Content create(Database db, Integer parentContentId, Integer contentTypeDefinitionId, Integer repositoryId, ContentVO contentVO) throws ConstraintException, SystemException, Exception
+    public /*synchronized*/ MediumContentImpl create(Database db, Integer parentContentId, Integer contentTypeDefinitionId, Integer repositoryId, ContentVO contentVO) throws ConstraintException, SystemException, Exception
     {
-	    Content content = null;
+    	MediumContentImpl content = null;
 		
         try
         {            
-            Content parentContent = null;
-          	ContentTypeDefinition contentTypeDefinition = null;
+            ContentVO parentContentVO = null;
+          	ContentTypeDefinitionVO contentTypeDefinition = null;
 
             if(parentContentId != null)
             {
-            	parentContent = getContentWithId(parentContentId, db);
+            	parentContentVO = getContentVOWithId(parentContentId, db);
             	
             	if(repositoryId == null)
-					repositoryId = parentContent.getRepository().getRepositoryId();	
+					repositoryId = parentContentVO.getRepositoryId();	
             }
             
             if(contentTypeDefinitionId != null)
-            	contentTypeDefinition = ContentTypeDefinitionController.getController().getContentTypeDefinitionWithId(contentTypeDefinitionId, db);
+            	contentTypeDefinition = ContentTypeDefinitionController.getController().getContentTypeDefinitionVOWithId(contentTypeDefinitionId, db);
 
-            Repository repository = RepositoryController.getController().getRepositoryWithId(repositoryId, db);
+            //RepositoryVO repository = RepositoryController.getController().getRepositoryVOWithId(repositoryId, db);
 
 			/*
         	synchronized (controller)
 			{
         		//db.lock(parentContent);
 			*/
-	            content = new ContentImpl();
+	            content = new MediumContentImpl();
 	            content.setValueObject(contentVO);
-	            content.setParentContent((ContentImpl)parentContent);
-	            content.setRepository((RepositoryImpl)repository);
-	            content.setContentTypeDefinition((ContentTypeDefinitionImpl)contentTypeDefinition);
+	            content.setParentContentId(parentContentId);
+	            content.setRepositoryId(repositoryId);
+	            content.setContentTypeDefinitionId(contentTypeDefinitionId);
 	            
 				db.create(content);
 				
 				//Now we add the content to the knowledge of the related entities.
+				/*
 				if(parentContent != null)
 				{
 					parentContent.getChildren().add(content);
 					parentContent.setIsBranch(new Boolean(true));
 				}
+				*/
         	//}
 
 			//repository.getContents().add(content);			
@@ -1429,10 +1432,15 @@ public class ContentController extends BaseController
    		if(repositoryId == null || repositoryId.intValue() < 1)
    			return null;
    		
+		String key = "root_" + repositoryId;
+		ContentVO contentVO = (ContentVO)CacheController.getCachedObjectFromAdvancedCache("contentCache", key);
+		if(contentVO != null)
+		{
+			return contentVO;
+		}
+
         Database db = CastorDatabaseService.getDatabase();
         ConstraintExceptionBuffer ceb = new ConstraintExceptionBuffer();
-
-        Content content = null;
 
         beginTransaction(db);
 
@@ -1446,7 +1454,8 @@ public class ContentController extends BaseController
         	QueryResults results = oql.execute(Database.ReadOnly);			
 			if (results.hasMore()) 
             {
-            	content = (Content)results.next();
+				Content content = (Content)results.next();
+				contentVO = content.getValueObject();
 	        }
             else
             {
@@ -1457,7 +1466,8 @@ public class ContentController extends BaseController
 				rootContentVO.setCreatorName(userName);
 				rootContentVO.setName(repositoryVO.getName());
 				rootContentVO.setIsBranch(new Boolean(true));
-            	content = create(db, null, null, repositoryId, rootContentVO);
+            	Content content = create(db, null, null, repositoryId, rootContentVO);
+            	contentVO = content.getValueObject();
             }
             
 			results.close();
@@ -1482,7 +1492,10 @@ public class ContentController extends BaseController
             throw new SystemException(e.getMessage());
         }
 
-        return (content == null) ? null : content.getValueObject();
+		if(contentVO != null)
+			CacheController.cacheObjectInAdvancedCache("contentCache", key, contentVO);
+
+        return contentVO;
    	}
 
 
@@ -1494,16 +1507,23 @@ public class ContentController extends BaseController
 	        
 	public ContentVO getRootContentVO(Integer repositoryId, String userName, boolean createIfNonExisting) throws ConstraintException, SystemException
 	{
+		String key = "root_" + repositoryId;
+		ContentVO contentVO = (ContentVO)CacheController.getCachedObjectFromAdvancedCache("contentCache", key);
+		if(contentVO != null)
+		{
+			return contentVO;
+		}
+
 		Database db = CastorDatabaseService.getDatabase();
 		ConstraintExceptionBuffer ceb = new ConstraintExceptionBuffer();
-
-		Content content = null;
 
 		beginTransaction(db);
 
 		try
 		{
-		    content = getRootContent(db, repositoryId, userName, createIfNonExisting);
+		    Content content = getRootContent(db, repositoryId, userName, createIfNonExisting);
+            if(content != null)
+            	contentVO = content.getValueObject();
             
 			//If any of the validations or setMethods reported an error, we throw them up now before create. 
 			ceb.throwIfNotEmpty();
@@ -1524,9 +1544,61 @@ public class ContentController extends BaseController
 			throw new SystemException(e.getMessage());
 		}
 
-		return (content == null) ? null : content.getValueObject();
+		if(contentVO != null)
+			CacheController.cacheObjectInAdvancedCache("contentCache", key, contentVO);
+
+		return contentVO;
 	}
    	
+	
+	/**
+	 * This method fetches the root content for a particular repository within a transaction.
+	 * If there is no such content we create one as all repositories need one to work.
+	 */
+	        
+	public ContentVO getRootContentVO(Database db, Integer repositoryId, String userName, boolean createIfNonExisting) throws ConstraintException, SystemException, Exception
+	{
+		String key = "root_" + repositoryId;
+		ContentVO contentVO = (ContentVO)CacheController.getCachedObjectFromAdvancedCache("contentCache", key);
+		if(contentVO != null)
+		{
+			return contentVO;
+		}
+
+		logger.info("Fetching the root content for the repository " + repositoryId);
+		OQLQuery oql = db.getOQLQuery( "SELECT c FROM org.infoglue.cms.entities.content.impl.simple.SmallContentImpl c WHERE is_undefined(c.parentContentId) AND c.repositoryId = $1");
+		oql.bind(repositoryId);
+			
+		QueryResults results = oql.execute(Database.ReadOnly);			
+		if (results.hasMore()) 
+		{
+			SmallContentImpl contentImpl = (SmallContentImpl)results.next();
+			contentVO = contentImpl.getValueObject();
+		}
+		else
+		{
+			if(createIfNonExisting)
+			{
+				//None found - we create it and give it the name of the repository.
+				logger.info("Found no rootContent so we create a new....");
+				ContentVO rootContentVO = new ContentVO();
+				RepositoryVO repositoryVO = RepositoryController.getController().getRepositoryVOWithId(repositoryId);
+				rootContentVO.setCreatorName(userName);
+				rootContentVO.setName(repositoryVO.getName());
+				rootContentVO.setIsBranch(new Boolean(true));
+				contentVO = create(db, null, null, repositoryId, rootContentVO).getValueObject();
+			}
+		}
+		
+		if(contentVO != null)
+			CacheController.cacheObjectInAdvancedCache("contentCache", key, contentVO);
+
+		results.close();
+		oql.close();
+		
+		return contentVO;
+	}
+
 	
 	/**
 	 * This method fetches the root content for a particular repository within a transaction.
@@ -1668,7 +1740,7 @@ public class ContentController extends BaseController
         try
         {
         	
-        	childrenVOList = getContentChildrenVOList(parentContentId, allowedContentTypeIds, db);	
+        	childrenVOList = getContentChildrenVOList(parentContentId, allowedContentTypeIds, db); //getContentChildrenVOList(parentContentId, allowedContentTypeIds, db);	
 
         	//If any of the validations or setMethods reported an error, we throw them up now before create.
             ceb.throwIfNotEmpty();
@@ -2289,7 +2361,7 @@ public class ContentController extends BaseController
 	 */
 	public ContentVO getContentVOWithPath(Integer repositoryId, String path, boolean forceFolders, InfoGluePrincipal creator, Database db) throws SystemException, Exception 
 	{
-		ContentVO content = getRootContent(repositoryId, db).getValueObject();
+		ContentVO content = getRootContentVO(db, repositoryId, creator.getName(), false);
 		final String paths[] = path.split("/");
 		if(path.equals(""))
 			return content;
@@ -2355,9 +2427,19 @@ public class ContentController extends BaseController
 	 */
 	private ContentVO getChildVOWithName(Integer parentContentId, String name, Database db) throws Exception
 	{
+   		String key = "" + parentContentId + name;
+
+		ContentVO cachedChildContentVO = (ContentVO)CacheController.getCachedObjectFromAdvancedCache("childContentCache", key);
+		if(cachedChildContentVO != null)
+		{
+			if(logger.isInfoEnabled())
+				logger.info("There was an cached cachedChildContentVO:" + cachedChildContentVO);
+			return cachedChildContentVO;
+		}
+
 		ContentVO contentVO = null;
 		
-		OQLQuery oql = db.getOQLQuery("SELECT c FROM org.infoglue.cms.entities.content.impl.simple.MediumContentImpl c WHERE c.parentContentId = $1 AND c.name = $2");
+		OQLQuery oql = db.getOQLQuery("SELECT c FROM org.infoglue.cms.entities.content.impl.simple.SmallContentImpl c WHERE c.parentContentId = $1 AND c.name = $2");
     	oql.bind(parentContentId);
     	oql.bind(name);
     	
@@ -2365,9 +2447,12 @@ public class ContentController extends BaseController
 		
 		if(results.hasMore()) 
         {
-        	MediumContentImpl content = (MediumContentImpl)results.next();
+			SmallContentImpl content = (SmallContentImpl)results.next();
         	contentVO = content.getValueObject();
         }
+
+		if(contentVO != null)
+			CacheController.cacheObjectInAdvancedCache("childContentCache", key, contentVO, new String[]{CacheController.getPooledString(1, parentContentId)}, true);
 
 		results.close();
 		oql.close();
@@ -2420,25 +2505,54 @@ public class ContentController extends BaseController
 	 * Recursive methods to get all contentVersions of a given state under the specified parent content.
 	 */ 
 	
-    public List getContentVOWithParentRecursive(Integer contentId) throws ConstraintException, SystemException
+    public List getContentVOWithParentRecursive(Integer contentId, ProcessBean processBean) throws ConstraintException, SystemException
 	{
-		return getContentVOWithParentRecursive(contentId, new ArrayList());
+    	List<ContentVO> contentVOList = new ArrayList<ContentVO>();
+    	
+    	Database db = CastorDatabaseService.getDatabase();
+        ConstraintExceptionBuffer ceb = new ConstraintExceptionBuffer();
+
+        beginTransaction(db);
+
+        try
+        {
+        	contentVOList = getContentVOWithParentRecursive(contentId, processBean, contentVOList, db);
+    		
+            commitTransaction(db);
+        }
+        catch(Exception e)
+        {
+			logger.error("An error occurred so we should not complete the transaction:" + e.getMessage());
+			logger.warn("An error occurred so we should not complete the transaction:" + e.getMessage(), e);
+            rollbackTransaction(db);
+            throw new SystemException(e.getMessage());
+        } 
+
+        return contentVOList;
 	}
 	
-	private List getContentVOWithParentRecursive(Integer contentId, List resultList) throws ConstraintException, SystemException
+	private List getContentVOWithParentRecursive(Integer contentId, ProcessBean processBean, List resultList, Database db) throws ConstraintException, SystemException, Exception
 	{
 		// Get the versions of this content.
-		resultList.add(getContentVOWithId(contentId));
+		resultList.add(getContentVOWithId(contentId, db));
+		
+		if (resultList.size() % 10 == 0)
+		{
+			if(resultList.size() > 10)
+				processBean.updateLastDescription("Found " + resultList.size() + " so far...");
+			else
+				processBean.updateProcess("Found " + resultList.size() + " so far...");
+		}
 		
 		// Get the children of this content and do the recursion
-		List childContentList = ContentController.getContentController().getContentChildrenVOList(contentId, null);
+		List childContentList = ContentController.getContentController().getContentChildrenVOList(contentId, null, db);
 		Iterator cit = childContentList.iterator();
 		while (cit.hasNext())
 		{
 			ContentVO contentVO = (ContentVO) cit.next();
-			getContentVOWithParentRecursive(contentVO.getId(), resultList);
+			getContentVOWithParentRecursive(contentVO.getId(), processBean, resultList, db);
 		}
-	
+
 		return resultList;
 	}
 

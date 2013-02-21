@@ -380,7 +380,8 @@ public class ExportImportController extends BaseController
 			
 			List<CategoryVO> existingCategories = null;
 			if(parentCategory != null)
-				existingCategories = CategoryController.getController().findByParent(parentCategory.getCategoryId(), db);
+				existingCategories = CategoryController.getController().getActiveByParent(parentCategory.getCategoryId(), db);
+				//existingCategories = CategoryController.getController().findByParent(parentCategory.getCategoryId(), db);
 			else
 				existingCategories = CategoryController.getController().findRootCategoryVOList(db);
 				
@@ -629,10 +630,12 @@ public class ExportImportController extends BaseController
 		Collection childContents = content.getChildren();
 		if(childContents != null)
 		{
+			System.out.println("childContents:" + childContents.size());
 			Iterator childContentsIterator = childContents.iterator();
 			while(childContentsIterator.hasNext())
 			{
 				Content childContent = (Content)childContentsIterator.next();
+				System.out.println("childContent:" + childContent.getName());
 				childContent.setRepository(content.getRepository());
 				childContent.setParentContent((ContentImpl)content);
 				createContents(childContent, idMap, contentTypeDefinitionIdMap, allContents, contentTypeDefinitions, categoryIdMap, version, db, onlyLatestVersions);

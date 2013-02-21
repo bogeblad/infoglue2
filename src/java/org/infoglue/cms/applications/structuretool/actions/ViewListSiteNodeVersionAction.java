@@ -98,138 +98,138 @@ public class ViewListSiteNodeVersionAction extends InfoGlueAbstractAction
 
 	protected String doExecute() throws Exception 
 	{
-		ProcessBean processBean = ProcessBean.createProcessBean(ViewListSiteNodeVersionAction.class.getName(), "" + siteNodeId + "_" + getInfoGluePrincipal().getName());
+		ProcessBean processBean = ProcessBean.createProcessBean(ViewListSiteNodeVersionAction.class.getName(), "" + getInfoGluePrincipal().getName());
 		processBean.setStatus(ProcessBean.RUNNING);
 
 		try
 		{
-		Timer t = new Timer();
-		
-		logger.info("siteNodeId:" + this.siteNodeId);
-		logger.info("siteNodeVersionId:" + this.siteNodeVersionId);
-		if(this.siteNodeVersionId == null)
-		{
-		    SiteNodeVersionVO siteNodeVersionVO = SiteNodeVersionControllerProxy.getSiteNodeVersionControllerProxy().getACLatestActiveSiteNodeVersionVO(this.getInfoGluePrincipal(), siteNodeId);
-		    if(siteNodeVersionVO != null)
-		        this.siteNodeVersionId = siteNodeVersionVO.getId();
-		}
-		
-		RequestAnalyser.getRequestAnalyser().registerComponentStatistics("ViewListSiteNodeVersionAction 1", t.getElapsedTime());
-		if(this.siteNodeVersionId != null)
-		{
-			AccessConstraintExceptionBuffer ceb = new AccessConstraintExceptionBuffer();
-		
-			Integer protectedSiteNodeVersionId = SiteNodeVersionControllerProxy.getSiteNodeVersionControllerProxy().getProtectedSiteNodeVersionId(siteNodeVersionId);
-			if(protectedSiteNodeVersionId != null && !AccessRightController.getController().getIsPrincipalAuthorized(this.getInfoGluePrincipal(), "SiteNodeVersion.SubmitToPublish", protectedSiteNodeVersionId.toString()))
-				ceb.add(new AccessConstraintException("SiteNodeVersion.siteNodeVersionId", "1005"));
-
-			RequestAnalyser.getRequestAnalyser().registerComponentStatistics("ViewListSiteNodeVersionAction 2", t.getElapsedTime());
-
-			ceb.throwIfNotEmpty();
-
-			if(contentId != null && contentId > -1)
+			Timer t = new Timer();
+			
+			logger.info("siteNodeId:" + this.siteNodeId);
+			logger.info("siteNodeVersionId:" + this.siteNodeVersionId);
+			if(this.siteNodeVersionId == null)
 			{
-				Integer protectedContentId = ContentControllerProxy.getController().getProtectedContentId(contentId);
-				if(protectedContentId == null || AccessRightController.getController().getIsPrincipalAuthorized(this.getInfoGluePrincipal(), "Content.SubmitToPublish", protectedContentId.toString()))
-				{
-					ContentVO contentVO = ContentControllerProxy.getController().getACContentVOWithId(getInfoGluePrincipal(), contentId);
-					List languageVOList = LanguageController.getController().getLanguageVOList(contentVO.getRepositoryId());
-					Iterator languageVOListIterator = languageVOList.iterator();
-					while(languageVOListIterator.hasNext())
-					{
-						LanguageVO language = (LanguageVO)languageVOListIterator.next();
-						ContentVersionVO contentVersionVO = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(contentId, language.getId());
-						if(contentVersionVO != null && contentVersionVO.getStateId().equals(ContentVersionVO.WORKING_STATE))
-						{
-							this.contentVersionVOList.add(contentVersionVO);
-						}
-					}
-				}
+			    SiteNodeVersionVO siteNodeVersionVO = SiteNodeVersionControllerProxy.getSiteNodeVersionControllerProxy().getACLatestActiveSiteNodeVersionVO(this.getInfoGluePrincipal(), siteNodeId);
+			    if(siteNodeVersionVO != null)
+			        this.siteNodeVersionId = siteNodeVersionVO.getId();
 			}
-			RequestAnalyser.getRequestAnalyser().registerComponentStatistics("ViewListSiteNodeVersionAction 3", t.getElapsedTime());
-			processBean.updateProcess(getLocalizedString(getLocale(), "tool.structuretool.publicationProcess.gettingItems"));
 			
-			Set<SiteNodeVersionVO> siteNodeVersionVOList = new HashSet<SiteNodeVersionVO>();
-			Set<ContentVersionVO> contentVersionVOList = new HashSet<ContentVersionVO>();
+			RequestAnalyser.getRequestAnalyser().registerComponentStatistics("ViewListSiteNodeVersionAction 1", t.getElapsedTime());
+			if(this.siteNodeVersionId != null)
+			{
+				AccessConstraintExceptionBuffer ceb = new AccessConstraintExceptionBuffer();
 			
-			SiteNodeVersionController.getController().getSiteNodeAndAffectedItemsRecursive(this.siteNodeId, SiteNodeVersionVO.WORKING_STATE, siteNodeVersionVOList, contentVersionVOList, false, recurseSiteNodes, this.getInfoGluePrincipal(), processBean, getLocale());
-			RequestAnalyser.getRequestAnalyser().registerComponentStatistics("ViewListContentVersion.getSiteNodeAndAffectedItemsRecursive", t.getElapsedTime());
-			
-			processBean.updateProcess(getLocalizedString(getLocale(), "tool.structuretool.publicationProcess.found", siteNodeVersionVOList.size() + "/" + contentVersionVOList.size()));
-			processBean.updateProcess(getLocalizedString(getLocale(), "tool.structuretool.publicationProcess.gettingMetaData"));
-			
-			Database db = CastorDatabaseService.getDatabase();
-
-	        beginTransaction(db);
-
-	        try
-	        {
-	        	boolean skipDisplayName = false;
-				for(SiteNodeVersionVO snVO : siteNodeVersionVOList)
+				Integer protectedSiteNodeVersionId = SiteNodeVersionControllerProxy.getSiteNodeVersionControllerProxy().getProtectedSiteNodeVersionId(siteNodeVersionId);
+				if(protectedSiteNodeVersionId != null && !AccessRightController.getController().getIsPrincipalAuthorized(this.getInfoGluePrincipal(), "SiteNodeVersion.SubmitToPublish", protectedSiteNodeVersionId.toString()))
+					ceb.add(new AccessConstraintException("SiteNodeVersion.siteNodeVersionId", "1005"));
+	
+				RequestAnalyser.getRequestAnalyser().registerComponentStatistics("ViewListSiteNodeVersionAction 2", t.getElapsedTime());
+	
+				ceb.throwIfNotEmpty();
+	
+				if(contentId != null && contentId > -1)
 				{
-					if(snVO.getStateId() == 0)
+					Integer protectedContentId = ContentControllerProxy.getController().getProtectedContentId(contentId);
+					if(protectedContentId == null || AccessRightController.getController().getIsPrincipalAuthorized(this.getInfoGluePrincipal(), "Content.SubmitToPublish", protectedContentId.toString()))
 					{
-						if(!skipDisplayName)
+						ContentVO contentVO = ContentControllerProxy.getController().getACContentVOWithId(getInfoGluePrincipal(), contentId);
+						List languageVOList = LanguageController.getController().getLanguageVOList(contentVO.getRepositoryId());
+						Iterator languageVOListIterator = languageVOList.iterator();
+						while(languageVOListIterator.hasNext())
 						{
-							InfoGluePrincipal principal = (InfoGluePrincipal)getInfoGluePrincipal(snVO.getVersionModifier(), db);
-							if(principal != null)
+							LanguageVO language = (LanguageVO)languageVOListIterator.next();
+							ContentVersionVO contentVersionVO = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(contentId, language.getId());
+							if(contentVersionVO != null && contentVersionVO.getStateId().equals(ContentVersionVO.WORKING_STATE))
 							{
-								if(principal.getName().equalsIgnoreCase(principal.getDisplayName()))
-									skipDisplayName = true;
-								
-								snVO.setVersionModifierDisplayName(principal.getDisplayName());
+								this.contentVersionVOList.add(contentVersionVO);
 							}
 						}
-						snVO.setPath(getSiteNodePath(snVO.getSiteNodeId(), db));
 					}
-					else
-						System.out.println("Not adding siteNodeVersion..");
 				}
-				RequestAnalyser.getRequestAnalyser().registerComponentStatistics("ViewListContentVersion versions", t.getElapsedTime());
-			    this.siteNodeVersionVOList.addAll(siteNodeVersionVOList);
-			    Collections.sort(this.siteNodeVersionVOList, Collections.reverseOrder(new ReflectionComparator("modifiedDateTime")));
-
-				processBean.updateProcess("Getting modifier and path to found contents.");
-
-				for(ContentVersionVO contentVersionVO : contentVersionVOList)
-				{
-					if(contentVersionVO.getStateId() == 0)	
-					{
-						if(!skipDisplayName)
-						{
-							InfoGluePrincipal principal = (InfoGluePrincipal)getInfoGluePrincipal(contentVersionVO.getVersionModifier(), db);
-							if(principal != null)
-							{
-								if(principal.getName().equalsIgnoreCase(principal.getDisplayName()))
-									skipDisplayName = true;
-								
-								contentVersionVO.setVersionModifierDisplayName(principal.getDisplayName());
-							}
-						}
-						contentVersionVO.setPath(getContentPath(contentVersionVO.getContentId(), db));
-					}
-					else
-						System.out.println("Not adding contentVersion..");
-				}
-
-				RequestAnalyser.getRequestAnalyser().registerComponentStatistics("ViewListContentVersion versions", t.getElapsedTime());
-			    this.contentVersionVOList.addAll(contentVersionVOList);
-			    Collections.sort(this.contentVersionVOList, Collections.reverseOrder(new ReflectionComparator("modifiedDateTime")));
+				RequestAnalyser.getRequestAnalyser().registerComponentStatistics("ViewListSiteNodeVersionAction 3", t.getElapsedTime());
+				processBean.updateProcess(getLocalizedString(getLocale(), "tool.structuretool.publicationProcess.gettingItems"));
 				
-				commitTransaction(db);
-	        }
-	        catch(Exception e)
-	        {
-	            logger.error("An error occurred so we should not complete the transaction:" + e);
-	            logger.warn("An error occurred so we should not complete the transaction:" + e, e);
-	            rollbackTransaction(db);
-	            throw new SystemException(e.getMessage());
-	        }
-		    
-			//System.out.println("this.siteNodeVersionVOList:" + this.siteNodeVersionVOList.size());
-	        //System.out.println("this.contentVersionVOList:" + this.contentVersionVOList.size());
-			RequestAnalyser.getRequestAnalyser().registerComponentStatistics("ViewListSiteNodeVersionAction 4", t.getElapsedTime());
-		}
+				Set<SiteNodeVersionVO> siteNodeVersionVOList = new HashSet<SiteNodeVersionVO>();
+				Set<ContentVersionVO> contentVersionVOList = new HashSet<ContentVersionVO>();
+				
+				SiteNodeVersionController.getController().getSiteNodeAndAffectedItemsRecursive(this.siteNodeId, SiteNodeVersionVO.WORKING_STATE, siteNodeVersionVOList, contentVersionVOList, false, recurseSiteNodes, this.getInfoGluePrincipal(), processBean, getLocale());
+				RequestAnalyser.getRequestAnalyser().registerComponentStatistics("ViewListContentVersion.getSiteNodeAndAffectedItemsRecursive", t.getElapsedTime());
+				
+				processBean.updateProcess(getLocalizedString(getLocale(), "tool.structuretool.publicationProcess.found", siteNodeVersionVOList.size() + "/" + contentVersionVOList.size()));
+				processBean.updateProcess(getLocalizedString(getLocale(), "tool.structuretool.publicationProcess.gettingMetaData"));
+				
+				Database db = CastorDatabaseService.getDatabase();
+	
+		        beginTransaction(db);
+	
+		        try
+		        {
+		        	boolean skipDisplayName = false;
+					for(SiteNodeVersionVO snVO : siteNodeVersionVOList)
+					{
+						if(snVO.getStateId() == 0)
+						{
+							if(!skipDisplayName)
+							{
+								InfoGluePrincipal principal = (InfoGluePrincipal)getInfoGluePrincipal(snVO.getVersionModifier(), db);
+								if(principal != null)
+								{
+									if(principal.getName().equalsIgnoreCase(principal.getDisplayName()))
+										skipDisplayName = true;
+									
+									snVO.setVersionModifierDisplayName(principal.getDisplayName());
+								}
+							}
+							snVO.setPath(getSiteNodePath(snVO.getSiteNodeId(), db));
+						}
+						else
+							System.out.println("Not adding siteNodeVersion..");
+					}
+					RequestAnalyser.getRequestAnalyser().registerComponentStatistics("ViewListContentVersion versions", t.getElapsedTime());
+				    this.siteNodeVersionVOList.addAll(siteNodeVersionVOList);
+				    Collections.sort(this.siteNodeVersionVOList, Collections.reverseOrder(new ReflectionComparator("modifiedDateTime")));
+	
+					processBean.updateProcess("Getting modifier and path to found contents.");
+	
+					for(ContentVersionVO contentVersionVO : contentVersionVOList)
+					{
+						if(contentVersionVO.getStateId() == 0)	
+						{
+							if(!skipDisplayName)
+							{
+								InfoGluePrincipal principal = (InfoGluePrincipal)getInfoGluePrincipal(contentVersionVO.getVersionModifier(), db);
+								if(principal != null)
+								{
+									if(principal.getName().equalsIgnoreCase(principal.getDisplayName()))
+										skipDisplayName = true;
+									
+									contentVersionVO.setVersionModifierDisplayName(principal.getDisplayName());
+								}
+							}
+							contentVersionVO.setPath(getContentPath(contentVersionVO.getContentId(), db));
+						}
+						else
+							System.out.println("Not adding contentVersion..");
+					}
+	
+					RequestAnalyser.getRequestAnalyser().registerComponentStatistics("ViewListContentVersion versions", t.getElapsedTime());
+				    this.contentVersionVOList.addAll(contentVersionVOList);
+				    Collections.sort(this.contentVersionVOList, Collections.reverseOrder(new ReflectionComparator("modifiedDateTime")));
+					
+					commitTransaction(db);
+		        }
+		        catch(Exception e)
+		        {
+		            logger.error("An error occurred so we should not complete the transaction:" + e);
+		            logger.warn("An error occurred so we should not complete the transaction:" + e, e);
+		            rollbackTransaction(db);
+		            throw new SystemException(e.getMessage());
+		        }
+			    
+				//System.out.println("this.siteNodeVersionVOList:" + this.siteNodeVersionVOList.size());
+		        //System.out.println("this.contentVersionVOList:" + this.contentVersionVOList.size());
+				RequestAnalyser.getRequestAnalyser().registerComponentStatistics("ViewListSiteNodeVersionAction 4", t.getElapsedTime());
+			}
 		}
 		finally
 		{
@@ -364,7 +364,7 @@ public class ViewListSiteNodeVersionAction extends InfoGlueAbstractAction
 		this.attemptDirectPublishing = attemptDirectPublishing;
 	}
 
-
+/*
 	public ProcessBean getProcessBean()
 	{
 		return ProcessBean.getProcessBean(ViewListSiteNodeVersionAction.class.getName(), ""+this.siteNodeId + "_" + getInfoGluePrincipal().getName());
@@ -407,4 +407,5 @@ public class ViewListSiteNodeVersionAction extends InfoGlueAbstractAction
 	{
 		return "successShowProcessesAsJSON";
 	}
+	*/
 }

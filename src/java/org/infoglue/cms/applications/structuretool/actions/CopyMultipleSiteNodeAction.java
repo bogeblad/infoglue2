@@ -29,9 +29,12 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.log4j.Logger;
 import org.dom4j.Document;
 import org.dom4j.Element;
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
+import org.infoglue.cms.applications.databeans.ProcessBean;
+import org.infoglue.cms.applications.managementtool.actions.ExportRepositoryAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.RepositoryController;
 import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeController;
 import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeControllerProxy;
@@ -45,6 +48,7 @@ import org.infoglue.cms.util.dom.DOMBuilder;
 
 public class CopyMultipleSiteNodeAction extends InfoGlueAbstractAction
 {
+    private final static Logger logger = Logger.getLogger(CopyMultipleSiteNodeAction.class.getName());
 
    	//  Initial params
     private Integer originalSiteNodeId;
@@ -66,6 +70,9 @@ public class CopyMultipleSiteNodeAction extends InfoGlueAbstractAction
     private ConstraintExceptionBuffer ceb;
    	private SiteNodeVO siteNodeVO;
    	
+	private String processId = null;
+	private int processStatus = -1;
+
   
   	public CopyMultipleSiteNodeAction()
 	{
@@ -77,7 +84,7 @@ public class CopyMultipleSiteNodeAction extends InfoGlueAbstractAction
 		this.siteNodeVO = siteNodeVO;
 		this.ceb = new ConstraintExceptionBuffer();			
 	}	
-
+		
 	public void setSiteNodeId(Integer siteNodeId)
 	{
 		this.siteNodeVO.setSiteNodeId(siteNodeId);
@@ -105,10 +112,15 @@ public class CopyMultipleSiteNodeAction extends InfoGlueAbstractAction
         
         return "input";
     }
+   
+   public String doCopyDone() throws Exception
+   {    	
+       return "success";
+   }
     
     public String doExecute() throws Exception
     {
-        if(this.newParentSiteNodeId == null)
+    	if(this.newParentSiteNodeId == null)
         {
     		this.repositories = RepositoryController.getController().getAuthorizedRepositoryVOList(this.getInfoGluePrincipal(), false);
             return "chooseDestination";
@@ -116,31 +128,44 @@ public class CopyMultipleSiteNodeAction extends InfoGlueAbstractAction
         
         ceb.throwIfNotEmpty();
     	
-        try
+        
+		ProcessBean processBean = ProcessBean.createProcessBean(this.getClass().getName(), "" + getInfoGluePrincipal().getName());
+		processBean.setStatus(ProcessBean.RUNNING);
+
+		try
 		{
             if(this.qualifyerXML != null && this.qualifyerXML.length() != 0)
 		    {
 		        Document document = new DOMBuilder().getDocument(this.qualifyerXML);
 				List siteNodes = parseSiteNodesFromXML(this.qualifyerXML);
-				Iterator i = siteNodes.iterator();
-				while(i.hasNext())
+				Iterator iterator = siteNodes.iterator();
+				int i=0;
+				while(iterator.hasNext())
 				{
-				    SiteNodeVO siteNodeVO = (SiteNodeVO)i.next();
+				    SiteNodeVO siteNodeVO = (SiteNodeVO)iterator.next();
 				    try
-					{											
-				        SiteNodeControllerProxy.getSiteNodeControllerProxy().acCopySiteNode(this.getInfoGluePrincipal(), siteNodeVO, this.newParentSiteNodeId);
+					{		
+				    	SiteNodeControllerProxy.getSiteNodeControllerProxy().acCopySiteNode(this.getInfoGluePrincipal(), siteNodeVO, this.newParentSiteNodeId, processBean);
 					}
 					catch(Exception e)
 					{
-						e.printStackTrace();
+						logger.error("Error in copy site nodes:" + e.getMessage(), e);
 					    this.errorsOccurred = true;
 					}
+					i++;
 		    	}
 		    }
+	    	processBean.updateProcess("Finished - cleaning up");
+            Thread.sleep(1000);
 		}
 		catch(Exception e)
 		{
-		    e.printStackTrace();
+			logger.error("Error in copy site nodes:" + e.getMessage(), e);
+		}
+		finally
+		{
+			processBean.setStatus(ProcessBean.FINISHED);
+			processBean.removeProcess();
 		}
 		
 		this.topSiteNodeId = SiteNodeController.getController().getRootSiteNodeVO(this.repositoryId).getId();

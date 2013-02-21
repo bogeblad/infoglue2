@@ -1,4 +1,4 @@
-<!-- $Id: actions.xml,v 1.83.2.9.2.6 2013/02/18 14:04:31 mattias Exp $ -->
+<!-- $Id: actions.xml,v 1.83.2.9.2.7 2013/02/21 14:44:24 mattias Exp $ -->
 <actions>
 
 	<!-- MySettings -->
@@ -944,6 +944,7 @@
 	</action>
 	<action name="org.infoglue.cms.applications.contenttool.actions.ViewListContentVersionAction" alias="ViewListContentVersion">
 		<view name="success">/cms/contenttool/viewListContentVersion.vm</view>
+		<view name="successShowProcessesAsJSON">/cms/managementtool/viewExportRepositoryProcessesAsJson.vm</view>
 		<view name="error">/cms/contenttool/error.vm</view>
 		<view name="accessDenied">/cms/contenttool/viewConstraintException.vm</view>
 	</action>
@@ -969,6 +970,7 @@
 		<view name="inputChooseContents">/cms/contenttool/viewListContentToUnpublish.vm</view>
 		<view name="inputChooseContentsV3">/cms/contenttool/v3/viewListContentToUnpublish.vm</view>
 		<view name="success">ViewContent.action?stay=true</view>
+		<view name="successShowProcessesAsJSON">/cms/managementtool/viewExportRepositoryProcessesAsJson.vm</view>
 		<view name="error">/cms/contenttool/error.vm</view>
 		<view name="accessDenied">/cms/contenttool/viewConstraintException.vm</view>
 	</action>
@@ -1189,6 +1191,7 @@
 		<view name="input">/cms/structuretool/viewCopyMultipleSiteNodesChooseSiteNodes.vm</view>
 		<view name="chooseDestination">/cms/structuretool/viewCopyMultipleSiteNodesChooseDestination.vm</view>
 		<view name="success">/cms/structuretool/viewCopyMultipleSiteNodesFinished.vm</view>
+		<view name="successShowProcessesAsJSON">/cms/managementtool/viewExportRepositoryProcessesAsJson.vm</view>
 		<view name="error">/cms/structuretool/error.vm</view>
 		<view name="accessDenied">/cms/structuretool/viewConstraintException.vm</view>
 	</action>

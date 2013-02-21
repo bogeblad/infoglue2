@@ -150,6 +150,30 @@ public class ProcessBean
     }
 
     /**
+     * This method sends the event description to all listeners.
+     * 
+     * @param eventDescription
+     */
+    public void updateLastDescription(String eventDescription)
+    {
+    	if(processEvents.size() > 0)
+    		processEvents.remove(processEvents.size() - 1);
+    	processEvents.add(eventDescription);
+    	// TODO Does this need to be synchronized with adding listeners?
+    	for(ProcessBeanListener processBeanListener : listeners)
+    	{
+    		try
+    		{
+        		processBeanListener.processUpdatedLastDescription(eventDescription);
+    		}
+    		catch (Exception e) 
+    		{
+    			logger.error("Error updating ProcessBeanListener: " + e.getMessage());
+			}
+    	}
+    }
+
+    /**
      * This method sends the new artifact to all listeners.
      * 
      * 

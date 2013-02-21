@@ -18,14 +18,50 @@
 	<!-- 
 		function openMainArea(url, title)
 		{
-			var agt=navigator.userAgent.toLowerCase();
-			if(agt.indexOf("safari")!=-1)
+			//alert('url:' + url);
+			if(url.indexOf("ViewListContentVersion.action") > -1 ||
+			   url.indexOf("UnpublishContentVersion!inputChooseContents.action") > -1)
 			{
-				parent.frames['main'].location = '' + url + '&title=' + title;
+				var agt=navigator.userAgent.toLowerCase();
+				if(agt.indexOf("safari")!=-1)
+				{
+					parent.frames["main"].location = 'InProcessLoading!executeContent.action';
+				}
+				else	
+				{
+					parent.frames["main"].location.href = 'InProcessLoading!executeContent.action';
+				}
+
+				var frame = parent.frames["main"];
+				if(typeof frame.invokeURL == 'function')
+				{
+				}
+				else
+					frame = parent.frames[3];
+				
+				setTimeout(function() {
+					frame.invokeURL(url);
+				}, 500);
+				
+				setTimeout(function() {
+					var convertedURL = url;
+					convertedURL = convertedURL.replace("ViewListContentVersion.action","ViewListContentVersion!showProcessesAsJSON.action");
+					convertedURL = convertedURL.replace("UnpublishContentVersion!inputChooseContents.action","UnpublishContentVersion!showProcessesAsJSON.action");
+					frame.showProcessURL(convertedURL);
+				}, 500);
+				
 			}
-			else	
+			else
 			{
-				parent.frames["main"].location.href = '' + url + '&title=' + title;
+				var agt=navigator.userAgent.toLowerCase();
+				if(agt.indexOf("safari")!=-1)
+				{
+					parent.frames['main'].location = '' + url + '&title=' + title;
+				}
+				else	
+				{
+					parent.frames["main"].location.href = '' + url + '&title=' + title;
+				}
 			}
 		}
 

@@ -43,6 +43,10 @@
 		
 	<script language="JavaScript"> 
 		window.resizeTo(370,640);
+		
+		#if("$!newParentSiteNodeId" != "")
+			top.document.location.href = "CopyMultipleSiteNodes!copyDone.action";
+		#end
 	</script> 
 
 </head>

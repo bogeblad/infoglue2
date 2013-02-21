@@ -408,7 +408,7 @@ public class InstallationValidatorAction extends InfoGlueAbstractAction
 			    			
 				    			if(!hasMetaInfo)
 				    			{
-				        		    ContentVO contentVO = SiteNodeController.getController().createSiteNodeMetaInfoContent(db, siteNode, siteNode.getRepository().getId(), this.getInfoGluePrincipal(), null).getValueObject();
+				        		    ContentVO contentVO = SiteNodeController.getController().createSiteNodeMetaInfoContent(db, siteNode.getValueObject(), siteNode.getRepository().getId(), this.getInfoGluePrincipal(), null, new ArrayList()).getValueObject();
 				        		    metaInfoContentId = contentVO.getId(); 
 				    			}
 				    			    

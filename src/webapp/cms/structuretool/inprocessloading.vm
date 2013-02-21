@@ -47,14 +47,26 @@
 			}
 		-->
 		</script>
+		
+		<style type="text/css">
+			ol {
+				margin-left: 0px;
+				padding-left: 16px;
+				
+			}
+			ol li {
+				font-size: 11px;
+			}
+		</style>
+		
 	</head>
 
-	<body class="structuretool" style="margin:0px;padding:0px;overflow:hidden;height:100%; background-color: #FEF8D0;">
+	<body class="$toolClass" style="margin:0px;padding:0px;overflow:hidden;height:100%; background-color: $toolColor;">
 	
 		<iframe id="actionFrame" src="Loading!executeStructure.action" frameborder="0" style="background-color: transparent;overflow:hidden;height:100%;width:100%" height="100%" width="100%"></iframe>
 	
-		<div id="processInfo" style="padding: 10px; font-family: Arial; font-size: 10px; width: 500px; height: 300px; position: absolute; top: 50px; left: 50px; background-color: white; border: 1px solid #ccc; overflow:auto;">
-			
+		<div id="processInfo" style="padding: 10px; font-family: Arial; font-size: 10px; width: 500px; height: 300px; position: absolute; top: 50px; left: 50px; background-color: rgba(255,255,255,0.75); border: 1px solid #666; overflow:auto;">
+
 		</div>
 		
 	</body>

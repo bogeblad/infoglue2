@@ -428,7 +428,7 @@ public class PageCacheHelper implements Runnable
             for(int i=0; i<subCaches.length; i++)
             {
             	File subCacheDir = subCaches[i];
-            	logger.warn("subCacheDir:" + subCacheDir.getName());
+            	logger.info("subCacheDir:" + subCacheDir.getName());
             	if(subCacheDir.isDirectory() && subCacheDir.getName().equals(getPageCacheName()))
             	{
             		logger.warn("clearing:" + subCacheDir.getName());

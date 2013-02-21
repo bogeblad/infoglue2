@@ -327,10 +327,10 @@ public class CacheController extends Thread
 		super();
 	}
 
-	public static synchronized void preCacheCMSEntities() throws Exception 
+	public static void preCacheCMSEntities() throws Exception 
 	{
 		Timer t = new Timer();
-		
+		logger.warn("AAAAAAAAAAAAAAAAAAAAAAAA");
 		ContentTypeDefinitionController.getController().getContentTypeDefinitionVOList();
 		logger.warn("pre cache content types took:" + t.getElapsedTime());
 
@@ -358,7 +358,7 @@ public class CacheController extends Thread
 		*/
 	}
 
-	public static synchronized void preCacheDeliverEntities() throws Exception 
+	public static void preCacheDeliverEntities() throws Exception 
 	{
 		Timer t = new Timer();
 
@@ -2466,11 +2466,16 @@ public class CacheController extends Thread
 									    	if(contentId != null)
 									    	{
 									    		ContentVO contentVO = ContentController.getContentController().getContentVOWithId(contentId); 
-									    		ContentTypeDefinitionVO ctdVO = ContentTypeDefinitionController.getController().getContentTypeDefinitionVOWithId(contentVO.getContentTypeDefinitionId());
-									    		if(ctdVO.getName().equals("HTMLTemplate") || ctdVO.getName().equals("PagePartTemplate"))
+									    		if(contentVO != null && contentVO.getContentTypeDefinitionId() != null)
 									    		{
-													ComponentController.getController().reIndexComponentContentsDelayed(contentVO.getId());
+										    		ContentTypeDefinitionVO ctdVO = ContentTypeDefinitionController.getController().getContentTypeDefinitionVOWithId(contentVO.getContentTypeDefinitionId());
+										    		if(ctdVO.getName().equals("HTMLTemplate") || ctdVO.getName().equals("PagePartTemplate"))
+										    		{
+														ComponentController.getController().reIndexComponentContentsDelayed(contentVO.getId());
+										    		}
 									    		}
+									    		else
+									    			logger.warn("No content type for " + contentVO.getName());
 									    	}
 							    		}
 							    		else
@@ -3446,7 +3451,7 @@ public class CacheController extends Thread
 							    }
 							    else
 							    {
-							    	logger.warn("WHOOOAAAAAAAAAA.. clearing all... on " + cacheName + ":" + entity);
+							    	logger.info("WHOOOAAAAAAAAAA.. clearing all... on " + cacheName + ":" + entity);
 							    	//System.out.println("selectiveCacheUpdate:" + selectiveCacheUpdate);
 							    	//System.out.println("entity:" + entity);
 							    	//System.out.println("cacheName:" + cacheName);
@@ -3519,7 +3524,7 @@ public class CacheController extends Thread
         }  
 	}
 
-	public static synchronized void clearCastorCaches(DefeatCacheParameters dcp) throws Exception
+	public static void clearCastorCaches(DefeatCacheParameters dcp) throws Exception
 	{
 	    logger.info("Emptying the Castor Caches");
 	    
@@ -3580,7 +3585,7 @@ public class CacheController extends Thread
 		}
 	}
 	
-	public static synchronized void clearCastorCaches() throws Exception
+	public static void clearCastorCaches() throws Exception
 	{
 	    logger.info("Emptying the Castor Caches");
 	    
@@ -3696,12 +3701,12 @@ public class CacheController extends Thread
 	}
 	
 
-	public static synchronized void clearCache(Class type, Object[] ids) throws Exception
+	public static void clearCache(Class type, Object[] ids) throws Exception
 	{
 		clearCache(type, ids, false);
 	}
 	
-	public static synchronized void clearCache(Class type, Object[] ids, boolean forceClear) throws Exception
+	public static void clearCache(Class type, Object[] ids, boolean forceClear) throws Exception
 	{		
 		long wait = 0;
 		while(!forceClear && !getForcedCacheEvictionMode() && RequestAnalyser.getRequestAnalyser().getApproximateNumberOfDatabaseQueries() > 0)
@@ -3758,7 +3763,7 @@ public class CacheController extends Thread
 		}
 	}
 
-	public static synchronized void clearCache(Class c) throws Exception
+	public static void clearCache(Class c) throws Exception
 	{
 	    Database db = CastorDatabaseService.getDatabase();
 
@@ -3817,7 +3822,7 @@ public class CacheController extends Thread
 	    }
 	}
 
-	public static synchronized void clearCache(Database db, Class c) throws Exception
+	public static void clearCache(Database db, Class c) throws Exception
 	{
 		long wait = 0;
 		while(!getForcedCacheEvictionMode() && RequestAnalyser.getRequestAnalyser().getApproximateNumberOfDatabaseQueries() > 0)
@@ -3886,7 +3891,7 @@ public class CacheController extends Thread
 		}
 	}
 
-	public static synchronized void cacheCentralCastorCaches() throws Exception
+	public static void cacheCentralCastorCaches() throws Exception
 	{
 	    Database db = CastorDatabaseService.getDatabase();
 

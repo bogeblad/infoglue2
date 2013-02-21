@@ -261,6 +261,7 @@ public class ContentDeliveryController extends BaseDeliveryController
 	{
 		ContentVersionVO contentVersionVO = null;
 		SiteNodeVO siteNodeVO = SiteNodeController.getController().getSiteNodeVOWithId(siteNodeId, db);
+		
 		String contentVersionKey = "contentVersionVO_" + siteNodeVO.getRepositoryId() + "_" + contentId + "_" + languageId + "_" + useLanguageFallback;
 		contentVersionVO = (ContentVersionVO)CacheController.getCachedObjectFromAdvancedCache("contentVersionCache", contentVersionKey);
 
@@ -280,7 +281,7 @@ public class ContentDeliveryController extends BaseDeliveryController
 		
 		if(contentVersionVO != null && deliveryContext != null)
 		    deliveryContext.addUsedContentVersion(CacheController.getPooledString(2, contentVersionVO.getId()));
-		
+
 		return contentVersionVO;
 	}
 
@@ -431,20 +432,18 @@ public class ContentDeliveryController extends BaseDeliveryController
 		
 		//MediumContentImpl content = (MediumContentImpl)getObjectWithId(MediumContentImpl.class, contentId, db);
 		ContentVO content = getContentVO(db, contentId, deliveryContext);
-
-		deliveryContext.addDebugInformation("getContentVersionVO() with:" + siteNodeId + ", " + contentId + ", " + languageId);
+		//deliveryContext.addDebugInformation("getContentVersionVO() with:" + siteNodeId + ", " + contentId + ", " + languageId);
 		
 		boolean isValidContent = isValidContent(infoGluePrincipal, content, languageId, useLanguageFallback, false, db, deliveryContext);
-		
-		deliveryContext.addDebugInformation("isValidContent:" + isValidContent);
+		//deliveryContext.addDebugInformation("isValidContent:" + isValidContent);
 		if(isValidContent)
 		{
 			contentVersion = getContentVersionVO(contentId, languageId, getOperatingMode(deliveryContext), deliveryContext, db);
-			deliveryContext.addDebugInformation("contentVersion:" + contentVersion);
+			//deliveryContext.addDebugInformation("contentVersion:" + contentVersion);
 			if(contentVersion == null && useLanguageFallback)
 			{
 				Integer masterLanguageId = LanguageDeliveryController.getLanguageDeliveryController().getMasterLanguageForSiteNode(db, siteNodeId).getLanguageId();
-				deliveryContext.addDebugInformation("masterLanguageId:" + masterLanguageId);
+				//deliveryContext.addDebugInformation("masterLanguageId:" + masterLanguageId);
 				if(languageId != null && !languageId.equals(masterLanguageId))
 				{
 					contentVersion = getContentVersionVO(contentId, masterLanguageId, getOperatingMode(deliveryContext), deliveryContext, db);
@@ -454,7 +453,7 @@ public class ContentDeliveryController extends BaseDeliveryController
 				if(languageId != null && contentVersion == null && useLanguageFallback)
 				{
 					Integer contentMasterLanguageId = LanguageDeliveryController.getLanguageDeliveryController().getMasterLanguageForRepository(db, content.getRepositoryId()).getLanguageId();
-					deliveryContext.addDebugInformation("contentMasterLanguageId:" + contentMasterLanguageId);
+					//deliveryContext.addDebugInformation("contentMasterLanguageId:" + contentMasterLanguageId);
 					if(languageId != null && !languageId.equals(contentMasterLanguageId) && !masterLanguageId.equals(contentMasterLanguageId))
 					{
 						contentVersion = getContentVersionVO(contentId, contentMasterLanguageId, getOperatingMode(deliveryContext), deliveryContext, db);
@@ -665,6 +664,8 @@ public class ContentDeliveryController extends BaseDeliveryController
 		return contentVersionVO;
     }
 
+	
+	
 	/**
 	 * This method gets a contentVersion with a state and a language which is active.
 	 */
@@ -926,6 +927,7 @@ public class ContentDeliveryController extends BaseDeliveryController
 		{
 			//logger.info("Enforcing getHasUserContentAccess for attributeName:" + contentId + ":" + languageId + ":" + attributeName);
 			boolean hasUserContentAccess = getHasUserContentAccess(db, infogluePrincipal, contentId);
+			
 			deliveryContext.addDebugInformation("hasUserContentAccess: " + hasUserContentAccess);
 			if(!hasUserContentAccess)
 			{
@@ -990,10 +992,11 @@ public class ContentDeliveryController extends BaseDeliveryController
 			}
 			else
 			{
+			
 				ContentVersionVO contentVersionVO = getContentVersionVO(db, siteNodeId, contentId, languageId, useLanguageFallback, deliveryContext, infogluePrincipal);
+				
 				deliveryContext.addDebugInformation("contentVersionVO:" + contentVersionVO);
-			   
-	        	if (contentVersionVO != null) 
+			   if (contentVersionVO != null) 
 				{
 					deliveryContext.addDebugInformation("contentVersionVO.versionValue:" + contentVersionVO.getVersionValue().length());
 
@@ -1014,7 +1017,7 @@ public class ContentDeliveryController extends BaseDeliveryController
     				CacheController.cacheObjectInAdvancedCache(contentVersionIdCacheName, versionKey, contentVersionId, new String[]{groupKey1, groupKey2}, true);
 				}
 			}
-			
+
 			if(deliveryContext != null)
 			{
 				if(contentVersionId != null)
@@ -2993,7 +2996,6 @@ public class ContentDeliveryController extends BaseDeliveryController
 		{
 			validateOnDates = deliveryContext.getValidateOnDates();
 		}
-
 		//RequestAnalyser.getRequestAnalyser().registerComponentStatistics("isValidContentPart1", t.getElapsedTimeNanos() / 1000);
 
 		try
@@ -3012,7 +3014,6 @@ public class ContentDeliveryController extends BaseDeliveryController
 		{
 			logger.error("An error occurred trying to validate access to a content. Resetting datalayer and disabling page cache but allowing for now. Reson: " + e.getMessage());
 			logger.warn("An error occurred trying to validate access to a content. Resetting datalayer and disabling page cache but allowing for now. Reson: " + e.getMessage(), e);
-			
 		}
 					    
 		//RequestAnalyser.getRequestAnalyser().registerComponentStatistics("isValidContentPart protectedContentId", t.getElapsedTimeNanos() / 1000);
@@ -3029,7 +3030,7 @@ public class ContentDeliveryController extends BaseDeliveryController
 			//TODO
 		    ContentVersionVO contentVersion = getContentVersionVO(content.getId(), languageId, getOperatingMode(deliveryContext), deliveryContext, db);
 		    //SmallestContentVersionVO contentVersion = getSmallestContentVersionVO(content.getId(), languageId, getOperatingMode(deliveryContext), deliveryContext, db);
-		    
+
 		    //RequestAnalyser.getRequestAnalyser().registerComponentStatistics("isValidContentPart4.1", t.getElapsedTimeNanos() / 1000);
 
 		    Integer repositoryId = content.getRepositoryId();

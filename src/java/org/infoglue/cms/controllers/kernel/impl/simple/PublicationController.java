@@ -802,7 +802,7 @@ public class PublicationController extends BaseController
 		{
 			ContentVersion contentVersion = null;
 			ContentVersion oldContentVersion = ContentVersionController.getContentVersionController().getMediumContentVersionWithId(entityId, db);
-			if(oldContentVersion != null && oldContentVersion.getOwningContent() != null && typeId.intValue() == EventVO.UNPUBLISH_LATEST.intValue())
+			if(oldContentVersion != null && typeId.intValue() == EventVO.UNPUBLISH_LATEST.intValue())
 			{
 			    oldContentVersion.setIsActive(new Boolean(false));
 			    contentVersion = oldContentVersion;

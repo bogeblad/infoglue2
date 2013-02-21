@@ -11,9 +11,10 @@
 	<script type="text/javascript" src="script/vector.js"></script>
 	<script type="text/javascript" src="script/qualifyer.js"></script>
 	<script type="text/javascript" src="script/infogluecommons.js"></script>
+	<script type="text/javascript" src="script/jquery/jquery-1.3.2.min.js"></script>
 	
 	<script language="JavaScript"> 
-		window.resizeTo(370,640);
+		window.resizeTo(570,640);
 	</script> 
 		
 	<script type="text/javascript" language="JavaScript">
@@ -50,10 +51,22 @@
 		function finish()
 		{
 		   	document.inputForm.newParentSiteNodeId.value = document.inputForm.entityId.value;
-		    showDiv("savingLayer");
+			$("#inputForm").attr("target","_top");
 			document.inputForm.submit();
+
+			setTimeout(function() {
+				updateProcessInfo();
+			}, 500);
 		}
 	
+		function updateProcessInfo()
+		{
+			setTimeout(function() {
+				$("#processFrame").attr("src", "CopyMultipleSiteNodes!showProcessesAsJSON.action").show();
+				updateProcessInfo();
+			}, 500);
+		}
+		
 		/**
 		 * This submits the qalifyers.
 		 */
@@ -63,7 +76,6 @@
 		   	document.inputForm.repositoryId.value = repositoryId;
 			
 			document.inputForm.action = 'CopyMultipleSiteNodes.action';
-			showDiv("savingLayer");
 			document.inputForm.submit();
 		}
 			
@@ -73,16 +85,11 @@
 
 <body class="structuretooledit">
 
-<div id="savingLayer" class="infobackground">
-	<div class="infoheader">Saving changes</div>
-	<div class="infobody">Processing input - please wait!</div>
-</div>
-
 <table class="structuretooledit" cellpadding="0" cellspacing="0" border="0">
 <tr>
 	<td valign="top">
 		
-		<table cellpadding="0" cellspacing="0" border="0">
+		<table id="mainTable" cellpadding="0" cellspacing="0" border="0">
 		<tr class="darkapricot">
 			<td class="smalllabel">Mark the destination folder and press "Save".</td>
 		</tr>
@@ -110,11 +117,7 @@
 		</tr>	
 		<tr>
 			<td class="menu">   
-				#if($tree == "applet") 
-					#showJavaTree("350" "450" "199" "209" "179" "SiteNode" $repositoryId "false")
-				#else
-					<IFRAME frameborder="0" name="itreeFrame" id="itreeFrame" src="ViewStructureHtmlTree!bindingView.action?repositoryId=${repositoryId}&showLeafs=false" width="350" height="450" align="baseline"></IFRAME>
-				#end
+				<iframe frameborder="0" name="itreeFrame" id="itreeFrame" src="ViewStructureHtmlTree!bindingView.action?repositoryId=${repositoryId}&showLeafs=false" width="550" height="450" align="baseline"></iframe>
 			</td>
 		</tr>	
 		<tr>
@@ -128,7 +131,7 @@
 		</tr>		
 		<tr>
 			<td>
-				<form name="inputForm" action="CopyMultipleSiteNodes.action">
+				<form id="inputForm" name="inputForm" action="CopyMultipleSiteNodes.action">
 					<input type="hidden" name="siteNodeId" value="$siteNodeId">
 					<input type="hidden" name="entityId" value="">
 					<input type="hidden" name="path" value="">
@@ -142,6 +145,9 @@
 	</td>	
 </tr>
 </table>
+
+<iframe frameborder="0" name="processFrame" id="processFrame" src="" width="560" height="400" align="baseline" style="display: none; position: absolute; top: 100px; left: 4px; border: 1px solid #666; background-color: white;"></iframe>
+<iframe frameborder="0" name="actionFrame" id="actionFrame" src="" width="360" height="1" align="baseline"></iframe>
 
 </body>
 </html>

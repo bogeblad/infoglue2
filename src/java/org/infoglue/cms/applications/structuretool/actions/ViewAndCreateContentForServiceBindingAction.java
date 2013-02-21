@@ -40,11 +40,13 @@ import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeStateController;
 import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeVersionController;
 import org.infoglue.cms.entities.content.Content;
 import org.infoglue.cms.entities.content.ContentVO;
+import org.infoglue.cms.entities.content.ContentVersion;
 import org.infoglue.cms.entities.management.ContentTypeDefinition;
 import org.infoglue.cms.entities.management.Language;
 import org.infoglue.cms.entities.management.LanguageVO;
 import org.infoglue.cms.entities.management.ServiceDefinitionVO;
 import org.infoglue.cms.entities.structure.SiteNode;
+import org.infoglue.cms.entities.structure.SiteNodeVO;
 import org.infoglue.cms.entities.structure.SiteNodeVersion;
 import org.infoglue.cms.entities.structure.SiteNodeVersionVO;
 import org.infoglue.cms.entities.workflow.EventVO;
@@ -210,7 +212,7 @@ public class ViewAndCreateContentForServiceBindingAction extends InfoGlueAbstrac
     		ContentTypeDefinition contentTypeDefinition = ContentTypeDefinitionController.getController().getContentTypeDefinitionWithName("Meta info", db);
     		this.metaInfoContentTypeDefinitionId = contentTypeDefinition.getId();
     		
-    		SiteNode siteNode = SiteNodeController.getController().getSiteNodeWithId(this.siteNodeId, db);
+    		SiteNodeVO siteNode = SiteNodeController.getController().getSiteNodeVOWithId(this.siteNodeId, db);
 
     		if(this.changeStateToWorking != null && this.changeStateToWorking.equalsIgnoreCase("true"))
     		{
@@ -218,7 +220,7 @@ public class ViewAndCreateContentForServiceBindingAction extends InfoGlueAbstrac
     			if(!siteNodeVersion.getStateId().equals(SiteNodeVersionVO.WORKING_STATE))
     			{
 	    			List<EventVO> events = new ArrayList<EventVO>();
-		    		SiteNodeStateController.getController().changeState(siteNodeVersion.getId(), siteNode.getValueObject(), SiteNodeVersionVO.WORKING_STATE, "Auto", true, this.getInfoGluePrincipal(), db, this.siteNodeId, events);
+		    		SiteNodeStateController.getController().changeState(siteNodeVersion.getId(), siteNode, SiteNodeVersionVO.WORKING_STATE, "Auto", true, this.getInfoGluePrincipal(), db, this.siteNodeId, events);
     			}
     		}
     		
@@ -229,7 +231,7 @@ public class ViewAndCreateContentForServiceBindingAction extends InfoGlueAbstrac
             if(metaInfoContent == null)
             {
             	siteNode.setMetaInfoContentId(null);
-    		    this.contentVO = SiteNodeController.getController().createSiteNodeMetaInfoContent(db, siteNode, this.repositoryId, this.getInfoGluePrincipal(), null).getValueObject();
+    		    this.contentVO = SiteNodeController.getController().createSiteNodeMetaInfoContent(db, siteNode, this.repositoryId, this.getInfoGluePrincipal(), null, new ArrayList<ContentVersion>()).getValueObject();
             	siteNode.setMetaInfoContentId(this.contentVO.getId());
                 logger.error("The site node must have a meta information bound. We tried to recreate it. Old info was lost.");
             } 

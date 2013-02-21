@@ -35,6 +35,9 @@ public class LoadingAction extends ViewCMSAbstractToolAction
 { 
 	private static final long serialVersionUID = 1L;
 
+	private String toolClass = "";
+	private String toolColor = "";
+	
     public String doExecute() throws Exception
     {
         return "success";
@@ -42,12 +45,25 @@ public class LoadingAction extends ViewCMSAbstractToolAction
 
     public String doExecuteStructure() throws Exception
     {
+    	this.toolClass = "structuretool";
+    	this.toolColor = "#FEF8D0";
         return "successStructure";
     }
 
     public String doExecuteContent() throws Exception
     {
+    	this.toolClass = "contenttool";
+    	this.toolColor = "#C7D1B3";
         return "successContent";
     }
 
+    public String getToolClass()
+    {
+    	return this.toolClass;
+    }
+
+    public String getToolColor()
+    {
+    	return this.toolColor;
+    }
 }

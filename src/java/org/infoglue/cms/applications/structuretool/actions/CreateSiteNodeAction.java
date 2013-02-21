@@ -23,6 +23,7 @@
 
 package org.infoglue.cms.applications.structuretool.actions;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
@@ -44,6 +45,7 @@ import org.infoglue.cms.controllers.kernel.impl.simple.RepositoryController;
 import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeController;
 import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeControllerProxy;
 import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeTypeDefinitionController;
+import org.infoglue.cms.entities.content.ContentVersion;
 import org.infoglue.cms.entities.content.ContentVersionVO;
 import org.infoglue.cms.entities.content.DigitalAssetVO;
 import org.infoglue.cms.entities.management.LanguageVO;
@@ -254,7 +256,7 @@ public class CreateSiteNodeAction extends InfoGlueAbstractAction
             SiteNode newSiteNode = SiteNodeControllerProxy.getSiteNodeControllerProxy().acCreate(this.getInfoGluePrincipal(), this.parentSiteNodeId, this.siteNodeTypeDefinitionId, this.repositoryId, this.siteNodeVO, db);            
             newSiteNodeVO = newSiteNode.getValueObject();
             
-            SiteNodeController.getController().createSiteNodeMetaInfoContent(db, newSiteNode, this.repositoryId, this.getInfoGluePrincipal(), this.pageTemplateContentId);
+            SiteNodeController.getController().createSiteNodeMetaInfoContent(db, newSiteNode.getValueObject(), this.repositoryId, this.getInfoGluePrincipal(), this.pageTemplateContentId, new ArrayList<ContentVersion>());
             
             commitTransaction(db);
         }
@@ -315,7 +317,7 @@ public class CreateSiteNodeAction extends InfoGlueAbstractAction
         	SiteNode newSiteNode = SiteNodeControllerProxy.getSiteNodeControllerProxy().acCreate(this.getInfoGluePrincipal(), this.parentSiteNodeId, this.siteNodeTypeDefinitionId, this.repositoryId, this.siteNodeVO, db);            
             newSiteNodeVO = newSiteNode.getValueObject();
             
-            SiteNodeController.getController().createSiteNodeMetaInfoContent(db, newSiteNode, this.repositoryId, this.getInfoGluePrincipal(), this.pageTemplateContentId);
+            SiteNodeController.getController().createSiteNodeMetaInfoContent(db, newSiteNode.getValueObject(), this.repositoryId, this.getInfoGluePrincipal(), this.pageTemplateContentId, new ArrayList<ContentVersion>());
             
             commitTransaction(db);
 

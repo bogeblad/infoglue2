@@ -30,9 +30,13 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
+import org.exolab.castor.jdo.Database;
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.applications.databeans.LinkBean;
+import org.infoglue.cms.applications.databeans.ProcessBean;
+import org.infoglue.cms.applications.structuretool.actions.ViewListSiteNodeVersionAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.AccessRightController;
+import org.infoglue.cms.controllers.kernel.impl.simple.CastorDatabaseService;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentControllerProxy;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentStateController;
@@ -42,10 +46,14 @@ import org.infoglue.cms.controllers.kernel.impl.simple.PublicationController;
 import org.infoglue.cms.entities.content.ContentVO;
 import org.infoglue.cms.entities.content.ContentVersion;
 import org.infoglue.cms.entities.content.ContentVersionVO;
+import org.infoglue.cms.entities.content.SmallestContentVersionVO;
 import org.infoglue.cms.entities.publishing.PublicationVO;
 import org.infoglue.cms.entities.workflow.EventVO;
 import org.infoglue.cms.exception.AccessConstraintException;
+import org.infoglue.cms.exception.ConstraintException;
+import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.util.AccessConstraintExceptionBuffer;
+import org.infoglue.cms.util.ConstraintExceptionBuffer;
 
 /**
  *
@@ -102,20 +110,33 @@ public class UnpublishContentVersionAction extends InfoGlueAbstractAction
 
 	public String doInputChooseContents() throws Exception 
 	{
-		if(this.contentId != null)
-		{
-		    ContentVO contentVO = ContentController.getContentController().getContentVOWithId(this.contentId);
-		    this.repositoryId = contentVO.getRepositoryId();
-		    
-			AccessConstraintExceptionBuffer ceb = new AccessConstraintExceptionBuffer();
-		
-			Integer protectedContentId = ContentControllerProxy.getController().getProtectedContentId(contentId);
-			if(protectedContentId != null && !AccessRightController.getController().getIsPrincipalAuthorized(this.getInfoGluePrincipal(), "Content.SubmitToPublish", protectedContentId.toString()))
-				ceb.add(new AccessConstraintException("Content.contentId", "1005"));
-			
-			ceb.throwIfNotEmpty();
+		ProcessBean processBean = ProcessBean.createProcessBean(UnpublishContentVersionAction.class.getName(), "" + getInfoGluePrincipal().getName());
+		processBean.setStatus(ProcessBean.RUNNING);
 
-			contentVOList = ContentController.getContentController().getContentVOWithParentRecursive(contentId);
+		try
+		{
+			if(this.contentId != null)
+			{
+			    ContentVO contentVO = ContentController.getContentController().getContentVOWithId(this.contentId);
+			    this.repositoryId = contentVO.getRepositoryId();
+			    
+				AccessConstraintExceptionBuffer ceb = new AccessConstraintExceptionBuffer();
+			
+				Integer protectedContentId = ContentControllerProxy.getController().getProtectedContentId(contentId);
+				if(protectedContentId != null && !AccessRightController.getController().getIsPrincipalAuthorized(this.getInfoGluePrincipal(), "Content.SubmitToPublish", protectedContentId.toString()))
+					ceb.add(new AccessConstraintException("Content.contentId", "1005"));
+				
+				ceb.throwIfNotEmpty();
+	
+				processBean.updateProcess("Getting child contents available for unpublish");
+				
+				contentVOList = ContentController.getContentController().getContentVOWithParentRecursive(contentId, processBean);
+			}
+		}
+		finally
+		{
+			processBean.setStatus(ProcessBean.FINISHED);
+			processBean.removeProcess();
 		}
 
 	    return "inputChooseContents";
@@ -196,53 +217,124 @@ public class UnpublishContentVersionAction extends InfoGlueAbstractAction
 	   
     public String doUnpublishAll() throws Exception
     {   
-		String[] contentIds = getRequest().getParameterValues("sel");
+		ProcessBean processBean = ProcessBean.createProcessBean(UnpublishContentVersionAction.class.getName(), "" + getInfoGluePrincipal().getName());
+		processBean.setStatus(ProcessBean.RUNNING);
+
+		String[] contentIdStrings = getRequest().getParameterValues("sel");
 		
 		List events = new ArrayList();
 
-        for(int i=0; i < contentIds.length; i++)
-		{
-            String contentIdString = contentIds[i];
-	        
-            List contentVersionsVOList = ContentVersionController.getContentVersionController().getPublishedActiveContentVersionVOList(new Integer(contentIdString));
-	        Map checkedLanguages = new HashMap();
-			Iterator it = contentVersionsVOList.iterator();
-			while(it.hasNext())
-			{
-				ContentVersionVO contentVersionVO = (ContentVersionVO)it.next();
+		Database db = CastorDatabaseService.getDatabase();
+
+        beginTransaction(db);
+
+        try
+        {
+        	List<Integer> contentIds = new ArrayList<Integer>();
+        	for(String contentIdString : contentIdStrings)
+        	{
+        		contentIds.add(new Integer(contentIdString));
+        	}
+        	
+        	processBean.updateProcess("Searching for all published versions.");
+        	List<SmallestContentVersionVO> contentVersionsVOList = ContentVersionController.getContentVersionController().getPublishedActiveContentVersionVOList(contentIds, db);
+        	processBean.updateProcess("Found " + contentVersionsVOList.size() + " versions");
+        	
+        	for(SmallestContentVersionVO contentVersionVO : contentVersionsVOList)
+        	{
+        		//ContentVersion contentVersion = ContentVersionController.getContentVersionController().getMediumContentVersionWithId(contentVersionVO.getId(), db);
+        		//contentVersion.setStateId(0);
+        		//contentVersion.setVersionComment(this.versionComment);
+        		//contentVersion.setVersionModifier(this.getInfoGluePrincipal().getName());
 				
-				if(checkedLanguages.get(contentVersionVO.getLanguageId()) == null)
-				{
-					checkedLanguages.put(contentVersionVO.getLanguageId(), new Boolean(true));
-					ContentVersionVO latestContentVersionVO = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(contentVersionVO.getContentId(), contentVersionVO.getLanguageId());
-					if(contentVersionVO.getId().equals(latestContentVersionVO.getId()))
-					{
-						logger.info("Creating a new working version as there was no active working version left...:" + contentVersionVO.getLanguageName());
-						ContentStateController.changeState(contentVersionVO.getId(), ContentVersionVO.WORKING_STATE, "new working version", false, null, this.getInfoGluePrincipal(), contentVersionVO.getContentId(), events);
-					}
-				}
-				
+				ContentStateController.changeState(contentVersionVO.getId(), ContentVersionVO.WORKING_STATE, "new working version", false, this.getInfoGluePrincipal(), contentVersionVO.getContentId(), db, events);
+        		
 				EventVO eventVO = new EventVO();
 				eventVO.setDescription(this.versionComment);
 				eventVO.setEntityClass(ContentVersion.class.getName());
 				eventVO.setEntityId(contentVersionVO.getContentVersionId());
-				eventVO.setName(contentVersionVO.getContentName() + "(" + contentVersionVO.getLanguageName() + ")");
+				eventVO.setName(contentVersionVO.getContentId() + "(" + contentVersionVO.getLanguageId() + ")");
 				eventVO.setTypeId(EventVO.UNPUBLISH_LATEST);
-				eventVO = EventController.create(eventVO, this.repositoryId, this.getInfoGluePrincipal());
+				eventVO = EventController.create(eventVO, this.repositoryId, this.getInfoGluePrincipal(), db);
 				events.add(eventVO);
+        	
+				if(events.size() % 10 == 0)
+					processBean.updateLastDescription("Updated " + events.size() + " versions");
+        	}
+
+			processBean.updateLastDescription("Creating publication");
+
+			if(attemptDirectPublishing.equalsIgnoreCase("true"))
+			{
+			    PublicationVO publicationVO = new PublicationVO();
+			    publicationVO.setName("Direct publication by " + this.getInfoGluePrincipal().getName());
+			    publicationVO.setDescription(getVersionComment());
+			    publicationVO.setPublisher(this.getInfoGluePrincipal().getName());
+			    publicationVO.setRepositoryId(repositoryId);
+			    publicationVO = PublicationController.getController().createAndPublish(publicationVO, events, this.overrideVersionModifyer, this.getInfoGluePrincipal(), db);
 			}
-		}	
-		
-		if(attemptDirectPublishing.equalsIgnoreCase("true"))
+			
+
+        	/*
+	        for(int i=0; i < contentIds.length; i++)
+			{
+	            String contentIdString = contentIds[i];
+		        
+	            List contentVersionsVOList = ContentVersionController.getContentVersionController().getPublishedActiveContentVersionVOList(new Integer(contentIdString), db);
+		        Map checkedLanguages = new HashMap();
+				Iterator it = contentVersionsVOList.iterator();
+				while(it.hasNext())
+				{
+					ContentVersionVO contentVersionVO = (ContentVersionVO)it.next();
+					
+					if(checkedLanguages.get(contentVersionVO.getLanguageId()) == null)
+					{
+						checkedLanguages.put(contentVersionVO.getLanguageId(), new Boolean(true));
+						ContentVersionVO latestContentVersionVO = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(contentVersionVO.getContentId(), contentVersionVO.getLanguageId(), db);
+						if(contentVersionVO.getId().equals(latestContentVersionVO.getId()))
+						{
+							logger.info("Creating a new working version as there was no active working version left...:" + contentVersionVO.getLanguageName());
+							ContentStateController.changeState(contentVersionVO.getId(), ContentVersionVO.WORKING_STATE, "new working version", false, this.getInfoGluePrincipal(), contentVersionVO.getContentId(), db, events);
+						}
+					}
+					
+					EventVO eventVO = new EventVO();
+					eventVO.setDescription(this.versionComment);
+					eventVO.setEntityClass(ContentVersion.class.getName());
+					eventVO.setEntityId(contentVersionVO.getContentVersionId());
+					eventVO.setName(contentVersionVO.getContentName() + "(" + contentVersionVO.getLanguageName() + ")");
+					eventVO.setTypeId(EventVO.UNPUBLISH_LATEST);
+					eventVO = EventController.create(eventVO, this.repositoryId, this.getInfoGluePrincipal(), db);
+					events.add(eventVO);
+				}
+			}	
+			
+			if(attemptDirectPublishing.equalsIgnoreCase("true"))
+			{
+			    PublicationVO publicationVO = new PublicationVO();
+			    publicationVO.setName("Direct publication by " + this.getInfoGluePrincipal().getName());
+			    publicationVO.setDescription(getVersionComment());
+			    //publicationVO.setPublisher(this.getInfoGluePrincipal().getName());
+			    publicationVO.setRepositoryId(repositoryId);
+			    publicationVO = PublicationController.getController().createAndPublish(publicationVO, events, this.overrideVersionModifyer, this.getInfoGluePrincipal(), db);
+			}
+			*/
+			
+		    commitTransaction(db);
+        }
+        catch(Exception e)
+        {
+			logger.error("An error occurred so we should not complete the transaction:" + e.getMessage());
+			logger.warn("An error occurred so we should not complete the transaction:" + e.getMessage(), e);
+            rollbackTransaction(db);
+            throw new SystemException(e.getMessage());
+        }
+        finally
 		{
-		    PublicationVO publicationVO = new PublicationVO();
-		    publicationVO.setName("Direct publication by " + this.getInfoGluePrincipal().getName());
-		    publicationVO.setDescription(getVersionComment());
-		    //publicationVO.setPublisher(this.getInfoGluePrincipal().getName());
-		    publicationVO.setRepositoryId(repositoryId);
-		    publicationVO = PublicationController.getController().createAndPublish(publicationVO, events, this.overrideVersionModifyer, this.getInfoGluePrincipal());
+			processBean.setStatus(ProcessBean.FINISHED);
+			processBean.removeProcess();
 		}
-		
+        
        	return "success";
     }
 
@@ -409,5 +501,4 @@ public class UnpublishContentVersionAction extends InfoGlueAbstractAction
 	{
 		this.originalAddress = originalAddress;
 	}
-
 }

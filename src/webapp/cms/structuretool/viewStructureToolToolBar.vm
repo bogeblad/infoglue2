@@ -21,7 +21,8 @@
 		{
 			//alert('url:' + url);
 			if(url.indexOf("ViewListSiteNodeVersion.action") > -1
-			|| url.indexOf("UnpublishSiteNodeVersion!inputChooseSiteNodes.action") > -1)
+			|| url.indexOf("UnpublishSiteNodeVersion!inputChooseSiteNodes.action") > -1
+			|| url.indexOf("UnpublishContentVersion!inputChooseContents.action") > -1)
 			{
 				//alert('$this.getCMSBaseUrl()/InProcessLoading!executeStructure.action');
 				parent.frames["main"].location.href = 'InProcessLoading!executeStructure.action';
@@ -34,8 +35,9 @@
 					var convertedURL = url;
 					convertedURL = convertedURL.replace("ViewListSiteNodeVersion","ViewListSiteNodeVersion!showProcessesAsJSON");
 					convertedURL = convertedURL.replace("UnpublishSiteNodeVersion!inputChooseSiteNodes.action","UnpublishSiteNodeVersion!showProcessesAsJSON.action");
+					convertedURL = convertedURL.replace("UnpublishContentVersion!inputChooseContents.action","UnpublishContentVersion!showProcessesAsJSON.action");
 					parent.frames["main"].showProcessURL(convertedURL);
-				}, 1000);
+				}, 500);
 				
 			}
 			else

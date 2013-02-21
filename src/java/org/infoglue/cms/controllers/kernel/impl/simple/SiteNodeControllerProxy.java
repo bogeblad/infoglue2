@@ -29,6 +29,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.exolab.castor.jdo.Database;
+import org.infoglue.cms.applications.databeans.ProcessBean;
 import org.infoglue.cms.entities.structure.SiteNode;
 import org.infoglue.cms.entities.structure.SiteNodeVO;
 import org.infoglue.cms.exception.Bug;
@@ -214,7 +215,7 @@ public class SiteNodeControllerProxy extends SiteNodeController
 	 * This method moves a content after first checking that the user has rights to edit it.
 	 */
 
-	public void acCopySiteNode(InfoGluePrincipal infogluePrincipal, SiteNodeVO siteNodeVO, Integer newParentSiteNodeId) throws ConstraintException, SystemException, Bug, Exception
+	public void acCopySiteNode(InfoGluePrincipal infogluePrincipal, SiteNodeVO siteNodeVO, Integer newParentSiteNodeId, ProcessBean processBean) throws ConstraintException, SystemException, Bug, Exception
 	{
 		Map hashMap = new HashMap();
 		
@@ -223,7 +224,7 @@ public class SiteNodeControllerProxy extends SiteNodeController
 
 		intercept(hashMap, "SiteNodeVersion.CreateSiteNode", infogluePrincipal);
 
-		copySiteNode(siteNodeVO, newParentSiteNodeId, infogluePrincipal);
+		copySiteNode(siteNodeVO, newParentSiteNodeId, infogluePrincipal, processBean);
 	}   
 
 }

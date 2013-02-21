@@ -956,6 +956,11 @@ public class ViewApplicationStateAction extends InfoGlueAbstractAction
 		if(sessionTimeout == null)
 		    sessionTimeout = "1800";
 		
+		System.out.println("INPUT ENCODING:" + CmsPropertyHandler.getInputCharacterEncoding("iso-88"));
+		System.out.println("INPUT ENCODING:" + CmsPropertyHandler.getInputCharacterEncoding("iso-88", true));
+
+		System.out.println("URLs:" + CmsPropertyHandler.getInternalDeliveryUrls());
+
         states.add(getList("Application started", "" + formatter.formatDate(CmsPropertyHandler.getStartupTime(), "yyyy-MM-dd HH:mm")));
         states.add(getList("Maximum memory (MB)", "" + Runtime.getRuntime().maxMemory() / 1024 / 1024));
         states.add(getList("Used memory (MB)", "" + ((Runtime.getRuntime().totalMemory()- Runtime.getRuntime().freeMemory()) / 1024 / 1024)));

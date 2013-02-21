@@ -51,6 +51,7 @@ import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeTypeDefinitionCon
 import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeVersionController;
 import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeVersionControllerProxy;
 import org.infoglue.cms.entities.content.ContentVO;
+import org.infoglue.cms.entities.content.ContentVersion;
 import org.infoglue.cms.entities.content.ContentVersionVO;
 import org.infoglue.cms.entities.management.AvailableServiceBinding;
 import org.infoglue.cms.entities.management.AvailableServiceBindingVO;
@@ -229,8 +230,8 @@ public class ViewSiteNodeAction extends InfoGlueAbstractAction
 
     		if(!hadMetaInfo)
     		{
-    		    SiteNode siteNode = SiteNodeController.getController().getSiteNodeWithId(this.siteNodeVO.getId(), db);
-    		    SiteNodeController.getController().createSiteNodeMetaInfoContent(db, siteNode, siteNode.getRepository().getId(), this.getInfoGluePrincipal(), null).getValueObject();
+    		    SiteNodeVO siteNode = SiteNodeController.getController().getSiteNodeVOWithId(this.siteNodeVO.getId(), db);
+    		    SiteNodeController.getController().createSiteNodeMetaInfoContent(db, siteNode, siteNode.getRepositoryId(), this.getInfoGluePrincipal(), null, new ArrayList<ContentVersion>()).getValueObject();
     		}
 	    }
 

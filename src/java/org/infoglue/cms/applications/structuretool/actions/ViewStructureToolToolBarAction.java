@@ -442,6 +442,7 @@ public class ViewStructureToolToolBarAction extends InfoGlueAbstractAction
 
 	private ImageButton getCopyMultipleButton() throws Exception
 	{
+		//return new ImageButton(this.getCMSBaseUrl() + "/CopyMultipleSiteNodes!input.action?siteNodeId=" + this.siteNodeId + "&repositoryId=" + this.repositoryId, getLocalizedString(getSession().getLocale(), "images.structuretool.buttons.copyMultipleSiteNodes"), "tool.structuretool.copyMultipleSiteNodes.header");	
 		return new ImageButton(true, "javascript:openPopup('CopyMultipleSiteNodes!input.action?siteNodeId=" + this.siteNodeId + "&repositoryId=" + this.repositoryId + "', 'CopyMultipleSiteNodes', 'width=400,height=640,resizable=no');", getLocalizedString(getSession().getLocale(), "images.structuretool.buttons.copyMultipleSiteNodes"), "tool.structuretool.copyMultipleSiteNodes.header");	
 	}
 

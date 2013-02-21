@@ -2103,12 +2103,12 @@ public class CmsPropertyHandler
 		}
 	    if(properties.size() == 0)
 	    {
-	    	properties.put("å", "a");
-	    	properties.put("ä", "a");
-	    	properties.put("ö", "o");
-	    	properties.put("Å", "A");
-	    	properties.put("Ä", "A");
-	    	properties.put("Ö", "O");
+	    	properties.put("\u00E5", "a");
+	    	properties.put("\u00E4", "a");
+	    	properties.put("\u00F6", "o");
+	    	properties.put("\u00C5", "A");
+	    	properties.put("\u00C4", "A");
+	    	properties.put("\u00D6", "O");
 	    }
 	    
 	    return properties;
