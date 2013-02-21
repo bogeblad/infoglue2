@@ -92,7 +92,6 @@ public class ViewListContentVersionAction extends InfoGlueAbstractAction
 				
 				ceb.throwIfNotEmpty();
 	
-				Set<Integer> contentVersionVOSet = new HashSet<Integer>();
 				RequestAnalyser.getRequestAnalyser().registerComponentStatistics("ViewListContentVersion part 1", t.getElapsedTime());
 				
 				//Set<SiteNodeVersionVO> siteNodeVersionVOList = new HashSet<SiteNodeVersionVO>();

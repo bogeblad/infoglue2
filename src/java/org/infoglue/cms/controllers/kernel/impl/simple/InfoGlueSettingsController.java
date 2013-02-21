@@ -349,10 +349,10 @@ public class InfoGlueSettingsController extends BaseController implements Castor
 		    		while (results.hasMore()) 
 		            {
 		    			GeneralOQLResult resultBean = (GeneralOQLResult)results.next();
-		    			Integer rowNum = resultBean.getId();
+		    			//Integer rowNum = resultBean.getId();
 		    			String contentKey = resultBean.getValue1().replaceAll("content_", "").replaceAll("_initialLanguageId", "");
 		    			String languageId = resultBean.getValue2();
-		    			System.out.println("" + contentKey + "=" + languageId);
+		    			//System.out.println("" + contentKey + "=" + languageId);
 		    			contentInitialLanguageId.put(new Integer(contentKey), languageId);
 		            }   
 	                

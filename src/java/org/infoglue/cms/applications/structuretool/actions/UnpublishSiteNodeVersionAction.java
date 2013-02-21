@@ -183,6 +183,7 @@ public class UnpublishSiteNodeVersionAction extends InfoGlueAbstractAction
 			    ContentVersionVO currentContentVersionVO = (ContentVersionVO)contentVersionVOListIterator.next();
 			    
 				ContentVersionVO latestContentVersionVO = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(currentContentVersionVO.getContentId(), currentContentVersionVO.getLanguageId());
+				ContentVO contentVO = ContentController.getContentController().getContentVOWithId(currentContentVersionVO.getContentId());
 				if(currentContentVersionVO.getId().equals(latestContentVersionVO.getId()))
 				{
 					logger.info("Creating a new working version as there was no active working version left...:" + currentContentVersionVO.getLanguageName());
@@ -193,7 +194,7 @@ public class UnpublishSiteNodeVersionAction extends InfoGlueAbstractAction
 				versionEventVO.setDescription(this.versionComment);
 				versionEventVO.setEntityClass(ContentVersion.class.getName());
 				versionEventVO.setEntityId(currentContentVersionVO.getId());
-				versionEventVO.setName(currentContentVersionVO.getContentName());
+				versionEventVO.setName(contentVO.getName());
 				versionEventVO.setTypeId(EventVO.UNPUBLISH_LATEST);
 				versionEventVO = EventController.create(versionEventVO, this.repositoryId, this.getInfoGluePrincipal());
 				events.add(versionEventVO);			    

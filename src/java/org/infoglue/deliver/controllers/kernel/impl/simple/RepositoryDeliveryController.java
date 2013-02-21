@@ -181,9 +181,6 @@ public class RepositoryDeliveryController extends BaseDeliveryController
         	RepositoryVO repositoryVO = (RepositoryVO) repositoriesIterator.next();
             logger.info("repository:" + repositoryVO.getDnsName());
             
-        	if(repositoryVO.getName().equalsIgnoreCase("GU Medarbetarportal2"))
-        		debug = true;
-
             String fullDnsNames = repositoryVO.getDnsName();
 
             String workingPath = null;
@@ -205,6 +202,7 @@ public class RepositoryDeliveryController extends BaseDeliveryController
 	            	livePath = livePath.substring(0, livePathEndIndex);
             }
             
+            /*
             if(debug)
             	t.printElapsedTime("Before");
             try
@@ -234,7 +232,8 @@ public class RepositoryDeliveryController extends BaseDeliveryController
 			}
             if(debug)
             	t.printElapsedTime("After: " + url);
-		    
+		    */
+            
             if(CmsPropertyHandler.getOperatingMode().equals("0"))
             {
             	String workingPathAlternative1 = workingPath;
@@ -258,16 +257,6 @@ public class RepositoryDeliveryController extends BaseDeliveryController
 	            String livePathAlternative2 = livePath;
 	            if(livePathAlternative2 != null)
 	            	livePathAlternative2 = URLEncoder.encode(livePathAlternative2, (niceURIEncoding.indexOf("8859") > -1 ? "utf-8" : "iso-8859-1")).replaceAll("\\+", "%20");
-	            
-	            /*
-	            if(debug)
-	            {
-	            	System.out.println("url:" + url);
-	            	System.out.println("livePath:" + livePath);
-	            	System.out.println("livePathAlternative1:" + livePathAlternative1);
-	            	System.out.println("livePathAlternative2" + livePathAlternative2);
-	            }
-	            */
 	            
 	            if(livePath != null && url.indexOf(livePath) == -1 && url.indexOf(livePathAlternative1) == -1 && url.indexOf(livePathAlternative2) == -1)
 	            {
@@ -338,7 +327,7 @@ public class RepositoryDeliveryController extends BaseDeliveryController
             	        logger.info("Has to check repositoryName also:" + repositoryVO.getName() + "=" + repositoryName + "=" + serverName);
                         if(repositoryVO.getName().equalsIgnoreCase(repositoryName))
                         {
-                	        logger.warn("Adding 1:" + repositoryVO.getName() + "=" + repositoryName);
+                	        logger.info("Adding 1:" + repositoryVO.getName() + "=" + repositoryName);
                         	repositories.add(repositoryVO);
                         }
             	    }
@@ -348,8 +337,8 @@ public class RepositoryDeliveryController extends BaseDeliveryController
             	    	logger.info("serverName:" + serverName);
                     	if(dnsName.startsWith(serverName))
                 	    {
-                	        //logger.warn("Adding 2:" + repositoryVO.getName() + "=" + repositoryName + "=" + serverName);
-                        	repositories.add(repositoryVO);
+                    		logger.info("Adding 2:" + repositoryVO.getName() + "=" + repositoryName + "=" + serverName);
+                           	repositories.add(repositoryVO);
                 	    }
                 	    /*
             	        logger.warn("Adding 2:" + repositoryVO.getName() + "=" + repositoryName);

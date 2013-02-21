@@ -432,7 +432,6 @@ public class ContentDeliveryController extends BaseDeliveryController
 		
 		//MediumContentImpl content = (MediumContentImpl)getObjectWithId(MediumContentImpl.class, contentId, db);
 		ContentVO content = getContentVO(db, contentId, deliveryContext);
-		//deliveryContext.addDebugInformation("getContentVersionVO() with:" + siteNodeId + ", " + contentId + ", " + languageId);
 		
 		boolean isValidContent = isValidContent(infoGluePrincipal, content, languageId, useLanguageFallback, false, db, deliveryContext);
 		//deliveryContext.addDebugInformation("isValidContent:" + isValidContent);

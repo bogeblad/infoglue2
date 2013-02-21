@@ -606,7 +606,12 @@ public class CmsPropertyHandler
 
 	public static String getContextDiskPath()
 	{
-		return getProperty("contextDiskPath");
+		String contextDiskPath = getProperty("contextDiskPath");
+		
+		if(contextDiskPath == null || contextDiskPath.equals(""))
+			return getContextRootPath();
+		else
+			return contextDiskPath;
 	}
 	
 	public static String getOperatingMode()

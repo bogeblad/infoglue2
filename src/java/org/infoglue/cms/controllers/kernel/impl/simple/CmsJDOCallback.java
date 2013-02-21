@@ -128,7 +128,7 @@ public class CmsJDOCallback implements CallbackInterceptor
 
     public void storing(Object object, boolean modified) throws Exception
     {
-    	if(object.getClass().getName().indexOf(".DigitalAssetImpl") > -1)
+    	if(object.getClass().getName().indexOf("Impl") > -1)
     	{
     		logger.error("storing " + object.getClass().getName());
     		//Thread.dumpStack();
@@ -258,7 +258,11 @@ public class CmsJDOCallback implements CallbackInterceptor
 
 					CacheController.clearCacheForGroup("registryCache", "" + ("org.infoglue.cms.entities.content.ContentVersion_" + getObjectIdentity(object)).hashCode());						
 
+					//CacheController.clearCacheForGroup("childContentCache", "content_" + contentVersion.getOwningContent().getId());
 					CacheController.clearCacheForGroup("childContentCache", "content_" + contentVersion.getOwningContent().getId());
+					if(contentVersion.getOwningContent().getValueObject().getParentContentId() != null)
+						CacheController.clearCacheForGroup("childContentCache", "content_" + contentVersion.getOwningContent().getValueObject().getParentContentId());					
+
 					CacheController.clearCacheForGroup("contentVersionCache", "content_" + contentVersion.getOwningContent().getId());
 					CacheController.clearCacheForGroup("contentVersionCache", "contentVersion_" + contentVersion.getId());
 				}
@@ -288,7 +292,10 @@ public class CmsJDOCallback implements CallbackInterceptor
 
 					CacheController.clearCacheForGroup("registryCache", "" + ("org.infoglue.cms.entities.content.ContentVersion_" + getObjectIdentity(object)).hashCode());						
 
-					CacheController.clearCacheForGroup("childContentCache", "content_" + contentVersion.getContentId());
+					CacheController.clearCacheForGroup("childContentCache", "content_" + contentVO.getId());
+					if(contentVO.getParentContentId() != null)
+						CacheController.clearCacheForGroup("childContentCache", "content_" + contentVO.getParentContentId());					
+
 					CacheController.clearCacheForGroup("contentVersionCache", "content_" + contentVersion.getContentId());
 					CacheController.clearCacheForGroup("contentVersionCache", "contentVersion_" + contentVersion.getId());
 				}
@@ -551,7 +558,7 @@ public class CmsJDOCallback implements CallbackInterceptor
 
     public void created(Object object) throws Exception
     {
-    	if(object.getClass().getName().indexOf(".DigitalAssetImpl") > -1)
+    	if(object.getClass().getName().indexOf("ContentImpl") > -1)
     	{
     		logger.error("created " + object.getClass().getName());
     		//Thread.dumpStack();
@@ -638,11 +645,39 @@ public class CmsJDOCallback implements CallbackInterceptor
 			}
 			else if(object.getClass().getName().equals(ContentImpl.class.getName()))
 			{
-				//CacheController.clearCache("childContentCache");
+				try
+				{
+					ContentImpl content = (ContentImpl)object;
+					CacheController.clearCacheForGroup("childContentCache", "content_" + content.getId());
+					if(content.getValueObject().getParentContentId() != null)
+						CacheController.clearCacheForGroup("childContentCache", "content_" + content.getValueObject().getParentContentId());					
+				}
+				catch (Exception e) 
+				{
+					logger.warn("Error in JDOCallback:" + e.getMessage(), e);
+				}
 				
 				clearCache(SmallContentImpl.class);
 				clearCache(SmallishContentImpl.class);
 				clearCache(MediumContentImpl.class);
+			}
+			else if(object.getClass().getName().equals(MediumContentImpl.class.getName()))
+			{
+				try
+				{
+					MediumContentImpl content = (MediumContentImpl)object;
+					CacheController.clearCacheForGroup("childContentCache", "content_" + content.getId());
+					if(content.getValueObject().getParentContentId() != null)
+						CacheController.clearCacheForGroup("childContentCache", "content_" + content.getValueObject().getParentContentId());					
+				}
+				catch (Exception e) 
+				{
+					logger.warn("Error in JDOCallback:" + e.getMessage(), e);
+				}
+				
+				clearCache(SmallContentImpl.class);
+				clearCache(SmallishContentImpl.class);
+				clearCache(ContentImpl.class);
 			}
 			else if(object.getClass().getName().equals(ContentVersionImpl.class.getName()))
 			{

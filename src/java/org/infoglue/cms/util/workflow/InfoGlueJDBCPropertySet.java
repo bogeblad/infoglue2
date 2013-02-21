@@ -150,7 +150,6 @@ public class InfoGlueJDBCPropertySet extends JDBCPropertySet
             PreparedStatement ps = null;
             //String sql = "SELECT " + colItemKey + "," + colItemType + ", " + colString + ", " + colDate + ", " + colData + ", " + colFloat + ", " + colNumber + " FROM " + tableName + " WHERE " + colItemKey + " LIKE ? AND " + colGlobalKey + " = ?";
 
-            //System.out.println("Type:" + type);
         	String sql = "SELECT " + colItemKey + "," + colItemType + ", " + colString + ", " + colDate + ", " + colData + ", " + colFloat + ", " + colNumber + " FROM " + tableName;
             if(type != 10)
             {
@@ -471,8 +470,8 @@ public class InfoGlueJDBCPropertySet extends JDBCPropertySet
         {
             conn = getConnection();
             
-            System.out.println("globalKey:" + globalKey);
-            System.out.println("key:" + key);
+            //System.out.println("globalKey:" + globalKey);
+            //System.out.println("key:" + key);
             String sql = "SELECT " + colItemType + " FROM " + tableName + " WHERE " + colGlobalKey + " = ? AND " + colItemKey + " = ?";
             PreparedStatement ps = conn.prepareStatement(sql);
             ps.setString(1, globalKey);
@@ -694,8 +693,20 @@ public class InfoGlueJDBCPropertySet extends JDBCPropertySet
 		    			   key.indexOf("protectedProtocolPort") > -1 ||
 		    			   key.indexOf("componentRendererAction") > -1 ||
 		    			   key.indexOf("componentRendererUrl") > -1 ||
+		    			   key.indexOf("encodeValidateUrl") > -1 ||
+		    			   key.indexOf("encodeCasServiceUrl") > -1 ||
+		    			   key.indexOf("helpUrl") > -1 ||
+		    			   key.indexOf("headerHTML") > -1 ||
+		    			   key.indexOf("tree") > -1 ||
+		    			   key.indexOf("authorizerClass") > -1 ||
+    					   key.indexOf("invalidLoginUrl") > -1 ||
+						   key.indexOf("successLoginBaseUrl") > -1 ||
+						   key.indexOf("serverName") > -1 ||
+						   key.indexOf("casRenew") > -1 ||
+						   key.indexOf("casProxyValidateUrl") > -1 ||
+						   key.indexOf("authConstraint") > -1 ||
 		    			   key.indexOf("session.timeout") > -1
-		    			   )
+			    			)
 		    			{
 		    				logger.info("Returning null!!!!!!!!!:" + key);
 		    				return null;
@@ -1145,7 +1156,7 @@ public class InfoGlueJDBCPropertySet extends JDBCPropertySet
 		Properties properties = new Properties();
 		properties.put("user", userName);
 		properties.put("password", password);
-		//properties.put("defaultRowPrefetch","500");
+		properties.put("defaultRowPrefetch","1000");
 
         connectionFactory = new DriverManagerConnectionFactory(connectURI, properties /*userName, password*/);
         poolableConnectionFactory = new PoolableConnectionFactory(connectionFactory,connectionPool,null,validationQuery,false,true);
