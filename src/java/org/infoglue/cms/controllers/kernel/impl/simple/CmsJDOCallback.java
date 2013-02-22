@@ -112,7 +112,7 @@ public class CmsJDOCallback implements CallbackInterceptor
 
     public Class loaded(Object object, short accessMode) throws Exception
     {
-    	if(object.getClass().getName().indexOf(".DigitalAssetImpl") > -1)
+    	if(object.getClass().getName().indexOf(".ContentVersionImpl") > -1 || object.getClass().getName().indexOf(".ContentImpl") > -1)
     	{
     		logger.error("Loaded " + object.getClass().getName() + " accessMode:" + accessMode);
     		//Thread.dumpStack();
@@ -128,10 +128,10 @@ public class CmsJDOCallback implements CallbackInterceptor
 
     public void storing(Object object, boolean modified) throws Exception
     {
-    	if(object.getClass().getName().indexOf("Impl") > -1)
+    	if(object.getClass().getName().indexOf(".ContentVersionImpl") > -1 || object.getClass().getName().indexOf(".ContentImpl") > -1)
     	{
     		logger.error("storing " + object.getClass().getName());
-    		//Thread.dumpStack();
+    		Thread.dumpStack();
     	}
 
 		//logger.error("storing...:" + object + ":" + modified);
@@ -238,6 +238,25 @@ public class CmsJDOCallback implements CallbackInterceptor
 					CacheController.clearCacheForGroup("childContentCache", "content_" + content.getId());
 					if(content.getParentContent() != null)
 						CacheController.clearCacheForGroup("childContentCache", "content_" + content.getParentContent().getId());					
+				}
+				catch (Exception e) 
+				{
+					logger.warn("Error in JDOCallback:" + e.getMessage(), e);
+				}
+			}
+			else if(object.getClass().getName().equals(MediumContentImpl.class.getName()))
+			{
+				clearCache(SmallContentImpl.class);
+				clearCache(SmallishContentImpl.class);
+				clearCache(ContentImpl.class);
+
+				//CacheController.clearCache("childContentCache");
+				try
+				{
+					MediumContentImpl content = (MediumContentImpl)object;
+					CacheController.clearCacheForGroup("contentCache", "content_" + content.getId());
+					CacheController.clearCacheForGroup("contentVersionCache", "content_" + content.getId());
+					CacheController.clearCache("childContentCache");
 				}
 				catch (Exception e) 
 				{
@@ -558,10 +577,10 @@ public class CmsJDOCallback implements CallbackInterceptor
 
     public void created(Object object) throws Exception
     {
-    	if(object.getClass().getName().indexOf("ContentImpl") > -1)
+    	if(object.getClass().getName().indexOf(".ContentVersionImpl") > -1)
     	{
     		logger.error("created " + object.getClass().getName());
-    		//Thread.dumpStack();
+    		Thread.dumpStack();
     	}
 
         // ( (Persistent) object ).jdoAfterCreate();

@@ -970,6 +970,45 @@ public class ContentVersionController extends BaseController
 		return contentVersion;
 	}
 
+   	/**
+	 * This method returns the latest active content version.
+	 */
+    
+	public ContentVersion getLatestActiveMediumContentVersion(Integer contentId, Integer languageId, Database db) throws SystemException, Bug, Exception
+	{
+		ContentVersion contentVersion = null;
+		
+		Content content = ContentController.getContentController().getMediumContentWithId(contentId, db);
+		Collection contentVersions = content.getContentVersions();
+		if(logger.isInfoEnabled())
+    	{
+	    	logger.info("contentId:" + contentId);
+	    	logger.info("languageId:" + languageId);
+	    	logger.info("content:" + content.getName());
+			logger.info("contentVersions:" + contentVersions.size());
+    	}
+    	
+		Iterator i = contentVersions.iterator();
+        while(i.hasNext())
+		{
+			ContentVersion currentContentVersion = (ContentVersion)i.next();
+			if(logger.isInfoEnabled())
+				logger.info("found one candidate:" + currentContentVersion.getValueObject());
+			if(contentVersion == null || (currentContentVersion.getId().intValue() > contentVersion.getId().intValue()))
+			{
+				if(logger.isInfoEnabled())
+				{
+					logger.info("currentContentVersion:" + currentContentVersion.getIsActive());
+					logger.info("currentContentVersion:" + currentContentVersion.getLanguage().getId());
+				}
+				if(currentContentVersion.getIsActive().booleanValue() &&  currentContentVersion.getValueObject().getLanguageId().intValue() == languageId.intValue())
+					contentVersion = currentContentVersion;
+			}
+		}
+
+		return contentVersion;
+	}
+
 	
    	/**
 	 * This method returns the latest active content version.
@@ -1209,7 +1248,7 @@ public class ContentVersionController extends BaseController
     {
     	return create(contentId, languageId, contentVersionVO, oldContentVersionId, true, true, db);
     }
-	
+
     
 	/**
 	 * This method created a new contentVersion in the database. It also updates the owning content
@@ -1219,7 +1258,7 @@ public class ContentVersionController extends BaseController
     {
     	return create(contentId, languageId, contentVersionVO, oldContentVersionId, allowBrokenAssets, duplicateAssets, null, db);
     }
-    
+
     public ContentVersion create(Integer contentId, Integer languageId, ContentVersionVO contentVersionVO, Integer oldContentVersionId, boolean allowBrokenAssets, boolean duplicateAssets, Integer excludedAssetId, Database db) throws ConstraintException, SystemException, Exception
     {
 		Content content   = ContentController.getContentController().getContentWithId(contentId, db);

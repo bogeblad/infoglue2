@@ -253,7 +253,8 @@ public class ContentFactory
 	    	}
 	    	
 			final Content content = ContentControllerProxy.getContentController().create(db, parentContent.getId(), contentTypeDefinitionVO.getId(), parentContent.getRepositoryId(), contentVO);
-			final ContentVersion newContentVersion = ContentVersionController.getContentVersionController().create(content.getId(), language.getId(), contentVersionVO, null, db);
+			final ContentVersion newContentVersion = ContentVersionController.getContentVersionController().createMedium(content.getId(), language.getId(), contentVersionVO, db);
+			//final ContentVersion newContentVersion = ContentVersionController.getContentVersionController().create(content.getId(), language.getId(), contentVersionVO, null, db);
 			createCategories(newContentVersion, categories);
 			
 			if(logger.isDebugEnabled())
@@ -284,9 +285,12 @@ public class ContentFactory
 	{
 		try 
 		{
-			final Content content = ContentControllerProxy.getContentController().getContentWithId(contentVO.getId(), db);
+			//final Content content = ContentControllerProxy.getContentController().getContentWithId(contentVO.getId(), db);
+			final Content content = ContentControllerProxy.getContentController().getMediumContentWithId(contentVO.getId(), db);
 			content.setValueObject(contentVO);
-			final ContentVersion contentVersion = ContentVersionController.getContentVersionController().getLatestActiveContentVersion(content.getId(), language.getId(), db);
+			//final ContentVersion contentVersion = ContentVersionController.getContentVersionController().getLatestActiveContentVersion(content.getId(), language.getId(), db);
+			final ContentVersion contentVersion = ContentVersionController.getContentVersionController().getLatestActiveMediumContentVersion(content.getId(), language.getId(), db);
+			System.out.println("contentVersion for " + contentVO.getId() + ":" + language.getId() + ":" + contentVersion);
 			if(contentVersion != null)
 			{
 				contentVersion.getValueObject().setVersionValue(contentVersionVO.getVersionValue());
@@ -295,7 +299,8 @@ public class ContentFactory
 			}
 			else
 			{
-				final ContentVersion newContentVersion = ContentVersionController.getContentVersionController().create(content.getId(), language.getId(), contentVersionVO, null, db);
+				final ContentVersion newContentVersion = ContentVersionController.getContentVersionController().createMedium(content.getId(), language.getId(), contentVersionVO, db);
+				//final ContentVersion newContentVersion = ContentVersionController.getContentVersionController().create(content.getId(), language.getId(), contentVersionVO, null, db);
 				createCategories(newContentVersion, categories);
 			}
 			
@@ -350,7 +355,7 @@ public class ContentFactory
 	private void createCategory(final ContentVersion contentVersion, final String attributeName, final List categoryVOs) throws Exception 
 	{
 		final List categories = categoryVOListToCategoryList(categoryVOs);
-		ContentCategoryController.getController().create(categories, contentVersion, attributeName, db);
+		ContentCategoryController.getController().createMedium(categories, contentVersion, attributeName, db);
 	}
 
 	/**

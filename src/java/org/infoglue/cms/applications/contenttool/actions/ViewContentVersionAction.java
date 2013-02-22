@@ -1437,7 +1437,9 @@ public class ViewContentVersionAction extends InfoGlueAbstractAction
 		try
 		{
 			if(this.contentVersionVO != null && this.contentVersionVO.getContentVersionId() != null)
+			{
 				return contentCategoryController.findByContentVersionAttribute(attribute, contentVersionVO.getContentVersionId());
+			}
 		}
 		catch(Exception e)
 		{

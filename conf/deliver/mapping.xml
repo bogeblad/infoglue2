@@ -1280,7 +1280,7 @@
     <field name="parentContentId" type="java.lang.Integer">
       <sql name="parentContentId" type="integer"/>
     </field>
-    <field name="contentVersions" type="org.infoglue.cms.entities.content.impl.simple.ContentVersionImpl" lazy="true" collection="collection">
+    <field name="contentVersions" type="org.infoglue.cms.entities.content.impl.simple.MediumContentVersionImpl" lazy="true" collection="collection">
       <sql many-key="contentId"/>
     </field>
   </class>

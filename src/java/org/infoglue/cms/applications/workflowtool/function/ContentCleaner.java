@@ -46,7 +46,7 @@ public class ContentCleaner extends ContentFunction
 		{
 			if(getContentVO() != null)
 			{
-				Content content = ContentController.getContentController().getContentWithId(getContentVO().getId(), getDatabase());
+				Content content = ContentController.getContentController().getMediumContentWithId(getContentVO().getId(), getDatabase());
 				Collection versions = content.getContentVersions();
 				boolean hasPublishedVersion = false;
 				Iterator versionsIterator = versions.iterator();

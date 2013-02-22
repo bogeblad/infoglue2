@@ -344,7 +344,8 @@ public class ContentStateController extends BaseController
 	{
 		//if(originalContentVersion.getContentCategories().size() > 0)
 		//{
-			List orignals = contentCategoryController.findByContentVersion(newContentVersionId, db);
+			List orignals = contentCategoryController.findByContentVersion(originalContentVersion, db);
+			logger.info("orignals:" + orignals.size() + " on " + originalContentVersion);
 			for (Iterator iter = orignals.iterator(); iter.hasNext();)
 			{
 				ContentCategory contentCategory = (ContentCategory)iter.next();

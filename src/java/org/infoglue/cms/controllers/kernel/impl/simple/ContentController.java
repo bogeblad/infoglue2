@@ -351,11 +351,16 @@ public class ContentController extends BaseController
 		return (Content) getObjectWithIdAsReadOnly(ContentImpl.class, contentId, db);
     }
 
+    public Content getMediumContentWithId(Integer contentId, Database db) throws SystemException, Bug
+    {
+		return (Content) getObjectWithId(MediumContentImpl.class, contentId, db);
+    }
+
     public Content getReadOnlyMediumContentWithId(Integer contentId, Database db) throws SystemException, Bug
     {
 		return (Content) getObjectWithIdAsReadOnly(MediumContentImpl.class, contentId, db);
     }
-    
+
     
     public List getContentVOList() throws SystemException, Bug
     {
@@ -987,9 +992,9 @@ public class ContentController extends BaseController
     {
         ConstraintExceptionBuffer ceb = new ConstraintExceptionBuffer();
 
-        Content content = null;
-		Content newParentContent = null;
-		Content oldParentContent = null;
+        //Content content = null;
+		//Content newParentContent = null;
+		//Content oldParentContent = null;
 
         //Validation that checks the entire object
         contentVO.validate();
@@ -1006,33 +1011,41 @@ public class ContentController extends BaseController
         	throw new ConstraintException("Content.parentContentId", "3301");
         }
 		
-		content          = getContentWithId(contentVO.getContentId(), db);
-        oldParentContent = content.getParentContent();
-        newParentContent = getContentWithId(newParentContentId, db);
+        System.out.println("AAAAAAAAAAA");
+		Content content          = getMediumContentWithId(contentVO.getContentId(), db);
+        //oldParentContent = content.getParentContent();
+        //newParentContent = getContentWithId(newParentContentId, db);
                     
-        if(oldParentContent.getId().intValue() == newParentContentId.intValue())
+		System.out.println(""+content.getValueObject().getParentContentId());
+		System.out.println(""+content.getValueObject().getParentContentId().intValue());
+		System.out.println(""+newParentContentId.intValue());
+        if(content.getValueObject().getParentContentId() == null || content.getValueObject().getParentContentId().intValue() == newParentContentId.intValue())
         {
         	logger.warn("You cannot specify the same folder as it originally was located in......");
         	throw new ConstraintException("Content.parentContentId", "3304");
         }
 
-		Content tempContent = newParentContent.getParentContent();
-		while(tempContent != null)
+		//ContentVO tempContent = newParentContent.getParentContent();
+		ContentVO newParentContentVO = getContentVOWithId(newParentContentId, db);
+		
+		Integer parentContentId = newParentContentVO.getParentContentId();
+		while(parentContentId != null)
 		{
+			ContentVO tempContent = getContentVOWithId(parentContentId, db);
 			if(tempContent.getId().intValue() == content.getId().intValue())
 			{
 				logger.warn("You cannot move the content to a child under it......");
         		throw new ConstraintException("Content.parentContentId", "3302");
 			}
-			tempContent = tempContent.getParentContent();
+			parentContentId = tempContent.getParentContentId();
 		}				            
         
-        oldParentContent.getChildren().remove(content);
-        content.setParentContent((ContentImpl)newParentContent);
-        
-        changeRepositoryRecursive(content, newParentContent.getRepository());
+        //oldParentContent.getChildren().remove(content);
+        //content.setParentContent((ContentImpl)newParentContent);
+        content.getValueObject().setParentContentId(newParentContentId);
+        changeRepositoryRecursive(content, newParentContentVO.getRepositoryId());
         //content.setRepository(newParentContent.getRepository());
-        newParentContent.getChildren().add(content);
+        //newParentContent.getChildren().add(content);
         
         //If any of the validations or setMethods reported an error, we throw them up now before create.
         ceb.throwIfNotEmpty();
@@ -1054,16 +1067,16 @@ public class ContentController extends BaseController
 	 * @param newRepository
 	 */
 
-	private void changeRepositoryRecursive(Content content, Repository newRepository)
+	private void changeRepositoryRecursive(Content content, Integer newRepositoryId)
 	{
-	    if(content.getRepository().getId().intValue() != newRepository.getId().intValue())
+	    if(content.getValueObject().getRepositoryId().intValue() != newRepositoryId.intValue())
 	    {
-		    content.setRepository((RepositoryImpl)newRepository);
+		    content.getValueObject().setRepositoryId(newRepositoryId);
 		    Iterator childContentsIterator = content.getChildren().iterator();
 		    while(childContentsIterator.hasNext())
 		    {
 		        Content childContent = (Content)childContentsIterator.next();
-		        changeRepositoryRecursive(childContent, newRepository);
+		        changeRepositoryRecursive(childContent, newRepositoryId);
 		    }
 	    }
 	}

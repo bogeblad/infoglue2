@@ -20,7 +20,7 @@
  *
  * ===============================================================================
  *
- * $Id: ContentCategoryController.java,v 1.22.2.1.2.3 2012/11/20 07:01:54 mattias Exp $
+ * $Id: ContentCategoryController.java,v 1.22.2.1.2.4 2013/02/22 09:07:46 mattias Exp $
  */
 package org.infoglue.cms.controllers.kernel.impl.simple;
 
@@ -38,6 +38,8 @@ import org.infoglue.cms.entities.content.ContentVersion;
 import org.infoglue.cms.entities.content.ContentVersionVO;
 import org.infoglue.cms.entities.content.impl.simple.ContentCategoryImpl;
 import org.infoglue.cms.entities.content.impl.simple.ContentVersionImpl;
+import org.infoglue.cms.entities.content.impl.simple.MediumContentCategoryImpl;
+import org.infoglue.cms.entities.content.impl.simple.MediumContentVersionImpl;
 import org.infoglue.cms.entities.kernel.BaseEntityVO;
 import org.infoglue.cms.entities.management.Category;
 import org.infoglue.cms.entities.management.CategoryVO;
@@ -65,15 +67,15 @@ public class ContentCategoryController extends BaseController
 	private static final ContentCategoryController instance = new ContentCategoryController();
 
 	private static final String findByContentVersion = new StringBuffer("SELECT c ")
-			.append("FROM org.infoglue.cms.entities.content.impl.simple.ContentCategoryImpl c ")
+			.append("FROM org.infoglue.cms.entities.content.impl.simple.MediumContentCategoryImpl c ")
 			.append("WHERE c.contentVersion.contentVersionId = $1").toString();
-
+/*
 	private static final String findByContentVersionAttribute = new StringBuffer("SELECT c ")
 			.append("FROM org.infoglue.cms.entities.content.impl.simple.ContentCategoryImpl c ")
 			.append("WHERE c.attributeName = $1 ")
 			.append("AND c.contentVersion.contentVersionId = $2")
 			.append("ORDER BY c.category.name").toString();
-
+*/
 	private static final String findByContentVersionAttributeSmall = new StringBuffer("SELECT c ")
 	.append("FROM org.infoglue.cms.entities.content.impl.simple.SmallContentCategoryImpl c ")
 	.append("WHERE c.attributeName = $1 ")
@@ -81,7 +83,7 @@ public class ContentCategoryController extends BaseController
 	.append("ORDER BY c.contentCategoryId").toString();
 
 	private static final String findByCategory = new StringBuffer("SELECT c ")
-			.append("FROM org.infoglue.cms.entities.content.impl.simple.ContentCategoryImpl c ")
+			.append("FROM org.infoglue.cms.entities.content.impl.simple.MediumContentCategoryImpl c ")
 			.append("WHERE c.category.categoryId = $1 ").toString();
 
 	public static ContentCategoryController getController()
@@ -359,8 +361,8 @@ public class ContentCategoryController extends BaseController
 		// TODO: When hibernate comes, just save the VOs and if it has a child VO with an id set
 		// TODO: it is used to make the relationship...ask me for clarification -frank
 		Category category = (Category)getObjectWithId(CategoryImpl.class, c.getCategory().getId(), db);
-		ContentVersion contentVersion = (ContentVersion)getObjectWithId(ContentVersionImpl.class, c.getContentVersionId(), db);
-
+		//ContentVersion contentVersion = (ContentVersion)getObjectWithId(ContentVersionImpl.class, c.getContentVersionId(), db);
+		ContentVersion contentVersion = ContentVersionController.getContentVersionController().getMediumContentVersionWithId(c.getContentVersionId(), db);
 		ContentCategory contentCategory = null;
 		
 		List existingContentCategories = ContentCategoryController.getController().findByContentVersionAttribute(c.getAttributeName(), contentVersion.getContentVersionId(), db);
@@ -382,10 +384,10 @@ public class ContentCategoryController extends BaseController
 		{
 			logger.info("Creating the category " + category.getName() + " as it was not set on this version");
 	
-			contentCategory = new ContentCategoryImpl();
+			contentCategory = new MediumContentCategoryImpl();
 			contentCategory.setValueObject(c);
 			contentCategory.setCategory((CategoryImpl)category);
-			contentCategory.setContentVersion((ContentVersionImpl)contentVersion);
+			contentCategory.setContentVersion((MediumContentVersionImpl)contentVersion);
 			db.create(contentCategory);
 			contentVersion.getContentCategories().add(contentCategory);
 		}
@@ -505,6 +507,55 @@ public class ContentCategoryController extends BaseController
 		
 		return contentCategoryList;
 	}
+	
+	/**
+	 * Creates a number of ContentCategories from a list of categories and a contentVersion.
+	 */
+	
+	public List createMedium(List categoryList, ContentVersion contentVersion, String attributeName, Database db) throws SystemException, Exception
+	{
+		logger.info("Creating categories on " + contentVersion.getId() + " for attributeName:" + attributeName);
+		List contentCategoryList = new ArrayList();
+
+		Iterator categoryListIterator = categoryList.iterator();
+		while(categoryListIterator.hasNext())
+		{
+		    Category category = (Category)categoryListIterator.next();
+		    
+			List existingContentCategories = ContentCategoryController.getController().findByContentVersionAttribute(attributeName, contentVersion.getContentVersionId(), db);
+			boolean exists = false;
+			Iterator existingContentCategoriesIterator = existingContentCategories.iterator();
+			while(existingContentCategoriesIterator.hasNext())
+			{
+				ContentCategory contentCategory = (ContentCategory)existingContentCategoriesIterator.next();
+				if(contentCategory.getCategoryId().equals(category.getId()))
+				{
+					exists = true;
+					logger.info("The category " + category.getName() + " was allready set on this version");
+					break;
+				}
+			}
+			
+			if(!exists)
+			{
+				logger.info("Creating the category " + category.getName() + " as it was not set on this version");
+
+				ContentCategoryVO contentCategoryVO = new ContentCategoryVO();
+			    contentCategoryVO.setAttributeName(attributeName);
+			    contentCategoryVO.setContentVersionId(contentVersion.getId());
+			    ContentCategory contentCategory = createMediumWithDatabase(contentCategoryVO, category, contentVersion, db);
+				contentVersion.getContentCategories().add(contentCategory);
+				    
+				contentCategoryList.add(contentCategory);
+			}
+			else
+			{
+				logger.info("Skipping the category " + category.getName() + " as it was allready set on this version");
+			}
+		}
+		
+		return contentCategoryList;
+	}
 
 	public ContentCategory createWithDatabase(ContentCategoryVO c, Category category, ContentVersion contentVersion, Database db) throws SystemException, PersistenceException
 	{
@@ -512,6 +563,16 @@ public class ContentCategoryController extends BaseController
 		contentCategory.setValueObject(c);
 		contentCategory.setCategory((CategoryImpl)category);
 		contentCategory.setContentVersion((ContentVersionImpl)contentVersion);
+		db.create(contentCategory);
+		return contentCategory;
+	}
+
+	public ContentCategory createMediumWithDatabase(ContentCategoryVO c, Category category, ContentVersion contentVersion, Database db) throws SystemException, PersistenceException
+	{
+		ContentCategory contentCategory = new MediumContentCategoryImpl();
+		contentCategory.setValueObject(c);
+		contentCategory.setCategory((CategoryImpl)category);
+		contentCategory.setContentVersion((MediumContentVersionImpl)contentVersion);
 		db.create(contentCategory);
 		return contentCategory;
 	}
