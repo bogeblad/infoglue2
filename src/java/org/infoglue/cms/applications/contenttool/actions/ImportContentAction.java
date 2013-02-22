@@ -256,7 +256,8 @@ public class ImportContentAction extends InfoGlueAbstractAction
 			
 			List<CategoryVO> existingCategories = null;
 			if(parentCategory != null)
-				existingCategories = CategoryController.getController().findByParent(parentCategory.getCategoryId(), db);
+				existingCategories = CategoryController.getController().getActiveByParent(parentCategory.getCategoryId(), db);
+				//existingCategories = CategoryController.getController().findByParent(parentCategory.getCategoryId(), db);
 			else
 				existingCategories = CategoryController.getController().findRootCategoryVOList(db);
 				
