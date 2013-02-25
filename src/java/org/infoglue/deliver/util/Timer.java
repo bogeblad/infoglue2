@@ -72,6 +72,17 @@ public class Timer
 			System.out.println(message + " - Elapsed time since last report: " + elapsedTime);
 		}
 	}
+	
+	public void printElapsedTime(String message, int minimumTimeToPrint)
+	{
+		if(this.isActive)
+		{
+			elapsedTime = System.currentTimeMillis() - lastPrintTime;
+			lastPrintTime = System.currentTimeMillis();
+			if(elapsedTime > minimumTimeToPrint)
+				System.out.println(message + " - Elapsed time since last report: " + elapsedTime);
+		}
+	}
 
 	public void printElapsedTimeNano(String message)
 	{

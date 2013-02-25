@@ -144,7 +144,8 @@ public class WorkingPublicationThread extends Thread
 				    String objectId = cacheEvictionBean.getObjectId();
 				    String objectName = cacheEvictionBean.getObjectName();
 					String typeId = cacheEvictionBean.getTypeId();
-					String changedAttributeNames = cacheEvictionBean.getChangedAttributeNames();
+					Map<String,String> extraInformation = cacheEvictionBean.getExtraInformation();
+					String changedAttributeNames = extraInformation.get("changedAttributeNames");
 				    logger.info("className:" + className);
 					logger.info("objectId:" + objectId);
 					logger.info("objectName:" + objectName);
@@ -411,21 +412,21 @@ public class WorkingPublicationThread extends Thread
 					    for(Map<String,String> igCacheCall : allIGCacheCalls)
 						{
 							logger.info("Calling clear caches with:" + igCacheCall.get("className") + ":" + igCacheCall.get("objectId"));
-							CacheController.clearCaches(igCacheCall.get("className"), igCacheCall.get("objectId"), null);
+							CacheController.clearCaches(igCacheCall.get("className"), igCacheCall.get("objectId"), extraInformation, null);
 
 						    elapsedTime = t.getElapsedTime();
 						    if(elapsedTime > 100)
-						    	logger.warn("Clearing all caches for " + igCacheCall.get("className") + ":" + igCacheCall.get("objectId") + " took");
+						    	logger.warn("Clearing all caches for " + igCacheCall.get("className") + ":" + igCacheCall.get("objectId") + " took " + elapsedTime);
 						}
 					    
 					    if(!skipOriginalEntity)
 					    {
 					    	//System.out.println("" + className + ":" + objectId + ":" + changedAttributeNames);
-						    CacheController.clearCaches(className, objectId, changedAttributeNames, null);
+						    CacheController.clearCaches(className, objectId, extraInformation, null);
 							CacheController.setForcedCacheEvictionMode(true);
 						    elapsedTime = t.getElapsedTime();
 						    if(elapsedTime > 100)
-						    	logger.warn("Clearing all caches for " + className + ":" + objectId + ":" + changedAttributeNames + " took");
+						    	logger.warn("Clearing all caches for " + className + ":" + objectId + ":" + changedAttributeNames + " took " + elapsedTime);
 					    }
 						CacheEvictionBeanListenerService.getService().notifyListeners(cacheEvictionBean);
 					}
