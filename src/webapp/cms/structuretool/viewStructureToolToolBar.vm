@@ -56,6 +56,18 @@
 			this.location.href = '$this.getCMSBaseUrl()/ViewStructureToolToolBar.action?url=' + url + '&title=' + title;
 		}
 		
+		function reloadPage()
+		{
+			var agt=navigator.userAgent.toLowerCase();
+	   	    if(agt.indexOf("safari")!=-1)
+	   	    {
+				parent.frames[3].location.reload();
+	   		}
+	   	    else	
+	   	    {
+	   	   		parent.frames["main"].location.reload();
+	   	    }
+		}
 		
 		//-----------------------------------------------
 		// This function reloads the toolbar above the current 
@@ -147,7 +159,7 @@
 		
 		function enableScrollLayer()
 		{
-			document.getElementById("scroll").style.zIndex = "3000";
+			document.getElementById("scroll").style.zIndex = "2";
 		}
 		
 		function disableScrollLayer()
@@ -184,6 +196,7 @@
 
 		function refreshStructureToolBarAndMenu(context, title, toolbarKey, arguments, unrefreshedNodeId, changeTypeId, newNodeId)
 		{
+			/*
 			//alert("unrefreshedNodeId:" + unrefreshedNodeId);
 			//alert("changeTypeId:" + changeTypeId);
 			//alert("newNodeId:" + newNodeId);
@@ -192,7 +205,6 @@
 		    if(agt.indexOf("safari")!=-1)
 		    {
 				toolbarKey 	= hexcode(toolbarKey);	
-				
 				parent.frames[2].location = context + '/ViewStructureToolToolBar.action?title=' + title + '&toolbarKey=' + toolbarKey + '&' + arguments;
 				
 				if(unrefreshedNodeId > 0)
@@ -206,7 +218,6 @@
 				{
 					toolbarKey 	= hexcode(toolbarKey);	
 					parent.frames["toolbar"].location.href = context + '/ViewStructureToolToolBar.action?title=' + title + '&toolbarKey=' + toolbarKey + '&' + arguments;
-ents;
 					
 					if(unrefreshedNodeId > 0)
 					{
@@ -214,6 +225,7 @@ ents;
 					}
 				}
 		    }
+		    */
 		}
 		
 		function pageLoaded()
@@ -292,15 +304,6 @@ ents;
 </table>
 </div>
 
-<div id="scroll" style="left: 0px; width: 100%; border: 0px solid red; position: absolute; padding: 2px 0px 2px 0px; top: 32px; height: 10px; z-index: 500;">
-	<div style="float: left; z-index: 1000; padding-left: 4px;"">
-	<a href="javascript://" onclick="return false" onmouseover="dw_scrollObj.initScroll('wn','left')" onmouseout="dw_scrollObj.stopScroll('wn')" onmousedown="dw_scrollObj.doubleSpeed('wn')" onmouseup="dw_scrollObj.resetSpeed('wn')"><img src="images/arrowleft.gif" width="5" height="10" alt="Scroll left" border="0"/></a>    
-	</div>
-	<div style="float: right; z-index: 1000; padding-right: 4px;"">
-	<a href="javascript://" onclick="return false" onmouseover="dw_scrollObj.initScroll('wn','right')" onmouseout="dw_scrollObj.stopScroll('wn')" onmousedown="dw_scrollObj.doubleSpeed('wn')" onmouseup="dw_scrollObj.resetSpeed('wn')"><img src="images/arrowright.gif" width="5" height="10" alt="Scroll right" border="0"/></a>
-	</div>
-</div>
-
 <!-- This is the toolbar --->
 <div id="hold" style="left: 0px; border: 0px solid blue; position: absolute; padding: 0px 0px 0px 0px; top: 1px; height: 44px;">
 <div id="wn" style="float: left; margin: 0px; padding: 0px;">
@@ -377,13 +380,13 @@ ents;
 </div>
 
 <!-- This is the headline --->
-<div style="LEFT:0px; RIGHT:0px; position:absolute; TOP:32px; BOTTOM:1px; visibility:visible; z-index:0">
+<div style="LEFT:0px; RIGHT:0px; position:absolute; TOP:32px; BOTTOM:1px; visibility:visible; z-index:2">
 <table cellpadding="0" cellspacing="0" border="0" width="100%">
 <tr>
 	<td colspan="3" bgcolor="FFFFFF"><img src="images/trans.gif" width="1" height="1"></td>
 </tr>
 <tr>
-	<td class="actionheader"><div class="leftmarginalized">#if($title != "tool.structuretool.siteNodeComponentsHeader")$ui.getString($title) - #else<div id="loading" style="display: inline;">$ui.getString("tool.common.loading.label") <img src='images/loaderHorisontal.gif' height="10"/> </div>#end $!siteNodeVO.name $!stateDescription</div></td>
+	<td class="actionheader"><div style="position: absolute; top: 8px; left: 5px;"><a href="javascript://" onclick="return false" onmouseover="dw_scrollObj.initScroll('wn','left')" onmouseout="dw_scrollObj.stopScroll('wn')" onmousedown="dw_scrollObj.doubleSpeed('wn')" onmouseup="dw_scrollObj.resetSpeed('wn')"><img src="images/arrowleft.gif" width="5" height="10" alt="Scroll left" border="0"/></a></div><div class="leftmarginalized" style="height: 20px; z-index:2;">#if($title != "tool.structuretool.siteNodeComponentsHeader")$ui.getString($title) - #else<div id="loading" style="display: inline;">$ui.getString("tool.common.loading.label") <img src='images/loaderHorisontal.gif' height="10"/> </div>#end $!siteNodeVO.name $!stateDescription #if($title == "tool.structuretool.siteNodeComponentsHeader")<a href="javascript:reloadPage();"><img src="images/refresh.gif"/></a>#end</div><div style="position: absolute; top: 8px; right: 5px;"><a href="javascript://" onclick="return false" onmouseover="dw_scrollObj.initScroll('wn','right')" onmouseout="dw_scrollObj.stopScroll('wn')" onmousedown="dw_scrollObj.doubleSpeed('wn')" onmouseup="dw_scrollObj.resetSpeed('wn')"><img src="images/arrowright.gif" width="5" height="10" alt="Scroll right" border="0"/></a></div></td>
 </tr>
 <tr class="lightgreen">
 	<td colspan="3" height="1"><img src="images/trans.gif" width="1" height="1"></td>
