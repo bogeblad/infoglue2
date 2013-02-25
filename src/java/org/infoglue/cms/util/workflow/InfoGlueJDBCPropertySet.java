@@ -733,7 +733,7 @@ public class InfoGlueJDBCPropertySet extends JDBCPropertySet
 		    }
 	    }
 
-    	System.out.println("Getting value for key:" + key + ":" + type);
+    	//System.out.println("Getting value for key:" + key + ":" + type);
     	/*
 		if(key.equalsIgnoreCase("serverNode_-1_logPath"))
 		{
@@ -777,9 +777,9 @@ public class InfoGlueJDBCPropertySet extends JDBCPropertySet
         if(type == 0 || type == 5)
         	sql = "SELECT " + colItemType + ", " + colString + ", " + colDate + ", '' AS " + colData + ", " + colFloat + ", " + colNumber + " FROM " + tableName + " WHERE " + colItemKey + " = ? AND " + colGlobalKey + " = ?";
 
-        System.out.println("sql:" + sql);
-        System.out.println("key:" + key);
-        System.out.println("globalKey:" + globalKey);
+        //System.out.println("sql:" + sql);
+        //System.out.println("key:" + key);
+        //System.out.println("globalKey:" + globalKey);
 
 		//Thread.dumpStack();
 
@@ -896,7 +896,7 @@ public class InfoGlueJDBCPropertySet extends JDBCPropertySet
     		//if(key.indexOf("error") > -1)
     		//	System.out.println("o1:" + o);	
             
-            t.printElapsedTime("Read took + " + type + "=" + o);
+            //t.printElapsedTime("Read took + " + type + "=" + o);
         } 
         catch (SQLException e) 
         {

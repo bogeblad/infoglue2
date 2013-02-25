@@ -1328,15 +1328,29 @@ public class ContentController extends BaseController
     		Timer t = new Timer();
     		HashMap argument = (HashMap)i.next();
     		String contentTypeDefinitionName = (String)argument.get("contentTypeDefinitionName");
+    		Integer ctdId = -1;
+    		if(contentTypeDefinitionName != null && !contentTypeDefinitionName.equals(""))
+    		{
+    			ContentTypeDefinitionVO ctdVO = ContentTypeDefinitionController.getController().getContentTypeDefinitionVOWithName(contentTypeDefinitionName, db);
+    			ctdId = ctdVO.getId();
+    		}
     		OQLQuery oql = null;
+/*
     		if(CmsPropertyHandler.getUseShortTableNames().equals("true"))
 				oql = db.getOQLQuery("CALL SQL SELECT c.contId, c.name, c.publishDateTime, c.expireDateTime, c.isBranch, c.isProtected, c.creator, ctd.contentTypeDefId, c.repositoryId, c.parentContId FROM cmCont c, cmContentTypeDef ctd, cmRepository r where c.repositoryId = r.repositoryId AND c.contentTypeDefId = ctd.contentTypeDefId AND ctd.name = $1 AS org.infoglue.cms.entities.content.impl.simple.SmallContentImpl");
 			else
 				oql = db.getOQLQuery("CALL SQL SELECT c.contentId, c.name, c.publishDateTime, c.expireDateTime, c.isBranch, c.isProtected, c.creator, ctd.contentTypeDefinitionId, c.repositoryId, c.parentContentId FROM cmContent c, cmContentTypeDefinition ctd, cmRepository r where c.repositoryId = r.repositoryId AND c.contentTypeDefinitionId = ctd.contentTypeDefinitionId AND ctd.name = $1 AS org.infoglue.cms.entities.content.impl.simple.SmallContentImpl");
+*/
+    		if(CmsPropertyHandler.getUseShortTableNames().equals("true"))
+				oql = db.getOQLQuery("CALL SQL SELECT c.contId, c.name, c.publishDateTime, c.expireDateTime, c.isBranch, c.isProtected, c.creator, c.contentTypeDefId, c.repositoryId, c.parentContId FROM cmCont c where c.contentTypeDefId = $1 AS org.infoglue.cms.entities.content.impl.simple.SmallContentImpl");
+			else
+				oql = db.getOQLQuery("CALL SQL SELECT c.contentId, c.name, c.publishDateTime, c.expireDateTime, c.isBranch, c.isProtected, c.creator, c.contentTypeDefinitionId, c.repositoryId, c.parentContentId FROM cmContent c where c.contentTypeDefinitionId = $1 AS org.infoglue.cms.entities.content.impl.simple.SmallContentImpl");
 
     		//OQLQuery oql = db.getOQLQuery("CALL SQL SELECT contentId, name FROM cmContent c, cmContentTypeDefinition ctd WHERE c.contentTypeDefinitionId = ctd.contentTypeDefinitionId AND ctd.name = $1 AS org.infoglue.cms.entities.content.impl.simple.ContentImpl");
     		//OQLQuery oql = db.getOQLQuery("SELECT c FROM org.infoglue.cms.entities.content.impl.simple.MediumContentImpl c WHERE c.contentTypeDefinition.name = $1 ORDER BY c.contentId");
-        	oql.bind(contentTypeDefinitionName);
+        	//oql.bind(contentTypeDefinitionName);
+        	oql.bind(ctdId);
+        	
         	QueryResults results = oql.execute(Database.ReadOnly);
         	if(logger.isInfoEnabled())
         		t.printElapsedTime("Query for " + contentTypeDefinitionName);

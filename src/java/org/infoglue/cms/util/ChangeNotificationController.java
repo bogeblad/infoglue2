@@ -95,7 +95,7 @@ public class ChangeNotificationController
 
 		int sendSize = 0;
 		Iterator iterator = list.getList().iterator();
-		while(iterator.hasNext() && sendSize < 10)
+		while(iterator.hasNext() && sendSize < 30)
 		{
         	NotificationMessage notificationMessage = (NotificationMessage)iterator.next();
 			if(notificationMessage.getType() == NotificationMessage.PUBLISHING || notificationMessage.getType() == NotificationMessage.UNPUBLISHING || notificationMessage.getType() == NotificationMessage.SYSTEM)
@@ -193,7 +193,6 @@ public class ChangeNotificationController
 						logger.error("Error setting extra info:" + e.getMessage(), e);
 					}
 				}
-				//System.out.println("internalMessage:" + internalMessage);
 
 				i++;
 			}
@@ -232,6 +231,7 @@ public class ChangeNotificationController
 		
 		try 
 		{
+			//System.out.println("internalMessage:" + internalMessage);
 			new RemoteCacheUpdater().updateRemoteCaches(internalMessage, publicMessage);
 		} 
 		catch (Exception e) 

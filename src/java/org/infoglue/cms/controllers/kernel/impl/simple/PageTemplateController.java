@@ -64,9 +64,9 @@ public class PageTemplateController extends BaseController
 		try 
 		{
 			beginTransaction(db);
-
+			
 		    pageTemplates = getPageTemplates(infoGluePrincipal, db);
-		    Iterator i = pageTemplates.iterator();
+			Iterator i = pageTemplates.iterator();
 		    while(i.hasNext())
 		    {
 		        ContentVO contentVO = (ContentVO)i.next();
@@ -93,7 +93,7 @@ public class PageTemplateController extends BaseController
 	 * This method returns the contents that are of contentTypeDefinition "PageTemplate"
 	 */
 	
-	public List getPageTemplates(InfoGluePrincipal infoGluePrincipal, Database db) throws Exception
+	public List<ContentVO> getPageTemplates(InfoGluePrincipal infoGluePrincipal, Database db) throws Exception
 	{
 		HashMap arguments = new HashMap();
 		arguments.put("method", "selectListOnContentTypeName");

@@ -2631,6 +2631,9 @@ public class CacheController extends Thread
 									    	String siteNodeId = sentSiteNodeId;
 									    	String repositoryId = sentRepositoryId;
 									    	String parentSiteNodeId = sentParentSiteNodeId;
+									    	//System.out.println("siteNodeId:" + siteNodeId);
+									    	//System.out.println("repositoryId:" + repositoryId);
+									    	//System.out.println("parentSiteNodeId:" + parentSiteNodeId);
 									    	if(siteNodeId == null || siteNodeId.equals(""))
 									    	{
 										    	try

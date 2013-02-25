@@ -186,7 +186,7 @@ public class CreateSiteNodeAction extends InfoGlueAbstractAction
 	{
 		SiteNodeVO parentSiteNodeVO = SiteNodeController.getController().getSiteNodeVOWithId(this.parentSiteNodeId);
 		LanguageVO masterLanguageVO = LanguageController.getController().getMasterLanguage(parentSiteNodeVO.getRepositoryId());
-
+		
 		List components = PageTemplateController.getController().getPageTemplates(this.getInfoGluePrincipal(), masterLanguageVO.getId());
 		
 		Collections.sort(components, new ReflectionComparator(sortProperty));

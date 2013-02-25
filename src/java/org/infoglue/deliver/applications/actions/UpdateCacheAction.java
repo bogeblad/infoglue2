@@ -355,7 +355,7 @@ public class UpdateCacheAction extends InfoGlueAbstractAction
          
     public String doExecute() throws Exception
     {
-    	logger.warn("A cache update was received");
+    	logger.info("A cache update was received");
     	
     	if(!CmsPropertyHandler.getOperatingMode().equals("3"))
     		tk = new ThreadMonitor(2000, this.getRequest(), "Update cache took to long", false);

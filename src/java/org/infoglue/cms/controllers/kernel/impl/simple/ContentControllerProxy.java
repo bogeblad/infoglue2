@@ -126,7 +126,7 @@ public class ContentControllerProxy extends ContentController
 	 * This method returns a list of content-objects after checking that it is accessable by the given user
 	 */
 		
-    public List getACContentVOList(InfoGluePrincipal infoGluePrincipal, HashMap argumentHashMap, Database db) throws SystemException, Bug, Exception
+    public List<ContentVO> getACContentVOList(InfoGluePrincipal infoGluePrincipal, HashMap argumentHashMap, Database db) throws SystemException, Bug, Exception
     {
     	return getACContentVOList(infoGluePrincipal, argumentHashMap, "Content.Read", db);
     }
@@ -135,7 +135,7 @@ public class ContentControllerProxy extends ContentController
 	 * This method returns a list of content-objects after checking that it is accessable by the given user
 	 */
 		
-    public List getACContentVOList(InfoGluePrincipal infoGluePrincipal, HashMap argumentHashMap, String interceptionPointName, Database db) throws SystemException, Bug, Exception
+    public List<ContentVO> getACContentVOList(InfoGluePrincipal infoGluePrincipal, HashMap argumentHashMap, String interceptionPointName, Database db) throws SystemException, Bug, Exception
     {
     	List contents = null;
     	

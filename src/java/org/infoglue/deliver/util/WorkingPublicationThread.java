@@ -156,7 +156,7 @@ public class WorkingPublicationThread extends Thread
 
 					List<Map<String,String>> allIGCacheCalls = new ArrayList<Map<String,String>>();
 
-				    logger.info("className:" + className + " objectId:" + objectId + " objectName: " + objectName + " typeId: " + typeId);
+				    logger.info("className:" + className + " objectId:" + objectId + " objectName: " + objectName + " typeId: " + typeId + ":" + extraInformation);
 				    if(className.indexOf("AccessRight") > -1)
 				    {
 				    	logger.info("Special handling of access rights..");
@@ -405,18 +405,18 @@ public class WorkingPublicationThread extends Thread
 							}
 						}	
 					    
-					    long elapsedTime = t.getElapsedTime();
-					    if(elapsedTime > 50)
-					    	logger.warn("Clearing all castor caches took");
+					    //long elapsedTime = t.getElapsedTime();
+					    //if(elapsedTime > 50)
+					    //	logger.warn("Clearing all castor caches took");
 
 					    for(Map<String,String> igCacheCall : allIGCacheCalls)
 						{
-							logger.info("Calling clear caches with:" + igCacheCall.get("className") + ":" + igCacheCall.get("objectId"));
+							logger.info("Calling clear caches with:" + igCacheCall.get("className") + ":" + igCacheCall.get("objectId") + ":" + extraInformation);
 							CacheController.clearCaches(igCacheCall.get("className"), igCacheCall.get("objectId"), extraInformation, null);
 
-						    elapsedTime = t.getElapsedTime();
-						    if(elapsedTime > 100)
-						    	logger.warn("Clearing all caches for " + igCacheCall.get("className") + ":" + igCacheCall.get("objectId") + " took " + elapsedTime);
+						    //elapsedTime = t.getElapsedTime();
+						    //if(elapsedTime > 10)
+						    logger.info("Clearing all caches for " + igCacheCall.get("className") + ":" + igCacheCall.get("objectId"));
 						}
 					    
 					    if(!skipOriginalEntity)
@@ -424,9 +424,9 @@ public class WorkingPublicationThread extends Thread
 					    	//System.out.println("" + className + ":" + objectId + ":" + changedAttributeNames);
 						    CacheController.clearCaches(className, objectId, extraInformation, null);
 							CacheController.setForcedCacheEvictionMode(true);
-						    elapsedTime = t.getElapsedTime();
-						    if(elapsedTime > 100)
-						    	logger.warn("Clearing all caches for " + className + ":" + objectId + ":" + changedAttributeNames + " took " + elapsedTime);
+						    //elapsedTime = t.getElapsedTime();
+						    //if(elapsedTime > 10)
+						    	logger.info("Clearing all caches for " + className + ":" + objectId + ":" + changedAttributeNames);
 					    }
 						CacheEvictionBeanListenerService.getService().notifyListeners(cacheEvictionBean);
 					}
@@ -440,6 +440,8 @@ public class WorkingPublicationThread extends Thread
 				    //if(cacheEvictionBean.getPublicationId() > -1)
 				    	RequestAnalyser.getRequestAnalyser().addPublication(cacheEvictionBean);
 				}
+				
+				//t.printElapsedTime("Working thread");
 				
 				//TEST
 				if(accessRightsToClear != null && accessRightsToClear.size() > 0)
