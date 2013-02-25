@@ -13,6 +13,7 @@
 	<script type="text/javascript" src="script/listview.js"></script>
 	<script type="text/javascript" src="script/ig_scroll.js"></script>
 	<script type="text/javascript" src="script/ig_hscroll.js"></script>
+	<script type="text/javascript" src="script/jquery/jquery-1.2.6.min.js"></script>
 	<script type="text/javascript">
 	<!-- 
 		setCMSContext('$this.getCMSBaseUrl()');
@@ -52,7 +53,6 @@
 
 		function reload(url, title)
 		{
-			//alert('url:' + url);
 			this.location.href = '$this.getCMSBaseUrl()/ViewStructureToolToolBar.action?url=' + url + '&title=' + title;
 		}
 		
@@ -156,7 +156,7 @@
 		}
 
 		function refreshStructureToolBar(context, title, toolbarKey, arguments, repositoryId, siteNodeId, path)
-		{
+		{	  
 			toolbarKey 	= hexcode(toolbarKey);	
 
 			var agt=navigator.userAgent.toLowerCase();
@@ -173,6 +173,7 @@
 					parent.frames["menu"].syncWithTree(path, repositoryId);
 				}
 	   	    }
+	   	    
 		}
 
 		//-----------------------------------------------
@@ -204,8 +205,8 @@
 				if(parent.frames["toolbar"].document)
 				{
 					toolbarKey 	= hexcode(toolbarKey);	
-					
 					parent.frames["toolbar"].location.href = context + '/ViewStructureToolToolBar.action?title=' + title + '&toolbarKey=' + toolbarKey + '&' + arguments;
+ents;
 					
 					if(unrefreshedNodeId > 0)
 					{
@@ -214,7 +215,18 @@
 				}
 		    }
 		}
+		
+		function pageLoaded()
+		{
+			$("#loading").css("display", "none");
+		}
+
+		function pageLoading()
+		{
+			$("#loading").css("display", "inline");
+		}
 				
+		setTimeout(function(){pageLoaded();}, 10000);
 	-->
 	</script>
 	
@@ -371,7 +383,7 @@
 	<td colspan="3" bgcolor="FFFFFF"><img src="images/trans.gif" width="1" height="1"></td>
 </tr>
 <tr>
-	<td class="actionheader"><div class="leftmarginalized">$ui.getString($title) $!stateDescription - $!siteNodeVO.name</div></td>
+	<td class="actionheader"><div class="leftmarginalized">#if($title != "tool.structuretool.siteNodeComponentsHeader")$ui.getString($title) - #else<div id="loading" style="display: inline;">$ui.getString("tool.common.loading.label") <img src='images/loaderHorisontal.gif' height="10"/> </div>#end $!siteNodeVO.name $!stateDescription</div></td>
 </tr>
 <tr class="lightgreen">
 	<td colspan="3" height="1"><img src="images/trans.gif" width="1" height="1"></td>
