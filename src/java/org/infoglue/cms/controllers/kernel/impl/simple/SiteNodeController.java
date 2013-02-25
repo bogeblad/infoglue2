@@ -177,14 +177,21 @@ public class SiteNodeController extends BaseController
 	 
 	public SiteNodeVO getSiteNodeVOWithId(Integer siteNodeId, boolean skipCaching) throws SystemException
     {
-    	SiteNodeVO siteNodeVO = null;
-    	
+		String key = "" + siteNodeId;
+		SiteNodeVO siteNodeVO = (SiteNodeVO)CacheController.getCachedObjectFromAdvancedCache("siteNodeCache", key);
+		if(siteNodeVO != null)
+		{
+			return siteNodeVO;
+		}
+		
 		Database db = CastorDatabaseService.getDatabase();
         beginTransaction(db);
 		try
         {	
 			siteNodeVO = getSiteNodeVOWithId(siteNodeId, db, skipCaching);
-			
+			if(siteNodeVO != null)
+				CacheController.cacheObjectInAdvancedCache("siteNodeCache", key, siteNodeVO);
+
 	    	commitTransaction(db);
         }
         catch(Exception e)
@@ -192,7 +199,7 @@ public class SiteNodeController extends BaseController
             logger.error("An error occurred so we should not complete the transaction:" + e, e);
             rollbackTransaction(db);
             throw new SystemException(e.getMessage());
-        }      
+        } 
         
         return siteNodeVO;
     }        

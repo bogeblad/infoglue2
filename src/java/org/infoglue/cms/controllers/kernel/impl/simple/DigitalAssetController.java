@@ -2169,13 +2169,13 @@ public class DigitalAssetController extends BaseController
 	 */
 	public static boolean dumpDigitalAsset(DigitalAssetVO digitalAssetVO, String fileName, String filePath, Database db) throws Exception
 	{
-		logger.warn("fileName:" + fileName);
+		logger.info("fileName:" + fileName);
 		File outputFile = new File(filePath + File.separator + fileName);
 		File tmpOutputFile = new File(filePath + File.separator + "tmp_" + Thread.currentThread().getId() + "_" + fileName);
 		if(outputFile.exists())
 		{
 			//if(logger.isInfoEnabled())
-				logger.warn("The file allready exists so we don't need to dump it again..");
+				logger.info("The file allready exists so we don't need to dump it again..");
 			
 			return true;
 		}

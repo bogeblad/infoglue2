@@ -24,6 +24,7 @@
 
 package org.infoglue.cms.controllers.kernel.impl.simple;
  
+import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
@@ -156,6 +157,7 @@ public class CmsJDOCallback implements CallbackInterceptor
 			} 
 			catch (NoClassDefFoundError e){}
 			
+			Timer t = new Timer();
     		Map extraInfo = CacheController.getExtraInfo(SiteNodeVersionImpl.class.getName(), getObjectIdentity(object).toString());
     		//System.out.println("extraInfo in jdo callback:" + extraInfo);
     		boolean skipRemoteUpdate = false;	
@@ -163,8 +165,8 @@ public class CmsJDOCallback implements CallbackInterceptor
     			skipRemoteUpdate = true;
     		//System.out.println("skipRemoteUpdate:" + skipRemoteUpdate);
 			//This uses a hook and adds extra info to the notification if it exists
-    		String storedClassName = getNotificationClassName(object);
-			NotificationMessage notificationMessage = new NotificationMessage("CmsJDOCallback", storedClassName, userName, NotificationMessage.TRANS_UPDATE, getObjectIdentity(object), getObjectName(object), CacheController.getExtraInfo(object.getClass().getName(), getObjectIdentity(object).toString()));
+    		String storedClassName = getNotificationClassNameAndAddExtraInfo(object, false);
+			NotificationMessage notificationMessage = new NotificationMessage("CmsJDOCallback", storedClassName, userName, NotificationMessage.TRANS_UPDATE, getObjectIdentity(object), getObjectName(object), CacheController.getExtraInfo(storedClassName, getObjectIdentity(object).toString()));
 			if(!skipRemoteUpdate)
 				ChangeNotificationController.getInstance().addNotificationMessage(notificationMessage);
 	
@@ -515,13 +517,54 @@ public class CmsJDOCallback implements CallbackInterceptor
     	}
     }
 
-	public String getNotificationClassName(Object object) 
+	public String getNotificationClassNameAndAddExtraInfo(Object object, boolean addMetaData) 
 	{
 		String storedClassName = object.getClass().getName();
-		if(storedClassName.equals("org.infoglue.cms.entities.structure.impl.simple.MediumSiteNodeVersionImpl"))
+
+		if(storedClassName.equals("org.infoglue.cms.entities.structure.impl.simple.SiteNodeImpl"))
+		{
+			try
+			{
+				SiteNodeImpl impl = ((SiteNodeImpl)object);
+			    Map<String,String> extraInfoMap = new HashMap<String,String>();
+				extraInfoMap.put("siteNodeId", ""+impl.getId());
+			    extraInfoMap.put("parentSiteNodeId", ""+impl.getValueObject().getParentSiteNodeId());
+			    extraInfoMap.put("repositoryId", ""+impl.getValueObject().getRepositoryId());
+			    CacheController.setExtraInfo(SiteNodeImpl.class.getName(), impl.getId().toString(), extraInfoMap);
+			}
+			catch (Exception e) 
+			{
+				logger.error("Error setting extra info:" + e.getMessage(), e);
+			}
+		}		
+		else if(storedClassName.equals("org.infoglue.cms.entities.structure.impl.simple.MediumSiteNodeVersionImpl"))
+		{
 			storedClassName = "org.infoglue.cms.entities.structure.impl.simple.SiteNodeVersionImpl";
+		}
+		else if(storedClassName.equals("org.infoglue.cms.entities.content.impl.simple.MediumContentImpl"))
+		{
+			/*
+			try
+			{
+				MediumContentVersionImpl impl = ((MediumContentVersionImpl)object);
+				ContentVO contentVO = ContentController.getContentController().getContentVOWithId(impl.getId());
+	    	    Map<String,String> extraInfoMap = new HashMap<String,String>();
+	 			extraInfoMap.put("contentId", ""+contentVO.getId());
+	    	    extraInfoMap.put("parentContentId", ""+contentVO.getParentContentId());
+	    	    extraInfoMap.put("repositoryId", ""+contentVO.getRepositoryId());
+	    	    CacheController.setExtraInfo(ContentVersionImpl.class.getName(), impl.getId().toString(), extraInfoMap);
+			}
+			catch (Exception e) 
+			{
+				logger.error("Error setting extra info:" + e.getMessage(), e);
+			}
+			*/
+			storedClassName = "org.infoglue.cms.entities.content.impl.simple.ContentImpl";
+		}
 		else if(storedClassName.equals("org.infoglue.cms.entities.content.impl.simple.MediumContentVersionImpl"))
+		{
 			storedClassName = "org.infoglue.cms.entities.content.impl.simple.ContentVersionImpl";
+		}
 	
 		return storedClassName;
 	}
@@ -610,8 +653,8 @@ public class CmsJDOCallback implements CallbackInterceptor
 		    } 
 			catch (NoClassDefFoundError e){}
 			
-    		String storedClassName = getNotificationClassName(object);
-    	    NotificationMessage notificationMessage = new NotificationMessage("CMSJDOCallback", storedClassName, userName, NotificationMessage.TRANS_CREATE, getObjectIdentity(object), getObjectName(object), CacheController.getExtraInfo(object.getClass().getName(), getObjectIdentity(object).toString()));
+    		String storedClassName = getNotificationClassNameAndAddExtraInfo(object, false);
+    	    NotificationMessage notificationMessage = new NotificationMessage("CMSJDOCallback", storedClassName, userName, NotificationMessage.TRANS_CREATE, getObjectIdentity(object), getObjectName(object), CacheController.getExtraInfo(storedClassName, getObjectIdentity(object).toString()));
     	    ChangeNotificationController.getInstance().addNotificationMessage(notificationMessage);
 
     	    if(object.getClass().getName().indexOf("org.infoglue.cms.entities.management") > -1 && 
@@ -869,8 +912,8 @@ public class CmsJDOCallback implements CallbackInterceptor
 			} 
 			catch (NoClassDefFoundError e){}
 
-    		String storedClassName = getNotificationClassName(object);
-		    NotificationMessage notificationMessage = new NotificationMessage("CMSJDOCallback", storedClassName, userName, NotificationMessage.TRANS_DELETE, getObjectIdentity(object), getObjectName(object), CacheController.getExtraInfo(object.getClass().getName(), getObjectIdentity(object).toString()));
+    		String storedClassName = getNotificationClassNameAndAddExtraInfo(object, true);
+		    NotificationMessage notificationMessage = new NotificationMessage("CMSJDOCallback", storedClassName, userName, NotificationMessage.TRANS_DELETE, getObjectIdentity(object), getObjectName(object), CacheController.getExtraInfo(storedClassName, getObjectIdentity(object).toString()));
 		    ChangeNotificationController.getInstance().addNotificationMessage(notificationMessage);
 
 			if(object.getClass().getName().indexOf("org.infoglue.cms.entities.management") > -1 && 
@@ -1059,7 +1102,7 @@ public class CmsJDOCallback implements CallbackInterceptor
 					clearCache(MediumSiteNodeVersionImpl.class);
 					try
 					{
-						MediumSiteNodeVersionImpl siteNodeVersion = (MediumSiteNodeVersionImpl)object;
+						SiteNodeVersionImpl siteNodeVersion = (SiteNodeVersionImpl)object;
 						CacheController.clearCacheForGroup("childSiteNodesCache", "siteNode_" + siteNodeVersion.getSiteNodeId());
 						CacheController.clearCacheForGroup("latestSiteNodeVersionCache", "siteNode_" + siteNodeVersion.getValueObject().getSiteNodeId());
 						SiteNodeVO siteNodeVO = SiteNodeController.getController().getSiteNodeVOWithId(siteNodeVersion.getValueObject().getSiteNodeId(), true);

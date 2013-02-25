@@ -1618,7 +1618,7 @@ public class ContentVersionController extends BaseController
 					}
 						
 			    	List<String> changedAttributes = getChangedAttributeNames(oldContentVersionVO, contentVersionVO);
-		    	    Map extraInfoMap = new HashMap();
+		    	    Map<String,String> extraInfoMap = new HashMap<String,String>();
 		    	    String csList = StringUtils.join(changedAttributes.toArray(), ",");
 		    	    //logger.info("csList:" + csList);
 		    	    extraInfoMap.put("changedAttributeNames", csList);
@@ -1647,7 +1647,10 @@ public class ContentVersionController extends BaseController
 					SiteNodeVersionControllerProxy.getSiteNodeVersionControllerProxy().acUpdate(principal, latestSiteNodeVersionVO, db);
 
 					Map extraInfoMap = new HashMap();
-				    extraInfoMap.put("skipSiteNodeVersionUpdate", true);
+				    extraInfoMap.put("skipSiteNodeVersionUpdate", "true");
+//		    	    extraInfoMap.put("contentId", ""+contentVO.getId());
+//		    	    extraInfoMap.put("parentContentId", ""+contentVO.getParentContentId());
+//		    	    extraInfoMap.put("repositoryId", ""+contentVO.getRepositoryId());
 					CacheController.setExtraInfo(SiteNodeVersionImpl.class.getName(), latestSiteNodeVersionVO.getId().toString(), extraInfoMap);
 				}
 			}

@@ -82,7 +82,7 @@ public class NotificationMessage
 		this(name, className, systemUserName, type, objectId, objectName, new HashMap());
 	}
 	
-	public NotificationMessage(String name, String className, String systemUserName, int type, Object objectId, String objectName, Map extraInformation)
+	public NotificationMessage(String name, String className, String systemUserName, int type, Object objectId, String objectName, Map<String,String> extraInformation)
 	{
 		this.name = name;
 		this.className = className;

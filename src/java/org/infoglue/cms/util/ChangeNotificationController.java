@@ -24,13 +24,26 @@
 package org.infoglue.cms.util;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
+import org.infoglue.cms.controllers.kernel.impl.simple.ContentController;
+import org.infoglue.cms.controllers.kernel.impl.simple.ContentVersionController;
 import org.infoglue.cms.controllers.kernel.impl.simple.LuceneController;
+import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeController;
+import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeVersionController;
+import org.infoglue.cms.entities.content.ContentVO;
+import org.infoglue.cms.entities.content.ContentVersionVO;
+import org.infoglue.cms.entities.content.impl.simple.ContentVersionImpl;
+import org.infoglue.cms.entities.structure.SiteNodeVO;
+import org.infoglue.cms.entities.structure.SiteNodeVersionVO;
+import org.infoglue.cms.entities.structure.impl.simple.SiteNodeVersionImpl;
+import org.infoglue.deliver.util.CacheController;
+import org.infoglue.deliver.util.Timer;
 
 public class ChangeNotificationController
 {
@@ -71,14 +84,18 @@ public class ChangeNotificationController
 	
 	public static void notifyListeners()
 	{
+		//System.out.println("Do we have any messages to send?:" + list.getList().size());
+		boolean repeat = true;
+		
 		if(list.getList().size() > 0)
 			logger.info("Now as the transaction is done and there are items in the notification list - let's notify the deliver app...");
 
 		List internalMessageList = new ArrayList();
 		List publicMessageList = new ArrayList();
 
+		int sendSize = 0;
 		Iterator iterator = list.getList().iterator();
-		while(iterator.hasNext())
+		while(iterator.hasNext() && sendSize < 10)
 		{
         	NotificationMessage notificationMessage = (NotificationMessage)iterator.next();
 			if(notificationMessage.getType() == NotificationMessage.PUBLISHING || notificationMessage.getType() == NotificationMessage.UNPUBLISHING || notificationMessage.getType() == NotificationMessage.SYSTEM)
@@ -95,14 +112,21 @@ public class ChangeNotificationController
 				internalMessageList.add(notificationMessage);
 			}			
 			
+			sendSize++;
 			iterator.remove();
 		}
+
+		//System.out.println("Size:" + list.getList().size());
+		if(list.getList().size() == 0)
+			repeat = false;
 		
 		Hashtable internalMessage = null;
 		Hashtable publicMessage = null;
 		
 		if(internalMessageList.size() > 0)
 		{
+			Timer t = new Timer();
+
 			internalMessage = new Hashtable();
 			Iterator internalMessageListIterator = internalMessageList.iterator();
 			int i = 0;
@@ -122,8 +146,58 @@ public class ChangeNotificationController
 						internalMessage.put(i + "." + key, notificationMessage.getExtraInformation().get(key));
 					}
 				}
+		
+				if(notificationMessage.getType() != NotificationMessage.TRANS_DELETE)
+				{
+					try
+					{
+						//System.out.println("notificationMessage.getClassName():" + notificationMessage.getClassName());
+						if(notificationMessage.getClassName().equals("org.infoglue.cms.entities.structure.impl.simple.SiteNodeImpl"))
+						{
+							SiteNodeVO siteNodeVO = SiteNodeController.getController().getSiteNodeVOWithId(new Integer(""+notificationMessage.getObjectId()));
+				    	    internalMessage.put(i + ".siteNodeId", ""+siteNodeVO.getId());
+				    	    internalMessage.put(i + ".parentSiteNodeId", ""+siteNodeVO.getParentSiteNodeId());
+				    	    internalMessage.put(i + ".repositoryId", ""+siteNodeVO.getRepositoryId());
+						}
+						if(notificationMessage.getClassName().equals("org.infoglue.cms.entities.structure.impl.simple.SiteNodeVersionImpl"))
+						{
+							SiteNodeVersionVO siteNodeVersionVO = SiteNodeVersionController.getController().getSiteNodeVersionVOWithId(new Integer(""+notificationMessage.getObjectId()));
+							SiteNodeVO siteNodeVO = SiteNodeController.getController().getSiteNodeVOWithId(siteNodeVersionVO.getSiteNodeId());
+				    	    internalMessage.put(i + ".siteNodeId", ""+siteNodeVO.getId());
+				    	    internalMessage.put(i + ".parentSiteNodeId", ""+siteNodeVO.getParentSiteNodeId());
+				    	    internalMessage.put(i + ".repositoryId", ""+siteNodeVO.getRepositoryId());
+						}
+						else if(notificationMessage.getClassName().equals("org.infoglue.cms.entities.content.impl.simple.ContentImpl"))
+						{
+							ContentVO contentVO = ContentController.getContentController().getContentVOWithId(new Integer(""+notificationMessage.getObjectId()));
+				    	    internalMessage.put(i + ".contentId", ""+contentVO.getId());
+				    	    internalMessage.put(i + ".contentTypeDefinitionId", ""+contentVO.getContentTypeDefinitionId());
+				    	    internalMessage.put(i + ".contentIsProtected", ""+contentVO.getIsProtected());
+				    	    internalMessage.put(i + ".parentContentId", ""+contentVO.getParentContentId());
+				    	    internalMessage.put(i + ".repositoryId", ""+contentVO.getRepositoryId());
+						}
+						else if(notificationMessage.getClassName().equals("org.infoglue.cms.entities.content.impl.simple.ContentVersionImpl"))
+						{
+							ContentVersionVO contentVersionVO = ContentVersionController.getContentVersionController().getContentVersionVOWithId(new Integer(""+notificationMessage.getObjectId()));
+							ContentVO contentVO = ContentController.getContentController().getContentVOWithId(contentVersionVO.getContentId());
+				    	    internalMessage.put(i + ".contentId", ""+contentVO.getId());
+				    	    internalMessage.put(i + ".contentTypeDefinitionId", ""+contentVO.getContentTypeDefinitionId());
+				    	    internalMessage.put(i + ".contentIsProtected", ""+contentVO.getIsProtected());
+				    	    internalMessage.put(i + ".parentContentId", ""+contentVO.getParentContentId());
+				    	    internalMessage.put(i + ".repositoryId", ""+contentVO.getRepositoryId());
+				    	    //CacheController.setExtraInfo(ContentVersionImpl.class.getName(), contentVersionVO.getId().toString(), extraInfoMap);
+						}
+					}
+					catch (Exception e) 
+					{
+						logger.error("Error setting extra info:" + e.getMessage(), e);
+					}
+				}
+				//System.out.println("internalMessage:" + internalMessage);
+
 				i++;
 			}
+			t.printElapsedTime("Adding extra info in cache update", 100);
 		}
 
 		if(publicMessageList.size() > 0)
@@ -165,6 +239,8 @@ public class ChangeNotificationController
 			e.printStackTrace();
 		}
 		
+		if(repeat)
+			notifyListeners();
 	}
 	//TEST
 	

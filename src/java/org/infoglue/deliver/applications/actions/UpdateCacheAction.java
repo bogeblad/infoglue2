@@ -25,7 +25,9 @@
 package org.infoglue.deliver.applications.actions;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -394,8 +396,36 @@ public class UpdateCacheAction extends InfoGlueAbstractAction
 		    String objectId  	= this.getRequest().getParameter(i + ".objectId");
 		    String objectName 	= this.getRequest().getParameter(i + ".objectName");
 		    //A very special parameter only used in working environments. Notifies what has changes more precisly
-		    String changedAttributeNames = this.getRequest().getParameter(i + ".changedAttributeNames");
-		    //System.out.println("changedAttributeNames:" + changedAttributeNames);
+		    Map<String,String> extraInfo 	= new HashMap<String,String>();
+		    String changedAttributeNames 	= this.getRequest().getParameter(i + ".changedAttributeNames");
+ 		    String contentId 				= this.getRequest().getParameter(i + ".contentId");
+		    String parentContentId 			= this.getRequest().getParameter(i + ".parentContentId");
+		    String contentTypeDefinitionId	= this.getRequest().getParameter(i + ".contentTypeDefinitionId");
+		    String contentIsProtected 		= this.getRequest().getParameter(i + ".contentIsProtected");
+ 		    String siteNodeId 				= this.getRequest().getParameter(i + ".siteNodeId");
+		    String parentSiteNodeId		 	= this.getRequest().getParameter(i + ".parentSiteNodeId");
+		    String repositoryId 			= this.getRequest().getParameter(i + ".repositoryId");
+		    //System.out.println("contentId:" + contentId);
+		    //System.out.println("parentContentId:" + parentContentId);
+		    //System.out.println("siteNodeId:" + siteNodeId);
+		    //System.out.println("parentSiteNodeId:" + parentSiteNodeId);
+		    //System.out.println("repositoryId:" + repositoryId);
+		    if(changedAttributeNames != null)
+		    	extraInfo.put("changedAttributeNames", changedAttributeNames);
+		    if(contentId != null)
+		    	extraInfo.put("contentId", contentId);
+		    if(parentContentId != null)
+		    	extraInfo.put("parentContentId", parentContentId);
+		    if(contentTypeDefinitionId != null)
+		    	extraInfo.put("contentTypeDefinitionId", contentTypeDefinitionId);
+		    if(contentIsProtected != null)
+		    	extraInfo.put("contentIsProtected", contentIsProtected);
+		    if(siteNodeId != null)
+		    	extraInfo.put("siteNodeId", siteNodeId);
+		    if(parentSiteNodeId != null)
+		    	extraInfo.put("parentSiteNodeId", parentSiteNodeId);
+		    if(repositoryId != null)
+		    	extraInfo.put("repositoryId", repositoryId);
 		    
 		    while(className != null && !className.equals(""))
 		    {
@@ -420,7 +450,7 @@ public class UpdateCacheAction extends InfoGlueAbstractAction
 			    }
 			    if(!skip)
 			    {
-			    	CacheEvictionBean cacheEvictionBean = new CacheEvictionBean(publicationId, userName, timestamp, className, typeId, objectId, objectName, changedAttributeNames);
+			    	CacheEvictionBean cacheEvictionBean = new CacheEvictionBean(publicationId, userName, timestamp, className, typeId, objectId, objectName, extraInfo);
 			    	newNotificationList.add(cacheEvictionBean);
 			    	/*
 			    	synchronized(CacheController.notifications)
@@ -442,8 +472,37 @@ public class UpdateCacheAction extends InfoGlueAbstractAction
 			    objectName 	= this.getRequest().getParameter(i + ".objectName");
 
 			    //A very special parameter only used in working environments. Notifies what has changes more precisly
-			    changedAttributeNames = this.getRequest().getParameter(i + ".changedAttributeNames");
-			    //System.out.println("changedAttributeNames:" + changedAttributeNames);
+			    extraInfo 				= new HashMap<String,String>();
+			    changedAttributeNames 	= this.getRequest().getParameter(i + ".changedAttributeNames");
+	 		    contentId 				= this.getRequest().getParameter(i + ".contentId");
+			    parentContentId 		= this.getRequest().getParameter(i + ".parentContentId");
+			    contentTypeDefinitionId	= this.getRequest().getParameter(i + ".contentTypeDefinitionId");
+			    contentIsProtected 		= this.getRequest().getParameter(i + ".contentIsProtected");
+	 		    siteNodeId 				= this.getRequest().getParameter(i + ".siteNodeId");
+			    parentSiteNodeId		= this.getRequest().getParameter(i + ".parentSiteNodeId");
+			    repositoryId 			= this.getRequest().getParameter(i + ".repositoryId");
+//			    System.out.println("contentId:" + contentId);
+//			    System.out.println("parentContentId:" + parentContentId);
+//			    System.out.println("siteNodeId:" + siteNodeId);
+//			    System.out.println("parentSiteNodeId:" + parentSiteNodeId);
+//			    System.out.println("repositoryId:" + repositoryId);
+			    if(changedAttributeNames != null)
+			    	extraInfo.put("changedAttributeNames", changedAttributeNames);
+			    if(contentId != null)
+			    	extraInfo.put("contentId", contentId);
+			    if(parentContentId != null)
+			    	extraInfo.put("parentContentId", parentContentId);
+			    if(contentTypeDefinitionId != null)
+			    	extraInfo.put("contentTypeDefinitionId", contentTypeDefinitionId);
+			    if(contentIsProtected != null)
+			    	extraInfo.put("contentIsProtected", contentIsProtected);
+			    if(siteNodeId != null)
+			    	extraInfo.put("siteNodeId", siteNodeId);
+			    if(parentSiteNodeId != null)
+			    	extraInfo.put("parentSiteNodeId", parentSiteNodeId);
+			    if(repositoryId != null)
+			    	extraInfo.put("repositoryId", repositoryId);
+
 		    }
 		    
 		    if(i == 0)
@@ -456,8 +515,36 @@ public class UpdateCacheAction extends InfoGlueAbstractAction
 			    objectName 	= this.getRequest().getParameter("objectName");
 			 
 			    //A very special parameter only used in working environments. Notifies what has changes more precisly
-			    changedAttributeNames = this.getRequest().getParameter(i + ".changedAttributeNames");
-			    //System.out.println("changedAttributeNames:" + changedAttributeNames);
+			    extraInfo = new HashMap<String,String>();
+			    changedAttributeNames 	= this.getRequest().getParameter("changedAttributeNames");
+	 		    contentId 				= this.getRequest().getParameter("contentId");
+			    parentContentId 		= this.getRequest().getParameter("parentContentId");
+			    contentTypeDefinitionId	= this.getRequest().getParameter("contentTypeDefinitionId");
+			    contentIsProtected 		= this.getRequest().getParameter("contentIsProtected");
+	 		    siteNodeId 				= this.getRequest().getParameter("siteNodeId");
+			    parentSiteNodeId 		= this.getRequest().getParameter("parentSiteNodeId");
+			    repositoryId 			= this.getRequest().getParameter("repositoryId");
+//			    System.out.println("contentId:" + contentId);
+//			    System.out.println("parentContentId:" + parentContentId);
+//			    System.out.println("siteNodeId:" + siteNodeId);
+//			    System.out.println("parentSiteNodeId:" + parentSiteNodeId);
+//			    System.out.println("repositoryId:" + repositoryId);
+			    if(changedAttributeNames != null)
+			    	extraInfo.put("changedAttributeNames", changedAttributeNames);
+			    if(contentId != null)
+			    	extraInfo.put("contentId", contentId);
+			    if(parentContentId != null)
+			    	extraInfo.put("parentContentId", parentContentId);
+			    if(contentTypeDefinitionId != null)
+			    	extraInfo.put("contentTypeDefinitionId", contentTypeDefinitionId);
+			    if(contentIsProtected != null)
+			    	extraInfo.put("contentIsProtected", contentIsProtected);
+			    if(siteNodeId != null)
+			    	extraInfo.put("siteNodeId", siteNodeId);
+			    if(parentSiteNodeId != null)
+			    	extraInfo.put("parentSiteNodeId", parentSiteNodeId);
+			    if(repositoryId != null)
+			    	extraInfo.put("repositoryId", repositoryId);
 
 			    Integer publicationId = -1;
 			    if(className.indexOf(PublicationImpl.class.getName()) > -1)
@@ -479,7 +566,7 @@ public class UpdateCacheAction extends InfoGlueAbstractAction
 			    }
 			    if(!skip)
 			    {
-				    CacheEvictionBean cacheEvictionBean = new CacheEvictionBean(publicationId, userName, timestamp, className, typeId, objectId, objectName, changedAttributeNames);
+				    CacheEvictionBean cacheEvictionBean = new CacheEvictionBean(publicationId, userName, timestamp, className, typeId, objectId, objectName, extraInfo);
 				    newNotificationList.add(cacheEvictionBean);
 				    /*
 				    synchronized(CacheController.notifications)

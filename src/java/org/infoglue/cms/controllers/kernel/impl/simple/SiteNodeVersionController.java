@@ -223,7 +223,7 @@ public class SiteNodeVersionController extends BaseController
     public SiteNodeVersionVO getSiteNodeVersionVOWithId(Integer siteNodeVersionId) throws SystemException, Bug
     {
 		return (SiteNodeVersionVO) getVOWithId(SmallSiteNodeVersionImpl.class, siteNodeVersionId);
-    }
+	}
 
     public SiteNodeVersionVO getSiteNodeVersionVOWithId(Integer siteNodeVersionId, Database db) throws SystemException, Bug
     {
@@ -1015,7 +1015,12 @@ public class SiteNodeVersionController extends BaseController
 				    {
 				    	try
 				    	{
-				    		deleteMetaInfoForSiteNodeVersion(db, serviceBinding, infoGluePrincipal);
+				    		if(siteNode.getMetaInfoContentId() != null)
+				    		{
+				    			ContentVO contentVO = ContentController.getContentController().getContentVOWithId(siteNode.getMetaInfoContentId(), db);
+				    			ContentController.getContentController().delete(contentVO, db, true, true, true, infoGluePrincipal);
+				    		}
+				    		//deleteMetaInfoForSiteNodeVersion(db, serviceBinding, infoGluePrincipal);
 				    	}
 				    	catch(Exception e)
 				    	{
