@@ -559,7 +559,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
 			//This only states how much memory in general has been allocated more than when the thread started. It can well be other threads allocating but a timeframe is nice.
 			float memoryDiff = (((float)Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) - startTotalMemory) / 1024f / 1024f;
 			logger.info("memoryDiff:" + memoryDiff + "(" + startTotalMemory + "-" + ((float)Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) + ")");
-			if(memoryDiff > 150)
+			if(memoryDiff > 100)
 				logger.warn("During the rendering of: " + this.getOriginalFullURL() + " a large amount (" + (int)memoryDiff + "MB) was allocated.");
 			
 		    //System.out.println("The page delivery took " + elapsedTime + "ms for request " + this.getRequest().getRequestURL() + "?" + this.getRequest().getQueryString());
