@@ -138,10 +138,10 @@
 		 			<option value="100000000" #checkSelected("100000000" "$assetMaxSize")>100 MB</option>
 		 		</select>
 	 		</p>
-	 		<p>
+	 		#*<p>
 				<label for="exportFileName">Export file name (optional):</label>
 				<input type="textfield" name="exportFileName" value="">
-	 		</p>
+	 		</p>*#
 	 		<p>
 				<label for="exportFileName">Additional repositories to include:</label>
 				<select name="repositoryId" multiple="true" size="10">

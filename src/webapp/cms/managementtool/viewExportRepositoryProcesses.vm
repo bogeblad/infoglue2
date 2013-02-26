@@ -82,9 +82,8 @@
 			width: 12px;
 			height: 12px;
 			display: block;
-			float: left;
 			background-size: 10px 10px;
-			margin: 1px 0 0;
+			margin: 1px 0 0 0;
 		}
 
 		.template {display: none;}
@@ -121,7 +120,7 @@
 		<p class="processError"></p>
 		<ul class="actions">
 			<li class="downloadProcessAction"></li>
-			<li class="deleteProcessAction"><a href="javascript:void(0)" onclick="deleteProcess(this)"><img src="images/delete.gif" width="12" height="12" border="0"> Remove</a></li>
+			<li class="deleteProcessAction"><a href="javascript:void(0)" onclick="deleteProcess(this)"><img src="images/delete.gif" width="12" height="12" border="0"> $ui.getString("tool.managementtool.exportRepository.removeProcess.label")</a></li>
 			<li class="toggleEventsAction"><a href="javascript:void(0)" onclick="toggleProcessEventList(this)">$ui.getString("tool.managementtool.exportRepository.status.showProcessEvents")</a></li>
 		</ul>
 		<ol class="processEvents"></ol>
