@@ -2190,11 +2190,11 @@ public class DigitalAssetController extends BaseController
 			DigitalAsset digitalAsset = getDigitalAssetWithId(digitalAssetVO.getDigitalAssetId(), db);
 			
 			InputStream is = digitalAsset.getAssetBlob();
-			System.out.println("getEnableDiskAssets():" + CmsPropertyHandler.getEnableDiskAssets());
-			System.out.println("tmpOutputFile.exists():" + tmpOutputFile.exists());
+			//System.out.println("getEnableDiskAssets():" + CmsPropertyHandler.getEnableDiskAssets());
+			//System.out.println("tmpOutputFile.exists():" + tmpOutputFile.exists());
 			if((CmsPropertyHandler.getEnableDiskAssets().equals("false") || !tmpOutputFile.exists()) && is != null)
 			{
-				System.out.println("IS WAS NOT NULL");
+				//System.out.println("IS WAS NOT NULL");
 				synchronized (is)
 				{
 					FileOutputStream fis = new FileOutputStream(tmpOutputFile);
@@ -2213,20 +2213,20 @@ public class DigitalAssetController extends BaseController
 					fis.close();
 					bos.close();
 	
-					logger.warn("\n\nExists" + tmpOutputFile.getAbsolutePath() + "=" + tmpOutputFile.exists() + " OR " + outputFile.exists() + ":" + outputFile.length());
+					logger.info("\n\nExists:" + tmpOutputFile.getAbsolutePath() + "=" + tmpOutputFile.exists() + " OR " + outputFile.exists() + ":" + outputFile.length());
 					if(tmpOutputFile.length() == 0 || tmpOutputFile.length() != digitalAsset.getAssetFileSize() || outputFile.exists())
 					{
-						logger.warn("outputFile:" + outputFile.getAbsolutePath());	
-						logger.warn("written file:" + tmpOutputFile.length() + " - removing temp and not renaming it...");	
+						logger.info("outputFile:" + outputFile.getAbsolutePath());	
+						logger.info("written file:" + tmpOutputFile.length() + " - removing temp and not renaming it...");	
 						tmpOutputFile.delete();
 					}
 					else
 					{
 						if(tmpOutputFile.length() == digitalAsset.getAssetFileSize())
 						{
-							logger.warn("written file:" + tmpOutputFile.getAbsolutePath() + " - renaming it to " + outputFile.getAbsolutePath());	
+							logger.info("written file:" + tmpOutputFile.getAbsolutePath() + " - renaming it to " + outputFile.getAbsolutePath());	
 							tmpOutputFile.renameTo(outputFile);
-							logger.warn("Renamed to" + outputFile.getAbsolutePath() + "=" + outputFile.exists());
+							logger.info("Renamed to" + outputFile.getAbsolutePath() + "=" + outputFile.exists());
 						}
 						else
 						{
@@ -2239,7 +2239,7 @@ public class DigitalAssetController extends BaseController
 			{
 				if(logger.isInfoEnabled())
 				{
-					logger.warn("Dumping from file - diskassets is on probably.");
+					logger.info("Dumping from file - diskassets is on probably.");
 					logger.info("Inside the cms-app I think - we should take the file from disk");
 					logger.info("tmpOutputFile:" + tmpOutputFile.getAbsolutePath() + ":" + tmpOutputFile.exists());
 					logger.info("outputFile:" + outputFile.getAbsolutePath() + ":" + outputFile.exists());

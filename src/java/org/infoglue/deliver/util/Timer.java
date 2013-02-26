@@ -40,6 +40,7 @@ public class Timer
 	private long elapsedTimeNanos 	= 0;
 	private long lastPrintTimeNanos  = 0;
 	private boolean isActive 	= true;
+	private long initialMemory	= 0;
 	
 	public Timer()
 	{
@@ -47,6 +48,13 @@ public class Timer
 		lastPrintTime = startTime;
 		startTimeNanos = System.nanoTime();
 		lastPrintTimeNanos = startTimeNanos;
+		initialMemory = Runtime.getRuntime().freeMemory();
+	}
+
+	public long getMemoryDifferenceAsMegaBytes()
+	{
+		long diff = Runtime.getRuntime().freeMemory() - initialMemory;
+		return (diff < 1 ? 0 : (diff/1000/1000));
 	}
 	
 	public long getElapsedTime()

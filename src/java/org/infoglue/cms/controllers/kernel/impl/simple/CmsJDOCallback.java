@@ -131,8 +131,8 @@ public class CmsJDOCallback implements CallbackInterceptor
     {
     	if(object.getClass().getName().indexOf(".ContentVersionImpl") > -1 || object.getClass().getName().indexOf(".ContentImpl") > -1)
     	{
-    		logger.error("storing " + object.getClass().getName());
-    		Thread.dumpStack();
+    		logger.warn("storing " + object.getClass().getName());
+    		//Thread.dumpStack();
     	}
 
 		//logger.error("storing...:" + object + ":" + modified);
@@ -622,8 +622,8 @@ public class CmsJDOCallback implements CallbackInterceptor
     {
     	if(object.getClass().getName().indexOf(".ContentVersionImpl") > -1)
     	{
-    		logger.error("created " + object.getClass().getName());
-    		Thread.dumpStack();
+    		logger.warn("created " + object.getClass().getName());
+    		//Thread.dumpStack();
     	}
 
         // ( (Persistent) object ).jdoAfterCreate();

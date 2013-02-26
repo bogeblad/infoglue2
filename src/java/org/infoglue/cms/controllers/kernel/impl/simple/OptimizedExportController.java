@@ -53,6 +53,7 @@ import org.infoglue.cms.entities.management.Repository;
 import org.infoglue.cms.entities.management.impl.simple.InfoGlueExportImpl;
 import org.infoglue.cms.entities.structure.SiteNode;
 import org.infoglue.cms.entities.structure.SiteNodeVersion;
+import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.util.CmsPropertyHandler;
 import org.infoglue.cms.util.handlers.DigitalAssetBytesHandler;
 import org.infoglue.deliver.util.CompressionHelper;
@@ -173,19 +174,22 @@ public class OptimizedExportController extends BaseController implements Runnabl
 
 			String names = "";
 			
-			int exportedEntities = exportHeavyEntities(repositories, "Contents", folderName, assetMaxSize, onlyPublishedVersions, exportFileName);
+			List<Content> allExportedContents = new ArrayList<Content>();
+			List<SiteNode> allExportedSiteNodes = new ArrayList<SiteNode>();
+			
+			int exportedEntities = exportHeavyEntities(repositories, "Contents", folderName, assetMaxSize, onlyPublishedVersions, exportFileName, allExportedSiteNodes, allExportedContents);
 			processBean.updateProcess("Contents exported: " + exportedEntities + " in " + (t.getElapsedTime() / 1000) + " seconds");
 
-		    exportedEntities = exportHeavyEntities(repositories, "ContentVersions", folderName, assetMaxSize, onlyPublishedVersions, exportFileName);
+		    exportedEntities = exportHeavyEntities(repositories, "ContentVersions", folderName, assetMaxSize, onlyPublishedVersions, exportFileName, allExportedSiteNodes, allExportedContents);
 			processBean.updateProcess("Content versions exported: " + exportedEntities + " in " + (t.getElapsedTime() / 1000) + " seconds");
 
-		    exportedEntities = exportHeavyEntities(repositories, "SiteNodes", folderName, assetMaxSize, onlyPublishedVersions, exportFileName);
+		    exportedEntities = exportHeavyEntities(repositories, "SiteNodes", folderName, assetMaxSize, onlyPublishedVersions, exportFileName, allExportedSiteNodes, allExportedContents);
 			processBean.updateProcess("Sitenodes exported: " + exportedEntities + " in " + (t.getElapsedTime() / 1000) + " seconds");
 		
-			exportedEntities = exportHeavyEntities(repositories, "SiteNodeVersions", folderName, assetMaxSize, onlyPublishedVersions, exportFileName);
+			exportedEntities = exportHeavyEntities(repositories, "SiteNodeVersions", folderName, assetMaxSize, onlyPublishedVersions, exportFileName, allExportedSiteNodes, allExportedContents);
 			processBean.updateProcess("Sitenode versions exported: " + exportedEntities + " in " + (t.getElapsedTime() / 1000) + " seconds");
 			
-			exportedEntities = exportHeavyEntities(repositories, "DigitalAssets", folderName, assetMaxSize, onlyPublishedVersions, exportFileName);
+			exportedEntities = exportHeavyEntities(repositories, "DigitalAssets", folderName, assetMaxSize, onlyPublishedVersions, exportFileName, allExportedSiteNodes, allExportedContents);
 			processBean.updateProcess("Assets exported: " + exportedEntities + " in " + (t.getElapsedTime() / 1000) + " seconds");
 			
 		    List<Repository> repositoryList = new ArrayList<Repository>();
@@ -224,10 +228,11 @@ public class OptimizedExportController extends BaseController implements Runnabl
 			    allAccessRights.addAll(AccessRightController.getController().getSiteNodeAccessRightListOnlyReadOnly(repository.getId(), db));
 			    logger.info("Read allAccessRights 5:" + allAccessRights.size());
 				
-				//getContentPropertiesAndAccessRights(ps, allContentProperties, allAccessRights, keys, content, db);
-				//logger.info("getContentPropertiesAndAccessRights");
-				//getSiteNodePropertiesAndAccessRights(ps, allSiteNodeProperties, allAccessRights, keys, siteNode, db);
-				//logger.info("getSiteNodePropertiesAndAccessRights");
+				getContentProperties(ps, allContentProperties, allExportedContents, db);
+				logger.info("getContentPropertiesAndAccessRights");
+				
+				getSiteNodeProperties(ps, allSiteNodeProperties, allExportedSiteNodes, db);
+				logger.info("getSiteNodePropertiesAndAccessRights");
 				
 				//siteNodes.add(siteNode);
 				//contents.add(content);
@@ -342,7 +347,7 @@ public class OptimizedExportController extends BaseController implements Runnabl
 	}
 	
 
-	protected int exportHeavyEntities(String[] repositories, String type, String folderName, Integer assetMaxSize, boolean onlyPublishedVersions, String exportFileName) throws Exception 
+	protected int exportHeavyEntities(String[] repositories, String type, String folderName, Integer assetMaxSize, boolean onlyPublishedVersions, String exportFileName, List<SiteNode> allReturningSiteNodes, List<Content> allReturningContents) throws Exception 
 	{
 		int exportedEntities = 0;
 
@@ -462,6 +467,8 @@ public class OptimizedExportController extends BaseController implements Runnabl
 					infoGlueExportImpl.setSiteNodeVersions(allSiteNodeVersions);
 					infoGlueExportImpl.setDigitalAssets(allDigitalAssets);
 					
+					allReturningSiteNodes.addAll(allSiteNodes);
+					allReturningContents.addAll(allContents);
 					marshaller.marshal(infoGlueExportImpl);
 					
 					osw.flush();
@@ -483,6 +490,38 @@ public class OptimizedExportController extends BaseController implements Runnabl
 		
 		return exportedEntities;
 	}
+	
+	public static void getContentProperties(PropertySet ps, Hashtable<String, String> allContentProperties, List<Content> allContents, Database db) throws SystemException
+	{
+		for(Content content : allContents)
+		{
+			String allowedContentTypeNames = ps.getString("content_" + content.getId() + "_allowedContentTypeNames");
+			if ( allowedContentTypeNames != null && !allowedContentTypeNames.equals(""))
+		    {
+	        	allContentProperties.put("content_" + content.getId() + "_allowedContentTypeNames", allowedContentTypeNames);
+		    }
+	
+			if(ps.exists("content_" + content.getId() + "_defaultContentTypeName"))
+				allContentProperties.put("content_" + content.getId() + "_defaultContentTypeName", "" + ps.getString("content_" + content.getId() + "_defaultContentTypeName"));
+		    if(ps.exists("content_" + content.getId() + "_initialLanguageId"))
+		    	allContentProperties.put("content_" + content.getId() + "_initialLanguageId", "" + ps.getString("content_" + content.getId() + "_initialLanguageId"));
+		}		
+	}
+
+	public static void getSiteNodeProperties(PropertySet ps, Hashtable<String, String> allSiteNodeProperties, List<SiteNode> allSiteNodes, Database db) throws SystemException, Exception
+	{
+		for(SiteNode siteNode : allSiteNodes)
+		{
+		    String disabledLanguagesString = "" + ps.getString("siteNode_" + siteNode.getId() + "_disabledLanguages");
+		    String enabledLanguagesString = "" + ps.getString("siteNode_" + siteNode.getId() + "_enabledLanguages");
+	
+		    if(disabledLanguagesString != null && !disabledLanguagesString.equals("") && !disabledLanguagesString.equals("null"))
+		    	allSiteNodeProperties.put("siteNode_" + siteNode.getId() + "_disabledLanguages", disabledLanguagesString);
+		    if(enabledLanguagesString != null && !enabledLanguagesString.equals("") && !enabledLanguagesString.equals("null"))
+			    allSiteNodeProperties.put("siteNode_" + siteNode.getId() + "_enabledLanguages", enabledLanguagesString);
+		}
+	}
+	
 	
 	public static Hashtable<String,String> getRepositoryProperties(PropertySet ps, Integer repositoryId) throws Exception
 	{

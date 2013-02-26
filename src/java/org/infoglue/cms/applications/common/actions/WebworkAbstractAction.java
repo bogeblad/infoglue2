@@ -25,6 +25,7 @@ package org.infoglue.cms.applications.common.actions;
 
 import java.lang.reflect.Method;
 import java.net.URLEncoder;
+import java.util.Enumeration;
 import java.util.Locale;
 
 import javax.servlet.http.HttpServletRequest;
@@ -119,7 +120,15 @@ public abstract class WebworkAbstractAction implements Action, ServletRequestAwa
         	result = isCommand() ? invokeCommand() : doExecute();
         	setStandardResponseHeaders();
         	
-			RequestAnalyser.getRequestAnalyser().registerComponentStatistics("" + this.getUnencodedCurrentURI(), t.getElapsedTime());
+        	long elapsedTime = t.getElapsedTime();
+        	long memoryDiff = t.getMemoryDifferenceAsMegaBytes();
+        	if(elapsedTime > 5000 || memoryDiff > 100)
+        	{
+        		RequestAnalyser.getRequestAnalyser().registerComponentStatistics("" + this.getUnencodedCurrentURIWithParameters() + " (" + memoryDiff + ")", elapsedTime);
+        		logger.warn("The " + CmsPropertyHandler.getApplicationName() + " request: " + this.getUnencodedCurrentURIWithParameters() + " took " + elapsedTime + " ms to render and seems to have allocated " + memoryDiff + " MB of memory)");
+        	}
+        	else
+        		RequestAnalyser.getRequestAnalyser().registerComponentStatistics("" + this.getUnencodedCurrentURI(), elapsedTime);
         } 
         catch(ResultException e) 
         {
@@ -228,6 +237,26 @@ public abstract class WebworkAbstractAction implements Action, ServletRequestAwa
 	{
 		String urlBase = getRequest().getRequestURI().toString();
 		
+		return urlBase;
+	}
+
+	/**
+	 * This method returns the URI to the current page.
+	 */
+	
+	public String getUnencodedCurrentURIWithParameters() throws Exception
+	{
+		String urlBase = getRequest().getRequestURI().toString();
+		String queryString = "";
+		Enumeration parameterNames = getRequest().getParameterNames();
+		while(parameterNames.hasMoreElements())
+		{
+			String name = (String)parameterNames.nextElement();
+			queryString += "&" + name + "=" + getRequest().getParameter(name);
+		}
+		if(queryString != null && !queryString.equals(""))
+			urlBase = urlBase + "?" + queryString.substring(1);
+
 		return urlBase;
 	}
 
@@ -343,8 +372,6 @@ public abstract class WebworkAbstractAction implements Action, ServletRequestAwa
       		final Method method = getClass().getMethod(methodName.toString(), new Class[0]);
       		result = (String) method.invoke(this, new Object[0]);
         	setStandardResponseHeaders();
-
-   			RequestAnalyser.getRequestAnalyser().registerComponentStatistics("" + this.getUnencodedCurrentURI(), t.getElapsedTime());
     	} 
     	catch (NoSuchMethodException e) 
     	{
