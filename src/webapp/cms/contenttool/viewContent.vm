@@ -266,8 +266,8 @@
 					#set($isOdd = true)
 				#end
 				<tr $class>
-					<td width="16"><img src="images/tree/contentRoot.gif" width="16" height="16"></td>
 					<td width="100%" colspan="5">
+						<img src="images/tree/contentRoot.gif" width="16" height="16" style="vertical-align: middle;">
 						<a href="ViewContentVersion!standalone.action?contentId=$referenceBean.referencingCompletingObject.contentId&languageId=$referenceBean.versions.get($lastIndex).referencingObject.languageId" target="_blank">$referenceBean.name</a>
 	 					- #if($referenceBean.versions.get($lastIndex).registryVOList.size() > 1) $referenceBean.versions.get($lastIndex).registryVOList.size() $ui.getString("tool.contenttool.referencesFound") #end ($referenceBean.versions.size() $ui.getString("tool.contenttool.versions"))
 	 				</td>
@@ -323,8 +323,8 @@
 					#set($isOdd = true)
 				#end
 				<tr $class>
-					<td width="16"><img src="images/tree/structureRoot.gif"></td>
-					<td width="100%" colspan="5">
+					<td width="100%" colspan="6">
+						<img src="images/tree/structureRoot.gif" style="vertical-align: middle;">
 						<a href="${componentRendererUrl}${componentRendererAction}?siteNodeId=$referenceBean.referencingCompletingObject.siteNodeId&contentId=-1" target="_blank">$referenceBean.name</a>
 						- #if($referenceBean.versions.get($lastIndex).registryVOList.size() > 1) $referenceBean.versions.get($lastIndex).registryVOList.size() $ui.getString("tool.structuretool.referencesFound") #end ($referenceBean.versions.size() $ui.getString("tool.structuretool.versions"))
 					</td>
