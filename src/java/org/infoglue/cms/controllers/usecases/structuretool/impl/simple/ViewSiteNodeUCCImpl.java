@@ -44,13 +44,13 @@ public class ViewSiteNodeUCCImpl extends BaseUCCController implements ViewSiteNo
         Database db = CastorDatabaseService.getDatabase();
         ConstraintExceptionBuffer ceb = new ConstraintExceptionBuffer();
 
-        SiteNode siteNode = null;
+        SiteNodeVO siteNodeVO = null;
 
         beginTransaction(db);
 
         try
         {
-            siteNode = SiteNodeController.getController().getSiteNodeWithId(siteNodeId, db);
+            siteNodeVO = SiteNodeController.getController().getSiteNodeVOWithId(siteNodeId, db);
         
             //If any of the validations or setMethods reported an error, we throw them up now before create.
             ceb.throwIfNotEmpty();
@@ -70,7 +70,7 @@ public class ViewSiteNodeUCCImpl extends BaseUCCController implements ViewSiteNo
             throw new SystemException(e.getMessage());
         }
 
-        return siteNode.getValueObject();
+        return siteNodeVO;
     }        
 }
         

@@ -61,6 +61,7 @@ import org.infoglue.cms.entities.structure.SiteNode;
 import org.infoglue.cms.entities.structure.SiteNodeVO;
 import org.infoglue.cms.entities.structure.SiteNodeVersion;
 import org.infoglue.cms.entities.structure.SiteNodeVersionVO;
+import org.infoglue.cms.entities.structure.impl.simple.QualifyerImpl;
 import org.infoglue.cms.entities.structure.impl.simple.SmallQualifyerImpl;
 import org.infoglue.cms.entities.structure.impl.simple.SmallServiceBindingImpl;
 import org.infoglue.cms.exception.Bug;
@@ -609,59 +610,75 @@ public class RegistryController extends BaseController
 			    Iterator qualifyersIterator = serviceBinding.getBindingQualifyers().iterator();
 			    while(qualifyersIterator.hasNext())
 			    {
-			    	Qualifyer qualifyer = (Qualifyer)qualifyersIterator.next();
-			        String name = qualifyer.getName();
-			        String value = qualifyer.getValue();
+			    	String name = null;
+			    	String value = null;
+			    	
+			    	Object o = qualifyersIterator.next();
+			    	if(o instanceof QualifyerImpl)
+			    	{
+			    		Qualifyer qualifyer = (Qualifyer)qualifyersIterator.next();
+				        name = qualifyer.getName();
+				        value = qualifyer.getValue();
+			    	}
+			    	else if(o instanceof SmallQualifyerImpl)
+			    	{
+			    		SmallQualifyerImpl qualifyer = (SmallQualifyerImpl)qualifyersIterator.next();
+				        name = qualifyer.getName();
+				        value = qualifyer.getValue();			    		
+			    	}
+			    	
+			    	if(name != null && value != null)
+			    	{
+		                try
+		                {
+					        RegistryVO registryVO = new RegistryVO();
+					        registryVO.setReferenceType(RegistryVO.PAGE_BINDING);
+				            if(name.equalsIgnoreCase("contentId"))
+					        {
+	//			                Content content = ContentController.getContentController().getContentWithId(new Integer(value), db);
+				            
+				                registryVO.setEntityId(value);
+					            registryVO.setEntityName(Content.class.getName());
+					            
+					            registryVO.setReferencingEntityId(siteNodeVersion.getId().toString());
+					            registryVO.setReferencingEntityName(SiteNodeVersion.class.getName());
+	//				            registryVO.setReferencingEntityCompletingId(oldSiteNode.getId().toString());
+					            registryVO.setReferencingEntityCompletingId(siteNodeVersion.getSiteNodeId().toString());
+					            registryVO.setReferencingEntityCompletingName(SiteNode.class.getName());
+					        
+					            /*
+					            Collection contentVersions = content.getContentVersions();
+					            Iterator contentVersionIterator = contentVersions.iterator();
+					            while(contentVersionIterator.hasNext())
+					            {
+					                ContentVersion contentVersion = (ContentVersion)contentVersionIterator.next();
+					                getComponents(siteNodeVersion, contentVersion.getVersionValue(), db);
+					                getComponentBindings(siteNodeVersion, contentVersion.getVersionValue(), db);
+					            }
+					            */
+					        }
+				            else if(name.equalsIgnoreCase("siteNodeId"))
+					        {
+	//			                SiteNode siteNode = SiteNodeController.getController().getSiteNodeWithId(new Integer(value), db);
+				                
+				                registryVO.setEntityId(value);
+					            registryVO.setEntityName(SiteNode.class.getName());
+					            
+					            registryVO.setReferencingEntityId(siteNodeVersion.getId().toString());
+					            registryVO.setReferencingEntityName(SiteNodeVersion.class.getName());
+					            registryVO.setReferencingEntityCompletingId(siteNodeVersion.getSiteNodeId().toString());
+					            registryVO.setReferencingEntityCompletingName(SiteNode.class.getName());
+					        }
+				            
+				    	    logger.info("Before creating registry entry...");
 	
-	                try
-	                {
-				        RegistryVO registryVO = new RegistryVO();
-				        registryVO.setReferenceType(RegistryVO.PAGE_BINDING);
-			            if(name.equalsIgnoreCase("contentId"))
-				        {
-//			                Content content = ContentController.getContentController().getContentWithId(new Integer(value), db);
-			            
-			                registryVO.setEntityId(value);
-				            registryVO.setEntityName(Content.class.getName());
-				            
-				            registryVO.setReferencingEntityId(siteNodeVersion.getId().toString());
-				            registryVO.setReferencingEntityName(SiteNodeVersion.class.getName());
-//				            registryVO.setReferencingEntityCompletingId(oldSiteNode.getId().toString());
-				            registryVO.setReferencingEntityCompletingId(siteNodeVersion.getSiteNodeId().toString());
-				            registryVO.setReferencingEntityCompletingName(SiteNode.class.getName());
-				        
-				            /*
-				            Collection contentVersions = content.getContentVersions();
-				            Iterator contentVersionIterator = contentVersions.iterator();
-				            while(contentVersionIterator.hasNext())
-				            {
-				                ContentVersion contentVersion = (ContentVersion)contentVersionIterator.next();
-				                getComponents(siteNodeVersion, contentVersion.getVersionValue(), db);
-				                getComponentBindings(siteNodeVersion, contentVersion.getVersionValue(), db);
-				            }
-				            */
-				        }
-			            else if(name.equalsIgnoreCase("siteNodeId"))
-				        {
-//			                SiteNode siteNode = SiteNodeController.getController().getSiteNodeWithId(new Integer(value), db);
-			                
-			                registryVO.setEntityId(value);
-				            registryVO.setEntityName(SiteNode.class.getName());
-				            
-				            registryVO.setReferencingEntityId(siteNodeVersion.getId().toString());
-				            registryVO.setReferencingEntityName(SiteNodeVersion.class.getName());
-				            registryVO.setReferencingEntityCompletingId(siteNodeVersion.getSiteNodeId().toString());
-				            registryVO.setReferencingEntityCompletingName(SiteNode.class.getName());
-				        }
-			            
-			    	    logger.info("Before creating registry entry...");
-
-			            this.create(registryVO, db);
-	                }
-	                catch(Exception e)
-	                {
-	                    e.printStackTrace();
-	                }		        
+				            this.create(registryVO, db);
+		                }
+		                catch(Exception e)
+		                {
+		                    e.printStackTrace();
+		                }		        
+			    	}
 			    }
 		    }
 		}

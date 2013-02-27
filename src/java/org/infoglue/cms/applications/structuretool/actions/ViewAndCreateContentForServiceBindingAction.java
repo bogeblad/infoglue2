@@ -216,17 +216,17 @@ public class ViewAndCreateContentForServiceBindingAction extends InfoGlueAbstrac
 
     		if(this.changeStateToWorking != null && this.changeStateToWorking.equalsIgnoreCase("true"))
     		{
-    			SiteNodeVersion siteNodeVersion = SiteNodeVersionController.getController().getLatestActiveSiteNodeVersion(db, this.siteNodeId);
-    			if(!siteNodeVersion.getStateId().equals(SiteNodeVersionVO.WORKING_STATE))
+    			SiteNodeVersionVO siteNodeVersionVO = SiteNodeVersionController.getController().getLatestActiveSiteNodeVersionVO(db, this.siteNodeId);
+    			if(!siteNodeVersionVO.getStateId().equals(SiteNodeVersionVO.WORKING_STATE))
     			{
 	    			List<EventVO> events = new ArrayList<EventVO>();
-		    		SiteNodeStateController.getController().changeState(siteNodeVersion.getId(), siteNode, SiteNodeVersionVO.WORKING_STATE, "Auto", true, this.getInfoGluePrincipal(), db, this.siteNodeId, events);
+		    		SiteNodeStateController.getController().changeState(siteNodeVersionVO.getId(), siteNode, SiteNodeVersionVO.WORKING_STATE, "Auto", true, this.getInfoGluePrincipal(), db, this.siteNodeId, events);
     			}
     		}
     		
-    		Content metaInfoContent = null;
+    		ContentVO metaInfoContent = null;
     		if(siteNode.getMetaInfoContentId() != null && siteNode.getMetaInfoContentId().intValue() > -1)
-    		    metaInfoContent = ContentController.getContentController().getContentWithId(siteNode.getMetaInfoContentId(), db);
+    		    metaInfoContent = ContentController.getContentController().getContentVOWithId(siteNode.getMetaInfoContentId(), db);
             
             if(metaInfoContent == null)
             {
@@ -237,7 +237,7 @@ public class ViewAndCreateContentForServiceBindingAction extends InfoGlueAbstrac
             } 
             else
             {
-                this.contentVO = metaInfoContent.getValueObject();
+                this.contentVO = metaInfoContent; //.getValueObject();
             }
 
 	    		/*

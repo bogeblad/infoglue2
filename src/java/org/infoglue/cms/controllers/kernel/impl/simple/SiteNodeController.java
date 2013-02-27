@@ -592,6 +592,7 @@ public class SiteNodeController extends BaseController
         return getSiteNodeWithId(siteNodeId, db, false);
     }
 
+
     public SiteNodeVersion getSiteNodeVersionWithId(Integer siteNodeVersionId, Database db) throws SystemException, Bug
     {
 		return (SiteNodeVersion) getObjectWithId(SiteNodeVersionImpl.class, siteNodeVersionId, db);
