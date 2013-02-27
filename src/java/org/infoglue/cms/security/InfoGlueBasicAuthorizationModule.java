@@ -612,7 +612,7 @@ public class InfoGlueBasicAuthorizationModule extends BaseController implements 
 				InfoGluePrincipal infoGluePrincipal = new InfoGluePrincipal(systemUser.getUserName(), systemUser.getFirstName(), systemUser.getLastName(), systemUser.getEmail(), roles, groups, false, this);
 				users.add(infoGluePrincipal);
 			}
-			System.out.println("Returning:" + users.size());
+			logger.info("Returning:" + users.size());
 		}
 		
 		return users;
@@ -762,7 +762,7 @@ public class InfoGlueBasicAuthorizationModule extends BaseController implements 
 			}
 		}
 		
-		System.out.println("Returning:" + users.size());
+		logger.info("Returning:" + users.size());
 
 		return users;
 	}

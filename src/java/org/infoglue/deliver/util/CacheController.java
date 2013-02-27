@@ -2832,7 +2832,7 @@ public class CacheController extends Thread
 							    		String contentIdString = sentContentId;
 							    		String contentTypeDefinitionId = sentContentTypeDefinitionId;
 							    		String contentIsProtected = sentContentIsProtected;
-								    	if(contentIdString == null)
+								    	if(contentIdString == null || contentIdString.equals(""))
 								    	{
 									    	try
 									    	{

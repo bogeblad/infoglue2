@@ -1122,7 +1122,7 @@ public class CmsPropertyHandler
 			{
 				logger.warn("Error parsing useHashCodeInCaches:" + e.getMessage());
 			}
-			logger.warn("Slow query for newUseHashCodeInCaches:" + newUseHashCodeInCaches);
+			logger.info("Slow query for newUseHashCodeInCaches:" + newUseHashCodeInCaches);
 			useHashCodeInCaches = newUseHashCodeInCaches;
 		}
 		
@@ -1147,7 +1147,7 @@ public class CmsPropertyHandler
 			{
 				logger.warn("Error parsing useSynchronizationOnCaches:" + e.getMessage());
 			}
-			logger.warn("Slow query for newUseSynchronizationOnCaches:" + newUseSynchronizationOnCaches);
+			logger.info("Slow query for newUseSynchronizationOnCaches:" + newUseSynchronizationOnCaches);
 			useSynchronizationOnCaches = newUseSynchronizationOnCaches;
 		}
 

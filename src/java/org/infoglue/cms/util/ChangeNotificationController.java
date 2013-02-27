@@ -155,48 +155,63 @@ public class ChangeNotificationController
 						if(notificationMessage.getClassName().equals("org.infoglue.cms.entities.structure.impl.simple.SiteNodeImpl"))
 						{
 							SiteNodeVO siteNodeVO = SiteNodeController.getController().getSiteNodeVOWithId(new Integer(""+notificationMessage.getObjectId()));
-				    	    internalMessage.put(i + ".siteNodeId", ""+siteNodeVO.getId());
-				    	    internalMessage.put(i + ".parentSiteNodeId", ""+siteNodeVO.getParentSiteNodeId());
-				    	    internalMessage.put(i + ".repositoryId", ""+siteNodeVO.getRepositoryId());
+							if(siteNodeVO != null)
+							{
+					    	    internalMessage.put(i + ".siteNodeId", ""+siteNodeVO.getId());
+					    	    internalMessage.put(i + ".parentSiteNodeId", ""+siteNodeVO.getParentSiteNodeId());
+					    	    internalMessage.put(i + ".repositoryId", ""+siteNodeVO.getRepositoryId());
+							}
 						}
 						if(notificationMessage.getClassName().equals("org.infoglue.cms.entities.structure.impl.simple.SiteNodeVersionImpl"))
 						{
 							SiteNodeVersionVO siteNodeVersionVO = SiteNodeVersionController.getController().getSiteNodeVersionVOWithId(new Integer(""+notificationMessage.getObjectId()));
-							SiteNodeVO siteNodeVO = SiteNodeController.getController().getSiteNodeVOWithId(siteNodeVersionVO.getSiteNodeId());
-				    	    internalMessage.put(i + ".siteNodeId", ""+siteNodeVO.getId());
-				    	    internalMessage.put(i + ".parentSiteNodeId", ""+siteNodeVO.getParentSiteNodeId());
-				    	    internalMessage.put(i + ".repositoryId", ""+siteNodeVO.getRepositoryId());
+							if(siteNodeVersionVO != null)
+							{
+								SiteNodeVO siteNodeVO = SiteNodeController.getController().getSiteNodeVOWithId(siteNodeVersionVO.getSiteNodeId());
+					    	    internalMessage.put(i + ".siteNodeId", ""+siteNodeVO.getId());
+					    	    internalMessage.put(i + ".parentSiteNodeId", ""+siteNodeVO.getParentSiteNodeId());
+					    	    internalMessage.put(i + ".repositoryId", ""+siteNodeVO.getRepositoryId());
+							}
 						}
 						else if(notificationMessage.getClassName().equals("org.infoglue.cms.entities.content.impl.simple.ContentImpl"))
 						{
 							ContentVO contentVO = ContentController.getContentController().getContentVOWithId(new Integer(""+notificationMessage.getObjectId()));
-				    	    internalMessage.put(i + ".contentId", ""+contentVO.getId());
-				    	    internalMessage.put(i + ".contentTypeDefinitionId", ""+contentVO.getContentTypeDefinitionId());
-				    	    internalMessage.put(i + ".contentIsProtected", ""+contentVO.getIsProtected());
-				    	    internalMessage.put(i + ".parentContentId", ""+contentVO.getParentContentId());
-				    	    internalMessage.put(i + ".repositoryId", ""+contentVO.getRepositoryId());
+							if(contentVO != null)
+							{
+					    	    internalMessage.put(i + ".contentId", ""+contentVO.getId());
+					    	    internalMessage.put(i + ".contentTypeDefinitionId", ""+contentVO.getContentTypeDefinitionId());
+					    	    internalMessage.put(i + ".contentIsProtected", ""+contentVO.getIsProtected());
+					    	    internalMessage.put(i + ".parentContentId", ""+contentVO.getParentContentId());
+					    	    internalMessage.put(i + ".repositoryId", ""+contentVO.getRepositoryId());
+							}
 						}
 						else if(notificationMessage.getClassName().equals("org.infoglue.cms.entities.content.impl.simple.ContentVersionImpl"))
 						{
 							ContentVersionVO contentVersionVO = ContentVersionController.getContentVersionController().getContentVersionVOWithId(new Integer(""+notificationMessage.getObjectId()));
-							ContentVO contentVO = ContentController.getContentController().getContentVOWithId(contentVersionVO.getContentId());
-				    	    internalMessage.put(i + ".contentId", ""+contentVO.getId());
-				    	    internalMessage.put(i + ".contentTypeDefinitionId", ""+contentVO.getContentTypeDefinitionId());
-				    	    internalMessage.put(i + ".contentIsProtected", ""+contentVO.getIsProtected());
-				    	    internalMessage.put(i + ".parentContentId", ""+contentVO.getParentContentId());
-				    	    internalMessage.put(i + ".repositoryId", ""+contentVO.getRepositoryId());
-				    	    //CacheController.setExtraInfo(ContentVersionImpl.class.getName(), contentVersionVO.getId().toString(), extraInfoMap);
+							if(contentVersionVO != null)
+							{
+								ContentVO contentVO = ContentController.getContentController().getContentVOWithId(contentVersionVO.getContentId());
+					    	    internalMessage.put(i + ".contentId", ""+contentVO.getId());
+					    	    internalMessage.put(i + ".contentTypeDefinitionId", ""+contentVO.getContentTypeDefinitionId());
+					    	    internalMessage.put(i + ".contentIsProtected", ""+contentVO.getIsProtected());
+					    	    internalMessage.put(i + ".parentContentId", ""+contentVO.getParentContentId());
+					    	    internalMessage.put(i + ".repositoryId", ""+contentVO.getRepositoryId());
+					    	    //CacheController.setExtraInfo(ContentVersionImpl.class.getName(), contentVersionVO.getId().toString(), extraInfoMap);
+							}
 						}
 					}
 					catch (Exception e) 
 					{
 						logger.error("Error setting extra info:" + e.getMessage(), e);
+						internalMessageListIterator.remove();
 					}
 				}
 
 				i++;
 			}
-			t.printElapsedTime("Adding extra info in cache update", 100);
+			long elapsedTime = t.getElapsedTime();
+			if(elapsedTime > 100)
+				logger.warn("Adding extra info in cache update took:" + elapsedTime);
 		}
 
 		if(publicMessageList.size() > 0)

@@ -225,7 +225,7 @@ public class InfoGlueJDBCPropertySet extends JDBCPropertySet
 
             ArrayList list = new ArrayList();
             ResultSet rs = ps.executeQuery();
-            logger.warn("All rows " + sql);
+            logger.info("All rows " + sql);
 
             int rows = 0;
             while (rs.next()) 
@@ -354,8 +354,7 @@ public class InfoGlueJDBCPropertySet extends JDBCPropertySet
                     break;
 
                 default:
-                    logger.warn("JDBCPropertySet doesn't support this type yet:" + key + ":" + typeId);
-                	//throw new InvalidPropertyTypeException("JDBCPropertySet doesn't support this type yet:" + typeId);
+                    logger.info("JDBCPropertySet doesn't support this type yet:" + key + ":" + typeId);
                 }
 
                 if(type != 10 && valueMapType5 == null)
