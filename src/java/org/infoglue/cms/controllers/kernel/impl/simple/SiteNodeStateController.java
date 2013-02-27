@@ -169,7 +169,7 @@ public class SiteNodeStateController extends BaseController
         try
         { 
 			MediumSiteNodeVersionImpl oldMediumSiteNodeVersionImpl = SiteNodeVersionController.getController().getMediumSiteNodeVersionWithId(oldSiteNodeVersionId, db);
-			t.printElapsedTime("oldMediumSiteNodeVersionImpl:" + oldMediumSiteNodeVersionImpl.getSiteNodeId());
+			//t.printElapsedTime("oldMediumSiteNodeVersionImpl:" + oldMediumSiteNodeVersionImpl.getSiteNodeId());
 			
             //Here we create a new version if it was a state-change back to working, it's a copy of the publish-version
 	    	if(stateId.intValue() == SiteNodeVersionVO.WORKING_STATE.intValue())

@@ -113,10 +113,11 @@ public class CmsJDOCallback implements CallbackInterceptor
 
     public Class loaded(Object object, short accessMode) throws Exception
     {
-    	if(object.getClass().getName().indexOf(".ContentVersionImpl") > -1 || object.getClass().getName().indexOf(".ContentImpl") > -1)
+    	if(object.getClass().getName().indexOf(".ContentVersionImpl") > -1 || object.getClass().getName().indexOf(".ContentImpl") > -1 || object.getClass().getName().indexOf(".SiteNodeVersionImpl") > -1 || object.getClass().getName().indexOf(".SiteNodeImpl") > -1)
     	{
     		logger.error("Loaded " + object.getClass().getName() + " accessMode:" + accessMode);
-    		//Thread.dumpStack();
+    		if(logger.isDebugEnabled())
+    			Thread.dumpStack();
     	}
     	
     	//if(accessMode == 1)
@@ -129,10 +130,11 @@ public class CmsJDOCallback implements CallbackInterceptor
 
     public void storing(Object object, boolean modified) throws Exception
     {
-    	if(object.getClass().getName().indexOf(".ContentVersionImpl") > -1 || object.getClass().getName().indexOf(".ContentImpl") > -1)
+    	if(object.getClass().getName().indexOf(".ContentVersionImpl") > -1 || object.getClass().getName().indexOf(".ContentImpl") > -1 || object.getClass().getName().indexOf(".SiteNodeVersionImpl") > -1 || object.getClass().getName().indexOf(".SiteNodeImpl") > -1)
     	{
     		logger.warn("storing " + object.getClass().getName());
-    		//Thread.dumpStack();
+    		if(logger.isDebugEnabled())
+    			Thread.dumpStack();
     	}
 
 		//logger.error("storing...:" + object + ":" + modified);
@@ -620,10 +622,11 @@ public class CmsJDOCallback implements CallbackInterceptor
 
     public void created(Object object) throws Exception
     {
-    	if(object.getClass().getName().indexOf(".ContentVersionImpl") > -1)
+    	if(object.getClass().getName().indexOf(".ContentVersionImpl") > -1 || object.getClass().getName().indexOf(".ContentImpl") > -1 || object.getClass().getName().indexOf(".SiteNodeVersionImpl") > -1 || object.getClass().getName().indexOf(".SiteNodeImpl") > -1)
     	{
     		logger.warn("created " + object.getClass().getName());
-    		//Thread.dumpStack();
+    		if(logger.isDebugEnabled())
+    			Thread.dumpStack();
     	}
 
         // ( (Persistent) object ).jdoAfterCreate();

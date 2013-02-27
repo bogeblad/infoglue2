@@ -1002,9 +1002,9 @@ public class ContentTypeDefinitionController extends BaseController
 					catch (Exception e) 
 					{
 						if(logger.isDebugEnabled())
-							logger.error("Unable to fetch data from custom class [" + dataProviderClass + "]:" + e.getMessage(), e);
+							logger.warn("Unable to fetch data from custom class [" + dataProviderClass + "] on param: " + contentTypeAttribute.getName() + ":" + e.getMessage(), e);
 						else
-							logger.error("Unable to fetch data from custom class [" + dataProviderClass + "]:" + e.getMessage());
+							logger.warn("Unable to fetch data from custom class [" + dataProviderClass + "] on param: " + contentTypeAttribute.getName() + ":" + e.getMessage());
 					}
 				}
 				
