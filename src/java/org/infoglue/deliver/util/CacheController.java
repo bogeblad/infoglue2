@@ -1195,7 +1195,7 @@ public class CacheController extends Thread
 		    	}
 		    	catch (Exception e) 
 		    	{
-		    		logger.error("SŒ Error:" + e.getMessage());
+		    		logger.error("Sï¿½ Error:" + e.getMessage());
 				}
 			}
 	    }
@@ -2450,13 +2450,23 @@ public class CacheController extends Thread
 
 						Object object = e.getValue();
 						
-						String sentContentId = extraInformation.get("contentId");
-						String sentParentContentId = extraInformation.get("parentContentId");
-						String sentSiteNodeId = extraInformation.get("siteNodeId");
-						String sentParentSiteNodeId = extraInformation.get("parentSiteNodeId");
-						String sentRepositoryId = extraInformation.get("repositoryId");
-						String sentContentTypeDefinitionId = extraInformation.get("contentTypeDefinitionId");
-						String sentContentIsProtected = extraInformation.get("contentIsProtected");
+						String sentContentId = null;
+						String sentParentContentId = null;
+						String sentSiteNodeId = null;
+						String sentParentSiteNodeId = null;
+						String sentRepositoryId = null;
+						String sentContentTypeDefinitionId = null;
+						String sentContentIsProtected = null;
+						if (extraInformation != null)
+						{
+							sentContentId = extraInformation.get("contentId");
+							sentParentContentId = extraInformation.get("parentContentId");
+							sentSiteNodeId = extraInformation.get("siteNodeId");
+							sentParentSiteNodeId = extraInformation.get("parentSiteNodeId");
+							sentRepositoryId = extraInformation.get("repositoryId");
+							sentContentTypeDefinitionId = extraInformation.get("contentTypeDefinitionId");
+							sentContentIsProtected = extraInformation.get("contentIsProtected");
+						}
 						
 						//System.out.println("sentContentId:" + sentContentId);
 						//System.out.println("sentParentContentId:" + sentParentContentId);
@@ -2606,7 +2616,7 @@ public class CacheController extends Thread
 							    {
 							    	//System.out.println("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
 							    	//Thread.dumpStack();
-							    	//Hur lšser vi detta bra?
+							    	//Hur lï¿½ser vi detta bra?
 							    	if(CmsPropertyHandler.getOperatingMode().equalsIgnoreCase("0"))
 							    	{
 								    	if(cacheName.equals("pageCacheExtra"))
@@ -3089,7 +3099,7 @@ public class CacheController extends Thread
 									    			if(changedAttributeName.indexOf("ComponentStructure") > -1 && cacheName.equals("pageCache"))
 									    			{
 									    				//Map allreadyFlushedEntries....
-									    				//Det Šr nŒt fel pŒ detta omrŒde eller pŒ versionsuthŠmtningen..
+									    				//Det ï¿½r nï¿½t fel pï¿½ detta omrï¿½de eller pï¿½ versionsuthï¿½mtningen..
 									    				GeneralCacheAdministrator pageCacheExtraInstance = (GeneralCacheAdministrator)caches.get("pageCacheExtra");
 									    				String cacheGroupKey = "content_" + contentId + "_ComponentStructureDependency";
 									    				//Set<String> groupEntries = (Set<String>)cacheInstance.getCache().cacheMap.getGroup("content_" + contentId + "_ComponentStructureDependency");

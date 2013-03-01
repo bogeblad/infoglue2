@@ -616,15 +616,15 @@ public class RegistryController extends BaseController
 			    	Object o = qualifyersIterator.next();
 			    	if(o instanceof QualifyerImpl)
 			    	{
-			    		Qualifyer qualifyer = (Qualifyer)qualifyersIterator.next();
+			    		Qualifyer qualifyer = (Qualifyer)o;
 				        name = qualifyer.getName();
 				        value = qualifyer.getValue();
 			    	}
 			    	else if(o instanceof SmallQualifyerImpl)
 			    	{
-			    		SmallQualifyerImpl qualifyer = (SmallQualifyerImpl)qualifyersIterator.next();
+			    		SmallQualifyerImpl qualifyer = (SmallQualifyerImpl)o;
 				        name = qualifyer.getName();
-				        value = qualifyer.getValue();			    		
+				        value = qualifyer.getValue();
 			    	}
 			    	
 			    	if(name != null && value != null)

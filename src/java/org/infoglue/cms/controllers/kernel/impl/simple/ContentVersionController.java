@@ -1697,16 +1697,19 @@ public class ContentVersionController extends BaseController
         
         try
         {     
-            ContentVersion contentVersion = getContentVersionWithId(contentVersionId, db);
-	    	contentVersion.setValueObject(contentVersionVO);
-	    	
-	    	ContentTypeDefinition contentTypeDefinition = contentVersion.getOwningContent().getContentTypeDefinition();
-            
-	    	SiteNodeVersion latestSiteNodeVersion = null;
-		    if(principal != null && contentTypeDefinition.getName().equalsIgnoreCase("Meta info"))
+            ContentVersion contentVersion = getMediumContentVersionWithId(contentVersionId, db);
+           
+            ContentVO contentVO = ContentController.getContentController().getContentVOWithId(contentVersion.getValueObject().getContentId(), db);
+        	ContentTypeDefinitionVO contentTypeDefinitionVO = ContentTypeDefinitionController.getController().getContentTypeDefinitionVOWithId(contentVO.getContentTypeDefinitionId(), db);
+
+        	contentVersion.setValueObject(contentVersionVO);
+        	contentVersion.getValueObject().setContentId(contentVO.getContentId());
+
+        	SiteNodeVersion latestSiteNodeVersion = null;
+		    if(principal != null && contentTypeDefinitionVO.getName().equalsIgnoreCase("Meta info"))
 		    {
-		    	SiteNode siteNode = SiteNodeController.getController().getSiteNodeWithMetaInfoContentId(db, contentVersion.getValueObject().getContentId());
-				if(siteNode.getMetaInfoContentId() != null && siteNode.getMetaInfoContentId().equals(contentVersion.getValueObject().getContentId()))
+		    	SiteNode siteNode = SiteNodeController.getController().getSiteNodeWithMetaInfoContentId(db, contentVO.getContentId());
+				if(siteNode.getMetaInfoContentId() != null && siteNode.getMetaInfoContentId().equals(contentVO.getContentId()))
 				{
 			    	latestSiteNodeVersion = SiteNodeVersionController.getController().getLatestSiteNodeVersion(db, siteNode.getId(), false);
 			    	latestSiteNodeVersion.setVersionModifier(contentVersionVO.getVersionModifier());
