@@ -26,6 +26,7 @@ package org.infoglue.cms.applications.contenttool.wizards.actions;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.infoglue.cms.applications.common.VisualFormatter;
 import org.infoglue.cms.applications.databeans.AssetKeyDefinition;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentControllerProxy;
@@ -38,6 +39,7 @@ import org.infoglue.cms.entities.content.ContentVersionVO;
 import org.infoglue.cms.entities.content.DigitalAssetVO;
 import org.infoglue.cms.entities.management.ContentTypeDefinitionVO;
 import org.infoglue.cms.entities.management.LanguageVO;
+import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.util.CmsPropertyHandler;
 import org.infoglue.cms.util.ConstraintExceptionBuffer;
 
@@ -49,6 +51,8 @@ import org.infoglue.cms.util.ConstraintExceptionBuffer;
 
 public class CreateContentWizardFinishAction extends CreateContentWizardAbstractAction
 {
+	private static final Logger logger = Logger.getLogger(CreateContentWizardFinishAction.class);
+	
 	private ConstraintExceptionBuffer ceb 		= null;
 	private String returnAddress 				= "CreateContentWizardFinish.action";
 	private String refreshAddress 				= null;
@@ -154,9 +158,12 @@ public class CreateContentWizardFinishAction extends CreateContentWizardAbstract
 			
 			this.getResponse().sendRedirect(returnAddress);
 		}
-		catch(Exception e)
+		catch(Exception ex)
 		{
-			e.printStackTrace();
+			logger.error("An error occured when creating content from wizard. Type: " + ex.getCause() + ". Message: " + ex.getMessage());
+			logger.warn("An error occured when creating content from wizard.", ex);
+			invalidateCreateContentWizardInfoBean();
+			throw new SystemException(ex);
 		}
 		
 		return NONE;

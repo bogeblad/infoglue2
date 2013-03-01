@@ -74,7 +74,9 @@
 		{
 			refreshStructureToolBar('$this.getCMSBaseUrl()', 'tool.structuretool.siteNodeComponentsHeader', 'tool.structuretool.siteNodeComponentsHeader', 'siteNodeId=' + itemId + '&repositoryId=' + repoId + '&isBranch=true', '$unrefreshedNodeId', '$changeTypeId', '$siteNodeId');
 
-			parent.frames['main'].location.href="$this.getCMSBaseUrl()/ViewSiteNode.action?siteNodeId=" + itemId + "&repositoryId=" + repoId;
+			var frm = parent.frames['main'] || parent.frames[3];
+
+			frm.location.href="$this.getCMSBaseUrl()/ViewSiteNode.action?siteNodeId=" + itemId + "&repositoryId=" + repoId;
 		}
 	
 		function reloadMain()

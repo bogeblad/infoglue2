@@ -53,13 +53,14 @@
 		{
 			//alert("htmlTreeItemClick:" + itemId + repoId);
 			var agt=navigator.userAgent.toLowerCase();
+			var frm = parent.frames['main'] || parent.frames[3];
     		if(agt.indexOf("safari")!=-1)
     		{
-    			parent.frames['main'].location = "ViewContent.action?contentId=" + itemId + "&repositoryId=" + repoId;
+    			frm.location = "ViewContent.action?contentId=" + itemId + "&repositoryId=" + repoId;
 			}
     		else	
     		{
-				parent.frames['main'].location.href="ViewContent.action?contentId=" + itemId + "&repositoryId=" + repoId;
+				frm.location.href="ViewContent.action?contentId=" + itemId + "&repositoryId=" + repoId;
 			}
 		}
 		   

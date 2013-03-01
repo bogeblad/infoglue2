@@ -42,6 +42,7 @@ import org.infoglue.cms.entities.content.ContentVersionVO;
 import org.infoglue.cms.entities.content.DigitalAssetVO;
 import org.infoglue.cms.entities.management.ContentTypeDefinitionVO;
 import org.infoglue.cms.entities.management.LanguageVO;
+import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.util.CmsPropertyHandler;
 
 import webwork.action.ActionContext;
@@ -69,66 +70,75 @@ public class CreateContentWizardInputAssetsAction extends CreateContentWizardAbs
         	
     public String doInput() throws Exception
     {
-		CreateContentWizardInfoBean createContentWizardInfoBean = this.getCreateContentWizardInfoBean();
-        this.contentTypeDefinitionVO = ContentTypeDefinitionController.getController().getContentTypeDefinitionVOWithId(createContentWizardInfoBean.getContentTypeDefinitionId());
-		    
-		List assetKeys = ContentTypeDefinitionController.getController().getDefinedAssetKeys(this.contentTypeDefinitionVO.getSchemaValue());
-		
-		if(this.languageId == null)
-		{
-			this.languageId = createContentWizardInfoBean.getLanguageId();
+    	try
+    	{
+			CreateContentWizardInfoBean createContentWizardInfoBean = this.getCreateContentWizardInfoBean();
+	        this.contentTypeDefinitionVO = ContentTypeDefinitionController.getController().getContentTypeDefinitionVOWithId(createContentWizardInfoBean.getContentTypeDefinitionId());
+			    
+			List assetKeys = ContentTypeDefinitionController.getController().getDefinedAssetKeys(this.contentTypeDefinitionVO.getSchemaValue());
+			
 			if(this.languageId == null)
 			{
-				LanguageVO masterLanguageVO = LanguageController.getController().getMasterLanguage(createContentWizardInfoBean.getRepositoryId());
-				this.languageId = masterLanguageVO.getLanguageId();
-			}
-		}
-
-		if(this.contentVersionId == null)
-		{
-			ContentVersionVO newContentVersion = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(createContentWizardInfoBean.getContentVO().getId(), languageId);
-			this.contentVersionId = newContentVersion.getId();
-		}
-
-		boolean hasMandatoryAssets = false;
-		boolean missingAsset = false;
-		Iterator assetKeysIterator = assetKeys.iterator();
-		while(assetKeysIterator.hasNext())
-		{
-			AssetKeyDefinition assetKeyDefinition = (AssetKeyDefinition)assetKeysIterator.next();
-			if(assetKeyDefinition.getIsMandatory().booleanValue())
-			{
-				hasMandatoryAssets = true;
-				DigitalAssetVO asset = DigitalAssetController.getController().getDigitalAssetVO(createContentWizardInfoBean.getContentVO().getId(), languageId, assetKeyDefinition.getAssetKey(), false);
-				if(asset == null)
+				this.languageId = createContentWizardInfoBean.getLanguageId();
+				if(this.languageId == null)
 				{
-					mandatoryAssetKey = assetKeyDefinition.getAssetKey();
-					mandatoryAssetMaximumSize = "" + assetKeyDefinition.getMaximumSize();
-					missingAsset = true;
-					break;
+					LanguageVO masterLanguageVO = LanguageController.getController().getMasterLanguage(createContentWizardInfoBean.getRepositoryId());
+					this.languageId = masterLanguageVO.getLanguageId();
 				}
 			}
-		}
-
-		if(!hasMandatoryAssets && !inputMoreAssets.equalsIgnoreCase("false"))
-			inputMoreAssets = "true";
-
-		if(missingAsset)
-		{
-			inputMoreAssets = "false";
-			return "input";
-		}
-		else
-		{
-			if(inputMoreAssets != null && inputMoreAssets.equalsIgnoreCase("true"))
+	
+			if(this.contentVersionId == null)
 			{
-				return "input";				
+				ContentVersionVO newContentVersion = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(createContentWizardInfoBean.getContentVO().getId(), languageId);
+				this.contentVersionId = newContentVersion.getId();
+			}
+	
+			boolean hasMandatoryAssets = false;
+			boolean missingAsset = false;
+			Iterator assetKeysIterator = assetKeys.iterator();
+			while(assetKeysIterator.hasNext())
+			{
+				AssetKeyDefinition assetKeyDefinition = (AssetKeyDefinition)assetKeysIterator.next();
+				if(assetKeyDefinition.getIsMandatory().booleanValue())
+				{
+					hasMandatoryAssets = true;
+					DigitalAssetVO asset = DigitalAssetController.getController().getDigitalAssetVO(createContentWizardInfoBean.getContentVO().getId(), languageId, assetKeyDefinition.getAssetKey(), false);
+					if(asset == null)
+					{
+						mandatoryAssetKey = assetKeyDefinition.getAssetKey();
+						mandatoryAssetMaximumSize = "" + assetKeyDefinition.getMaximumSize();
+						missingAsset = true;
+						break;
+					}
+				}
+			}
+	
+			if(!hasMandatoryAssets && !inputMoreAssets.equalsIgnoreCase("false"))
+				inputMoreAssets = "true";
+	
+			if(missingAsset)
+			{
+				inputMoreAssets = "false";
+				return "input";
 			}
 			else
 			{
-	    		return "success";
+				if(inputMoreAssets != null && inputMoreAssets.equalsIgnoreCase("true"))
+				{
+					return "input";
+				}
+				else
+				{
+		    		return "success";
+				}
 			}
-		}
+    	}
+    	catch (Throwable ex)
+    	{
+    		logger.warn("An error occured with content wizard bean. The bean will be discarded. Error type " + ex.getClass() + ". Message: " + ex.getMessage());
+    		invalidateCreateContentWizardInfoBean();
+    		throw new SystemException(ex);
+    	}
 
     }
 

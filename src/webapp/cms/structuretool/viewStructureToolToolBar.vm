@@ -20,16 +20,17 @@
 	
 		function openMainArea(url)
 		{
+			var frm = parent.frames["main"] || parent.frames[3];
 			//alert('url:' + url);
 			if(url.indexOf("ViewListSiteNodeVersion.action") > -1
 			|| url.indexOf("UnpublishSiteNodeVersion!inputChooseSiteNodes.action") > -1
 			|| url.indexOf("UnpublishContentVersion!inputChooseContents.action") > -1)
 			{
 				//alert('$this.getCMSBaseUrl()/InProcessLoading!executeStructure.action');
-				parent.frames["main"].location.href = 'InProcessLoading!executeStructure.action';
+				frm.location.href = 'InProcessLoading!executeStructure.action';
 				
 				setTimeout(function() {
-					parent.frames["main"].invokeURL(url);
+					frm.invokeURL(url);
 				}, 500);
 				
 				setTimeout(function() {
@@ -37,13 +38,13 @@
 					convertedURL = convertedURL.replace("ViewListSiteNodeVersion","ViewListSiteNodeVersion!showProcessesAsJSON");
 					convertedURL = convertedURL.replace("UnpublishSiteNodeVersion!inputChooseSiteNodes.action","UnpublishSiteNodeVersion!showProcessesAsJSON.action");
 					convertedURL = convertedURL.replace("UnpublishContentVersion!inputChooseContents.action","UnpublishContentVersion!showProcessesAsJSON.action");
-					parent.frames["main"].showProcessURL(convertedURL);
+					frm.showProcessURL(convertedURL);
 				}, 500);
 				
 			}
 			else
 			{
-				parent.frames["main"].location.href = '' + url;
+				frm.location.href = '' + url;
 				if(url.indexOf("ViewPage") > -1)
 				{
 					this.location.href = "$this.getCMSBaseUrl()/ViewStructureToolToolBar.action?title=tool.structuretool.siteNodeComponentsHeader&toolbarKey=tool.structuretool.siteNodeComponentsHeader&siteNodeId=$siteNodeId&repositoryId=$repositoryId&isBranch=true";
@@ -58,7 +59,7 @@
 		
 		function reloadPage()
 		{
-			var loc = parent.frames["main"].location || parent.frames[3];
+			var loc = parent.frames["main"].location || parent.frames[3].location;
 			#if($title == "tool.structuretool.siteNodeDetailsHeader")
 				loc.href = "$this.getComponentRendererUrl()$this.getComponentRendererAction()?siteNodeId=$siteNodeId&reloadToolbar=true";
 			#else

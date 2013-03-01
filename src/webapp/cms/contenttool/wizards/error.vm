@@ -3,13 +3,13 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
 #if($colorScheme == "ManagementTool")
-	#beginManagementTool("Error" "Error" "null")
+	#beginManagementTool("tool.common.error" "Error" "null")
 #elseif($colorScheme == "StructureTool")
-	#beginStructureTool("Error" "Error" "null" "null" "null" "null")
+	#beginStructureTool("tool.common.error" "Error" "null" "null" "null" "null")
 #elseif($colorScheme == "PublishingTool")
-	#beginPublishingTool("Error" "Error" "null" "null" "null" "null")
+	#beginPublishingTool("tool.common.error" "Error" "null" "null" "null" "null")
 #else
-	#beginContentTool("Error" "Error" "null" "null" "null" "null")
+	#beginContentTool("tool.common.error" "Error" "null" "null" "null" "null")
 #end
 
 <table>

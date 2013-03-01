@@ -1285,7 +1285,7 @@ public class ContentVersionController extends BaseController
     
     public ContentVersion create(Content content, Language language, ContentVersionVO contentVersionVO, Integer oldContentVersionId, boolean allowBrokenAssets, boolean duplicateAssets, Integer excludedAssetId, Database db) throws ConstraintException, SystemException, Exception
     {
-    	//Behšvs verkligen content hŠr? MŠt tiderna ocksŒ
+    	//Behï¿½vs verkligen content hï¿½r? Mï¿½t tiderna ocksï¿½
     	Timer t = new Timer();		
     	ContentVersion contentVersion = new ContentVersionImpl();
 		contentVersion.setValueObject(contentVersionVO);
@@ -1306,7 +1306,7 @@ public class ContentVersionController extends BaseController
 
     public MediumContentVersionImpl createMedium(Integer contentId, Integer languageId, ContentVersionVO contentVersionVO, Database db) throws ConstraintException, SystemException, Exception
     {
-    	//Behšvs verkligen content hŠr? MŠt tiderna ocksŒ
+    	//Behï¿½vs verkligen content hï¿½r? Mï¿½t tiderna ocksï¿½
     	Timer t = new Timer();		
     	MediumContentVersionImpl contentVersion = new MediumContentVersionImpl();
 		contentVersion.setValueObject(contentVersionVO);
@@ -1321,7 +1321,7 @@ public class ContentVersionController extends BaseController
 
     public ContentVersion createMedium(ContentVersion oldContentVersion, Integer contentId, Integer languageId, ContentVersionVO contentVersionVO, Integer oldContentVersionId, boolean hasAssets, boolean allowBrokenAssets, boolean duplicateAssets, Integer excludedAssetId, Database db) throws ConstraintException, SystemException, Exception
     {
-    	//Behšvs verkligen content hŠr? MŠt tiderna ocksŒ
+    	//Behï¿½vs verkligen content hï¿½r? Mï¿½t tiderna ocksï¿½
     	Timer t = new Timer();		
     	MediumContentVersionImpl contentVersion = new MediumContentVersionImpl();
 		contentVersion.setValueObject(contentVersionVO);
@@ -1715,7 +1715,7 @@ public class ContentVersionController extends BaseController
 				}
 			}
 		    
-	    	registryController.updateContentVersionThreaded(contentVersion.getValueObject(), latestSiteNodeVersion.getValueObject());
+	    	registryController.updateContentVersionThreaded(contentVersion.getValueObject(), latestSiteNodeVersion == null ? null : latestSiteNodeVersion.getValueObject());
 			   
 	    	updatedContentVersionVO = contentVersion.getValueObject();
 	    	
