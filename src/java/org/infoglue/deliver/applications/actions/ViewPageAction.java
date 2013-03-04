@@ -36,6 +36,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Random;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.Cookie;
@@ -591,8 +593,9 @@ public class ViewPageAction extends InfoGlueAbstractAction
 			}
 
 			String originalFullUrl = getOriginalFullURL();
-			if(elapsedTime > 1000)
-				RequestAnalyser.getRequestAnalyser().registerPageStatistics("" + originalFullUrl, elapsedTime);
+			RequestAnalyser.getRequestAnalyser().registerLatestPageStatistics("" + originalFullUrl + " (" + browserBean.getUseragent() + ", IP: " + getRequest().getRemoteAddr() + ") - took " + elapsedTime + " ms.");
+			if(elapsedTime > 5000)
+				RequestAnalyser.getRequestAnalyser().registerPageStatistics("" + originalFullUrl + " (" + browserBean.getUseragent() + ")", elapsedTime);
 		    		    
 		    //System.out.println("The page delivery took " + elapsedTime + "ms");
 		    if(elapsedTime > 10000)
@@ -613,10 +616,13 @@ public class ViewPageAction extends InfoGlueAbstractAction
 	    		tk.done();
 	    	else
 	    		logger.warn("Done had allready been run... skipping");
+		
+			killUnwantedSessions();
 		}
 		
-        return NONE;
+		return NONE;
     }
+
 
     
     /**
@@ -1006,7 +1012,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
 		    //This only states how much memory in general has been allocated more than when the thread started. It can well be other threads allocating but a timeframe is nice.
 			float memoryDiff = (((float)Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) - startTotalMemory) / 1024f / 1024f;
 			logger.info("memoryDiff:" + memoryDiff + "(" + startTotalMemory + "-" + ((float)Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) + ")");
-			if(memoryDiff > 150)
+			if(memoryDiff > 100)
 				logger.warn("During the rendering of: " + this.getOriginalFullURL() + " a large amount (" + (int)memoryDiff + "MB) was allocated.");
 			
 			if(!memoryWarningSent)
@@ -2332,6 +2338,58 @@ public class ViewPageAction extends InfoGlueAbstractAction
 		
 		return infoGluePrincipal;		
   	}
+	
+	/**
+	 * This method removes sessions just created if it was a user agent (bot) matched that we don't think reuses sessions anyway. It would only hog memory.
+	 */
+	public void killUnwantedSessions() 
+	{
+		try
+		{
+			if(browserBean.getUseragent() != null)
+			{
+				Pattern pattern = null;
+				String userAgentsRegexp = null;
+				try
+				{
+					Map cacheSettings = CmsPropertyHandler.getCacheSettings();
+					//System.out.println("cacheSettings:" + cacheSettings);
+			    	if(cacheSettings != null)
+			    	{
+			    		userAgentsRegexp = (String)cacheSettings.get("KILL_SESSION_FOR_USERAGENTSMATCHING");
+				    	if(userAgentsRegexp != null && !userAgentsRegexp.equals(""))
+							pattern = Pattern.compile(userAgentsRegexp);
+				    }
+				}
+				catch (Exception e) 
+				{
+					logger.warn("cacheSettings was null:" + e.getMessage(), e);
+				}
+
+				if(logger.isInfoEnabled())
+				{
+					logger.info("userAgentsRegexp:" + userAgentsRegexp);
+				}
+				
+				if(pattern != null)
+				{
+			        Matcher matcher = pattern.matcher(browserBean.getUseragent());
+			        if(matcher.find())
+			    	{
+			        	logger.info("Killing session from:" + browserBean.getUseragent());
+			        	this.getHttpSession().invalidate();
+			    	}
+			    	matcher.reset();
+				}
+			}
+		}
+		catch (Exception e) 
+		{
+			logger.warn("Problem with session validation check");
+		}
+	}
+
+	
 	/**
 	 * Setters and getters for all things sent to the page in the request
 	 */
