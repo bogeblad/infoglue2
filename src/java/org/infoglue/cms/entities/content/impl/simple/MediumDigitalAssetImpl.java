@@ -35,12 +35,12 @@ import org.infoglue.cms.entities.kernel.BaseEntityVO;
 public class MediumDigitalAssetImpl extends DigitalAssetImpl
 {
     private DigitalAssetVO valueObject = new DigitalAssetVO();
-	//private byte[] assetBytes = null;
+	private byte[] assetBytes = null;
 	private java.util.Collection contentVersions;
 	private java.util.Collection userProperties;
 	private java.util.Collection roleProperties;
 	private java.util.Collection groupProperties;
-	//private java.io.InputStream assetBlob;
+	private java.io.InputStream assetBlob;
 	private boolean assetBlobRead = false;
 	    
     /**
@@ -181,7 +181,7 @@ public class MediumDigitalAssetImpl extends DigitalAssetImpl
     {
         this.groupProperties = groupProperties;
     }
-    /*
+
     public void setAssetBlob(java.io.InputStream assetBlob)
     {
         this.assetBlob = assetBlob;
@@ -240,7 +240,6 @@ public class MediumDigitalAssetImpl extends DigitalAssetImpl
 				
 		return this.assetBytes;
 	}
-	*/
 
 	public boolean getIsAssetBlobRead() 
 	{

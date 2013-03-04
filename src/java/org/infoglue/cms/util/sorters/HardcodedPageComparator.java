@@ -1,11 +1,15 @@
 package org.infoglue.cms.util.sorters;
 
 import java.util.Comparator;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.log4j.Logger;
 import org.infoglue.deliver.applications.databeans.WebPage;
 import org.infoglue.deliver.controllers.kernel.impl.simple.TemplateController;
+import org.infoglue.deliver.util.RequestAnalyser;
+import org.infoglue.deliver.util.Timer;
 
 /**
  * Sort on a particular property, using reflection to find the value
@@ -24,6 +28,8 @@ public class HardcodedPageComparator implements Comparator
 	
 	private TemplateController templateController;
 
+	private static Map<String,Boolean> classUndefinedProperties = new HashMap<String,Boolean>();
+	
 	public HardcodedPageComparator(String sortProperty, String sortOrder, boolean numberOrder, String nameProperty, String namesInOrderString, TemplateController templateController)
 	{
 		this.sortProperty = sortProperty;
@@ -36,12 +42,14 @@ public class HardcodedPageComparator implements Comparator
 
 	public int compare(Object o1, Object o2)
 	{
+		Timer t = new Timer();
+
 	    Comparable valueOne = getProperty(o1, sortProperty);
 		Comparable valueTwo = getProperty(o2, sortProperty);
 		
 		Comparable valueOneName = getProperty(o1, nameProperty);
 		Comparable valueTwoName = getProperty(o2, nameProperty);
-		
+
 		if(valueOne == null)
 		{
 		    WebPage webPage1 = (WebPage)o1;
@@ -155,16 +163,39 @@ public class HardcodedPageComparator implements Comparator
 	{
 		try
 		{
-			Object propertyObject = PropertyUtils.getProperty(o, sortProperty);
+			if(o == null || classUndefinedProperties.get("" + o.getClass().getName() + "_" + property) != null)
+				return null;
+			
+			Object propertyObject = PropertyUtils.getProperty(o, property);
+
 			if(propertyObject instanceof String)
-				return (Comparable)propertyObject.toString().toLowerCase();
+			{
+			    if(this.numberOrder)
+			    {
+			        try
+			        {
+			            return (Comparable)new Long(propertyObject.toString());
+			        }
+			        catch(Exception e)
+			        {
+			            logger.info("Not a number..." + e.getMessage());
+			        }
+			    }
+			    
+			    return (Comparable)propertyObject.toString().toLowerCase();
+			}
 			else
+			{
 				return (Comparable)propertyObject;
+			}
 		}
 		catch (Exception e)
 		{
-			logger.info(getClass().getName() + " Error finding property " + property, e);
+			//logger.warn("Error finding property " + property + " on " + o.getClass() + ". Caching this.");
+			logger.info("Error finding property " + property + " on " + o.getClass() + ". Caching this.", e);
+			classUndefinedProperties.put("" + o.getClass().getName() + "_" + property, new Boolean(false));
 			return null;
 		}
 	}
+
 }

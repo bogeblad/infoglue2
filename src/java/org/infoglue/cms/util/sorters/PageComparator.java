@@ -1,11 +1,15 @@
 package org.infoglue.cms.util.sorters;
 
 import java.util.Comparator;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.log4j.Logger;
 import org.infoglue.deliver.applications.databeans.WebPage;
 import org.infoglue.deliver.controllers.kernel.impl.simple.TemplateController;
+import org.infoglue.deliver.util.RequestAnalyser;
+import org.infoglue.deliver.util.Timer;
 
 /**
  * Sort on a particular property, using reflection to find the value
@@ -20,6 +24,8 @@ public class PageComparator implements Comparator
 	private String sortOrder;
 	private boolean numberOrder;
 	private TemplateController templateController;
+
+	private static Map<String,Boolean> classUndefinedProperties = new HashMap<String,Boolean>();
 
 	public PageComparator(String sortProperty, String sortOrder, boolean numberOrder, TemplateController templateController)
 	{
@@ -41,7 +47,7 @@ public class PageComparator implements Comparator
 		    
 		    Integer meta1Id = this.templateController.getMetaInformationContentId(webPage1.getSiteNodeId());
 		    Integer meta2Id = this.templateController.getMetaInformationContentId(webPage2.getSiteNodeId());
-		    
+
 		    valueOne = this.templateController.getContentAttribute(meta1Id, this.templateController.getLanguageId(), sortProperty);
 			valueTwo = this.templateController.getContentAttribute(meta2Id, this.templateController.getLanguageId(), sortProperty);
 		
@@ -107,7 +113,11 @@ public class PageComparator implements Comparator
 	{
 		try
 		{
-			Object propertyObject = PropertyUtils.getProperty(o, sortProperty);
+			if(o == null || classUndefinedProperties.get("" + o.getClass().getName() + "_" + property) != null)
+				return null;
+
+			Object propertyObject = PropertyUtils.getProperty(o, property);
+
 			if(propertyObject instanceof String)
 			{
 			    if(this.numberOrder)
@@ -131,7 +141,9 @@ public class PageComparator implements Comparator
 		}
 		catch (Exception e)
 		{
-			logger.info(getClass().getName() + " Error finding property " + property, e);
+			//logger.warn("Error finding property " + property + " on " + o.getClass() + ". Caching this.");
+			logger.info("Error finding property " + property + " on " + o.getClass() + ". Caching this.", e);
+			classUndefinedProperties.put("" + o.getClass().getName() + "_" + property, new Boolean(false));
 			return null;
 		}
 	}

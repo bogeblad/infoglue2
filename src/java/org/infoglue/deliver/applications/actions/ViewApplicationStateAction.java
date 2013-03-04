@@ -896,7 +896,32 @@ public class ViewApplicationStateAction extends InfoGlueAbstractAction
 
         return "successPageStatistics";
     }
-    
+
+    public String doLatestPageStatistics() throws Exception
+    {
+    	String returnValue = handleAccess(this.getRequest());
+    	if(returnValue != null)
+    		return returnValue;
+        //states.add(getList("Average processing time per request (ms)", "" + RequestAnalyser.getRequestAnalyser().getAverageElapsedTime()));
+		
+        states.add(getList("<br/><strong>Last requested pages</strong>", "&nbsp;"));
+        
+        VisualFormatter vf = new VisualFormatter();
+        
+        List unsortedPageUrls = new ArrayList();
+        List<String> pageUrls = RequestAnalyser.getRequestAnalyser().getLatestPageStatistics();
+        Iterator pageUrlsIterator = pageUrls.iterator();
+        while(pageUrlsIterator.hasNext())
+        {
+        	String pageUrl = (String)pageUrlsIterator.next();
+        	unsortedPageUrls.add(getList("" + pageUrl, ""));
+        }
+
+    	states.addAll(unsortedPageUrls);
+
+        return "successPageStatistics";
+    }
+
     public String doCacheStatistics() throws Exception
     {
     	String returnValue = handleAccess(this.getRequest());
