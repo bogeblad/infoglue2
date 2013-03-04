@@ -331,6 +331,7 @@
     	<li><a href="ViewApplicationState!cacheStatistics.action">Cache statistics</a></li>
     	<li><a href="ViewApplicationState!componentStatistics.action">Component statistics</a></li>
     	<li><a href="ViewApplicationState!pageStatistics.action">Page statistics</a></li>
+    	<li><a href="ViewApplicationState!latestPageStatistics.action">100 Latest requests</a></li>
     	<li><a href="jsp/BlockedThread.jsp">Suspected thread locks (On Java 5-setups only).</a></li>
 		<li><a href="jsp/ThreadAnalysis.jsp">List of all active threads (On Java 5-setups only).</a></li>
 		<li><a href="jsp/PermGen.jsp">Detailed memory info (On Java 5-setups only).</a></li>
