@@ -289,7 +289,7 @@ public class DigitalAssetController extends BaseController
 		
 		try
 		{			
-        	ContentVersion contentVersion = ContentVersionController.getContentVersionController().checkStateAndChangeIfNeeded(contentVersionId, principal, db);
+        	MediumContentVersionImpl contentVersion = ContentVersionController.getContentVersionController().checkStateAndChangeIfNeeded(contentVersionId, principal, db);
 			//ContentVersion contentVersion = ContentVersionController.getContentVersionController().getContentVersionWithId(contentVersionId, db);
         	returningContentVersionId.add(contentVersion.getId());
         	
@@ -312,7 +312,7 @@ public class DigitalAssetController extends BaseController
    	 * The asset is send in as an InputStream which castor inserts automatically.
    	 */
 
-   	public static DigitalAssetVO create(DigitalAssetVO digitalAssetVO, InputStream is, ContentVersion contentVersion, Database db) throws SystemException, Exception
+   	public static DigitalAssetVO create(DigitalAssetVO digitalAssetVO, InputStream is, MediumContentVersionImpl contentVersion, Database db) throws SystemException, Exception
    	{
 		DigitalAsset digitalAsset = null;
 		
@@ -320,12 +320,13 @@ public class DigitalAssetController extends BaseController
 		contentVersions.add(contentVersion);
 		logger.info("Added contentVersion:" + contentVersion.getId());
 	
-		digitalAsset = new DigitalAssetImpl();
+		digitalAsset = new MediumDigitalAssetImpl();
 		digitalAsset.setValueObject(digitalAssetVO.createCopy());
 		if(CmsPropertyHandler.getEnableDiskAssets().equals("false"))
 			digitalAsset.setAssetBlob(is);
 		digitalAsset.setContentVersions(contentVersions);
-
+		
+		System.out.println("contentVersion:" + contentVersion.getClass().getName());
 		db.create(digitalAsset);
         
 		//if(contentVersion.getDigitalAssets() == null)
@@ -1885,6 +1886,9 @@ public class DigitalAssetController extends BaseController
 
 	public void appendContentId(List<DigitalAssetVO> matchingAssets, Database db) throws Exception 
 	{
+		if(matchingAssets == null || matchingAssets.size() == 0)
+			return;
+		
 		StringBuilder variables = new StringBuilder();
 		for(int i=0; i<matchingAssets.size(); i++)
 			variables.append("$" + (i+1) + (i+1!=matchingAssets.size() ? "," : ""));

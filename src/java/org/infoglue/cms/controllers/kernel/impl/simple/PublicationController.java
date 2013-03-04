@@ -507,6 +507,13 @@ public class PublicationController extends BaseController
 	 * This method creates a new publication with the concerned events carried out.
 	 */
 	public PublicationVO createAndPublish(PublicationVO publicationVO, List<EventVO> events, boolean overrideVersionModifyer, InfoGluePrincipal infoGluePrincipal, Database db) throws SystemException, Exception
+	{
+		return createAndPublish(publicationVO, events, overrideVersionModifyer, infoGluePrincipal, db, false);
+	}
+	/**
+	 * This method creates a new publication with the concerned events carried out.
+	 */
+	public PublicationVO createAndPublish(PublicationVO publicationVO, List<EventVO> events, boolean overrideVersionModifyer, InfoGluePrincipal infoGluePrincipal, Database db, boolean isDeleteOperation) throws SystemException, Exception
     {
         List<Integer> siteNodeVersionId = new ArrayList<Integer>();
         List<Integer> contentVersionId = new ArrayList<Integer>();
@@ -525,7 +532,7 @@ public class PublicationController extends BaseController
 		Map<Integer,SiteNodeVO> siteNodeMap = SiteNodeController.getController().getSiteNodeVOMapWithNoStateCheck(siteNodeVersionId);
 		Map<Integer,ContentVO> contentMap = ContentController.getContentController().getContentVOMapWithNoStateCheck(contentVersionId);
 
-        publicationVO = createAndPublish(publicationVO, events, siteNodeMap, contentMap, overrideVersionModifyer, infoGluePrincipal, db);
+        publicationVO = createAndPublish(publicationVO, events, siteNodeMap, contentMap, overrideVersionModifyer, infoGluePrincipal, db, isDeleteOperation);
 	        
         return publicationVO;
     }
@@ -622,10 +629,15 @@ public class PublicationController extends BaseController
         return publicationVO;
     }
 
+	public PublicationVO createAndPublish(PublicationVO publicationVO, List<EventVO> events, Map<Integer,SiteNodeVO> newSiteNodeMap, Map<Integer,ContentVO> newContentMap, boolean overrideVersionModifyer, InfoGluePrincipal infoGluePrincipal, Database db) throws SystemException, Exception
+    {
+		return createAndPublish(publicationVO, events, newSiteNodeMap, newContentMap, overrideVersionModifyer, infoGluePrincipal, db, false);
+    }
+	
 	/**
 	 * This method creates a new publication with the concerned events carried out.
 	 */
-	public PublicationVO createAndPublish(PublicationVO publicationVO, List<EventVO> events, Map<Integer,SiteNodeVO> newSiteNodeMap, Map<Integer,ContentVO> newContentMap, boolean overrideVersionModifyer, InfoGluePrincipal infoGluePrincipal, Database db) throws SystemException, Exception
+	public PublicationVO createAndPublish(PublicationVO publicationVO, List<EventVO> events, Map<Integer,SiteNodeVO> newSiteNodeMap, Map<Integer,ContentVO> newContentMap, boolean overrideVersionModifyer, InfoGluePrincipal infoGluePrincipal, Database db, boolean isDeleteOperation) throws SystemException, Exception
     {
 	   	logger.info("*********************************");
     	logger.info("Creating edition ");
@@ -644,7 +656,7 @@ public class PublicationController extends BaseController
 			SiteNodeVO siteNodeVO = newSiteNodeMap.get(event.getEntityId());
 			ContentVO contentVO = newContentMap.get(event.getEntityId());
 			
-			createPublicationInformation(publication, EventController.getEventWithId(event.getId(), db), siteNodeVO, contentVO, overrideVersionModifyer, infoGluePrincipal, db);
+			createPublicationInformation(publication, EventController.getEventWithId(event.getId(), db), siteNodeVO, contentVO, overrideVersionModifyer, infoGluePrincipal, db, isDeleteOperation);
 		}
 
 		db.create(publication);
@@ -790,6 +802,14 @@ public class PublicationController extends BaseController
 	 */
 	private static void createPublicationInformation(Publication publication, Event event, SiteNodeVO siteNodeVO, ContentVO contentVO, boolean overrideVersionModifyer, InfoGluePrincipal infoGluePrincipal, Database db) throws Exception
 	{
+		createPublicationInformation(publication, event, siteNodeVO, contentVO, overrideVersionModifyer, infoGluePrincipal, db, false);
+	}
+	/**
+	 * Creates a connection between contentversion or siteNodeVersion and publication, ie adds a contentversion
+	 * to the publication.
+	 */
+	private static void createPublicationInformation(Publication publication, Event event, SiteNodeVO siteNodeVO, ContentVO contentVO, boolean overrideVersionModifyer, InfoGluePrincipal infoGluePrincipal, Database db, boolean isDeleteOperation) throws Exception
+	{
 		String entityClass = event.getEntityClass();
 		Integer entityId   = event.getEntityId();
 		Integer typeId     = event.getTypeId();
@@ -801,7 +821,12 @@ public class PublicationController extends BaseController
         if(entityClass.equals(ContentVersion.class.getName()))
 		{
 			ContentVersion contentVersion = null;
-			ContentVersion oldContentVersion = ContentVersionController.getContentVersionController().getMediumContentVersionWithId(entityId, db);
+			ContentVersion oldContentVersion = null;
+			if(!isDeleteOperation)
+				oldContentVersion = ContentVersionController.getContentVersionController().getMediumContentVersionWithId(entityId, db);
+			else
+				oldContentVersion = ContentVersionController.getContentVersionController().getReadOnlyMediumContentVersionWithId(entityId, db);
+			
 			if(oldContentVersion != null && typeId.intValue() == EventVO.UNPUBLISH_LATEST.intValue())
 			{
 			    oldContentVersion.setIsActive(new Boolean(false));
@@ -827,7 +852,11 @@ public class PublicationController extends BaseController
 			    List events = new ArrayList();
 				Integer contentId = oldContentVersion.getValueObject().getContentId();
 	    		ContentVersion newContentVersion = ContentStateController.changeState(entityId, contentVO, ContentVersionVO.PUBLISHED_STATE, "Published", overrideVersionModifyer, null, infoGluePrincipal, contentId, db, events);
-	    		contentVersion = ContentVersionController.getContentVersionController().getMediumContentVersionWithId(newContentVersion.getContentVersionId(), db);
+	    		contentVersion = null;
+	    		if(!isDeleteOperation)
+	    			contentVersion = ContentVersionController.getContentVersionController().getMediumContentVersionWithId(newContentVersion.getContentVersionId(), db);
+	    		else
+	    			contentVersion = ContentVersionController.getContentVersionController().getReadOnlyMediumContentVersionWithId(newContentVersion.getContentVersionId(), db);
 			}
 
 			if(contentVersion != null)

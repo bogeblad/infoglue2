@@ -339,8 +339,11 @@ public class InfoGlueSettingsController extends BaseController implements Castor
 	    		try
 	    		{
 		    		StringBuilder sql = new StringBuilder();
-		    		sql.append("select rownum AS ID, entity_key as column1Value, string_val as column2Value, '' as column3Value, '' as column4Value, '' as column5Value, '' as column6Value, '' as column7Value from os_propertyentry where entity_name = 'infoglue' AND key_type = 5 and entity_key like 'content_%_initialLanguageId' AND String_VAL <> '-1' ");
-		    		
+		    		if(CmsPropertyHandler.getDatabaseEngine().equalsIgnoreCase("oracle"))
+		    			sql.append("select rownum AS ID, entity_key as column1Value, string_val as column2Value, '' as column3Value, '' as column4Value, '' as column5Value, '' as column6Value, '' as column7Value from os_propertyentry where entity_name = 'infoglue' AND key_type = 5 and entity_key like 'content_%_initialLanguageId' AND String_VAL <> '-1' ");
+		    		else if(CmsPropertyHandler.getDatabaseEngine().equalsIgnoreCase("mysql"))
+		    			sql.append("select @rownum:=@rownum+1 AS ID, entity_key as column1Value, string_val as column2Value, '' as column3Value, '' as column4Value, '' as column5Value, '' as column6Value, '' as column7Value from os_propertyentry, (SELECT @rownum:=0) r where entity_name = 'infoglue' AND key_type = 5 and entity_key like 'content_%_initialLanguageId' AND String_VAL <> '-1' ");
+		    			
 		    		String SQL = "CALL SQL " + sql.toString() + "AS org.infoglue.cms.entities.management.GeneralOQLResult";
 		    		
 		    		OQLQuery oql = db.getOQLQuery(SQL);

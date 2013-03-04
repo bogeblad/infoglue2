@@ -284,55 +284,62 @@ public class ComponentController extends BaseController
 			CacheController.cacheObject("componentContentsCache", cacheKey, templatesAndPagePartMap);
 		}
 		
-    	ContentVO contentVO = ContentController.getContentController().getContentVOWithId(contentId);
-    	if(contentVO != null)
-    	{
-	    	LanguageVO masterLanguageVO = LanguageController.getController().getMasterLanguage(contentVO.getRepositoryId());
-	    	ContentVersionVO contentVersionVO = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(contentId, masterLanguageVO.getId());
-	
-	    	String groupNameDefault = "Unknown";
-			String descriptionDefault = "Unknown";
-	    	String groupNameAttribute = ContentVersionController.getContentVersionController().getAttributeValue(contentVersionVO, "GroupName", false);
-	    	logger.info("groupNameAttribute:" + groupNameAttribute);
-	    	String descriptionAttribute = ContentVersionController.getContentVersionController().getAttributeValue(contentVersionVO, "Description", false);
-			contentVO.getExtraProperties().put("GroupName", (groupNameAttribute == null ? groupNameDefault : groupNameAttribute));
-			contentVO.getExtraProperties().put("Description", (descriptionAttribute == null ? descriptionDefault : descriptionAttribute));
+		try
+		{
+	    	ContentVO contentVO = ContentController.getContentController().getContentVOWithId(contentId);
+	    	if(contentVO != null)
+	    	{
+		    	LanguageVO masterLanguageVO = LanguageController.getController().getMasterLanguage(contentVO.getRepositoryId());
+		    	ContentVersionVO contentVersionVO = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(contentId, masterLanguageVO.getId());
 		
-	    	List<ContentVO> allComponents = templatesAndPagePartMap.get("all");
-	    	if(allComponents == null)
-	    	{
-	    		allComponents = new ArrayList<ContentVO>();
-	    		templatesAndPagePartMap.put("all", allComponents);
+		    	String groupNameDefault = "Unknown";
+				String descriptionDefault = "Unknown";
+		    	String groupNameAttribute = ContentVersionController.getContentVersionController().getAttributeValue(contentVersionVO, "GroupName", false);
+		    	logger.info("groupNameAttribute:" + groupNameAttribute);
+		    	String descriptionAttribute = ContentVersionController.getContentVersionController().getAttributeValue(contentVersionVO, "Description", false);
+				contentVO.getExtraProperties().put("GroupName", (groupNameAttribute == null ? groupNameDefault : groupNameAttribute));
+				contentVO.getExtraProperties().put("Description", (descriptionAttribute == null ? descriptionDefault : descriptionAttribute));
+			
+		    	List<ContentVO> allComponents = templatesAndPagePartMap.get("all");
+		    	if(allComponents == null)
+		    	{
+		    		allComponents = new ArrayList<ContentVO>();
+		    		templatesAndPagePartMap.put("all", allComponents);
+		    	}
+		    	allComponents.add(contentVO);
+		    	logger.info("Adding " + contentVO.getName() + " to group " + contentVO.getName());
+		    	
+		    	List<ContentVO> nameComponents = templatesAndPagePartMap.get(contentVO.getName());
+		    	if(nameComponents == null)
+		    	{
+		    		nameComponents = new ArrayList<ContentVO>();
+		    		templatesAndPagePartMap.put(contentVO.getName(), nameComponents);
+		    	}
+		    	nameComponents.add(contentVO);
+		
+		    	logger.info("Adding " + contentVO.getName() + " to group " + contentVO.getName());
+		    	if(groupNameAttribute != null && !groupNameAttribute.equals(""))
+		    	{
+		        	String[] groupNames = groupNameAttribute.split(",");
+			        for(String groupName : groupNames)
+			        {
+			        	logger.info("groupName:" + groupName);
+			        	List<ContentVO> groupComponents = templatesAndPagePartMap.get(groupName.trim());
+			        	if(groupComponents == null)
+			        	{
+			        		groupComponents = new ArrayList<ContentVO>();
+			        		templatesAndPagePartMap.put(groupName.trim(), groupComponents);
+			        	}
+			        	groupComponents.add(contentVO);
+			        	logger.info("Adding " + contentVO.getName() + " to " + groupName.trim());
+			        }
+		    	}
 	    	}
-	    	allComponents.add(contentVO);
-	    	logger.info("Adding " + contentVO.getName() + " to group " + contentVO.getName());
-	    	
-	    	List<ContentVO> nameComponents = templatesAndPagePartMap.get(contentVO.getName());
-	    	if(nameComponents == null)
-	    	{
-	    		nameComponents = new ArrayList<ContentVO>();
-	    		templatesAndPagePartMap.put(contentVO.getName(), nameComponents);
-	    	}
-	    	nameComponents.add(contentVO);
-	
-	    	logger.info("Adding " + contentVO.getName() + " to group " + contentVO.getName());
-	    	if(groupNameAttribute != null && !groupNameAttribute.equals(""))
-	    	{
-	        	String[] groupNames = groupNameAttribute.split(",");
-		        for(String groupName : groupNames)
-		        {
-		        	logger.info("groupName:" + groupName);
-		        	List<ContentVO> groupComponents = templatesAndPagePartMap.get(groupName.trim());
-		        	if(groupComponents == null)
-		        	{
-		        		groupComponents = new ArrayList<ContentVO>();
-		        		templatesAndPagePartMap.put(groupName.trim(), groupComponents);
-		        	}
-		        	groupComponents.add(contentVO);
-		        	logger.info("Adding " + contentVO.getName() + " to " + groupName.trim());
-		        }
-	    	}
-    	}
+		}
+		catch (Exception e) 
+		{
+			logger.warn("Component was deleted..");
+		}
 	}
 	
 	/**

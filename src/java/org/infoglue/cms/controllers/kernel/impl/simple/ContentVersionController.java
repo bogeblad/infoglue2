@@ -174,14 +174,14 @@ public class ContentVersionController extends BaseController
 		return (ContentVersion) getObjectWithId(ContentVersionImpl.class, contentVersionId, db);
     }
 
-    public ContentVersion getMediumContentVersionWithId(Integer contentVersionId, Database db) throws SystemException, Bug
+    public MediumContentVersionImpl getMediumContentVersionWithId(Integer contentVersionId, Database db) throws SystemException, Bug
     {
-		return (ContentVersion) getObjectWithId(MediumContentVersionImpl.class, contentVersionId, db);
+		return (MediumContentVersionImpl) getObjectWithId(MediumContentVersionImpl.class, contentVersionId, db);
     }
 
-    public ContentVersion getReadOnlyMediumContentVersionWithId(Integer contentVersionId, Database db) throws SystemException, Bug
+    public MediumContentVersionImpl getReadOnlyMediumContentVersionWithId(Integer contentVersionId, Database db) throws SystemException, Bug
     {
-		return (ContentVersion) getObjectWithIdAsReadOnly(MediumContentVersionImpl.class, contentVersionId, db);
+		return (MediumContentVersionImpl) getObjectWithIdAsReadOnly(MediumContentVersionImpl.class, contentVersionId, db);
     }
 
     public ContentVersion getReadOnlyContentVersionWithId(Integer contentVersionId, Database db) throws SystemException, Bug
@@ -1201,7 +1201,6 @@ public class ContentVersionController extends BaseController
 		
 		return contentVersion;
     }
-
    	
 	/**
 	 * This method created a new contentVersion in the database.
@@ -1213,6 +1212,17 @@ public class ContentVersionController extends BaseController
     }
     
     
+	/**
+	 * This method created a new contentVersion in the database. It also updates the owning content
+	 * so it recognises the change. 
+	 */
+   
+    public MediumContentVersionImpl create(Integer contentId, Integer languageId, ContentVersionVO contentVersionVO, Integer oldContentVersionId, Database db) throws ConstraintException, SystemException, Exception
+    {
+    	return create(contentId, languageId, contentVersionVO, oldContentVersionId, true, true, null, db);
+    }
+
+
     /**
 	 * This method created a new contentVersion in the database.
 	 */
@@ -1220,12 +1230,12 @@ public class ContentVersionController extends BaseController
     public ContentVersionVO create(Integer contentId, Integer languageId, ContentVersionVO contentVersionVO, Integer oldContentVersionId, boolean allowBrokenAssets, boolean duplicateAssets) throws ConstraintException, SystemException
     {
 		Database db = CastorDatabaseService.getDatabase();
-        ContentVersion contentVersion = null;
+        MediumContentVersionImpl contentVersion = null;
 
         beginTransaction(db);
 		try
         {
-			contentVersion = create(contentId, languageId, contentVersionVO, oldContentVersionId, allowBrokenAssets, duplicateAssets, db);
+			contentVersion = create(contentId, languageId, contentVersionVO, oldContentVersionId, allowBrokenAssets, duplicateAssets, null, db);
 			commitTransaction(db);
 		}
         catch(Exception e)
@@ -1237,34 +1247,28 @@ public class ContentVersionController extends BaseController
         }
         
         return contentVersion.getValueObject();
-    }     
-    
-	/**
-	 * This method created a new contentVersion in the database. It also updates the owning content
-	 * so it recognises the change. 
-	 */
-    
-    public ContentVersion create(Integer contentId, Integer languageId, ContentVersionVO contentVersionVO, Integer oldContentVersionId, Database db) throws ConstraintException, SystemException, Exception
-    {
-    	return create(contentId, languageId, contentVersionVO, oldContentVersionId, true, true, db);
-    }
+    } 
 
     
 	/**
 	 * This method created a new contentVersion in the database. It also updates the owning content
 	 * so it recognises the change. 
 	 */
+    /*
     public ContentVersion create(Integer contentId, Integer languageId, ContentVersionVO contentVersionVO, Integer oldContentVersionId, boolean allowBrokenAssets, boolean duplicateAssets, Database db) throws ConstraintException, SystemException, Exception
     {
     	return create(contentId, languageId, contentVersionVO, oldContentVersionId, allowBrokenAssets, duplicateAssets, null, db);
     }
+    */
 
+    /*
     public ContentVersion create(Integer contentId, Integer languageId, ContentVersionVO contentVersionVO, Integer oldContentVersionId, boolean allowBrokenAssets, boolean duplicateAssets, Integer excludedAssetId, Database db) throws ConstraintException, SystemException, Exception
     {
 		Content content   = ContentController.getContentController().getContentWithId(contentId, db);
     	Language language = LanguageController.getController().getLanguageWithId(languageId, db);
 		return create(content, language, contentVersionVO, oldContentVersionId, allowBrokenAssets, duplicateAssets, excludedAssetId, db);
-    }     
+    } 
+    */    
     
 	/**
 	 * This method created a new contentVersion in the database. It also updates the owning content
@@ -1277,29 +1281,30 @@ public class ContentVersionController extends BaseController
     	return create(content, language, contentVersionVO, oldContentVersionId, true, db);
     }
     */
+    /*
     public ContentVersion create(Content content, Language language, ContentVersionVO contentVersionVO, Integer oldContentVersionId, boolean allowBrokenAssets, boolean duplicateAssets, Database db) throws ConstraintException, SystemException, Exception
     {
     	return create(content, language, contentVersionVO, oldContentVersionId, allowBrokenAssets, duplicateAssets, null, db);
       
     }
+    */
     
-    public ContentVersion create(Content content, Language language, ContentVersionVO contentVersionVO, Integer oldContentVersionId, boolean allowBrokenAssets, boolean duplicateAssets, Integer excludedAssetId, Database db) throws ConstraintException, SystemException, Exception
+    public MediumContentVersionImpl create(Integer contentId, Integer languageId, ContentVersionVO contentVersionVO, Integer oldContentVersionId, boolean allowBrokenAssets, boolean duplicateAssets, Integer excludedAssetId, Database db) throws ConstraintException, SystemException, Exception
     {
-    	//Beh�vs verkligen content h�r? M�t tiderna ocks�
     	Timer t = new Timer();		
-    	ContentVersion contentVersion = new ContentVersionImpl();
+    	MediumContentVersionImpl contentVersion = new MediumContentVersionImpl();
 		contentVersion.setValueObject(contentVersionVO);
-        contentVersion.setLanguage((LanguageImpl)language);
-		contentVersion.setOwningContent((ContentImpl)content);
+		contentVersion.getValueObject().setLanguageId(languageId);
+		contentVersion.getValueObject().setContentId(contentId);
 		RequestAnalyser.getRequestAnalyser().registerComponentStatistics("create 2", t.getElapsedTime());
 		
 		db.create(contentVersion); 
 		RequestAnalyser.getRequestAnalyser().registerComponentStatistics("create 3.0", t.getElapsedTime());
 
-        content.getContentVersions().add(contentVersion);
+        //content.getContentVersions().add(contentVersion);
 
         if(oldContentVersionId != null && oldContentVersionId.intValue() != -1)
-		    copyDigitalAssets(getContentVersionWithId(oldContentVersionId, db), contentVersion, allowBrokenAssets, duplicateAssets, excludedAssetId, db);
+		    copyDigitalAssets(getMediumContentVersionWithId(oldContentVersionId, db), contentVersion, allowBrokenAssets, duplicateAssets, excludedAssetId, db);
 
         return contentVersion;
     }     
@@ -1318,8 +1323,8 @@ public class ContentVersionController extends BaseController
 
         return contentVersion;
     }     
-
-    public ContentVersion createMedium(ContentVersion oldContentVersion, Integer contentId, Integer languageId, ContentVersionVO contentVersionVO, Integer oldContentVersionId, boolean hasAssets, boolean allowBrokenAssets, boolean duplicateAssets, Integer excludedAssetId, Database db) throws ConstraintException, SystemException, Exception
+    
+    public MediumContentVersionImpl createMedium(MediumContentVersionImpl oldContentVersion, Integer contentId, Integer languageId, ContentVersionVO contentVersionVO, Integer oldContentVersionId, boolean hasAssets, boolean allowBrokenAssets, boolean duplicateAssets, Integer excludedAssetId, Database db) throws ConstraintException, SystemException, Exception
     {
     	//Beh�vs verkligen content h�r? M�t tiderna ocks�
     	Timer t = new Timer();		
@@ -1448,7 +1453,7 @@ public class ContentVersionController extends BaseController
 		    publicationVO.setDescription("Unpublished all versions before forced deletion");
 		    //publicationVO.setPublisher(this.getInfoGluePrincipal().getName());
 		    publicationVO.setRepositoryId(content.getRepositoryId());
-		    publicationVO = PublicationController.getController().createAndPublish(publicationVO, events, true, infogluePrincipal, db);
+		    publicationVO = PublicationController.getController().createAndPublish(publicationVO, events, true, infogluePrincipal, db, true);
         }
         //TEST
 
@@ -1525,7 +1530,7 @@ public class ContentVersionController extends BaseController
         beginTransaction(db);
 		try
         {
-		    ContentVersion contentVersion = this.getContentVersionWithId(contentVersionId, db);
+			MediumContentVersionImpl contentVersion = this.getMediumContentVersionWithId(contentVersionId, db);
 		    
 		    boolean foundExistingAsset = false;
 		    
@@ -1590,14 +1595,14 @@ public class ContentVersionController extends BaseController
         	if(!skipValidate)
             ceb.throwIfNotEmpty();
             
-            ContentVersion contentVersion = null;
+        	MediumContentVersionImpl contentVersion = null;
             Integer contentVersionIdToUpdate = contentVersionVO.getId();
             
 			contentVersionVO.setModifiedDateTime(new Date());
 	        if(contentVersionVO.getId() == null)
 	    	{
 	    		logger.info("Creating the entity because there was no version at all for: " + contentId + " " + languageId);
-	    		contentVersion = create(contentId, languageId, contentVersionVO, null,  db);
+	    		contentVersion = createMedium(contentId, languageId, contentVersionVO, db);
 	    	}
 	    	else
 	    	{
@@ -2166,7 +2171,7 @@ public class ContentVersionController extends BaseController
 		copyDigitalAssets(originalContentVersion, newContentVersion, true, db);
 	}
 	*/
-	public void copyDigitalAssets(ContentVersion originalContentVersion, ContentVersion newContentVersion, boolean allowBrokenAssets, boolean duplicateAssets, Integer excludedAssetId, Database db) throws ConstraintException, SystemException, Exception
+	public void copyDigitalAssets(MediumContentVersionImpl originalContentVersion, MediumContentVersionImpl newContentVersion, boolean allowBrokenAssets, boolean duplicateAssets, Integer excludedAssetId, Database db) throws ConstraintException, SystemException, Exception
 	{
 	    Collection digitalAssets = originalContentVersion.getDigitalAssets();	
 
@@ -2231,7 +2236,7 @@ public class ContentVersionController extends BaseController
 	    }
 	}	
 
-	public DigitalAssetVO copyDigitalAssetAndRemoveOldReference(ContentVersion contentVersion, DigitalAsset digitalAsset, boolean allowBrokenAssets, Database db) throws ConstraintException, SystemException, Exception
+	public DigitalAssetVO copyDigitalAssetAndRemoveOldReference(MediumContentVersionImpl contentVersion, DigitalAsset digitalAsset, boolean allowBrokenAssets, Database db) throws ConstraintException, SystemException, Exception
 	{
 	    logger.info("Copying digitalAsset " + digitalAsset.getAssetKey());
 	    DigitalAssetVO digitalAssetVO = digitalAsset.getValueObject();
@@ -3277,9 +3282,9 @@ public class ContentVersionController extends BaseController
 	/**
 	 * This method deletes the relation to a digital asset - not the asset itself.
 	 */
-	public ContentVersion checkStateAndChangeIfNeeded(Integer contentVersionId, InfoGluePrincipal principal, Database db) throws ConstraintException, SystemException, Bug
+	public MediumContentVersionImpl checkStateAndChangeIfNeeded(Integer contentVersionId, InfoGluePrincipal principal, Database db) throws ConstraintException, SystemException, Bug
     {
-    	ContentVersion contentVersion = null;
+		MediumContentVersionImpl contentVersion = null;
     	ContentVersionVO contentVersionVO = ContentVersionController.getContentVersionController().getContentVersionVOWithId(contentVersionId, db);
     	if(!contentVersionVO.getStateId().equals(ContentVersionVO.WORKING_STATE))
 		{
@@ -3289,7 +3294,7 @@ public class ContentVersionController extends BaseController
 		}
 		else
 		{
-			contentVersion = ContentVersionController.getContentVersionController().getContentVersionWithId(contentVersionVO.getId(), db);
+			contentVersion = ContentVersionController.getContentVersionController().getMediumContentVersionWithId(contentVersionVO.getId(), db);
 		}
     	            
         return contentVersion;
@@ -3307,7 +3312,7 @@ public class ContentVersionController extends BaseController
 
         try
         {      
-        	ContentVersion contentVersion = null;
+        	MediumContentVersionImpl contentVersion = null;
         	ContentVersionVO contentVersionVO = ContentVersionController.getContentVersionController().getContentVersionVOWithId(contentVersionId, db);
         	DigitalAssetVO digitalAssetVO = DigitalAssetController.getController().getDigitalAssetVOWithId(digitalAssetId, db);
     	    if(!contentVersionVO.getStateId().equals(ContentVersionVO.WORKING_STATE))
@@ -3331,7 +3336,7 @@ public class ContentVersionController extends BaseController
         	    	logger.info("contentVersion:" + contentVersion);
         	    	logger.info("oldDigitalAsset:" + oldDigitalAsset.getId());
 	            	if(contentVersion == null)
-	            		contentVersion = ContentVersionController.getContentVersionController().getContentVersionWithId(contentVersionId, db);
+	            		contentVersion = ContentVersionController.getContentVersionController().getMediumContentVersionWithId(contentVersionId, db);
 	            	
 	    	    	digitalAssetVO = copyDigitalAssetAndRemoveOldReference(contentVersion, oldDigitalAsset, false, db);
 	    	    	logger.info("new digitalAssetVO:" + digitalAssetVO.getId());

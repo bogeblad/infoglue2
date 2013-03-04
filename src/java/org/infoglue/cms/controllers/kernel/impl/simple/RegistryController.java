@@ -220,7 +220,7 @@ public class RegistryController extends BaseController
 		    if(siteNodeVersionVO != null)
 		    {
 		        logger.info("Going to use " + siteNodeVersionVO.getId() + " as reference");
-		        clearRegistryVOList(SiteNodeVersion.class.getName(), siteNodeVersionVO.getId().toString());
+		        clearRegistryVOList(SiteNodeVersion.class.getName(), siteNodeVersionVO.getId().toString(), db);
 
 			    getComponents(siteNodeVersionVO, versionValue, db);
 			    getComponentBindings(siteNodeVersionVO, versionValue, db);
@@ -234,7 +234,7 @@ public class RegistryController extends BaseController
 	    }
 	    else
 	    {
-	        clearRegistryVOList(ContentVersion.class.getName(), oldContentVersion.getContentVersionId().toString());
+	        clearRegistryVOList(ContentVersion.class.getName(), oldContentVersion.getContentVersionId().toString(), db);
 	        getInlineSiteNodes(oldContentVersion, versionValue, db);
 		    getInlineContents(oldContentVersion, versionValue, db);
 		    getRelationSiteNodes(oldContentVersion, versionValue, db);
@@ -352,7 +352,7 @@ public class RegistryController extends BaseController
 		    if(siteNodeVersion != null)
 		    {
 		        logger.info("Going to use " + siteNodeVersion.getId() + " as reference");
-		    	clearRegistryVOList(SiteNodeVersion.class.getName(), siteNodeVersion.getId().toString());
+		    	clearRegistryVOList(SiteNodeVersion.class.getName(), siteNodeVersion.getId().toString(), db);
 			    getComponents(siteNodeVersion, versionValue, db);
 			    getComponentBindings(siteNodeVersion, versionValue, db);
 			    getPageBindings(siteNodeVersion, db);
@@ -365,7 +365,7 @@ public class RegistryController extends BaseController
 	    }
 	    else
 	    {
-	        clearRegistryVOList(ContentVersion.class.getName(), oldContentVersion.getContentVersionId().toString());
+	        clearRegistryVOList(ContentVersion.class.getName(), oldContentVersion.getContentVersionId().toString(), db);
 	        if(siteNodeVersion != null)
 	        	getPageBindings(siteNodeVersion, db);
 		    getInlineSiteNodes(oldContentVersion, versionValue, db);
@@ -506,7 +506,7 @@ public class RegistryController extends BaseController
 	    //SiteNode oldSiteNode = oldSiteNodeVersion.getOwningSiteNode();
  
 	    logger.info("Before clearing old registry...");
-	    clearRegistryVOList(SiteNodeVersion.class.getName(), siteNodeVersionVO.getId().toString());
+	    clearRegistryVOList(SiteNodeVersion.class.getName(), siteNodeVersionVO.getId().toString(), db);
 	    logger.info("After clearing old registry...");
 
 		//Collection serviceBindings = siteNodeVersion.getServiceBindings();
@@ -1899,6 +1899,28 @@ public class RegistryController extends BaseController
 		}
 	}
 	
+
+	/**
+	 * Gets matching references
+	 */
+	
+	public void clearRegistryVOList(String referencingEntityName, String referencingEntityId, Database db) throws SystemException, Exception
+	{
+		OQLQuery oql = db.getOQLQuery("SELECT r FROM org.infoglue.cms.entities.management.impl.simple.RegistryImpl r WHERE r.referencingEntityName = $1 AND r.referencingEntityId = $2 ORDER BY r.registryId");
+		oql.bind(referencingEntityName);
+		oql.bind(referencingEntityId);
+		
+		QueryResults results = oql.execute();
+		while (results.hasMore()) 
+        {
+            Registry registry = (Registry)results.next();
+            //System.out.println("Removing registry:" + registry.getRegistryId());
+            db.remove(registry);
+        }
+		
+		results.close();
+		oql.close();		    
+	}
 
 	/**
 	 * Gets matching references

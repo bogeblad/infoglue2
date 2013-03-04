@@ -1574,13 +1574,12 @@ public class SiteNodeVersionController extends BaseController
     	int slotSize = 500;
     	if(siteNodeVersionVOListSubList.size() > 0)
     	{
-    		//System.out.println("siteNodeVersionVOListSubList:" + siteNodeVersionVOListSubList.size());
-	    	List<Integer> subList = siteNodeVersionVOListSubList.subList(0, (siteNodeVersionVOListSubList.size() > slotSize ? slotSize : siteNodeVersionVOListSubList.size()-1));
+	    	List<Integer> subList = siteNodeVersionVOListSubList.subList(0, (siteNodeVersionVOListSubList.size() > slotSize ? slotSize : siteNodeVersionVOListSubList.size()));
 	    	while(subList != null && subList.size() > 0)
 	    	{
 	    		relatedSiteNodes.addAll(RegistryController.getController().getMatchingRegistryVOListForReferencingEntities(SiteNodeVersion.class.getName(), subList, db));
 	    		siteNodeVersionVOListSubList = siteNodeVersionVOListSubList.subList(subList.size()-1, siteNodeVersionVOListSubList.size()-1);
-	    		subList =  siteNodeVersionVOListSubList.subList(0, (siteNodeVersionVOListSubList.size() > slotSize ? slotSize : siteNodeVersionVOListSubList.size()-1));
+	    		subList =  siteNodeVersionVOListSubList.subList(0, (siteNodeVersionVOListSubList.size() > slotSize ? slotSize : siteNodeVersionVOListSubList.size()));
 	    	}
     	}
 		processBean.updateProcess(getLocalizedString(locale, "tool.structuretool.publicationProcess.foundRelatedSoFar", relatedSiteNodes.size()));
@@ -1609,12 +1608,12 @@ public class SiteNodeVersionController extends BaseController
     	relatedContentVersionIdsToCheckSubList.addAll(relatedContentVersionIdsToCheck);
     	if(relatedContentVersionIdsToCheckSubList.size() > 0)
     	{
-    		List<Integer> subList = relatedContentVersionIdsToCheckSubList.subList(0, (relatedContentVersionIdsToCheckSubList.size() > slotSize ? slotSize : relatedContentVersionIdsToCheckSubList.size()-1));
+    		List<Integer> subList = relatedContentVersionIdsToCheckSubList.subList(0, (relatedContentVersionIdsToCheckSubList.size() > slotSize ? slotSize : relatedContentVersionIdsToCheckSubList.size()));
         	while(subList != null && subList.size() > 0)
         	{
         		relatedContents.addAll(RegistryController.getController().getMatchingRegistryVOListForReferencingEntities(ContentVersion.class.getName(), subList, db));
         		relatedContentVersionIdsToCheckSubList = relatedContentVersionIdsToCheckSubList.subList(subList.size()-1, relatedContentVersionIdsToCheckSubList.size() -1);
-        		subList = relatedContentVersionIdsToCheckSubList.subList(0, (relatedContentVersionIdsToCheckSubList.size() > slotSize ? slotSize : relatedContentVersionIdsToCheckSubList.size()-1));
+        		subList = relatedContentVersionIdsToCheckSubList.subList(0, (relatedContentVersionIdsToCheckSubList.size() > slotSize ? slotSize : relatedContentVersionIdsToCheckSubList.size()));
         	}
 
 			Iterator<RegistryVO> relatedContentsIterator = relatedContents.iterator();

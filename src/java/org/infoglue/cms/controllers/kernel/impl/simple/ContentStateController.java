@@ -34,6 +34,7 @@ import org.infoglue.cms.entities.content.ContentCategoryVO;
 import org.infoglue.cms.entities.content.ContentVO;
 import org.infoglue.cms.entities.content.ContentVersion;
 import org.infoglue.cms.entities.content.ContentVersionVO;
+import org.infoglue.cms.entities.content.impl.simple.MediumContentVersionImpl;
 import org.infoglue.cms.entities.kernel.BaseEntityVO;
 import org.infoglue.cms.entities.management.AccessRight;
 import org.infoglue.cms.entities.management.AccessRightVO;
@@ -158,19 +159,19 @@ public class ContentStateController extends BaseController
 	 * This method handles versioning and state-control of content.
 	 * Se inline documentation for further explainations.
 	 */
-	public static ContentVersion changeState(Integer oldContentVersionId, ContentVO contentVO, Integer stateId, String versionComment, boolean overrideVersionModifyer, String recipientFilter, InfoGluePrincipal infoGluePrincipal, Integer contentId, Database db, List resultingEvents) throws SystemException, ConstraintException
+	public static MediumContentVersionImpl changeState(Integer oldContentVersionId, ContentVO contentVO, Integer stateId, String versionComment, boolean overrideVersionModifyer, String recipientFilter, InfoGluePrincipal infoGluePrincipal, Integer contentId, Database db, List resultingEvents) throws SystemException, ConstraintException
 	{
 		return changeState(oldContentVersionId, contentVO, stateId, versionComment, overrideVersionModifyer, recipientFilter, infoGluePrincipal, contentId, db, resultingEvents, null);
 	}
 	
-	public static ContentVersion changeState(Integer oldContentVersionId, ContentVO contentVO, Integer stateId, String versionComment, boolean overrideVersionModifyer, String recipientFilter, InfoGluePrincipal infoGluePrincipal, Integer contentId, Database db, List resultingEvents, Integer excludedAssetId) throws SystemException, ConstraintException
+	public static MediumContentVersionImpl changeState(Integer oldContentVersionId, ContentVO contentVO, Integer stateId, String versionComment, boolean overrideVersionModifyer, String recipientFilter, InfoGluePrincipal infoGluePrincipal, Integer contentId, Database db, List resultingEvents, Integer excludedAssetId) throws SystemException, ConstraintException
 	{
 		Timer t = new Timer();
-		ContentVersion newContentVersion = null;
+		MediumContentVersionImpl newContentVersion = null;
 
 		try
 		{
-			ContentVersion oldContentVersion = ContentVersionController.getContentVersionController().getReadOnlyMediumContentVersionWithId(oldContentVersionId, db);
+			MediumContentVersionImpl oldContentVersion = ContentVersionController.getContentVersionController().getReadOnlyMediumContentVersionWithId(oldContentVersionId, db);
 			logger.info("oldContentVersion:" + oldContentVersion.getId());
 			//t.printElapsedTime("oldContentVersion");
 			

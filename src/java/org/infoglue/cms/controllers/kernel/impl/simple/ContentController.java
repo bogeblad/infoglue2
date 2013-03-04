@@ -1548,10 +1548,8 @@ public class ContentController extends BaseController
 
 		try
 		{
-		    Content content = getRootContent(db, repositoryId, userName, createIfNonExisting);
-            if(content != null)
-            	contentVO = content.getValueObject();
-            
+			contentVO = getRootContentVO(db, repositoryId, userName, createIfNonExisting);
+			
 			//If any of the validations or setMethods reported an error, we throw them up now before create. 
 			ceb.throwIfNotEmpty();
 			commitTransaction(db);
