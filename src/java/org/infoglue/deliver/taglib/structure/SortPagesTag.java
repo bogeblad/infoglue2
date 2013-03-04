@@ -41,9 +41,9 @@ public class SortPagesTag extends TemplateControllerTag
 	private Comparator comparator;
 	
 	private List input = new ArrayList();
-	
-	private String sortProperty = "NavigationTitle";
-	private String nameProperty = "NavigationTitle";
+
+	private String sortProperty = "navigationTitle";
+	private String nameProperty = "navigationTitle";
 	private String sortOrder 	= "asc";
 	private boolean numberOrder = false; 
 	private String type			= "PageComparator";
@@ -70,8 +70,13 @@ public class SortPagesTag extends TemplateControllerTag
 	    Collections.sort(input, comparator);
 		produceResult(input);
 		
-		comparator = null;
-		input = new ArrayList();
+		comparator 			= null;
+		input 				= new ArrayList();
+		sortProperty 		= "navigationTitle";
+		nameProperty 		= "navigationTitle";
+		sortOrder 			= "asc";
+		type				= "PageComparator";
+		namesInOrderString 	= null;
 		
         return EVAL_PAGE;
     }
