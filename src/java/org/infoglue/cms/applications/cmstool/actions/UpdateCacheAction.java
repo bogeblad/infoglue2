@@ -185,6 +185,17 @@ public class UpdateCacheAction extends InfoGlueAbstractAction
 					Object[] idsExtraMedium = {new Integer(objectId)};
 					CacheController.clearCache(typesExtraMedium, idsExtraMedium);
 				}
+				else if(Class.forName(className).getName().equals(MediumDigitalAssetImpl.class.getName()))
+				{
+					CacheController.clearCache("digitalAssetCache");
+					Class typesExtra = SmallDigitalAssetImpl.class;
+					Object[] idsExtra = {new Integer(objectId)};
+					CacheController.clearCache(typesExtra, idsExtra);
+
+					Class typesExtraMedium = DigitalAssetImpl.class;
+					Object[] idsExtraMedium = {new Integer(objectId)};
+					CacheController.clearCache(typesExtraMedium, idsExtraMedium);
+				}
 				else if(Class.forName(className).getName().equals(SystemUserImpl.class.getName()))
 				{
 				    Class typesExtra = SmallSystemUserImpl.class;
@@ -261,11 +272,15 @@ public class UpdateCacheAction extends InfoGlueAbstractAction
 				{
 					CacheController.clearCache("NavigationCache");					
 					CacheController.clearCacheForGroup("childSiteNodesCache", "siteNode_" + objectId);
+					CacheController.clearCacheForGroup("childPagesCache", "siteNode_" + objectId);
 					try
 					{
 						SiteNodeVO siteNodeVO = SiteNodeController.getController().getSiteNodeVOWithId(Integer.parseInt(objectId));
 						if(siteNodeVO.getParentSiteNodeId() != null)
+						{
 							CacheController.clearCacheForGroup("childSiteNodesCache", "siteNode_" + siteNodeVO.getParentSiteNodeId());					
+							CacheController.clearCacheForGroup("childPagesCache", "siteNode_" + siteNodeVO.getParentSiteNodeId());					
+						}
 					}
 					catch (Exception e) 
 					{

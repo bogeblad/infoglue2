@@ -80,7 +80,7 @@ public abstract class SimpleXmlServiceAction extends InfoGlueAbstractAction
 
     private static final String protectedPropertyFragments = "password,administrator,authorizer,authenticator,masterserver,slaveserver,log";
     
-    protected static final String SERVICEREVISION = "$Revision: 1.24.2.1.2.3 $"; 
+    protected static final String SERVICEREVISION = "$Revision: 1.24.2.1.2.4 $"; 
 	protected static String ENCODING = "UTF-8";
     protected static String TYPE_FOLDER = "Folder";
     protected static String TYPE_ITEM = "Item";
@@ -213,7 +213,7 @@ public abstract class SimpleXmlServiceAction extends InfoGlueAbstractAction
     		ContentTypeDefinitionVO vo = (ContentTypeDefinitionVO) i.next();
     		if(vo.getType().compareTo(ContentTypeDefinitionVO.CONTENT)==0)
     		{
-    		    TransactionHistoryVO transactionHistoryVO = transactionHistoryController.getLatestTransactionHistoryVOForEntity(ContentTypeDefinitionImpl.class, vo.getContentTypeDefinitionId());
+    			TransactionHistoryVO transactionHistoryVO = transactionHistoryController.getLatestTransactionHistoryVOForEntity(ContentTypeDefinitionImpl.class, vo.getContentTypeDefinitionId());
     		    
 	    		Element definition = DocumentHelper.createElement("definition");
 	    		definition

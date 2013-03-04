@@ -344,7 +344,7 @@ public class CreateDigitalAssetAction extends ViewDigitalAssetAction
 
 						String fileUploadMaximumSize = getPrincipalPropertyValue(this.principal, "fileUploadMaximumSize", false, true);
 						logger.info("fileUploadMaximumSize in create:" + fileUploadMaximumSize);
-						if(!fileUploadMaximumSize.equalsIgnoreCase("-1") && new Integer(fileUploadMaximumSize).intValue() < new Long(file.length()).intValue())
+						if(!fileUploadMaximumSize.equalsIgnoreCase("") && !fileUploadMaximumSize.equalsIgnoreCase("-1") && new Integer(fileUploadMaximumSize).intValue() < new Long(file.length()).intValue())
 						{
 						    file.delete();
 						    this.reasonKey = "tool.contenttool.fileUpload.fileUploadFailedOnSizeText";
@@ -435,9 +435,8 @@ public class CreateDigitalAssetAction extends ViewDigitalAssetAction
 						if(this.contentVersionId != null)
 						{
 							AssetKeyDefinition assetKeyDefinition = ContentTypeDefinitionController.getController().getDefinedAssetKey(contentTypeDefinitionVO.getSchemaValue(), digitalAssetKey);
-							
 							keepOriginal = handleTransformations(newAsset, file, contentType, assetKeyDefinition);
-						    if(keepOriginal)
+							if(keepOriginal)
 						    {
 						    	List<Integer> newContentVersionIdList = new ArrayList<Integer>();
 						    	digitalAssetVO = DigitalAssetController.create(newAsset, is, this.contentVersionId, this.getInfoGluePrincipal(), newContentVersionIdList);
@@ -609,7 +608,7 @@ public class CreateDigitalAssetAction extends ViewDigitalAssetAction
 		}
 		catch (Exception e) 
 		{
-			e.printStackTrace();
+			logger.error("Error transforming asset:" + e.getMessage());
 		}
 		
 		return keepOriginal;
