@@ -625,6 +625,8 @@ public class CacheController extends Thread
 		    		cacheCapacity = "5000";
 				if(cacheName != null && cacheName.equalsIgnoreCase("childSiteNodesCache"))
 		    		cacheCapacity = "20000";
+				if(cacheName != null && cacheName.equalsIgnoreCase("childPagesCache"))
+		    		cacheCapacity = "20000";
 				if(cacheName != null && cacheName.equalsIgnoreCase("siteNodeCache"))
 		    		cacheCapacity = "20000";
 				if(cacheName != null && cacheName.equalsIgnoreCase("contentCache"))
@@ -1195,7 +1197,7 @@ public class CacheController extends Thread
 		    	}
 		    	catch (Exception e) 
 		    	{
-		    		logger.error("S� Error:" + e.getMessage());
+		    		logger.error("Sooo error:" + e.getMessage());
 				}
 			}
 	    }
@@ -2368,6 +2370,11 @@ public class CacheController extends Thread
 						clear = true;
 						selectiveCacheUpdate = true;
 					}
+					if(cacheName.equalsIgnoreCase("childPagesCache") && entity.indexOf("SiteNode") > 0)
+					{
+						clear = true;
+						selectiveCacheUpdate = true;
+					}
 					if(cacheName.equalsIgnoreCase("propertySetCache") && entity.indexOf("SiteNode") > 0)
 					{
 					    clear = true;
@@ -2616,7 +2623,7 @@ public class CacheController extends Thread
 							    {
 							    	//System.out.println("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
 							    	//Thread.dumpStack();
-							    	//Hur l�ser vi detta bra?
+							    	//How to solve this good
 							    	if(CmsPropertyHandler.getOperatingMode().equalsIgnoreCase("0"))
 							    	{
 								    	if(cacheName.equals("pageCacheExtra"))
@@ -2677,7 +2684,7 @@ public class CacheController extends Thread
 								    				cacheInstance.flushGroup("" + siteNodeId);
 									    		}
 								    			
-								    			if(siteNodeId != null && (cacheName.equals("childSiteNodesCache") || cacheName.equals("siteNodeCache") || cacheName.equals("componentPropertyCacheRepoGroups") || cacheName.equals("componentPropertyVersionIdCacheRepoGroups")))
+								    			if(siteNodeId != null && (cacheName.equals("childSiteNodesCache") || cacheName.equals("childPagesCache") || cacheName.equals("siteNodeCache") || cacheName.equals("componentPropertyCacheRepoGroups") || cacheName.equals("componentPropertyVersionIdCacheRepoGroups")))
 								    			{
 											    	
 											    	if(cacheName.equals("componentPropertyCacheRepoGroups") || cacheName.equals("componentPropertyVersionIdCacheRepoGroups"))
@@ -2725,7 +2732,7 @@ public class CacheController extends Thread
 								    	cacheInstance.flushGroup("siteNode_" + entityId);
 								    	cacheInstance.flushGroup("selectiveCacheUpdateNonApplicable");
 							    	
-						    			if(cacheName.equals("childSiteNodesCache") || cacheName.equals("siteNodeCache") || cacheName.equals("componentPropertyCacheRepoGroups") || cacheName.equals("componentPropertyVersionIdCacheRepoGroups"))
+						    			if(cacheName.equals("childSiteNodesCache") || cacheName.equals("childPagesCache") || cacheName.equals("siteNodeCache") || cacheName.equals("componentPropertyCacheRepoGroups") || cacheName.equals("componentPropertyVersionIdCacheRepoGroups"))
 						    			{
 						    				logger.info("Flushing parent also");
 						    				
@@ -2853,8 +2860,12 @@ public class CacheController extends Thread
 									    		logger.info("Error loading content with id " + entityId + ":" + e2.getMessage());
 											}
 								    	}
-								    	Integer contentId = new Integer(contentIdString);
-								    	if(contentTypeDefinitionId == null && contentIsProtected == null)
+
+								    	Integer contentId = null;
+								    	if(contentIdString != null)
+								    		contentId = new Integer(contentIdString);
+								    	
+								    	if(contentTypeDefinitionId == null && contentIsProtected == null && contentId != null)
 								    	{
 								    		ContentVO contentVO = ContentController.getContentController().getContentVOWithId(new Integer(contentId));
 								    		contentTypeDefinitionId = ""+contentVO.getContentTypeDefinitionId();
@@ -3099,7 +3110,7 @@ public class CacheController extends Thread
 									    			if(changedAttributeName.indexOf("ComponentStructure") > -1 && cacheName.equals("pageCache"))
 									    			{
 									    				//Map allreadyFlushedEntries....
-									    				//Det �r n�t fel p� detta omr�de eller p� versionsuth�mtningen..
+									    				//It's something wrong here..
 									    				GeneralCacheAdministrator pageCacheExtraInstance = (GeneralCacheAdministrator)caches.get("pageCacheExtra");
 									    				String cacheGroupKey = "content_" + contentId + "_ComponentStructureDependency";
 									    				//Set<String> groupEntries = (Set<String>)cacheInstance.getCache().cacheMap.getGroup("content_" + contentId + "_ComponentStructureDependency");
@@ -4272,6 +4283,7 @@ public class CacheController extends Thread
 		caches.add("redirectCache");
 		caches.add("languageCache");
 		caches.add("childSiteNodesCache");
+		caches.add("childPagesCache");
 		caches.add("parentSiteNodeCache");
 		caches.add("contentTypeDefinitionCache");
 		caches.add("componentContentsCache");

@@ -210,6 +210,16 @@ public class RequestAnalyser
         Counter.registerPageStatistics(pageUrl, elapsedTime);
     }
 
+    public void registerLatestPageStatistics(String pageUrl)
+    {
+        Counter.registerLatestPageStatistics(pageUrl);
+    }
+
+    public List<String> getLatestPageStatistics()
+    {
+        return Counter.getLatestPageStatistics();
+    }
+
     public static Set getAllComponentNames()
     {
     	return Counter.getAllComponentNames();

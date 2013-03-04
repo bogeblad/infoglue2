@@ -385,6 +385,35 @@ public class WorkingPublicationThread extends Thread
 						    		CacheController.clearCaches(SmallestContentVersionImpl.class.getName(), contentVersionVO.getId().toString(), null);					    			
 					    		}
 							}
+							else if(Class.forName(className).getName().equals(MediumDigitalAssetImpl.class.getName()))
+							{
+								CacheController.clearCache("digitalAssetCache");
+								Class typesExtra = SmallDigitalAssetImpl.class;
+								Object[] idsExtra = {new Integer(objectId)};
+								CacheController.clearCache(typesExtra, idsExtra);
+	
+								Class typesExtraMedium = DigitalAssetImpl.class;
+								Object[] idsExtraMedium = {new Integer(objectId)};
+								CacheController.clearCache(typesExtraMedium, idsExtraMedium);
+	
+								String disableAssetDeletionInWorkThread = CmsPropertyHandler.getDisableAssetDeletionInWorkThread();
+								if(disableAssetDeletionInWorkThread != null && !disableAssetDeletionInWorkThread.equals("true"))
+								{
+									logger.info("We should delete all images with digitalAssetId " + objectId);
+									DigitalAssetDeliveryController.getDigitalAssetDeliveryController().deleteDigitalAssets(new Integer(objectId));
+								}
+								
+								List<SmallestContentVersionVO> contentVersionVOList = DigitalAssetController.getContentVersionVOListConnectedToAssetWithId(new Integer(objectId));	
+					    		Iterator<SmallestContentVersionVO> contentVersionVOListIterator = contentVersionVOList.iterator();
+					    		while(contentVersionVOListIterator.hasNext())
+					    		{
+					    			SmallestContentVersionVO contentVersionVO = contentVersionVOListIterator.next();
+					    			logger.info("Invoking clearCaches for ContentVersionImpl with id:" + contentVersionVO.getId());
+						    		CacheController.clearCaches(ContentVersionImpl.class.getName(), contentVersionVO.getId().toString(), null);		    			
+						    		CacheController.clearCaches(SmallContentVersionImpl.class.getName(), contentVersionVO.getId().toString(), null);					    			
+						    		CacheController.clearCaches(SmallestContentVersionImpl.class.getName(), contentVersionVO.getId().toString(), null);					    			
+					    		}
+							}
 							else if(Class.forName(className).getName().equals(SystemUserImpl.class.getName()))
 							{
 							    Class typesExtra = SmallSystemUserImpl.class;

@@ -55,6 +55,7 @@ public class Counter
     private static Long maxElapsedTime = new Long(0);
     private static Map allComponentsStatistics = new HashMap();
     private static Map allPageStatistics = new HashMap();
+    private static LinkedBlockingQueue<String> latestPageStatistics = new LinkedBlockingQueue<String>(100);
     private static LinkedBlockingQueue<CacheEvictionBean> latestPublications = new LinkedBlockingQueue<CacheEvictionBean>(200);
     private static List<CacheEvictionBean> ongoingPublications = new ArrayList<CacheEvictionBean>();
     private static Integer numberOfPublicationsSinceStart = new Integer(0);
@@ -120,6 +121,20 @@ public class Counter
         return latestPublicationsList;
     }
 
+    static List<String> getLatestPageStatistics()
+    {
+    	List<String> latestPagesList = new ArrayList<String>();
+    	synchronized (latestPageStatistics)
+		{
+    		Iterator<String> latestPageStatisticsIterator = latestPageStatistics.iterator();
+    		while(latestPageStatisticsIterator.hasNext())
+    		{
+    			latestPagesList.add(latestPageStatisticsIterator.next());
+    		}
+		}
+        return latestPagesList;
+    }
+    
     static void resetLatestPublications()
     {
     	synchronized (latestPublications)
@@ -289,6 +304,17 @@ public class Counter
     	catch (Exception e) 
     	{
     		logger.error("Error in registerPageStatistics: " + e.getMessage());
+		}
+    }
+
+    static void registerLatestPageStatistics(String pageUrl)
+    {
+    	synchronized (latestPageStatistics)
+		{
+    		if(latestPageStatistics.remainingCapacity() == 0)
+    			latestPageStatistics.poll();
+    		
+    		latestPageStatistics.add(pageUrl);
 		}
     }
 

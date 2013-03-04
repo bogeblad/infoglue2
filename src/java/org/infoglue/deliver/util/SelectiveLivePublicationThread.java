@@ -391,6 +391,24 @@ public class SelectiveLivePublicationThread extends PublicationThread
 									DigitalAssetDeliveryController.getDigitalAssetDeliveryController().deleteDigitalAssets(new Integer(objectId));
 								}
 							}
+							else if(Class.forName(className).getName().equals(MediumDigitalAssetImpl.class.getName()))
+							{
+								CacheController.clearCache("digitalAssetCache");
+								Class typesExtra = SmallDigitalAssetImpl.class;
+								Object[] idsExtra = {new Integer(objectId)};
+								CacheController.clearCache(typesExtra, idsExtra);
+								
+								Class typesExtraMedium = DigitalAssetImpl.class;
+								Object[] idsExtraMedium = {new Integer(objectId)};
+								CacheController.clearCache(typesExtraMedium, idsExtraMedium);
+	
+								String disableAssetDeletionInLiveThread = CmsPropertyHandler.getDisableAssetDeletionInLiveThread();
+								if(disableAssetDeletionInLiveThread != null && !disableAssetDeletionInLiveThread.equals("true"))
+								{
+									logger.info("We should delete all images with digitalAssetId " + objectId);
+									DigitalAssetDeliveryController.getDigitalAssetDeliveryController().deleteDigitalAssets(new Integer(objectId));
+								}
+							}
 							else if(Class.forName(className).getName().equals(SystemUserImpl.class.getName()))
 							{
 							    Class typesExtra = SmallSystemUserImpl.class;
@@ -1004,6 +1022,11 @@ public class SelectiveLivePublicationThread extends PublicationThread
 			{
 				getObjectWithId(SmallDigitalAssetImpl.class, new Integer(objectId), db);
 				getObjectWithId(MediumDigitalAssetImpl.class, new Integer(objectId), db);
+			}
+			else if(Class.forName(className).getName().equals(MediumDigitalAssetImpl.class.getName()))
+			{
+				getObjectWithId(SmallDigitalAssetImpl.class, new Integer(objectId), db);
+				getObjectWithId(DigitalAssetImpl.class, new Integer(objectId), db);
 			}
 			else if(Class.forName(className).getName().equals(PublicationImpl.class.getName()))
 			{
