@@ -1613,6 +1613,10 @@
       <sql many-key="digitalAssetId" many-table="cmGroupPropertiesDigitalAsset"/>
     </field>
     -->
+    <field name="assetBlob" type="stream" >
+      <sql name="assetBlob" type="blob" dirty="ignore" />
+    </field>
+    
   </class>
 
 <!--  Mapping for DigitalAsset  -->

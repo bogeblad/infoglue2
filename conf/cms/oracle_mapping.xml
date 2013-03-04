@@ -1607,6 +1607,9 @@
       <sql many-key="DigAssetId" many-table="cmGroupPropDigAsset"/>
     </field>
     -->
+    <field name="assetBlob" type="stream" >
+      <sql name="assetBlob" type="blob" dirty="ignore" />
+    </field>
   </class>
   
 <!--  Mapping for DigitalAsset  -->
