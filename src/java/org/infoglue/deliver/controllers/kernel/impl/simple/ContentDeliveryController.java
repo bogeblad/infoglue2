@@ -460,7 +460,7 @@ public class ContentDeliveryController extends BaseDeliveryController
 				}
 			}
 		}
-
+		
 		RequestAnalyser.getRequestAnalyser().registerComponentStatistics("getContentVersionVO in delivery took", t.getElapsedTimeNanos() / 1000);
 
 		return contentVersion;

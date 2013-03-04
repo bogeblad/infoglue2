@@ -6314,7 +6314,7 @@ public class BasicTemplateController implements TemplateController
 	 * @return
 	 * @throws Exception
 	 */
-	private List getPages(List childNodeVOList, boolean escapeHTML, boolean hideUnauthorizedPages) throws Exception
+	private List<WebPage> getPages(List childNodeVOList, boolean escapeHTML, boolean hideUnauthorizedPages) throws Exception
 	{
 		List childPages = new ArrayList();
 
@@ -6394,21 +6394,55 @@ public class BasicTemplateController implements TemplateController
 	
 	public List getChildPages(Integer siteNodeId, boolean escapeHTML, boolean hideUnauthorizedPages)
 	{
+        String key = "" + siteNodeId + "_" + escapeHTML + "_" + hideUnauthorizedPages;
+        logger.info("key in getChildSiteNodes:" + key);
+		List<WebPage> childPages = (List<WebPage>)CacheController.getCachedObjectFromAdvancedCache("childPagesCache", key);
+		
+		if(childPages == null)
+		{
+			//System.out.println("No found pages on " + key);
+			try
+			{
+				Timer t = new Timer();
+				List childNodeVOList = this.nodeDeliveryController.getChildSiteNodes(getDatabase(), siteNodeId);
+				//if(logger.isInfoEnabled())
+					RequestAnalyser.getRequestAnalyser().registerComponentStatistics("getChildSiteNodes", t.getElapsedTimeNanos() / 1000);
+				childPages = getPages(childNodeVOList, escapeHTML, hideUnauthorizedPages);
+				//if(logger.isInfoEnabled())
+					RequestAnalyser.getRequestAnalyser().registerComponentStatistics("getPages", t.getElapsedTimeNanos() / 1000);
+
+				CacheController.cacheObjectInAdvancedCache("childPagesCache", key, childPages, new String[] {CacheController.getPooledString(3, siteNodeId)}, true);
+			}
+			catch(Exception e)
+			{
+				childPages = new ArrayList<WebPage>();
+				logger.error("An error occurred trying to get the page childPages:" + e.getMessage(), e);
+			}
+		}
+		else
+		{
+			//System.out.println("Found cached childPages:" + childPages.size());
+			for(WebPage page : childPages)
+				this.getDeliveryContext().addUsedSiteNode(CacheController.getPooledString(3, page.getSiteNodeId()));
+
+		}
+		/*
 		List childPages = new ArrayList();
 		try
 		{
 			Timer t = new Timer();
 			List childNodeVOList = this.nodeDeliveryController.getChildSiteNodes(getDatabase(), siteNodeId);
-			if(logger.isInfoEnabled())
+			//if(logger.isInfoEnabled())
 				RequestAnalyser.getRequestAnalyser().registerComponentStatistics("getChildSiteNodes", t.getElapsedTimeNanos() / 1000);
 			childPages = getPages(childNodeVOList, escapeHTML, hideUnauthorizedPages);
-			if(logger.isInfoEnabled())
+			//if(logger.isInfoEnabled())
 				RequestAnalyser.getRequestAnalyser().registerComponentStatistics("getPages", t.getElapsedTimeNanos() / 1000);
 		}
 		catch(Exception e)
 		{
 			logger.error("An error occurred trying to get the page childPages:" + e.getMessage(), e);
 		}
+		*/
 		
 		return childPages;
 	}
