@@ -44,8 +44,10 @@ import org.apache.log4j.Logger;
 import org.exolab.castor.jdo.Database;
 import org.infoglue.cms.applications.common.VisualFormatter;
 import org.infoglue.cms.controllers.kernel.impl.simple.CastorDatabaseService;
+import org.infoglue.cms.controllers.kernel.impl.simple.ContentTypeDefinitionController;
 import org.infoglue.cms.controllers.kernel.impl.simple.TransactionHistoryController;
 import org.infoglue.cms.controllers.kernel.impl.simple.UserControllerProxy;
+import org.infoglue.cms.entities.management.ContentTypeDefinitionVO;
 import org.infoglue.cms.security.InfoGluePrincipal;
 import org.infoglue.cms.util.NotificationMessage;
 import org.infoglue.deliver.applications.databeans.DatabaseWrapper;
@@ -84,6 +86,7 @@ public class MatchingContentsQueue implements Runnable
 		{
 			singleton = new MatchingContentsQueue();
 			Thread thread = new Thread (singleton);
+			thread.setName("MatchingContentsQueue-Worker");
 			thread.start();
 		}
 		
@@ -115,13 +118,21 @@ public class MatchingContentsQueue implements Runnable
 	 */
 	public void addMatchingContentsQueueBean(String cacheKey, MatchingContentsQueueBean bean)
 	{
-		logger.info("Adding url:" + cacheKey);
+
 		//MatchingContentsQueueBean matchingContentsQueueBean = instanceMatchingContentsQueueBeans.get(cacheKey);
 		//if(matchingContentsQueueBean == null)
 		//{
 		synchronized (instanceMatchingContentsQueueBeans) 
 		{
-			instanceMatchingContentsQueueBeans.put(cacheKey, bean);			
+			MatchingContentsQueueBean currentBean = instanceMatchingContentsQueueBeans.get(cacheKey);
+
+			if (currentBean != null)
+			{
+				logger.info("There was a bean for the given cache key. Updating last fetched and sets the new value");
+				bean.setLastFetched(currentBean.getLastFetched());
+			}
+
+			instanceMatchingContentsQueueBeans.put(cacheKey, bean);
 		}
 		//}
 		/*
@@ -134,6 +145,15 @@ public class MatchingContentsQueue implements Runnable
 		}
 		*/
 		logger.info("Done...");
+	}
+	
+	private void removeMatchingContentsQueueBean(String cacheKey)
+	{
+		logger.info("Removing url:" + cacheKey);
+		synchronized (instanceMatchingContentsQueueBeans) 
+		{
+			instanceMatchingContentsQueueBeans.remove(cacheKey);
+		}
 	}
 
 	/**
@@ -159,172 +179,209 @@ public class MatchingContentsQueue implements Runnable
 		logger.info("Running HttpUniqueRequestQueue...");
 		while(keepRunning)
 		{
-			logger.info("Running..: " + instanceMatchingContentsQueueBeans.size());
-			if(instanceMatchingContentsQueueBeans.size() > 1000)
+			try
 			{
+				logger.info("Running..: " + instanceMatchingContentsQueueBeans.size());
+				if(instanceMatchingContentsQueueBeans.size() > 1000)
+				{
+					logger.warn("Too many objects in matching contents queue. Clearing queue");
+					synchronized (instanceMatchingContentsQueueBeans) 
+					{
+						instanceMatchingContentsQueueBeans.clear();	
+					}
+				}
+
+				Map<String, MatchingContentsQueueBean> localMatchingContentsQueueBeans = new HashMap<String, MatchingContentsQueueBean>();
 				synchronized (instanceMatchingContentsQueueBeans) 
 				{
-					instanceMatchingContentsQueueBeans.clear();	
+					logger.info("About to copy beans to local list. Number of beans: " + instanceMatchingContentsQueueBeans.size());
+					for (Map.Entry<String, MatchingContentsQueueBean> entry : instanceMatchingContentsQueueBeans.entrySet())
+					{
+						localMatchingContentsQueueBeans.put(entry.getKey(), entry.getValue());
+					}
+					logger.info("Done copying beans to local list. Number of beans in local list: " + localMatchingContentsQueueBeans.size());
 				}
-			}
-			
-			Iterator<String> cacheKeysIterator = instanceMatchingContentsQueueBeans.keySet().iterator();
-			while(cacheKeysIterator.hasNext())
-			{
-				String cacheKey = cacheKeysIterator.next();
-				MatchingContentsQueueBean bean = instanceMatchingContentsQueueBeans.get(cacheKey);
-				
-				if(logger.isInfoEnabled())
-					logger.info("MatchingContentsQueueBean cacheKey:" + cacheKey);
-				
-				try
-				{
-					long diff = (System.currentTimeMillis() - bean.getLastFetched()) / 1000;
 
-					List cachedMatchingContents = null;
-					DatabaseWrapper dbWrapperCached = new DatabaseWrapper(CastorDatabaseService.getDatabase());
+				Iterator<String> cacheKeysIterator = localMatchingContentsQueueBeans.keySet().iterator();
+				while(cacheKeysIterator.hasNext())
+				{
+					String cacheKey = cacheKeysIterator.next();
+					MatchingContentsQueueBean bean = localMatchingContentsQueueBeans.get(cacheKey);
+					
+					if(logger.isInfoEnabled())
+						logger.info("MatchingContentsQueueBean cacheKey:" + cacheKey);
+					
+					boolean removeQueueBean = false;
+
 					try
 					{
-						dbWrapperCached.getDatabase().begin();
-						
-						InfoGluePrincipal user = UserControllerProxy.getController(dbWrapperCached.getDatabase()).getUser(bean.getUserName());
-						BasicTemplateController tc = new BasicTemplateController(dbWrapperCached, user);
-						DeliveryContext deliveryContext = DeliveryContext.getDeliveryContext(false);
-						tc.setDeliveryControllers(NodeDeliveryController.getNodeDeliveryController(null, null, null), null, null);	
-						tc.setDeliveryContext(deliveryContext);
-
-						cachedMatchingContents = tc.getMatchingContents(bean.getContentTypeDefinitionNames(), 
-								   bean.getCategoryCondition(), 
-								   bean.getFreeText(), 
-								   bean.getFreeTextAttributeNamesList(), 
-								   bean.getFromDate(), 
-								   bean.getToDate(), 
-								   bean.getExpireFromDate(),
-								   bean.getExpireToDate(),
-								   bean.getVersionModifier(), 
-								   bean.getMaximumNumberOfItems(), 
-								   true, 
-								   true, 
-								   bean.getCacheInterval(), 
-								   bean.getCacheName(), 
-								   bean.getCacheKey(), 
-								   false,
-								   bean.getScheduleInterval(),
-								   bean.getRepositoryIdsList(), 
-								   bean.getLanguageId(), 
-								   bean.getSkipLanguageCheck(), 
-								   bean.getStartNodeId(),
-								   bean.getSortColumn(),
-								   bean.getSortOrder(), 
-								   false,
-								   bean.getValidateAccessRightsAsAnonymous(), 
-								   true);
-						
-						dbWrapperCached.getDatabase().rollback();
-					}
-					catch (Exception e) 
-					{
-						dbWrapperCached.getDatabase().rollback();
-						logger.error("Error in matching contents:" + e.getMessage(), e);
-					}
-					finally
-					{
-						dbWrapperCached.getDatabase().close();
-					}
-					
-					logger.info("diff:" + diff);
-					logger.info("bean.getScheduleInterval()" + bean.getScheduleInterval());
-					logger.info("Cached matches:" + (cachedMatchingContents == null ? "null" : cachedMatchingContents.size()));
-					
-					if(diff > bean.getScheduleInterval() || cachedMatchingContents == null || cachedMatchingContents.size() == 0)
-					{
-						logger.info("Running match either because the time was now or because no cached result was found");
-						
-						DatabaseWrapper dbWrapper = new DatabaseWrapper(CastorDatabaseService.getDatabase());
+						long diff = (System.currentTimeMillis() - bean.getLastFetched()) / 1000;
+	
+						List cachedMatchingContents = null;
+						DatabaseWrapper dbWrapperCached = new DatabaseWrapper(CastorDatabaseService.getDatabase());
 						try
 						{
-							dbWrapper.getDatabase().begin();
+							dbWrapperCached.getDatabase().begin();
 							
-							InfoGluePrincipal user = UserControllerProxy.getController(dbWrapper.getDatabase()).getUser(bean.getUserName());
-							BasicTemplateController tc = new BasicTemplateController(dbWrapper, user);
+							InfoGluePrincipal user = UserControllerProxy.getController(dbWrapperCached.getDatabase()).getUser(bean.getUserName());
+							BasicTemplateController tc = new BasicTemplateController(dbWrapperCached, user);
 							DeliveryContext deliveryContext = DeliveryContext.getDeliveryContext(false);
 							tc.setDeliveryControllers(NodeDeliveryController.getNodeDeliveryController(null, null, null), null, null);	
 							tc.setDeliveryContext(deliveryContext);
+	
+							cachedMatchingContents = tc.getMatchingContents(bean.getContentTypeDefinitionNames(), 
+									   bean.getCategoryCondition(), 
+									   bean.getFreeText(), 
+									   bean.getFreeTextAttributeNamesList(), 
+									   bean.getFromDate(), 
+									   bean.getToDate(), 
+									   bean.getExpireFromDate(),
+									   bean.getExpireToDate(),
+									   bean.getVersionModifier(), 
+									   bean.getMaximumNumberOfItems(), 
+									   true, 
+									   true, 
+									   bean.getCacheInterval(), 
+									   bean.getCacheName(), 
+									   bean.getCacheKey(), 
+									   false,
+									   bean.getScheduleInterval(),
+									   bean.getRepositoryIdsList(), 
+									   bean.getLanguageId(), 
+									   bean.getSkipLanguageCheck(), 
+									   bean.getStartNodeId(),
+									   bean.getSortColumn(),
+									   bean.getSortOrder(), 
+									   false,
+									   bean.getValidateAccessRightsAsAnonymous(), 
+									   true);
 							
-							List matchingContents = tc.getMatchingContents(bean.getContentTypeDefinitionNames(), 
-												   bean.getCategoryCondition(), 
-												   bean.getFreeText(), 
-												   bean.getFreeTextAttributeNamesList(), 
-												   bean.getFromDate(), 
-												   bean.getToDate(), 
-												   bean.getExpireFromDate(),
-												   bean.getExpireToDate(),
-												   bean.getVersionModifier(), 
-												   bean.getMaximumNumberOfItems(), 
-												   true, 
-												   true, 
-												   bean.getCacheInterval(), 
-												   bean.getCacheName(), 
-												   bean.getCacheKey(), 
-												   false,
-												   bean.getScheduleInterval(),
-												   bean.getRepositoryIdsList(), 
-												   bean.getLanguageId(), 
-												   bean.getSkipLanguageCheck(), 
-												   bean.getStartNodeId(),
-												   bean.getSortColumn(),
-												   bean.getSortOrder(), 
-												   true,
-												   bean.getValidateAccessRightsAsAnonymous(), 
-												   false);
-							
-							bean.setLastFetched(System.currentTimeMillis());
-							
-							logger.info("matchingContents in queue:" + matchingContents.size());
-
-							dbWrapper.getDatabase().rollback();
+							dbWrapperCached.getDatabase().rollback();
 						}
 						catch (Exception e) 
 						{
-							cacheKeysIterator.remove();
-							dbWrapper.getDatabase().rollback();
+							removeQueueBean = true;
+							dbWrapperCached.getDatabase().rollback();
 							logger.error("Error in matching contents:" + e.getMessage(), e);
 						}
 						finally
 						{
-							dbWrapper.getDatabase().close();
+							dbWrapperCached.getDatabase().close();
 						}
-					}
-				}
-				catch(Exception e)
-				{
-					/*
-					synchronized (instanceMatchingContentsQueueBeans)
-					{
-						Map<String, Set<MatchingContentsQueueBean>> currentLiveInstanceMatchingContentsQueueBeans = instanceMatchingContentsQueueBeans;
-						Set<MatchingContentsQueueBean> currentMatchingContentsQueueBeans = currentLiveInstanceMatchingContentsQueueBeans.get(serverBaseUrl);
-						if(currentMatchingContentsQueueBeans == null)
+						
+						logger.info("diff:" + diff);
+						logger.info("bean.getScheduleInterval()" + bean.getScheduleInterval());
+						logger.info("Cached matches:" + (cachedMatchingContents == null ? "null" : cachedMatchingContents.size()));
+						logger.info("removeQueueBean:" + removeQueueBean);
+						
+						if(!removeQueueBean && (diff > bean.getScheduleInterval() || cachedMatchingContents == null )) //|| cachedMatchingContents.size() == 0
 						{
-							currentMatchingContentsQueueBeans = new HashSet<MatchingContentsQueueBean>();
-							currentLiveInstanceMatchingContentsQueueBeans.put(serverBaseUrl, currentMatchingContentsQueueBeans);
+							logger.info("Running match either because the time was now or because no cached result was found");
+							
+							DatabaseWrapper dbWrapper = new DatabaseWrapper(CastorDatabaseService.getDatabase());
+							try
+							{
+								dbWrapper.getDatabase().begin();
+								
+								InfoGluePrincipal user = UserControllerProxy.getController(dbWrapper.getDatabase()).getUser(bean.getUserName());
+								BasicTemplateController tc = new BasicTemplateController(dbWrapper, user);
+								DeliveryContext deliveryContext = DeliveryContext.getDeliveryContext(false);
+								tc.setDeliveryControllers(NodeDeliveryController.getNodeDeliveryController(null, null, null), null, null);	
+								tc.setDeliveryContext(deliveryContext);
+								
+								List matchingContents = tc.getMatchingContents(bean.getContentTypeDefinitionNames(), 
+													   bean.getCategoryCondition(), 
+													   bean.getFreeText(), 
+													   bean.getFreeTextAttributeNamesList(), 
+													   bean.getFromDate(), 
+													   bean.getToDate(), 
+													   bean.getExpireFromDate(),
+													   bean.getExpireToDate(),
+													   bean.getVersionModifier(), 
+													   bean.getMaximumNumberOfItems(), 
+													   true, 
+													   true, 
+													   bean.getCacheInterval(), 
+													   bean.getCacheName(), 
+													   bean.getCacheKey(), 
+													   false,
+													   bean.getScheduleInterval(),
+													   bean.getRepositoryIdsList(), 
+													   bean.getLanguageId(), 
+													   bean.getSkipLanguageCheck(), 
+													   bean.getStartNodeId(),
+													   bean.getSortColumn(),
+													   bean.getSortOrder(), 
+													   true,
+													   bean.getValidateAccessRightsAsAnonymous(), 
+													   false);
+								
+								bean.setLastFetched(System.currentTimeMillis());
+								
+								logger.info("matchingContents in queue:" + matchingContents.size());
+								
+								dbWrapper.getDatabase().rollback();
+							}
+							catch (Exception e) 
+							{
+	//							cacheKeysIterator.remove();
+								removeQueueBean = true;
+								dbWrapper.getDatabase().rollback();
+								logger.error("Error in matching contents:" + e.getMessage());
+								logger.warn("Error in matching contents.", e);
+							}
+							finally
+							{
+								dbWrapper.getDatabase().close();
+							}
 						}
-						currentMatchingContentsQueueBeans.addAll(beans);
 					}
-					*/
-
-					logger.error("Error updating cache at " + cacheKey + ". We skip further tries for now and queue it:" + e.getMessage(), e);
+					catch(Exception e)
+					{
+						/*
+						synchronized (instanceMatchingContentsQueueBeans)
+						{
+							Map<String, Set<MatchingContentsQueueBean>> currentLiveInstanceMatchingContentsQueueBeans = instanceMatchingContentsQueueBeans;
+							Set<MatchingContentsQueueBean> currentMatchingContentsQueueBeans = currentLiveInstanceMatchingContentsQueueBeans.get(serverBaseUrl);
+							if(currentMatchingContentsQueueBeans == null)
+							{
+								currentMatchingContentsQueueBeans = new HashSet<MatchingContentsQueueBean>();
+								currentLiveInstanceMatchingContentsQueueBeans.put(serverBaseUrl, currentMatchingContentsQueueBeans);
+							}
+							currentMatchingContentsQueueBeans.addAll(beans);
+						}
+						*/
+						removeQueueBean = true;
+						logger.error("Error updating cache at " + cacheKey + ". We skip further tries for now and queue it:" + e.getMessage());
+						logger.warn("Error updating cache at " + cacheKey + ". We skip further tries for now and queue it.", e);
+					}
+					finally
+					{
+						if (removeQueueBean)
+						{
+							logger.info("Removing queue bean because it was making trouble. Cache key: " + cacheKey);
+							//cacheKeysIterator.remove();
+							removeMatchingContentsQueueBean(cacheKey);
+						}
+					}
 				}
+
+				try
+				{
+					Thread.sleep(10000);
+			    }
+				catch( InterruptedException e ) 
+				{
+					logger.error("Interrupted Exception caught");
+			    }
 			}
-	
-			try
-			{ 
-				Thread.sleep(10000);
-		    } 
-			catch( InterruptedException e ) 
+			catch (Throwable tr)
 			{
-				logger.error("Interrupted Exception caught");
-		    }
+				logger.error("Error in matching contents queue. Will catch and continous going. Type: " + tr.getClass() + ". Message: " + tr.getMessage());
+				logger.warn("Error in matching contents queue. Will catch and continous going.", tr);
+			}
 		}
+		logger.error("MATCHING CONTENT QUEUE STOPPED!");
 	}
 
 }

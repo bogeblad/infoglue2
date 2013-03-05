@@ -198,12 +198,12 @@ public class OptimizedImportController extends BaseController implements Runnabl
 					if(toEncoding == null)
 						toEncoding = "utf-8";
 					
-					if(replacements.indexOf("å") == -1 && 
-					   replacements.indexOf("ä") == -1 && 
-					   replacements.indexOf("ö") == -1 && 
-					   replacements.indexOf("Å") == -1 && 
-					   replacements.indexOf("Ä") == -1 && 
-					   replacements.indexOf("Ö") == -1)
+					if(replacements.indexOf("ï¿½") == -1 && 
+					   replacements.indexOf("ï¿½") == -1 && 
+					   replacements.indexOf("ï¿½") == -1 && 
+					   replacements.indexOf("ï¿½") == -1 && 
+					   replacements.indexOf("ï¿½") == -1 && 
+					   replacements.indexOf("ï¿½") == -1)
 					{
 						replacements = new String(replacements.getBytes(fromEncoding), toEncoding);
 					}
@@ -948,7 +948,7 @@ public class OptimizedImportController extends BaseController implements Runnabl
 			
 			List<CategoryVO> existingCategories = null;
 			if(parentCategory != null)
-				existingCategories = CategoryController.getController().getActiveByParent(parentCategory.getCategoryId(), db);
+				existingCategories = CategoryController.getController().getActiveCategoryVOListByParent(parentCategory.getCategoryId(), db);
 				//existingCategories = CategoryController.getController().findByParent(parentCategory.getCategoryId(), db);
 			else
 				existingCategories = CategoryController.getController().findRootCategoryVOList(db);
