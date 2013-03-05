@@ -1090,7 +1090,7 @@ public class ViewApplicationStateAction extends InfoGlueAbstractAction
         }
     	
     	CacheEntry ce = null;
-    	
+
     	Iterator ceIterator = ((GeneralCacheAdministrator)cache).getCache().cacheMap.values().iterator();
     	while(ceIterator.hasNext())
     	{

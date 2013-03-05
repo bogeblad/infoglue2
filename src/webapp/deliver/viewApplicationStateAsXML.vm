@@ -2,7 +2,7 @@
 <applicationState>
 	<title>Delivery engine status ($serverName)</title>
 	<version>2.10.4.0 Final</version>
-	<releaseDate>2013-02-27</releaseDate>
+	<releaseDate>2013-03-05</releaseDate>
 	<serverName>$serverName</serverName>
 	<items>
 	#foreach($state in $states)

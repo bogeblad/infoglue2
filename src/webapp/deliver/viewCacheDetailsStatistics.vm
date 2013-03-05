@@ -76,9 +76,9 @@
 	
 	<script type="text/javascript">
 	<!--
-		function showGroups(cacheKey)
+		function showGroups(cacheName, cacheKey)
 		{
-			$("#groupsContent").load("ViewApplicationState!cacheEntryGroups.action?cacheName=pageCache&cacheKey=" + cacheKey);
+			$("#groupsContent").load("ViewApplicationState!cacheEntryGroups.action?cacheName=" + cacheName + "&cacheKey=" + cacheKey);
 			$("#groups").show();
 		}
 		
@@ -117,7 +117,7 @@
 	  <tr class="value">
 	 	 <td>$cacheEntry.key</td>
 	 	 <td>$this.getLength($cacheEntry.content)</td>
-	 	 <td><a href="javascript:showGroups('$cacheEntry.key');">View groups ($cacheEntry.groups.size() used)</a></td>
+	 	 <td><a href="javascript:showGroups('$cacheName', '$cacheEntry.key');">View groups ($cacheEntry.groups.size() used)</a></td>
 	  </tr>
 	  #end
   #else  

@@ -1613,6 +1613,14 @@ public class ContentVersionController extends BaseController
 					List<EventVO> events = new ArrayList<EventVO>();
 					contentVersion = ContentStateController.changeState(oldContentVersionVO.getId(), contentVO, ContentVersionVO.WORKING_STATE, (contentVersionVO.getVersionComment().equals("No comment") ? "new working version" : contentVersionVO.getVersionComment()), false, null, principal, oldContentVersionVO.getContentId(), db, events);
 					contentVersion.setVersionValue(contentVersionVO.getVersionValue());
+					/*
+					List<String> changedAttributes = getChangedAttributeNames(oldContentVersionVO, contentVersionVO);
+					System.out.println("changedAttributes in contentversioncontroller:" + changedAttributes);
+		    	    Map extraInfoMap = new HashMap();
+		    	    String csList = StringUtils.join(changedAttributes.toArray(), ",");
+		    	    extraInfoMap.put("changedAttributeNames", csList);
+		    		CacheController.setExtraInfo(ContentVersionImpl.class.getName(), contentVersion.getId().toString(), extraInfoMap);
+					*/
 				}
 				else
 				{
