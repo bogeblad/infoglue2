@@ -235,6 +235,10 @@
 				oFCKeditor.Config["AutoDetectLanguage"] = false ;
 				oFCKeditor.Config["DefaultLanguage"]    = '$languageCode' ;
 				oFCKeditor.ToolbarSet = WYSIWYGToolbar ;
+				
+				if(WYSIWYGExtraConfig && WYSIWYGExtraConfig != '')
+					eval(WYSIWYGExtraConfig);
+				
 				oFCKeditor.ReplaceTextarea();
 				
 				htmlEditors[plainTextAreaName + "WYSIWYGEditor"] = oFCKeditor;
@@ -524,6 +528,12 @@
 			#set($WYSIWYGToolbar = "Default")
 		#end
 
+		#set($WYSIWYGExtraConfig = "")
+		#set($WYSIWYGExtraConfig = $!attribute.getContentTypeAttribute("WYSIWYGExtraConfig").getContentTypeAttributeParameterValue().getLocalizedValue("label", $session.locale))
+		#if($WYSIWYGExtraConfig == "")
+			#set($WYSIWYGExtraConfig = "")
+		#end
+
 		#set($enableTemplateEditor = "")
 		#set($enableTemplateEditor = $!attribute.getContentTypeAttribute("enableTemplateEditor").getContentTypeAttributeParameterValue().getLocalizedValue("label", $session.locale))
 		#if($enableTemplateEditor == "")
@@ -654,6 +664,7 @@
 							// Replace an existing textarea with an HTMLArea object having the above config.
 							plainEditors["${attribute.name}"] = "${attribute.name}";
 							plainEditorsToolbars["${attribute.name}"] = "${WYSIWYGToolbar}";
+							plainEditorsExtraConfig["${attribute.name}"] = "${WYSIWYGExtraConfig}";
 							
 							currentEditorIdHash["${attribute.name}CurrentEditorId"] = 1;
 							#set($currentEditorId = 1)
