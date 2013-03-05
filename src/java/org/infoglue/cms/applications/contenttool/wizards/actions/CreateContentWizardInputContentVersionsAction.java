@@ -120,7 +120,7 @@ public class CreateContentWizardInputContentVersionsAction extends CreateContent
 	 
 	public String doExecute() throws Exception
 	{
-		CreateContentWizardInfoBean createContentWizardInfoBean = getCreateContentWizardInfoBean();
+//		CreateContentWizardInfoBean createContentWizardInfoBean = getCreateContentWizardInfoBean();
 		
 		this.contentVersionVO.setVersionModifier(this.getInfoGluePrincipal().getName());
 

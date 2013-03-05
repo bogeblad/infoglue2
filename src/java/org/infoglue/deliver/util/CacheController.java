@@ -2878,7 +2878,7 @@ public class CacheController extends Thread
 							    		{
 								    		List<String> changes = Collections.EMPTY_LIST;
 								    		//System.out.println("extraInformation:" + extraInformation);
-								    		String changedAttributes = extraInformation.get("changedAttributeNames");
+								    		String changedAttributes = extraInformation == null ? null : extraInformation.get("changedAttributeNames");
 								    		if(changedAttributes != null && changedAttributes.length() > 0)
 								    			changes = new ArrayList<String>(Arrays.asList(StringUtils.split(changedAttributes, ",")));
 

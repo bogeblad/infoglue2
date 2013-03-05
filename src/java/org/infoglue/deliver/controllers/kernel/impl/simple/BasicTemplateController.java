@@ -5286,7 +5286,7 @@ public class BasicTemplateController implements TemplateController
 
 		if(logger.isInfoEnabled())
 		{
-			logger.info("cachedMatchingContents:" + cachedMatchingContents.size());
+			logger.info("cachedMatchingContents:" + cachedMatchingContents == null ? "null" : cachedMatchingContents.size());
 			logger.info("cacheResult:" + cacheResult);
 			logger.info("forceRefetch:" + forceRefetch);
 			logger.info("returnOnlyCachedResult:" + returnOnlyCachedResult);
