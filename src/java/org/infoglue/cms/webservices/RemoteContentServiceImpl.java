@@ -588,7 +588,7 @@ public class RemoteContentServiceImpl extends RemoteInfoGlueService
 			    		} 
 			    		catch (Exception e) 
 			    		{
-			    			logger.warn("An error occurred so we should not complete the transaction:" + e);
+			    			logger.error("An error occurred so we should not complete the transaction:" + e, e);
 			    			rollbackTransaction(db);
 			    			throw new SystemException(e.getMessage());
 			    		}
@@ -1152,7 +1152,6 @@ public class RemoteContentServiceImpl extends RemoteInfoGlueService
 			    publicationVO.setRepositoryId(currentContentVO.getRepositoryId());
 			    publicationVO = PublicationController.getController().createAndPublish(publicationVO, events, true, this.principal);
             }
-			
 			ContentController.getContentController().delete(contentVO, principal, forceDelete.booleanValue());
                
 	        logger.info("Done with contents..");

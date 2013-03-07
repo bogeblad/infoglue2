@@ -297,72 +297,79 @@ public class CreatePageTemplateAction extends InfoGlueAbstractAction implements 
     
     public String doUpdate() throws Exception
     {
-        logger.info("pagePartContentId:" + pagePartContentId);
-        logger.info("contentId:" + contentId);
-        logger.info("componentId:" + componentId);
-        
-        ContentVO pagePartContentVO = ContentController.getContentController().getContentVOWithId(pagePartContentId);
-		Integer pagePartMasterLanguageId = LanguageController.getController().getMasterLanguage(pagePartContentVO.getRepositoryId()).getId();
-		ContentVersionVO pagePartContentVersionVO = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(pagePartContentId, pagePartMasterLanguageId);
-		Locale pagePartMasterLocale = LanguageController.getController().getLocaleWithId(pagePartMasterLanguageId);
-		
-		ContentVO metaInfoContentVO = ContentController.getContentController().getContentVOWithId(this.contentId);
-		Integer originalMetaInfoMasterLanguageId = LanguageController.getController().getMasterLanguage(metaInfoContentVO.getRepositoryId()).getId();
-		ContentVersionVO originalContentVersionVO = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(this.contentId, originalMetaInfoMasterLanguageId);
-		logger.info("originalMetaInfoMasterLanguageId:" + originalMetaInfoMasterLanguageId);
-		logger.info("contentId:" + contentId);
-		logger.info("originalContentVersionVO:" + originalContentVersionVO);
-		
-	    String componentStructure = ContentVersionController.getContentVersionController().getAttributeValue(originalContentVersionVO.getId(), "ComponentStructure", false);
-	    logger.info("componentStructure:" + componentStructure);
-		if(componentId != null)
-		{
-			logger.info("We should strip all but componentId:" + componentId);
-			Document document = XMLHelper.readDocumentFromByteArray(componentStructure.getBytes("UTF-8"));
-			String componentXPath = "//component[@id=" + componentId + "]";
-
-			Node node = org.apache.xpath.XPathAPI.selectSingleNode(document.getDocumentElement(), componentXPath);
-			if(node != null)
+    	try
+    	{
+	        logger.info("pagePartContentId:" + pagePartContentId);
+	        logger.info("contentId:" + contentId);
+	        logger.info("componentId:" + componentId);
+	        
+	        ContentVO pagePartContentVO = ContentController.getContentController().getContentVOWithId(pagePartContentId);
+			Integer pagePartMasterLanguageId = LanguageController.getController().getMasterLanguage(pagePartContentVO.getRepositoryId()).getId();
+			ContentVersionVO pagePartContentVersionVO = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(pagePartContentId, pagePartMasterLanguageId);
+			Locale pagePartMasterLocale = LanguageController.getController().getLocaleWithId(pagePartMasterLanguageId);
+			
+			ContentVO metaInfoContentVO = ContentController.getContentController().getContentVOWithId(this.contentId);
+			Integer originalMetaInfoMasterLanguageId = LanguageController.getController().getMasterLanguage(metaInfoContentVO.getRepositoryId()).getId();
+			ContentVersionVO originalContentVersionVO = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(this.contentId, originalMetaInfoMasterLanguageId);
+			logger.info("originalMetaInfoMasterLanguageId:" + originalMetaInfoMasterLanguageId);
+			logger.info("contentId:" + contentId);
+			logger.info("originalContentVersionVO:" + originalContentVersionVO);
+			
+		    String componentStructure = ContentVersionController.getContentVersionController().getAttributeValue(originalContentVersionVO.getId(), "ComponentStructure", false);
+		    logger.info("componentStructure:" + componentStructure);
+			if(componentId != null)
 			{
-				Element component = (Element)node;
-				component.setAttribute("pagePartTemplateContentId", "-1");
-				component.setAttribute("isInherited", "true");
-				/*
-				NodeList propertiesNL = component.getElementsByTagName("properties");
-				if(propertiesNL != null && propertiesNL.getLength() > 0)
-				{
-					Node propertiesNode = propertiesNL.item(0);
-					addPropertyElement((Element)propertiesNode, "pagePartContentId", "" + pagePartContentId, "textfield", pagePartMasterLocale);
-				}
-				*/
-				String modifiedXML = XMLHelper.serializeDom(component, new StringBuffer()).toString(); 
-				logger.info("modifiedXML:" + modifiedXML);
-				componentStructure = "<?xml version='1.0' encoding='UTF-8'?><components>" + modifiedXML + "</components>";
-			}
-		}
-	    
-		String versionValue = "<?xml version='1.0' encoding='UTF-8'?><article xmlns=\"x-schema:ArticleSchema.xml\"><attributes><Name><![CDATA[" + this.name + "]]></Name><GroupName><![CDATA[" + this.groupName + "]]></GroupName><ComponentStructure><![CDATA[" + componentStructure + "]]></ComponentStructure></attributes></article>";
+				logger.info("We should strip all but componentId:" + componentId);
+				Document document = XMLHelper.readDocumentFromByteArray(componentStructure.getBytes("UTF-8"));
+				String componentXPath = "//component[@id=" + componentId + "]";
 	
-		ContentVersionVO contentVersionVO = pagePartContentVersionVO;
-		contentVersionVO.setVersionComment("Saved page template");
-		contentVersionVO.setVersionModifier(this.getInfoGluePrincipal().getName());
-		contentVersionVO.setVersionValue(versionValue);
-		ContentVersionVO updateContentVersionVO = ContentVersionController.getContentVersionController().update(pagePartContentVO.getId(), pagePartMasterLanguageId, contentVersionVO, this.getInfoGluePrincipal());
-
-		if(this.attemptDirectPublication)
-		{
-			List events = new ArrayList();
-
-			ContentVersionVO newContentVersionVO = ContentStateController.changeState(updateContentVersionVO.getId(), ContentVersionVO.PUBLISH_STATE, "Auto publish", false, null, this.getInfoGluePrincipal(), null, events);
-
-		    PublicationVO publicationVO = new PublicationVO();
-		    publicationVO.setName("Direct publication by " + this.getInfoGluePrincipal().getName());
-		    publicationVO.setDescription("Direct publication");
-		    publicationVO.setRepositoryId(pagePartContentVO.getRepositoryId());
-		    publicationVO = PublicationController.getController().createAndPublish(publicationVO, events, false, this.getInfoGluePrincipal());
-		}
+				Node node = org.apache.xpath.XPathAPI.selectSingleNode(document.getDocumentElement(), componentXPath);
+				if(node != null)
+				{
+					Element component = (Element)node;
+					component.setAttribute("pagePartTemplateContentId", "-1");
+					component.setAttribute("isInherited", "true");
+					/*
+					NodeList propertiesNL = component.getElementsByTagName("properties");
+					if(propertiesNL != null && propertiesNL.getLength() > 0)
+					{
+						Node propertiesNode = propertiesNL.item(0);
+						addPropertyElement((Element)propertiesNode, "pagePartContentId", "" + pagePartContentId, "textfield", pagePartMasterLocale);
+					}
+					*/
+					String modifiedXML = XMLHelper.serializeDom(component, new StringBuffer()).toString(); 
+					logger.info("modifiedXML:" + modifiedXML);
+					componentStructure = "<?xml version='1.0' encoding='UTF-8'?><components>" + modifiedXML + "</components>";
+				}
+			}
+		    
+			String versionValue = "<?xml version='1.0' encoding='UTF-8'?><article xmlns=\"x-schema:ArticleSchema.xml\"><attributes><Name><![CDATA[" + this.name + "]]></Name><GroupName><![CDATA[" + this.groupName + "]]></GroupName><ComponentStructure><![CDATA[" + componentStructure + "]]></ComponentStructure></attributes></article>";
 		
-        return Action.SUCCESS;
+			ContentVersionVO contentVersionVO = pagePartContentVersionVO;
+			contentVersionVO.setVersionComment("Saved page template");
+			contentVersionVO.setVersionModifier(this.getInfoGluePrincipal().getName());
+			contentVersionVO.setVersionValue(versionValue);
+			ContentVersionVO updateContentVersionVO = ContentVersionController.getContentVersionController().update(pagePartContentVO.getId(), pagePartMasterLanguageId, contentVersionVO, this.getInfoGluePrincipal());
+	
+			if(this.attemptDirectPublication)
+			{
+				List events = new ArrayList();
+	
+				ContentVersionVO newContentVersionVO = ContentStateController.changeState(updateContentVersionVO.getId(), ContentVersionVO.PUBLISH_STATE, "Auto publish", false, null, this.getInfoGluePrincipal(), null, events);
+	
+			    PublicationVO publicationVO = new PublicationVO();
+			    publicationVO.setName("Direct publication by " + this.getInfoGluePrincipal().getName());
+			    publicationVO.setDescription("Direct publication");
+			    publicationVO.setRepositoryId(pagePartContentVO.getRepositoryId());
+			    publicationVO = PublicationController.getController().createAndPublish(publicationVO, events, false, this.getInfoGluePrincipal());
+			}
+	        return Action.SUCCESS;
+    	}
+    	catch (Exception e) 
+    	{
+			logger.error("Error updating page template:" + e.getMessage(), e);
+    		throw e;
+		}
     }
     
 	public Integer getTopRepositoryId() throws ConstraintException, SystemException, Bug
