@@ -57,6 +57,8 @@ import org.apache.pluto.portalImpl.services.ServiceManager;
 import org.apache.pluto.portalImpl.services.portletentityregistry.PortletEntityRegistry;
 import org.exolab.castor.jdo.CacheManager;
 import org.exolab.castor.jdo.Database;
+import org.exolab.castor.jdo.OQLQuery;
+import org.exolab.castor.jdo.QueryResults;
 import org.infoglue.cms.applications.common.VisualFormatter;
 import org.infoglue.cms.controllers.kernel.impl.simple.AccessRightController;
 import org.infoglue.cms.controllers.kernel.impl.simple.CastorDatabaseService;
@@ -85,6 +87,7 @@ import org.infoglue.cms.entities.content.impl.simple.SmallestContentVersionImpl;
 import org.infoglue.cms.entities.content.impl.simple.SmallishContentImpl;
 import org.infoglue.cms.entities.management.AccessRightVO;
 import org.infoglue.cms.entities.management.ContentTypeDefinitionVO;
+import org.infoglue.cms.entities.management.GeneralOQLResult;
 import org.infoglue.cms.entities.management.InterceptionPointVO;
 import org.infoglue.cms.entities.management.impl.simple.AccessRightGroupImpl;
 import org.infoglue.cms.entities.management.impl.simple.AccessRightImpl;
@@ -149,6 +152,8 @@ import org.infoglue.deliver.applications.actions.InfoGlueComponent;
 import org.infoglue.deliver.applications.databeans.CacheEvictionBean;
 import org.infoglue.deliver.applications.databeans.DatabaseWrapper;
 import org.infoglue.deliver.cache.PageCacheHelper;
+import org.infoglue.deliver.controllers.kernel.impl.simple.ContentDeliveryController;
+import org.infoglue.deliver.controllers.kernel.impl.simple.NodeDeliveryController;
 import org.infoglue.deliver.invokers.PageInvoker;
 import org.infoglue.deliver.portal.ServletConfigContainer;
 import org.xmlpull.v1.builder.XmlDocument;
@@ -336,7 +341,6 @@ public class CacheController extends Thread
 	public static void preCacheCMSEntities() throws Exception 
 	{
 		Timer t = new Timer();
-		logger.warn("AAAAAAAAAAAAAAAAAAAAAAAA");
 		ContentTypeDefinitionController.getController().getContentTypeDefinitionVOList();
 		logger.warn("pre cache content types took:" + t.getElapsedTime());
 
@@ -373,13 +377,13 @@ public class CacheController extends Thread
 		
 		ComponentController.getController().preCacheComponents(-1);
 		logger.warn("preCacheComponents took:" + t.getElapsedTime());
-
+		
 		List<SiteNodeVO> snVOList = SiteNodeController.getController().getSiteNodeVOList(false, new Integer(CmsPropertyHandler.getOperatingMode()), 30000);
 		logger.warn("snVOList:" + snVOList.size() + " fetched and precached in " + t.getElapsedTime() + " ms");
 
 		List<ContentVO> cList = ContentController.getContentController().getContentVOList(10000);
 		logger.warn("cList:" + snVOList.size() + " fetched and precached in " + t.getElapsedTime() + " ms");
-		
+
 		/*
 		FileInputStream fis = new FileInputStream(CmsPropertyHandler.getDigitalAssetPath() + File.separator + "startupCache.txt");
         ObjectInputStream ois = new ObjectInputStream(fis);
@@ -594,7 +598,9 @@ public class CacheController extends Thread
 		    		cacheCapacity = "15000";
 		    			    	
 		    	if(cacheName != null && cacheName.startsWith("contentAttributeCache"))
-		    		cacheCapacity = "70000";
+		    		cacheCapacity = "50000";
+		    	if(cacheName != null && cacheName.startsWith("metaInfoContentAttributeCache"))
+		    		cacheCapacity = "40000";
 		    	//else if(cacheName != null && cacheName.startsWith("contentAttributeCache"))
 		    	//	cacheCapacity = "1000";
 		    	if(cacheName != null && cacheName.startsWith("pageCache"))
@@ -2230,6 +2236,11 @@ public class CacheController extends Thread
 						clear = true;
 						selectiveCacheUpdate = true;
 					}
+					if(cacheName.startsWith("metaInfoContentAttributeCache") && entity.indexOf("Content") > -1)
+					{	
+						clear = true;
+						selectiveCacheUpdate = true;
+					}
 					if(cacheName.equalsIgnoreCase("contentVersionCache") && (entity.indexOf("Content") > -1 || entity.indexOf("AccessRight") > 0 || entity.indexOf("SystemUser") > 0 || entity.indexOf("Role") > 0  || entity.indexOf("Group") > 0))
 					{	
 						clear = true;
@@ -2370,7 +2381,7 @@ public class CacheController extends Thread
 						clear = true;
 						selectiveCacheUpdate = true;
 					}
-					if(cacheName.equalsIgnoreCase("childPagesCache") && entity.indexOf("SiteNode") > 0)
+					if(cacheName.equalsIgnoreCase("childPagesCache") && (entity.indexOf("SiteNode") > 0 || entity.indexOf("Content") > 0))
 					{
 						clear = true;
 						selectiveCacheUpdate = true;
@@ -2777,7 +2788,7 @@ public class CacheController extends Thread
 								}
 							    else if(selectiveCacheUpdate && entity.indexOf("ContentVersion") > 0 && useSelectivePageCacheUpdate)
 							    {
-									logger.info("ContentVersion entity was sent: " + entity + ":" + entityId);
+									logger.info("ContentVersion entity was sent: " + entity + ":" + entityId + " and cacheName:" + cacheName);
 
 							    	logger.info("Getting eventListeners...");
 							        //Object cacheEntryEventListener = eventListeners.get(e.getKey() + "_cacheEntryEventListener");
@@ -2823,11 +2834,80 @@ public class CacheController extends Thread
 						    		}
 							    	else if(cacheName.equals("assetUrlCacheWithGroups"))
 						    		{
-							    		String contentId = sentContentId;
-							    		if(contentId == null || contentId.equals(""))
-							    			contentId = ""+ContentVersionController.getContentVersionController().getContentIdForContentVersion(new Integer(entityId));
-										cacheInstance.flushGroup("content_" + contentId);
-								    	logger.info("Clearing assetUrlCacheWithGroups for content:" + "content_" + contentId);
+							    		try
+							    		{
+								    		String contentId = sentContentId;
+								    		if(contentId == null || contentId.equals(""))
+								    			contentId = ""+ContentVersionController.getContentVersionController().getContentIdForContentVersion(new Integer(entityId));
+											cacheInstance.flushGroup("content_" + contentId);
+									    	logger.info("Clearing assetUrlCacheWithGroups for content:" + "content_" + contentId);
+							    		}
+							    		catch (Exception e2) 
+							    		{
+							    			logger.warn("Flushing all as it was a missing entity - was probably a delete");
+							    			cacheInstance.flushAll();
+										}
+						    		}
+							    	else if(cacheName.equals("childPagesCache"))
+						    		{
+							    		try
+							    		{
+								    		String contentId = sentContentId;
+								    		if(contentId == null || contentId.equals(""))
+								    			contentId = ""+ContentVersionController.getContentVersionController().getContentIdForContentVersion(new Integer(entityId));
+	
+								    		try
+								    		{
+									    		SiteNodeVO siteNodeVO = SiteNodeController.getController().getSiteNodeVOWithMetaInfoContentId(new Integer(contentId));
+									    		if(siteNodeVO != null)
+									    		{
+									    			cacheInstance.flushGroup("siteNode_" + siteNodeVO.getId());
+									    			cacheInstance.flushGroup("siteNode_" + siteNodeVO.getParentSiteNodeId());
+									    		}
+									    	}
+								    		catch (Exception e2) 
+								    		{
+								    			logger.error("Did not find a sitenode with this meta info:" + contentId);
+											}
+								    		cacheInstance.flushGroup("content_" + contentId);
+								    		cacheInstance.flushGroup("contentVersion_" + entityId);
+								    		cacheInstance.flushGroup("selectiveCacheUpdateNonApplicable");
+									    	logger.warn("Clearing childPagesCache for content:" + "content_" + contentId);
+							    		}
+							    		catch (Exception e2) 
+							    		{
+							    			System.out.println("Flushing all as it was a missing entity - was probably a delete");
+							    			cacheInstance.flushAll();
+										}
+
+						    		}
+							    	else if(cacheName.equals("matchingContentsCache"))
+						    		{
+							    		try
+							    		{
+								    		String contentId = sentContentId;
+								    		if(contentId == null || contentId.equals(""))
+								    		try
+								    		{
+									    		contentId = ""+ContentVersionController.getContentVersionController().getContentIdForContentVersion(new Integer(entityId));
+									    		ContentVO contentVO = ContentController.getContentController().getContentVOWithId(new Integer(contentId));
+									    		String contentTypeDefinitionId = "" + contentVO.getContentTypeDefinitionId();
+									    		cacheInstance.flushGroup("selectiveCacheUpdateNonApplicable_contentTypeDefinitionId_" + contentTypeDefinitionId);
+								    		}
+								    		catch (Exception e2) 
+								    		{
+								    			System.out.println("Flushing all as it was a missing entity - was probably a delete");
+								    			cacheInstance.flushAll();
+											}
+
+								    		cacheInstance.flushGroup("content_" + contentId);
+									    	logger.info("Clearing assetUrlCacheWithGroups for content:" + "content_" + contentId);
+							    		}
+							    		catch (Exception e2) 
+							    		{
+							    			System.out.println("Flushing all as it was a missing entity - was probably a delete");
+							    			cacheInstance.flushAll();
+										}
 						    		}
 							    	else
 							    	{
@@ -4301,6 +4381,7 @@ public class CacheController extends Thread
 		caches.add("latestSiteNodeVersionCache");
 		caches.add("interceptionPointCache");
 		caches.add("contentAttributeCache");		
+		caches.add("metaInfoContentAttributeCache");		
 		caches.add("ServerNodeProperties");
 		caches.add("serverNodePropertiesCache");
 		caches.add("pageCache");
