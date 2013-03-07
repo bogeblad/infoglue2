@@ -394,7 +394,7 @@ public class ContentDeliveryController extends BaseDeliveryController
 					masterLanguageId = LanguageDeliveryController.getLanguageDeliveryController().getMasterLanguageForSiteNode(db, siteNodeId).getLanguageId();
 				else
 					masterLanguageId = LanguageDeliveryController.getLanguageDeliveryController().getMasterLanguageForRepository(db, content.getRepositoryId()).getLanguageId();
-				
+			
 				if(languageId == null || (languageId != null && !languageId.equals(masterLanguageId)))
 				{
 					contentVersion = getSmallestContentVersionVO(contentId, masterLanguageId, getOperatingMode(deliveryContext), deliveryContext, db);
@@ -432,7 +432,6 @@ public class ContentDeliveryController extends BaseDeliveryController
 		
 		//MediumContentImpl content = (MediumContentImpl)getObjectWithId(MediumContentImpl.class, contentId, db);
 		ContentVO content = getContentVO(db, contentId, deliveryContext);
-		
 		boolean isValidContent = isValidContent(infoGluePrincipal, content, languageId, useLanguageFallback, false, db, deliveryContext);
 		//deliveryContext.addDebugInformation("isValidContent:" + isValidContent);
 		if(isValidContent)
@@ -461,8 +460,15 @@ public class ContentDeliveryController extends BaseDeliveryController
 			}
 		}
 		
-		RequestAnalyser.getRequestAnalyser().registerComponentStatistics("getContentVersionVO in delivery took", t.getElapsedTimeNanos() / 1000);
-
+		RequestAnalyser.getRequestAnalyser().registerComponentStatistics("getContentVersionVO in delivery took (micro)", t.getElapsedTimeNanos() / 1000);
+		/*
+		if(content.getContentTypeDefinitionId().intValue() == 2 || content.getContentTypeDefinitionId().intValue() == 100000)
+		{
+			logger.error("Investigate...");
+			Thread.dumpStack();
+		}
+		*/
+		
 		return contentVersion;
 	}
 
@@ -903,6 +909,30 @@ public class ContentDeliveryController extends BaseDeliveryController
 		if(contentId == null || contentId.intValue() < 1)
 			return "";
 		
+		/*
+		String metaAttributeKey = "c_" + contentId + "_" + languageId + "_" + attributeName;
+    	String candidate = (String)CacheController.getCachedObjectFromAdvancedCache("metaInfoContentAttributeCache", metaAttributeKey);
+    	if(candidate == null && useLanguageFallback)
+    	{
+			LanguageVO masterLanguageVO = LanguageDeliveryController.getLanguageDeliveryController().getMasterLanguageForSiteNode(db, siteNodeId);
+			if(!masterLanguageVO.getId().equals(languageId))
+			{
+				metaAttributeKey = "c_" + contentId + "_" + masterLanguageVO.getId() + "_" + attributeName;
+				candidate = (String)CacheController.getCachedObjectFromAdvancedCache("metaInfoContentAttributeCache", metaAttributeKey);
+			}
+    	}
+    	
+    	if(candidate != null)
+    	{
+    		//System.out.println("It was a cached meta info attribute...");
+    		return candidate;
+    	}
+    	else
+    	{
+    		//System.out.println("No cached meta info attribute:" + metaAttributeKey);
+    	}
+		*/
+		
 		boolean isTemplateQuery = false;
 		if(attributeName.equalsIgnoreCase("Template") || attributeName.equalsIgnoreCase("PreTemplate") || attributeName.equalsIgnoreCase("ComponentLabels"))
 			isTemplateQuery = true;
@@ -991,11 +1021,10 @@ public class ContentDeliveryController extends BaseDeliveryController
 			}
 			else
 			{
-			
 				ContentVersionVO contentVersionVO = getContentVersionVO(db, siteNodeId, contentId, languageId, useLanguageFallback, deliveryContext, infogluePrincipal);
 				
 				deliveryContext.addDebugInformation("contentVersionVO:" + contentVersionVO);
-			   if (contentVersionVO != null) 
+				if(contentVersionVO != null) 
 				{
 					deliveryContext.addDebugInformation("contentVersionVO.versionValue:" + contentVersionVO.getVersionValue().length());
 
@@ -1467,23 +1496,24 @@ public class ContentDeliveryController extends BaseDeliveryController
 		// addition ss - 030422
 		// Search digital asset among language versions.
 		List langs = LanguageDeliveryController.getLanguageDeliveryController().getAvailableLanguages(db, siteNodeId);
+		List<Integer> checkedLanguages = new ArrayList<Integer>();
 		Iterator lit = langs.iterator();
 		while (lit.hasNext())
 		{
 			LanguageVO langVO = (LanguageVO) lit.next();
-			if (langVO.getLanguageId().compareTo(languageId)!=0)
+			if(langVO.getLanguageId().compareTo(languageId)!=0)
 			{
 				SmallestContentVersionVO contentVersion = getSmallestContentVersionVO(siteNodeId, contentId, langVO.getLanguageId(), db, false, deliveryContext, infoGluePrincipal);
 				if (contentVersion != null) 
 				{
 					DigitalAssetVO digitalAsset = (assetKey == null) ? DigitalAssetController.getLatestDigitalAssetVO(contentVersion.getId(), db) : DigitalAssetController.getLatestDigitalAssetVO(contentVersion.getId(), assetKey, db);
-					
 					if(digitalAsset != null)
 					{
 						asset = digitalAsset;
 						break;
 					}
-				}									
+				}
+				checkedLanguages.add(langVO.getLanguageId());
 			}
 		}
 
@@ -1501,6 +1531,11 @@ public class ContentDeliveryController extends BaseDeliveryController
 					LanguageVO langVO = (LanguageVO) contentRepositoryLangsIterator.next();
 					if (langVO.getLanguageId().compareTo(languageId)!=0)
 					{
+						if(checkedLanguages.contains(langVO.getLanguageId()))
+						{
+							continue;
+						}
+
 						SmallestContentVersionVO contentVersion = getSmallestContentVersionVO(siteNodeId, contentId, langVO.getLanguageId(), db, false, deliveryContext, infoGluePrincipal);
 						if (contentVersion != null) 
 						{
@@ -1873,7 +1908,7 @@ public class ContentDeliveryController extends BaseDeliveryController
 		SmallestContentVersionVO contentVersion = getSmallestContentVersionVO(siteNodeId, contentId, languageId, db, useLanguageFallback, deliveryContext, infoGluePrincipal);
 		ContentVO contentVO = this.getContentVO(db, contentId, deliveryContext);
 		LanguageVO masterLanguageVO = LanguageDeliveryController.getLanguageDeliveryController().getMasterLanguageForRepository(contentVO.getRepositoryId(), db);
-		
+
 		if(logger.isInfoEnabled())
 		{
 			logger.info("languageId:" + languageId);
@@ -1892,7 +1927,7 @@ public class ContentDeliveryController extends BaseDeliveryController
 		*/
 		
 		boolean isUnprotectedAsset = getHasUserContentAccess(db, UserControllerProxy.getController().getUser(CmsPropertyHandler.getAnonymousUser()), contentId);
-		
+
 		if(!isUnprotectedAsset)
 		{
 			//SiteNodeVO siteNodeVO = getSiteNodeVO(db, siteNodeId);
@@ -1953,6 +1988,7 @@ public class ContentDeliveryController extends BaseDeliveryController
 					if(repositoryVO.getDnsName() != null && !repositoryVO.getDnsName().equals(""))
 						dnsName = repositoryVO.getDnsName();
 				}
+
 				/*
 				SiteNode siteNode = NodeDeliveryController.getNodeDeliveryController(siteNodeId, languageId, contentId).getSiteNode(db, siteNodeId);
 				String dnsName = CmsPropertyHandler.getWebServerAddress();
@@ -2036,8 +2072,11 @@ public class ContentDeliveryController extends BaseDeliveryController
 		}
 			
 		if(assetUrl == null || assetUrl.equals(""))
+		{
 			RequestAnalyser.getRequestAnalyser().registerComponentStatistics("Missed as assetURL was empty", t.getElapsedTime());
-
+			logger.warn("Missed as assetURL was empty:" + assetKey);
+		}
+		
         //CacheController.cacheObject(cacheName, assetCacheKey, assetUrl);
 		//System.out.println("Group:" + "content_" + contentId);
         CacheController.cacheObjectInAdvancedCache(cacheName, assetCacheKey, assetUrl, new String[]{"content_" + contentId}, true);
@@ -2643,6 +2682,33 @@ public class ContentDeliveryController extends BaseDeliveryController
 		return value;
 	}
 	
+	/**
+	 * This method fetches a value from the xml that is the contentVersions Value. If the 
+	 * contentVersioVO is null the contentVersion has not been created yet and no values are present.
+	 */
+	public String getAttributeValue(String versionValue, String key, boolean escapeHTML)
+	{
+		String value = "";
+		try
+        {
+        	String xml = versionValue;
+        	
+        	int startTagIndex = xml.indexOf("<" + key + ">");
+        	int endTagIndex   = xml.indexOf("]]></" + key + ">");
+        	
+        	if(startTagIndex > 0 && startTagIndex < xml.length() && endTagIndex > startTagIndex && endTagIndex <  xml.length())
+        		value = xml.substring(startTagIndex + key.length() + 11, endTagIndex);
+
+    		if(escapeHTML)
+        	    value = formatter.escapeHTML(value);
+        } 
+        catch(Exception e)
+        {
+        	logger.error("An error occurred so we should not return the attribute value:" + e, e);
+        }
+
+		return value;
+	}
 
 	/**
 	 * This method returns a sorted list of childContents to a content ordered by the given attribute in the direction given.
@@ -3029,8 +3095,7 @@ public class ContentDeliveryController extends BaseDeliveryController
 			//TODO
 		    ContentVersionVO contentVersion = getContentVersionVO(content.getId(), languageId, getOperatingMode(deliveryContext), deliveryContext, db);
 		    //SmallestContentVersionVO contentVersion = getSmallestContentVersionVO(content.getId(), languageId, getOperatingMode(deliveryContext), deliveryContext, db);
-
-		    //RequestAnalyser.getRequestAnalyser().registerComponentStatistics("isValidContentPart4.1", t.getElapsedTimeNanos() / 1000);
+			//RequestAnalyser.getRequestAnalyser().registerComponentStatistics("isValidContentPart4", t.getElapsedTimeNanos() / 1000);
 
 		    Integer repositoryId = content.getRepositoryId();
 			if(contentVersion == null && useLanguageFallBack && repositoryId != null)
@@ -3039,7 +3104,6 @@ public class ContentDeliveryController extends BaseDeliveryController
 				//TODO
 				if(masterLanguage != null && !masterLanguage.getId().equals(languageId))
 				{
-					//contentVersion = getContentVersion(content, masterLanguage.getId(), getOperatingMode(), deliveryContext, db);
 					contentVersion = getContentVersionVO(content.getId(), masterLanguage.getId(), getOperatingMode(deliveryContext), deliveryContext, db);
 					//contentVersion = getSmallestContentVersionVO(content.getId(), masterLanguage.getId(), getOperatingMode(deliveryContext), deliveryContext, db);
 				}
