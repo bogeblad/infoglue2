@@ -65,7 +65,7 @@ public class ContentStateController extends BaseController
 	
     public static ContentVersionVO changeState(Integer oldContentVersionId, Integer stateId, String versionComment, boolean overrideVersionModifyer, InfoGluePrincipal infoGluePrincipal, Integer contentId, List resultingEvents) throws ConstraintException, SystemException
     {
-    	ContentVO contentVO = ContentController.getContentController().getContentVOWithId(contentId);
+    	ContentVO contentVO = (contentId == null ? null : ContentController.getContentController().getContentVOWithId(contentId));
 
     	return changeState(oldContentVersionId, contentVO, stateId, versionComment, overrideVersionModifyer, null, infoGluePrincipal, contentId, resultingEvents);
     }
@@ -87,7 +87,7 @@ public class ContentStateController extends BaseController
 	
     public static ContentVersionVO changeState(Integer oldContentVersionId, Integer stateId, String versionComment, boolean overrideVersionModifyer, String recipientFilter, InfoGluePrincipal infoGluePrincipal, Integer contentId, List resultingEvents) throws ConstraintException, SystemException
     {
-    	ContentVO contentVO = ContentController.getContentController().getContentVOWithId(contentId);
+    	ContentVO contentVO = (contentId == null ? null : ContentController.getContentController().getContentVOWithId(contentId));
 
     	return changeState(oldContentVersionId, contentVO, stateId, versionComment, overrideVersionModifyer, recipientFilter, infoGluePrincipal, contentId, resultingEvents);
     }
@@ -175,8 +175,13 @@ public class ContentStateController extends BaseController
 			logger.info("oldContentVersion:" + oldContentVersion.getId());
 			//t.printElapsedTime("oldContentVersion");
 			
-			if (contentId == null)
-				contentId = new Integer(contentVO.getContentId().intValue());
+			if (contentId == null && contentVO != null)
+				contentId = contentVO.getContentId();
+			else if(contentId == null)
+				contentId = oldContentVersion.getValueObject().getContentId();
+				
+			if(contentId != null && contentVO == null)
+		    	contentVO = ContentController.getContentController().getContentVOWithId(contentId, db);
 
 			boolean duplicateAssets = CmsPropertyHandler.getDuplicateAssetsBetweenVersions();
 			
