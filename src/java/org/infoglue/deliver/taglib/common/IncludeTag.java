@@ -51,6 +51,7 @@ public class IncludeTag extends TemplateControllerTag
     {
 		try
         {
+			String renderDescription = null;
 		    if(contentId == null)
 		    {
 			    Integer componentContentId = this.getController().getComponentLogic().getInfoGlueComponent().getContentId();
@@ -63,6 +64,7 @@ public class IncludeTag extends TemplateControllerTag
 			        ContentVO contentVO = (ContentVO)i.next();
 			        if(contentVO.getName().equalsIgnoreCase(contentName))
 	                {
+			        	renderDescription = ""+contentVO.getName();
 			            contentId = contentVO.getId();
 			            break;
 	                }
@@ -75,7 +77,7 @@ public class IncludeTag extends TemplateControllerTag
 		        template = this.getController().getContentAttributeUsingLanguageFallback(contentId, "Template", true);
 		    }
 		    
-		    String result = this.getController().renderString(template, contentId, this.useSubContext);
+		    String result = this.getController().renderString(template, contentId, this.useSubContext, renderDescription);
 		    produceResult(result);
         } 
 		catch (Exception e)

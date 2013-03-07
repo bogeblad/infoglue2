@@ -138,6 +138,8 @@ public class VelocityTemplateProcessor
 		 	String componentName = "Unknown name or not a component";
 		 	if(component != null)
 		    	componentName = "" + component.getName() + "(" + component.getContentId() + ")";
+		 	else if(params.get("renderDescription") != null)
+		 		componentName = ""+params.get("renderDescription");
 		    
 		    RequestAnalyser.getRequestAnalyser().registerComponentStatistics(componentName + (statisticsSuffix == null ? "" : statisticsSuffix), timer.getElapsedTime());
 	        if(logger.isInfoEnabled())
