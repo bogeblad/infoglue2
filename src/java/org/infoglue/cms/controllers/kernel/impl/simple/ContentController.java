@@ -466,7 +466,6 @@ public class ContentController extends BaseController
         try
         {            
             ContentVO parentContentVO = null;
-          	ContentTypeDefinitionVO contentTypeDefinition = null;
 
             if(parentContentId != null)
             {
@@ -474,11 +473,14 @@ public class ContentController extends BaseController
             	
             	if(repositoryId == null)
 					repositoryId = parentContentVO.getRepositoryId();	
+            	
+            	if(parentContentVO.getIsBranch() == false)
+            	{
+            		Content parentContent = getMediumContentWithId(parentContentVO.getId(), db);
+            		parentContent.setIsBranch(new Boolean(true));
+            	}
             }
             
-            if(contentTypeDefinitionId != null)
-            	contentTypeDefinition = ContentTypeDefinitionController.getController().getContentTypeDefinitionVOWithId(contentTypeDefinitionId, db);
-
             //RepositoryVO repository = RepositoryController.getController().getRepositoryVOWithId(repositoryId, db);
 
 			/*
