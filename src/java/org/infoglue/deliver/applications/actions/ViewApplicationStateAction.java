@@ -857,6 +857,11 @@ public class ViewApplicationStateAction extends InfoGlueAbstractAction
         	long componentAverageElapsedTime = RequestAnalyser.getComponentAverageElapsedTime(componentName);
         	int componentNumberOfHits = RequestAnalyser.getComponentNumberOfHits(componentName);
         	//states.add(getList("" + componentName + " - " + componentNumberOfHits + " hits", "" + componentAverageElapsedTime));
+        	if(componentName.indexOf("micro") > -1)
+        	{
+        		componentAverageElapsedTime = componentAverageElapsedTime / 1000;
+        		componentName = componentName.replaceFirst("micro", "now milli");
+        	}
         	unsortedComponents.add(getList("" + componentName + " - " + componentNumberOfHits + " hits", new Long(componentNumberOfHits * componentAverageElapsedTime), new Long(componentAverageElapsedTime)));
         }
 
