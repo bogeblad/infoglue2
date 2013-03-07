@@ -1186,6 +1186,11 @@ public class ComponentLogic
 
 	public List getChildPages(String propertyName, boolean useInheritance, boolean escapeHTML, boolean hideUnauthorizedPages, boolean useRepositoryInheritance, boolean useStructureInheritance)
 	{
+		return getChildPages(propertyName, useInheritance, escapeHTML, hideUnauthorizedPages, useRepositoryInheritance, useStructureInheritance, 0);
+	}
+	
+	public List getChildPages(String propertyName, boolean useInheritance, boolean escapeHTML, boolean hideUnauthorizedPages, boolean useRepositoryInheritance, boolean useStructureInheritance, Integer levelsToPopulate)
+	{
 	    List childPages = new ArrayList();
 	    
 	    Map property = getInheritedComponentProperty(this.infoGlueComponent, propertyName, useInheritance, useRepositoryInheritance, useStructureInheritance);
@@ -1196,28 +1201,39 @@ public class ComponentLogic
 			while(bindingsIterator.hasNext())
 			{
 				Integer siteNodeId = bindingsIterator.next().getEntityId();
-				childPages.addAll(getChildPages(siteNodeId));
+				childPages.addAll(getChildPages(siteNodeId, levelsToPopulate));
 			}
 		}
 
 	    return childPages;
 	}
 
-	
+
 	/**
 	 * This method returns a list of childpages.
 	 */
 
 	public List getChildPages(Integer siteNodeId)
 	{
-		List pages = templateController.getChildPages(siteNodeId);
+		return getChildPages(siteNodeId, 0);
+	}
+	
+	
+	/**
+	 * This method returns a list of childpages.
+	 */
 
+	public List getChildPages(Integer siteNodeId, Integer levelsToPopulate)
+	{
+		List pages = templateController.getChildPages(siteNodeId, levelsToPopulate);
+		/*
 		Iterator pagesIterator = pages.iterator();
 		while(pagesIterator.hasNext())
 		{
 			WebPage webPage = (WebPage)pagesIterator.next();
 			webPage.setUrl(getPageUrl(webPage.getSiteNodeId()));
 		}
+		*/
 	
 		return pages;
 	}
