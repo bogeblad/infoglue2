@@ -734,6 +734,12 @@
     <field name="modifiedDateTime" type="java.util.Date">
       <sql name="modifiedDateTime" type="timestamp" dirty="check" />
     </field>    
+    <field name="languageId" type="java.lang.Integer">
+      <sql name="languageId" type="integer" dirty="check" />
+    </field>
+    <field name="attributes" type="java.lang.String">
+      <sql name="attributes" type="varchar" dirty="check" />
+    </field>
   </class>
 
   <!--  Mapping for SmallServiceBinding  -->
