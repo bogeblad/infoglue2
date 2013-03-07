@@ -202,7 +202,8 @@ public class ChangeNotificationController
 					}
 					catch (Exception e) 
 					{
-						logger.error("Error setting extra info:" + e.getMessage(), e);
+						logger.error("Error setting extra info:" + e.getMessage());
+						logger.warn("Error setting extra info:" + e.getMessage(), e);
 						internalMessageListIterator.remove();
 					}
 				}
