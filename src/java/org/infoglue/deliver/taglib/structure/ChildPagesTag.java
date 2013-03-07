@@ -40,6 +40,7 @@ public class ChildPagesTag extends ComponentLogicTag
     private boolean useStructureInheritance = true;
 	private boolean escapeHTML = false;
 	private boolean hideUnauthorizedPages = false;
+	private Integer levelsToPopulate = 0;
 		
 	
     public ChildPagesTag()
@@ -52,15 +53,17 @@ public class ChildPagesTag extends ComponentLogicTag
 		Timer t = new Timer();
 	    if(this.siteNodeId != null)
 	    {
-	        setResultAttribute(this.getController().getChildPages(this.siteNodeId, this.escapeHTML, this.hideUnauthorizedPages));
+	    	//if(this.siteNodeId != 100081)
+	    	//	this.levelsToPopulate = 2;
+	        setResultAttribute(this.getController().getChildPages(this.siteNodeId, this.escapeHTML, this.hideUnauthorizedPages, this.levelsToPopulate));
 		    //if(logger.isInfoEnabled())
-	    	RequestAnalyser.getRequestAnalyser().registerComponentStatistics("ChildPages 1 tag", t.getElapsedTimeNanos() / 1000);	    	
+	    	RequestAnalyser.getRequestAnalyser().registerComponentStatistics("ChildPages 1 tag(micro)", t.getElapsedTimeNanos() / 1000);	    	
 	    }
 	    else if(this.propertyName != null)
 	    {
-	    	setResultAttribute(getComponentLogic().getChildPages(propertyName, useInheritance, this.escapeHTML, this.hideUnauthorizedPages, useRepositoryInheritance, useStructureInheritance));
+	    	setResultAttribute(getComponentLogic().getChildPages(propertyName, useInheritance, this.escapeHTML, this.hideUnauthorizedPages, useRepositoryInheritance, useStructureInheritance, this.levelsToPopulate));
 		    //if(logger.isInfoEnabled())
-	    	RequestAnalyser.getRequestAnalyser().registerComponentStatistics("ChildPages 2 tag", t.getElapsedTimeNanos() / 1000);
+	    	RequestAnalyser.getRequestAnalyser().registerComponentStatistics("ChildPages 2 tag(micro)", t.getElapsedTimeNanos() / 1000);
 	    }
         else
             throw new JspException("You must state either propertyName or siteNodeId");
@@ -72,7 +75,8 @@ public class ChildPagesTag extends ComponentLogicTag
 	    this.useStructureInheritance = true;
 	    this.escapeHTML = false;
 	    this.hideUnauthorizedPages = false;
-
+	    this.levelsToPopulate = 0;
+	    
 	    return EVAL_PAGE;
     }
 
@@ -109,6 +113,11 @@ public class ChildPagesTag extends ComponentLogicTag
     public void setUseStructureInheritance(boolean useStructureInheritance)
     {
         this.useStructureInheritance = useStructureInheritance;
+    }
+
+    public void setLevelsToPopulate(String levelsToPopulate) throws JspException
+    {
+        this.levelsToPopulate = evaluateInteger("ChildPagesTag", "levelsToPopulate", levelsToPopulate);
     }
 
 }

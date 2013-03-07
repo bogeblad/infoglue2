@@ -250,7 +250,7 @@ public class SiteNodeController extends BaseController
 
 	    	if(CmsPropertyHandler.getUseShortTableNames() != null && CmsPropertyHandler.getUseShortTableNames().equalsIgnoreCase("true"))
 	    	{
-		   		SQL.append("CALL SQL select sn.siNoId, sn.name, sn.publishDateTime, sn.expireDateTime, sn.isBranch, sn.parentSiNoId, sn.metaInfoContentId, sn.repositoryId, sn.siNoTypeDefId, sn.creator, (select count(*) from cmSiNo sn2 where sn2.parentSiNoId = sn.siNoId) AS childCount, snv.siNoVerId, snv.stateId, snv.isProtected, snv.versionModifier, snv.modifiedDateTime from cmSiNo sn, cmSiNoVer snv ");
+		   		SQL.append("CALL SQL select sn.siNoId, sn.name, sn.publishDateTime, sn.expireDateTime, sn.isBranch, sn.parentSiNoId, sn.metaInfoContentId, sn.repositoryId, sn.siNoTypeDefId, sn.creator, (select count(*) from cmSiNo sn2 where sn2.parentSiNoId = sn.siNoId) AS childCount, snv.siNoVerId, snv.stateId, snv.isProtected, snv.versionModifier, snv.modifiedDateTime, 0 AS languageId, '' as attributes from cmSiNo sn, cmSiNoVer snv ");
 		   		SQL.append("where ");
 		   		SQL.append("sn.siNoId = $1 ");
 		   		SQL.append("AND snv.siNoId = sn.siNoId ");
@@ -264,7 +264,7 @@ public class SiteNodeController extends BaseController
 	    	}
 	    	else
 	    	{
-		   		SQL.append("CALL SQL select sn.siteNodeId, sn.name, sn.publishDateTime, sn.expireDateTime, sn.isBranch, sn.parentSiteNodeId, sn.metaInfoContentId, sn.repositoryId, sn.siteNodeTypeDefinitionId, sn.creator, (select count(*) from cmSiteNode sn2 where sn2.parentSiteNodeId = sn.siteNodeId) AS childCount, sn.siteNodeId, snv.stateId, snv.isProtected, snv.versionModifier, snv.modifiedDateTime from cmSiteNode sn, cmSiteNodeVersion snv ");
+		   		SQL.append("CALL SQL select sn.siteNodeId, sn.name, sn.publishDateTime, sn.expireDateTime, sn.isBranch, sn.parentSiteNodeId, sn.metaInfoContentId, sn.repositoryId, sn.siteNodeTypeDefinitionId, sn.creator, (select count(*) from cmSiteNode sn2 where sn2.parentSiteNodeId = sn.siteNodeId) AS childCount, sn.siteNodeId, snv.stateId, snv.isProtected, snv.versionModifier, snv.modifiedDateTime, 0 AS languageId, '' as attributes from cmSiteNode sn, cmSiteNodeVersion snv ");
 		   		SQL.append("where ");
 		   		SQL.append("sn.siteNodeId = $1 ");
 		   		SQL.append("AND snv.siteNodeId = sn.siteNodeId ");
@@ -336,7 +336,7 @@ public class SiteNodeController extends BaseController
 
 	    	if(CmsPropertyHandler.getUseShortTableNames() != null && CmsPropertyHandler.getUseShortTableNames().equalsIgnoreCase("true"))
 	    	{
-		   		SQL.append("CALL SQL select sn.siNoId, sn.name, sn.publishDateTime, sn.expireDateTime, sn.isBranch, sn.parentSiNoId, sn.metaInfoContentId, sn.repositoryId, sn.siNoTypeDefId, sn.creator, (select count(*) from cmSiNo sn2 where sn2.parentSiNoId = sn.siNoId) AS childCount, snv.siNoVerId, snv.stateId, snv.isProtected, snv.versionModifier, snv.modifiedDateTime from cmSiNo sn, cmSiNoVer snv ");
+		   		SQL.append("CALL SQL select sn.siNoId, sn.name, sn.publishDateTime, sn.expireDateTime, sn.isBranch, sn.parentSiNoId, sn.metaInfoContentId, sn.repositoryId, sn.siNoTypeDefId, sn.creator, (select count(*) from cmSiNo sn2 where sn2.parentSiNoId = sn.siNoId) AS childCount, snv.siNoVerId, snv.stateId, snv.isProtected, snv.versionModifier, snv.modifiedDateTime, 0 AS languageId, '' as attributes from cmSiNo sn, cmSiNoVer snv ");
 		   		SQL.append("where ");
 		   		SQL.append("sn.siNoId = $1 ");
 		   		SQL.append("AND snv.siNoId = sn.siNoId ");
@@ -349,7 +349,7 @@ public class SiteNodeController extends BaseController
 	    	}
 	    	else
 	    	{
-		   		SQL.append("CALL SQL select sn.siteNodeId, sn.name, sn.publishDateTime, sn.expireDateTime, sn.isBranch, sn.parentSiteNodeId, sn.metaInfoContentId, sn.repositoryId, sn.siteNodeTypeDefinitionId, sn.creator, (select count(*) from cmSiteNode sn2 where sn2.parentSiteNodeId = sn.siteNodeId) AS childCount, snv.siteNodeVersionId, snv.stateId, snv.isProtected, snv.versionModifier, snv.modifiedDateTime from cmSiteNode sn, cmSiteNodeVersion snv ");
+		   		SQL.append("CALL SQL select sn.siteNodeId, sn.name, sn.publishDateTime, sn.expireDateTime, sn.isBranch, sn.parentSiteNodeId, sn.metaInfoContentId, sn.repositoryId, sn.siteNodeTypeDefinitionId, sn.creator, (select count(*) from cmSiteNode sn2 where sn2.parentSiteNodeId = sn.siteNodeId) AS childCount, snv.siteNodeVersionId, snv.stateId, snv.isProtected, snv.versionModifier, snv.modifiedDateTime, 0 AS languageId, '' as attributes from cmSiteNode sn, cmSiteNodeVersion snv ");
 		   		SQL.append("where ");
 		   		SQL.append("sn.siteNodeId = $1 ");
 		   		SQL.append("AND snv.siteNodeId = sn.siteNodeId ");
@@ -427,7 +427,7 @@ public class SiteNodeController extends BaseController
 	    
     	if(CmsPropertyHandler.getUseShortTableNames() != null && CmsPropertyHandler.getUseShortTableNames().equalsIgnoreCase("true"))
     	{
-	   		SQL.append("CALL SQL select sn.siNoId, sn.name, sn.publishDateTime, sn.expireDateTime, sn.isBranch, sn.parentSiNoId, sn.metaInfoContentId, sn.repositoryId, sn.siNoTypeDefId, sn.creator, (select count(*) from cmSiNo sn2 where sn2.parentSiNoId = sn.siNoId) AS childCount, snv.stateId, snv.isProtected, snv.versionModifier, snv.modifiedDateTime from cmSiNo sn, cmSiNoVer snv ");
+	   		SQL.append("CALL SQL select sn.siNoId, sn.name, sn.publishDateTime, sn.expireDateTime, sn.isBranch, sn.parentSiNoId, sn.metaInfoContentId, sn.repositoryId, sn.siNoTypeDefId, sn.creator, (select count(*) from cmSiNo sn2 where sn2.parentSiNoId = sn.siNoId) AS childCount, snv.stateId, snv.isProtected, snv.versionModifier, snv.modifiedDateTime, 0 AS languageId, '' as attributes from cmSiNo sn, cmSiNoVer snv ");
 	   		SQL.append("where ");
 	   		SQL.append("snv.siNoId = sn.siNoId ");
 	   		SQL.append("AND snv.siNoVerId = ( ");
@@ -441,7 +441,7 @@ public class SiteNodeController extends BaseController
     	}
     	else
     	{
-	   		SQL.append("CALL SQL select sn.siteNodeId, sn.name, sn.publishDateTime, sn.expireDateTime, sn.isBranch, sn.parentSiteNodeId, sn.metaInfoContentId, sn.repositoryId, sn.siteNodeTypeDefinitionId, sn.creator, (select count(*) from cmSiteNode sn2 where sn2.parentSiteNodeId = sn.siteNodeId) AS childCount, snv.stateId, snv.isProtected, snv.versionModifier, snv.modifiedDateTime from cmSiteNode sn, cmSiteNodeVersion snv ");
+	   		SQL.append("CALL SQL select sn.siteNodeId, sn.name, sn.publishDateTime, sn.expireDateTime, sn.isBranch, sn.parentSiteNodeId, sn.metaInfoContentId, sn.repositoryId, sn.siteNodeTypeDefinitionId, sn.creator, (select count(*) from cmSiteNode sn2 where sn2.parentSiteNodeId = sn.siteNodeId) AS childCount, snv.stateId, snv.isProtected, snv.versionModifier, snv.modifiedDateTime, 0 AS languageId, '' as attributes from cmSiteNode sn, cmSiteNodeVersion snv ");
 	   		SQL.append("where ");
 	   		SQL.append("snv.siteNodeId = sn.siteNodeId ");
 	   		SQL.append("AND snv.siteNodeVersionId = ( ");
@@ -527,7 +527,7 @@ public class SiteNodeController extends BaseController
 	    
     	if(CmsPropertyHandler.getUseShortTableNames() != null && CmsPropertyHandler.getUseShortTableNames().equalsIgnoreCase("true"))
     	{
-	   		SQL.append("CALL SQL select sn.siNoId, sn.name, sn.publishDateTime, sn.expireDateTime, sn.isBranch, sn.parentSiNoId, sn.metaInfoContentId, sn.repositoryId, sn.siNoTypeDefId, sn.creator, (select count(*) from cmSiNo sn2 where sn2.parentSiNoId = sn.siNoId) AS childCount, snv.siNoVerId, snv.stateId, snv.isProtected, snv.versionModifier, snv.modifiedDateTime from cmSiNo sn, cmSiNoVer snv ");
+	   		SQL.append("CALL SQL select sn.siNoId, sn.name, sn.publishDateTime, sn.expireDateTime, sn.isBranch, sn.parentSiNoId, sn.metaInfoContentId, sn.repositoryId, sn.siNoTypeDefId, sn.creator, (select count(*) from cmSiNo sn2 where sn2.parentSiNoId = sn.siNoId) AS childCount, snv.siNoVerId, snv.stateId, snv.isProtected, snv.versionModifier, snv.modifiedDateTime, 0 AS languageId, '' as attributes from cmSiNo sn, cmSiNoVer snv ");
 	   		SQL.append("where ");
 	   		SQL.append("snv.siNoId = sn.siNoId ");
 	   		SQL.append("AND snv.siNoVerId IN (" + variables + ") ");
@@ -535,7 +535,7 @@ public class SiteNodeController extends BaseController
     	}
     	else
     	{
-	   		SQL.append("CALL SQL select sn.siteNodeId, sn.name, sn.publishDateTime, sn.expireDateTime, sn.isBranch, sn.parentSiteNodeId, sn.metaInfoContentId, sn.repositoryId, sn.siteNodeTypeDefinitionId, sn.creator, (select count(*) from cmSiteNode sn2 where sn2.parentSiteNodeId = sn.siteNodeId) AS childCount, snv.siteNodeVersionId, snv.stateId, snv.isProtected, snv.versionModifier, snv.modifiedDateTime from cmSiteNode sn, cmSiteNodeVersion snv ");
+	   		SQL.append("CALL SQL select sn.siteNodeId, sn.name, sn.publishDateTime, sn.expireDateTime, sn.isBranch, sn.parentSiteNodeId, sn.metaInfoContentId, sn.repositoryId, sn.siteNodeTypeDefinitionId, sn.creator, (select count(*) from cmSiteNode sn2 where sn2.parentSiteNodeId = sn.siteNodeId) AS childCount, snv.siteNodeVersionId, snv.stateId, snv.isProtected, snv.versionModifier, snv.modifiedDateTime, 0 AS languageId, '' as attributes from cmSiteNode sn, cmSiteNodeVersion snv ");
 	   		SQL.append("where ");
 	   		SQL.append("snv.siteNodeId = sn.siteNodeId ");
 	   		SQL.append("AND snv.siteNodeVersionId IN (" + variables + ") ");
@@ -1048,7 +1048,7 @@ public class SiteNodeController extends BaseController
     	StringBuffer SQL = new StringBuffer();
     	if(CmsPropertyHandler.getUseShortTableNames() != null && CmsPropertyHandler.getUseShortTableNames().equalsIgnoreCase("true"))
     	{
-	   		SQL.append("CALL SQL select sn.siNoId, sn.name, sn.publishDateTime, sn.expireDateTime, sn.isBranch, sn.parentSiNoId, sn.metaInfoContentId, sn.repositoryId, sn.siNoTypeDefId, sn.creator, (select count(*) from cmSiNo sn2 where sn2.parentSiNoId = sn.siNoId) AS childCount, snv.siNoVerId, snv.stateId, snv.isProtected, snv.versionModifier, snv.modifiedDateTime from cmSiNo sn, cmSiNoVer snv ");
+	   		SQL.append("CALL SQL select sn.siNoId, sn.name, sn.publishDateTime, sn.expireDateTime, sn.isBranch, sn.parentSiNoId, sn.metaInfoContentId, sn.repositoryId, sn.siNoTypeDefId, sn.creator, (select count(*) from cmSiNo sn2 where sn2.parentSiNoId = sn.siNoId) AS childCount, snv.siNoVerId, snv.stateId, snv.isProtected, snv.versionModifier, snv.modifiedDateTime, 0 AS languageId, '' as attributes from cmSiNo sn, cmSiNoVer snv ");
 	   		SQL.append("where ");
 	   		SQL.append("sn.parentSiNoId = $1 ");
 	   		SQL.append("AND snv.siNoId = sn.siNoId ");
@@ -1061,7 +1061,7 @@ public class SiteNodeController extends BaseController
     	}
     	else
     	{
-	   		SQL.append("CALL SQL select sn.siteNodeId, sn.name, sn.publishDateTime, sn.expireDateTime, sn.isBranch, sn.parentSiteNodeId, sn.metaInfoContentId, sn.repositoryId, sn.siteNodeTypeDefinitionId, sn.creator, (select count(*) from cmSiteNode sn2 where sn2.parentSiteNodeId = sn.siteNodeId) AS childCount, snv.siteNodeVersionId, snv.stateId, snv.isProtected, snv.versionModifier, snv.modifiedDateTime from cmSiteNode sn, cmSiteNodeVersion snv ");
+	   		SQL.append("CALL SQL select sn.siteNodeId, sn.name, sn.publishDateTime, sn.expireDateTime, sn.isBranch, sn.parentSiteNodeId, sn.metaInfoContentId, sn.repositoryId, sn.siteNodeTypeDefinitionId, sn.creator, (select count(*) from cmSiteNode sn2 where sn2.parentSiteNodeId = sn.siteNodeId) AS childCount, snv.siteNodeVersionId, snv.stateId, snv.isProtected, snv.versionModifier, snv.modifiedDateTime, 0 AS languageId, '' as attributes from cmSiteNode sn, cmSiteNodeVersion snv ");
 	   		SQL.append("where ");
 	   		SQL.append("sn.parentSiteNodeId = $1 ");
 	   		SQL.append("AND snv.siteNodeId = sn.siteNodeId ");
@@ -1231,7 +1231,7 @@ public class SiteNodeController extends BaseController
    		StringBuffer SQL = new StringBuffer();
    		if(CmsPropertyHandler.getUseShortTableNames() != null && CmsPropertyHandler.getUseShortTableNames().equalsIgnoreCase("true"))
     	{
-	   		SQL.append("CALL SQL select * from (select sn.siNoId, sn.name, sn.publishDateTime, sn.expireDateTime, sn.isBranch, sn.parentSiNoId, sn.metaInfoContentId, sn.repositoryId, sn.siNoTypeDefId, sn.creator, (select count(*) from cmSiNo sn2 where sn2.parentSiNoId = sn.siNoId) AS childCount, snv.siNoVerId, snv.stateId, snv.isProtected, snv.versionModifier, snv.modifiedDateTime from cmSiNo sn, cmSiNoVer snv ");
+	   		SQL.append("CALL SQL select * from (select sn.siNoId, sn.name, sn.publishDateTime, sn.expireDateTime, sn.isBranch, sn.parentSiNoId, sn.metaInfoContentId, sn.repositoryId, sn.siNoTypeDefId, sn.creator, (select count(*) from cmSiNo sn2 where sn2.parentSiNoId = sn.siNoId) AS childCount, snv.siNoVerId, snv.stateId, snv.isProtected, snv.versionModifier, snv.modifiedDateTime, 0 AS languageId, '' as attributes from cmSiNo sn, cmSiNoVer snv ");
 	   		SQL.append("where ");
 	   		SQL.append("snv.siNoId = sn.siNoId ");
 	   		SQL.append("AND snv.siNoVerId = ( ");
@@ -1244,7 +1244,7 @@ public class SiteNodeController extends BaseController
     	}
     	else
     	{
-	   		SQL.append("CALL SQL select sn.siteNodeId, sn.name, sn.publishDateTime, sn.expireDateTime, sn.isBranch, sn.parentSiteNodeId, sn.metaInfoContentId, sn.repositoryId, sn.siteNodeTypeDefinitionId, sn.creator, (select count(*) from cmSiteNode sn2 where sn2.parentSiteNodeId = sn.siteNodeId) AS childCount, snv.siteNodeVersionId, snv.stateId, snv.isProtected, snv.versionModifier, snv.modifiedDateTime from cmSiteNode sn, cmSiteNodeVersion snv ");
+	   		SQL.append("CALL SQL select sn.siteNodeId, sn.name, sn.publishDateTime, sn.expireDateTime, sn.isBranch, sn.parentSiteNodeId, sn.metaInfoContentId, sn.repositoryId, sn.siteNodeTypeDefinitionId, sn.creator, (select count(*) from cmSiteNode sn2 where sn2.parentSiteNodeId = sn.siteNodeId) AS childCount, snv.siteNodeVersionId, snv.stateId, snv.isProtected, snv.versionModifier, snv.modifiedDateTime, 0 AS languageId, '' as attributes from cmSiteNode sn, cmSiteNodeVersion snv ");
 	   		SQL.append("where ");
 	   		SQL.append("snv.siteNodeId = sn.siteNodeId ");
 	   		SQL.append("AND snv.siteNodeVersionId = ( ");
@@ -1376,7 +1376,7 @@ public class SiteNodeController extends BaseController
    		StringBuffer SQL = new StringBuffer();
     	if(CmsPropertyHandler.getUseShortTableNames() != null && CmsPropertyHandler.getUseShortTableNames().equalsIgnoreCase("true"))
     	{
-	   		SQL.append("CALL SQL select sn.siNoId, sn.name, sn.publishDateTime, sn.expireDateTime, sn.isBranch, sn.parentSiNoId, sn.metaInfoContentId, sn.repositoryId, sn.siNoTypeDefId, sn.creator, (select count(*) from cmSiNo sn2 where sn2.parentSiNoId = sn.siNoId) AS childCount, snv.siNoVerId, snv.stateId, snv.isProtected, snv.versionModifier, snv.modifiedDateTime from cmSiNo sn, cmSiNoVer snv ");
+	   		SQL.append("CALL SQL select sn.siNoId, sn.name, sn.publishDateTime, sn.expireDateTime, sn.isBranch, sn.parentSiNoId, sn.metaInfoContentId, sn.repositoryId, sn.siNoTypeDefId, sn.creator, (select count(*) from cmSiNo sn2 where sn2.parentSiNoId = sn.siNoId) AS childCount, snv.siNoVerId, snv.stateId, snv.isProtected, snv.versionModifier, snv.modifiedDateTime, 0 AS languageId, '' as attributes from cmSiNo sn, cmSiNoVer snv ");
 	   		SQL.append("where ");
 	   		SQL.append("sn.parentSiNoId = $1 ");
 	   		SQL.append("AND snv.siNoId = sn.siNoId ");
@@ -1390,7 +1390,7 @@ public class SiteNodeController extends BaseController
     	}
     	else
     	{
-	   		SQL.append("CALL SQL select sn.siteNodeId, sn.name, sn.publishDateTime, sn.expireDateTime, sn.isBranch, sn.parentSiteNodeId, sn.metaInfoContentId, sn.repositoryId, sn.siteNodeTypeDefinitionId, sn.creator, (select count(*) from cmSiteNode sn2 where sn2.parentSiteNodeId = sn.siteNodeId) AS childCount, snv.siteNodeVersionId, snv.stateId, snv.isProtected, snv.versionModifier, snv.modifiedDateTime from cmSiteNode sn, cmSiteNodeVersion snv ");
+	   		SQL.append("CALL SQL select sn.siteNodeId, sn.name, sn.publishDateTime, sn.expireDateTime, sn.isBranch, sn.parentSiteNodeId, sn.metaInfoContentId, sn.repositoryId, sn.siteNodeTypeDefinitionId, sn.creator, (select count(*) from cmSiteNode sn2 where sn2.parentSiteNodeId = sn.siteNodeId) AS childCount, snv.siteNodeVersionId, snv.stateId, snv.isProtected, snv.versionModifier, snv.modifiedDateTime, 0 AS languageId, '' as attributes from cmSiteNode sn, cmSiteNodeVersion snv ");
 	   		SQL.append("where ");
 	   		SQL.append("sn.parentSiteNodeId = $1 ");
 	   		SQL.append("AND snv.siteNodeId = sn.siteNodeId ");

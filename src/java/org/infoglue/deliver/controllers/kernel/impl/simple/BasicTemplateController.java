@@ -5873,7 +5873,28 @@ public class BasicTemplateController implements TemplateController
 	{
 	    return getPageNavTitle(siteNodeId, false);
 	}
-	
+
+	/**
+	 * This method deliveres a String with the Navigation title the page asked for has.
+	 * The navigation-title is fetched from the meta-info-content bound to the site node.
+	 */
+	 
+	public String getPageMetaData(Integer siteNodeId, Integer languageId, String attributeName) 
+	{
+		String navTitle = "";
+		
+		try
+		{
+			navTitle = this.nodeDeliveryController.getPageNavigationTitle(getDatabase(), this.getPrincipal(), siteNodeId, languageId, null, META_INFO_BINDING_NAME, NAV_TITLE_ATTRIBUTE_NAME, USE_LANGUAGE_FALLBACK, this.deliveryContext, false);
+		}
+		catch(Exception e)
+		{
+			logger.warn("An error occurred trying to get the page navigationtitle on " + this.getCurrentPagePath() + ": " + e.getMessage(), e);
+		}
+				
+		return navTitle;
+	}
+
 	/**
 	 * This method deliveres a String with the Navigation title the page asked for has.
 	 * The navigation-title is fetched from the meta-info-content bound to the site node.
@@ -6332,7 +6353,10 @@ public class BasicTemplateController implements TemplateController
 					webPage.setSiteNodeId(siteNodeVO.getSiteNodeId());
 					webPage.setLanguageId(this.languageId);
 					webPage.setContentId(null);
-					webPage.setNavigationTitle(this.nodeDeliveryController.getPageNavigationTitle(getDatabase(), this.getPrincipal(), siteNodeVO.getSiteNodeId(), this.languageId, siteNodeVO.getMetaInfoContentId(), META_INFO_BINDING_NAME, NAV_TITLE_ATTRIBUTE_NAME, USE_LANGUAGE_FALLBACK, this.deliveryContext, escapeHTML));
+					
+					LanguageVO masterLanguageVO = LanguageDeliveryController.getLanguageDeliveryController().getMasterLanguageForRepository(getDatabase(), siteNodeVO.getRepositoryId());
+					webPage.setNavigationTitle(this.nodeDeliveryController.getPageNavigationTitle(getDatabase(), this.getPrincipal(), siteNodeVO.getId(), siteNodeVO.getRepositoryId(), this.languageId, siteNodeVO.getMetaInfoContentId(), META_INFO_BINDING_NAME, NAV_TITLE_ATTRIBUTE_NAME, USE_LANGUAGE_FALLBACK, this.deliveryContext, escapeHTML));
+					//System.out.println("Populating nav title for " + siteNodeVO.getName());
 					if(siteNodeVO.getMetaInfoContentId() != null)
 					{
 						if(deliveryContext != null)
@@ -6372,6 +6396,16 @@ public class BasicTemplateController implements TemplateController
 	 * siteNode. The method is great for navigation-purposes on a structured site. 
 	 */
 	
+	public List getChildPages(Integer siteNodeId, Integer levelsToPopulate)
+	{
+	    return getChildPages(siteNodeId, false, false, levelsToPopulate);
+	}
+
+	/**
+	 * The method returns a list of WebPage-objects that is the children of the given 
+	 * siteNode. The method is great for navigation-purposes on a structured site. 
+	 */
+	
 	public List getChildPages(Integer siteNodeId, boolean escapeHTML)
 	{
 	    return getChildPages(siteNodeId, escapeHTML, false);
@@ -6386,7 +6420,7 @@ public class BasicTemplateController implements TemplateController
 	{
 		return getChildPages(siteNodeId, escapeHTML, hideUnauthorizedPages);
 	}
-	
+
 	/**
 	 * The method returns a list of WebPage-objects that is the children of the given 
 	 * siteNode. The method is great for navigation-purposes on a structured site. 
@@ -6394,8 +6428,18 @@ public class BasicTemplateController implements TemplateController
 	
 	public List getChildPages(Integer siteNodeId, boolean escapeHTML, boolean hideUnauthorizedPages)
 	{
-        String key = "" + siteNodeId + "_" + escapeHTML + "_" + hideUnauthorizedPages;
-        logger.info("key in getChildSiteNodes:" + key);
+		return getChildPages(siteNodeId, escapeHTML, hideUnauthorizedPages, 0);
+	}
+	
+	/**
+	 * The method returns a list of WebPage-objects that is the children of the given 
+	 * siteNode. The method is great for navigation-purposes on a structured site. 
+	 */
+	
+	public List getChildPages(Integer siteNodeId, boolean escapeHTML, boolean hideUnauthorizedPages, Integer levelsToPopulate)
+	{
+        String key = "" + siteNodeId + "_" + escapeHTML + "_" + hideUnauthorizedPages + "_" + levelsToPopulate;
+		logger.info("key in getChildSiteNodes:" + key);
 		List<WebPage> childPages = (List<WebPage>)CacheController.getCachedObjectFromAdvancedCache("childPagesCache", key);
 		
 		if(childPages == null)
@@ -6404,14 +6448,14 @@ public class BasicTemplateController implements TemplateController
 			try
 			{
 				Timer t = new Timer();
-				List childNodeVOList = this.nodeDeliveryController.getChildSiteNodes(getDatabase(), siteNodeId);
+				List childNodeVOList = this.nodeDeliveryController.getChildSiteNodes(getDatabase(), siteNodeId, levelsToPopulate);
 				//if(logger.isInfoEnabled())
-					RequestAnalyser.getRequestAnalyser().registerComponentStatistics("getChildSiteNodes", t.getElapsedTimeNanos() / 1000);
+					RequestAnalyser.getRequestAnalyser().registerComponentStatistics("getChildPages.getChildSiteNodes(micro)", t.getElapsedTimeNanos() / 1000);
 				childPages = getPages(childNodeVOList, escapeHTML, hideUnauthorizedPages);
 				//if(logger.isInfoEnabled())
-					RequestAnalyser.getRequestAnalyser().registerComponentStatistics("getPages", t.getElapsedTimeNanos() / 1000);
+					RequestAnalyser.getRequestAnalyser().registerComponentStatistics("getChildPages.getPages(micro)", t.getElapsedTimeNanos() / 1000);
 
-				CacheController.cacheObjectInAdvancedCache("childPagesCache", key, childPages, new String[] {CacheController.getPooledString(3, siteNodeId)}, true);
+				//CacheController.cacheObjectInAdvancedCache("childPagesCache", key, childPages, new String[] {CacheController.getPooledString(3, siteNodeId)}, true);
 			}
 			catch(Exception e)
 			{
@@ -6880,6 +6924,15 @@ public class BasicTemplateController implements TemplateController
 
 	public String renderString(String template, Integer contentId, boolean useSubContext) 
 	{
+		return renderString(template, contentId, useSubContext, null);
+	}
+	
+	/**
+	 * This method allows a user to get any string rendered as a template.
+	 */
+
+	public String renderString(String template, Integer contentId, boolean useSubContext, String renderDescription) 
+	{
 		String result = "";
 		
 		Integer includedComponentContentId = null;
@@ -6887,6 +6940,9 @@ public class BasicTemplateController implements TemplateController
 		try
 		{
 			Map context = new HashMap();
+			if(renderDescription != null)
+				context.put("renderDescription", renderDescription);
+			
 			if(!useSubContext)
 			{
 			    context.put("templateLogic", this);

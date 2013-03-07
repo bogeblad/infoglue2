@@ -234,4 +234,35 @@ public class SmallestSiteNodeImpl extends SiteNodeImpl
     {
         this.valueObject.setModifiedDateTime(modifiedDateTime);
     }
+
+    public Integer getContentVersionId()
+    {
+        return this.valueObject.getContentVersionId();
+    }
+            
+    public void setContentVersionId(Integer contentVersionId)
+    {
+        this.valueObject.setContentVersionId(contentVersionId);
+    }
+
+    public Integer getLanguageId()
+    {
+        return this.valueObject.getLanguageId();
+    }
+            
+    public void setLanguageId(Integer languageId)
+    {
+        this.valueObject.setLanguageId(languageId);
+    }
+
+    public String getAttributes()
+    {
+        return this.valueObject.getAttributes();
+    }
+            
+    public void setAttributes(String attributes)
+    {
+    	this.valueObject.setAttributes(attributes);
+    }
+
 }        

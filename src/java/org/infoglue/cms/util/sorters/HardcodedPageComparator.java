@@ -55,16 +55,20 @@ public class HardcodedPageComparator implements Comparator
 		    WebPage webPage1 = (WebPage)o1;
 		    WebPage webPage2 = (WebPage)o2;
 		    
-		    Integer meta1Id = webPage1.getMetaInfoContentId(); //this.templateController.getMetaInformationContentId(webPage1.getSiteNodeId());
-		    Integer meta2Id = webPage2.getMetaInfoContentId(); //this.templateController.getMetaInformationContentId(webPage2.getSiteNodeId());
+		    //Integer meta1Id = webPage1.getMetaInfoContentId(); //this.templateController.getMetaInformationContentId(webPage1.getSiteNodeId());
+		    //Integer meta2Id = webPage2.getMetaInfoContentId(); //this.templateController.getMetaInformationContentId(webPage2.getSiteNodeId());
 
-		    valueOne = this.templateController.getContentAttribute(meta1Id, this.templateController.getLanguageId(), sortProperty);
-			valueTwo = this.templateController.getContentAttribute(meta2Id, this.templateController.getLanguageId(), sortProperty);
+		    valueOne = this.templateController.getPageMetaData(webPage1.getSiteNodeId(), this.templateController.getLanguageId(), sortProperty);
+		    valueTwo = this.templateController.getPageMetaData(webPage2.getSiteNodeId(), this.templateController.getLanguageId(), sortProperty);
+		    //valueOne = this.templateController.getContentAttribute(meta1Id, this.templateController.getLanguageId(), sortProperty);
+		    //valueTwo = this.templateController.getContentAttribute(meta2Id, this.templateController.getLanguageId(), sortProperty);
 
 			if(valueOneName == null)
 			{
-			    valueOneName = this.templateController.getContentAttribute(meta1Id, this.templateController.getLanguageId(), nameProperty);
-				valueTwoName = this.templateController.getContentAttribute(meta2Id, this.templateController.getLanguageId(), nameProperty);
+			    //valueOneName = this.templateController.getContentAttribute(meta1Id, this.templateController.getLanguageId(), nameProperty);
+				//valueTwoName = this.templateController.getContentAttribute(meta2Id, this.templateController.getLanguageId(), nameProperty);
+			    valueOneName = this.templateController.getPageMetaData(webPage1.getSiteNodeId(), this.templateController.getLanguageId(), nameProperty);
+				valueTwoName = this.templateController.getPageMetaData(webPage2.getSiteNodeId(), this.templateController.getLanguageId(), nameProperty);
 			}
 			
 		    if(this.numberOrder)

@@ -1175,6 +1175,8 @@ public interface TemplateController
     public abstract String getPageNavTitle(String structureBindningName,
             int index);
 
+	public abstract String getPageMetaData(Integer siteNodeId, Integer languageId, String attributeName);
+	
     /**
      * This method returns true if the if the page in question (ie sitenode) has page-caching disabled.
      * This is essential to turn off when you have a dynamic page like an external application or searchresult.
@@ -1266,7 +1268,19 @@ public interface TemplateController
      * The method returns a list of WebPage-objects that is the children of the given 
      * siteNode. The method is great for navigation-purposes on a structured site. 
      */
+    public abstract List getChildPages(Integer siteNodeId, boolean escapeHTML, boolean hideUnauthorizedPages, Integer levelsToPopulate);
+
+    /**
+     * The method returns a list of WebPage-objects that is the children of the given 
+     * siteNode. The method is great for navigation-purposes on a structured site. 
+     */
     public abstract List getChildPages(Integer siteNodeId);
+
+    /**
+     * The method returns a list of WebPage-objects that is the children of the given 
+     * siteNode. The method is great for navigation-purposes on a structured site. 
+     */
+    public abstract List getChildPages(Integer siteNodeId, Integer levelsToPopulate);
 
     
     public abstract List getBoundPages(String structureBindningName);
@@ -1485,6 +1499,8 @@ public interface TemplateController
      */
     public abstract String renderString(String template, Integer includedComponentContentId, boolean useSubContext);
 
+	public abstract String renderString(String template, Integer includedComponentContentId, boolean useSubContext, String renderDescription); 
+	
     /**
      * This method allows the current template to include another template which is also rendered 
      * in the current context as if it were a part. The method assumes that the result can be cached.

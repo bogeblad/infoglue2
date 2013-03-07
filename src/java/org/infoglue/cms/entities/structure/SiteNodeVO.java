@@ -58,6 +58,10 @@ public class SiteNodeVO implements BaseEntityVO
 	
 	private Integer parentSiteNodeId 	= null;
 
+	private Integer languageId		 	= null;
+	private Integer contentVersionId	= null;
+	private String attributes 			= null;
+
   	//Used if an application wants to add more properties to this item... used for performance reasons.
   	private Map extraProperties = new Hashtable();
   	
@@ -285,5 +289,50 @@ public class SiteNodeVO implements BaseEntityVO
     {
         this.modifiedDateTime = modifiedDateTime;
     }
+    
+	public Integer getLanguageId()
+	{
+		return languageId;
+	}
+
+	public void setLanguageId(Integer languageId)
+	{
+		//if(this.attributes != null)
+		//	addAttributes(languageId, this.attributes);
+		this.languageId = languageId;
+	}
+
+	public Integer getContentVersionId()
+	{
+		return contentVersionId;
+	}
+
+	public void setContentVersionId(Integer contentVersionId)
+	{
+		this.contentVersionId = contentVersionId;
+	}
+
+	public String getAttributes()
+	{
+		return this.attributes;
+	}
+
+	public void setAttributes(String attributes)
+	{
+		//if(this.languageId != null)
+		//	addAttributes(languageId, attributes);
+		this.attributes = attributes;
+	}
+/*
+	public void addAttributes(Integer languageId, String attributes)
+	{
+		//this.extraProperties.put("attributes_" + languageId, attributes);
+	}
+
+	public String getAttributes(Integer languageId)
+	{
+		//return (String)this.extraProperties.get("attributes_" + languageId);
+	}
+*/
 }
         

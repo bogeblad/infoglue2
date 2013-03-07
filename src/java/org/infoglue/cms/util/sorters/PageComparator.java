@@ -48,9 +48,11 @@ public class PageComparator implements Comparator
 		    Integer meta1Id = this.templateController.getMetaInformationContentId(webPage1.getSiteNodeId());
 		    Integer meta2Id = this.templateController.getMetaInformationContentId(webPage2.getSiteNodeId());
 
-		    valueOne = this.templateController.getContentAttribute(meta1Id, this.templateController.getLanguageId(), sortProperty);
-			valueTwo = this.templateController.getContentAttribute(meta2Id, this.templateController.getLanguageId(), sortProperty);
-		
+		    //valueOne = this.templateController.getContentAttribute(meta1Id, this.templateController.getLanguageId(), sortProperty);
+		    //valueTwo = this.templateController.getContentAttribute(meta2Id, this.templateController.getLanguageId(), sortProperty);
+		    valueOne = this.templateController.getPageMetaData(webPage1.getSiteNodeId(), this.templateController.getLanguageId(), sortProperty);
+		    valueTwo = this.templateController.getPageMetaData(webPage2.getSiteNodeId(), this.templateController.getLanguageId(), sortProperty);
+
 		    if(this.numberOrder)
 		    {
 		        try
