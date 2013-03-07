@@ -1780,7 +1780,7 @@ public class NodeDeliveryController extends BaseDeliveryController
 	 * The title is based on the content sent in firstly, secondly the siteNode. 
 	 * The actual text is fetched from either the content or the metacontent bound to the sitenode. 
 	 */
-	/*
+
 	public String getPageNavigationTitle(Database db, InfoGluePrincipal infoGluePrincipal, Integer siteNodeId, Integer repositoryId, Integer languageId, Integer contentId, String metaBindingName, String attributeName, boolean useLanguageFallback, DeliveryContext deliveryContext, boolean escapeHTML) throws SystemException, Exception
 	{
 		String navTitle = "";
@@ -1826,7 +1826,7 @@ public class NodeDeliveryController extends BaseDeliveryController
     	
 		return navTitle;
 	}
-*/
+
 		
     public Integer getSiteNodeId(Database db, InfoGluePrincipal infogluePrincipal, Integer repositoryId, String path, String attributeName, Integer parentSiteNodeId, Integer languageId, DeliveryContext deliveryContext) throws SystemException, Exception
     {
