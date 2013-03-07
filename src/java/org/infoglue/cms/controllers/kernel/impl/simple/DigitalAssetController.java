@@ -1735,8 +1735,8 @@ public class DigitalAssetController extends BaseController
     {
     	DigitalAssetVO digitalAssetVO = null;
 
-    	Content content = ContentController.getContentController().getContentWithId(contentId, db);
-    	ContentVersion contentVersion = ContentVersionController.getContentVersionController().getLatestActiveContentVersion(contentId, languageId, db);
+    	ContentVO content = ContentController.getContentController().getContentVOWithId(contentId, db);
+    	ContentVersionVO contentVersion = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(contentId, languageId, db);
 		if(contentVersion != null)
 		{
 			DigitalAssetVO digitalAsset;
@@ -1752,7 +1752,7 @@ public class DigitalAssetController extends BaseController
 			}
 			else
 			{
-				LanguageVO masterLanguageVO = LanguageDeliveryController.getLanguageDeliveryController().getMasterLanguageForRepository(content.getRepository().getRepositoryId(), db);
+				LanguageVO masterLanguageVO = LanguageDeliveryController.getLanguageDeliveryController().getMasterLanguageForRepository(content.getRepositoryId(), db);
 				if(useLanguageFallback && languageId.intValue() != masterLanguageVO.getId().intValue())
 					return getDigitalAssetVO(contentId, masterLanguageVO.getId(), assetKey, useLanguageFallback, db);
 			}
