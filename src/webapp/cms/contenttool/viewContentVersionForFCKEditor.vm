@@ -121,6 +121,7 @@
 	var attributesStatus = new Array();
 	var plainEditors = new Array();
 	var plainEditorsToolbars = new Array();
+	var plainEditorsExtraConfig = new Array();
 	var htmlEditors = new Array();
 	var attributeNames = new Array();
 	var attributeTypes = new Array();
@@ -223,6 +224,7 @@
 			{
 				var plainTextAreaName = plainEditors[i];
 				var WYSIWYGToolbar = plainEditorsToolbars[plainTextAreaName];
+				var WYSIWYGExtraConfig = plainEditorsExtraConfig[plainTextAreaName];
 				//alert("WYSIWYGToolbar:" + WYSIWYGToolbar)
 				//alert("Creating a textarea for " + plainTextAreaName + " = " + i);
 				document.getElementById(plainTextAreaName).value = transformAttribute(document.getElementById(plainTextAreaName).value);

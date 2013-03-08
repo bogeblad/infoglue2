@@ -152,7 +152,15 @@ public class HardcodedPageComparator implements Comparator
 	    		    if((valueTwo != null && !valueTwo.toString().equalsIgnoreCase("")) && (valueOne == null || valueOne.toString().equalsIgnoreCase("")))
 	    		        result = 1;
 	    	        
-	    		    result = valueOne.compareTo(valueTwo);
+	    		    try
+	    		    {
+	    		    	result = valueOne.compareTo(valueTwo);
+	    		    }
+	    		    catch (Exception e) 
+	    		    {
+	    		    	logger.warn("Error comparing [" + valueOne + "] and [" + valueTwo + "] for property:" + sortProperty);
+	    		    	result = 0;
+					}
 	    		}
 	    	    
 	    	    if(result > 0)

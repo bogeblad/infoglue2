@@ -106,8 +106,16 @@ public class PageComparator implements Comparator
 	            return -1;
 		    if((valueTwo != null && !valueTwo.toString().equalsIgnoreCase("")) && (valueOne == null || valueOne.toString().equalsIgnoreCase("")))
 	            return 1;
-	        
-		    return valueOne.compareTo(valueTwo);
+		    
+		    try
+		    {
+		    	return valueOne.compareTo(valueTwo);
+		    }
+		    catch (Exception e) 
+		    {
+		    	logger.warn("Error comparing [" + valueOne + "] and [" + valueTwo + "] for property:" + sortProperty);
+		    	return 0;
+			}
 		}
 	}
 
