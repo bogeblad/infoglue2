@@ -78,7 +78,9 @@
 	<!--
 		function showGroups(cacheName, cacheKey)
 		{
-			$("#groupsContent").load("ViewApplicationState!cacheEntryGroups.action?cacheName=" + cacheName + "&cacheKey=" + cacheKey);
+			$("#groupsContent").load("ViewApplicationState!cacheEntryGroups.action", { 'cacheName': cacheName, 'cacheKey': cacheKey }, function(response, status, xhr) {
+				$("#groupsContent").text(response);
+			});
 			$("#groups").show();
 		}
 		

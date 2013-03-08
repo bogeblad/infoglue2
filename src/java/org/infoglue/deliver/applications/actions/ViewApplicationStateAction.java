@@ -1105,7 +1105,7 @@ public class ViewApplicationStateAction extends InfoGlueAbstractAction
     			break;
     		}
     	}
-    	getResponse().setContentType("text/html");
+    	getResponse().setContentType("text/plain");
 
     	StringBuilder sb = new StringBuilder();
     	
@@ -1114,13 +1114,12 @@ public class ViewApplicationStateAction extends InfoGlueAbstractAction
     		List<String> groups = new ArrayList<String>();
     		groups.addAll(ce.getGroups());
     		Collections.sort(groups);
-    		
 	    	for(Object group : groups)
 	    	{
 	    		sb.append("" + group + "\n");
 	    	}
     	}
-    	
+    	System.out.println(sb.toString());
     	getResponse().getWriter().println(sb.toString());
     	
     	return NONE;
