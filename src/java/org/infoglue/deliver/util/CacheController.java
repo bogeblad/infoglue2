@@ -2811,7 +2811,7 @@ public class CacheController extends Thread
 							    	}
 							    	else if(cacheName.equals("componentPropertyCacheRepoGroups") || cacheName.equals("componentPropertyVersionIdCacheRepoGroups"))
 						    		{
-								    	try
+							    		try
 								    	{
 								    		String repositoryId = sentRepositoryId;
 									    	if(repositoryId == null)
@@ -2823,14 +2823,15 @@ public class CacheController extends Thread
 									    		ContentVO contentVO = ContentController.getContentController().getContentVOWithId(new Integer(contentId));
 									    		repositoryId = "" + contentVO.getRepositoryId();
 									    	}
-
+									    	
 									    	cacheInstance.flushGroup("" + repositoryId);
+									    	cacheInstance.flushGroup("selectiveCacheUpdateNonApplicable");
 									    	logger.info("Clearing componentPropertyCacheRepoGroups for repo:" +repositoryId);
 								    	}
 								    	catch (Exception e2) 
 								    	{
 								    		logger.info("Error loading content with id " + entityId + ":" + e2.getMessage());
-										}						    			
+										}				
 						    		}
 							    	else if(cacheName.equals("assetUrlCacheWithGroups"))
 						    		{

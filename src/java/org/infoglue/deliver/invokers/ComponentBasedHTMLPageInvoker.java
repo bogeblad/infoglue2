@@ -832,10 +832,11 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 		Iterator componentNodeListIterator = componentNodeList.iterator();
 		while(componentNodeListIterator.hasNext())
 		{
-			XmlElement child 	= (XmlElement)componentNodeListIterator.next();
-			Integer id 			= new Integer(child.getAttributeValue(child.getNamespaceName(), "id"));
-			Integer contentId 	= new Integer(child.getAttributeValue(child.getNamespaceName(), "contentId"));
-			String name 	  	= child.getAttributeValue(child.getNamespaceName(), "name");
+			XmlElement child 		= (XmlElement)componentNodeListIterator.next();
+			Integer id 				= new Integer(child.getAttributeValue(child.getNamespaceName(), "id"));
+			Integer contentId 		= new Integer(child.getAttributeValue(child.getNamespaceName(), "contentId"));
+			String name 	  		= child.getAttributeValue(child.getNamespaceName(), "name");
+			String isPagePartRef	= child.getAttributeValue(child.getNamespaceName(), "isPagePartReference");
 			
 			//logger.info("id 2:" + id);
 			//logger.info("contentId 2:" + contentId);
@@ -906,6 +907,7 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 					property.put("name", propertyName);
 					property.put("path", path);
 					property.put("type", type);
+					property.put("isPagePartReference", (isPagePartRef == null ? "false" : isPagePartRef));
 					
 					Iterator attributesIterator = propertyElement.attributes();
 					while(attributesIterator.hasNext())
@@ -1306,7 +1308,8 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 			Integer id 			= new Integer(child.getAttributeValue(child.getNamespaceName(), "id"));
 			Integer contentId 	= new Integer(child.getAttributeValue(child.getNamespaceName(), "contentId"));
 			String name 	  	= child.getAttributeValue(child.getNamespaceName(), "name");
-	
+			String isPagePartRef	= child.getAttributeValue(child.getNamespaceName(), "isPagePartReference");
+
 			ContentVO contentVO = ContentDeliveryController.getContentDeliveryController().getContentVO(db, contentId, templateController.getDeliveryContext());
 			
 			component = new InfoGlueComponent();
@@ -1373,7 +1376,8 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 					property.put("name", propertyName);
 					property.put("path", path);
 					property.put("type", type);
-					
+					property.put("isPagePartReference", (isPagePartRef == null ? "false" : isPagePartRef));
+
 					Iterator attributesIterator = propertyElement.attributes();
 					while(attributesIterator.hasNext())
 					{
@@ -2677,7 +2681,8 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 				String name 	  					= componentElement.getAttributeValue(componentElement.getNamespaceName(), "name");
 				String isInherited 					= componentElement.getAttributeValue(componentElement.getNamespaceName(), "isInherited");
 				String pagePartTemplateContentId 	= componentElement.getAttributeValue(componentElement.getNamespaceName(), "pagePartTemplateContentId");
-								
+				String isPagePartRef				= componentElement.getAttributeValue(componentElement.getNamespaceName(), "isPagePartReference");
+
 		    	//RequestAnalyser.getRequestAnalyser().registerComponentStatistics("XPP 1 took", t.getElapsedTime());
 
 				try
@@ -2775,7 +2780,8 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 							property.put("name", propertyName);
 							property.put("path", path);
 							property.put("type", type);
-							
+							property.put("isPagePartReference", (isPagePartRef == null ? "false" : isPagePartRef));
+
 							Iterator attributesIterator = propertyElement.attributes();
 							while(attributesIterator.hasNext())
 							{

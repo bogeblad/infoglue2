@@ -1978,6 +1978,8 @@ public class ComponentLogic
 
 		if(property != null)
 		{
+			if(property.get("isPagePartReference") != null)
+				relatedRepositoryIds.add("selectiveCacheUpdateNonApplicable");
 			try
 			{
 				LanguageVO languageVO = LanguageController.getController().getMasterLanguage(this.templateController.getSiteNode().getRepositoryId(), this.templateController.getDatabase());
@@ -2014,6 +2016,9 @@ public class ComponentLogic
 
 				if(property != null)
 				{
+					System.out.println("property:" + property);
+					if(property.get("isPagePartReference") != null)
+						relatedRepositoryIds.add("selectiveCacheUpdateNonApplicable");
 					try
 					{
 						LanguageVO languageVO = LanguageController.getController().getMasterLanguage(this.templateController.getSiteNode().getRepositoryId(), this.templateController.getDatabase());
