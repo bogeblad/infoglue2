@@ -3,12 +3,44 @@
 ####################################
 
 #macro(workingDiv)
-<div id="working" style="border: 1px solid black; left: 30%; top: 30%; z-index: 10; visibility: hidden; position:absolute; width:300px; height:115px; z-index:1; padding:10px; background-color: buttonface;">
+<div id="working" style="border: 1px solid black; left: 30%; top: 30%; z-index: 10; visibility:hidden; position:absolute; width:300px; height:115px; z-index:1; padding:10px; background-color: buttonface;">
 	<div style="left: 0px; width: 100%; text-align: center;">
 		<font face="Verdana" size="-1" color="#006699"><strong>System is working</strong></font>
 		<hr width="80%" SIZE="2">
 	</div>
 	<div style="width: 100%; text-align: center;"><img alt="" src="images/workinganim.gif" /></div>
+</div>
+#end
+
+#macro(processDiv)
+#set($hash = "#")
+<script type="text/javascript">
+	window.onbeforeunload = function (e) {
+	  document.getElementById("processDiv").style.display = 'block';
+	};
+</script>
+<style type="text/css">
+	${hash}processDiv {  
+	    position:absolute;  
+	    width:300px;  
+	    display: none;
+	    top:100px;  
+	    left:50%;  
+	    height: 120px;
+	    margin-left:-150px;  
+	    text-align:center;  
+	    padding:40px 0 0 0;  
+	    color: black;
+	    font:bold 11px Arial, Helvetica, sans-serif;  
+	    border: 1px solid black;
+	    background-color: rgba(255,255,255,0.9);
+	}  
+</style>
+<div id="processDiv">
+	<div style="left: 0px; width: 100%; text-align: center;">
+		<font face="Verdana" size="-1" color="#006699"><strong>Loading...</strong></font>
+	</div>
+	<div style="width: 100%; text-align: center;"><img alt="" src="images/loaderHorisontal.gif" /></div>
 </div>
 #end
 
@@ -571,7 +603,7 @@
 </head>
 
 <body class="managementtooledit">
-#workingDiv()
+#processDiv()
 <div class="listmarginalized">
 <!--div class="fullymarginalized"-->
 #set( $lvColor = "blue")
@@ -851,6 +883,7 @@
 </head>
 
 <body class="contenttooledit" onload="javascript:refreshContentToolBar('$titleKey', '$toolbarKey', '$arguments', $unrefreshedContentId, $changeTypeId, $addedContentId);">
+#processDiv()
 #set( $lvColor = "green")
 #end
 
@@ -911,7 +944,8 @@
 	<title>$ui.getString($titleKey)</title>
 	<link rel="stylesheet" type="text/css" href="css/cms.css" />
 	<link rel="stylesheet" type="text/css" href="css/infogluecommons.css" />	
-	<script language="JavaScript" type="text/javascript" src="script/listview.js"></script>
+	<script type="text/javascript" src="script/jquery/jquery-1.2.6.min.js"></script>
+	<script type="text/javascript" src="script/listview.js"></script>
 	<meta http-equiv="Expires" content="Tue, 01 Jan 1980 1:00:00 GMT" />
 	<meta http-equiv="Cache-Control" content="no-cache" />
 	<meta http-equiv="Pragma" content="no-cache" />
@@ -920,6 +954,7 @@
 </head>
 
 <body class="publishingtooledit" onload="javascript:refreshPublishingToolBar('$titleKey', '$toolbarKey', '$arguments');">
+#processDiv()
 <div class="fullymarginalized">
 #set( $lvColor = "brown")
 
@@ -949,6 +984,7 @@
 </head>
 
 <body class="mydesktoptooledit" onload="javascript:refreshMyDesktopToolBar('$titleKey', '$toolbarKey', '$arguments');">
+#processDiv()
 <div class="fullymarginalized">
 #set( $lvColor = "yellow")
 

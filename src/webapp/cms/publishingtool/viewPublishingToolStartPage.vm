@@ -5,19 +5,19 @@
 #beginPublishingTool("tool.publishingtool.welcomeHeader" "Welcome to the publishing tool, select one repository to work with" "")
 
 <!--div class="fullymarginalized"-->
-<script type="text/javascript" language="Javascript">
+<script type="text/javascript">
+	
+	function reloadMenu(id)
+	{
+		var menuFrame = parent.header;
+		var theDoc = menuFrame.document;
+		var theFrame = parent.menu;
+		
+		theDoc.selectbox.repositoryId.value = id;
+	    document.location.href = "ViewPublications.action?repositoryId=" + id;
+	}
 
-		function reloadMenu(id)
-		{
-			var menuFrame = parent.header;
-			var theDoc = menuFrame.document;
-			var theFrame = parent.menu;
-   			
-   			theDoc.selectbox.repositoryId.value = id;
-		    document.location.href = "ViewPublications.action?repositoryId=" + id;
-		}
-
-	</script>
+</script>
 
 <table tableborder="0" border="0" bgcolor="666666" width="70%" cellpadding="1" cellspacing="0">
 <tr>
