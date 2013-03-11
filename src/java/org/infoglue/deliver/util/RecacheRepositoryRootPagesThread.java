@@ -134,6 +134,7 @@ public class RecacheRepositoryRootPagesThread implements Runnable
 		  			List<RepositoryVO> repositories = RepositoryController.getController().getRepositoryVOList();
 		  			for(RepositoryVO repository : repositories)
 		  			{
+		  				Thread.sleep(2000);
 		  				try
 		  				{
 		      				SiteNodeVO siteNodeVO = SiteNodeController.getController().getRootSiteNodeVO(repository.getId());
