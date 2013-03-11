@@ -236,7 +236,7 @@
 			$("#loading").css("display", "inline");
 		}
 				
-		setTimeout(function(){pageLoaded();}, 10000);
+		setTimeout(function(){pageLoaded();}, 20000);
 	-->
 	</script>
 	
