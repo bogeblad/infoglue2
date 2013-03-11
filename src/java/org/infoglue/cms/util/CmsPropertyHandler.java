@@ -1249,6 +1249,11 @@ public class CmsPropertyHandler
 	    return getServerNodeProperty("componentRendererUrl", true);
 	}
 
+	public static String getRecacheWorkingUrl()
+	{
+	    return getProperty("recacheWorkingUrl");
+	}
+
 	public static String getComponentRendererAction()
 	{
 	    return getServerNodeProperty("componentRendererAction", true);

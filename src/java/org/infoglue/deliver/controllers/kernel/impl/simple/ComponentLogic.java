@@ -2016,7 +2016,7 @@ public class ComponentLogic
 
 				if(property != null)
 				{
-					System.out.println("property:" + property);
+					//System.out.println("property:" + property);
 					if(property.get("isPagePartReference") != null)
 						relatedRepositoryIds.add("selectiveCacheUpdateNonApplicable");
 					try

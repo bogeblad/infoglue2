@@ -277,7 +277,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
 				
 				if(CmsPropertyHandler.getAllowInternalCallsBasedOnIP())
 				{
-					if(getRequest().getRemoteAddr().equals("127.0.0.1") || getRequest().getRemoteAddr().equals("192.168.0.1"))
+					if(getRequest().getRemoteAddr().equals("127.0.0.1") || getRequest().getRemoteAddr().equals("192.168.0.1") || getRequest().getRemoteAddr().equals("0:0:0:0:0:0:0:1%0"))
 						protectDeliver = false;
 				}
 				

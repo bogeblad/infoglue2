@@ -2074,7 +2074,7 @@ public class ContentDeliveryController extends BaseDeliveryController
 		if(assetUrl == null || assetUrl.equals(""))
 		{
 			RequestAnalyser.getRequestAnalyser().registerComponentStatistics("Missed as assetURL was empty", t.getElapsedTime());
-			logger.warn("Missed as assetURL was empty:" + assetKey);
+			logger.info("Missed as assetURL was empty:" + assetKey);
 		}
 		
         //CacheController.cacheObject(cacheName, assetCacheKey, assetUrl);
