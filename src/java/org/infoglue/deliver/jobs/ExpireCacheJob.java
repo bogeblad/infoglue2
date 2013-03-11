@@ -25,12 +25,14 @@ package org.infoglue.deliver.jobs;
 import java.io.File;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.log4j.Logger;
 import org.infoglue.cms.util.CmsPropertyHandler;
 import org.infoglue.deliver.cache.PageCacheHelper;
 import org.infoglue.deliver.util.CacheController;
+import org.infoglue.deliver.util.RecacheRepositoryRootPagesThread;
 import org.infoglue.deliver.util.RequestAnalyser;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
@@ -50,6 +52,7 @@ public class ExpireCacheJob implements Job
     
     private static long lastCacheCheck = System.currentTimeMillis();
     private static long lastCacheCleanup = System.currentTimeMillis();
+    private static long lastRecacheCall = System.currentTimeMillis();
     
     public synchronized void execute(JobExecutionContext context) throws JobExecutionException
     {
@@ -97,7 +100,6 @@ public class ExpireCacheJob implements Job
     	
 	    
     	long diff = ((System.currentTimeMillis() - lastCacheCleanup) / 1000);
-    	//if(diff > 3600)
     	if(diff > 3600 && (Calendar.getInstance().get(Calendar.HOUR_OF_DAY) == 23 || Calendar.getInstance().get(Calendar.HOUR_OF_DAY) == 1 || Calendar.getInstance().get(Calendar.HOUR_OF_DAY) == 2))
 	    {
     		logger.info("Cleaning heavy caches so memory footprint is kept low:" + diff);
@@ -285,6 +287,7 @@ public class ExpireCacheJob implements Job
                 RequestAnalyser.getRequestAnalyser().setBlockRequests(false);
             }
             
+            
             synchronized (intervalCount)
 			{
                 intervalCount++;
@@ -339,6 +342,14 @@ public class ExpireCacheJob implements Job
 	                intervalCount = 0;
 	            }
 			}
+            
+        	long diffReCache = ((System.currentTimeMillis() - lastRecacheCall) / 1000);
+        	if(CmsPropertyHandler.getOperatingMode().equals("0") && diffReCache > 1800)
+    	    {    			
+    			new Thread(new RecacheRepositoryRootPagesThread()).start();
+    			lastRecacheCall = System.currentTimeMillis();
+    	    }
+
         }
         catch (Exception e)
         {

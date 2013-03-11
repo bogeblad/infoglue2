@@ -347,7 +347,7 @@ public class CacheController extends Thread
 		ComponentController.getController().preCacheComponents(-1);
 		logger.warn("preCacheComponents took:" + t.getElapsedTime());
 		
-		List<SiteNodeVO> snVOList = SiteNodeController.getController().getSiteNodeVOList(false, 0, 30000);
+		List<SiteNodeVO> snVOList = SiteNodeController.getController().getSiteNodeVOList(false, 0, 15000);
 		logger.warn("snVOList:" + snVOList.size() + " fetched and precached in " + t.getElapsedTime() + " ms");
 
 		List<ContentVO> cList = ContentController.getContentController().getContentVOList(10000);
@@ -378,10 +378,10 @@ public class CacheController extends Thread
 		ComponentController.getController().preCacheComponents(-1);
 		logger.warn("preCacheComponents took:" + t.getElapsedTime());
 		
-		List<SiteNodeVO> snVOList = SiteNodeController.getController().getSiteNodeVOList(false, new Integer(CmsPropertyHandler.getOperatingMode()), 30000);
+		List<SiteNodeVO> snVOList = SiteNodeController.getController().getSiteNodeVOList(false, new Integer(CmsPropertyHandler.getOperatingMode()), 5000);
 		logger.warn("snVOList:" + snVOList.size() + " fetched and precached in " + t.getElapsedTime() + " ms");
 
-		List<ContentVO> cList = ContentController.getContentController().getContentVOList(10000);
+		List<ContentVO> cList = ContentController.getContentController().getContentVOList(5000);
 		logger.warn("cList:" + snVOList.size() + " fetched and precached in " + t.getElapsedTime() + " ms");
 
 		/*

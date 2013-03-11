@@ -123,7 +123,11 @@ public final class DeliverContextListener implements ServletContextListener
 			InfoGlueAuthenticationFilter.initializeProperties();
 			
 			new Thread(new Runnable() { public void run() {try {CacheController.preCacheDeliverEntities();} catch (Exception e) {}}}).start();
-			
+			if(CmsPropertyHandler.getOperatingMode().equals("0"))
+			{
+				new Thread(new RecacheRepositoryRootPagesThread()).start();
+			}
+		
 			CmsPropertyHandler.setStartupTime(new Date()); 
 			
 			System.out.println("**************************************\n");
