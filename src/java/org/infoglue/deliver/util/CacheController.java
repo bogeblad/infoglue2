@@ -67,7 +67,9 @@ import org.infoglue.cms.controllers.kernel.impl.simple.ContentController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentTypeDefinitionController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentVersionController;
 import org.infoglue.cms.controllers.kernel.impl.simple.DigitalAssetController;
+import org.infoglue.cms.controllers.kernel.impl.simple.GroupPropertiesController;
 import org.infoglue.cms.controllers.kernel.impl.simple.InterceptionPointController;
+import org.infoglue.cms.controllers.kernel.impl.simple.PropertiesCategoryController;
 import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeController;
 import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeVersionController;
 import org.infoglue.cms.entities.content.ContentVO;
@@ -371,7 +373,60 @@ public class CacheController extends Thread
 	public static void preCacheDeliverEntities() throws Exception 
 	{
 		Timer t = new Timer();
+		
+		class PreCacheGroupPropertiesTask implements Runnable 
+		{
+			PreCacheGroupPropertiesTask() { }
+	        
+	        public void run() 
+	        {
+				try
+				{
+					Timer t = new Timer();
+					Database db = CastorDatabaseService.getDatabase();
+					try 
+					{
+						beginTransaction(db);
 
+						GroupPropertiesController.getController().preCacheAllGroupProperties(db);
+						logger.warn("preCacheAllGroupProperties took: " + t.getElapsedTime());
+						commitTransaction(db);
+					} 
+					catch (Exception e) 
+					{
+						logger.error("Error precaching all group properties: " + e.getMessage(), e);
+						rollbackTransaction(db);
+					}
+				}
+				catch (Exception e) 
+				{
+					logger.error("Could not start PreCacheTask:" + e.getMessage(), e);
+				}
+				finally
+				{
+					GroupPropertiesController.inCacheProgress.set(false);
+				}
+	        }
+	    }
+		if(GroupPropertiesController.inCacheProgress.compareAndSet(false, true))
+		{
+			Thread thread = new Thread(new PreCacheGroupPropertiesTask());
+		    thread.start();
+		}
+		
+		if(CacheController.getCacheSize("propertiesCategoryCache") == 0 && GroupPropertiesController.preCacheInProgress.compareAndSet(false, true))
+		{
+			try
+			{
+				PropertiesCategoryController.getController().preCacheAllPropertiesCategoryVOList();
+			}
+			finally
+			{
+				GroupPropertiesController.preCacheInProgress.set(false);
+			}
+			logger.warn("preCacheAllPropertiesCategoryVOList took: " + t.getElapsedTime());
+		}
+		
 		ContentTypeDefinitionController.getController().getContentTypeDefinitionVOList();
 		logger.warn("pre cache content types took:" + t.getElapsedTime());
 		
@@ -530,14 +585,6 @@ public class CacheController extends Thread
 	public static void cacheObjectInAdvancedCacheWithGroupsAsSet(String cacheName, Object key, Object value, Set<String> groupsAsList, boolean useGroups)
 	{
 		String[] groups = groupsAsList.toArray(new String[0]);
-		/*
-		Object[] o = groupsAsList.toArray();
-		String[] groups = new String[o.length];
-		for (int i=0; i<groups.length;i++)
-		{
-			groups[i] = o[i].toString();
-		}
-		*/
 		
 		cacheObjectInAdvancedCache(cacheName, key, value, groups, useGroups);
 	}
@@ -734,29 +781,6 @@ public class CacheController extends Thread
 			{
 				synchronized(cacheAdministrator) //Back
 	    		{
-				/*
-				Timer t = new Timer();
-	    		ReentrantReadWriteLock rwl = locksCache.get(cacheName);
-	    		boolean lockSuccess = false;
-	    		try {
-					lockSuccess = rwl.writeLock().tryLock(writeLockTimeout, TimeUnit.MILLISECONDS);
-				} catch (InterruptedException e1) {
-					System.out.println("########Returned null because of lock error...:" + e1.getMessage());
-					printLockDebug(rwl);
-					return;
-				}
-	    		//rwl.writeLock().lock();
-	            try
-	            {
-	            	if(!lockSuccess)
-	            	{
-	            		System.out.println("######Returned null because of lock timeout...");
-						printLockDebug(rwl);
-	            		return;
-	            	}
-
-	            	RequestAnalyser.getRequestAnalyser().registerComponentStatistics("Getting lock 6 on " + cacheName, t.getElapsedTime());
-		    	*/	
 					try
 					{
 						if(useGroups)
@@ -780,13 +804,6 @@ public class CacheController extends Thread
 					}
 	            	//RequestAnalyser.getRequestAnalyser().registerComponentStatistics("Putting object in " + cacheName, t.getElapsedTime());
 				}
-				/*
-	            finally
-	            {
-	            	if(lockSuccess)
-	            		rwl.writeLock().unlock();
-	            }
-	            */
 			}
 			else
 			{
@@ -851,8 +868,13 @@ public class CacheController extends Thread
 		System.out.println("CurrentThread isWriteLocked: " + rwl.isWriteLocked());
 	}	
 	*/
-	
+
 	public static void cacheObjectInAdvancedCache(String cacheName, Object key, Object value, boolean useFileCacheFallback, boolean useMemoryCache, String fileCacheCharEncoding, Integer memoryCacheSize, boolean unlimitedDiskCache)
+	{
+		cacheObjectInAdvancedCache(cacheName, key, value, null, false, useFileCacheFallback, useMemoryCache, fileCacheCharEncoding, memoryCacheSize, unlimitedDiskCache, false);
+	}
+	
+	public static void cacheObjectInAdvancedCache(String cacheName, Object key, Object value, String[] groups, boolean useGroups, boolean useFileCacheFallback, boolean useMemoryCache, String fileCacheCharEncoding, Integer memoryCacheSize, boolean unlimitedDiskCache, boolean persistentCachesBetweenRestarts)
 	{
 		if(cacheName == null || key == null || value == null || key.toString().length() == 0)
 			return;
@@ -866,6 +888,7 @@ public class CacheController extends Thread
 			logger.info("fileCacheCharEncoding: "+ fileCacheCharEncoding);
 			logger.info("memoryCacheSize: "+ memoryCacheSize);
 			logger.info("unlimitedDiskCache: "+ unlimitedDiskCache);
+			logger.info("persistentCachesBetweenRestarts: "+ persistentCachesBetweenRestarts);
 		}
 
 	    if(!caches.containsKey(cacheName))
@@ -881,9 +904,13 @@ public class CacheController extends Thread
 			
 			p.setProperty(AbstractCacheAdministrator.CACHE_ALGORITHM_KEY, "com.opensymphony.oscache.base.algorithm.ImprovedLRUCache");
 			p.setProperty("cache.persistence.class", "com.opensymphony.oscache.plugins.diskpersistence.DiskPersistenceListener");
-			p.setProperty("cache.path", CmsPropertyHandler.getDigitalAssetPath() + File.separator + "caches" + File.separator + cacheName);
+			p.setProperty("cache.path", CmsPropertyHandler.getDigitalAssetPath() + File.separator + (persistentCachesBetweenRestarts ? "persistentCaches" : "caches") + File.separator + cacheName);
 			
 			cacheAdministrator = new GeneralCacheAdministrator(p);
+			
+			//Adding one entry just to get the disk cache active
+			if(useFileCacheFallback && memoryCacheSize == 1)
+				 cacheAdministrator.putInCache("dummy", "value");
 			
 	        //CacheEntryEventListenerImpl cacheEntryEventListener = new ExtendedCacheEntryEventListenerImpl();
 			//CacheMapAccessEventListenerImpl cacheMapAccessEventListener = new CacheMapAccessEventListenerImpl(); 
@@ -898,63 +925,71 @@ public class CacheController extends Thread
 	    
 		GeneralCacheAdministrator cacheAdministrator = (GeneralCacheAdministrator)caches.get(cacheName);
 			
+		if(groups != null)
+		{
+			List<String> groupCandidateListStandard = new ArrayList<String>();
+			List<String> groupCandidateListSpecial = new ArrayList<String>();
+			for(int i=0; i<groups.length; i++)
+			{
+				if(groups[i].startsWith("content") || groups[i].startsWith("siteNode"))
+					groupCandidateListStandard.add(groups[i]);
+				else
+					groupCandidateListSpecial.add(groups[i]);
+			}
+			
+			if(!groupCandidateListSpecial.contains("selectiveCacheUpdateNonApplicable"))
+			{
+				groupCandidateListSpecial.addAll(groupCandidateListStandard);
+			}
+			String[] newGroups = new String[groupCandidateListSpecial.size()];
+			groups = groupCandidateListSpecial.toArray(newGroups);
+		}
+		
 		if(CmsPropertyHandler.getUseSynchronizationOnCaches())
 		{
     		synchronized(cacheAdministrator) //Back
     		{
-			/*
-			Timer t = new Timer();
-    		ReentrantReadWriteLock rwl = locksCache.get(cacheName);
-    		boolean lockSuccess = false;
-    		try {
-				lockSuccess = rwl.writeLock().tryLock(writeLockTimeout, TimeUnit.MILLISECONDS);
-			} catch (InterruptedException e1) {
-				System.out.println("Returned null because of lock error...:" + e1.getMessage());
-				printLockDebug(rwl);
-				return;
-			}
-    		//rwl.writeLock().lock();
-            try
-            {
-            	if(!lockSuccess)
-            	{
-            		System.out.println("Returned null because of lock timeout...");
-					printLockDebug(rwl);
-            		return;
-            	}
-            	
-            	RequestAnalyser.getRequestAnalyser().registerComponentStatistics("Getting lock for " + cacheName, t.getElapsedTime());
-			*/
 				try
+				{
+					if(useGroups)
+					{
+						if(CmsPropertyHandler.getUseHashCodeInCaches())
+							cacheAdministrator.putInCache("" + key.toString().hashCode(), value, groups);
+						else
+							cacheAdministrator.putInCache(key.toString(), value, groups);
+					}
+					else
+					{
+						if(CmsPropertyHandler.getUseHashCodeInCaches())
+							cacheAdministrator.putInCache("" + key.toString().hashCode(), value);
+						else
+						    cacheAdministrator.putInCache(key.toString(), value);
+					}
+				}
+				catch (Exception e) 
+				{
+					logger.warn("Error putting in cache:" + e.getMessage());
+				}
+			}
+		}
+		else
+		{
+			try
+			{
+				if(useGroups)
+				{
+					if(CmsPropertyHandler.getUseHashCodeInCaches())
+						cacheAdministrator.putInCache("" + key.toString().hashCode(), value, groups);
+					else
+						cacheAdministrator.putInCache(key.toString(), value, groups);
+				}
+				else
 				{
 					if(CmsPropertyHandler.getUseHashCodeInCaches())
 						cacheAdministrator.putInCache("" + key.toString().hashCode(), value);
 					else
 					    cacheAdministrator.putInCache(key.toString(), value);
 				}
-				catch (Exception e) 
-				{
-					logger.warn("Error putting in cache:" + e.getMessage());
-				}
-
-            	//RequestAnalyser.getRequestAnalyser().registerComponentStatistics("Putting object 2 to " + cacheName, t.getElapsedTime());
-			}
-    		/*
-            finally
-            {
-            	if(lockSuccess)
-            		rwl.writeLock().unlock();
-            }
-            */
-		}
-		else
-		{
-			try
-			{
-				if(CmsPropertyHandler.getUseHashCodeInCaches())
-					cacheAdministrator.putInCache("" + key.toString().hashCode(), value);
-				else
-				    cacheAdministrator.putInCache(key.toString(), value);
 			}
 			catch (Exception e) 
 			{
@@ -971,8 +1006,6 @@ public class CacheController extends Thread
 		return getCachedObjectFromAdvancedCache(cacheName, key, false, "UTF-8", false);
 	}
 
-	//private static Map<String,ReentrantReadWriteLock> locksCache = new HashMap<String,ReentrantReadWriteLock>();
-	
 	public static Object getCachedObjectFromAdvancedCache(String cacheName, String key, boolean useFileCacheFallback, String fileCacheCharEncoding, boolean cacheFileResultInMemory)
 	{
 		if(cacheName == null || key == null || key.length() == 0)
@@ -994,28 +1027,7 @@ public class CacheController extends Thread
 				{
 		    		synchronized(cacheAdministrator) //Back
 		    		{
-		    		/*
-		    		Timer t = new Timer();
-		    		ReentrantReadWriteLock rwl = locksCache.get(cacheName);
-		    		boolean lockSuccess = false;
-		    		try {
-						lockSuccess = rwl.readLock().tryLock(readLockTimeout, TimeUnit.MILLISECONDS);
-					} catch (InterruptedException e1) {
-						RequestAnalyser.getRequestAnalyser().registerComponentStatistics("Error getting lock 3 on " + cacheName, t.getElapsedTime());
-						printLockDebug(rwl);
-						return null;
-					}
-		            try
-		            {
-		            	if(!lockSuccess)
-		            	{
-							RequestAnalyser.getRequestAnalyser().registerComponentStatistics("Timeout getting lock 3 on " + cacheName, t.getElapsedTime());
-							printLockDebug(rwl);
-		            		return null;
-		            	}
-					*/
-		            	
-					    try 
+		    		    try 
 					    {
 					    	if(CmsPropertyHandler.getUseHashCodeInCaches())
 								value = (cacheAdministrator == null) ? null : cacheAdministrator.getFromCache("" + key.hashCode(), CacheEntry.INDEFINITE_EXPIRY);
@@ -1046,13 +1058,6 @@ public class CacheController extends Thread
 					    	//RequestAnalyser.getRequestAnalyser().registerComponentStatistics("Getting object 3 part 2 from " + cacheName, t.getElapsedTime());
 						}
 			    	}
-		    		/*
-		            finally
-		            {
-		            	if(lockSuccess)
-		            		rwl.readLock().unlock();
-		            }
-					*/
 				}
 		    	else
 		    	{
@@ -1160,54 +1165,7 @@ public class CacheController extends Thread
 			//locksCache.put(cacheName, new ReentrantReadWriteLock());
 	    }
 	    
-	    /*
-	    if(cacheAdministrator != null)
-	    {		    	
-		    try 
-		    {
-		    	//synchronized (cacheAdministrator) 
-		    	//{
-			    	value = (cacheAdministrator == null) ? null : cacheAdministrator.getFromCache(pageKey, CacheEntry.INDEFINITE_EXPIRY);
-			    	//}
-		    	//System.out.println("SUCCESS hit pageCache on url:" + pageInvoker.getTemplateController().getOriginalFullURL());
-		    } 
-		    catch (NeedsRefreshException nre) 
-		    {
-		    	//System.out.println("Missed pageCache on url:" + pageInvoker.getTemplateController().getOriginalFullURL());
-		    	//logger.info("Nothing in cache - lets redo it...");
-		    	//logger.info("Old content:" + nre.getCacheContent());
-		    	boolean isUpdated = false;
-		    	try 
-		    	{
-					String result = (String)m.invoke(o, args);
-					//logger.info("result:" + result);
-					value = result;
-					if(result != null)
-					{
-				    	isUpdated = cacheNewResult(pageInvoker, cacheAdministrator, pageKey, result);
-					}
-					//logger.info("result:" + result);
-				} 
-		    	catch (Throwable t) 
-		    	{
-		    		logger.error("Error when trying to render page: " + t.getMessage());
-					throw new Exception(t.getMessage(), t);
-				}
-
-		    	try
-		    	{
-		    		if(!isUpdated)
-		    		{
-		    			cacheAdministrator.cancelUpdate(pageKey);
-		    		}
-		    	}
-		    	catch (Exception e) 
-		    	{
-		    		logger.error("Sooo error:" + e.getMessage());
-				}
-			}
-	    }
-	    */
+	    
 	    if(logger.isInfoEnabled())
 	    	logger.info("Getting from file: " + pageKey);
 	    Object pageCacheFileName = getCachedObjectFromAdvancedCache(cacheName, pageKey, CacheEntry.INDEFINITE_EXPIRY);
@@ -1234,22 +1192,6 @@ public class CacheController extends Thread
 	    if(value != null && value instanceof byte[])
 	    	value = compressionHelper.decompress((byte[])value);
 	    
-	    /*
-	    if(value == null && useFileCacheFallback)
-    	{
-	    	Timer t = new Timer();
-	    	logger.info("Falling back to filecache");
-    		value = getCachedContentFromFile(cacheName, key, fileCacheCharEncoding);
-    		if(value != null && cacheFileResultInMemory)
-    		{
-    	    	logger.info("Got cached content from file as it did not exist in memory...:" + value.toString().length());
-    			if(logger.isInfoEnabled())
-        			logger.info("Got cached content from file as it did not exist in memory...:" + value.toString().length());
-				cacheObjectInAdvancedCache(cacheName, pageKey, value);
-    		}
-    		RequestAnalyser.getRequestAnalyser().registerComponentStatistics("File cache", t.getElapsedTime());
-    	}
-	    */
 	    
 		return value;
 	}
@@ -1520,58 +1462,26 @@ public class CacheController extends Thread
 		    	//TODO
 		    	if(CmsPropertyHandler.getUseSynchronizationOnCaches())
 		    	{
-		    		//synchronized(cacheAdministrator) //Back
-		    		//{
-		    		/*
-		    		Timer t = new Timer();
-		    		ReentrantReadWriteLock rwl = locksCache.get(cacheName);
-		    		boolean lockSuccess = false;
-		    		try {
-						lockSuccess = rwl.readLock().tryLock(readLockTimeout, TimeUnit.MILLISECONDS);
-					} catch (InterruptedException e1) {
-						RequestAnalyser.getRequestAnalyser().registerComponentStatistics("Error getting lock 2 on " + cacheName, t.getElapsedTime());
-						printLockDebug(rwl);
-						return null;
+	    		    try 
+				    {
+				        if(CmsPropertyHandler.getUseHashCodeInCaches())
+				        	value = (cacheAdministrator == null) ? null : cacheAdministrator.getFromCache("" + key.hashCode(), updateInterval);
+				        else
+				        	value = (cacheAdministrator == null) ? null : cacheAdministrator.getFromCache(key, updateInterval);
+				    } 
+				    catch (NeedsRefreshException nre) 
+				    {
+				    	if(useFileCacheFallback && nre.getCacheContent() != null)
+				    	{
+				    		stopUseFileCacheFallback = true;
+				    	}
+				    	
+				        if(CmsPropertyHandler.getUseHashCodeInCaches())
+				        	cacheAdministrator.cancelUpdate("" + key.hashCode());
+				        else
+				        	cacheAdministrator.cancelUpdate(key);
 					}
-		    		//rwl.readLock().lock();
-		            try
-		            {
-		            	if(!lockSuccess)
-		            	{
-							RequestAnalyser.getRequestAnalyser().registerComponentStatistics("Timeout getting lock 2 on " + cacheName, t.getElapsedTime());
-							printLockDebug(rwl);
-		            		return null;
-		            	}
-					*/
-					    try 
-					    {
-					        if(CmsPropertyHandler.getUseHashCodeInCaches())
-					        	value = (cacheAdministrator == null) ? null : cacheAdministrator.getFromCache("" + key.hashCode(), updateInterval);
-					        else
-					        	value = (cacheAdministrator == null) ? null : cacheAdministrator.getFromCache(key, updateInterval);
-					    } 
-					    catch (NeedsRefreshException nre) 
-					    {
-					    	if(useFileCacheFallback && nre.getCacheContent() != null)
-					    	{
-					    		stopUseFileCacheFallback = true;
-					    	}
-					    	
-					        if(CmsPropertyHandler.getUseHashCodeInCaches())
-					        	cacheAdministrator.cancelUpdate("" + key.hashCode());
-					        else
-					        	cacheAdministrator.cancelUpdate(key);
-						}
-				    	//RequestAnalyser.getRequestAnalyser().registerComponentStatistics("Putting object 4 in " + cacheName, t.getElapsedTime());
-		    		//}
-		    		/*
-		            finally
-		            {
-		            	if(lockSuccess)
-		            		rwl.readLock().unlock();
-		            }
-		            */
-		    	}
+			    }
 		    	else
 		    	{
 		    		try 
@@ -1864,39 +1774,8 @@ public class CacheController extends Thread
 				    GeneralCacheAdministrator cacheInstance = (GeneralCacheAdministrator)object;
 		    		synchronized(cacheInstance) //Back
 		    		{
-				    /*
-				    Timer t = new Timer();
-		    		ReentrantReadWriteLock rwl = locksCache.get(cacheName);
-		    		boolean lockSuccess = false;
-		    		try {
-		    			System.out.println("qwqwwfwefwefwefwe");
-						lockSuccess = rwl.writeLock().tryLock(writeLockTimeout, TimeUnit.SECONDS);
-					} catch (InterruptedException e1) {
-						printLockDebug(rwl);
-						return;
-					}
-		    		//rwl.writeLock().lock();
-		            try
-		            {
-		            	if(!lockSuccess)
-		            	{
-							printLockDebug(rwl);
-		            		return;
-		            	}
-
-		            	RequestAnalyser.getRequestAnalyser().registerComponentStatistics("Getting lock for flushing entry in " + cacheName, t.getElapsedTime());
-					*/
 						cacheInstance.flushEntry(key);
-						//cacheInstance.removeEntry(key);
-		            	//RequestAnalyser.getRequestAnalyser().registerComponentStatistics("Flushing entry in " + cacheName, t.getElapsedTime());
 					}
-		    		/*
-		            finally
-		            {
-		            	if(lockSuccess)
-		            		rwl.writeLock().unlock();
-		            }
-		            */
 				}
 			}
 		//}

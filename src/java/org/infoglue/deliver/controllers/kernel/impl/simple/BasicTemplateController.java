@@ -5098,55 +5098,8 @@ public class BasicTemplateController implements TemplateController
 	
 	public List getMatchingContents(String contentTypeDefinitionNamesString, String categoryConditionString, String freeText, List freeTextAttributeNames, Date fromDate, Date toDate, Date expireFromDate, Date expireToDate, String versionModifier, Integer maximumNumberOfItems, boolean useLanguageFallback, boolean cacheResult, int cacheInterval, String cacheName, String cacheKey, boolean scheduleFetch, int scheduleInterval, List<Integer> repositoryIdList, Integer languageId, Boolean skipLanguageCheck, Integer startNodeId, String sortColumn, String sortOrder, boolean forceRefetch, boolean validateAccessRightsAsAnonymous, boolean returnOnlyCachedResult)
 	{
-		//System.out.println("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
 		Timer t = new Timer();
-		/*
-		try 
-		{
-			List<Integer> contentIds = new ArrayList<Integer>();
-			contentIds.add(1040839);
-			contentIds.add(1040803);
-			contentIds.add(1040630);
-			contentIds.add(1040611);
-			contentIds.add(1040612);
-
-			ContentVersionController.getContentVersionController().preCacheContentVersionVOList(contentIds, languageId, new Integer(CmsPropertyHandler.getOperatingMode()), deliveryContext, getDatabase());
-		} 
-		catch (Exception e)
-		{
-			e.printStackTrace();
-		}
-		t.printElapsedTime("Fetching content versions in batch took");
-
-		try 
-		{
-			List<Integer> contentIds = new ArrayList<Integer>();
-			contentIds.add(1040839);
-			ContentVersionController.getContentVersionController().preCacheContentVersionVOList(contentIds, languageId, new Integer(CmsPropertyHandler.getOperatingMode()), deliveryContext, getDatabase());
-
-			contentIds = new ArrayList<Integer>();
-			contentIds.add(1040803);
-			ContentVersionController.getContentVersionController().preCacheContentVersionVOList(contentIds, languageId, new Integer(CmsPropertyHandler.getOperatingMode()), deliveryContext, getDatabase());
-			
-			contentIds = new ArrayList<Integer>();
-			contentIds.add(1040630);
-			ContentVersionController.getContentVersionController().preCacheContentVersionVOList(contentIds, languageId, new Integer(CmsPropertyHandler.getOperatingMode()), deliveryContext, getDatabase());
-			
-			contentIds = new ArrayList<Integer>();
-			contentIds.add(1040611);
-			ContentVersionController.getContentVersionController().preCacheContentVersionVOList(contentIds, languageId, new Integer(CmsPropertyHandler.getOperatingMode()), deliveryContext, getDatabase());
-
-			contentIds = new ArrayList<Integer>();
-			contentIds.add(1040612);
-			ContentVersionController.getContentVersionController().preCacheContentVersionVOList(contentIds, languageId, new Integer(CmsPropertyHandler.getOperatingMode()), deliveryContext, getDatabase());
-		} 
-		catch (Exception e)
-		{
-			e.printStackTrace();
-		}
-		t.printElapsedTime("Fetching content versions one by one took");
-		*/
-
+		
 		if(sortColumn == null || sortColumn.equals(""))
 		{
 			if(CmsPropertyHandler.getUseShortTableNames().equals("true"))
@@ -5282,13 +5235,19 @@ public class BasicTemplateController implements TemplateController
 		logger.info("key: " + key);
 		
 		logger.info("forceRefetch:" + forceRefetch);
-		List cachedMatchingContents = (List)CacheController.getCachedObjectFromAdvancedCache(cacheName, key, cacheInterval);
+		List cachedMatchingContents = (List)CacheController.getCachedObjectFromAdvancedCache(cacheName, ""+key.hashCode()/*, cacheInterval*/);
+			
 
 		if(logger.isInfoEnabled())
 		{
+			logger.info("cacheInterval:" + cacheInterval);
+			logger.info("scheduleFetch:" + scheduleFetch);
+			logger.info("scheduleInterval:" + scheduleInterval);
 			logger.info("cachedMatchingContents:" + cachedMatchingContents == null ? "null" : cachedMatchingContents.size());
 			logger.info("cacheResult:" + cacheResult);
 			logger.info("forceRefetch:" + forceRefetch);
+			logger.info("key:" + key);
+			logger.info("key.hash:" + key.hashCode());
 			logger.info("returnOnlyCachedResult:" + returnOnlyCachedResult);
 		}
 
@@ -5310,7 +5269,8 @@ public class BasicTemplateController implements TemplateController
 			        	logger.info("Do not throw page cache on this if it's not a content of type:" + contentTypeDefinitionVO.getName());
 						if(deliveryContext != null)
 							deliveryContext.addUsedContent("selectiveCacheUpdateNonApplicable_contentTypeDefinitionId_" + contentTypeDefinitionVO.getId());
-						groups.add("selectiveCacheUpdateNonApplicable_contentTypeDefinitionId_" + contentTypeDefinitionVO.getId());
+						if(!scheduleFetch)
+							groups.add("selectiveCacheUpdateNonApplicable_contentTypeDefinitionId_" + contentTypeDefinitionVO.getId());
 			        }
 			    }
 	
@@ -5366,7 +5326,11 @@ public class BasicTemplateController implements TemplateController
 				//t.printElapsedTime("After check..");
 				
 				if(cacheResult)
-					CacheController.cacheObjectInAdvancedCacheWithGroupsAsSet(cacheName, key, result, groups, true);
+				{
+					//CacheController.cacheObjectInAdvancedCacheWithGroupsAsSet(cacheName, key, result, groups, true);
+					System.out.println("Caching with file fallback:" + result.size());
+					CacheController.cacheObjectInAdvancedCache(cacheName, ""+key.hashCode(), result, groups.toArray(new String[0]), true, true, true, "utf-8", 1, true, true);
+				}
 				
 				return result;
 			}

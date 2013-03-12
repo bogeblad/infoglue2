@@ -55,6 +55,7 @@ import org.infoglue.deliver.applications.databeans.DeliveryContext;
 import org.infoglue.deliver.controllers.kernel.impl.simple.BasicTemplateController;
 import org.infoglue.deliver.controllers.kernel.impl.simple.IntegrationDeliveryController;
 import org.infoglue.deliver.controllers.kernel.impl.simple.NodeDeliveryController;
+import org.infoglue.deliver.util.CacheController;
 import org.infoglue.deliver.util.LiveInstanceMonitor;
 
 /*
@@ -316,6 +317,35 @@ public class MatchingContentsQueue implements Runnable
 													   bean.getValidateAccessRightsAsAnonymous(), 
 													   false);
 								
+								if(bean.getContentTypeDefinitionNames() != null && !bean.getContentTypeDefinitionNames().equals(""))
+								{
+									String[] contentTypeDefinitionNames = bean.getContentTypeDefinitionNames().split(",");
+									for(String contentTypeDefinitionName : contentTypeDefinitionNames)
+									{
+										try
+										{
+											ContentTypeDefinitionVO contentTypeDefinitionVO = ContentTypeDefinitionController.getController().getContentTypeDefinitionVOWithName(contentTypeDefinitionName, dbWrapper.getDatabase());
+											if(contentTypeDefinitionVO != null)
+											{
+												logger.info("Do not throw page cache on this if it's not a content of type:" + contentTypeDefinitionVO.getName());
+												if(deliveryContext != null)
+												{
+													String contentTypeDefKey = "selectiveCacheUpdateNonApplicable_contentTypeDefinitionId_" + contentTypeDefinitionVO.getId();
+										    		CacheController.clearCache("pageCache", contentTypeDefKey);
+												}
+											}
+										}
+										catch (Exception e) 
+										{
+											logger.warn("Error reading content type: " + e.getMessage(), e);
+										}
+									}
+								}
+								else
+								{
+						    		CacheController.clearCache("pageCache", "selectiveCacheUpdateNonApplicable");
+								}
+								
 								bean.setLastFetched(System.currentTimeMillis());
 								
 								logger.info("matchingContents in queue:" + matchingContents.size());
@@ -368,7 +398,7 @@ public class MatchingContentsQueue implements Runnable
 
 				try
 				{
-					Thread.sleep(10000);
+					Thread.sleep(5000);
 			    }
 				catch( InterruptedException e ) 
 				{

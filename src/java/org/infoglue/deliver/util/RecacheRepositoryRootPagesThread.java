@@ -121,6 +121,9 @@ public class RecacheRepositoryRootPagesThread implements Runnable
     
 	public synchronized void run()
 	{
+		if(CmsPropertyHandler.getRecacheWorkingUrl().equals("@recacheWorkingUrl@"))
+			return;
+		
 		if(running.compareAndSet(false, true))
 		{
 			logger.warn("Recaching startpage on each repo\n\n");
@@ -141,8 +144,6 @@ public class RecacheRepositoryRootPagesThread implements Runnable
 		      				if(siteNodeVO != null)
 		      				{
 		          				logger.info("siteNodeVO:" + siteNodeVO.getName());
-		          				//String firstURL = (String)CmsPropertyHandler.getInternalDeliveryUrls().get(0);
-			        			//System.out.println("firstURL:" + firstURL);
 			        			String url = CmsPropertyHandler.getComponentRendererUrl() + "ViewPage.action?siteNodeId=" + siteNodeVO.getId();
 			        			
 			        			if(!CmsPropertyHandler.getRecacheWorkingUrl().equals(""))
