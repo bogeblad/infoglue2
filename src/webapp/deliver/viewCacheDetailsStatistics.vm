@@ -83,6 +83,14 @@
 			});
 			$("#groups").show();
 		}
+
+		function showValues(cacheName, cacheKey)
+		{
+			$("#groupsContent").load("ViewApplicationState!cacheEntryValue.action", { 'cacheName': cacheName, 'cacheKey': cacheKey }, function(response, status, xhr) {
+				$("#groupsContent").text(response);
+			});
+			$("#groups").show();
+		}
 		
 	-->	
 	</script>
@@ -118,7 +126,7 @@
   	  #foreach($cacheEntry in $cacheMap.values())
 	  <tr class="value">
 	 	 <td>$cacheEntry.key</td>
-	 	 <td>$this.getLength($cacheEntry.content)</td>
+	 	 <td><a href="javascript:showValues('$cacheName', '$cacheEntry.key');">View value</a></td>
 	 	 <td><a href="javascript:showGroups('$cacheName', '$cacheEntry.key');">View groups ($cacheEntry.groups.size() used)</a></td>
 	  </tr>
 	  #end
@@ -126,7 +134,7 @@
   	  #foreach($key in $cache.keySet())
 	  <tr>
 	 	 <td>$key</td>
-	 	 <td>&nbsp;</td>
+	 	 <td><a href="javascript:showGroups('$cacheName', '$cacheEntry.key');">View value</a></td>
 	 	 <td>&nbsp;</td>
 	  </tr>
 	  #end
