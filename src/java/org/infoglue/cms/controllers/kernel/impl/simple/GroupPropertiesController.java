@@ -254,6 +254,7 @@ public class GroupPropertiesController extends BaseController
 		logger.info("cacheKey:" + cacheKey);
 		
 		Object groupPropertiesVOListCandidate = CacheController.getCachedObject("groupPropertiesCache", cacheKey);
+		Boolean cached = (Boolean)CacheController.getCachedObject("groupPropertiesCache", "preCacheDone");
 		if(groupPropertiesVOListCandidate != null && groupPropertiesVOListCandidate instanceof NullObject)
 		{
 			logger.info("NullObject found:" + cacheKey);
@@ -263,6 +264,10 @@ public class GroupPropertiesController extends BaseController
 		{
 			logger.info("groupPropertiesVOListCandidate found:" + cacheKey);
 			groupPropertiesVOList =  (List)groupPropertiesVOListCandidate;
+		}
+		else if(cached != null && cached.booleanValue() == true)
+		{
+			return groupPropertiesVOList;
 		}
 		else
 		{
@@ -1064,10 +1069,10 @@ public class GroupPropertiesController extends BaseController
 				if(!groupProperties.getGroupName().equals(groupName))
 				{
 					String cacheKey = "" + groupName + "_" + languageVO.getId();
-					logger.info("cacheKey:" + cacheKey);
 					
-					//System.out.println("Caching for " + cacheKey + ":" + groupPropertyValues.size());
+					logger.info("Caching for " + cacheKey + ":" + groupPropertyValues.size());
 					CacheController.cacheObject("groupPropertiesCache", cacheKey, groupPropertyValues);
+					
 					groupPropertyValues = new ArrayList();
 					groupName = groupProperties.getGroupName();
 				}
@@ -1493,10 +1498,11 @@ public class GroupPropertiesController extends BaseController
 	 * @param attribute
 	 * @return
 	 */
-	private static AtomicBoolean preCacheInProgress = new AtomicBoolean(false);
+	public static AtomicBoolean preCacheInProgress = new AtomicBoolean(false);
 	
 	public List<CategoryVO> getRelatedCategoryVOList(String groupName, Integer languageId, String attribute, Database db)
 	{
+		Timer t = new Timer();
 	    List<CategoryVO> relatedCategories = new ArrayList<CategoryVO>();
 	    
 		try
@@ -1509,12 +1515,11 @@ public class GroupPropertiesController extends BaseController
 		        groupPropertyVO = (GroupPropertiesVO)iterator.next();
 		        break;
 		    }
-
+		  
 			if(groupPropertyVO != null && groupPropertyVO.getId() != null)
 			{
 				if(CacheController.getCacheSize("propertiesCategoryCache") == 0 && preCacheInProgress.compareAndSet(false, true))
 				{
-					Timer t = new Timer();
 					try
 					{
 						PropertiesCategoryController.getController().preCacheAllPropertiesCategoryVOList();
@@ -1525,7 +1530,7 @@ public class GroupPropertiesController extends BaseController
 					}
 					logger.warn("preCacheAllPropertiesCategoryVOList took: " + t.getElapsedTime());
 				}
-				 
+
 				String key = "categoryVOList_" + attribute + "_" + GroupProperties.class.getName() + "_" + groupPropertyVO.getId();
 				List<CategoryVO> categoryVOList = (List<CategoryVO>)CacheController.getCachedObject("propertiesCategoryCache", key);
 				if(categoryVOList != null)
@@ -1535,7 +1540,6 @@ public class GroupPropertiesController extends BaseController
 				}
 				else
 				{
-					
 					if(CacheController.getCachedObject("propertiesCategoryCache", "allValuesCached") != null)
 					{
 						//System.out.println("Skipping as there is no such property in the full precache..");
@@ -1545,7 +1549,7 @@ public class GroupPropertiesController extends BaseController
 						logger.warn("Reading the hard way for:" + key);
 	
 				    	List propertiesCategoryList = PropertiesCategoryController.getController().findByPropertiesAttributeReadOnly(attribute, GroupProperties.class.getName(), groupPropertyVO.getId(), db);
-		
+					
 				    	Iterator propertiesCategoryListIterator = propertiesCategoryList.iterator();
 				    	while(propertiesCategoryListIterator.hasNext())
 				    	{

@@ -179,7 +179,7 @@ public class SiteNodeController extends BaseController
     {
 		String key = "" + siteNodeId;
 		SiteNodeVO siteNodeVO = (SiteNodeVO)CacheController.getCachedObjectFromAdvancedCache("siteNodeCache", key);
-		if(siteNodeVO != null)
+		if(siteNodeVO != null && !skipCaching)
 		{
 			return siteNodeVO;
 		}
@@ -189,7 +189,7 @@ public class SiteNodeController extends BaseController
 		try
         {	
 			siteNodeVO = getSiteNodeVOWithId(siteNodeId, db, skipCaching);
-			if(siteNodeVO != null)
+			if(siteNodeVO != null && !skipCaching)
 				CacheController.cacheObjectInAdvancedCache("siteNodeCache", key, siteNodeVO);
 
 	    	commitTransaction(db);

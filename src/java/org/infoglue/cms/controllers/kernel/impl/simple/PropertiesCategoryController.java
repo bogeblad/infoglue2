@@ -20,7 +20,7 @@
  *
  * ===============================================================================
  *
- * $Id: PropertiesCategoryController.java,v 1.3.4.3 2012/11/30 11:41:51 mattias Exp $
+ * $Id: PropertiesCategoryController.java,v 1.3.4.4 2013/03/12 12:58:06 mattias Exp $
  */
 package org.infoglue.cms.controllers.kernel.impl.simple;
 
@@ -48,7 +48,6 @@ import org.infoglue.cms.entities.management.PropertiesCategoryVO;
 import org.infoglue.cms.entities.management.impl.simple.CategoryImpl;
 import org.infoglue.cms.entities.management.impl.simple.PropertiesCategoryImpl;
 import org.infoglue.cms.exception.SystemException;
-import org.infoglue.cms.util.ConstraintExceptionBuffer;
 import org.infoglue.deliver.util.CacheController;
 import org.infoglue.deliver.util.Timer;
 
