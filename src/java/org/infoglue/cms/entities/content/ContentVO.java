@@ -23,11 +23,10 @@
 
 package org.infoglue.cms.entities.content;
 
-import java.util.ArrayList;
+import java.io.Serializable;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Hashtable;
-import java.util.List;
 import java.util.Map;
 import java.util.SimpleTimeZone;
 
@@ -35,11 +34,12 @@ import org.infoglue.cms.entities.kernel.BaseEntityVO;
 import org.infoglue.cms.exception.ConstraintException;
 import org.infoglue.cms.util.CmsPropertyHandler;
 import org.infoglue.cms.util.ConstraintExceptionBuffer;
-import org.infoglue.cms.util.DateHelper;
 import org.infoglue.cms.util.validators.ValidatorFactory;
 
-public class ContentVO implements BaseEntityVO
+public class ContentVO implements BaseEntityVO, Serializable
 { 
+	private static final long serialVersionUID = 1L;
+	
 	public static final Integer NO 			= new Integer(0);
 	public static final Integer YES 		= new Integer(1);
 	public static final Integer INHERITED 	= new Integer(2);
