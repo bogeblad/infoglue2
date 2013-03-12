@@ -68,6 +68,7 @@ import org.infoglue.deliver.cache.PageCacheHelper;
 import org.infoglue.deliver.controllers.kernel.impl.simple.ExtranetController;
 import org.infoglue.deliver.portal.ServletConfigContainer;
 import org.infoglue.deliver.util.CacheController;
+import org.infoglue.deliver.util.CompressionHelper;
 import org.infoglue.deliver.util.RequestAnalyser;
 
 import com.opensymphony.oscache.base.Cache;
@@ -1119,7 +1120,41 @@ public class ViewApplicationStateAction extends InfoGlueAbstractAction
 	    		sb.append("" + group + "\n");
 	    	}
     	}
-    	System.out.println(sb.toString());
+
+    	getResponse().getWriter().println(sb.toString());
+    	
+    	return NONE;
+    }
+
+    public String doCacheEntryValue() throws Exception
+    {
+    	Object value = null;
+    	if(this.cacheName != null && !this.cacheName.equals(""))
+        {
+        	this.cache = CacheController.getCaches().get(this.cacheName);
+        	System.out.println("this.cache:" + this.cache);
+        	System.out.println("cacheKey:" + cacheKey);
+        	if(this.cache instanceof GeneralCacheAdministrator)
+        	{
+        		value = CacheController.getCachedObjectFromAdvancedCache(cacheName, cacheKey);
+        	}
+        	else
+        	{
+        		value = CacheController.getCachedObject(cacheName, cacheKey);        		
+        	}
+        }
+    	
+    	if(value != null && value instanceof byte[])
+    	{
+    	    CompressionHelper compressionHelper = new CompressionHelper();
+	    	value = compressionHelper.decompress((byte[])value);
+    	}
+    	System.out.println("value:" + value);
+    	getResponse().setContentType("text/plain");
+
+    	StringBuilder sb = new StringBuilder();
+    	
+    	sb.append("" + value + "\n");
     	getResponse().getWriter().println(sb.toString());
     	
     	return NONE;
