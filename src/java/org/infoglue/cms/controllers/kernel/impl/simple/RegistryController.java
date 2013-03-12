@@ -242,59 +242,49 @@ public class RegistryController extends BaseController
 	    }
 	}
 
-	/**
-	 * this method goes through all inline stuff and all relations if ordinary content 
-	 * and all components and bindings if a metainfo. All in a threaded matter.
-	 * 
-	 * @param contentVersionVO
-	 * @param contentVersionVO
-	 * @throws Exception
-	 */
-	
-	private static List<Object[]> queuedContentVersions = new ArrayList<Object[]>();
-	private static AtomicBoolean runningUpdateContentVersion = new AtomicBoolean();
-	public void updateContentVersionThreaded(ContentVersionVO contentVersionVO, SiteNodeVersionVO siteNodeVersionVO) throws Exception
-	{
-		class UpdateContentVersionRunnable implements Runnable 
+	private static ThreadLocal<List<Object[]>> queuedContentVersions = new ThreadLocal<List<Object[]>>() {
+
+		@Override
+		protected List<Object[]> initialValue()
 		{
-			ContentVersionVO contentVersionVO;
-			SiteNodeVersionVO siteNodeVersionVO;
-			
-			UpdateContentVersionRunnable(ContentVersionVO contentVersionVO, SiteNodeVersionVO siteNodeVersionVO) 
-			{ 
-				this.contentVersionVO = contentVersionVO; 
-				this.siteNodeVersionVO = siteNodeVersionVO;
+			return new ArrayList<Object[]>();
+		}
+	};
+
+	public static void notifyTransactionCommitted()
+	{
+		class UpdateContentVersionRunnable implements Runnable
+		{
+			List<Object[]> list;
+
+			UpdateContentVersionRunnable(List<Object[]> list)
+			{
+				this.list = list;
 			}
-	        
-	        public void run() 
+
+	        public void run()
 	        {
-	        	Timer t = new Timer();
-	    		try {Thread.currentThread().sleep(30000);} catch (Exception e) {}
-	    		
-    			List<Object[]> localContentVersions = new ArrayList<Object[]>();
-	        	synchronized (queuedContentVersions) 
-	        	{
-	        		localContentVersions.addAll(queuedContentVersions);
-	        		queuedContentVersions.clear();
-				}
-	        	
 				try
 				{
 					Database db = CastorDatabaseService.getDatabase();
 					try 
 					{
+						Timer t = new Timer();
+
 						beginTransaction(db);
-						
-						for(Object[] bean : localContentVersions)
+
+						logger.info("Start refreshing registry in thread" + Thread.currentThread().getId());
+
+						for(Object[] bean : list)
 						{
-							updateContentVersion((ContentVersionVO)bean[0], (SiteNodeVersionVO)bean[1], db);
+							RegistryController.getController().updateContentVersion((ContentVersionVO)bean[0], (SiteNodeVersionVO)bean[1], db);
 						}
-						
-						logger.info("Done refreshing registry took:" + t.getElapsedTime());
-						
+
 						commitTransaction(db);
-					}  
-					catch (Exception e) 
+
+						logger.info("Done refreshing registry took:" + t.getElapsedTime());
+					}
+					catch (Exception e)
 					{
 						logger.error("Error precaching all access rights for this user: " + e.getMessage(), e);
 						rollbackTransaction(db);
@@ -304,27 +294,42 @@ public class RegistryController extends BaseController
 				{
 					logger.error("Could not start PreCacheTask:" + e.getMessage(), e);
 				}
-				finally
-				{
-					runningUpdateContentVersion.set(false);
-				}
 	        }
 	    }
-	
-		synchronized (queuedContentVersions) 
+
+		if (queuedContentVersions.get().size() > 0)
 		{
-			queuedContentVersions.add(new Object[]{contentVersionVO, siteNodeVersionVO});
+			List<Object[]> localQueue = new ArrayList<Object[]>();
+			localQueue.addAll(queuedContentVersions.get());
+			Thread thread = new Thread(new UpdateContentVersionRunnable(localQueue));
+			thread.start();
+			queuedContentVersions.get().clear();
+			logger.debug("Started registry update thread. Number of entities: " + localQueue.size());
 		}
-	
-		if(runningUpdateContentVersion.compareAndSet(false, true))
+		else
 		{
-		    Thread thread = new Thread(new UpdateContentVersionRunnable(contentVersionVO, siteNodeVersionVO));
-		    thread.start();	
-    	}
-    	else
-    	{
-    		logger.info("Running allready - queing");
-    	}
+			logger.debug("No queued beans in registry queue. Skipping run.");
+		}
+	}
+	
+	/**
+	 * this method goes through all inline stuff and all relations if ordinary content 
+	 * and all components and bindings if a metainfo. All in a threaded matter.
+	 * 
+	 * @param contentVersionVO
+	 * @param contentVersionVO
+	 * @throws Exception
+	 */
+	
+//	private static List<Object[]> queuedContentVersions = new ArrayList<Object[]>();
+//	private static AtomicBoolean runningUpdateContentVersion = new AtomicBoolean();
+	public void updateContentVersionThreaded(ContentVersionVO contentVersionVO, SiteNodeVersionVO siteNodeVersionVO) throws Exception
+	{
+		if (logger.isInfoEnabled())
+		{
+			logger.info("Adds entity to registry controller update queue. ContentVersion.id: " + (contentVersionVO == null ? "null" : contentVersionVO.getContentVersionId()) + ", SiteNodeVersion.id " + (siteNodeVersionVO == null ? "null" : siteNodeVersionVO.getSiteNodeVersionId()));
+		}
+		queuedContentVersions.get().add(new Object[]{contentVersionVO, siteNodeVersionVO});
 	}
 	
 	/**

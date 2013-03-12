@@ -1282,6 +1282,8 @@ public abstract class BaseController
 
             db.commit();
 		    db.close();
+
+		    RegistryController.notifyTransactionCommitted();
         }
         catch(TransactionAbortedException tae)
         {
