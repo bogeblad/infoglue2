@@ -234,6 +234,12 @@ public class SiteNodeController extends BaseController
 	 
 	public SiteNodeVO getSiteNodeVOWithId(Integer siteNodeId, Database db, boolean skipCaching) throws SystemException, Bug, Exception
 	{
+		if(siteNodeId == null || siteNodeId == 0)
+		{
+			logger.info("Returned as " + siteNodeId + " was requested");
+			return null;
+		}
+		
 		String key = "" + siteNodeId;
 		SiteNodeVO siteNodeVO = (SiteNodeVO)CacheController.getCachedObjectFromAdvancedCache("siteNodeCache", key);
 		if(siteNodeVO != null)
@@ -244,7 +250,7 @@ public class SiteNodeController extends BaseController
 		}
 		else
 		{
-	   		StringBuffer SQL = new StringBuffer();
+			StringBuffer SQL = new StringBuffer();
 	    
 	   		Timer t = new Timer();
 
@@ -258,7 +264,8 @@ public class SiteNodeController extends BaseController
 		   		SQL.append("	select max(siNoVerId) from cmSiNoVer snv2 ");
 		   		SQL.append("	WHERE ");
 		   		SQL.append("	snv2.siNoId = snv.siNoId AND ");
-		   		SQL.append("	snv2.isActive = $2 AND snv2.stateId >= $3 ");
+		   		//SQL.append("	snv2.isActive = $2 AND snv2.stateId >= $3 ");
+		   		SQL.append("	snv2.stateId >= $2 ");
 		   		SQL.append("	) ");
 		   		SQL.append("order by sn.siNoId DESC AS org.infoglue.cms.entities.structure.impl.simple.SmallestSiteNodeImpl");
 	    	}
@@ -272,7 +279,8 @@ public class SiteNodeController extends BaseController
 		   		SQL.append("	select max(siteNodeVersionId) from cmSiteNodeVersion snv2 ");
 		   		SQL.append("	WHERE ");
 		   		SQL.append("	snv2.siteNodeId = snv.siteNodeId AND ");
-		   		SQL.append("	snv2.isActive = $2 AND snv2.stateId >= $3 ");
+		   		//SQL.append("	snv2.isActive = $2 AND snv2.stateId >= $3 ");
+		   		SQL.append("	snv2.stateId >= $2 ");
 		   		SQL.append("	) ");
 		   		SQL.append("order by sn.siteNodeId DESC AS org.infoglue.cms.entities.structure.impl.simple.SmallestSiteNodeImpl");    		
 	    	}
@@ -282,7 +290,7 @@ public class SiteNodeController extends BaseController
 	    	//logger.info("showDeletedItems:" + showDeletedItems);
 	    	OQLQuery oql = db.getOQLQuery(SQL.toString());
 			oql.bind(siteNodeId);
-			oql.bind(true);
+			//oql.bind(true);
 			oql.bind(new Integer(CmsPropertyHandler.getOperatingMode()));
 	
 			QueryResults results = oql.execute(Database.ReadOnly);
@@ -298,6 +306,8 @@ public class SiteNodeController extends BaseController
 					CacheController.cacheObjectInAdvancedCache("siteNodeCache", siteNodeCacheKey, siteNode.getValueObject());
 				}
 			}
+			else
+				System.out.println("Not found:" + siteNodeId);
 			
 			results.close();
 			oql.close();

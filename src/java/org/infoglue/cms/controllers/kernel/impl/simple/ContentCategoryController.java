@@ -20,7 +20,7 @@
  *
  * ===============================================================================
  *
- * $Id: ContentCategoryController.java,v 1.22.2.1.2.4 2013/02/22 09:07:46 mattias Exp $
+ * $Id: ContentCategoryController.java,v 1.22.2.1.2.5 2013/03/13 00:25:13 mattias Exp $
  */
 package org.infoglue.cms.controllers.kernel.impl.simple;
 
@@ -588,15 +588,15 @@ public class ContentCategoryController extends BaseController
 
 		try
 		{
-			ContentCategory contentCategory = (ContentCategory)getObjectWithId(ContentCategoryImpl.class, id, db);
-		    ContentVersion contentVersion = ContentVersionController.getContentVersionController().checkStateAndChangeIfNeeded(contentCategory.getContentVersionId(), principal, db);
+			ContentCategory contentCategory = (ContentCategory)getObjectWithId(MediumContentCategoryImpl.class, id, db);
+		    MediumContentVersionImpl contentVersion = ContentVersionController.getContentVersionController().checkStateAndChangeIfNeeded(contentCategory.getContentVersionId(), principal, db);
 						
 		    //ContentCategory contentCategory = (ContentCategory)getObjectWithId(ContentCategoryImpl.class, id, db);
 		    //ContentVersion contentVersion = (ContentVersion)getObjectWithId(ContentVersionImpl.class, contentCategory.getContentVersionId(), db);
 		    Iterator contentCategoriesIterator = contentVersion.getContentCategories().iterator();
 		    while(contentCategoriesIterator.hasNext())
 		    {
-		    	ContentCategory currentContentCategory = (ContentCategory)contentCategoriesIterator.next();
+		    	MediumContentCategoryImpl currentContentCategory = (MediumContentCategoryImpl)contentCategoriesIterator.next();
 		    	ContentCategoryVO currentContentCategoryVO = currentContentCategory.getValueObject();
 			    if(currentContentCategoryVO.getAttributeName().equals(contentCategory.getAttributeName()) && currentContentCategory.getCategory().getId().equals(contentCategory.getCategory().getId())) 
 		    	{
