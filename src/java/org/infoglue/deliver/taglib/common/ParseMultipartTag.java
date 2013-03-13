@@ -132,8 +132,6 @@ public class ParseMultipartTag extends TemplateControllerTag
 				        String name = item.getFieldName();
 				        String value = item.getString();
 				        String oldValue = (String)parameters.get(name);
-				        if(oldValue != null)
-				            value = oldValue + "," + value; 
 				        
 				        if(value != null)
 						{
@@ -152,6 +150,12 @@ public class ParseMultipartTag extends TemplateControllerTag
 								e.printStackTrace();
 							}
 						}
+				        
+				        if(oldValue != null)
+				        {
+				            value = oldValue + "," + value;
+				        }
+				        
 				        parameters.put(name, value);
 				    }
 				        
