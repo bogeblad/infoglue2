@@ -40,7 +40,11 @@
 				{
 					url = 'MoveSiteNode.action?repositoryId=$repositoryId&siteNodeId=' + siteNodeId + '&newParentSiteNodeId=' + newParentSiteNodeId + "&changeTypeId=" + changeTypeId;
 				    //alert('Calling:' + url);
-				    self.opener.parent.frames["main"].location.href = url;
+				    var mainFrame = self.opener.parent.frames["main"];
+					if(!mainFrame || !mainFrame.location)
+						mainFrame = self.opener.parent.frames[3];
+						    
+				    mainFrame.location.href = url;
 				    window.close();
 				    //document.inputForm.submit();
 				}

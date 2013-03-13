@@ -59,11 +59,14 @@
 		
 		function reloadPage()
 		{
-			var loc = parent.frames["main"].location || parent.frames[3].location;
+			var mainFrame = parent.frames["main"];
+			if(!mainFrame || !mainFrame.location)
+				mainFrame = parent.frames[3];
+		
 			#if($title == "tool.structuretool.siteNodeDetailsHeader")
-				loc.href = "$this.getComponentRendererUrl()$this.getComponentRendererAction()?siteNodeId=$siteNodeId&reloadToolbar=true";
+				mainFrame.location.href = "$this.getComponentRendererUrl()$this.getComponentRendererAction()?siteNodeId=$siteNodeId&reloadToolbar=true";
 			#else
-				loc.reload();
+				mainFrame.location.reload();
 			#end
 		}
 		

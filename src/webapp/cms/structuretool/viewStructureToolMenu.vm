@@ -72,11 +72,13 @@
 		
 		function htmlTreeItemClick(itemId, repoId, path)
 		{
-			refreshStructureToolBar('$this.getCMSBaseUrl()', 'tool.structuretool.siteNodeComponentsHeader', 'tool.structuretool.siteNodeComponentsHeader', 'siteNodeId=' + itemId + '&repositoryId=' + repoId + '&isBranch=true', '$unrefreshedNodeId', '$changeTypeId', '$siteNodeId');
-
-			var frm = parent.frames['main'] || parent.frames[3];
-
-			frm.location.href="$this.getCMSBaseUrl()/ViewSiteNode.action?siteNodeId=" + itemId + "&repositoryId=" + repoId;
+			refreshStructureToolBar('$this.getCMSBaseUrl()', 'tool.structuretool.siteNodeComponentsHeader', 'tool.structuretool.siteNodeComponentsHeader', 'showLoadIndicator=true&siteNodeId=' + itemId + '&repositoryId=' + repoId + '&isBranch=true', '$unrefreshedNodeId', '$changeTypeId', '$siteNodeId');
+			
+			var mainFrame = parent.frames["main"];
+			if(!mainFrame || !mainFrame.location)
+				mainFrame = parent.frames[3];
+				
+			mainFrame.location.href="$this.getCMSBaseUrl()/ViewSiteNode.action?siteNodeId=" + itemId + "&repositoryId=" + repoId;
 		}
 	
 		function reloadMain()
@@ -171,7 +173,6 @@
 			//alert("w_newHeight:" + w_newHeight);
 			try 
 			{
-				document.getElementById("loadingDiv").style.visibility = "hidden";
 				treeView().setSize(w_newWidth - 10,w_newHeight - 50);
 				treeView().style.visibility = "visible";
 			}

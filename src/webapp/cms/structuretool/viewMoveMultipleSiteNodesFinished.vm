@@ -29,8 +29,12 @@
 			//    if (confirm('Are you sure you want to move the sitenode to the folder you have just selected?'))
 			//	{
 					//alert('Calling:' + url);
-				    self.opener.parent.frames["menu"].location.reload();
-				    self.opener.parent.frames["main"].location.href = url;
+				    var mainFrame = self.opener.parent.frames["main"];
+					if(!mainFrame || !mainFrame.location)
+						mainFrame = self.opener.parent.frames[3];
+							
+				    mainFrame.location.reload();
+				    mainFrame.location.href = url;
 				    window.close();
 			//	}
 			//}

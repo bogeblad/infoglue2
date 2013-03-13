@@ -160,7 +160,12 @@
 			
 			var url = 'CreateServiceBinding.action?serviceBindingId=$serviceBindingId&repositoryId=$repositoryId&siteNodeVersionId=$siteNodeVersionId&availableServiceBindingId=$availableServiceBindingId&serviceDefinitionId=$serviceDefinitionId&path=' + escape(path) + '&entityId=' + entityId + "&qualifyerXML=" + escape(qualifyerXML);
 		    //alert('Calling:' + url);
-		    self.opener.parent.frames["main"].location.href = url;
+		    
+    		var mainFrame = self.opener.parent.frames["main"];
+			if(!mainFrame || !mainFrame.location)
+				mainFrame = self.opener.parent.frames[3];
+    
+		    mainFrame.location.href = url;
 		    window.close();
 		    //document.inputForm.submit();
 		}
