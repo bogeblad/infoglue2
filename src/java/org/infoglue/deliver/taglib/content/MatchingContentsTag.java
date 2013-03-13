@@ -119,7 +119,7 @@ public class MatchingContentsTag extends TemplateControllerTag
 		
 		logger.info("cacheInterval:" + cacheInterval);
 		
-	    setResultAttribute(getController().getMatchingContents(contentTypeDefinitionNames, categoryCondition, freeText, freeTextAttributeNamesList, fromDate, toDate, expireFromDate, expireToDate, versionModifier, maximumNumberOfItems, true, cacheResult, cacheInterval, cacheName, cacheKey, scheduleFetch, scheduleInterval, repositoryIdList, this.languageId, skipLanguageCheck, startNodeId, sortColumn, sortOrder, false, validateAccessRightsAsAnonymous, false));
+	    setResultAttribute(getController().getMatchingContents(contentTypeDefinitionNames, categoryCondition, freeText, freeTextAttributeNamesList, fromDate, toDate, expireFromDate, expireToDate, versionModifier, maximumNumberOfItems, true, cacheResult, cacheInterval, cacheName, cacheKey, scheduleFetch, scheduleInterval, repositoryIdList, this.languageId, skipLanguageCheck, startNodeId, sortColumn, sortOrder, false, validateAccessRightsAsAnonymous, false, false));
 	    
 	    this.contentTypeDefinitionNames = null;
 	    this.categoryCondition = null;

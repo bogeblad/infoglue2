@@ -213,7 +213,8 @@ public class MatchingContentsQueue implements Runnable
 						logger.info("MatchingContentsQueueBean cacheKey:" + cacheKey);
 					
 					boolean removeQueueBean = false;
-
+					boolean forceRecache = false;
+					
 					try
 					{
 						long diff = (System.currentTimeMillis() - bean.getLastFetched()) / 1000;
@@ -245,7 +246,7 @@ public class MatchingContentsQueue implements Runnable
 									   bean.getCacheInterval(), 
 									   bean.getCacheName(), 
 									   bean.getCacheKey(), 
-									   false,
+									   bean.getScheduleFetch(),
 									   bean.getScheduleInterval(),
 									   bean.getRepositoryIdsList(), 
 									   bean.getLanguageId(), 
@@ -255,8 +256,85 @@ public class MatchingContentsQueue implements Runnable
 									   bean.getSortOrder(), 
 									   false,
 									   bean.getValidateAccessRightsAsAnonymous(), 
+									   true,
 									   true);
+
 							
+							//This part check the matching contents cache for directives to recache... it is a cache entry marking when the cache-refresh request was made
+							if(bean.getContentTypeDefinitionNames() != null && !bean.getContentTypeDefinitionNames().equals(""))
+							{
+								String[] contentTypeDefinitionNames = bean.getContentTypeDefinitionNames().split(",");
+								for(String contentTypeDefinitionName : contentTypeDefinitionNames)
+								{
+									try
+									{
+										ContentTypeDefinitionVO contentTypeDefinitionVO = ContentTypeDefinitionController.getController().getContentTypeDefinitionVOWithName(contentTypeDefinitionName, dbWrapperCached.getDatabase());
+										if(contentTypeDefinitionVO != null)
+										{
+											logger.info("Do not throw page cache on this if it's not a content of type:" + contentTypeDefinitionVO.getName());
+									    	String recacheMark = (String)CacheController.getCachedObjectFromAdvancedCache("matchingContentsCache", "recacheAllMark");
+									    	logger.info("recacheMark:" + recacheMark);
+									    	if(recacheMark == null)
+									    		recacheMark = (String)CacheController.getCachedObjectFromAdvancedCache("matchingContentsCache", "recacheMark_" + contentTypeDefinitionVO.getId());
+									    	
+									    	logger.info("recacheMark:" + recacheMark);
+									    	if(recacheMark != null)
+									    	{
+									    		long markTime = Long.parseLong(recacheMark);
+									    		long diffMark = System.currentTimeMillis() - markTime;
+									    		logger.info("It was " + diffMark + " since the recache directive was added.");
+									    		logger.info("Bean was last fetched " + bean.getLastFetched() + ".");
+									    		if(diffMark > 30000)
+									    		{
+									    			logger.info("Deleting the mark..");
+									    			CacheController.clearCache("matchingContentsCache", "recacheMark_" + contentTypeDefinitionVO.getId());
+									    		}
+									    		else if(markTime > bean.getLastFetched())
+									    		{
+									    			logger.info("Forcing a recache as the mark was later than the last fetched.");
+									    			forceRecache = true;
+									    		}
+									    		else
+									    		{
+									    			logger.info("Doing nothing:" + markTime + "/" + bean.getLastFetched() + "/" + diffMark);
+									    		}
+									    	}
+									    }
+									}
+									catch (Exception e) 
+									{
+										logger.warn("Error reading content type: " + e.getMessage(), e);
+									}
+								}
+							}
+							else
+							{
+						    	String recacheMark = (String)CacheController.getCachedObjectFromAdvancedCache("matchingContentsCache", "recacheMark");
+						    	logger.info("recacheMark:" + recacheMark);
+						    	if(recacheMark != null)
+						    	{
+						    		long markTime = Long.getLong(recacheMark);
+						    		long diffMark = System.currentTimeMillis() - markTime;
+						    		logger.info("It was " + diffMark + " since the recache directive was added.");
+						    		logger.info("Bean was last fetched " + bean.getLastFetched() + ".");
+						    		if(diffMark > 3600000)
+						    		{
+						    			logger.info("Deleting the mark..");
+						    			CacheController.clearCache("matchingContentsCache", "recacheMark");
+						    		}
+						    		else if(markTime > bean.getLastFetched())
+						    		{
+						    			logger.info("Forcing a recache as the mark was later than the last fetched.");
+						    			forceRecache = true;
+						    		}
+						    		else
+						    		{
+						    			logger.info("Doing nothing:" + markTime + "/" + bean.getLastFetched() + "/" + diffMark);
+						    		}
+						    	}
+							}
+							//END TEST
+
 							dbWrapperCached.getDatabase().rollback();
 						}
 						catch (Exception e) 
@@ -269,16 +347,22 @@ public class MatchingContentsQueue implements Runnable
 						{
 							dbWrapperCached.getDatabase().close();
 						}
-						
+												
 						logger.info("diff:" + diff);
 						logger.info("bean.getScheduleInterval()" + bean.getScheduleInterval());
 						logger.info("Cached matches:" + (cachedMatchingContents == null ? "null" : cachedMatchingContents.size()));
 						logger.info("removeQueueBean:" + removeQueueBean);
-						
-						if(!removeQueueBean && (diff > bean.getScheduleInterval() || cachedMatchingContents == null )) //|| cachedMatchingContents.size() == 0
+
+						logger.info("cachedMatchingContents:" + (cachedMatchingContents == null ? "null" : cachedMatchingContents.size()));
+
+						if(!removeQueueBean && (diff > bean.getScheduleInterval() || cachedMatchingContents == null || forceRecache)) //|| cachedMatchingContents.size() == 0
 						{
-							logger.info("Running match either because the time was now or because no cached result was found");
-							
+							logger.info("Running match either because the time was now or because no cached result was found or there was a recache directive in the cache");
+							logger.info("forceRecache:" + forceRecache);
+							logger.info("removeQueueBean:" + removeQueueBean);
+							logger.info("diff:" + diff);
+							logger.info("bean.getScheduleInterval():" + bean.getScheduleInterval());
+								
 							DatabaseWrapper dbWrapper = new DatabaseWrapper(CastorDatabaseService.getDatabase());
 							try
 							{
@@ -305,7 +389,7 @@ public class MatchingContentsQueue implements Runnable
 													   bean.getCacheInterval(), 
 													   bean.getCacheName(), 
 													   bean.getCacheKey(), 
-													   false,
+													   bean.getScheduleFetch(),
 													   bean.getScheduleInterval(),
 													   bean.getRepositoryIdsList(), 
 													   bean.getLanguageId(), 
@@ -315,7 +399,8 @@ public class MatchingContentsQueue implements Runnable
 													   bean.getSortOrder(), 
 													   true,
 													   bean.getValidateAccessRightsAsAnonymous(), 
-													   false);
+													   false, 
+													   true);
 								
 								if(bean.getContentTypeDefinitionNames() != null && !bean.getContentTypeDefinitionNames().equals(""))
 								{
@@ -328,11 +413,8 @@ public class MatchingContentsQueue implements Runnable
 											if(contentTypeDefinitionVO != null)
 											{
 												logger.info("Do not throw page cache on this if it's not a content of type:" + contentTypeDefinitionVO.getName());
-												if(deliveryContext != null)
-												{
-													String contentTypeDefKey = "selectiveCacheUpdateNonApplicable_contentTypeDefinitionId_" + contentTypeDefinitionVO.getId();
-										    		CacheController.clearCache("pageCache", contentTypeDefKey);
-												}
+												String contentTypeDefKey = "selectiveCacheUpdateNonApplicable_contentTypeDefinitionId_" + contentTypeDefinitionVO.getId();
+									    		CacheController.clearCache("pageCache", contentTypeDefKey);
 											}
 										}
 										catch (Exception e) 

@@ -5089,14 +5089,14 @@ public class BasicTemplateController implements TemplateController
 	
 	public List getMatchingContents(String contentTypeDefinitionNamesString, String categoryConditionString, String freeText, List freeTextAttributeNames, Date fromDate, Date toDate, Date expireFromDate, Date expireToDate, String versionModifier, Integer maximumNumberOfItems, boolean useLanguageFallback, boolean cacheResult, int cacheInterval, String cacheName, String cacheKey, List<Integer> repositoryIdList, Integer languageId, Boolean skipLanguageCheck, Integer startNodeId)
 	{
-		return getMatchingContents(contentTypeDefinitionNamesString, categoryConditionString, freeText, freeTextAttributeNames, fromDate, toDate, expireFromDate, expireToDate, versionModifier, maximumNumberOfItems, useLanguageFallback, cacheResult, cacheInterval, cacheName, cacheKey, false, -1, repositoryIdList, languageId, skipLanguageCheck, startNodeId, null, null, false, true, false);
+		return getMatchingContents(contentTypeDefinitionNamesString, categoryConditionString, freeText, freeTextAttributeNames, fromDate, toDate, expireFromDate, expireToDate, versionModifier, maximumNumberOfItems, useLanguageFallback, cacheResult, cacheInterval, cacheName, cacheKey, false, -1, repositoryIdList, languageId, skipLanguageCheck, startNodeId, null, null, false, true, false, false);
 	}
 	
 	/**
 	 * This method searches for all contents matching
 	 */
 	
-	public List getMatchingContents(String contentTypeDefinitionNamesString, String categoryConditionString, String freeText, List freeTextAttributeNames, Date fromDate, Date toDate, Date expireFromDate, Date expireToDate, String versionModifier, Integer maximumNumberOfItems, boolean useLanguageFallback, boolean cacheResult, int cacheInterval, String cacheName, String cacheKey, boolean scheduleFetch, int scheduleInterval, List<Integer> repositoryIdList, Integer languageId, Boolean skipLanguageCheck, Integer startNodeId, String sortColumn, String sortOrder, boolean forceRefetch, boolean validateAccessRightsAsAnonymous, boolean returnOnlyCachedResult)
+	public List getMatchingContents(String contentTypeDefinitionNamesString, String categoryConditionString, String freeText, List freeTextAttributeNames, Date fromDate, Date toDate, Date expireFromDate, Date expireToDate, String versionModifier, Integer maximumNumberOfItems, boolean useLanguageFallback, boolean cacheResult, int cacheInterval, String cacheName, String cacheKey, boolean scheduleFetch, int scheduleInterval, List<Integer> repositoryIdList, Integer languageId, Boolean skipLanguageCheck, Integer startNodeId, String sortColumn, String sortOrder, boolean forceRefetch, boolean validateAccessRightsAsAnonymous, boolean returnOnlyCachedResult, boolean preventQueueBean)
 	{
 		Timer t = new Timer();
 		
@@ -5195,7 +5195,7 @@ public class BasicTemplateController implements TemplateController
 		if(cacheKey != null && !cacheKey.equals(""))
 			key = cacheKey;
 		
-		if(scheduleFetch)
+		if(scheduleFetch && !preventQueueBean)
 		{
 			MatchingContentsQueueBean bean = new MatchingContentsQueueBean();
 			bean.setCacheInterval(cacheInterval);
@@ -5233,17 +5233,16 @@ public class BasicTemplateController implements TemplateController
 		}
 
 		logger.info("key: " + key);
-		
 		logger.info("forceRefetch:" + forceRefetch);
+
 		List cachedMatchingContents = (List)CacheController.getCachedObjectFromAdvancedCache(cacheName, ""+key.hashCode()/*, cacheInterval*/);
-			
 
 		if(logger.isInfoEnabled())
 		{
 			logger.info("cacheInterval:" + cacheInterval);
 			logger.info("scheduleFetch:" + scheduleFetch);
 			logger.info("scheduleInterval:" + scheduleInterval);
-			logger.info("cachedMatchingContents:" + cachedMatchingContents == null ? "null" : cachedMatchingContents.size());
+			logger.info("cachedMatchingContents:" + (cachedMatchingContents == null ? "null" : cachedMatchingContents.size()));
 			logger.info("cacheResult:" + cacheResult);
 			logger.info("forceRefetch:" + forceRefetch);
 			logger.info("key:" + key);
@@ -5253,7 +5252,15 @@ public class BasicTemplateController implements TemplateController
 
 		if((cachedMatchingContents == null || !cacheResult || forceRefetch) && !returnOnlyCachedResult)
 		{
-			logger.info("Getting matching contents from db for key:" + key);
+			/*
+			System.out.println("CacheSize:" + CacheController.getCacheSize("matchingContentsCache"));
+			System.out.println("Getting matching contents from db for key:" + key);
+			System.out.println("cachedMatchingContents:" + cachedMatchingContents);
+			System.out.println("cacheResult:" + cacheResult);
+			System.out.println("forceRefetch:" + forceRefetch);
+			System.out.println("returnOnlyCachedResult:" + returnOnlyCachedResult);
+			Thread.dumpStack();
+			*/
 			
 			try
 			{
@@ -5270,8 +5277,12 @@ public class BasicTemplateController implements TemplateController
 						if(deliveryContext != null)
 							deliveryContext.addUsedContent("selectiveCacheUpdateNonApplicable_contentTypeDefinitionId_" + contentTypeDefinitionVO.getId());
 						if(!scheduleFetch)
+						{
 							groups.add("selectiveCacheUpdateNonApplicable_contentTypeDefinitionId_" + contentTypeDefinitionVO.getId());
-			        }
+						}
+						else
+							groups.add("none");
+					}
 			    }
 	
 			    final CategoryConditions categoryConditions = CategoryConditions.parse(categoryConditionString, getDatabase());
@@ -5329,7 +5340,7 @@ public class BasicTemplateController implements TemplateController
 				{
 					//CacheController.cacheObjectInAdvancedCacheWithGroupsAsSet(cacheName, key, result, groups, true);
 					System.out.println("Caching with file fallback:" + result.size());
-					CacheController.cacheObjectInAdvancedCache(cacheName, ""+key.hashCode(), result, groups.toArray(new String[0]), true, true, true, "utf-8", 1, true, true);
+					CacheController.cacheObjectInAdvancedCache(cacheName, ""+key.hashCode(), result, groups.toArray(new String[0]), true, true, true, "utf-8", 100, true, true);
 				}
 				
 				return result;
@@ -5344,9 +5355,12 @@ public class BasicTemplateController implements TemplateController
 			logger.info("Getting cached contents for key:" + key);
 			return cachedMatchingContents;
 		}
-		
+		else if(returnOnlyCachedResult)
+		{
+			return null;
+		}
 		RequestAnalyser.getRequestAnalyser().registerComponentStatistics("getMatchingContents", t.getElapsedTime());
-
+		
 		return Collections.EMPTY_LIST;
 	}
 	

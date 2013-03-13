@@ -1442,7 +1442,7 @@ public interface TemplateController
 	 * This method searches for all contents matching
 	 */
 	
-	public List getMatchingContents(String contentTypeDefinitionNamesString, String categoryConditionString, String freeText, List freeTextAttributeNames, Date fromDate, Date toDate, Date expireFromDate, Date expireToDate, String versionModifier, Integer maximumNumberOfItems, boolean useLanguageFallback, boolean cacheResult, int cacheInterval, String cacheName, String cacheKey, boolean scheduleFetch, int scheduleInterval, List<Integer> repositoryIdList, Integer languageId, Boolean skipLanguageCheck, Integer startNodeId, String sortColumn, String sortOrder, boolean forceRefetch, boolean validateAccessRightsAsAnonymous, boolean returnOnlyCachedResult);
+	public List getMatchingContents(String contentTypeDefinitionNamesString, String categoryConditionString, String freeText, List freeTextAttributeNames, Date fromDate, Date toDate, Date expireFromDate, Date expireToDate, String versionModifier, Integer maximumNumberOfItems, boolean useLanguageFallback, boolean cacheResult, int cacheInterval, String cacheName, String cacheKey, boolean scheduleFetch, int scheduleInterval, List<Integer> repositoryIdList, Integer languageId, Boolean skipLanguageCheck, Integer startNodeId, String sortColumn, String sortOrder, boolean forceRefetch, boolean validateAccessRightsAsAnonymous, boolean returnOnlyCachedResult, boolean preventQueueBean);
 	
 	/**
 	 * This method returns which mode the delivery-engine is running in.
