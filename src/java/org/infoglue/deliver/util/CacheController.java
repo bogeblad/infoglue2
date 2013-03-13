@@ -2267,6 +2267,11 @@ public class CacheController extends Thread
 						clear = true;
 						selectiveCacheUpdate = true;
 					}
+					if(cacheName.equalsIgnoreCase("siteNodeCacheWithLatestVersion") && entity.indexOf("SiteNode") > 0)
+					{
+						clear = true;
+						selectiveCacheUpdate = true;
+					}
 					if(cacheName.equalsIgnoreCase("propertySetCache") && entity.indexOf("SiteNode") > 0)
 					{
 					    clear = true;
@@ -2578,7 +2583,6 @@ public class CacheController extends Thread
 								    			
 								    			if(siteNodeId != null && (cacheName.equals("childSiteNodesCache") || cacheName.equals("childPagesCache") || cacheName.equals("siteNodeCache") || cacheName.equals("componentPropertyCacheRepoGroups") || cacheName.equals("componentPropertyVersionIdCacheRepoGroups")))
 								    			{
-											    	
 											    	if(cacheName.equals("componentPropertyCacheRepoGroups") || cacheName.equals("componentPropertyVersionIdCacheRepoGroups"))
 										    		{
 										    			cacheInstance.flushGroup("" + repositoryId);

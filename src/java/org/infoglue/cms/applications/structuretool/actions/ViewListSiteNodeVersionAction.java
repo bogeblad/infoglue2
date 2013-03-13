@@ -114,7 +114,6 @@ public class ViewListSiteNodeVersionAction extends InfoGlueAbstractAction
 			        this.siteNodeVersionId = siteNodeVersionVO.getId();
 			}
 			
-			RequestAnalyser.getRequestAnalyser().registerComponentStatistics("ViewListSiteNodeVersionAction 1", t.getElapsedTime());
 			if(this.siteNodeVersionId != null)
 			{
 				AccessConstraintExceptionBuffer ceb = new AccessConstraintExceptionBuffer();
@@ -122,9 +121,7 @@ public class ViewListSiteNodeVersionAction extends InfoGlueAbstractAction
 				Integer protectedSiteNodeVersionId = SiteNodeVersionControllerProxy.getSiteNodeVersionControllerProxy().getProtectedSiteNodeVersionId(siteNodeVersionId);
 				if(protectedSiteNodeVersionId != null && !AccessRightController.getController().getIsPrincipalAuthorized(this.getInfoGluePrincipal(), "SiteNodeVersion.SubmitToPublish", protectedSiteNodeVersionId.toString()))
 					ceb.add(new AccessConstraintException("SiteNodeVersion.siteNodeVersionId", "1005"));
-	
-				RequestAnalyser.getRequestAnalyser().registerComponentStatistics("ViewListSiteNodeVersionAction 2", t.getElapsedTime());
-	
+		
 				ceb.throwIfNotEmpty();
 	
 				if(contentId != null && contentId > -1)
@@ -146,7 +143,7 @@ public class ViewListSiteNodeVersionAction extends InfoGlueAbstractAction
 						}
 					}
 				}
-				RequestAnalyser.getRequestAnalyser().registerComponentStatistics("ViewListSiteNodeVersionAction 3", t.getElapsedTime());
+	
 				processBean.updateProcess(getLocalizedString(getLocale(), "tool.structuretool.publicationProcess.gettingItems"));
 				
 				Set<SiteNodeVersionVO> siteNodeVersionVOList = new HashSet<SiteNodeVersionVO>();
@@ -185,7 +182,7 @@ public class ViewListSiteNodeVersionAction extends InfoGlueAbstractAction
 						else
 							System.out.println("Not adding siteNodeVersion..");
 					}
-					RequestAnalyser.getRequestAnalyser().registerComponentStatistics("ViewListContentVersion versions", t.getElapsedTime());
+
 				    this.siteNodeVersionVOList.addAll(siteNodeVersionVOList);
 				    Collections.sort(this.siteNodeVersionVOList, Collections.reverseOrder(new ReflectionComparator("modifiedDateTime")));
 	
@@ -212,7 +209,6 @@ public class ViewListSiteNodeVersionAction extends InfoGlueAbstractAction
 							System.out.println("Not adding contentVersion..");
 					}
 	
-					RequestAnalyser.getRequestAnalyser().registerComponentStatistics("ViewListContentVersion versions", t.getElapsedTime());
 				    this.contentVersionVOList.addAll(contentVersionVOList);
 				    Collections.sort(this.contentVersionVOList, Collections.reverseOrder(new ReflectionComparator("modifiedDateTime")));
 					
@@ -225,10 +221,6 @@ public class ViewListSiteNodeVersionAction extends InfoGlueAbstractAction
 		            rollbackTransaction(db);
 		            throw new SystemException(e.getMessage());
 		        }
-			    
-				//System.out.println("this.siteNodeVersionVOList:" + this.siteNodeVersionVOList.size());
-		        //System.out.println("this.contentVersionVOList:" + this.contentVersionVOList.size());
-				RequestAnalyser.getRequestAnalyser().registerComponentStatistics("ViewListSiteNodeVersionAction 4", t.getElapsedTime());
 			}
 		}
 		finally

@@ -95,7 +95,7 @@ public class ChangeNotificationController
 
 		int sendSize = 0;
 		Iterator iterator = list.getList().iterator();
-		while(iterator.hasNext() && sendSize < 30)
+		while(iterator.hasNext() && sendSize < 100)
 		{
         	NotificationMessage notificationMessage = (NotificationMessage)iterator.next();
 			if(notificationMessage.getType() == NotificationMessage.PUBLISHING || notificationMessage.getType() == NotificationMessage.UNPUBLISHING || notificationMessage.getType() == NotificationMessage.SYSTEM)

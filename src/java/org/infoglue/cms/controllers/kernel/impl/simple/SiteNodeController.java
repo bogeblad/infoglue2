@@ -387,7 +387,7 @@ public class SiteNodeController extends BaseController
 				siteNodeVO = siteNode.getValueObject();			
 	
 				String siteNodeCacheKey = "" + siteNode.getValueObject().getId();
-				CacheController.cacheObjectInAdvancedCache("siteNodeCacheWithLatestVersion", siteNodeCacheKey, siteNode.getValueObject());
+				CacheController.cacheObjectInAdvancedCache("siteNodeCacheWithLatestVersion", siteNodeCacheKey, siteNode.getValueObject(), new String[]{CacheController.getPooledString(3, siteNode.getValueObject().getId())}, true);
 			}
 			
 			results.close();
