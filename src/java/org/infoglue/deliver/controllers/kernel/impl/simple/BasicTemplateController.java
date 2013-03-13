@@ -5235,7 +5235,8 @@ public class BasicTemplateController implements TemplateController
 		logger.info("key: " + key);
 		logger.info("forceRefetch:" + forceRefetch);
 
-		List cachedMatchingContents = (List)CacheController.getCachedObjectFromAdvancedCache(cacheName, ""+key.hashCode()/*, cacheInterval*/);
+		List cachedMatchingContents = (List)CacheController.getCachedObjectFromAdvancedCache(cacheName, key/*, cacheInterval*/);
+		//List cachedMatchingContents = (List)CacheController.getCachedObjectFromAdvancedCache(cacheName, ""+key.hashCode()/*, cacheInterval*/);
 
 		if(logger.isInfoEnabled())
 		{
@@ -5334,13 +5335,14 @@ public class BasicTemplateController implements TemplateController
 					}
 				}
 
-				//t.printElapsedTime("After check..");
+				RequestAnalyser.getRequestAnalyser().registerComponentStatistics("getMatchingContents against db", t.getElapsedTime());
 				
 				if(cacheResult)
 				{
 					//CacheController.cacheObjectInAdvancedCacheWithGroupsAsSet(cacheName, key, result, groups, true);
-					System.out.println("Caching with file fallback:" + result.size());
-					CacheController.cacheObjectInAdvancedCache(cacheName, ""+key.hashCode(), result, groups.toArray(new String[0]), true, true, true, "utf-8", 100, true, true);
+					logger.info("Caching with file fallback:" + result.size());
+					CacheController.cacheObjectInAdvancedCacheWithGroupsAsSet(cacheName, key, result, groups, true);
+					//CacheController.cacheObjectInAdvancedCache(cacheName, ""+key.hashCode(), result, groups.toArray(new String[0]), true, true, true, "utf-8", 200, false, false);
 				}
 				
 				return result;
@@ -5352,14 +5354,15 @@ public class BasicTemplateController implements TemplateController
 		}
 		else if(cachedMatchingContents != null)
 		{
+			RequestAnalyser.getRequestAnalyser().registerComponentStatistics("getMatchingContents cached", t.getElapsedTime());
 			logger.info("Getting cached contents for key:" + key);
 			return cachedMatchingContents;
 		}
 		else if(returnOnlyCachedResult)
 		{
+			RequestAnalyser.getRequestAnalyser().registerComponentStatistics("getMatchingContents cached but empty", t.getElapsedTime());
 			return null;
 		}
-		RequestAnalyser.getRequestAnalyser().registerComponentStatistics("getMatchingContents", t.getElapsedTime());
 		
 		return Collections.EMPTY_LIST;
 	}

@@ -344,7 +344,7 @@ public class ExpireCacheJob implements Job
 			}
             
         	long diffReCache = ((System.currentTimeMillis() - lastRecacheCall) / 1000);
-        	if(CmsPropertyHandler.getOperatingMode().equals("0") && diffReCache > 1800)
+        	if(CmsPropertyHandler.getOperatingMode().equals("0") && diffReCache > 7200)
     	    {    			
     			new Thread(new RecacheRepositoryRootPagesThread()).start();
     			lastRecacheCall = System.currentTimeMillis();

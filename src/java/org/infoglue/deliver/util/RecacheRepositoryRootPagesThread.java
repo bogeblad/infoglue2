@@ -164,14 +164,14 @@ public class RecacheRepositoryRootPagesThread implements Runnable
 		  				}
 		  				catch (Exception e) 
 		  				{
-		  					logger.error("Could not refresh deliver cache: " + e.getMessage(), e);
+		  					logger.warn("Could not refresh deliver cache: " + e.getMessage(), e);
 		  				}
 		  			}
 		        }
 	  		}
 	  		catch (Exception e) 
 	  		{
-	  			logger.error("Could not refresh deliver cache: " + e.getMessage(), e);
+	  			logger.warn("Could not refresh deliver cache: " + e.getMessage(), e);
 			}
 	  		finally
 	  		{
