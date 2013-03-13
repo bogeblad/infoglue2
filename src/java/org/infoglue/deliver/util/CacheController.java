@@ -3521,8 +3521,7 @@ public class CacheController extends Thread
 							    }
 							    else if(cacheName.equalsIgnoreCase("matchingContentsCache") && entity.indexOf("MediumContentCategoryImpl") > 0)
 							    {
-							    	System.out.println("Special handling");
-						    		try
+							    	try
 						    		{
 						    			String contentId = sentContentId;
 						    			//if(contentId == null || contentId.equals(""))
@@ -3598,7 +3597,9 @@ public class CacheController extends Thread
 							} //BACK
 						}
 						
-						t.printElapsedTime("clearCaches end:" + e.getKey(), 10);
+						long elapsedTime = t.getElapsedTime();
+						if(elapsedTime > 20)
+							logger.warn("Clear cache end took: " + elapsedTime);
 						logger.info("Cleared cache:" + e.getKey());
 	
 						if(!selectiveCacheUpdate)
