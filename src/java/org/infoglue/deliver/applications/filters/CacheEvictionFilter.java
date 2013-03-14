@@ -40,7 +40,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
+import org.infoglue.cms.util.CmsPropertyHandler;
 import org.infoglue.deliver.util.CacheController;
+import org.infoglue.deliver.util.SimpleThreadMonitor;
 
 /**
  * This filter empties the caches waiting to be emptied.
@@ -68,7 +70,11 @@ public class CacheEvictionFilter implements Filter
     {
         HttpServletRequest httpRequest = (HttpServletRequest) servletRequest;
         HttpServletResponse httpResponse = (HttpServletResponse) servletResponse;
-                
+              
+        SimpleThreadMonitor tk = null;
+    	if(!CmsPropertyHandler.getOperatingMode().equals("3"))
+    		tk = new SimpleThreadMonitor(5000, httpRequest, "Page view took to long!", true);
+
         try
         {
             String requestURI = URLDecoder.decode(getContextRelativeURI(httpRequest), "UTF-8");
@@ -87,6 +93,13 @@ public class CacheEvictionFilter implements Filter
         catch (Exception e)
         {
             logger.error("CacheEvictionFilter threw error:" + e.getMessage(), e);
+        }
+        finally
+        {
+        	if(tk != null && !tk.getIsDoneRunning())
+	    		tk.done();
+	    	else
+	    		logger.warn("Done had allready been run... skipping");
         }
         
         filterChain.doFilter(httpRequest, httpResponse);
