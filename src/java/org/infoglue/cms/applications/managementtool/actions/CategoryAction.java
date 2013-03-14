@@ -8,6 +8,7 @@ import org.infoglue.cms.applications.common.actions.ModelAction;
 import org.infoglue.cms.applications.common.actions.SubscriptionsAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.CategoryController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentCategoryController;
+import org.infoglue.cms.controllers.kernel.impl.simple.PropertiesCategoryController;
 import org.infoglue.cms.entities.kernel.Persistent;
 import org.infoglue.cms.entities.management.CategoryVO;
 import org.infoglue.cms.exception.ConstraintException;
@@ -26,6 +27,7 @@ public class CategoryAction extends ModelAction
 
 	private CategoryController controller = CategoryController.getController();
 	private ContentCategoryController contentCategoryController = ContentCategoryController.getController();
+	private PropertiesCategoryController propertiesCategoryController = PropertiesCategoryController.getController();
 	private boolean forceDelete = false;
 		
 	protected Persistent createModel()	{ return new CategoryVO(); }
@@ -37,7 +39,10 @@ public class CategoryAction extends ModelAction
 
 	public List getReferences() throws Exception
 	{
-		return contentCategoryController.findByCategory(getCategoryId());
+		List refs = contentCategoryController.findByCategory(getCategoryId());
+		refs.addAll(propertiesCategoryController.findByCategory(getCategoryId()));
+
+		return refs; //contentCategoryController.findByCategory(getCategoryId());
 	}
 	
 	public String doList() throws SystemException

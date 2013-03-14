@@ -29,6 +29,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.log4j.Logger;
 import org.dom4j.Document;
 import org.dom4j.Element;
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
@@ -45,6 +46,8 @@ import org.infoglue.cms.util.dom.DOMBuilder;
 
 public class MoveMultipleContentAction extends InfoGlueAbstractAction
 {
+    private final static Logger logger = Logger.getLogger(MoveMultipleContentAction.class.getName());
+
 	private static final long serialVersionUID = 1L;
 	
     //Initial params
@@ -184,7 +187,7 @@ public class MoveMultipleContentAction extends InfoGlueAbstractAction
 		}
 		catch(Exception e)
 		{
-		    e.printStackTrace();
+		    logger.error("Problem moving page: " + e.getMessage(), e);
 		}
 		
 		this.topContentId = ContentController.getContentController().getRootContentVO(this.repositoryId, this.getInfoGluePrincipal().getName()).getContentId();

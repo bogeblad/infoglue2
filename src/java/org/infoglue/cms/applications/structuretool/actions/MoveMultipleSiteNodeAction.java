@@ -29,13 +29,21 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.log4j.Logger;
 import org.dom4j.Document;
 import org.dom4j.Element;
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
+import org.infoglue.cms.controllers.kernel.impl.simple.EventController;
+import org.infoglue.cms.controllers.kernel.impl.simple.PublicationController;
 import org.infoglue.cms.controllers.kernel.impl.simple.RepositoryController;
 import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeController;
 import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeControllerProxy;
+import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeVersionController;
+import org.infoglue.cms.entities.publishing.PublicationVO;
 import org.infoglue.cms.entities.structure.SiteNodeVO;
+import org.infoglue.cms.entities.structure.SiteNodeVersion;
+import org.infoglue.cms.entities.structure.SiteNodeVersionVO;
+import org.infoglue.cms.entities.workflow.EventVO;
 import org.infoglue.cms.util.ConstraintExceptionBuffer;
 import org.infoglue.cms.util.dom.DOMBuilder;
 
@@ -45,6 +53,7 @@ import org.infoglue.cms.util.dom.DOMBuilder;
 
 public class MoveMultipleSiteNodeAction extends InfoGlueAbstractAction
 {
+    private final static Logger logger = Logger.getLogger(MoveMultipleSiteNodeAction.class.getName());
 
    	//  Initial params
     private Integer originalSiteNodeId;
@@ -118,6 +127,8 @@ public class MoveMultipleSiteNodeAction extends InfoGlueAbstractAction
     	
         try
 		{
+    		List<EventVO> resultingEvents = new ArrayList<EventVO>();
+
             if(this.qualifyerXML != null && this.qualifyerXML.length() != 0)
 		    {
 		        Document document = new DOMBuilder().getDocument(this.qualifyerXML);
@@ -127,8 +138,58 @@ public class MoveMultipleSiteNodeAction extends InfoGlueAbstractAction
 				{
 				    SiteNodeVO siteNodeVO = (SiteNodeVO)i.next();
 				    try
-					{											
+					{	
+						Integer oldParentSiteNodeId = siteNodeVO.getParentSiteNodeId();
+
 				        SiteNodeControllerProxy.getSiteNodeControllerProxy().acMoveSiteNode(this.getInfoGluePrincipal(), siteNodeVO, this.newParentSiteNodeId);
+
+				        //Creating the event that will notify the editor...
+						try
+						{
+							EventVO eventVO = new EventVO();
+							if(oldParentSiteNodeId != null)
+							{
+								SiteNodeVO oldParentSiteNodeVO = SiteNodeController.getController().getSiteNodeVOWithId(oldParentSiteNodeId);
+								SiteNodeVersionVO snvVO = SiteNodeVersionController.getController().getLatestSiteNodeVersionVO(oldParentSiteNodeVO.getId());
+								eventVO = new EventVO();
+								eventVO.setDescription("Moved " + oldParentSiteNodeVO.getName());
+								eventVO.setEntityClass(SiteNodeVersion.class.getName());
+								eventVO.setEntityId(snvVO.getId());
+						        eventVO.setName(oldParentSiteNodeVO.getName());
+								eventVO.setTypeId(EventVO.PUBLISH);
+						        eventVO = EventController.create(eventVO, oldParentSiteNodeVO.getRepositoryId(), this.getInfoGluePrincipal());			
+						        eventVO.setName("Moved child from " + oldParentSiteNodeVO.getName());
+								resultingEvents.add(eventVO);
+							}
+							
+							SiteNodeVO newParentSiteNodeVO = SiteNodeController.getController().getSiteNodeVOWithId(this.newParentSiteNodeId);
+							SiteNodeVersionVO snvVO = SiteNodeVersionController.getController().getLatestSiteNodeVersionVO(newParentSiteNodeVO.getId());
+							eventVO = new EventVO();
+							eventVO.setDescription("Moved child to " + newParentSiteNodeVO.getName());
+							eventVO.setEntityClass(SiteNodeVersion.class.getName());
+							eventVO.setEntityId(snvVO.getId());
+					        eventVO.setName(newParentSiteNodeVO.getName());
+							eventVO.setTypeId(EventVO.PUBLISH);
+					        eventVO = EventController.create(eventVO, newParentSiteNodeVO.getRepositoryId(), this.getInfoGluePrincipal());			
+					        eventVO.setName("Moved " + newParentSiteNodeVO.getName());
+							resultingEvents.add(eventVO);
+
+							SiteNodeVO actualSiteNodeVO = SiteNodeController.getController().getSiteNodeVOWithId(this.siteNodeVO.getId());
+							snvVO = SiteNodeVersionController.getController().getLatestSiteNodeVersionVO(actualSiteNodeVO.getId());
+							eventVO = new EventVO();
+							eventVO.setDescription("Moved " + actualSiteNodeVO.getName());
+							eventVO.setEntityClass(SiteNodeVersion.class.getName());
+							eventVO.setEntityId(snvVO.getId());
+					        eventVO.setName(actualSiteNodeVO.getName());
+							eventVO.setTypeId(EventVO.PUBLISH);
+					        eventVO = EventController.create(eventVO, actualSiteNodeVO.getRepositoryId(), this.getInfoGluePrincipal());			
+					        eventVO.setName("Moved " + actualSiteNodeVO.getName());
+							resultingEvents.add(eventVO);
+						}
+						catch (Exception e) 
+						{
+							logger.error("Error adding publishing info: " + e.getMessage(), e);
+						}
 					}
 					catch(Exception e)
 					{
@@ -136,10 +197,16 @@ public class MoveMultipleSiteNodeAction extends InfoGlueAbstractAction
 					}
 		    	}
 		    }
+            
+			PublicationVO publicationVO = new PublicationVO();
+		    publicationVO.setName("Direct publication by " + this.getInfoGluePrincipal().getName());
+		    publicationVO.setDescription("Moved pages to " +  this.newParentSiteNodeId);
+		    publicationVO.setRepositoryId(repositoryId);
+		    publicationVO = PublicationController.getController().createAndPublish(publicationVO, resultingEvents, new HashMap(), new HashMap(), false, this.getInfoGluePrincipal());
 		}
 		catch(Exception e)
 		{
-		    e.printStackTrace();
+		    logger.error("Problem moving pages: " + e.getMessage(), e);
 		}
 		
 		this.topSiteNodeId = SiteNodeController.getController().getRootSiteNodeVO(this.repositoryId).getId();
