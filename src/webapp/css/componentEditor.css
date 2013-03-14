@@ -871,7 +871,7 @@ padding-left:28px;
 	/*background-position: 0px -52px;*/
 }
 #processDiv {  
-    position:absolute;  
+    position:fixed;  
     width:300px;  
     display: none;
     top:150px;  
