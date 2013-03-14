@@ -2,16 +2,6 @@
 ##          CMS STUFF 	   	       #
 ####################################
 
-#macro(workingDiv)
-<div id="working" style="border: 1px solid black; left: 30%; top: 30%; z-index: 10; visibility:hidden; position:absolute; width:300px; height:115px; z-index:1; padding:10px; background-color: buttonface;">
-	<div style="left: 0px; width: 100%; text-align: center;">
-		<font face="Verdana" size="-1" color="#006699"><strong>System is working</strong></font>
-		<hr width="80%" SIZE="2">
-	</div>
-	<div style="width: 100%; text-align: center;"><img alt="" src="images/workinganim.gif" /></div>
-</div>
-#end
-
 #macro(processDiv)
 #set($hash = "#")
 <script type="text/javascript">
@@ -21,7 +11,7 @@
 </script>
 <style type="text/css">
 	${hash}processDiv {  
-	    position:absolute;  
+	    position:fixed;  
 	    width:300px;  
 	    display: none;
 	    top:150px;  
