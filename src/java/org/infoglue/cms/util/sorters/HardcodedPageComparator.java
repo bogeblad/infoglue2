@@ -1,5 +1,6 @@
 package org.infoglue.cms.util.sorters;
 
+import java.text.Collator;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
@@ -8,8 +9,6 @@ import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.log4j.Logger;
 import org.infoglue.deliver.applications.databeans.WebPage;
 import org.infoglue.deliver.controllers.kernel.impl.simple.TemplateController;
-import org.infoglue.deliver.util.RequestAnalyser;
-import org.infoglue.deliver.util.Timer;
 
 /**
  * Sort on a particular property, using reflection to find the value
@@ -25,7 +24,8 @@ public class HardcodedPageComparator implements Comparator
 	private boolean numberOrder;
 	private String nameProperty;
 	private String namesInOrderString;
-	
+    private Collator collation = Collator.getInstance();
+
 	private TemplateController templateController;
 
 	private static Map<String,Boolean> classUndefinedProperties = new HashMap<String,Boolean>();
@@ -36,17 +36,25 @@ public class HardcodedPageComparator implements Comparator
 		this.sortOrder = sortOrder;
 		this.numberOrder = numberOrder;
 		this.nameProperty = nameProperty;
-		this.namesInOrderString = namesInOrderString;
+		if(namesInOrderString != null)
+			this.namesInOrderString = namesInOrderString.toLowerCase();
 		this.templateController = templateController;
+		try
+		{
+			if(templateController.getLocale() != null)
+				this.collation = Collator.getInstance(templateController.getLocale());
+		}
+		catch (Exception e) 
+		{
+			logger.warn("No good locale: " + e.getMessage());
+		}
 	}
 
 	public int compare(Object o1, Object o2)
 	{
-		Timer t = new Timer();
-
-	    Comparable valueOne = getProperty(o1, sortProperty);
+		Comparable valueOne = getProperty(o1, sortProperty);
 		Comparable valueTwo = getProperty(o2, sortProperty);
-		
+
 		Comparable valueOneName = getProperty(o1, nameProperty);
 		Comparable valueTwoName = getProperty(o2, nameProperty);
 
@@ -119,7 +127,7 @@ public class HardcodedPageComparator implements Comparator
 	{	    
 	    int index1 = namesInOrderString.indexOf(valueOneName.toString());
 	    int index2 = namesInOrderString.indexOf(valueTwoName.toString());
-	    
+
 	    if(index1 != -1 && index2 != -1)
 	    {
 	        if(index1 > index2)
@@ -143,7 +151,10 @@ public class HardcodedPageComparator implements Comparator
 	    		    if((valueTwo != null && !valueTwo.toString().equalsIgnoreCase("")) && (valueOne == null || valueOne.toString().equalsIgnoreCase("")))
 	    		        result = 1;
 	    	        
-	    		    result = valueTwo.compareTo(valueOne);
+	    		    if(valueOne instanceof String && valueTwo instanceof String)
+	    		    	result = collation.compare(valueTwo, valueOne);
+	    			else
+	    				result = valueTwo.compareTo(valueOne);
 	    	    }
 	    	    else
 	    		{
@@ -154,7 +165,10 @@ public class HardcodedPageComparator implements Comparator
 	    	        
 	    		    try
 	    		    {
-	    		    	result = valueOne.compareTo(valueTwo);
+		    		    if(valueOne instanceof String && valueTwo instanceof String)
+		    		    	result = collation.compare(valueOne, valueTwo);
+		    			else
+		    				result = valueOne.compareTo(valueTwo);
 	    		    }
 	    		    catch (Exception e) 
 	    		    {

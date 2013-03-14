@@ -337,7 +337,37 @@ public class SiteNodeVersionController extends BaseController
 		}
     }        
 	
+    /**
+     * This method removes the siteNodeVersion and also all associated bindings.
+     * @param siteNodeVersion
+     * @param db
+     * @throws ConstraintException
+     * @throws SystemException
+     */
+    public void delete(Integer siteNodeVersionId, Database db) throws ConstraintException, SystemException
+    {
+		try
+		{
+			MediumSiteNodeVersionImpl siteNodeVersion = getMediumSiteNodeVersionWithId(siteNodeVersionId, db);
+			Collection serviceBindings = siteNodeVersion.getServiceBindings();
+		    Iterator serviceBindingsIterator = serviceBindings.iterator();
+		    while(serviceBindingsIterator.hasNext())
+		    {
+		        ServiceBinding serviceBinding = (ServiceBinding)serviceBindingsIterator.next();
+		        serviceBindingsIterator.remove();
+		        db.remove(serviceBinding);
+		    }
+		    
+		    db.remove(siteNodeVersion);
+		}
+		catch(Exception e)
+		{
+			logger.error("An error occurred so we should not completes the transaction:" + e, e);
+			throw new SystemException(e.getMessage());
+		}
+    }        
 
+    
 	/**
 	 * This method creates an initial siteNodeVersion for the siteNode sent in and within the transaction sent in.
 	 */

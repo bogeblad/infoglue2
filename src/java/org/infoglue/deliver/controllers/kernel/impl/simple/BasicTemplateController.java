@@ -5866,7 +5866,7 @@ public class BasicTemplateController implements TemplateController
 		
 		try
 		{
-			navTitle = this.nodeDeliveryController.getPageNavigationTitle(getDatabase(), this.getPrincipal(), siteNodeId, languageId, null, META_INFO_BINDING_NAME, NAV_TITLE_ATTRIBUTE_NAME, USE_LANGUAGE_FALLBACK, this.deliveryContext, false);
+			navTitle = this.nodeDeliveryController.getPageNavigationTitle(getDatabase(), this.getPrincipal(), siteNodeId, languageId, null, META_INFO_BINDING_NAME, attributeName, USE_LANGUAGE_FALLBACK, this.deliveryContext, false);
 		}
 		catch(Exception e)
 		{

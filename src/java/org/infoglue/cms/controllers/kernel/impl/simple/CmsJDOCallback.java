@@ -1126,7 +1126,7 @@ public class CmsJDOCallback implements CallbackInterceptor
 					clearCache(SiteNodeVersionImpl.class);
 					try
 					{
-						SiteNodeVersion siteNodeVersion = (SiteNodeVersion)object;
+						MediumSiteNodeVersionImpl siteNodeVersion = (MediumSiteNodeVersionImpl)object;
 						CacheController.clearCacheForGroup("siteNodeCacheWithLatestVersion", "siteNode_" + (Integer)getObjectIdentity(object));
 						CacheController.clearCacheForGroup("childSiteNodesCache", "siteNode_" + siteNodeVersion.getValueObject().getSiteNodeId());
 						CacheController.clearCacheForGroup("childPagesCache", "siteNode_" + siteNodeVersion.getValueObject().getSiteNodeId());

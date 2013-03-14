@@ -624,11 +624,14 @@ public class EventController extends BaseController
 	            	}
 					else if(event.getEntityClass().equalsIgnoreCase(SiteNodeVersion.class.getName()))
 					{
-						SiteNodeVersion siteNodeVersion = null;
+						SiteNodeVersionVO siteNodeVersion = null;
+						SiteNodeVO siteNode = null;
 						
 						try
 	            		{
-							siteNodeVersion = SiteNodeVersionController.getController().getSiteNodeVersionWithId(event.getEntityId(), db);
+							siteNodeVersion = SiteNodeVersionController.getController().getSiteNodeVersionVOWithId(event.getEntityId(), db);
+							if(siteNodeVersion != null && siteNodeVersion.getSiteNodeId() != null)
+								siteNode = SiteNodeController.getController().getSiteNodeVOWithId(siteNodeVersion.getSiteNodeId(), db);
 	            		}
 	            		catch(SystemException e)
 	            		{
@@ -636,11 +639,11 @@ public class EventController extends BaseController
 	            			throw e;
 	            		}
 
-						if(siteNodeVersion == null || siteNodeVersion.getOwningSiteNode() == null)
+						if(siteNodeVersion == null || siteNode == null)
 						{
 						    isBroken = true;
 						    isValid = false;
-						    SiteNodeVersionController.getController().delete(siteNodeVersion, db);
+						    SiteNodeVersionController.getController().delete(siteNodeVersion.getId(), db);
 						}
 						else
 	            		{

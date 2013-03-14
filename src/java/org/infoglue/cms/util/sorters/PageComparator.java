@@ -1,5 +1,6 @@
 package org.infoglue.cms.util.sorters;
 
+import java.text.Collator;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
@@ -8,8 +9,6 @@ import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.log4j.Logger;
 import org.infoglue.deliver.applications.databeans.WebPage;
 import org.infoglue.deliver.controllers.kernel.impl.simple.TemplateController;
-import org.infoglue.deliver.util.RequestAnalyser;
-import org.infoglue.deliver.util.Timer;
 
 /**
  * Sort on a particular property, using reflection to find the value
@@ -24,6 +23,7 @@ public class PageComparator implements Comparator
 	private String sortOrder;
 	private boolean numberOrder;
 	private TemplateController templateController;
+    private Collator collation = Collator.getInstance();
 
 	private static Map<String,Boolean> classUndefinedProperties = new HashMap<String,Boolean>();
 
@@ -33,6 +33,15 @@ public class PageComparator implements Comparator
 		this.sortOrder = sortOrder;
 		this.numberOrder = numberOrder;
 		this.templateController = templateController;
+		try
+		{
+			if(templateController.getLocale() != null)
+				this.collation = Collator.getInstance(templateController.getLocale());
+		}
+		catch (Exception e) 
+		{
+			logger.warn("No good locale: " + e.getMessage());
+		}
 	}
 
 	public int compare(Object o1, Object o2)
@@ -98,7 +107,10 @@ public class PageComparator implements Comparator
 		    if((valueTwo != null && !valueTwo.toString().equalsIgnoreCase("")) && (valueOne == null || valueOne.toString().equalsIgnoreCase("")))
 	            return 1;
 	        
-	        return valueTwo.compareTo(valueOne);
+		    if(valueOne instanceof String && valueTwo instanceof String)
+		    	return collation.compare(valueTwo, valueOne);
+			else
+				return valueTwo.compareTo(valueOne);
 	    }
 	    else
 		{
@@ -109,7 +121,10 @@ public class PageComparator implements Comparator
 		    
 		    try
 		    {
-		    	return valueOne.compareTo(valueTwo);
+    		    if(valueOne instanceof String && valueTwo instanceof String)
+    		    	return collation.compare(valueOne, valueTwo);
+    			else
+    				return valueOne.compareTo(valueTwo);
 		    }
 		    catch (Exception e) 
 		    {

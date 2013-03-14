@@ -53,10 +53,10 @@ public class ContentCleaner extends ContentFunction
 				
 				List<ContentVersionVO> versions = ContentVersionController.getContentVersionController().getContentVersionVOList(getContentVO().getId(), getDatabase());
 				boolean hasPublishedVersion = false;
-				Iterator versionsIterator = versions.iterator();
+				Iterator<ContentVersionVO> versionsIterator = versions.iterator();
 				while(versionsIterator.hasNext())
 				{
-					ContentVersion cv = (ContentVersion)versionsIterator.next();
+					ContentVersionVO cv = versionsIterator.next();
 					if(cv.getStateId().intValue() == ContentVersionVO.PUBLISHED_STATE.intValue())
 						hasPublishedVersion = true;
 				}

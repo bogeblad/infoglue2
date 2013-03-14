@@ -630,12 +630,10 @@ public class ExportImportController extends BaseController
 		Collection childContents = content.getChildren();
 		if(childContents != null)
 		{
-			System.out.println("childContents:" + childContents.size());
 			Iterator childContentsIterator = childContents.iterator();
 			while(childContentsIterator.hasNext())
 			{
 				Content childContent = (Content)childContentsIterator.next();
-				System.out.println("childContent:" + childContent.getName());
 				childContent.setRepository(content.getRepository());
 				childContent.setParentContent((ContentImpl)content);
 				createContents(childContent, idMap, contentTypeDefinitionIdMap, allContents, contentTypeDefinitions, categoryIdMap, version, db, onlyLatestVersions);

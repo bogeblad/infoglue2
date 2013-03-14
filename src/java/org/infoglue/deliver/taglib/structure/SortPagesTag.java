@@ -42,7 +42,7 @@ public class SortPagesTag extends TemplateControllerTag
 	
 	private List input = new ArrayList();
 
-	private String sortProperty = "navigationTitle";
+	private String sortProperty = "NavigationTitle";
 	private String nameProperty = "navigationTitle";
 	private String sortOrder 	= "asc";
 	private boolean numberOrder = false; 
@@ -72,7 +72,7 @@ public class SortPagesTag extends TemplateControllerTag
 		
 		comparator 			= null;
 		input 				= new ArrayList();
-		sortProperty 		= "navigationTitle";
+		sortProperty 		= "NavigationTitle";
 		nameProperty 		= "navigationTitle";
 		sortOrder 			= "asc";
 		type				= "PageComparator";
