@@ -293,7 +293,7 @@ public class ExpireCacheJob implements Job
                 intervalCount++;
 	            if(intervalCount > 200)
 	            {
-	                logger.error("Cleaning cache directory as intervalCount:" + intervalCount);
+	                logger.info("Cleaning cache directory as intervalCount:" + intervalCount);
 	                String dir = CmsPropertyHandler.getDigitalAssetPath() + File.separator + "caches";
 	                File dirFile = new File(dir);
 	                if(dirFile.exists())
