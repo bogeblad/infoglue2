@@ -2605,9 +2605,41 @@ public class CacheController extends Thread
 								    		logger.warn("Missing siteNode version: " + se.getMessage(), se);
 								    	}
 							    	}
+							    	else
+							    	{
+							    		try
+							    		{
+								    		if((cacheName.equals("childSiteNodesCache") || cacheName.equals("childPagesCache") || cacheName.equals("siteNodeCache") || cacheName.equals("componentPropertyCacheRepoGroups") || cacheName.equals("componentPropertyVersionIdCacheRepoGroups")))
+							    			{
+									    		SiteNodeVersionVO snvVO = SiteNodeVersionController.getController().getSiteNodeVersionVOWithId(new Integer(entityId));
+								    			SiteNodeVO snVO = SiteNodeController.getController().getSiteNodeVOWithId(snvVO.getSiteNodeId());
+								    			
+								    			Integer repositoryId = snVO.getRepositoryId();
+										    	Integer parentSiteNodeId = snVO.getParentSiteNodeId();
+	
+								    			if(cacheName.equals("componentPropertyCacheRepoGroups") || cacheName.equals("componentPropertyVersionIdCacheRepoGroups"))
+									    		{
+									    			cacheInstance.flushGroup("" + repositoryId);
+									    			logger.info("Clearing componentPropertyCacheRepoGroups for repo:" + repositoryId);
+									    		}
+									    		if(parentSiteNodeId != null)
+										    	{
+										    		cacheInstance.flushGroup("siteNode_" + parentSiteNodeId);
+										    		cacheInstance.flushGroup("" + parentSiteNodeId);
+										    		cacheInstance.flushEntry("" + parentSiteNodeId);
+										    		logger.info("Clearing for:" + parentSiteNodeId);
+										    	}
+										    }
+							    		}
+							    		catch (Exception e2) 
+							    		{
+							    			logger.error("Problem clearing cache for site node version:" + e2.getMessage(), e2);
+										}
+							    	}
 							    }
 							    else if(selectiveCacheUpdate && (entity.indexOf("SiteNode") > 0 && entity.indexOf("SiteNodeTypeDefinition") == -1) && useSelectivePageCacheUpdate)
 							    {
+							    	System.out.println("GOT SN: " + entity + ":" + entityId);
 							    	//System.out.println("Entity: " + entity);
 							    	logger.info("Flushing " + "" + entityId);
 							    	logger.info("Flushing " + "siteNode_" + entityId);
@@ -4126,7 +4158,6 @@ public class CacheController extends Thread
         		return;
         	}
         }
-    	
     	WorkingPublicationThread wpt = new WorkingPublicationThread();
     	
     	SelectiveLivePublicationThread pt = null;
