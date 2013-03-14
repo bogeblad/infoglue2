@@ -1,3 +1,10 @@
+<div id="processDiv">
+	<div style="float: left; width: 100%; text-align: center; margin-bottom: 10px;">
+		<font face="Verdana" size="-1" color="#006699"><strong>Loading</strong></font>
+	</div>
+	<div style="float: left; width: 100%; text-align: center;"><img alt="" src="images/v3/loadingAnimation.gif" /></div>
+</div>
+
 <div id="emptySlotMenu" class="skin0">
 <div class="igmenuitems linkPublish" onClick="submitToPublish($siteNodeId, $contentId, $languageId, $repositoryId, '$originalFullURL');"><a href='#'>$submitToPublishHTML</a></div>
 <div id="addComponentMenuItem" class="igmenuitems linkNotify" onclick="openInlineDiv('$notifyUrl', 700, 750, true);"><a name='notify'><a href='#'>$notifyHTML</a></div>
