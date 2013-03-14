@@ -25,6 +25,9 @@ package org.infoglue.cms.controllers.kernel.impl.simple;
 
 import java.io.InputStream;
 import java.io.StringReader;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -43,6 +46,7 @@ import org.apache.xerces.parsers.DOMParser;
 import org.exolab.castor.jdo.Database;
 import org.exolab.castor.jdo.OQLQuery;
 import org.exolab.castor.jdo.QueryResults;
+import org.exolab.castor.jdo.engine.DatabaseImpl;
 import org.infoglue.cms.applications.common.VisualFormatter;
 import org.infoglue.cms.applications.databeans.OptimizationBeanList;
 import org.infoglue.cms.applications.databeans.ProcessBean;
@@ -848,28 +852,100 @@ public class ContentVersionController extends BaseController
 		List<String> contentHandled = new ArrayList<String>();
 		
 		StringBuilder variables = new StringBuilder();
-	    for(int i=0; i<contentIds.size(); i++)
+		/*
+		for(int i=0; i<contentIds.size(); i++)
 	    	variables.append("$" + (i+2) + (i+1!=contentIds.size() ? "," : ""));
+	    
+	    */
+		for(int i=0; i<contentIds.size(); i++)
+	    	variables.append("?" + (i+1!=contentIds.size() ? "," : ""));
 	    
 		StringBuilder sb = new StringBuilder();
 		if(CmsPropertyHandler.getUseShortTableNames().equals("true"))
 		{
-			sb.append("select max(cv.contVerId) AS id, cv.contId as column1Value, cv.stateId as column2Value, cv.languageId as column3Value, c.repositoryId as column4Value, c.contentTypeDefId as column5Value, max(cv.versionModifier) as column6Value, max(cv.modifiedDateTime) as column7Value from cmContVer cv, cmCont c where cv.isActive = $1 AND c.contId = cv.contId AND cv.contId IN (" + variables + ") group by cv.contId, cv.languageId, cv.stateId, c.repositoryId, c.contentTypeDefId order by ID desc ");
+			sb.append("select max(cv.contVerId) AS id, cv.contId as column1Value, cv.stateId as column2Value, cv.languageId as column3Value, c.repositoryId as column4Value, c.contentTypeDefId as column5Value, max(cv.versionModifier) as column6Value, max(cv.modifiedDateTime) as column7Value from cmContVer cv, cmCont c where cv.isActive = 1 AND c.contId = cv.contId AND cv.contId IN (" + variables + ") group by cv.contId, cv.languageId, cv.stateId, c.repositoryId, c.contentTypeDefId order by ID desc ");
 		}
 		else
 		{
-			sb.append("select max(cv.contentVersionId) AS id, cv.contentId as column1Value, cv.stateId as column2Value, cv.languageId as column3Value, c.repositoryId as column4Value, c.contentTypeDefinitionId as column5Value, max(cv.versionModifier) as column6Value, max(cv.modifiedDateTime) as column7Value from cmContentVersion cv, cmContent c where cv.isActive = $1 AND c.contentId = cv.contentId AND cv.contentId IN (" + variables + ") group by cv.contentId, cv.languageId, cv.stateId, c.repositoryId, c.contentTypeDefinitionId order by ID desc ");
+			sb.append("select max(cv.contentVersionId) AS id, cv.contentId as column1Value, cv.stateId as column2Value, cv.languageId as column3Value, c.repositoryId as column4Value, c.contentTypeDefinitionId as column5Value, max(cv.versionModifier) as column6Value, max(cv.modifiedDateTime) as column7Value from cmContentVersion cv, cmContent c where cv.isActive = 1 AND c.contentId = cv.contentId AND cv.contentId IN (" + variables + ") group by cv.contentId, cv.languageId, cv.stateId, c.repositoryId, c.contentTypeDefinitionId order by ID desc ");
 		}
-		OQLQuery oql = db.getOQLQuery("CALL SQL " + sb.toString() + "AS org.infoglue.cms.entities.management.GeneralOQLResult");
+
+		Connection conn = (Connection) ((DatabaseImpl)db).getConnection();
+		
+		PreparedStatement psmt = conn.prepareStatement(sb.toString());
+		int i=1;
+    	for(Integer entityId : contentIds)
+    	{
+    		psmt.setInt(i, entityId);
+    		i++;
+    	}
+
+		ResultSet rs = psmt.executeQuery();
+		while(rs.next())
+		{
+			/*
+			System.out.println("1: " + rs.getString(1));
+			System.out.println("2: " + rs.getString(2));
+			System.out.println("3: " + rs.getString(3));
+			System.out.println("4: " + rs.getString(4));
+			System.out.println("5: " + rs.getString(5));
+			System.out.println("6: " + rs.getString(6));
+			System.out.println("7: " + rs.getString(7));
+			System.out.println("8: " + rs.getString(8));
+			*/
+			Integer id = new Integer(rs.getString(1));
+			Integer contentId = new Integer(rs.getString(2));
+			Integer versionStateId = new Integer(rs.getString(3));
+			Integer languageId = new Integer(rs.getString(4));
+			Integer repositoryId = new Integer(rs.getString(5));
+			Integer contentTypeDefinitionId = null;
+			if(rs.getString(6) != null && !rs.getString(6).equals(""))
+				contentTypeDefinitionId = new Integer(rs.getString(6));
+			String versionModifier = rs.getString(7);
+			String modifiedDateTime = rs.getString(8);
+			if(id != null && contentId != null && !contentHandled.contains(contentId + "_" + languageId))
+			{
+				ContentVersionVO cv = new ContentVersionVO();
+				cv.setContentId(contentId);
+				cv.setLanguageId(languageId);
+				cv.setStateId(versionStateId);
+				cv.setContentVersionId(id);
+				cv.setRepositoryId(repositoryId);
+				if(contentTypeDefinitionId != null)
+					cv.setContentTypeDefinitionId(contentTypeDefinitionId);
+				cv.setVersionModifier(versionModifier);
+				cv.setModifiedDateTime(vf.parseDate(modifiedDateTime, "yyyy-MM-dd HH:mm:ss"));
+				
+				contentVersionIdSet.add(cv);
+				contentHandled.add(contentId + "_" + languageId);
+			}
+		}
+		rs.close();
+		psmt.close();
+		/*
+		String sql = "CALL SQL " + sb.toString() + "AS org.infoglue.cms.entities.management.GeneralOQLResult";
+		System.out.println("SQL: " + sql);
+		OQLQuery oql = db.getOQLQuery(sql);
 
     	oql.bind(true);
     	for(Integer entityId : contentIds)
-			oql.bind(entityId.toString());
+    	{
+    		System.out.println(entityId.toString());
+    		oql.bind(entityId.toString());
+    	}
     	
     	QueryResults results = oql.execute(Database.ReadOnly);
 		while (results.hasMore()) 
         {
 			GeneralOQLResult resultBean = (GeneralOQLResult)results.next();
+			System.out.println("resultBean.getId():" + resultBean.getId());
+			System.out.println("resultBean.getValue1():" + resultBean.getValue1());
+			System.out.println("resultBean.getValue2():" + resultBean.getValue2());
+			System.out.println("resultBean.getValue3():" + resultBean.getValue3());
+			System.out.println("resultBean.getValue4():" + resultBean.getValue4());
+			System.out.println("resultBean.getValue5():" + resultBean.getValue5());
+			System.out.println("resultBean.getValue6():" + resultBean.getValue6());
+
 			Integer contentId = new Integer(resultBean.getValue1());
 			Integer versionStateId = new Integer(resultBean.getValue2());
 			Integer languageId = new Integer(resultBean.getValue3());
@@ -879,7 +955,7 @@ public class ContentVersionController extends BaseController
 				contentTypeDefinitionId = new Integer(resultBean.getValue5());
 			String versionModifier = resultBean.getValue6();
 			String modifiedDateTime = resultBean.getValue7();
-			if(resultBean.getId() != null && resultBean.getValue1() != null/* && versionStateId.equals(stateId)*/ && !contentHandled.contains(contentId + "_" + languageId))
+			if(resultBean.getId() != null && contentId != null && !contentHandled.contains(contentId + "_" + languageId))
 			{
 				ContentVersionVO cv = new ContentVersionVO();
 				cv.setContentId(contentId);
@@ -899,7 +975,8 @@ public class ContentVersionController extends BaseController
 		
 		results.close();
 		oql.close();
-
+		*/
+		
 		return contentVersionIdSet;
 	}
 	

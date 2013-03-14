@@ -326,7 +326,6 @@ public class DigitalAssetController extends BaseController
 			digitalAsset.setAssetBlob(is);
 		digitalAsset.setContentVersions(contentVersions);
 		
-		System.out.println("contentVersion:" + contentVersion.getClass().getName());
 		db.create(digitalAsset);
         
 		//if(contentVersion.getDigitalAssets() == null)

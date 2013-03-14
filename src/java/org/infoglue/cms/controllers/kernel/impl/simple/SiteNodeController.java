@@ -475,14 +475,12 @@ public class SiteNodeController extends BaseController
 			oql.bind(entityId);
 
 		QueryResults results = oql.execute(Database.ReadOnly);
-		t.printElapsedTime("Executed query.....");
 		while (results.hasMore()) 
 		{
 			SiteNode siteNode = (SiteNode)results.next();
 			SiteNodeVO siteNodeVO = siteNode.getValueObject();			
 			siteNodeVOMap.put(siteNodeVO.getId(), siteNodeVO);
 		}
-		t.printElapsedTime("siteNodeVOMap populated:" + siteNodeVOMap.size());
 
 		results.close();
 		oql.close();

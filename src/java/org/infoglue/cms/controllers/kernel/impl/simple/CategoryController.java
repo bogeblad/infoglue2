@@ -20,7 +20,7 @@
  *
  * ===============================================================================
  *
- * $Id: CategoryController.java,v 1.20.4.6 2012/11/29 11:37:59 mattias Exp $
+ * $Id: CategoryController.java,v 1.20.4.7 2013/03/14 13:13:14 mattias Exp $
  */
 package org.infoglue.cms.controllers.kernel.impl.simple;
 
@@ -59,6 +59,7 @@ public class CategoryController extends BaseController
 
 	private static final CategoryController instance = new CategoryController();
 	private static final ContentCategoryController contentCategoryStore = ContentCategoryController.getController();
+	private static final PropertiesCategoryController propertiesCategoryStore = PropertiesCategoryController.getController();
 
 	private static final String findByParent = new StringBuffer("SELECT c ")
 			.append("FROM org.infoglue.cms.entities.management.impl.simple.CategoryImpl c ")
@@ -935,6 +936,7 @@ public class CategoryController extends BaseController
 	public void delete(Integer id) throws SystemException
 	{
 		contentCategoryStore.deleteByCategory(id);
+		propertiesCategoryStore.deleteByCategory(id);
 		deleteEntity(CategoryImpl.class, id);
 		deleteChildren(id);
 	}

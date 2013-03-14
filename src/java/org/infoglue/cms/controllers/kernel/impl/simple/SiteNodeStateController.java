@@ -309,6 +309,8 @@ public class SiteNodeStateController extends BaseController
     public void changeStateOnMetaInfo(Database db, SiteNodeVO snVO, SiteNodeVersionVO siteNodeVersionVO, Integer stateId, String versionComment, boolean overrideVersionModifyer, InfoGluePrincipal infoGluePrincipal, List events) throws ConstraintException, SystemException, Exception
     {
     	Timer t = new Timer();
+    	if(snVO == null)
+    		return;
     	
         List<LanguageVO> languages = LanguageController.getController().getAvailableLanguageVOListForRepository(snVO.getRepositoryId(), db);
 		RequestAnalyser.getRequestAnalyser().registerComponentStatistics("getAvailableLanguageVOListForRepository..", t.getElapsedTime());

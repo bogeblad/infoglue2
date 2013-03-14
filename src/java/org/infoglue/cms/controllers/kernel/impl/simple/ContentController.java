@@ -44,6 +44,7 @@ import org.infoglue.cms.entities.content.Content;
 import org.infoglue.cms.entities.content.ContentVO;
 import org.infoglue.cms.entities.content.ContentVersion;
 import org.infoglue.cms.entities.content.ContentVersionVO;
+import org.infoglue.cms.entities.content.SmallestContentVersionVO;
 import org.infoglue.cms.entities.content.impl.simple.ContentImpl;
 import org.infoglue.cms.entities.content.impl.simple.MediumContentImpl;
 import org.infoglue.cms.entities.content.impl.simple.SmallContentImpl;
@@ -155,7 +156,37 @@ public class ContentController extends BaseController
         return contentVOMap;
     }        
 	
+	
 	public Map<Integer,ContentVO> getContentVOMapWithNoStateCheck(List<Integer> contentVersionIds, Database db) throws SystemException, Bug, Exception
+    {
+		Map<Integer,ContentVO> contentVOMap = new HashMap<Integer,ContentVO>();
+		if(contentVersionIds == null || contentVersionIds.size() == 0)
+			return contentVOMap;
+		
+		List contentVersionIdsSubList = new ArrayList();
+		contentVersionIdsSubList.addAll(contentVersionIds);
+	
+		int slotSize = 500;
+		if(contentVersionIdsSubList.size() > 0)
+		{
+			List<Integer> subList = new ArrayList(contentVersionIdsSubList);
+			if(contentVersionIdsSubList.size() > slotSize)
+				subList = contentVersionIdsSubList.subList(0, slotSize);
+	    	while(subList != null && subList.size() > 0)
+	    	{
+	    		contentVOMap.putAll(getContentVOMapWithNoStateCheckImpl(subList, db));
+	    		contentVersionIdsSubList = contentVersionIdsSubList.subList(subList.size(), contentVersionIdsSubList.size());
+	    	
+	    		subList = new ArrayList(contentVersionIdsSubList);
+	    		if(contentVersionIdsSubList.size() > slotSize)
+	    			subList = contentVersionIdsSubList.subList(0, slotSize);
+	    	}
+		}
+		
+		return contentVOMap;
+	}
+	
+	public Map<Integer,ContentVO> getContentVOMapWithNoStateCheckImpl(List<Integer> contentVersionIds, Database db) throws SystemException, Bug, Exception
 	{
 	    Timer t = new Timer();
 	    Map<Integer,ContentVO> siteNodeVOMap = new HashMap<Integer,ContentVO>();
