@@ -2962,7 +2962,7 @@ public class ContentVersionController extends BaseController
 				Integer count = new Integer(rs.getString("versionCount"));
 				totalVersions = totalVersions + count;
 				result.put(contentId, count);
-				if(totalVersions < 1000)
+				if(totalVersions > 1000)
 					break;
 			}
 			rs.close();
