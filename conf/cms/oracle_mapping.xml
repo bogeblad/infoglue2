@@ -1185,7 +1185,7 @@
     <field name="parentContentId" type="java.lang.Integer">
       <sql name="parentContId" type="integer"/>
     </field>
-    <field name="children" type="org.infoglue.cms.entities.content.impl.simple.ContentImpl" lazy="true" collection="collection">
+    <field name="children" type="org.infoglue.cms.entities.content.impl.simple.SmallishContentImpl" lazy="true" collection="collection">
       <sql many-key="parentContId"/>
     </field>
   </class>
