@@ -581,6 +581,23 @@ public class SiteNodeStateController extends BaseController
 		}
 	}	
 	
+	
+	public void deleteAccessRights(String interceptionPointCategory, Integer siteNodeVersionId, Database db) throws ConstraintException, SystemException, Exception
+	{
+		List<InterceptionPoint> interceptionPointList = InterceptionPointController.getController().getInterceptionPointList(interceptionPointCategory, db);
+		List accessRightList = AccessRightController.getController().getAccessRightListForEntity(interceptionPointList, siteNodeVersionId.toString(), db, false);
+
+		//System.out.println("accessRightList:" + accessRightList.size());
+		Iterator accessRightListIterator = accessRightList.iterator();
+		while(accessRightListIterator.hasNext())
+		{
+			AccessRight accessRight = (AccessRight)accessRightListIterator.next();
+			//System.out.println("accessRight:" + accessRight.getId());
+			
+			AccessRightController.getController().delete(accessRight, db);
+		}
+	}	
+	
 	/**
 	 * This is a method that never should be called.
 	 */

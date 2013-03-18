@@ -853,11 +853,6 @@ public class ContentVersionController extends BaseController
 		List<String> contentHandled = new ArrayList<String>();
 		
 		StringBuilder variables = new StringBuilder();
-		/*
-		for(int i=0; i<contentIds.size(); i++)
-	    	variables.append("$" + (i+2) + (i+1!=contentIds.size() ? "," : ""));
-	    
-	    */
 		for(int i=0; i<contentIds.size(); i++)
 	    	variables.append("?" + (i+1!=contentIds.size() ? "," : ""));
 	    
@@ -884,16 +879,6 @@ public class ContentVersionController extends BaseController
 		ResultSet rs = psmt.executeQuery();
 		while(rs.next())
 		{
-			/*
-			System.out.println("1: " + rs.getString(1));
-			System.out.println("2: " + rs.getString(2));
-			System.out.println("3: " + rs.getString(3));
-			System.out.println("4: " + rs.getString(4));
-			System.out.println("5: " + rs.getString(5));
-			System.out.println("6: " + rs.getString(6));
-			System.out.println("7: " + rs.getString(7));
-			System.out.println("8: " + rs.getString(8));
-			*/
 			Integer id = new Integer(rs.getString(1));
 			Integer contentId = new Integer(rs.getString(2));
 			Integer versionStateId = new Integer(rs.getString(3));
@@ -923,60 +908,6 @@ public class ContentVersionController extends BaseController
 		}
 		rs.close();
 		psmt.close();
-		/*
-		String sql = "CALL SQL " + sb.toString() + "AS org.infoglue.cms.entities.management.GeneralOQLResult";
-		System.out.println("SQL: " + sql);
-		OQLQuery oql = db.getOQLQuery(sql);
-
-    	oql.bind(true);
-    	for(Integer entityId : contentIds)
-    	{
-    		System.out.println(entityId.toString());
-    		oql.bind(entityId.toString());
-    	}
-    	
-    	QueryResults results = oql.execute(Database.ReadOnly);
-		while (results.hasMore()) 
-        {
-			GeneralOQLResult resultBean = (GeneralOQLResult)results.next();
-			System.out.println("resultBean.getId():" + resultBean.getId());
-			System.out.println("resultBean.getValue1():" + resultBean.getValue1());
-			System.out.println("resultBean.getValue2():" + resultBean.getValue2());
-			System.out.println("resultBean.getValue3():" + resultBean.getValue3());
-			System.out.println("resultBean.getValue4():" + resultBean.getValue4());
-			System.out.println("resultBean.getValue5():" + resultBean.getValue5());
-			System.out.println("resultBean.getValue6():" + resultBean.getValue6());
-
-			Integer contentId = new Integer(resultBean.getValue1());
-			Integer versionStateId = new Integer(resultBean.getValue2());
-			Integer languageId = new Integer(resultBean.getValue3());
-			Integer repositoryId = new Integer(resultBean.getValue4());
-			Integer contentTypeDefinitionId = null;
-			if(resultBean.getValue5() != null && !resultBean.getValue5().equals(""))
-				contentTypeDefinitionId = new Integer(resultBean.getValue5());
-			String versionModifier = resultBean.getValue6();
-			String modifiedDateTime = resultBean.getValue7();
-			if(resultBean.getId() != null && contentId != null && !contentHandled.contains(contentId + "_" + languageId))
-			{
-				ContentVersionVO cv = new ContentVersionVO();
-				cv.setContentId(contentId);
-				cv.setLanguageId(languageId);
-				cv.setStateId(versionStateId);
-				cv.setContentVersionId(resultBean.getId());
-				cv.setRepositoryId(repositoryId);
-				if(contentTypeDefinitionId != null)
-					cv.setContentTypeDefinitionId(contentTypeDefinitionId);
-				cv.setVersionModifier(versionModifier);
-				cv.setModifiedDateTime(vf.parseDate(modifiedDateTime, "yyyy-MM-dd HH:mm:ss"));
-				
-				contentVersionIdSet.add(cv);
-				contentHandled.add(contentId + "_" + languageId);
-			}
-		}
-		
-		results.close();
-		oql.close();
-		*/
 		
 		return contentVersionIdSet;
 	}
@@ -2865,19 +2796,34 @@ public class ContentVersionController extends BaseController
 		while(languageVOListIterator.hasNext())
 		{
 			LanguageVO languageVO = languageVOListIterator.next();
-			List<SmallestContentVersionVO> contentVersionVOList = getSmallestContentVersionVOList(languageVO.getId(), numberOfVersionsToKeep, keepOnlyOldPublishedVersions, minimumTimeBetweenVersionsDuringClean);
 			
-			logger.info("Deleting " + contentVersionVOList.size() + " versions for language " + languageVO.getName());
-			int maxIndex = (contentVersionVOList.size() > batchLimit ? batchLimit : contentVersionVOList.size());
-			List partList = contentVersionVOList.subList(0, maxIndex);
-			while(partList.size() > 0)
+			Map<Integer,Integer> contentIdMap = getContentIdVersionCountMap(languageVO.getId(), numberOfVersionsToKeep);
+			if(!deleteVersions)
 			{
-				if(deleteVersions)
-					cleanVersions(numberOfVersionsToKeep, partList);
-				cleanedVersions = cleanedVersions + partList.size();
-				partList.clear();
-				maxIndex = (contentVersionVOList.size() > batchLimit ? batchLimit : contentVersionVOList.size());
-				partList = contentVersionVOList.subList(0, maxIndex);
+				for(Integer contentId : contentIdMap.keySet())
+				{
+					Integer versionCount = contentIdMap.get(contentId);
+					int additions = versionCount - numberOfVersionsToKeep;
+					//System.out.println("additions " + contentId + ": " + additions + "/" + versionCount + "/" + numberOfVersionsToKeep);
+					cleanedVersions = cleanedVersions + additions;
+				}
+			}
+			else
+			{
+				List<SmallestContentVersionVO> contentVersionVOList = getSmallestContentVersionVOList(languageVO.getId(), numberOfVersionsToKeep, keepOnlyOldPublishedVersions, minimumTimeBetweenVersionsDuringClean);
+				
+				//System.out.println("Deleting " + contentVersionVOList.size() + " versions for language " + languageVO.getName());
+				int maxIndex = (contentVersionVOList.size() > batchLimit ? batchLimit : contentVersionVOList.size());
+				List partList = contentVersionVOList.subList(0, maxIndex);
+				while(partList.size() > 0)
+				{
+					if(deleteVersions)
+						cleanVersions(numberOfVersionsToKeep, partList);
+					cleanedVersions = cleanedVersions + partList.size();
+					partList.clear();
+					maxIndex = (contentVersionVOList.size() > batchLimit ? batchLimit : contentVersionVOList.size());
+					partList = contentVersionVOList.subList(0, maxIndex);
+				}
 			}
 		}
 		return cleanedVersions;
@@ -2980,10 +2926,18 @@ public class ContentVersionController extends BaseController
 	}
 
 	
-	public List<ContentVO> getContentVOListWithManyVersions(Integer languageId, int numberOfVersionsToKeep) throws SystemException 
+	public Map<Integer,Integer> getContentIdVersionCountMap(Integer languageId, int numberOfVersionsToKeep) throws SystemException 
 	{
-		List<ContentVO> contentVOList = new ArrayList<ContentVO>();
-		
+		Map<Integer,Integer> result = new HashMap<Integer,Integer>();
+		/*
+		if(true)
+		{
+			result.put(839525, 10);
+			result.put(839545, 15);
+			result.put(1031723, 9);
+			return result;
+		}
+		*/
 		Database db = CastorDatabaseService.getDatabase();
     	
 		beginTransaction(db);
@@ -2992,19 +2946,27 @@ public class ContentVersionController extends BaseController
         {
 			StringBuilder sql = new StringBuilder();
 			if(CmsPropertyHandler.getUseShortTableNames().equals("true"))
-				sql.append("CALL SQL SELECT contId, name, publishDateTime, expireDateTime, isBranch, isProtected, creator, contentTypeDefId, repositoryId, parentContId FROM (select c.contId, c.name, c.publishDateTime, c.expireDateTime, c.isBranch, c.isProtected, c.creator, c.contentTypeDefId, c.repositoryId, c.parentContId, count(*) as versionCount from cmCont c, cmContVer cv where c.contId = cv.contId and cv.languageId = " + languageId + " group by c.contId, c.name, c.publishDateTime, c.expireDateTime, c.isBranch, c.isProtected, c.creator, c.contentTypeDefId, c.repositoryId, c.parentContId) where versionCount > " + numberOfVersionsToKeep + " AS org.infoglue.cms.entities.content.impl.simple.SmallContentImpl");
+				sql.append("select contId as contentId, versionCount from ( select cv.contId, count(*) as versionCount from cmContVer cv where cv.languageId = " + languageId + " group by cv.contId order by versionCount desc ) res where versionCount > " + numberOfVersionsToKeep);
 			else
-				sql.append("CALL SQL SELECT c.contentId, c.name, c.publishDateTime, c.expireDateTime, c.isBranch, c.isProtected, c.creator, c.contentTypeDefinitionId, c.repositoryId, c.parentContentId FROM (select c.contentId, c.name, c.publishDateTime, c.expireDateTime, c.isBranch, c.isProtected, c.creator, c.contentTypeDefinitionId, c.repositoryId, c.parentContentId, count(*) as versionCount from cmContent c, cmContentVersion cv where c.contentId = cv.contentId and cv.languageId = " + languageId + " group by c.contentId) c where versionCount > " + numberOfVersionsToKeep + " AS org.infoglue.cms.entities.content.impl.simple.SmallContentImpl");
+				sql.append("select contentId, versionCount from ( select cv.contentId, count(*) as versionCount from cmContentVersion cv where cv.languageId = " + languageId + " group by cv.contentId order by versionCount desc ) res where versionCount > " + numberOfVersionsToKeep);
 
-			//System.out.println("sql:" + sql);
-			OQLQuery oql = db.getOQLQuery(sql.toString());
-	
-			QueryResults results = oql.execute(Database.ReadOnly);
-			while (results.hasMore()) 
-	        {
-				SmallContentImpl content = (SmallContentImpl)results.next();
-				contentVOList.add(content.getValueObject());
-	        }
+			Connection conn = (Connection) ((DatabaseImpl)db).getConnection();
+			
+			PreparedStatement psmt = conn.prepareStatement(sql.toString());
+
+			int totalVersions = 0;
+			ResultSet rs = psmt.executeQuery();
+			while(rs.next())
+			{
+				Integer contentId = new Integer(rs.getString("contentId"));
+				Integer count = new Integer(rs.getString("versionCount"));
+				totalVersions = totalVersions + count;
+				result.put(contentId, count);
+				if(totalVersions < 1000)
+					break;
+			}
+			rs.close();
+			psmt.close();
 			
 			commitTransaction(db);
         }
@@ -3015,7 +2977,8 @@ public class ContentVersionController extends BaseController
             rollbackTransaction(db);
             throw new SystemException(e.getMessage());
         }
-        return contentVOList;
+        
+        return result;
 	}
 	
 	/**
@@ -3028,33 +2991,38 @@ public class ContentVersionController extends BaseController
 
 	public List<SmallestContentVersionVO> getSmallestContentVersionVOList(Integer languageId, int numberOfVersionsToKeep, boolean keepOnlyOldPublishedVersions, long minimumTimeBetweenVersionsDuringClean) throws SystemException, Bug, Exception
 	{
-		List<ContentVO> contentVOList = getContentVOListWithManyVersions(languageId, numberOfVersionsToKeep);
-		//System.out.println("contentVOList:" + contentVOList.size());
+		Map<Integer,Integer> contentIdMap = getContentIdVersionCountMap(languageId, numberOfVersionsToKeep);
+		//System.out.println("contentVOList:" + contentIdMap.size());
 
 		List<SmallestContentVersionVO> contentVersionVOList = new ArrayList<SmallestContentVersionVO>();
-		if(contentVOList == null || contentVOList.size() == 0)
+		if(contentIdMap == null || contentIdMap.size() == 0)
 			return contentVersionVOList;
 		
-		List contentVersionVOListSubList = new ArrayList();
-		contentVersionVOListSubList.addAll(contentVOList);
+		List<Integer> contentIdList = new ArrayList<Integer>();
+		contentIdList.addAll(contentIdMap.keySet());
 
-    	int slotSize = 500;
-    	if(contentVersionVOListSubList.size() > 0)
+		int slotSize = 500;
+    	while(contentIdList.size() > 0)
     	{
-    		List<ContentVO> subList = new ArrayList<ContentVO>(contentVersionVOListSubList);
-    		if(contentVersionVOListSubList.size() > slotSize)
-    			subList = contentVersionVOListSubList.subList(0, slotSize);
-	    	while(subList != null && subList.size() > 0)
+    		List<Integer> subList = new ArrayList<Integer>();
+    		if(contentIdList.size() > slotSize)
+    		{
+    			subList = contentIdList.subList(0, slotSize);
+    			contentIdList = contentIdList.subList(slotSize, contentIdList.size()-1);
+    		}
+    		else
+    		{
+    			subList.addAll(contentIdList);
+    			contentIdList.clear();
+    		}
+    		
+    		if(subList.size() > 0)
 	    	{
 	    		contentVersionVOList.addAll(getSmallestContentVersionVOListImpl(subList, languageId, numberOfVersionsToKeep, keepOnlyOldPublishedVersions, minimumTimeBetweenVersionsDuringClean));
-	    		contentVersionVOListSubList = contentVersionVOListSubList.subList(subList.size(), contentVersionVOListSubList.size());
-	    	
-	    		subList = new ArrayList(contentVersionVOListSubList);
-	    		if(contentVersionVOListSubList.size() > slotSize)
-	    			subList = contentVersionVOListSubList.subList(0, slotSize);
 	    	}
     	}
-		
+    	//System.out.println("contentVOList:" + contentVersionVOList.size());
+    	
 		return contentVersionVOList;
 	}
 	
@@ -3065,7 +3033,7 @@ public class ContentVersionController extends BaseController
 	 * @return
 	 * @throws SystemException 
 	 */
-	public List<SmallestContentVersionVO> getSmallestContentVersionVOListImpl(List<ContentVO> contentVOList, Integer languageId, int numberOfVersionsToKeep, boolean keepOnlyOldPublishedVersions, long minimumTimeBetweenVersionsDuringClean) throws SystemException 
+	public List<SmallestContentVersionVO> getSmallestContentVersionVOListImpl(List<Integer> contentIdList, Integer languageId, int numberOfVersionsToKeep, boolean keepOnlyOldPublishedVersions, long minimumTimeBetweenVersionsDuringClean) throws SystemException 
 	{
 		logger.info("numberOfVersionsToKeep:" + numberOfVersionsToKeep);
 
@@ -3078,16 +3046,19 @@ public class ContentVersionController extends BaseController
         try
         {
     		StringBuilder variables = new StringBuilder();
-    	    for(int i=0; i<contentVOList.size(); i++)
-    	    	variables.append("$" + (i+2) + (i+1!=contentVOList.size() ? "," : ""));
+    	    for(int i=0; i<contentIdList.size(); i++)
+    	    	variables.append("$" + (i+2) + (i+1!=contentIdList.size() ? "," : ""));
 
     	    String SQL = "SELECT cv FROM org.infoglue.cms.entities.content.impl.simple.SmallestContentVersionImpl cv WHERE cv.languageId = $1 AND cv.contentId IN LIST (" + variables + ") ORDER BY cv.contentId, cv.contentVersionId desc";
             //System.out.println("SQL:" + SQL);
             
             OQLQuery oql = db.getOQLQuery(SQL);
         	oql.bind(languageId);
-    		for(ContentVO cvVO : contentVOList)
-    			oql.bind(cvVO.getId());
+    		for(Integer contentId : contentIdList)
+    		{
+    			oql.bind(contentId);
+    			//System.out.println("contentId:" + contentId);
+    		}
 
         	QueryResults results = oql.execute(Database.ReadOnly);
 			
@@ -3103,6 +3074,9 @@ public class ContentVersionController extends BaseController
         	while (results.hasMore())
             {
 				SmallestContentVersionImpl version = (SmallestContentVersionImpl)results.next();
+				//System.out.println("version: " + version.getId() + ":" + version.getContentId());
+				//System.out.println("versionInitialSuggestions:" + versionInitialSuggestions.size());
+
 				if(previousContentId != null && previousContentId.intValue() != version.getContentId().intValue())
 				{
 					if(minimumTimeBetweenVersionsDuringClean != -1 && versionInitialSuggestions.size() > numberOfVersionsToKeep)
@@ -3134,6 +3108,8 @@ public class ContentVersionController extends BaseController
 						}
 					}
 										
+					//System.out.println("versionNonPublishedSuggestions:" + versionNonPublishedSuggestions.size());
+					//System.out.println("versionInitialSuggestions:" + versionInitialSuggestions.size());
 					contentVersionsIdList.addAll(versionNonPublishedSuggestions);
 					contentVersionsIdList.addAll(versionInitialSuggestions);
 					potentialContentVersionVOList.clear();

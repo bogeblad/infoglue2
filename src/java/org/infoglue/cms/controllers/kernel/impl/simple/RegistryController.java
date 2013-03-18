@@ -321,8 +321,6 @@ public class RegistryController extends BaseController
 	 * @throws Exception
 	 */
 	
-//	private static List<Object[]> queuedContentVersions = new ArrayList<Object[]>();
-//	private static AtomicBoolean runningUpdateContentVersion = new AtomicBoolean();
 	public void updateContentVersionThreaded(ContentVersionVO contentVersionVO, SiteNodeVersionVO siteNodeVersionVO) throws Exception
 	{
 		if (logger.isInfoEnabled())

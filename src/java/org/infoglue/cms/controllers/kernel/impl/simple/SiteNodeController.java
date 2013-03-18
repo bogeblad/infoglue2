@@ -24,6 +24,9 @@
 
 package org.infoglue.cms.controllers.kernel.impl.simple;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
@@ -41,6 +44,7 @@ import org.exolab.castor.jdo.Database;
 import org.exolab.castor.jdo.OQLQuery;
 import org.exolab.castor.jdo.ObjectNotFoundException;
 import org.exolab.castor.jdo.QueryResults;
+import org.exolab.castor.jdo.engine.DatabaseImpl;
 import org.infoglue.cms.applications.common.VisualFormatter;
 import org.infoglue.cms.applications.databeans.ProcessBean;
 import org.infoglue.cms.entities.content.Content;
@@ -49,9 +53,11 @@ import org.infoglue.cms.entities.content.ContentCategoryVO;
 import org.infoglue.cms.entities.content.ContentVO;
 import org.infoglue.cms.entities.content.ContentVersion;
 import org.infoglue.cms.entities.content.ContentVersionVO;
+import org.infoglue.cms.entities.content.SmallestContentVersionVO;
 import org.infoglue.cms.entities.content.impl.simple.ContentImpl;
 import org.infoglue.cms.entities.content.impl.simple.MediumContentImpl;
 import org.infoglue.cms.entities.content.impl.simple.MediumContentVersionImpl;
+import org.infoglue.cms.entities.content.impl.simple.SmallContentImpl;
 import org.infoglue.cms.entities.kernel.BaseEntityVO;
 import org.infoglue.cms.entities.management.AccessRight;
 import org.infoglue.cms.entities.management.AccessRightGroup;
@@ -2377,31 +2383,138 @@ public class SiteNodeController extends BaseController
 	 * @throws SystemException 
 	 */
 	
-	public int cleanSiteNodeVersions(int numberOfVersionsToKeep, boolean keepOnlyOldPublishedVersions, long minimumTimeBetweenVersionsDuringClean, boolean deleteVersions) throws SystemException 
+	public int cleanSiteNodeVersions(int numberOfVersionsToKeep, boolean keepOnlyOldPublishedVersions, long minimumTimeBetweenVersionsDuringClean, boolean deleteVersions) throws SystemException, Exception 
 	{
 		int cleanedVersions = 0;
 		
 		int batchLimit = 20;
 
-		List<SiteNodeVersionVO> siteNodeVersionVOList = getSiteNodeVersionVOList(numberOfVersionsToKeep, keepOnlyOldPublishedVersions, minimumTimeBetweenVersionsDuringClean);
-			
-		logger.info("Deleting " + siteNodeVersionVOList.size() + " versions");
-		int maxIndex = (siteNodeVersionVOList.size() > batchLimit ? batchLimit : siteNodeVersionVOList.size());
-		List partList = siteNodeVersionVOList.subList(0, maxIndex);
-		while(partList.size() > 0)
+		Map<Integer,Integer> siteNodeIdMap = getSiteNodeIdVersionCountMap(numberOfVersionsToKeep);
+		if(!deleteVersions)
 		{
-			if(deleteVersions)
-				cleanVersions(numberOfVersionsToKeep, partList);
-			cleanedVersions = cleanedVersions + partList.size();
-			partList.clear();
-			maxIndex = (siteNodeVersionVOList.size() > batchLimit ? batchLimit : siteNodeVersionVOList.size());
-			partList = siteNodeVersionVOList.subList(0, maxIndex);
-		}
+			for(Integer siteNodeId : siteNodeIdMap.keySet())
+			{
+				Integer versionCount = siteNodeIdMap.get(siteNodeId);
+				int additions = versionCount - numberOfVersionsToKeep;
+				//System.out.println("additions " + siteNodeId + ": " + additions + "/" + versionCount + "/" + numberOfVersionsToKeep);
 
+				cleanedVersions = cleanedVersions + additions;
+			}
+		}
+		else
+		{
+			List<SiteNodeVersionVO> siteNodeVersionVOList = getSiteNodeVersionVOList(numberOfVersionsToKeep, keepOnlyOldPublishedVersions, minimumTimeBetweenVersionsDuringClean);
+				
+			//System.out.println("Deleting " + siteNodeVersionVOList.size() + " versions");
+			int maxIndex = (siteNodeVersionVOList.size() > batchLimit ? batchLimit : siteNodeVersionVOList.size());
+			List partList = siteNodeVersionVOList.subList(0, maxIndex);
+			while(partList.size() > 0)
+			{
+				if(deleteVersions)
+					cleanVersions(numberOfVersionsToKeep, partList);
+				cleanedVersions = cleanedVersions + partList.size();
+				partList.clear();
+				maxIndex = (siteNodeVersionVOList.size() > batchLimit ? batchLimit : siteNodeVersionVOList.size());
+				partList = siteNodeVersionVOList.subList(0, maxIndex);
+			}
+		}
+		
 		return cleanedVersions;
 	}
 	
+
+	public Map<Integer,Integer> getSiteNodeIdVersionCountMap(int numberOfVersionsToKeep) throws SystemException 
+	{
+		Map<Integer,Integer> result = new HashMap<Integer,Integer>();
+		/*
+		if(true)
+		{
+			result.put(582178, 10);
+			result.put(625088, 15);
+			result.put(582177, 9);
+			return result;
+		}
+		*/
+
+		Database db = CastorDatabaseService.getDatabase();
+    	
+		beginTransaction(db);
+
+        try
+        {
+			StringBuilder sql = new StringBuilder();
+			if(CmsPropertyHandler.getUseShortTableNames().equals("true"))
+				sql.append("select siNoId as siteNodeId, versionCount from ( select snv.siNoId, count(*) as versionCount from cmSiNoVer snv group by snv.siNoId order by versionCount desc ) res where versionCount > " + numberOfVersionsToKeep);
+			else
+				sql.append("select siteNodeId, versionCount from ( select snv.siteNodeId, count(*) as versionCount from cmSiteNodeVersion snv group by snv.siteNodeId order by versionCount desc ) res where versionCount > " + numberOfVersionsToKeep);
+
+			Connection conn = (Connection) ((DatabaseImpl)db).getConnection();
+			
+			PreparedStatement psmt = conn.prepareStatement(sql.toString());
+
+			int totalVersions = 0;
+			ResultSet rs = psmt.executeQuery();
+			while(rs.next())
+			{
+				Integer siteNodeId = new Integer(rs.getString("siteNodeId"));
+				Integer count = new Integer(rs.getString("versionCount"));
+				totalVersions = totalVersions + count;
+				result.put(siteNodeId, count);
+				if(totalVersions < 1000)
+					break;
+			}
+			rs.close();
+			psmt.close();
+			
+			commitTransaction(db);
+        }
+        catch(Exception e)
+        {
+            logger.error("An error occurred so we should not complete the transaction:" + e, e);
+            logger.warn("An error occurred so we should not complete the transaction:" + e, e);
+            rollbackTransaction(db);
+            throw new SystemException(e.getMessage());
+        }
+        
+        return result;
+	}
 	
+	public List<SiteNodeVersionVO> getSiteNodeVersionVOList(int numberOfVersionsToKeep, boolean keepOnlyOldPublishedVersions, long minimumTimeBetweenVersionsDuringClean) throws SystemException, Bug, Exception
+	{
+		Map<Integer,Integer> siteNodeIdMap = getSiteNodeIdVersionCountMap(numberOfVersionsToKeep);
+		//System.out.println("contentVOList:" + contentVOList.size());
+
+		List<SiteNodeVersionVO> siteNodeVersionVOList = new ArrayList<SiteNodeVersionVO>();
+		if(siteNodeIdMap == null || siteNodeIdMap.size() == 0)
+			return siteNodeVersionVOList;
+		
+		List<Integer> siteNodeIdList = new ArrayList<Integer>();
+		siteNodeIdList.addAll(siteNodeIdMap.keySet());
+		
+    	int slotSize = 500;
+    	while(siteNodeIdList.size() > 0)
+    	{
+    		List<Integer> subList = new ArrayList<Integer>();
+    		if(siteNodeIdList.size() > slotSize)
+    		{
+    			subList = siteNodeIdList.subList(0, slotSize);
+    			siteNodeIdList = siteNodeIdList.subList(slotSize, siteNodeIdList.size()-1);
+    		}
+    		else
+    		{
+    			subList.addAll(siteNodeIdList);
+    			siteNodeIdList.clear();
+    		}
+    		
+    		if(subList.size() > 0)
+	    	{
+	    		siteNodeVersionVOList.addAll(getSiteNodeVersionVOListImpl(subList, numberOfVersionsToKeep, keepOnlyOldPublishedVersions, minimumTimeBetweenVersionsDuringClean));
+	    	}
+    	}
+		
+		return siteNodeVersionVOList;
+	}
+
 	/**
 	 * This method are here to return all content versions that are x number of versions behind the current active version. This is for cleanup purposes.
 	 * 
@@ -2410,7 +2523,7 @@ public class SiteNodeController extends BaseController
 	 * @throws SystemException 
 	 */
 	
-	public List<SiteNodeVersionVO> getSiteNodeVersionVOList(int numberOfVersionsToKeep, boolean keepOnlyOldPublishedVersions, long minimumTimeBetweenVersionsDuringClean) throws SystemException 
+	public List<SiteNodeVersionVO> getSiteNodeVersionVOListImpl(List<Integer> siteNodeIdList, int numberOfVersionsToKeep, boolean keepOnlyOldPublishedVersions, long minimumTimeBetweenVersionsDuringClean) throws SystemException 
 	{
 		logger.info("numberOfVersionsToKeep:" + numberOfVersionsToKeep);
 
@@ -2422,8 +2535,14 @@ public class SiteNodeController extends BaseController
 
         try
         {
-            OQLQuery oql = db.getOQLQuery("SELECT snv FROM org.infoglue.cms.entities.structure.impl.simple.SmallSiteNodeVersionImpl snv ORDER BY snv.siteNodeId, snv.siteNodeVersionId desc");
-        	
+    		StringBuilder variables = new StringBuilder();
+    	    for(int i=0; i<siteNodeIdList.size(); i++)
+    	    	variables.append("$" + (i+1) + (i+1!=siteNodeIdList.size() ? "," : ""));
+
+            OQLQuery oql = db.getOQLQuery("SELECT snv FROM org.infoglue.cms.entities.structure.impl.simple.SmallSiteNodeVersionImpl snv WHERE snv.siteNodeId IN LIST (" + variables + ") ORDER BY snv.siteNodeId, snv.siteNodeVersionId desc");
+    		for(Integer siteNodeId : siteNodeIdList)
+    			oql.bind(siteNodeId);
+
         	QueryResults results = oql.execute(Database.ReadOnly);
 			
         	int numberOfLaterVersions = 0;
@@ -2584,7 +2703,8 @@ public class SiteNodeController extends BaseController
 		}
 		
 		ServiceBindingController.deleteServiceBindingsReferencingSiteNodeVersion(siteNodeVersion, db);
-
+	    SiteNodeStateController.getController().deleteAccessRights("SiteNodeVersion", siteNodeVersion.getId(), db);
+	    
 		SiteNode siteNode = siteNodeVersion.getOwningSiteNode();
 
 		if(siteNode != null)
