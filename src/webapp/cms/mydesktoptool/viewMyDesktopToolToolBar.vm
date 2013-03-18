@@ -272,13 +272,7 @@
 			#else
 				<a title="$button.getTooltip()" href="javascript:openMainArea('$button.getActionUrl()', '$button.getTitle()');"><img src="$button.getImageUrl()" height="22" width="76" border="0"></a><img src="images/splitter.gif">
 			#end
-		#end
-		<!-- SS, 2002-09-15 Modification for progress information -->			
-			<a valign=middle height=27 id='progress' name='progress' style='visibility:hidden'>
-				<img valign=middle src='images/working.gif' border='0' /> <font color=black size=-1 valign=middel>Loading...</font>
-			</a> 
-		<!-- SS, end mod -->
-		
+		#end		
 	</td>
 	<td bgcolor="#999999"><img src="images/trans.gif" width="1" height="1"> 
 	</td>

@@ -1,3 +1,10 @@
+<div id="processDiv">
+	<div style="float: left; width: 100%; text-align: center; margin-bottom: 10px;">
+		<font face="Verdana" size="-1" color="#006699"><strong>$loading</strong></font>
+	</div>
+	<div style="float: left; width: 100%; text-align: center;"><img alt="" src="images/v3/loadingAnimation.gif" /></div>
+</div>
+
 <div id="emptySlotMenu" class="skin0">
 <div class="igmenuitems" onMouseover="javascript:highlightie5(event);" onMouseout="javascript:lowlightie5(event);" onClick="submitToPublish($siteNodeId, $contentId, $languageId, $repositoryId, '$originalFullURL');">$submitToPublishHTML</div>
 <div id="addComponentMenuItem" class="igmenuitems" onMouseover="javascript:highlightie5(event);" onMouseout="javascript:lowlightie5(event);" onClick="insertComponent();">$addComponentHTML</div>

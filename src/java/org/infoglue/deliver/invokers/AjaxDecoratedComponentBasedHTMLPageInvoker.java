@@ -36,6 +36,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+
 import org.apache.log4j.Logger;
 import org.dom4j.Document;
 import org.dom4j.Element;
@@ -187,7 +188,8 @@ public class AjaxDecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHT
 				if(indexOfBODYStartTag > -1)
 				{
 					StringBuffer sb = new StringBuffer(decoratePageTemplate);
-					decoratePageTemplate = sb.insert(indexOfBODYStartTag, "<div id=\"availableComponents\"></div><div id=\"componentTasks\"><div id=\"componentMenu\" class=\"skin0\">Loading menu...</div></div><div id=\"componentPropertiesDiv\"></div><div id=\"componentStructure\"></div>").toString();
+					Locale locale = this.getTemplateController().getLocaleAvailableInTool(this.getTemplateController().getPrincipal());
+					decoratePageTemplate = sb.insert(indexOfBODYStartTag, "<div id=\"availableComponents\"></div><div id=\"componentTasks\"><div id=\"componentMenu\" class=\"skin0\">Loading menu...</div></div><div id=\"componentPropertiesDiv\"></div><div id=\"componentStructure\"></div><div id=\"processDiv\"><div style=\"float: left; width: 100%; text-align: center; margin-bottom: 10px;\"><font face=\"Verdana\" size=\"-1\" color=\"#006699\"><strong>" + getLocalizedString(locale, "tool.common.loading.label") + "</strong></font></div><div style=\"float: left; width: 100%; text-align: center;\"><img alt=\"\" src=\"images/v3/loadingAnimation.gif\" /></div></div>").toString();
 				}
 			}		
 		}
@@ -333,6 +335,7 @@ public class AjaxDecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHT
 		    //Locale locale = templateController.getLocale();
 		    Locale locale = templateController.getLocaleAvailableInTool(principal);
 		    
+			String loading = getLocalizedString(locale, "tool.common.loading.label");
 			String submitToPublishHTML = getLocalizedString(locale, "deliver.editOnSight.submitToPublish");
 		    String addComponentHTML = getLocalizedString(locale, "deliver.editOnSight.addComponentHTML");
 			String deleteComponentHTML = getLocalizedString(locale, "deliver.editOnSight.deleteComponentHTML");
@@ -356,6 +359,8 @@ public class AjaxDecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHT
 			extraBody = extraBody.replaceAll("\\$repositoryId", "" + templateController.getSiteNode().getRepositoryId());
 			extraBody = extraBody.replaceAll("\\$originalFullURL", URLEncoder.encode(templateController.getOriginalFullURL(), "UTF-8"));
 			
+		    extraBody = extraBody.replaceAll("\\$loading", loading);
+
 			extraBody = extraBody.replaceAll("\\$submitToPublishHTML", submitToPublishHTML);
 			extraBody = extraBody.replaceAll("\\$addComponentHTML", addComponentHTML);
 			extraBody = extraBody.replaceAll("\\$deleteComponentHTML", deleteComponentHTML);

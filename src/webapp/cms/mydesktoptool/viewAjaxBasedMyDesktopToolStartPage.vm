@@ -15,114 +15,115 @@
 	<meta http-equiv="Cache-Control" content="no-cache" />
 	<meta http-equiv="Pragma" content="no-cache" />
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	
+	<script type="text/javascript" src="script/jquery/jquery-1.2.6.min.js"></script>
+	<script type="text/javascript" src="script/jqueryplugins/ui/jquery.dimensions.js"></script>
+	<script type="text/javascript" src="script/jqueryplugins/ui/ui.accordion.js"></script>
+	<script>
+	  $(document).ready(function(){
+	    //$("#example").accordion({fillSpace: true});
+	    $("#workArea").css("height", $(window).height() - 20);
+	    $(window).resize( function() {
+	     	$("#workArea").css("height", $(window).height() - 20);
+	 		});
+	  });
+	</script>
+	<style type="text/css">
+		.mydesktoptoolmenu { margin: 0px; padding: 0px; }
+		ul.ui-accordion-container { margin-left: 0px; padding-left: 0px; margin: 0px; padding: 0px; list-style-type: none; border: 1px solid blue; float: left; }
+		ul.ui-accordion-container li { margin: 0px; margin-bottom: 2px; padding: 0; background-color: #848284; background-image: url(i/accordion-left.png); background-repeat: no-repeat; cursor: default; white-space: default; width: 300px;}
+		ul.ui-accordion-container li a.ui-accordion-link { font-family: Tahoma, Arial, Sans serif; font-size: 12pt; font-weight: bold; color: white; display: block; padding-left: 5px; margin-right: 3px; height: 28px; background-image: url(i/accordion-middle.png); text-decoration: none; line-height: 28px; }
+		ul.ui-accordion-container li .ui-accordion-right { display: block; background-image: url(i/accordion-right.png); position: absolute; top: 0px; right: 0px; height: 28px; width: 3px;  }
+		
+		ul.ui-accordion-container li:hover { background-image: url(i/accordion-left-over.png); }
+		ul.ui-accordion-container li:hover a.ui-accordion-link { background-image: url(i/accordion-middle-over.png); }
+		ul.ui-accordion-container li:hover .ui-accordion-right { background-image: url(i/accordion-right-over.png); }
+		
+		ul.ui-accordion-container li.active { background-image: url(i/accordion-left-act.png); }
+		ul.ui-accordion-container li.active a.ui-accordion-link { background-image: url(i/accordion-middle-act.png); }
+		ul.ui-accordion-container li.active .ui-accordion-right { background-image: url(i/accordion-right-act.png); }
+		.accordionContent { background-color: white; border: 1px solid #666; }
+	</style>
+	
+	<script type="text/javascript">
+	<!--
+		function showWorkflowProperties(activeWorkflowId)
+		{	
+			$("#activeWorkflowProperties").html("");
+			$("#activeWorkflowProperties").load("ViewMyDesktopToolStartPage!getActiveWorkflowProperties.action?activeWorkflowId=" + activeWorkflowId + "",{}, function(event)
+			{
+				floatDiv("activeWorkflowDetailsProperties", 200, 50).flt();
+			});
+		}
+		
+		function showAvailableWorkflowProperties(workflowName)
+		{	
+			$("#availableWorkflowProperties").html("");
+			$("#availableWorkflowProperties").load("ViewMyDesktopToolStartPage!getAvailableWorkflowProperties.action?workflowName=" + workflowName + "",{}, function(event)
+			{
+				floatDiv("availableWorkflowDetailsProperties", 200, 50).flt();
+			});
+		}
+	-->
+	</script>
+	
+	<script type="text/javascript">
+	<!--
+		function invokeWorkflowView(workflowId, actionId, view)
+		{
+			var url = "";
+	
+			if(view.indexOf("?") > -1)
+				url= "" + view + "&workflowId=" + workflowId + "&actionId=" + actionId + "&returnAddress=$URLBase/ViewMyDesktopToolStartPage!invoke.action";
+			else
+				url= "" + view + "?workflowId=" + workflowId + "&actionId=" + actionId + "&returnAddress=$URLBase/ViewMyDesktopToolStartPage!invoke.action";
+	
+			document.location.href = url;
+		}
+	
+		function openUrl(url, popoup)
+		{
+			if(popoup)
+				openPopup(url, "Shortcut", "");
+			else
+				document.getElementById("workArea").src = url;
+		}
+	
+	-->
+	</script>
+	
+	#set($currentWorkflowVOList = $workflowVOList)
+	#set($availableWorkflows = $availableWorkflowVOList)
+	
+	<style type="text/css">
+		#contentwrapper {
+			float: left;
+			width: 100%;
+			height: 100%;
+		}
+		
+		#contentcolumn {
+			margin-left: 350px; /*Set left margin to LeftColumnWidth*/
+			margin-top: 10px;
+			margin-right: 10px;
+			height: 100%;
+			padding: 0px;
+			border: 0px solid red;
+		}
+		
+		#leftcolumn {
+			float: left;
+			width: 340px; /*Width of left column*/
+			margin-left: -100%;
+			margin-top: 10px;
+		}
+		
+	</style>
 </head>
 
 <body class="mydesktoptooledit">
+#processDiv()
 #set( $lvColor = "yellow")
-
-<script type="text/javascript" src="script/jquery/jquery-1.2.6.min.js"></script>
-<script type="text/javascript" src="script/jqueryplugins/ui/jquery.dimensions.js"></script>
-<script type="text/javascript" src="script/jqueryplugins/ui/ui.accordion.js"></script>
-<script>
-  $(document).ready(function(){
-    //$("#example").accordion({fillSpace: true});
-    $("#workArea").css("height", $(window).height() - 20);
-    $(window).resize( function() {
-     	$("#workArea").css("height", $(window).height() - 20);
- 		});
-  });
-</script>
-<style type="text/css">
-	.mydesktoptoolmenu { margin: 0px; padding: 0px; }
-	ul.ui-accordion-container { margin-left: 0px; padding-left: 0px; margin: 0px; padding: 0px; list-style-type: none; border: 1px solid blue; float: left; }
-	ul.ui-accordion-container li { margin: 0px; margin-bottom: 2px; padding: 0; background-color: #848284; background-image: url(i/accordion-left.png); background-repeat: no-repeat; cursor: default; white-space: default; width: 300px;}
-	ul.ui-accordion-container li a.ui-accordion-link { font-family: Tahoma, Arial, Sans serif; font-size: 12pt; font-weight: bold; color: white; display: block; padding-left: 5px; margin-right: 3px; height: 28px; background-image: url(i/accordion-middle.png); text-decoration: none; line-height: 28px; }
-	ul.ui-accordion-container li .ui-accordion-right { display: block; background-image: url(i/accordion-right.png); position: absolute; top: 0px; right: 0px; height: 28px; width: 3px;  }
-	
-	ul.ui-accordion-container li:hover { background-image: url(i/accordion-left-over.png); }
-	ul.ui-accordion-container li:hover a.ui-accordion-link { background-image: url(i/accordion-middle-over.png); }
-	ul.ui-accordion-container li:hover .ui-accordion-right { background-image: url(i/accordion-right-over.png); }
-	
-	ul.ui-accordion-container li.active { background-image: url(i/accordion-left-act.png); }
-	ul.ui-accordion-container li.active a.ui-accordion-link { background-image: url(i/accordion-middle-act.png); }
-	ul.ui-accordion-container li.active .ui-accordion-right { background-image: url(i/accordion-right-act.png); }
-	.accordionContent { background-color: white; border: 1px solid #666; }
-</style>
-
-<script type="text/javascript">
-<!--
-	function showWorkflowProperties(activeWorkflowId)
-	{	
-		$("#activeWorkflowProperties").html("");
-		$("#activeWorkflowProperties").load("ViewMyDesktopToolStartPage!getActiveWorkflowProperties.action?activeWorkflowId=" + activeWorkflowId + "",{}, function(event)
-		{
-			floatDiv("activeWorkflowDetailsProperties", 200, 50).flt();
-		});
-	}
-	
-	function showAvailableWorkflowProperties(workflowName)
-	{	
-		$("#availableWorkflowProperties").html("");
-		$("#availableWorkflowProperties").load("ViewMyDesktopToolStartPage!getAvailableWorkflowProperties.action?workflowName=" + workflowName + "",{}, function(event)
-		{
-			floatDiv("availableWorkflowDetailsProperties", 200, 50).flt();
-		});
-	}
--->
-</script>
-
-<script type="text/javascript">
-<!--
-	function invokeWorkflowView(workflowId, actionId, view)
-	{
-		var url = "";
-
-		if(view.indexOf("?") > -1)
-			url= "" + view + "&workflowId=" + workflowId + "&actionId=" + actionId + "&returnAddress=$URLBase/ViewMyDesktopToolStartPage!invoke.action";
-		else
-			url= "" + view + "?workflowId=" + workflowId + "&actionId=" + actionId + "&returnAddress=$URLBase/ViewMyDesktopToolStartPage!invoke.action";
-
-		document.location.href = url;
-	}
-
-	function openUrl(url, popoup)
-	{
-		if(popoup)
-			openPopup(url, "Shortcut", "");
-		else
-			document.getElementById("workArea").src = url;
-	}
-
--->
-</script>
-
-#set($currentWorkflowVOList = $workflowVOList)
-#set($availableWorkflows = $availableWorkflowVOList)
-
-<style type="text/css">
-	#contentwrapper {
-		float: left;
-		width: 100%;
-		height: 100%;
-	}
-	
-	#contentcolumn {
-		margin-left: 350px; /*Set left margin to LeftColumnWidth*/
-		margin-top: 10px;
-		margin-right: 10px;
-		height: 100%;
-		padding: 0px;
-		border: 0px solid red;
-	}
-	
-	#leftcolumn {
-		float: left;
-		width: 340px; /*Width of left column*/
-		margin-left: -100%;
-		margin-top: 10px;
-	}
-	
-</style>
 
 <div id="maincontainer">
 

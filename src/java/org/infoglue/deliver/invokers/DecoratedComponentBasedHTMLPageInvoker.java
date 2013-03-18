@@ -353,6 +353,7 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 
 		    Locale locale = templateController.getLocaleAvailableInTool(principal);
 		    
+			String loading 							= getLocalizedString(locale, "tool.common.loading.label");
 			String submitToPublishHTML 				= getLocalizedString(locale, "deliver.editOnSight.submitToPublish");
 		    String addComponentHTML 				= getLocalizedString(locale, "deliver.editOnSight.addComponentHTML");
 			String deleteComponentHTML 				= getLocalizedString(locale, "deliver.editOnSight.deleteComponentHTML");
@@ -392,6 +393,8 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 			extraBody = extraBody.replaceAll("\\$notifyUrl", notifyUrl);
 			extraBody = extraBody.replaceAll("\\$pageSubscriptionUrl", pageSubscriptionUrl);
 			
+		    extraBody = extraBody.replaceAll("\\$loading", loading);
+
 			extraBody = extraBody.replaceAll("\\$editHTML", editHTML);
 			extraBody = extraBody.replaceAll("\\$submitToPublishHTML", submitToPublishHTML);
 			

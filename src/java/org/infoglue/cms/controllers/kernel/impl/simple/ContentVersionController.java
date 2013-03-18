@@ -62,6 +62,7 @@ import org.infoglue.cms.entities.content.impl.simple.ContentVersionImpl;
 import org.infoglue.cms.entities.content.impl.simple.ExportContentVersionImpl;
 import org.infoglue.cms.entities.content.impl.simple.MediumContentVersionImpl;
 import org.infoglue.cms.entities.content.impl.simple.MediumDigitalAssetImpl;
+import org.infoglue.cms.entities.content.impl.simple.SmallContentImpl;
 import org.infoglue.cms.entities.content.impl.simple.SmallContentVersionImpl;
 import org.infoglue.cms.entities.content.impl.simple.SmallestContentVersionImpl;
 import org.infoglue.cms.entities.kernel.BaseEntityVO;
@@ -2853,7 +2854,7 @@ public class ContentVersionController extends BaseController
 	 * @throws SystemException 
 	 */
 	
-	public int cleanContentVersions(int numberOfVersionsToKeep, boolean keepOnlyOldPublishedVersions, long minimumTimeBetweenVersionsDuringClean, boolean deleteVersions) throws SystemException 
+	public int cleanContentVersions(int numberOfVersionsToKeep, boolean keepOnlyOldPublishedVersions, long minimumTimeBetweenVersionsDuringClean, boolean deleteVersions) throws SystemException, Exception 
 	{
 		int cleanedVersions = 0;
 		
@@ -2978,6 +2979,45 @@ public class ContentVersionController extends BaseController
 		return contentVersionsIdList;
 	}
 
+	
+	public List<ContentVO> getContentVOListWithManyVersions(Integer languageId, int numberOfVersionsToKeep) throws SystemException 
+	{
+		List<ContentVO> contentVOList = new ArrayList<ContentVO>();
+		
+		Database db = CastorDatabaseService.getDatabase();
+    	
+		beginTransaction(db);
+
+        try
+        {
+			StringBuilder sql = new StringBuilder();
+			if(CmsPropertyHandler.getUseShortTableNames().equals("true"))
+				sql.append("CALL SQL SELECT contId, name, publishDateTime, expireDateTime, isBranch, isProtected, creator, contentTypeDefId, repositoryId, parentContId FROM (select c.contId, c.name, c.publishDateTime, c.expireDateTime, c.isBranch, c.isProtected, c.creator, c.contentTypeDefId, c.repositoryId, c.parentContId, count(*) as versionCount from cmCont c, cmContVer cv where c.contId = cv.contId and cv.languageId = " + languageId + " group by c.contId, c.name, c.publishDateTime, c.expireDateTime, c.isBranch, c.isProtected, c.creator, c.contentTypeDefId, c.repositoryId, c.parentContId) where versionCount > " + numberOfVersionsToKeep + " AS org.infoglue.cms.entities.content.impl.simple.SmallContentImpl");
+			else
+				sql.append("CALL SQL SELECT c.contentId, c.name, c.publishDateTime, c.expireDateTime, c.isBranch, c.isProtected, c.creator, c.contentTypeDefinitionId, c.repositoryId, c.parentContentId FROM (select c.contentId, c.name, c.publishDateTime, c.expireDateTime, c.isBranch, c.isProtected, c.creator, c.contentTypeDefinitionId, c.repositoryId, c.parentContentId, count(*) as versionCount from cmContent c, cmContentVersion cv where c.contentId = cv.contentId and cv.languageId = " + languageId + " group by c.contentId) c where versionCount > " + numberOfVersionsToKeep + " AS org.infoglue.cms.entities.content.impl.simple.SmallContentImpl");
+
+			//System.out.println("sql:" + sql);
+			OQLQuery oql = db.getOQLQuery(sql.toString());
+	
+			QueryResults results = oql.execute(Database.ReadOnly);
+			while (results.hasMore()) 
+	        {
+				SmallContentImpl content = (SmallContentImpl)results.next();
+				contentVOList.add(content.getValueObject());
+	        }
+			
+			commitTransaction(db);
+        }
+        catch(Exception e)
+        {
+            logger.error("An error occurred so we should not complete the transaction:" + e, e);
+            logger.warn("An error occurred so we should not complete the transaction:" + e, e);
+            rollbackTransaction(db);
+            throw new SystemException(e.getMessage());
+        }
+        return contentVOList;
+	}
+	
 	/**
 	 * This method are here to return all content versions that are x number of versions behind the current active version. This is for cleanup purposes.
 	 * 
@@ -2985,8 +3025,47 @@ public class ContentVersionController extends BaseController
 	 * @return
 	 * @throws SystemException 
 	 */
+
+	public List<SmallestContentVersionVO> getSmallestContentVersionVOList(Integer languageId, int numberOfVersionsToKeep, boolean keepOnlyOldPublishedVersions, long minimumTimeBetweenVersionsDuringClean) throws SystemException, Bug, Exception
+	{
+		List<ContentVO> contentVOList = getContentVOListWithManyVersions(languageId, numberOfVersionsToKeep);
+		//System.out.println("contentVOList:" + contentVOList.size());
+
+		List<SmallestContentVersionVO> contentVersionVOList = new ArrayList<SmallestContentVersionVO>();
+		if(contentVOList == null || contentVOList.size() == 0)
+			return contentVersionVOList;
+		
+		List contentVersionVOListSubList = new ArrayList();
+		contentVersionVOListSubList.addAll(contentVOList);
+
+    	int slotSize = 500;
+    	if(contentVersionVOListSubList.size() > 0)
+    	{
+    		List<ContentVO> subList = new ArrayList<ContentVO>(contentVersionVOListSubList);
+    		if(contentVersionVOListSubList.size() > slotSize)
+    			subList = contentVersionVOListSubList.subList(0, slotSize);
+	    	while(subList != null && subList.size() > 0)
+	    	{
+	    		contentVersionVOList.addAll(getSmallestContentVersionVOListImpl(subList, languageId, numberOfVersionsToKeep, keepOnlyOldPublishedVersions, minimumTimeBetweenVersionsDuringClean));
+	    		contentVersionVOListSubList = contentVersionVOListSubList.subList(subList.size(), contentVersionVOListSubList.size());
+	    	
+	    		subList = new ArrayList(contentVersionVOListSubList);
+	    		if(contentVersionVOListSubList.size() > slotSize)
+	    			subList = contentVersionVOListSubList.subList(0, slotSize);
+	    	}
+    	}
+		
+		return contentVersionVOList;
+	}
 	
-	public List<SmallestContentVersionVO> getSmallestContentVersionVOList(Integer languageId, int numberOfVersionsToKeep, boolean keepOnlyOldPublishedVersions, long minimumTimeBetweenVersionsDuringClean) throws SystemException 
+	/**
+	 * This method are here to return all content versions that are x number of versions behind the current active version. This is for cleanup purposes.
+	 * 
+	 * @param numberOfVersionsToKeep
+	 * @return
+	 * @throws SystemException 
+	 */
+	public List<SmallestContentVersionVO> getSmallestContentVersionVOListImpl(List<ContentVO> contentVOList, Integer languageId, int numberOfVersionsToKeep, boolean keepOnlyOldPublishedVersions, long minimumTimeBetweenVersionsDuringClean) throws SystemException 
 	{
 		logger.info("numberOfVersionsToKeep:" + numberOfVersionsToKeep);
 
@@ -2998,9 +3077,18 @@ public class ContentVersionController extends BaseController
 
         try
         {
-            OQLQuery oql = db.getOQLQuery("SELECT cv FROM org.infoglue.cms.entities.content.impl.simple.SmallestContentVersionImpl cv WHERE cv.languageId = $1 ORDER BY cv.contentId, cv.contentVersionId desc");
+    		StringBuilder variables = new StringBuilder();
+    	    for(int i=0; i<contentVOList.size(); i++)
+    	    	variables.append("$" + (i+2) + (i+1!=contentVOList.size() ? "," : ""));
+
+    	    String SQL = "SELECT cv FROM org.infoglue.cms.entities.content.impl.simple.SmallestContentVersionImpl cv WHERE cv.languageId = $1 AND cv.contentId IN LIST (" + variables + ") ORDER BY cv.contentId, cv.contentVersionId desc";
+            //System.out.println("SQL:" + SQL);
+            
+            OQLQuery oql = db.getOQLQuery(SQL);
         	oql.bind(languageId);
-        	
+    		for(ContentVO cvVO : contentVOList)
+    			oql.bind(cvVO.getId());
+
         	QueryResults results = oql.execute(Database.ReadOnly);
 			
         	int numberOfLaterVersions = 0;

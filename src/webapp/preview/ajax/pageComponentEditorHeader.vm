@@ -41,6 +41,11 @@
 	catch(e) {/*alert("e:" + e);*/}
 
 	setTimeout("keepSession()", 60000);
+	
+	window.onbeforeunload = function (e) {
+	  document.getElementById("processDiv").style.display = 'block';
+	};
+	
 </script>
 <script type="text/javascript" src="${contextName}/script/ajaxComponentEditor.js"></script>
 
