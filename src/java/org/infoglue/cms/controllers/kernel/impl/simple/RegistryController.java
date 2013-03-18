@@ -242,9 +242,8 @@ public class RegistryController extends BaseController
 	    }
 	}
 
-	private static ThreadLocal<List<Object[]>> queuedContentVersions = new ThreadLocal<List<Object[]>>() {
-
-		@Override
+	private static ThreadLocal<List<Object[]>> queuedUpdatedContentVersions = new ThreadLocal<List<Object[]>>() 
+	{
 		protected List<Object[]> initialValue()
 		{
 			return new ArrayList<Object[]>();
@@ -296,14 +295,77 @@ public class RegistryController extends BaseController
 				}
 	        }
 	    }
+		
+		class DeleteForReferencingEntityNameRunnable implements Runnable
+		{
+			List<String[]> list;
 
-		if (queuedContentVersions.get().size() > 0)
+			DeleteForReferencingEntityNameRunnable(List<String[]> list)
+			{
+				this.list = list;
+			}
+
+	        public void run()
+	        {
+				try
+				{
+					Database db = CastorDatabaseService.getDatabase();
+					try 
+					{
+						Timer t = new Timer();
+
+						beginTransaction(db);
+
+						logger.info("Start refreshing registry in thread" + Thread.currentThread().getId());
+						//System.out.println("Clearing " + list.size());
+						for(String[] bean : list)
+						{
+							//System.out.println("bean " + bean[0] + "=" + bean[1]);
+							RegistryController.getController().clearRegistryForReferencingEntityName(bean[0], bean[1], db);
+						}
+						list.clear();
+						
+						commitTransaction(db);
+
+						logger.info("Done refreshing registry took:" + t.getElapsedTime());
+					}
+					catch (Exception e)
+					{
+						logger.error("Error precaching all access rights for this user: " + e.getMessage(), e);
+						rollbackTransaction(db);
+					}
+				}
+				catch (Exception e) 
+				{
+					logger.error("Could not start PreCacheTask:" + e.getMessage(), e);
+				}
+	        }
+	    }
+
+		//System.out.println("Check for beans:" + clearRegistryForReferencingEntityNameQueue.get());
+		if (queuedUpdatedContentVersions.get().size() > 0)
 		{
 			List<Object[]> localQueue = new ArrayList<Object[]>();
-			localQueue.addAll(queuedContentVersions.get());
+			localQueue.addAll(queuedUpdatedContentVersions.get());
 			Thread thread = new Thread(new UpdateContentVersionRunnable(localQueue));
 			thread.start();
-			queuedContentVersions.get().clear();
+			queuedUpdatedContentVersions.get().clear();
+			logger.debug("Started registry update thread. Number of entities: " + localQueue.size());
+		}
+		else
+		{
+			logger.debug("No queued beans in registry queue. Skipping run.");
+		}
+
+		if (clearRegistryForReferencingEntityNameQueue.get().size() > 0)
+		{
+			//Thread.dumpStack();
+
+			List<String[]> localQueue = new ArrayList<String[]>();
+			localQueue.addAll(clearRegistryForReferencingEntityNameQueue.get());
+			Thread thread = new Thread(new DeleteForReferencingEntityNameRunnable(localQueue));
+			thread.start();
+			clearRegistryForReferencingEntityNameQueue.get().clear();
 			logger.debug("Started registry update thread. Number of entities: " + localQueue.size());
 		}
 		else
@@ -327,7 +389,7 @@ public class RegistryController extends BaseController
 		{
 			logger.info("Adds entity to registry controller update queue. ContentVersion.id: " + (contentVersionVO == null ? "null" : contentVersionVO.getContentVersionId()) + ", SiteNodeVersion.id " + (siteNodeVersionVO == null ? "null" : siteNodeVersionVO.getSiteNodeVersionId()));
 		}
-		queuedContentVersions.get().add(new Object[]{contentVersionVO, siteNodeVersionVO});
+		queuedUpdatedContentVersions.get().add(new Object[]{contentVersionVO, siteNodeVersionVO});
 	}
 	
 	/**
@@ -2034,6 +2096,28 @@ public class RegistryController extends BaseController
 	}
 
 	/**
+	 * Gets matching references
+	 */
+	
+	public void clearRegistryForReferencingEntityName(String entityName, String entityId, Database db) throws SystemException, Exception
+	{
+		OQLQuery oql = db.getOQLQuery("SELECT r FROM org.infoglue.cms.entities.management.impl.simple.RegistryImpl r WHERE r.referencingEntityName = $1 AND r.referencingEntityId = $2 ORDER BY r.registryId");
+		oql.bind(entityName);
+		oql.bind(entityId);
+				
+		QueryResults results = oql.execute();
+
+		while (results.hasMore()) 
+        {
+            Registry registry = (Registry)results.next();
+            db.remove(registry);
+        }
+
+		results.close();
+		oql.close();
+	}
+	
+	/**
 	 * Clears all references to a entity
 	 */
 /*
@@ -2122,4 +2206,25 @@ public class RegistryController extends BaseController
 
 		return siteNodeVersion;		
 	}
+	
+	
+	private static ThreadLocal<List<String[]>> clearRegistryForReferencingEntityNameQueue = new ThreadLocal<List<String[]>>() 
+	{
+		protected List<String[]> initialValue() { return new ArrayList<String[]>(); }
+	};
+		
+	/**
+	 * this method goes through all inline stuff and all relations if ordinary content 
+	 * and all components and bindings if a metainfo. All in a threaded matter.
+	 * 
+	 * @param contentVersionVO
+	 * @param contentVersionVO
+	 * @throws Exception
+	 */
+	
+	public void clearRegistryForReferencingEntityNameThreaded(String entityName, String entityId) throws Exception
+	{
+		clearRegistryForReferencingEntityNameQueue.get().add(new String[]{entityName, entityName});
+	}
+
 }

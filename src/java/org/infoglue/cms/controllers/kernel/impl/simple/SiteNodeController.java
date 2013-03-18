@@ -83,12 +83,18 @@ import org.infoglue.cms.entities.management.impl.simple.AccessRightUserImpl;
 import org.infoglue.cms.entities.management.impl.simple.ContentTypeDefinitionImpl;
 import org.infoglue.cms.entities.management.impl.simple.RepositoryImpl;
 import org.infoglue.cms.entities.management.impl.simple.SiteNodeTypeDefinitionImpl;
+import org.infoglue.cms.entities.structure.Qualifyer;
+import org.infoglue.cms.entities.structure.ServiceBinding;
 import org.infoglue.cms.entities.structure.ServiceBindingVO;
 import org.infoglue.cms.entities.structure.SiteNode;
 import org.infoglue.cms.entities.structure.SiteNodeVO;
 import org.infoglue.cms.entities.structure.SiteNodeVersion;
 import org.infoglue.cms.entities.structure.SiteNodeVersionVO;
+import org.infoglue.cms.entities.structure.impl.simple.MediumSiteNodeVersionImpl;
+import org.infoglue.cms.entities.structure.impl.simple.ServiceBindingImpl;
 import org.infoglue.cms.entities.structure.impl.simple.SiteNodeImpl;
+import org.infoglue.cms.entities.structure.impl.simple.SmallQualifyerImpl;
+import org.infoglue.cms.entities.structure.impl.simple.SmallServiceBindingImpl;
 import org.infoglue.cms.entities.structure.impl.simple.SmallSiteNodeImpl;
 import org.infoglue.cms.entities.structure.impl.simple.SiteNodeVersionImpl;
 import org.infoglue.cms.entities.structure.impl.simple.SmallSiteNodeVersionImpl;
@@ -604,12 +610,6 @@ public class SiteNodeController extends BaseController
     public SiteNode getSiteNodeWithId(Integer siteNodeId, Database db) throws SystemException, Bug
     {
         return getSiteNodeWithId(siteNodeId, db, false);
-    }
-
-
-    public SiteNodeVersion getSiteNodeVersionWithId(Integer siteNodeVersionId, Database db) throws SystemException, Bug
-    {
-		return (SiteNodeVersion) getObjectWithId(SiteNodeVersionImpl.class, siteNodeVersionId, db);
     }
     
     public static SiteNode getSiteNodeWithId(Integer siteNodeId, Database db, boolean readOnly) throws SystemException, Bug
@@ -2669,8 +2669,9 @@ public class SiteNodeController extends BaseController
 			while(siteNodeVersionVOListIterator.hasNext())
 			{
 				SiteNodeVersionVO siteNodeVersionVO = siteNodeVersionVOListIterator.next();
-				SiteNodeVersion siteNodeVersion = getSiteNodeVersionWithId(siteNodeVersionVO.getId(), db);
-				logger.info("Deleting the siteNodeVersion " + siteNodeVersion.getId() + " on siteNode " + siteNodeVersion.getOwningSiteNode());
+				//SiteNodeVersion siteNodeVersion = SiteNodeVersionController.getController().getSiteNodeVersionWithId(siteNodeVersionVO.getId(), db);
+				MediumSiteNodeVersionImpl siteNodeVersion = SiteNodeVersionController.getController().getMediumSiteNodeVersionWithId(siteNodeVersionVO.getId(), db);
+				logger.info("Deleting the siteNodeVersion " + siteNodeVersion.getId() + " on siteNode " + siteNodeVersion.getSiteNodeId());
 				delete(siteNodeVersion, db, true);
 			}
 
@@ -2712,7 +2713,38 @@ public class SiteNodeController extends BaseController
 
 		db.remove(siteNodeVersion);
 	}
- 	
+
+ 	public void delete(MediumSiteNodeVersionImpl siteNodeVersion, Database db, boolean forceDelete) throws ConstraintException, SystemException, Exception
+	{
+		if (!forceDelete && siteNodeVersion.getStateId().intValue() == ContentVersionVO.PUBLISHED_STATE.intValue() && siteNodeVersion.getIsActive().booleanValue() == true)
+		{
+			SiteNodeVO snVO = getSiteNodeVOWithId(siteNodeVersion.getSiteNodeId(), db);
+			throw new ConstraintException("SiteNodeVersion.stateId", "3300", snVO.getName());
+		}
+		
+		Collection serviceBindnings = siteNodeVersion.getServiceBindings();
+		Iterator serviceBindningsIterator = serviceBindnings.iterator();
+		while(serviceBindningsIterator.hasNext())
+		{
+			SmallServiceBindingImpl serviceBinding = (SmallServiceBindingImpl)serviceBindningsIterator.next();
+			//logger.info("serviceBinding:" + serviceBinding.getServiceBindingId());
+			Collection qualifyers = serviceBinding.getBindingQualifyers();
+			Iterator qualifyersIterator = qualifyers.iterator();
+			while(qualifyersIterator.hasNext())
+			{	
+				SmallQualifyerImpl qualifyer = (SmallQualifyerImpl)qualifyersIterator.next();
+				qualifyersIterator.remove();
+				serviceBinding.getBindingQualifyers().remove(qualifyer);
+			}
+			db.remove(serviceBinding);
+		}
+		
+		//ServiceBindingController.deleteServiceBindingsReferencingSiteNodeVersion(siteNodeVersion, db);
+	    SiteNodeStateController.getController().deleteAccessRights("SiteNodeVersion", siteNodeVersion.getId(), db);
+	    
+		db.remove(siteNodeVersion);
+	}
+
  	
  	//Copy logic
 	/**

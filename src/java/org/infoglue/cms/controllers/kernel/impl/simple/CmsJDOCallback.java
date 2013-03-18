@@ -1038,15 +1038,17 @@ public class CmsJDOCallback implements CallbackInterceptor
 				clearCache(MediumContentVersionImpl.class);
 				clearCache(SmallContentVersionImpl.class);
 				clearCache(SmallestContentVersionImpl.class);
-				RegistryController.getController().clearRegistryForReferencingEntityName(ContentVersion.class.getName(), getObjectIdentity(object).toString());
+				
+				RegistryController.getController().clearRegistryForReferencingEntityNameThreaded(ContentVersion.class.getName(), getObjectIdentity(object).toString());
+				//RegistryController.getController().clearRegistryForReferencingEntityName(ContentVersion.class.getName(), getObjectIdentity(object).toString());
 			}
 			else if(object.getClass().getName().equals(MediumContentVersionImpl.class.getName()))
 			{
+				MediumContentVersionImpl contentVersion = (MediumContentVersionImpl)object;
 				try
 				{
 					ContentTypeDefinitionVO htmlTemplateMetaInfoCTDVO = ContentTypeDefinitionController.getController().getContentTypeDefinitionVOWithName("HTMLTemplate");
 					ContentTypeDefinitionVO pagePartTemplateMetaInfoCTDVO = ContentTypeDefinitionController.getController().getContentTypeDefinitionVOWithName("PagePartTemplate");
-					MediumContentVersionImpl contentVersion = (MediumContentVersionImpl)object;
 					ContentVO contentVO = ContentController.getContentController().getContentVOWithId(contentVersion.getContentId(), true);
 					if(contentVO.getContentTypeDefinitionId() == null || (
 					   contentVO.getContentTypeDefinitionId().equals(htmlTemplateMetaInfoCTDVO.getId()) ||
@@ -1063,7 +1065,10 @@ public class CmsJDOCallback implements CallbackInterceptor
 				clearCache(ContentVersionImpl.class);
 				clearCache(SmallContentVersionImpl.class);
 				clearCache(SmallestContentVersionImpl.class);
-				RegistryController.getController().clearRegistryForReferencingEntityName(ContentVersion.class.getName(), getObjectIdentity(object).toString());
+				clearCache(ContentImpl.class, contentVersion.getValueObject().getContentId());
+
+				RegistryController.getController().clearRegistryForReferencingEntityNameThreaded(ContentVersion.class.getName(), getObjectIdentity(object).toString());
+				//RegistryController.getController().clearRegistryForReferencingEntityName(ContentVersion.class.getName(), getObjectIdentity(object).toString());
 			}
 			else if(object.getClass().getName().equals(RepositoryLanguageImpl.class.getName()))
 			{
@@ -1170,7 +1175,8 @@ public class CmsJDOCallback implements CallbackInterceptor
 				//CacheController.clearCache("childSiteNodesCache");
 				CacheController.clearCache("parentSiteNodeCache");
 
-				RegistryController.getController().clearRegistryForReferencingEntityName(SiteNodeVersion.class.getName(), getObjectIdentity(object).toString());
+				RegistryController.getController().clearRegistryForReferencingEntityNameThreaded(SiteNodeVersion.class.getName(), getObjectIdentity(object).toString());
+				//RegistryController.getController().clearRegistryForReferencingEntityName(SiteNodeVersion.class.getName(), getObjectIdentity(object).toString());
 			}
 			else if(object.getClass().getName().equals(WorkflowDefinitionImpl.class.getName()))
 			{

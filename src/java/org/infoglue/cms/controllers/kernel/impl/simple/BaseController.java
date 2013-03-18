@@ -1283,6 +1283,38 @@ public abstract class BaseController
             db.commit();
 		    db.close();
 
+		    //RegistryController.notifyTransactionCommitted();
+        }
+        catch(TransactionAbortedException tae)
+        {
+        	if(tae.getCause() instanceof LockNotGrantedException)
+                throw new SystemException("The resource you tried to modify have just been updated by another user. Please try again later. System message: " + tae.getCause().getMessage());
+        	else
+               	throw new SystemException("An error occurred when we tried to commit an transaction. Reason:" + tae.getMessage(), tae);
+        }
+        catch(LockNotGrantedException lnge)
+        {
+            throw new SystemException("The resource you tried to modify have just been updated by another user. Please try again later. System message: " + lnge.getMessage());
+        }
+        catch(Exception e)
+        {
+           	throw new SystemException("An error occurred when we tried to commit an transaction. Reason:" + e.getMessage(), e);    
+        }
+    }
+
+    /**
+     * Ends a transaction on the named database
+     */
+     
+    protected static void commitRegistryAwareTransaction(Database db) throws SystemException
+    {
+        try
+        {
+            //logger.info("Closing a transaction in cms...");
+
+            db.commit();
+		    db.close();
+
 		    RegistryController.notifyTransactionCommitted();
         }
         catch(TransactionAbortedException tae)
@@ -1301,7 +1333,7 @@ public abstract class BaseController
            	throw new SystemException("An error occurred when we tried to commit an transaction. Reason:" + e.getMessage(), e);    
         }
     }
- 
+
  
     /**
      * Rollbacks a transaction on the named database

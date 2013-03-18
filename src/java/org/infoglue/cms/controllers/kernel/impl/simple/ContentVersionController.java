@@ -1415,6 +1415,23 @@ public class ContentVersionController extends BaseController
 		db.remove(contentVersion);
 	}
 
+ 	
+	/**
+	 * This method deletes an contentversion and notifies the owning content.
+	 */
+	
+ 	public void delete(MediumContentVersionImpl contentVersion, Database db, boolean forceDelete) throws ConstraintException, SystemException, Exception
+	{
+		if (!forceDelete && contentVersion.getStateId().intValue() == ContentVersionVO.PUBLISHED_STATE.intValue() && contentVersion.getIsActive().booleanValue() == true)
+		{
+			throw new ConstraintException("ContentVersion.stateId", "3300", contentVersion.getOwningContent().getName());
+		}
+		
+		contentCategoryController.deleteByContentVersion(contentVersion, db);
+		DigitalAssetController.getController().deleteByContentVersion(contentVersion, db);
+		//System.out.println("Removing:" + contentVersion.getId());
+		db.remove(contentVersion);
+	}
 
 
 	/**
@@ -1681,7 +1698,7 @@ public class ContentVersionController extends BaseController
 
 	    	updatedContentVersionVO = contentVersion.getValueObject();
 	    	
-	    	commitTransaction(db);  
+	    	commitRegistryAwareTransaction(db);  
         }
         catch(ConstraintException ce)
         {
@@ -1744,7 +1761,7 @@ public class ContentVersionController extends BaseController
 			   
 	    	updatedContentVersionVO = contentVersion.getValueObject();
 	    	
-	    	commitTransaction(db);  
+	    	commitRegistryAwareTransaction(db);  
         }
         catch(ConstraintException ce)
         {
@@ -2849,12 +2866,13 @@ public class ContentVersionController extends BaseController
 			while(contentVersionVOIdListIterator.hasNext())
 			{
 				SmallestContentVersionVO contentVersionVO = contentVersionVOIdListIterator.next();
-				ContentVersion contentVersion = getContentVersionWithId(contentVersionVO.getContentVersionId(), db);
+				//ContentVersion contentVersion = getContentVersionWithId(contentVersionVO.getContentVersionId(), db);
+				MediumContentVersionImpl contentVersion = getMediumContentVersionWithId(contentVersionVO.getContentVersionId(), db);
 				logger.info("Deleting the contentVersion " + contentVersion.getId() + " on content " + contentVersion.getOwningContent());
 				delete(contentVersion, db, true);
 			}
-
-			commitTransaction(db);
+			
+			commitRegistryAwareTransaction(db);
 
 			Thread.sleep(1000);
         }
