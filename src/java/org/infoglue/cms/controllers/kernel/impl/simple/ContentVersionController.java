@@ -2978,7 +2978,7 @@ public class ContentVersionController extends BaseController
 			{
 				Integer contentId = new Integer(rs.getString("contentId"));
 				Integer count = new Integer(rs.getString("versionCount"));
-				totalVersions = totalVersions + count;
+				totalVersions = totalVersions + (count-numberOfVersionsToKeep);
 				result.put(contentId, count);
 				if(totalVersions > 1000)
 					break;

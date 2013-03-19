@@ -2458,7 +2458,7 @@ public class SiteNodeController extends BaseController
 			{
 				Integer siteNodeId = new Integer(rs.getString("siteNodeId"));
 				Integer count = new Integer(rs.getString("versionCount"));
-				totalVersions = totalVersions + count;
+				totalVersions = totalVersions + (count-numberOfVersionsToKeep);
 				result.put(siteNodeId, count);
 				if(totalVersions > 1000)
 					break;
