@@ -41,7 +41,7 @@ public class ChildPagesTag extends ComponentLogicTag
 	private boolean escapeHTML = false;
 	private boolean hideUnauthorizedPages = false;
 	private Integer levelsToPopulate = 0;
-		
+	private String nameFilter = null;
 	
     public ChildPagesTag()
     {
@@ -55,13 +55,13 @@ public class ChildPagesTag extends ComponentLogicTag
 	    {
 	    	//if(this.siteNodeId != 100081)
 	    	//	this.levelsToPopulate = 2;
-	        setResultAttribute(this.getController().getChildPages(this.siteNodeId, this.escapeHTML, this.hideUnauthorizedPages, this.levelsToPopulate));
+	        setResultAttribute(this.getController().getChildPages(this.siteNodeId, this.escapeHTML, this.hideUnauthorizedPages, this.levelsToPopulate, this.nameFilter));
 		    //if(logger.isInfoEnabled())
 	    	RequestAnalyser.getRequestAnalyser().registerComponentStatistics("ChildPages 1 tag(micro)", t.getElapsedTimeNanos() / 1000);	    	
 	    }
 	    else if(this.propertyName != null)
 	    {
-	    	setResultAttribute(getComponentLogic().getChildPages(propertyName, useInheritance, this.escapeHTML, this.hideUnauthorizedPages, useRepositoryInheritance, useStructureInheritance, this.levelsToPopulate));
+	    	setResultAttribute(getComponentLogic().getChildPages(propertyName, useInheritance, this.escapeHTML, this.hideUnauthorizedPages, useRepositoryInheritance, useStructureInheritance, this.levelsToPopulate, this.nameFilter));
 		    //if(logger.isInfoEnabled())
 	    	RequestAnalyser.getRequestAnalyser().registerComponentStatistics("ChildPages 2 tag(micro)", t.getElapsedTimeNanos() / 1000);
 	    }
@@ -76,6 +76,7 @@ public class ChildPagesTag extends ComponentLogicTag
 	    this.escapeHTML = false;
 	    this.hideUnauthorizedPages = false;
 	    this.levelsToPopulate = 0;
+	    this.nameFilter = null;
 	    
 	    return EVAL_PAGE;
     }
@@ -118,6 +119,11 @@ public class ChildPagesTag extends ComponentLogicTag
     public void setLevelsToPopulate(String levelsToPopulate) throws JspException
     {
         this.levelsToPopulate = evaluateInteger("ChildPagesTag", "levelsToPopulate", levelsToPopulate);
+    }
+
+    public void setNameFilter(String nameFilter) throws JspException
+    {
+        this.nameFilter = evaluateString("childPages", "nameFilter", nameFilter);
     }
 
 }
