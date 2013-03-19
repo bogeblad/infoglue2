@@ -4143,7 +4143,7 @@ public class CacheController extends Thread
     public static void evictWaitingCache(boolean waitIfOngoing) throws Exception
     {	    
        	String operatingMode = CmsPropertyHandler.getOperatingMode();
-       	if(!waitIfOngoing || !operatingMode.equals("0"))
+       	if(!waitIfOngoing)
        	{
 		    synchronized(RequestAnalyser.getRequestAnalyser()) 
 		    {
@@ -4165,17 +4165,18 @@ public class CacheController extends Thread
        		{
 	       		ongoingThread.join(30000);
 		    	System.out.println("We waited and now the thread finished and we can return");
-		    	if(!ongoingThread.isAlive())
+		    	if(!ongoingThread.isAlive() && notifications.size() == 0)
+		    	{
 		    		return;
+		    	}
 		    	else
-		    		System.out.println("Was not dead after 30 - let's continute");
+		    		System.out.println("Was not dead after 30 or list of notifications was not empty - let's continute");
        		}
        		catch (InterruptedException e) 
        		{
        			System.out.println("Waited long - let's continute");
 			}
 	    }
-	    else
 	    	
 	    logger.info("evictWaitingCache starting");
     	logger.info("blocking");
