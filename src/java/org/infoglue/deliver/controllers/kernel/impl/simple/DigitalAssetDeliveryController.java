@@ -738,7 +738,7 @@ public class DigitalAssetDeliveryController extends BaseDeliveryController
 			while(filePath != null)
 			{
 				File assetDirectory = new File(filePath);
-				File[] files = assetDirectory.listFiles(new FilenameFilterImpl(digitalAssetId.toString())); 	
+				File[] files = assetDirectory.listFiles(new FilenameFilterImpl(digitalAssetId.toString() + "_")); 	
 				for(int j=0; j<files.length; j++)
 				{
 					File file = files[j];
@@ -756,7 +756,7 @@ public class DigitalAssetDeliveryController extends BaseDeliveryController
 				File assetDirectory = new File(filePath);
 				assetDirectory.mkdirs();
 				
-				File[] files = assetDirectory.listFiles(new FilenameFilterImpl(digitalAssetId.toString())); 	
+				File[] files = assetDirectory.listFiles(new FilenameFilterImpl(digitalAssetId.toString() + "_")); 	
 				if(files == null)
 				{
 					logger.error("There was a problem deleting files in:" + filePath + " - looking for " + digitalAssetId);
@@ -767,6 +767,7 @@ public class DigitalAssetDeliveryController extends BaseDeliveryController
 					{
 						File file = files[j];
 						logger.info("Deleting file " + file.getPath());
+						System.out.println("Deleting file " + file.getPath());
 						file.delete();
 					}
 				}
