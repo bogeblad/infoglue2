@@ -2416,7 +2416,7 @@ public class CacheController extends Thread
 										    		}
 									    		}
 									    		else
-									    			logger.warn("No content type for " + contentId);
+									    			logger.info("No content type for " + contentId);
 									    	}
 							    		}
 							    		else
@@ -3621,14 +3621,17 @@ public class CacheController extends Thread
 							    }
 							    else
 							    {
-							    	logger.warn("WHOOOAAAAAAAAAA.. clearing all... on " + cacheName + ":" + entity);
-							    	//System.out.println("selectiveCacheUpdate:" + selectiveCacheUpdate);
-							    	//System.out.println("entity:" + entity);
-							    	//System.out.println("cacheName:" + cacheName);
-							    	//logger.info("Flushing all:" + cacheName);
-							    	cacheInstance.flushAll();
-									logger.info("clearing:" + e.getKey());
-									//t.printElapsedTime("WHOOOAAAAAAAAAA.. clearing all... ", 10);
+							    	if(entity.indexOf("EventImpl") == -1 && entity.indexOf(".Publication") == -1)
+							    	{
+								    	logger.warn("WHOOOAAAAAAAAAA.. clearing all... on " + cacheName + ":" + entity);
+								    	//System.out.println("selectiveCacheUpdate:" + selectiveCacheUpdate);
+								    	//System.out.println("entity:" + entity);
+								    	//System.out.println("cacheName:" + cacheName);
+								    	//logger.info("Flushing all:" + cacheName);
+								    	cacheInstance.flushAll();
+										logger.info("clearing:" + e.getKey());
+										//t.printElapsedTime("WHOOOAAAAAAAAAA.. clearing all... ", 10);
+									}
 							    }
 							} //BACK
 						}
@@ -4132,20 +4135,48 @@ public class CacheController extends Thread
 
     public static void evictWaitingCache() throws Exception
     {	    
+    	evictWaitingCache(false);
+    }
+    
+    private static WorkingPublicationThread ongoingThread = null;
+    
+    public static void evictWaitingCache(boolean waitIfOngoing) throws Exception
+    {	    
        	String operatingMode = CmsPropertyHandler.getOperatingMode();
-	    synchronized(RequestAnalyser.getRequestAnalyser()) 
-	    {
-	       	if(RequestAnalyser.getRequestAnalyser().getBlockRequests() && RequestAnalyser.getRequestAnalyser().getBlockRequestTime() < 30000)
+       	if(!waitIfOngoing || !operatingMode.equals("0"))
+       	{
+		    synchronized(RequestAnalyser.getRequestAnalyser()) 
 		    {
-			    logger.info("evictWaitingCache allready in progress - returning to avoid conflict");
-		        return;
-		    }
-	       	else if(RequestAnalyser.getRequestAnalyser().getBlockRequests() && RequestAnalyser.getRequestAnalyser().getBlockRequestTime() > 30000)
-	       		logger.warn("An block must have gone wrong... there has gone over 30 seconds and still not reported done.. let's run anyway.");
+		       	if(RequestAnalyser.getRequestAnalyser().getBlockRequests() && RequestAnalyser.getRequestAnalyser().getBlockRequestTime() < 30000)
+			    {
+				    logger.warn("evictWaitingCache allready in progress - returning to avoid conflict");
+				    return;
+			    }
+		       	else if(RequestAnalyser.getRequestAnalyser().getBlockRequests() && RequestAnalyser.getRequestAnalyser().getBlockRequestTime() > 30000)
+		       		logger.warn("An block must have gone wrong... there has gone over 30 seconds and still not reported done.. let's run anyway.");
+	
+		       	RequestAnalyser.getRequestAnalyser().setBlockRequests(true);
+			}
+       	}
 
-	       	RequestAnalyser.getRequestAnalyser().setBlockRequests(true);
-		}
-
+       	if(waitIfOngoing && ongoingThread != null && ongoingThread.isAlive())
+	    {
+       		try
+       		{
+	       		ongoingThread.join(30000);
+		    	System.out.println("We waited and now the thread finished and we can return");
+		    	if(!ongoingThread.isAlive())
+		    		return;
+		    	else
+		    		System.out.println("Was not dead after 30 - let's continute");
+       		}
+       		catch (InterruptedException e) 
+       		{
+       			System.out.println("Waited long - let's continute");
+			}
+	    }
+	    else
+	    	
 	    logger.info("evictWaitingCache starting");
     	logger.info("blocking");
     	
@@ -4158,7 +4189,10 @@ public class CacheController extends Thread
         		return;
         	}
         }
+    	System.out.println("Had some notifications to handle:" + notifications.size());
+    	
     	WorkingPublicationThread wpt = new WorkingPublicationThread();
+    	ongoingThread = wpt;
     	
     	SelectiveLivePublicationThread pt = null;
     	String livePublicationThreadClass = "";

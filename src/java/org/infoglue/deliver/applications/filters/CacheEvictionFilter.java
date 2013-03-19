@@ -43,6 +43,7 @@ import org.apache.log4j.Logger;
 import org.infoglue.cms.util.CmsPropertyHandler;
 import org.infoglue.deliver.util.CacheController;
 import org.infoglue.deliver.util.SimpleThreadMonitor;
+import org.infoglue.deliver.util.Timer;
 
 /**
  * This filter empties the caches waiting to be emptied.
@@ -87,7 +88,9 @@ public class CacheEvictionFilter implements Filter
             //System.out.println("userAgent:" + userAgent);
             if (!uriMatcher.matches(requestURI) && userAgent != null && userAgent.indexOf("java") == -1 && userAgent.indexOf("axis") == -1) 
             {
-                CacheController.evictWaitingCache();
+            	Timer t = new Timer();
+                CacheController.evictWaitingCache(true);
+                t.printElapsedTime("evictWaitingCache", 20);
             }
         }
         catch (Exception e)
