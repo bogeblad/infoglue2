@@ -2462,10 +2462,15 @@ public class NodeDeliveryController extends BaseDeliveryController
 	/**
 	 * This method returns the list of siteNodeVO which is children to this one.
 	 */
-	
+
 	public List getChildSiteNodes(Database db, Integer siteNodeId, Integer levelsToPopulate) throws SystemException, Exception
 	{
-		return getChildSiteNodesOneLevel(db, siteNodeId);
+		return getChildSiteNodes(db, siteNodeId, levelsToPopulate, null);
+	}
+	
+	public List getChildSiteNodes(Database db, Integer siteNodeId, Integer levelsToPopulate, String nameFilter) throws SystemException, Exception
+	{
+		return getChildSiteNodesOneLevel(db, siteNodeId, nameFilter);
 		/*
 		//System.out.println("Query on siteNodeId:" + siteNodeId + "/" + levelsToPopulate);
 		if(levelsToPopulate > 0)
@@ -2827,7 +2832,7 @@ public class NodeDeliveryController extends BaseDeliveryController
 	 * This method returns the list of siteNodeVO which is children to this one.
 	 */
 	
-	public List getChildSiteNodesOneLevel(Database db, Integer siteNodeId) throws SystemException, Exception
+	public List getChildSiteNodesOneLevel(Database db, Integer siteNodeId, String nameFilter) throws SystemException, Exception
 	{
 		logger.info("getChildSiteNodes:" + siteNodeId);
 
@@ -2836,7 +2841,7 @@ public class NodeDeliveryController extends BaseDeliveryController
 			return null;
 		}
     	
-    	List<SiteNodeVO> siteNodeVOList = (List<SiteNodeVO>)CacheController.getCachedObjectFromAdvancedCache("childPagesCache", "" + siteNodeId); //populatedSiteNodeVOList.get(siteNodeId);
+    	List<SiteNodeVO> siteNodeVOList = (List<SiteNodeVO>)CacheController.getCachedObjectFromAdvancedCache("childPagesCache", "" + siteNodeId + (nameFilter == null ? "" : "_" + nameFilter)); //populatedSiteNodeVOList.get(siteNodeId);
     	if(siteNodeVOList != null)
     	{
     		//System.out.println("Returning cached");
@@ -2844,7 +2849,7 @@ public class NodeDeliveryController extends BaseDeliveryController
     	}
     	else
     	{
-	        String key = "" + siteNodeId;
+	        String key = "" + siteNodeId + (nameFilter == null ? "" : "_" + nameFilter);
 	        logger.info("key in getChildSiteNodes:" + key);
 			siteNodeVOList = (List)CacheController.getCachedObjectFromAdvancedCache("childSiteNodesCache", key);
 	
@@ -2883,6 +2888,8 @@ public class NodeDeliveryController extends BaseDeliveryController
 			   		SQL.append("	snv2.siNoId = snv.siNoId AND ");
 			   		SQL.append("	snv2.isActive = $2 AND snv2.stateId >= $3 ");
 			   		SQL.append("	) ");
+			   		if(nameFilter != null && !nameFilter.equals(""))
+			   			SQL.append(" AND sn.name LIKE $4 ");
 			   		SQL.append("order by sn.name ASC, sn.siNoId DESC AS org.infoglue.cms.entities.structure.impl.simple.SmallestSiteNodeImpl");
 		    	}
 		    	else
@@ -2897,6 +2904,8 @@ public class NodeDeliveryController extends BaseDeliveryController
 			   		SQL.append("	snv2.siteNodeId = snv.siteNodeId AND ");
 			   		SQL.append("	snv2.isActive = $2 AND snv2.stateId >= $3 ");
 			   		SQL.append("	) ");
+			   		if(nameFilter != null && !nameFilter.equals(""))
+			   			SQL.append(" AND sn.name LIKE $4 ");
 			   		SQL.append("order by sn.name ASC, sn.siteNodeId DESC AS org.infoglue.cms.entities.structure.impl.simple.SmallestSiteNodeImpl");    		
 		    	}
 	
@@ -2906,6 +2915,8 @@ public class NodeDeliveryController extends BaseDeliveryController
 				oql.bind(siteNodeId);
 				oql.bind(true);
 				oql.bind(getOperatingMode());
+				if(nameFilter != null && !nameFilter.equals(""))
+					oql.bind(nameFilter);
 		    	
 		    	QueryResults results = oql.execute(Database.ReadOnly);
 		    	//RequestAnalyser.getRequestAnalyser().registerComponentStatistics("getChildSiteNodes part 1", t.getElapsedTime());

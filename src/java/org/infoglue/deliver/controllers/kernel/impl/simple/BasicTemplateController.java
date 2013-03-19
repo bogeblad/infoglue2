@@ -6411,7 +6411,7 @@ public class BasicTemplateController implements TemplateController
 	{
 		return getChildPages(siteNodeId, escapeHTML, hideUnauthorizedPages, 0);
 	}
-	
+
 	/**
 	 * The method returns a list of WebPage-objects that is the children of the given 
 	 * siteNode. The method is great for navigation-purposes on a structured site. 
@@ -6419,7 +6419,17 @@ public class BasicTemplateController implements TemplateController
 	
 	public List getChildPages(Integer siteNodeId, boolean escapeHTML, boolean hideUnauthorizedPages, Integer levelsToPopulate)
 	{
-        String key = "" + siteNodeId + "_" + escapeHTML + "_" + hideUnauthorizedPages + "_" + levelsToPopulate;
+		return getChildPages(siteNodeId, escapeHTML, hideUnauthorizedPages, levelsToPopulate, null);
+	}
+	
+	/**
+	 * The method returns a list of WebPage-objects that is the children of the given 
+	 * siteNode. The method is great for navigation-purposes on a structured site. 
+	 */
+	
+	public List getChildPages(Integer siteNodeId, boolean escapeHTML, boolean hideUnauthorizedPages, Integer levelsToPopulate, String nameFilter)
+	{
+        String key = "" + siteNodeId + "_" + escapeHTML + "_" + hideUnauthorizedPages + "_" + levelsToPopulate + "_" + nameFilter;
 		logger.info("key in getChildSiteNodes:" + key);
 		List<WebPage> childPages = (List<WebPage>)CacheController.getCachedObjectFromAdvancedCache("childPagesCache", key);
 		
@@ -6429,7 +6439,7 @@ public class BasicTemplateController implements TemplateController
 			try
 			{
 				Timer t = new Timer();
-				List childNodeVOList = this.nodeDeliveryController.getChildSiteNodes(getDatabase(), siteNodeId, levelsToPopulate);
+				List childNodeVOList = this.nodeDeliveryController.getChildSiteNodes(getDatabase(), siteNodeId, levelsToPopulate, nameFilter);
 				//if(logger.isInfoEnabled())
 					RequestAnalyser.getRequestAnalyser().registerComponentStatistics("getChildPages.getChildSiteNodes(micro)", t.getElapsedTimeNanos() / 1000);
 				childPages = getPages(childNodeVOList, escapeHTML, hideUnauthorizedPages);
@@ -7607,19 +7617,21 @@ public class BasicTemplateController implements TemplateController
      */
     public boolean getHasUserAccess(String interceptionPointName, String extraParameters)
     {
+    	Timer t = new Timer();
 		boolean hasUserContentAccess = true;
 		
 		try 
 		{
-			
-			if(!AccessRightController.getController().getIsPrincipalAuthorized(infoGluePrincipal, interceptionPointName, extraParameters))
+			boolean hasAccess = AccessRightController.getController().getIsPrincipalAuthorized(infoGluePrincipal, interceptionPointName, extraParameters);
+			if(!hasAccess)
 			{
 			    hasUserContentAccess = false;
 				if(getIsDecorated() && getDeliveryContext().getConsiderEditorInDecoratedMode())
 			    {
 				    String cmsUserName = (String)getHttpServletRequest().getSession().getAttribute("cmsUserName");
-				    if(cmsUserName != null)
+				    if(cmsUserName != null && !cmsUserName.equals(infoGluePrincipal.getName()))
 				    {
+				    	System.out.println("Need this be here:" + cmsUserName + "=" + infoGluePrincipal.getName());
 					    InfoGluePrincipal cmsPrincipal = getPrincipal(cmsUserName);
 					    
 					    if(cmsPrincipal != null && AccessRightController.getController().getIsPrincipalAuthorized(cmsPrincipal, interceptionPointName, extraParameters))
