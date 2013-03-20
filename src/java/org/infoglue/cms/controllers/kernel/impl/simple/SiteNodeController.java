@@ -2413,6 +2413,7 @@ public class SiteNodeController extends BaseController
 				if(deleteVersions)
 					cleanVersions(numberOfVersionsToKeep, partList);
 				cleanedVersions = cleanedVersions + partList.size();
+				System.out.println("Cleaned " + cleanedVersions + " of " + siteNodeVersionVOList.size());
 				partList.clear();
 				maxIndex = (siteNodeVersionVOList.size() > batchLimit ? batchLimit : siteNodeVersionVOList.size());
 				partList = siteNodeVersionVOList.subList(0, maxIndex);
@@ -2460,7 +2461,7 @@ public class SiteNodeController extends BaseController
 				Integer count = new Integer(rs.getString("versionCount"));
 				totalVersions = totalVersions + (count-numberOfVersionsToKeep);
 				result.put(siteNodeId, count);
-				if(totalVersions > 1000)
+				if(totalVersions > 500)
 					break;
 			}
 			rs.close();

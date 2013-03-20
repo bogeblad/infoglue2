@@ -2806,7 +2806,7 @@ public class ContentVersionController extends BaseController
 	{
 		int cleanedVersions = 0;
 		
-		int batchLimit = 200;
+		int batchLimit = 20;
 		List languageVOList = LanguageController.getController().getLanguageVOList();
 		
 		Iterator<LanguageVO> languageVOListIterator = languageVOList.iterator();
@@ -2837,6 +2837,7 @@ public class ContentVersionController extends BaseController
 					if(deleteVersions)
 						cleanVersions(numberOfVersionsToKeep, partList);
 					cleanedVersions = cleanedVersions + partList.size();
+					System.out.println("Cleaned " + cleanedVersions + " of " + contentVersionVOList.size());
 					partList.clear();
 					maxIndex = (contentVersionVOList.size() > batchLimit ? batchLimit : contentVersionVOList.size());
 					partList = contentVersionVOList.subList(0, maxIndex);
@@ -2980,7 +2981,7 @@ public class ContentVersionController extends BaseController
 				Integer count = new Integer(rs.getString("versionCount"));
 				totalVersions = totalVersions + (count-numberOfVersionsToKeep);
 				result.put(contentId, count);
-				if(totalVersions > 1000)
+				if(totalVersions > 500)
 					break;
 			}
 			rs.close();
