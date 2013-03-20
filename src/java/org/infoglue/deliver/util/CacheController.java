@@ -2209,6 +2209,7 @@ public class CacheController extends Thread
 					if(cacheName.equalsIgnoreCase("principalCache") && (entity.indexOf("SystemUser") > 0 || entity.indexOf("Role") > 0  || entity.indexOf("Group") > 0))
 					{
 						clear = true;
+						System.out.println("entity:" + entity);
 					}
 					if((cacheName.equalsIgnoreCase("assetUrlCache") || cacheName.equalsIgnoreCase("assetUrlCacheWithGroups") || cacheName.equalsIgnoreCase("assetThumbnailUrlCache")) && (entity.indexOf("DigitalAsset") > 0 || entity.indexOf("ContentVersion") > 0 || entity.indexOf("AccessRight") > 0 || entity.indexOf("SystemUser") > 0 || entity.indexOf("Role") > 0  || entity.indexOf("Group") > 0))
 					{

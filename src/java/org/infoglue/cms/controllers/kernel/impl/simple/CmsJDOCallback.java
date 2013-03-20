@@ -585,7 +585,11 @@ public class CmsJDOCallback implements CallbackInterceptor
 		{
 			storedClassName = "org.infoglue.cms.entities.content.impl.simple.ContentVersionImpl";
 		}
-	
+		else if(storedClassName.equals("org.infoglue.cms.entities.structure.impl.simple.SmallQualifyerImpl"))
+		{
+			storedClassName = "org.infoglue.cms.entities.structure.impl.simple.QualifyerImpl";
+		}
+
 		return storedClassName;
 	}
 

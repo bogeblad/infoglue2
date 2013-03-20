@@ -6435,7 +6435,7 @@ public class BasicTemplateController implements TemplateController
 		
 		if(childPages == null)
 		{
-			//System.out.println("No found pages on " + key);
+			System.out.println("No found pages on " + key);
 			try
 			{
 				Timer t = new Timer();
@@ -6446,7 +6446,7 @@ public class BasicTemplateController implements TemplateController
 				//if(logger.isInfoEnabled())
 					RequestAnalyser.getRequestAnalyser().registerComponentStatistics("getChildPages.getPages(micro)", t.getElapsedTimeNanos() / 1000);
 
-				//CacheController.cacheObjectInAdvancedCache("childPagesCache", key, childPages, new String[] {CacheController.getPooledString(3, siteNodeId)}, true);
+				CacheController.cacheObjectInAdvancedCache("childPagesCache", key, childPages, new String[] {CacheController.getPooledString(3, siteNodeId)}, true);
 			}
 			catch(Exception e)
 			{

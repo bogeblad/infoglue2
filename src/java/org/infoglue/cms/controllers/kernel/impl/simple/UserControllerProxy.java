@@ -216,6 +216,7 @@ public class UserControllerProxy extends BaseController
     	
     	InfoGluePrincipal infoGluePrincipal = getAuthorizationModule().getAuthorizedInfoGluePrincipal(userName);
 	   
+    	System.out.println("Caching:" + infoGluePrincipal + " on " + userName);
 		if(infoGluePrincipal != null)
 			CacheController.cacheObjectInAdvancedCache("principalCache", userName, infoGluePrincipal, new String[]{}, false);
 		else
