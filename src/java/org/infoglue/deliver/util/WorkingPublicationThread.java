@@ -513,16 +513,6 @@ public class WorkingPublicationThread extends Thread
 
         RequestAnalyser.getRequestAnalyser().setBlockRequests(false);
 		logger.info("released block");
-	
-		try 
-        {
-			System.out.println("Calling again...");
-			CacheController.evictWaitingCache(false);
-		} 
-        catch (Exception e) 
-        {
-			e.printStackTrace();
-		}
 	}
 	
 	public void addCacheUpdateDirective(String className, String objectId, List<Map<String, String>> allIGCacheCalls) 

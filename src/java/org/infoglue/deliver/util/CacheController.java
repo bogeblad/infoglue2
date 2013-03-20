@@ -4143,40 +4143,19 @@ public class CacheController extends Thread
     public static void evictWaitingCache(boolean waitIfOngoing) throws Exception
     {	    
        	String operatingMode = CmsPropertyHandler.getOperatingMode();
-       	if(!waitIfOngoing)
-       	{
-		    synchronized(RequestAnalyser.getRequestAnalyser()) 
-		    {
-		       	if(RequestAnalyser.getRequestAnalyser().getBlockRequests() && RequestAnalyser.getRequestAnalyser().getBlockRequestTime() < 30000)
-			    {
-				    logger.warn("evictWaitingCache allready in progress - returning to avoid conflict");
-				    return;
-			    }
-		       	else if(RequestAnalyser.getRequestAnalyser().getBlockRequests() && RequestAnalyser.getRequestAnalyser().getBlockRequestTime() > 30000)
-		       		logger.warn("An block must have gone wrong... there has gone over 30 seconds and still not reported done.. let's run anyway.");
-	
-		       	RequestAnalyser.getRequestAnalyser().setBlockRequests(true);
-			}
-       	}
-
-       	if(waitIfOngoing && ongoingThread != null && ongoingThread.isAlive())
+	    synchronized(RequestAnalyser.getRequestAnalyser()) 
 	    {
-       		try
-       		{
-	       		ongoingThread.join(30000);
-		    	System.out.println("We waited and now the thread finished and we can return");
-		    	if(!ongoingThread.isAlive() && notifications.size() == 0)
-		    	{
-		    		return;
-		    	}
-		    	else
-		    		System.out.println("Was not dead after 30 or list of notifications was not empty - let's continute");
-       		}
-       		catch (InterruptedException e) 
-       		{
-       			System.out.println("Waited long - let's continute");
-			}
-	    }
+	       	if(RequestAnalyser.getRequestAnalyser().getBlockRequests() && RequestAnalyser.getRequestAnalyser().getBlockRequestTime() < 30000)
+		    {
+			    logger.warn("evictWaitingCache allready in progress - returning to avoid conflict");
+			    return;
+		    }
+	       	else if(RequestAnalyser.getRequestAnalyser().getBlockRequests() && RequestAnalyser.getRequestAnalyser().getBlockRequestTime() > 30000)
+	       		logger.warn("An block must have gone wrong... there has gone over 30 seconds and still not reported done.. let's run anyway.");
+
+	       	RequestAnalyser.getRequestAnalyser().setBlockRequests(true);
+		}
+
 	    	
 	    logger.info("evictWaitingCache starting");
     	logger.info("blocking");
@@ -4193,7 +4172,6 @@ public class CacheController extends Thread
     	System.out.println("Had some notifications to handle:" + notifications.size());
     	
     	WorkingPublicationThread wpt = new WorkingPublicationThread();
-    	ongoingThread = wpt;
     	
     	SelectiveLivePublicationThread pt = null;
     	String livePublicationThreadClass = "";

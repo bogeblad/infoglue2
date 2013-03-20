@@ -3020,7 +3020,7 @@ public class ContentVersionController extends BaseController
 		List<Integer> contentIdList = new ArrayList<Integer>();
 		contentIdList.addAll(contentIdMap.keySet());
 
-		int slotSize = 500;
+		int slotSize = 100;
     	while(contentIdList.size() > 0)
     	{
     		List<Integer> subList = new ArrayList<Integer>();
