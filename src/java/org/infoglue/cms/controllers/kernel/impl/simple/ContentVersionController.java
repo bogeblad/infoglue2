@@ -2837,7 +2837,7 @@ public class ContentVersionController extends BaseController
 					if(deleteVersions)
 						cleanVersions(numberOfVersionsToKeep, partList);
 					cleanedVersions = cleanedVersions + partList.size();
-					System.out.println("Cleaned " + cleanedVersions + " of " + contentVersionVOList.size());
+					logger.info("Cleaned " + cleanedVersions + " of " + contentVersionVOList.size());
 					partList.clear();
 					maxIndex = (contentVersionVOList.size() > batchLimit ? batchLimit : contentVersionVOList.size());
 					partList = contentVersionVOList.subList(0, maxIndex);

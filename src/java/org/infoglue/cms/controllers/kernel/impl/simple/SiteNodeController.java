@@ -2396,6 +2396,9 @@ public class SiteNodeController extends BaseController
 	
 	public int cleanSiteNodeVersions(int numberOfVersionsToKeep, boolean keepOnlyOldPublishedVersions, long minimumTimeBetweenVersionsDuringClean, boolean deleteVersions) throws SystemException, Exception 
 	{
+		if(numberOfVersionsToKeep > 10)
+			numberOfVersionsToKeep = 10;
+		
 		int cleanedVersions = 0;
 		
 		int batchLimit = 20;
@@ -2424,7 +2427,7 @@ public class SiteNodeController extends BaseController
 				if(deleteVersions)
 					cleanVersions(numberOfVersionsToKeep, partList);
 				cleanedVersions = cleanedVersions + partList.size();
-				System.out.println("Cleaned " + cleanedVersions + " of " + siteNodeVersionVOList.size());
+				logger.info("Cleaned " + cleanedVersions + " of " + siteNodeVersionVOList.size());
 				partList.clear();
 				maxIndex = (siteNodeVersionVOList.size() > batchLimit ? batchLimit : siteNodeVersionVOList.size());
 				partList = siteNodeVersionVOList.subList(0, maxIndex);
