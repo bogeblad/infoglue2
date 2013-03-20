@@ -1747,10 +1747,10 @@ public class ContentVersionController extends BaseController
         	SiteNodeVersion latestSiteNodeVersion = null;
 		    if(principal != null && contentTypeDefinitionVO.getName().equalsIgnoreCase("Meta info"))
 		    {
-		    	SiteNode siteNode = SiteNodeController.getController().getSiteNodeWithMetaInfoContentId(db, contentVO.getContentId());
+		    	SiteNodeVO siteNode = SiteNodeController.getController().getSiteNodeVOWithMetaInfoContentId(db, contentVO.getContentId());
 				if(siteNode.getMetaInfoContentId() != null && siteNode.getMetaInfoContentId().equals(contentVO.getContentId()))
 				{
-			    	latestSiteNodeVersion = SiteNodeVersionController.getController().getLatestSiteNodeVersion(db, siteNode.getId(), false);
+			    	latestSiteNodeVersion = SiteNodeVersionController.getController().getLatestMediumSiteNodeVersion(db, siteNode.getId(), false);
 			    	latestSiteNodeVersion.setVersionModifier(contentVersionVO.getVersionModifier());
 			    	latestSiteNodeVersion.setModifiedDateTime(DateHelper.getSecondPreciseDate());
 					SiteNodeVersionControllerProxy.getSiteNodeVersionControllerProxy().acUpdate(principal, latestSiteNodeVersion.getValueObject(), db);
@@ -1867,7 +1867,7 @@ public class ContentVersionController extends BaseController
     	if(CmsPropertyHandler.getUseShortTableNames() != null && CmsPropertyHandler.getUseShortTableNames().equalsIgnoreCase("true"))
     		oql = db.getOQLQuery("CALL SQL select cv.contVerId, cv.stateId, cv.modifiedDateTime, cv.verComment, cv.isCheckedOut, cv.isActive, cv.contId, cv.languageId, cv.verValue FROM cmContVer cv where cv.isActive = $1 AND cv.stateId = $2 AND cv.contId IN (" + variables + ") AS org.infoglue.cms.entities.content.impl.simple.SmallestContentVersionImpl");
 	
-    	System.out.println("SQL:" + SQL);
+    	//System.out.println("SQL:" + SQL);
     	//logger.info("SQL:" + SQL);
     	//logger.info("parentSiteNodeId:" + parentSiteNodeId);
     	//logger.info("showDeletedItems:" + showDeletedItems);

@@ -2183,9 +2183,7 @@ public class SiteNodeController extends BaseController
 
         try
         {
-        	SiteNode siteNode = getSiteNodeWithMetaInfoContentId(db, contentId);
-        	if(siteNode != null)
-        		siteNodeVO = siteNode.getValueObject();
+        	siteNodeVO = getSiteNodeVOWithMetaInfoContentId(db, contentId);
         	
             commitTransaction(db);
         }
@@ -2200,27 +2198,39 @@ public class SiteNodeController extends BaseController
         return siteNodeVO;
     }       
 
+    private static Map<Integer,Integer> metaInfoSiteNodeIdMap = new HashMap<Integer,Integer>();
+    
     public SiteNodeVO getSiteNodeVOWithMetaInfoContentId(Database db, Integer contentId) throws ConstraintException, SystemException, Exception
     {
 		SiteNodeVO siteNodeVO = null;
 
-		OQLQuery oql = db.getOQLQuery("SELECT sn FROM org.infoglue.cms.entities.structure.impl.simple.SmallSiteNodeImpl sn WHERE sn.metaInfoContentId = $1 ORDER BY sn.siteNodeId");
-    	oql.bind(contentId);
-    	
-    	QueryResults results = oql.execute(Database.ReadOnly);
+		Integer cachedSiteNodeId = metaInfoSiteNodeIdMap.get(contentId);
+		if(cachedSiteNodeId != null)
+		{
+			siteNodeVO = getSiteNodeVOWithId(cachedSiteNodeId, db);
+		}
+		else
+		{
+			//System.out.println("Asking for mapping:" + contentId);
+			OQLQuery oql = db.getOQLQuery("SELECT sn FROM org.infoglue.cms.entities.structure.impl.simple.SmallSiteNodeImpl sn WHERE sn.metaInfoContentId = $1 ORDER BY sn.siteNodeId");
+	    	oql.bind(contentId);
+	    	
+	    	QueryResults results = oql.execute(Database.ReadOnly);
+			
+			if(results.hasMore()) 
+	        {
+				SiteNode siteNode = (SiteNodeImpl)results.next();
+				siteNodeVO = siteNode.getValueObject();
+				metaInfoSiteNodeIdMap.put(contentId, siteNodeVO.getId());
+	        }
+	
+			results.close();
+			oql.close();
+		}
 		
-		if(results.hasMore()) 
-        {
-			SiteNode siteNode = (SiteNodeImpl)results.next();
-			siteNodeVO = siteNode.getValueObject();
-        }
-
-		results.close();
-		oql.close();
-
 		return siteNodeVO;
     }
-
+    /*
     public SiteNode getSiteNodeWithMetaInfoContentId(Database db, Integer contentId) throws ConstraintException, SystemException, Exception
     {
 		SiteNode siteNode = null;
@@ -2240,6 +2250,7 @@ public class SiteNodeController extends BaseController
 
 		return siteNode;
     }
+    */
     
 	/**
 	 * This method returns true if the if the siteNode in question is protected.

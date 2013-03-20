@@ -886,6 +886,47 @@ public class SiteNodeVersionController extends BaseController
 		return siteNodeVersion;
 	}
 
+	/**
+	 * This is a method used to get the latest site node version of a sitenode within a given transaction.
+	 */
+	
+	public SiteNodeVersion getLatestMediumSiteNodeVersion(Database db, Integer siteNodeId, boolean ReadOnly) throws SystemException, Bug
+	{
+		ConstraintExceptionBuffer ceb = new ConstraintExceptionBuffer();
+
+		SiteNodeVersion siteNodeVersion = null;
+
+		try
+		{
+			OQLQuery oql = db.getOQLQuery( "SELECT cv FROM org.infoglue.cms.entities.structure.impl.simple.MediumSiteNodeVersionImpl cv WHERE cv.siteNodeId = $1 ORDER BY cv.siteNodeVersionId desc");
+			oql.bind(siteNodeId);
+        	
+			QueryResults results = null;
+			if(ReadOnly)
+			    results = oql.execute(Database.ReadOnly);
+			else
+			{
+				this.logger.info("Fetching entity in read/write mode");
+				results = oql.execute();
+			}
+			
+			if (results.hasMore()) 
+			{
+				siteNodeVersion = (SiteNodeVersion)results.next();
+			}
+
+			results.close();
+			oql.close();
+		}
+		catch(Exception e)
+		{
+			logger.error("An error occurred so we should not completes the transaction:" + e, e);
+			throw new SystemException(e.getMessage());
+		}
+    	
+		return siteNodeVersion;
+	}
+
     
     public SiteNodeVersionVO updateStateId(Integer siteNodeVersionId, Integer stateId, String versionComment, InfoGluePrincipal infoGluePrincipal, Integer siteNodeId) throws ConstraintException, SystemException
     {

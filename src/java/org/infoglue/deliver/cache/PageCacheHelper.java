@@ -475,18 +475,21 @@ public class PageCacheHelper implements Runnable
 			System.out.println("Why is it 0");
 		//System.out.println("entities:" + entities.size());
 		Timer t = new Timer();
+		Timer t2 = new Timer();
 	
 		List<String> matchingPageKeysForGroups = new ArrayList<String>();
 		
 		Map<String,Object> cachedValuesCopy = CacheController.getCachedObjectsFromAdvancedCacheFilteredOnKeyEnd("pageCacheExtra", "_entitiesAsByte");
 		//System.out.println("cachedValuesCopy:" + cachedValuesCopy.size());
-		//t.printElapsedTime("getCachedObjectsFromAdvancedCacheFilteredOnKeyEnd took");
+		t2.printElapsedTime("getCachedObjectsFromAdvancedCacheFilteredOnKeyEnd took");
 		
 		for(String key : cachedValuesCopy.keySet())
 		{
+			t2.printElapsedTime("rest took");
 			//System.out.println("Key:" + key);
 			byte[] byteValue = (byte[])cachedValuesCopy.get(key);
 			String value = compressionHelper.decompress(byteValue);
+			t2.printElapsedTime("decompress took");
 			for(String matchToTest : entities)
 			{
 				//System.out.println("value:" + value);
@@ -501,6 +504,7 @@ public class PageCacheHelper implements Runnable
 		long elapsedTime = t.getElapsedTime();
 		if(elapsedTime > 20)
 			logger.warn("Found " + matchingPageKeysForGroups.size() + " pages. Matching pages took " + elapsedTime);
+		System.out.println("Found " + matchingPageKeysForGroups.size() + " pages. Matching pages took " + elapsedTime);
 		
 		return matchingPageKeysForGroups;
 	}

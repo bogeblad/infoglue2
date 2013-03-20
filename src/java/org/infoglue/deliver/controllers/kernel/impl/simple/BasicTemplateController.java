@@ -5350,6 +5350,7 @@ public class BasicTemplateController implements TemplateController
 			catch(Exception e)
 			{
 				logger.warn("An error occurred trying to get Matching Contents for contentTypeDefinitionNamesString: " + contentTypeDefinitionNamesString + ":" + e.getMessage(), e);
+				MatchingContentsQueue.getMatchingContentsQueue().clearMatchingContentsQueueBean(key);
 			}
 		}
 		else if(cachedMatchingContents != null)
