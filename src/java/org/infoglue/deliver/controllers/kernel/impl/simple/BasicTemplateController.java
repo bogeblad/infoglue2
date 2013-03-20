@@ -6436,7 +6436,6 @@ public class BasicTemplateController implements TemplateController
 		
 		if(childPages == null)
 		{
-			System.out.println("No found pages on " + key);
 			try
 			{
 				Timer t = new Timer();
