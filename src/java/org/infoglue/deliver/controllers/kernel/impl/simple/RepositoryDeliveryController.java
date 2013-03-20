@@ -520,8 +520,7 @@ public class RepositoryDeliveryController extends BaseDeliveryController
 			return (String)object;
 		}
 		
-	    System.out.println("No cached value for:" + key);
-		String propertyValue = null;
+	    String propertyValue = null;
 		
 		try
 	    {
@@ -540,8 +539,6 @@ public class RepositoryDeliveryController extends BaseDeliveryController
 			    
 				propertyValue = properties.getProperty(propertyName);
 			}
-
-		    System.out.println("Caching value for:" + key + ":" + propertyValue);
 
 		    logger.info("propertyValue:" + propertyValue);
 		    if(propertyValue != null)

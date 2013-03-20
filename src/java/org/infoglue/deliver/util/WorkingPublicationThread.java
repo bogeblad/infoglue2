@@ -461,7 +461,10 @@ public class WorkingPublicationThread extends Thread
 					}
 					catch (Exception e) 
 					{
-						logger.error("Error handling cache update message:" + className + ":" + objectId, e);
+						if(e.getMessage().indexOf("was not found") > -1 || (e.getCause() != null && e.getCause().getMessage().indexOf("was not found") > -1))
+							logger.warn("A delete operation probably gave us trouble clearing the correct caches");
+						else
+							logger.warn("Error handling cache update message:" + className + ":" + objectId, e);
 					}
 					
 				    RequestAnalyser.getRequestAnalyser().removeOngoingPublications(cacheEvictionBean);

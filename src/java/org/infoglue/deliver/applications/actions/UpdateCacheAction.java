@@ -184,7 +184,7 @@ public class UpdateCacheAction extends InfoGlueAbstractAction
         {
 	        if(!ServerNodeController.getController().getIsIPAllowed(this.getRequest()))
 	        {
-	        	logger.error("A user from an IP(" + this.getRequest().getRemoteAddr() + ") which is not allowed tried to call doReCache.");
+	        	logger.warn("A user from an IP(" + this.getRequest().getRemoteAddr() + ") which is not allowed tried to call UpdateCache!test.");
 
 	            this.getResponse().setContentType("text/plain");
 	            this.getResponse().setStatus(HttpServletResponse.SC_FORBIDDEN);
@@ -213,7 +213,7 @@ public class UpdateCacheAction extends InfoGlueAbstractAction
         {
 	        if(!ServerNodeController.getController().getIsIPAllowed(this.getRequest()))
 	        {
-	        	logger.error("A user from an IP(" + this.getRequest().getRemoteAddr() + ") which is not allowed tried to call doReCache.");
+	        	logger.warn("A user from an IP(" + this.getRequest().getRemoteAddr() + ") which is not allowed tried to call UpdateCache!getPublicationState.");
 
 	            this.getResponse().setContentType("text/plain");
 	            this.getResponse().setStatus(HttpServletResponse.SC_FORBIDDEN);
@@ -266,7 +266,7 @@ public class UpdateCacheAction extends InfoGlueAbstractAction
         {
 	        if(!ServerNodeController.getController().getIsIPAllowed(this.getRequest()))
 	        {
-	        	logger.error("A user from an IP(" + this.getRequest().getRemoteAddr() + ") which is not allowed tried to call doReCache.");
+	        	logger.warn("A user from an IP(" + this.getRequest().getRemoteAddr() + ") which is not allowed tried to call UpdateCache!getOngoingPublications.");
 
 	            this.getResponse().setContentType("text/plain");
 	            this.getResponse().setStatus(HttpServletResponse.SC_FORBIDDEN);
@@ -299,7 +299,7 @@ public class UpdateCacheAction extends InfoGlueAbstractAction
         {
 	        if(!ServerNodeController.getController().getIsIPAllowed(this.getRequest()))
 	        {
-	        	logger.error("A user from an IP(" + this.getRequest().getRemoteAddr() + ") which is not allowed tried to call doReCache.");
+	        	logger.warn("A user from an IP(" + this.getRequest().getRemoteAddr() + ") which is not allowed tried to call UpdateCache!getLatestPublications.");
 
 	            this.getResponse().setContentType("text/plain");
 	            this.getResponse().setStatus(HttpServletResponse.SC_FORBIDDEN);
@@ -332,7 +332,7 @@ public class UpdateCacheAction extends InfoGlueAbstractAction
         {
 	        if(!ServerNodeController.getController().getIsIPAllowed(this.getRequest()))
 	        {
-	        	logger.error("A user from an IP(" + this.getRequest().getRemoteAddr() + ") which is not allowed tried to call doReCache.");
+	        	logger.warn("A user from an IP(" + this.getRequest().getRemoteAddr() + ") which is not allowed tried to call UpdateCache!testV3.");
 
 	            this.getResponse().setContentType("text/plain");
 	            this.getResponse().setStatus(HttpServletResponse.SC_FORBIDDEN);
@@ -368,7 +368,7 @@ public class UpdateCacheAction extends InfoGlueAbstractAction
 	        long start = System.currentTimeMillis();
 	        if(!ServerNodeController.getController().getIsIPAllowed(this.getRequest()))
 	        {
-	        	logger.error("A user from an IP(" + this.getRequest().getRemoteAddr() + ") which is not allowed tried to call doReCache.");
+	        	logger.warn("A user from an IP(" + this.getRequest().getRemoteAddr() + ") which is not allowed tried to call UpdateCache.action.");
 
 	            this.getResponse().setContentType("text/plain");
 	            this.getResponse().setStatus(HttpServletResponse.SC_FORBIDDEN);

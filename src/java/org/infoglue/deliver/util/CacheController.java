@@ -435,10 +435,10 @@ public class CacheController extends Thread
 		ComponentController.getController().preCacheComponents(-1);
 		logger.warn("preCacheComponents took:" + t.getElapsedTime());
 		
-		List<SiteNodeVO> snVOList = SiteNodeController.getController().getSiteNodeVOList(false, new Integer(CmsPropertyHandler.getOperatingMode()), 5000);
+		List<SiteNodeVO> snVOList = SiteNodeController.getController().getSiteNodeVOList(false, new Integer(CmsPropertyHandler.getOperatingMode()), 30000);
 		logger.warn("snVOList:" + snVOList.size() + " fetched and precached in " + t.getElapsedTime() + " ms");
 
-		List<ContentVO> cList = ContentController.getContentController().getContentVOList(5000);
+		List<ContentVO> cList = ContentController.getContentController().getContentVOList(10000);
 		logger.warn("cList:" + snVOList.size() + " fetched and precached in " + t.getElapsedTime() + " ms");
 
 		/*
@@ -2763,7 +2763,7 @@ public class CacheController extends Thread
 							    		}
 							    		catch (Exception e2) 
 							    		{
-							    			logger.warn("Flushing all as it was a missing entity - was probably a delete");
+							    			logger.warn("Flushing assetUrlCacheWithGroups as it was a missing entity - was probably a delete");
 							    			cacheInstance.flushAll();
 										}
 						    		}
@@ -2791,14 +2791,13 @@ public class CacheController extends Thread
 								    		cacheInstance.flushGroup("content_" + contentId);
 								    		cacheInstance.flushGroup("contentVersion_" + entityId);
 								    		cacheInstance.flushGroup("selectiveCacheUpdateNonApplicable");
-									    	logger.warn("Clearing childPagesCache for content:" + "content_" + contentId);
+									    	logger.info("Clearing childPagesCache for content:" + "content_" + contentId);
 							    		}
 							    		catch (Exception e2) 
 							    		{
-							    			System.out.println("Flushing all as it was a missing entity - was probably a delete");
+							    			logger.warn("Flushing childPagesCache as it was a missing entity - was probably a delete");
 							    			cacheInstance.flushAll();
 										}
-
 						    		}
 							    	else if(cacheName.equals("matchingContentsCache"))
 						    		{
@@ -4170,7 +4169,7 @@ public class CacheController extends Thread
         		return;
         	}
         }
-    	System.out.println("Had some notifications to handle:" + notifications.size());
+    	logger.info("Had some notifications to handle:" + notifications.size());
     	
     	WorkingPublicationThread wpt = new WorkingPublicationThread();
     	
