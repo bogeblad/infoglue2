@@ -331,8 +331,8 @@ public class SimpleThreadMonitor implements Runnable
 	            	else	
 	            		stackString.append("    ").append(frame.toString()).append("\n");
 	            	
-	            	if((stackString.indexOf("infoglue") > -1 && j > 20) || j > 35)
-	            		break;
+	            	//if((stackString.indexOf("infoglue") > -1 && j > 20) || j > 35)
+	            	//	break;
 				}                    
 	       	}
 	
