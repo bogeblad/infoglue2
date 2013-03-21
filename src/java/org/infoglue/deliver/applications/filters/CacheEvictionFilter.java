@@ -74,7 +74,7 @@ public class CacheEvictionFilter implements Filter
               
         SimpleThreadMonitor tk = null;
     	if(!CmsPropertyHandler.getOperatingMode().equals("3"))
-    		tk = new SimpleThreadMonitor(5000, httpRequest, "Page view took to long!", true);
+    		tk = new SimpleThreadMonitor(3000, httpRequest, "Page view took to long!", true);
 
         try
         {
