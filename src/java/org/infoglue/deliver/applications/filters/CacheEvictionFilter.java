@@ -90,7 +90,7 @@ public class CacheEvictionFilter implements Filter
             {
             	Timer t = new Timer();
             	CacheController.evictWaitingCache();
-                t.printElapsedTime("evictWaitingCache", 20);
+                t.printElapsedTime("evictWaitingCache", 100);
             }
         }
         catch (Exception e)

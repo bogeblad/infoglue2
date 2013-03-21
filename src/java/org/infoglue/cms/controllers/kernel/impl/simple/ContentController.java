@@ -1044,7 +1044,6 @@ public class ContentController extends BaseController
         	throw new ConstraintException("Content.parentContentId", "3301");
         }
 		
-        System.out.println("AAAAAAAAAAA");
 		Content content          = getMediumContentWithId(contentVO.getContentId(), db);
         //oldParentContent = content.getParentContent();
         //newParentContent = getContentWithId(newParentContentId, db);
@@ -1315,11 +1314,12 @@ public class ContentController extends BaseController
 	    	{
 		        HashMap argument = (HashMap)i.next();
 	    		String contentTypeDefinitionName = (String)argument.get("contentTypeDefinitionName");
+	    		ContentTypeDefinitionVO ctdVO = ContentTypeDefinitionController.getController().getContentTypeDefinitionVOWithName(contentTypeDefinitionName, db);
 	    		
 				//OQLQuery oql = db.getOQLQuery("CALL SQL SELECT c.contentId, c.name, c.publishDateTime, c.expireDateTime, c.isBranch, c.isProtected, c.creator, ctd.contentTypeDefinitionId, r.repositoryId FROM cmContent c, cmContentTypeDefinition ctd, cmRepository r where c.repositoryId = r.repositoryId AND c.contentTypeDefinitionId = ctd.contentTypeDefinitionId AND ctd.name = $1 AS org.infoglue.cms.entities.content.impl.simple.SmallContentImpl");
 				//OQLQuery oql = db.getOQLQuery("CALL SQL SELECT contentId, name FROM cmContent c, cmContentTypeDefinition ctd WHERE c.contentTypeDefinitionId = ctd.contentTypeDefinitionId AND ctd.name = $1 AS org.infoglue.cms.entities.content.impl.simple.ContentImpl");
-	    		OQLQuery oql = db.getOQLQuery("SELECT c FROM org.infoglue.cms.entities.content.impl.simple.MediumContentImpl c WHERE c.contentTypeDefinition.name = $1 ORDER BY c.contentId");
-	        	oql.bind(contentTypeDefinitionName);
+	    		OQLQuery oql = db.getOQLQuery("SELECT c FROM org.infoglue.cms.entities.content.impl.simple.MediumContentImpl c WHERE c.contentTypeDefinitionId = $1 ORDER BY c.contentId");
+	        	oql.bind(ctdVO.getId());
 	        	
 	        	QueryResults results = oql.execute(Database.ReadOnly);
 				

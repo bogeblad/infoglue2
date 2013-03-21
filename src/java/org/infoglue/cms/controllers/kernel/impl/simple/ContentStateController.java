@@ -126,7 +126,7 @@ public class ContentStateController extends BaseController
 			if(newContentVersion != null)
 				newContentVersionVO = newContentVersion.getValueObject();
 			
-			commitTransaction(db);
+			commitRegistryAwareTransaction(db);
         }
         catch(ConstraintException ce)
         {

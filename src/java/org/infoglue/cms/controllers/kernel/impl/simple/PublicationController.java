@@ -443,7 +443,7 @@ public class PublicationController extends BaseController
 				mailNotification(event, publisher.getName(), publisher.getEmail(), email, comment, referenceUrl);
 			}
 
-			commitTransaction(db);
+			commitRegistryAwareTransaction(db);
 		}
 		catch(Exception e)
 		{

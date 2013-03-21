@@ -121,7 +121,7 @@ public class SiteNodeStateController extends BaseController
 		{	
 			newSiteNodeVersionVO = changeState(oldSiteNodeVersionId, siteNodeVO, stateId, versionComment, overrideVersionModifyer, recipientFilter, infoGluePrincipal, db, resultingEvents);
         	 	
-        	commitTransaction(db);
+			commitRegistryAwareTransaction(db);
         }
         catch(Exception e)
         {

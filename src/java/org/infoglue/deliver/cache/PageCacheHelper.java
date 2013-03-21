@@ -149,11 +149,16 @@ public class PageCacheHelper implements Runnable
 
 	public void notify(String entityString)
 	{
+		Timer t = new Timer();
 		//System.out.println("notify:" + entityString);
 		//Thread.dumpStack();
 		if(CmsPropertyHandler.getOperatingMode().equals("0"))
 		{
-			Timer t = new Timer();
+			//System.out.println("This is working mode: let's clear fully.");
+			CacheController.clearCache("pageCacheExtra");
+			CacheController.clearCache("pageCache");
+			
+			/*
 			logger.info("Forcing clear for: " + entityString);
 
 			try
@@ -169,32 +174,14 @@ public class PageCacheHelper implements Runnable
 					{
 						disabledPages.put(pageKey, new Date());
 					}
-					/*
-					CacheController.clearCache("pageCache", pageKey);
-			    	CacheController.clearCache("pageCacheExtra", pageKey);
-			    	CacheController.clearCache("pageCacheExtra", pageKey + "_pageCacheTimeout");
-			    	CacheController.clearCache("pageCacheExtra", pageKey + "_entitiesAsByte");
-	    			*/
 	    			PageCacheHelper.getInstance().notifyKey(""+pageKey);
 				}
-			
-				/*
-				List localPageCacheEvicitionQueue = new ArrayList<String>();
-				localPageCacheEvicitionQueue.add(entityString);
-		    	List<String> existingPageKeysForEntities = getMatchingPageKeysForGroups(localPageCacheEvicitionQueue);
-				System.out.println("existingPageKeysForEntities:" + existingPageKeysForEntities.size());
-				for(String pageKey : existingPageKeysForEntities)
-				{
-					System.out.println("Remove pageKey:" + pageKey);
-					clearPageCache(pageKey);
-				}
-				*/
 			}
 			catch (Exception e) 
 			{
 				logger.error("Error in notify:" + e.getMessage());
 			}
-			
+			*/
 			long elapsedTime = t.getElapsedTime();
 			if(elapsedTime > 20)
 				logger.warn("Notify took " + elapsedTime);

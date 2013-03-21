@@ -41,6 +41,7 @@ import org.exolab.castor.jdo.QueryResults;
 import org.infoglue.cms.applications.common.VisualFormatter;
 import org.infoglue.cms.entities.content.Content;
 import org.infoglue.cms.entities.content.ContentVO;
+import org.infoglue.cms.entities.content.ContentVersionVO;
 import org.infoglue.cms.entities.content.DigitalAsset;
 import org.infoglue.cms.entities.kernel.BaseEntityVO;
 import org.infoglue.cms.entities.management.CategoryVO;
@@ -804,7 +805,16 @@ public class GroupPropertiesController extends BaseController
 	public String getAttributeValue(String xml, String attributeName, boolean escapeHTML) throws SystemException, Bug
 	{
 		String value = "";
-		
+		int startTagIndex = xml.indexOf("<" + attributeName + ">");
+		int endTagIndex   = xml.indexOf("]]></" + attributeName + ">");
+
+		if(startTagIndex > 0 && startTagIndex < xml.length() && endTagIndex > startTagIndex && endTagIndex <  xml.length())
+		{
+			value = xml.substring(startTagIndex + attributeName.length() + 11, endTagIndex);
+			if(escapeHTML)
+				value = new VisualFormatter().escapeHTML(value);
+		}
+		/*
 		try
 		{
 			InputSource inputSource = new InputSource(new StringReader(xml));
@@ -837,6 +847,32 @@ public class GroupPropertiesController extends BaseController
 		{
 			e.printStackTrace();
 		}
+		*/
+		return value;
+	}
+
+	/**
+	 * Returns an attribute value from the ContentVersionVO
+	 *
+	 * @param contentVersionVO The version on which to find the value
+	 * @param attributeName THe name of the attribute whose value is wanted
+	 * @param escapeHTML A boolean indicating if the result should be escaped
+	 * @return The String vlaue of the attribute, or blank if it doe snot exist.
+	 */
+	public String getAttributeValue(ContentVersionVO contentVersionVO, String attributeName, boolean escapeHTML)
+	{
+		String xml = contentVersionVO.getVersionValue();
+
+		String value = "";
+		int startTagIndex = xml.indexOf("<" + attributeName + ">");
+		int endTagIndex   = xml.indexOf("]]></" + attributeName + ">");
+
+		if(startTagIndex > 0 && startTagIndex < xml.length() && endTagIndex > startTagIndex && endTagIndex <  xml.length())
+		{
+			value = xml.substring(startTagIndex + attributeName.length() + 11, endTagIndex);
+			if(escapeHTML)
+				value = new VisualFormatter().escapeHTML(value);
+		}		
 
 		return value;
 	}

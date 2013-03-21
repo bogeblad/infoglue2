@@ -42,6 +42,7 @@ import org.infoglue.cms.controllers.kernel.impl.simple.ContentControllerProxy;
 import org.infoglue.cms.controllers.kernel.impl.simple.DigitalAssetController;
 import org.infoglue.cms.controllers.kernel.impl.simple.InfoGluePrincipalControllerProxy;
 import org.infoglue.cms.controllers.kernel.impl.simple.LanguageController;
+import org.infoglue.cms.controllers.kernel.impl.simple.RegistryController;
 import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeController;
 import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeVersionControllerProxy;
 import org.infoglue.cms.controllers.kernel.impl.simple.ToolbarController;
@@ -701,6 +702,7 @@ public abstract class InfoGlueAbstractAction extends WebworkAbstractAction
 		    if (db.isActive())
 		    {
 			    db.commit();
+			    RegistryController.notifyTransactionCommitted();
 			}
 		}
 		catch(Exception e)

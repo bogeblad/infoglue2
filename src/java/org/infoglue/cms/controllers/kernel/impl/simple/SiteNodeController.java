@@ -574,7 +574,7 @@ public class SiteNodeController extends BaseController
 			SiteNodeVO siteNodeVO = siteNode.getValueObject();			
 			siteNodeVOMap.put(siteNodeVO.getSiteNodeVersionId(), siteNodeVO);
 		}
-		t.printElapsedTime("siteNodeVOMap populated:" + siteNodeVOMap.size());
+		//t.printElapsedTime("siteNodeVOMap populated:" + siteNodeVOMap.size());
 
 		results.close();
 		oql.close();

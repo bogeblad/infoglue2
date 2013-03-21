@@ -2039,6 +2039,7 @@ public class CacheController extends Thread
 			}
 			*/
 			RequestAnalyser.getRequestAnalyser().registerComponentStatistics("Start cache eviction", t.getElapsedTime());
+	    	//t.printElapsedTime("START cachesLoop:" + entity + ":" + entityId);
 
 			//synchronized(caches)
 		    //{
@@ -2225,7 +2226,6 @@ public class CacheController extends Thread
 					if(cacheName.equalsIgnoreCase("principalCache") && (entity.indexOf("SystemUser") > 0 || entity.indexOf("Role") > 0  || entity.indexOf("Group") > 0))
 					{
 						clear = true;
-						System.out.println("entity:" + entity);
 					}
 					if((cacheName.equalsIgnoreCase("assetUrlCache") || cacheName.equalsIgnoreCase("assetUrlCacheWithGroups") || cacheName.equalsIgnoreCase("assetThumbnailUrlCache")) && (entity.indexOf("DigitalAsset") > 0 || entity.indexOf("ContentVersion") > 0 || entity.indexOf("AccessRight") > 0 || entity.indexOf("SystemUser") > 0 || entity.indexOf("Role") > 0  || entity.indexOf("Group") > 0))
 					{
@@ -2458,6 +2458,7 @@ public class CacheController extends Thread
 						    GeneralCacheAdministrator cacheInstance = (GeneralCacheAdministrator)e.getValue();
 						    synchronized(cacheInstance) //Back
 						    {
+						    	//t.printElapsedTime("START:" + entity + ":" + entityId);
 						    	//ADD logic to flush correct on sitenode and sitenodeversion
 						    	/*
 						    	if(selectiveCacheUpdate && entity.indexOf("SiteNode") > 0)
@@ -2478,7 +2479,7 @@ public class CacheController extends Thread
 										logger.info("clearing " + e.getKey() + " : " + groupQualifyer);
 
 										PageCacheHelper.getInstance().notify("" + groupQualifyer);
-										/*
+								    	/*
 										if(cacheName.equals("pageCacheExtra"))
 								    	{
 								    		clearFileCacheForGroup(cacheInstance, "" + groupQualifyer);
