@@ -603,7 +603,7 @@ public class UpdateCacheAction extends InfoGlueAbstractAction
 			    	CacheController.notifications.addAll(newNotificationList);
 		        }
 			//}
-			new Thread(new Runnable() { public void run() {try {Thread.sleep(100); CacheController.evictWaitingCache(false);} catch (Exception e) {}}}).start();
+			//new Thread(new Runnable() { public void run() {try {Thread.sleep(100); CacheController.evictWaitingCache(false);} catch (Exception e) {}}}).start();
 			    
 			logger.info("UpdateCache finished...");
 		}
