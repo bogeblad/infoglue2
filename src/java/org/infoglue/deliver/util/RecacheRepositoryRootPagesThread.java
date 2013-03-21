@@ -135,8 +135,12 @@ public class RecacheRepositoryRootPagesThread implements Runnable
 		  		if(CmsPropertyHandler.getInternalDeliveryUrls().size() > 0)
 		        {
 		  			List<RepositoryVO> repositories = RepositoryController.getController().getRepositoryVOList();
+		  			int i = 0;
 		  			for(RepositoryVO repository : repositories)
 		  			{
+		  				if(i > 10)
+		  					break;
+		  				
 		  				Thread.sleep(2000);
 		  				try
 		  				{
