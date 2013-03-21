@@ -434,18 +434,18 @@ public class WorkingPublicationThread extends Thread
 							}
 						}	
 					    
-					    //long elapsedTime = t.getElapsedTime();
-					    //if(elapsedTime > 50)
-					    //	logger.warn("Clearing all castor caches took");
+					    long elapsedTime = t.getElapsedTime();
+					    if(elapsedTime > 50)
+					    	RequestAnalyser.getRequestAnalyser().registerComponentStatistics("Clearing all castor caches in working publication thread took", elapsedTime);
 
 					    for(Map<String,String> igCacheCall : allIGCacheCalls)
 						{
 							logger.info("Calling clear caches with:" + igCacheCall.get("className") + ":" + igCacheCall.get("objectId") + ":" + extraInformation);
 							CacheController.clearCaches(igCacheCall.get("className"), igCacheCall.get("objectId"), extraInformation, null);
 
-						    //elapsedTime = t.getElapsedTime();
-						    //if(elapsedTime > 10)
-						    logger.info("Clearing all caches for " + igCacheCall.get("className") + ":" + igCacheCall.get("objectId"));
+						    elapsedTime = t.getElapsedTime();
+						    if(elapsedTime > 10)
+						    	logger.warn("Clearing all caches for " + igCacheCall.get("className") + ":" + igCacheCall.get("objectId"));
 						}
 					    
 					    if(!skipOriginalEntity)
@@ -454,8 +454,8 @@ public class WorkingPublicationThread extends Thread
 						    CacheController.clearCaches(className, objectId, extraInformation, null);
 							CacheController.setForcedCacheEvictionMode(true);
 						    //elapsedTime = t.getElapsedTime();
-						    //if(elapsedTime > 10)
-						    	logger.info("Clearing all caches for " + className + ":" + objectId + ":" + changedAttributeNames);
+						    if(elapsedTime > 100)
+						    	logger.warn("Clearing all caches for " + className + ":" + objectId + ":" + changedAttributeNames);
 					    }
 						CacheEvictionBeanListenerService.getService().notifyListeners(cacheEvictionBean);
 					}
@@ -472,8 +472,6 @@ public class WorkingPublicationThread extends Thread
 				    //if(cacheEvictionBean.getPublicationId() > -1)
 				    	RequestAnalyser.getRequestAnalyser().addPublication(cacheEvictionBean);
 				}
-				
-				//t.printElapsedTime("Working thread");
 				
 				//TEST
 				if(accessRightsToClear != null && accessRightsToClear.size() > 0)
