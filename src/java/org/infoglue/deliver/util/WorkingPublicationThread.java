@@ -453,7 +453,7 @@ public class WorkingPublicationThread extends Thread
 					    String key = "" + className + "_" + objectId + "_" + extraInformation;
 					    if(!skipOriginalEntity && handledCacheCalls.get(key) == null)
 					    {
-					    	System.out.println("" + className + ":" + objectId + ":" + changedAttributeNames);
+					    	//System.out.println("" + className + ":" + objectId + ":" + changedAttributeNames);
 						    CacheController.clearCaches(className, objectId, extraInformation, null);
 							CacheController.setForcedCacheEvictionMode(true);
 						    //elapsedTime = t.getElapsedTime();
@@ -461,9 +461,9 @@ public class WorkingPublicationThread extends Thread
 						    	logger.warn("Clearing all caches for " + className + ":" + objectId + ":" + changedAttributeNames);
 					    }
 					    else
-					    	System.out.println("Skipping cache clear for the same entity..");
+					    	logger.info("Skipping cache clear for the same entity..");
 					    
-					    System.out.println("Adding:" + cacheEvictionBean.getObjectName() + ":" + cacheEvictionBean.getObjectId());
+					    //System.out.println("Adding:" + cacheEvictionBean.getObjectName() + ":" + cacheEvictionBean.getObjectId());
 						CacheEvictionBeanListenerService.getService().notifyListeners(cacheEvictionBean);
 					}
 					catch (Exception e) 

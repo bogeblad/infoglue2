@@ -271,8 +271,6 @@ public class PageCacheHelper implements Runnable
     		logger.warn("Problem loading data from file:" + e.getMessage());
     	}
     	
-    	t.printElapsedTime("Reading file from disk took");
-    	
     	return contents;
     }
     
@@ -318,8 +316,6 @@ public class PageCacheHelper implements Runnable
     	{
     		logger.warn("Problem loading data from file:" + e.getMessage());
     	}
-    	
-    	t.printElapsedTime("Reading file from disk took");
     	
     	return contents;
     }    

@@ -2656,7 +2656,6 @@ public class CacheController extends Thread
 							    }
 							    else if(selectiveCacheUpdate && (entity.indexOf("SiteNode") > 0 && entity.indexOf("SiteNodeTypeDefinition") == -1) && useSelectivePageCacheUpdate)
 							    {
-							    	System.out.println("GOT SN: " + entity + ":" + entityId);
 							    	//System.out.println("Entity: " + entity);
 							    	logger.info("Flushing " + "" + entityId);
 							    	logger.info("Flushing " + "siteNode_" + entityId);
@@ -4611,7 +4610,6 @@ public class CacheController extends Thread
 		            	}
 
 		            	//contents = FileHelper.getFileAsString(file, charEncoding);
-		            	t.printElapsedTime("getFileAsString took");
 		            }
 		            else
 		            {
@@ -4635,7 +4633,6 @@ public class CacheController extends Thread
 		            	contents = FileHelper.getFileAsStringOpt(file, charEncoding);
 	            	}
 	            	//contents = FileHelper.getFileAsString(file, charEncoding);
-	            	t.printElapsedTime("getFileAsString took");
 	            }
             }
             else
@@ -4648,8 +4645,6 @@ public class CacheController extends Thread
     	{
     		logger.warn("Problem loading data from file:" + e.getMessage());
     	}
-    	
-    	t.printElapsedTime("Reading file from disk took");
     	
     	return contents;
     }
