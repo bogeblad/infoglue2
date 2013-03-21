@@ -162,7 +162,7 @@ public class MatchingContentsQueue implements Runnable
 	 */
 	public void clearMatchingContentsQueueBean(String cacheKey)
 	{
-		logger.error("Clearing queue manually for " + cacheKey);
+		logger.warn("Clearing queue manually for " + cacheKey);
 		synchronized(instanceMatchingContentsQueueBeans)
 		{
 			instanceMatchingContentsQueueBeans.remove(cacheKey);
