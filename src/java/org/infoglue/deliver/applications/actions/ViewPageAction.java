@@ -759,11 +759,13 @@ public class ViewPageAction extends InfoGlueAbstractAction
 			return NONE; //doExecute();
 		}
 		
+		Timer t = new Timer();
         while(CmsPropertyHandler.getActuallyBlockOnBlockRequests() && RequestAnalyser.getRequestAnalyser().getBlockRequests())
         {
         	//System.out.println("Queing up requests as cache eviction are taking place..");
         	Thread.sleep(10);
         }
+        t.printElapsedTime("Waited in render view on blocking threads - correct", 50);
 		
 		if(logger.isInfoEnabled())
 		{
