@@ -481,7 +481,7 @@ public class PageCacheHelper implements Runnable
 		List<String> matchingPageKeysForGroups = new ArrayList<String>();
 		
 		Map<String,Object> cachedValuesCopy = CacheController.getCachedObjectsFromAdvancedCacheFilteredOnKeyEnd("pageCacheExtra", "_entitiesAsByte");
-		RequestAnalyser.getRequestAnalyser().registerComponentStatistics("getMatchingPageKeysForGroups.getCachedObjectsFromAdvancedCacheFilteredOnKeyEnd (now millis)", (t2.getElapsedTimeNanos() / 1000));
+		RequestAnalyser.getRequestAnalyser().registerComponentStatistics("getMatchingPageKeysForGroups.getCachedObjectsFromAdvancedCacheFilteredOnKeyEnd (now milli)", (t2.getElapsedTimeNanos() / 1000));
 		
 		//System.out.println("cachedValuesCopy:" + cachedValuesCopy.size());
 		
@@ -489,9 +489,9 @@ public class PageCacheHelper implements Runnable
 		{
 			//System.out.println("Key:" + key);
 			byte[] byteValue = (byte[])cachedValuesCopy.get(key);
-			RequestAnalyser.getRequestAnalyser().registerComponentStatistics("getMatchingPageKeysForGroups.cachedValuesCopy (now millis)", (t2.getElapsedTimeNanos() / 1000));
+			RequestAnalyser.getRequestAnalyser().registerComponentStatistics("getMatchingPageKeysForGroups.cachedValuesCopy (now milli)", (t2.getElapsedTimeNanos() / 1000));
 			String value = compressionHelper.decompress(byteValue);
-			RequestAnalyser.getRequestAnalyser().registerComponentStatistics("getMatchingPageKeysForGroups.decompress (now millis)", (t2.getElapsedTimeNanos() / 1000));
+			RequestAnalyser.getRequestAnalyser().registerComponentStatistics("getMatchingPageKeysForGroups.decompress (now milli)", (t2.getElapsedTimeNanos() / 1000));
 			for(String matchToTest : entities)
 			{
 				//System.out.println("value:" + value);
@@ -501,12 +501,13 @@ public class PageCacheHelper implements Runnable
 					break;
 				}
 			}
-			RequestAnalyser.getRequestAnalyser().registerComponentStatistics("getMatchingPageKeysForGroups.matchToTest (now millis)", (t2.getElapsedTimeNanos() / 1000));
+			RequestAnalyser.getRequestAnalyser().registerComponentStatistics("getMatchingPageKeysForGroups.matchToTest (now milli)", (t2.getElapsedTimeNanos() / 1000));
 		}
 		
-		long elapsedTime = t.getElapsedTime();
-		if(elapsedTime > 20)
+		long elapsedTime = t.getElapsedTimeNanos();
+		if(elapsedTime / 1000 / 1000 > 20)
 			logger.warn("Found " + matchingPageKeysForGroups.size() + " pages. Matching pages took " + elapsedTime);
+		RequestAnalyser.getRequestAnalyser().registerComponentStatistics("getMatchingPageKeysForGroups (now milli)", (elapsedTime / 1000));
 		
 		return matchingPageKeysForGroups;
 	}
