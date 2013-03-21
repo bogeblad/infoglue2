@@ -652,10 +652,18 @@ public class CacheController extends Thread
 		    		cacheCapacity = "40000";
 		    	//else if(cacheName != null && cacheName.startsWith("contentAttributeCache"))
 		    	//	cacheCapacity = "1000";
+		    	String pageCacheSize = "100";
+		    	String pageCacheExtraSize = "300";
+		    	if(CmsPropertyHandler.getOperatingMode().equals("3"))
+		    	{
+		    		pageCacheSize = "10000";
+			    	pageCacheExtraSize = "30000";
+		    	}
+		    	
 		    	if(cacheName != null && cacheName.startsWith("pageCache"))
-		    		cacheCapacity = "10000";
+		    		cacheCapacity = pageCacheSize;
 		    	if(cacheName != null && cacheName.startsWith("pageCacheExtra"))
-		    		cacheCapacity = "30000";
+		    		cacheCapacity = pageCacheExtraSize;
 				if(cacheName != null && cacheName.equalsIgnoreCase("encodedStringsCache"))
 					cacheCapacity = "2000";
 				if(cacheName != null && cacheName.equalsIgnoreCase("assetUrlCacheWithGroups"))
@@ -4143,13 +4151,6 @@ public class CacheController extends Thread
 
     public static void evictWaitingCache() throws Exception
     {	    
-    	evictWaitingCache(false);
-    }
-    
-    private static WorkingPublicationThread ongoingThread = null;
-    
-    public static void evictWaitingCache(boolean waitIfOngoing) throws Exception
-    {	    
        	String operatingMode = CmsPropertyHandler.getOperatingMode();
 	    synchronized(RequestAnalyser.getRequestAnalyser()) 
 	    {
@@ -4177,7 +4178,7 @@ public class CacheController extends Thread
         		return;
         	}
         }
-    	logger.info("Had some notifications to handle:" + notifications.size());
+    	System.out.println("Had some notifications to handle:" + notifications.size());
     	
     	WorkingPublicationThread wpt = new WorkingPublicationThread();
     	

@@ -501,6 +501,8 @@ public class PageCacheHelper implements Runnable
 				RequestAnalyser.getRequestAnalyser().registerComponentStatistics("getMatchingPageKeysForGroups.decompress (now milli)", (t2.getElapsedTimeNanos() / 1000));
 			}
 			
+			if(entities.size() > 5)
+				System.out.println("entities: " + entities.size());
 			for(String matchToTest : entities)
 			{
 				//System.out.println("value:" + value);

@@ -104,7 +104,7 @@ public class WorkingPublicationThread extends Thread
 		work();
 	}
 	
-	
+
 	public void work()
 	{
 		//synchronized (cacheEvictionBeans) 
@@ -443,21 +443,27 @@ public class WorkingPublicationThread extends Thread
 						{
 							logger.info("Calling clear caches with:" + igCacheCall.get("className") + ":" + igCacheCall.get("objectId") + ":" + extraInformation);
 							CacheController.clearCaches(igCacheCall.get("className"), igCacheCall.get("objectId"), extraInformation, null);
-
+							handledCacheCalls.put("" + igCacheCall.get("className") + "_" + igCacheCall.get("objectId") + "_" + extraInformation, new Boolean(true));
+							
 						    elapsedTime = t.getElapsedTime();
 						    if(elapsedTime > 10)
 						    	logger.warn("Clearing all caches for " + igCacheCall.get("className") + ":" + igCacheCall.get("objectId"));
 						}
 					    
-					    if(!skipOriginalEntity)
+					    String key = "" + className + "_" + objectId + "_" + extraInformation;
+					    if(!skipOriginalEntity && handledCacheCalls.get(key) == null)
 					    {
-					    	//System.out.println("" + className + ":" + objectId + ":" + changedAttributeNames);
+					    	System.out.println("" + className + ":" + objectId + ":" + changedAttributeNames);
 						    CacheController.clearCaches(className, objectId, extraInformation, null);
 							CacheController.setForcedCacheEvictionMode(true);
 						    //elapsedTime = t.getElapsedTime();
 						    if(elapsedTime > 100)
 						    	logger.warn("Clearing all caches for " + className + ":" + objectId + ":" + changedAttributeNames);
 					    }
+					    else
+					    	System.out.println("Skipping cache clear for the same entity..");
+					    
+					    System.out.println("Adding:" + cacheEvictionBean.getObjectName() + ":" + cacheEvictionBean.getObjectId());
 						CacheEvictionBeanListenerService.getService().notifyListeners(cacheEvictionBean);
 					}
 					catch (Exception e) 
@@ -518,6 +524,8 @@ public class WorkingPublicationThread extends Thread
         RequestAnalyser.getRequestAnalyser().setBlockRequests(false);
 		logger.info("released block");
 	}
+	
+	private Map<String,Boolean> handledCacheCalls = new HashMap<String,Boolean>();
 	
 	public void addCacheUpdateDirective(String className, String objectId, List<Map<String, String>> allIGCacheCalls) 
 	{
