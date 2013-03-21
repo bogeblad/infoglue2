@@ -128,6 +128,7 @@ public class WorkingPublicationThread extends Thread
 			    //sleep(publicationDelay);
 			
 				Timer t = new Timer();
+				Timer tTotal = new Timer();
 
 		        boolean accessRightsFlushed = false;
 		        List<String> processedEntities = new ArrayList<String>();
@@ -491,6 +492,8 @@ public class WorkingPublicationThread extends Thread
 		    		CacheController.clearCache("pageCache");
 		    		CacheController.clearCache("pageCacheExtra");
 				}
+				
+		        RequestAnalyser.getRequestAnalyser().registerComponentStatistics("Working publication thread took", tTotal.getElapsedTime());
 			} 
 			catch (Exception e)
 			{
@@ -511,7 +514,7 @@ public class WorkingPublicationThread extends Thread
 			}
 			*/
 		}
-
+        
         RequestAnalyser.getRequestAnalyser().setBlockRequests(false);
 		logger.info("released block");
 	}
