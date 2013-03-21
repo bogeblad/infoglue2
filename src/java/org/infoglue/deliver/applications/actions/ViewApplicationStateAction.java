@@ -1132,8 +1132,6 @@ public class ViewApplicationStateAction extends InfoGlueAbstractAction
     	if(this.cacheName != null && !this.cacheName.equals(""))
         {
         	this.cache = CacheController.getCaches().get(this.cacheName);
-        	System.out.println("this.cache:" + this.cache);
-        	System.out.println("cacheKey:" + cacheKey);
         	if(this.cache instanceof GeneralCacheAdministrator)
         	{
         		value = CacheController.getCachedObjectFromAdvancedCache(cacheName, cacheKey);
@@ -1149,7 +1147,6 @@ public class ViewApplicationStateAction extends InfoGlueAbstractAction
     	    CompressionHelper compressionHelper = new CompressionHelper();
 	    	value = compressionHelper.decompress((byte[])value);
     	}
-    	System.out.println("value:" + value);
     	getResponse().setContentType("text/plain");
 
     	StringBuilder sb = new StringBuilder();
