@@ -4177,7 +4177,7 @@ public class CacheController extends Thread
         		return;
         	}
         }
-    	System.out.println("Had some notifications to handle:" + notifications.size());
+    	logger.info("Had some notifications to handle:" + notifications.size());
     	
     	WorkingPublicationThread wpt = new WorkingPublicationThread();
     	
