@@ -1424,8 +1424,16 @@ public class CacheController extends Thread
 						logger.info("pageKey:" + pageKey);
 						logger.info("allUsedEntitiesCopyAsString:" + allUsedEntitiesCopyAsString);
 					}
-					byte[] compressedAllUsedEntitiesCopyAsString = compressionHelper.compress(allUsedEntitiesCopyAsString);
-					CacheController.cacheObjectInAdvancedCache(pageCacheExtraName, pageKey + "_entitiesAsByte", compressedAllUsedEntitiesCopyAsString);
+					
+					if(CmsPropertyHandler.getOperatingMode().equals("0"))
+					{
+						CacheController.cacheObjectInAdvancedCache(pageCacheExtraName, pageKey + "_entitiesAsByte", allUsedEntitiesCopyAsString);
+					}
+					else
+					{
+						byte[] compressedAllUsedEntitiesCopyAsString = compressionHelper.compress(allUsedEntitiesCopyAsString);
+						CacheController.cacheObjectInAdvancedCache(pageCacheExtraName, pageKey + "_entitiesAsByte", compressedAllUsedEntitiesCopyAsString);						
+					}
 				}
 			}
 		}

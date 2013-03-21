@@ -488,16 +488,26 @@ public class PageCacheHelper implements Runnable
 		for(String key : cachedValuesCopy.keySet())
 		{
 			//System.out.println("Key:" + key);
-			byte[] byteValue = (byte[])cachedValuesCopy.get(key);
-			RequestAnalyser.getRequestAnalyser().registerComponentStatistics("getMatchingPageKeysForGroups.cachedValuesCopy (now milli)", (t2.getElapsedTimeNanos() / 1000));
-			String value = compressionHelper.decompress(byteValue);
-			RequestAnalyser.getRequestAnalyser().registerComponentStatistics("getMatchingPageKeysForGroups.decompress (now milli)", (t2.getElapsedTimeNanos() / 1000));
+			String value = null;
+			if(CmsPropertyHandler.getOperatingMode().equals("0"))
+			{
+				value = (String)cachedValuesCopy.get(key);
+			}
+			else
+			{
+				byte[] byteValue = (byte[])cachedValuesCopy.get(key);
+				RequestAnalyser.getRequestAnalyser().registerComponentStatistics("getMatchingPageKeysForGroups.cachedValuesCopy (now milli)", (t2.getElapsedTimeNanos() / 1000));
+				value = compressionHelper.decompress(byteValue);
+				RequestAnalyser.getRequestAnalyser().registerComponentStatistics("getMatchingPageKeysForGroups.decompress (now milli)", (t2.getElapsedTimeNanos() / 1000));
+			}
+			
 			for(String matchToTest : entities)
 			{
 				//System.out.println("value:" + value);
 				if(value.indexOf(matchToTest) > -1)
 				{
-					matchingPageKeysForGroups.add(key.replaceAll("_entitiesAsByte", ""));
+					//matchingPageKeysForGroups.add(key.replaceAll("_entitiesAsByte", ""));
+					matchingPageKeysForGroups.add(key.substring(0,key.indexOf("_entitiesAsByte")));
 					break;
 				}
 			}

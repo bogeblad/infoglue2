@@ -146,7 +146,7 @@ public class ChangeNotificationController
 						internalMessage.put(i + "." + key, notificationMessage.getExtraInformation().get(key));
 					}
 				}
-		
+
 				if(notificationMessage.getType() != NotificationMessage.TRANS_DELETE)
 				{
 					try
