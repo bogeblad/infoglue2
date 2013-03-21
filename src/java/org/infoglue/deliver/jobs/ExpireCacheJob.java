@@ -93,9 +93,11 @@ public class ExpireCacheJob implements Job
 	            logger.error("An error occurred when we tried to validate caches:" + e.getMessage());
 	            logger.warn("An error occurred when we tried to validate caches:" + e.getMessage(), e);
 	        }
-		    
-		    logger.info("releasing block");
-		    RequestAnalyser.getRequestAnalyser().setBlockRequests(false);
+		    finally
+		    {
+			    logger.info("releasing block");
+			    RequestAnalyser.getRequestAnalyser().setBlockRequests(false);
+		    }
     	}
     	
 	    
@@ -151,7 +153,8 @@ public class ExpireCacheJob implements Job
 		    RequestAnalyser.getRequestAnalyser().setBlockRequests(false);
 		    */
     	}
-
+    	
+    	/*
         try
         {
             CacheController.evictWaitingCache();
@@ -160,7 +163,8 @@ public class ExpireCacheJob implements Job
         {
             logger.error("An error occurred when we tried to update cache:" + e.getMessage());
             logger.warn("An error occurred when we tried to update cache:" + e.getMessage(), e);
-        }    	
+        } 
+        */
 
         logger.info("---" + context.getJobDetail().getFullName() + " executing.[" + new Date() + "]");
 
@@ -182,7 +186,7 @@ public class ExpireCacheJob implements Job
         		        return;
         		    }
 
-        	       	RequestAnalyser.getRequestAnalyser().setBlockRequests(true);
+        	       	//RequestAnalyser.getRequestAnalyser().setBlockRequests(true);
         		}
 
 				try
@@ -223,9 +227,11 @@ public class ExpireCacheJob implements Job
                     logger.error("An error occurred when we tried to update cache:" + e.getMessage());
                     logger.warn("An error occurred when we tried to update cache:" + e.getMessage(), e);
                 }
-    		    
-    		    logger.info("releasing block");
-    		    RequestAnalyser.getRequestAnalyser().setBlockRequests(false);
+    		    finally
+    		    {
+	    		    //logger.info("releasing block");
+	    		    //RequestAnalyser.getRequestAnalyser().setBlockRequests(false);
+    		    }
             }
 
             Date firstPublishDateTime = CacheController.publishDateTime;
@@ -244,7 +250,7 @@ public class ExpireCacheJob implements Job
         		        return;
         		    }
 
-        	       	RequestAnalyser.getRequestAnalyser().setBlockRequests(true);
+        	       	//RequestAnalyser.getRequestAnalyser().setBlockRequests(true);
         		}
                 
                 try
@@ -282,9 +288,11 @@ public class ExpireCacheJob implements Job
                     logger.error("An error occurred when we tried to update cache:" + e.getMessage());
                     logger.warn("An error occurred when we tried to update cache:" + e.getMessage(), e);
                 }
-
-                logger.info("releasing block");
-                RequestAnalyser.getRequestAnalyser().setBlockRequests(false);
+                finally
+                {
+	                //logger.info("releasing block");
+	                //RequestAnalyser.getRequestAnalyser().setBlockRequests(false);
+                }
             }
             
             
