@@ -138,7 +138,8 @@ public class RecacheRepositoryRootPagesThread implements Runnable
 		  			int i = 0;
 		  			for(RepositoryVO repository : repositories)
 		  			{
-		  				if(i > 10)
+		  				i++;
+		  				if(i > 20)
 		  					break;
 		  				
 		  				Thread.sleep(2000);
