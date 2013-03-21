@@ -42,6 +42,7 @@ import org.infoglue.cms.io.FileHelper;
 import org.infoglue.cms.util.CmsPropertyHandler;
 import org.infoglue.deliver.util.CacheController;
 import org.infoglue.deliver.util.CompressionHelper;
+import org.infoglue.deliver.util.RequestAnalyser;
 import org.infoglue.deliver.util.Timer;
 
 
@@ -475,17 +476,22 @@ public class PageCacheHelper implements Runnable
 			System.out.println("Why is it 0");
 		//System.out.println("entities:" + entities.size());
 		Timer t = new Timer();
+		Timer t2 = new Timer();
 	
 		List<String> matchingPageKeysForGroups = new ArrayList<String>();
 		
 		Map<String,Object> cachedValuesCopy = CacheController.getCachedObjectsFromAdvancedCacheFilteredOnKeyEnd("pageCacheExtra", "_entitiesAsByte");
+		RequestAnalyser.getRequestAnalyser().registerComponentStatistics("getMatchingPageKeysForGroups.getCachedObjectsFromAdvancedCacheFilteredOnKeyEnd (now millis)", (t2.getElapsedTimeNanos() / 1000));
+		
 		//System.out.println("cachedValuesCopy:" + cachedValuesCopy.size());
 		
 		for(String key : cachedValuesCopy.keySet())
 		{
 			//System.out.println("Key:" + key);
 			byte[] byteValue = (byte[])cachedValuesCopy.get(key);
+			RequestAnalyser.getRequestAnalyser().registerComponentStatistics("getMatchingPageKeysForGroups.cachedValuesCopy (now millis)", (t2.getElapsedTimeNanos() / 1000));
 			String value = compressionHelper.decompress(byteValue);
+			RequestAnalyser.getRequestAnalyser().registerComponentStatistics("getMatchingPageKeysForGroups.decompress (now millis)", (t2.getElapsedTimeNanos() / 1000));
 			for(String matchToTest : entities)
 			{
 				//System.out.println("value:" + value);
@@ -495,6 +501,7 @@ public class PageCacheHelper implements Runnable
 					break;
 				}
 			}
+			RequestAnalyser.getRequestAnalyser().registerComponentStatistics("getMatchingPageKeysForGroups.matchToTest (now millis)", (t2.getElapsedTimeNanos() / 1000));
 		}
 		
 		long elapsedTime = t.getElapsedTime();
