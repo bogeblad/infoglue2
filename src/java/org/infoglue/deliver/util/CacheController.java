@@ -2785,29 +2785,39 @@ public class CacheController extends Thread
 						    		}
 							    	else if(cacheName.equals("childPagesCache"))
 						    		{
+							    		//System.out.println("childPagesCache:" + entity + "=" + entityId);
 							    		try
 							    		{
 								    		String contentId = sentContentId;
+								    		//System.out.println("sentContentId:" + sentContentId);
 								    		if(contentId == null || contentId.equals(""))
 								    			contentId = ""+ContentVersionController.getContentVersionController().getContentIdForContentVersion(new Integer(entityId));
-	
-								    		try
+								    		//System.out.println("contentId:" + contentId);
+								    		
+								    		ContentTypeDefinitionVO metaInfoContentTypeDefinitionVO = ContentTypeDefinitionController.getController().getContentTypeDefinitionVOWithName("Meta info");
+								    		ContentVO contentVO = ContentController.getContentController().getContentVOWithId(new Integer(contentId));
+								    		
+								    		if(metaInfoContentTypeDefinitionVO.getId().equals(contentVO.getContentTypeDefinitionId()))
 								    		{
-									    		SiteNodeVO siteNodeVO = SiteNodeController.getController().getSiteNodeVOWithMetaInfoContentId(new Integer(contentId));
-									    		if(siteNodeVO != null)
+									    		try
 									    		{
-									    			cacheInstance.flushGroup("siteNode_" + siteNodeVO.getId());
-									    			cacheInstance.flushGroup("siteNode_" + siteNodeVO.getParentSiteNodeId());
-									    		}
-									    	}
-								    		catch (Exception e2) 
-								    		{
-								    			logger.error("Did not find a sitenode with this meta info:" + contentId);
-											}
-								    		cacheInstance.flushGroup("content_" + contentId);
-								    		cacheInstance.flushGroup("contentVersion_" + entityId);
-								    		cacheInstance.flushGroup("selectiveCacheUpdateNonApplicable");
-									    	logger.info("Clearing childPagesCache for content:" + "content_" + contentId);
+										    		SiteNodeVO siteNodeVO = SiteNodeController.getController().getSiteNodeVOWithMetaInfoContentId(new Integer(contentId));
+										    		System.out.println("siteNodeVO:" + siteNodeVO);
+										    		if(siteNodeVO != null)
+										    		{
+										    			cacheInstance.flushGroup("siteNode_" + siteNodeVO.getId());
+										    			cacheInstance.flushGroup("siteNode_" + siteNodeVO.getParentSiteNodeId());
+										    		}
+										    	}
+									    		catch (Exception e2) 
+									    		{
+									    			logger.error("Did not find a sitenode with this meta info:" + contentId);
+												}
+									    		cacheInstance.flushGroup("content_" + contentId);
+									    		cacheInstance.flushGroup("contentVersion_" + entityId);
+									    		cacheInstance.flushGroup("selectiveCacheUpdateNonApplicable");
+										    	logger.info("Clearing childPagesCache for content:" + "content_" + contentId);
+								    		}
 							    		}
 							    		catch (Exception e2) 
 							    		{

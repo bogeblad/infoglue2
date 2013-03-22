@@ -2206,7 +2206,7 @@ public class SiteNodeController extends BaseController
     public SiteNodeVO getSiteNodeVOWithMetaInfoContentId(Database db, Integer contentId) throws ConstraintException, SystemException, Exception
     {
 		SiteNodeVO siteNodeVO = null;
-
+		
 		Integer cachedSiteNodeId = metaInfoSiteNodeIdMap.get(contentId);
 		if(cachedSiteNodeId != null)
 		{
@@ -2214,17 +2214,18 @@ public class SiteNodeController extends BaseController
 		}
 		else
 		{
-			System.out.println("Asking for heavy lookup on meta info content id");
+			logger.error("Asking for heavy lookup on meta info content id:" + contentId);
 			//System.out.println("Asking for mapping:" + contentId);
 			OQLQuery oql = db.getOQLQuery("SELECT sn FROM org.infoglue.cms.entities.structure.impl.simple.SmallSiteNodeImpl sn WHERE sn.metaInfoContentId = $1 ORDER BY sn.siteNodeId");
 	    	oql.bind(contentId);
 	    	
 	    	QueryResults results = oql.execute(Database.ReadOnly);
 			
-			if(results.hasMore()) 
+	    	if(results.hasMore()) 
 	        {
-				SiteNode siteNode = (SiteNodeImpl)results.next();
+				SmallSiteNodeImpl siteNode = (SmallSiteNodeImpl)results.next();
 				siteNodeVO = siteNode.getValueObject();
+				logger.info("Caching " + siteNodeVO.getId() + " on " + contentId);
 				metaInfoSiteNodeIdMap.put(contentId, siteNodeVO.getId());
 	        }
 	
