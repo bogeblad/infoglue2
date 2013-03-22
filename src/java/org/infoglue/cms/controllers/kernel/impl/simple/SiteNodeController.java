@@ -333,6 +333,9 @@ public class SiteNodeController extends BaseController
 			RequestAnalyser.getRequestAnalyser().registerComponentStatistics("getSmallestSiteNodeVOWithId", t.getElapsedTime());
 		}
 		
+		if(siteNodeVO != null && siteNodeVO.getMetaInfoContentId() != null)
+			metaInfoSiteNodeIdMap.put(siteNodeVO.getMetaInfoContentId(), siteNodeVO.getId());
+		
 		return siteNodeVO;
 	}
 	
@@ -2211,6 +2214,7 @@ public class SiteNodeController extends BaseController
 		}
 		else
 		{
+			System.out.println("Asking for heavy lookup on meta info content id");
 			//System.out.println("Asking for mapping:" + contentId);
 			OQLQuery oql = db.getOQLQuery("SELECT sn FROM org.infoglue.cms.entities.structure.impl.simple.SmallSiteNodeImpl sn WHERE sn.metaInfoContentId = $1 ORDER BY sn.siteNodeId");
 	    	oql.bind(contentId);
