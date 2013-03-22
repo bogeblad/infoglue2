@@ -2802,7 +2802,6 @@ public class CacheController extends Thread
 									    		try
 									    		{
 										    		SiteNodeVO siteNodeVO = SiteNodeController.getController().getSiteNodeVOWithMetaInfoContentId(new Integer(contentId));
-										    		System.out.println("siteNodeVO:" + siteNodeVO);
 										    		if(siteNodeVO != null)
 										    		{
 										    			cacheInstance.flushGroup("siteNode_" + siteNodeVO.getId());
