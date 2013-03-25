@@ -2621,8 +2621,8 @@ public class ContentVersionController extends BaseController
 		                
 		                if(includeMetaInfo || (!includeMetaInfo && (relatedContentTypeDefinitionVO == null || !relatedContentTypeDefinitionVO.getName().equalsIgnoreCase("Meta info"))))
 		                {
-		            		List<ContentVersionVO> relatedContentVersions = ContentVersionController.getContentVersionController().getLatestContentVersionVOListPerLanguage(contentVO.getId(), db);
-
+		            		List<ContentVersionVO> relatedContentVersions = ContentVersionController.getContentVersionController().getLatestContentVersionVOListPerLanguage(relatedContentVO.getId(), db);
+		            		
 		                	//List<ContentVersionVO> relatedContentVersions = ContentVersionController.getContentVersionController().getLatestContentVersionIdsPerLanguage(relatedContentVO.getId(), stateId, db);
 		                	//List<ContentVersionVO> relatedContentVersions = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVOIfInState(relatedContentVO.getId(), stateId, db);
 			                logger.info("relatedContentVersions:" + relatedContentVersions.size());
@@ -2631,7 +2631,7 @@ public class ContentVersionController extends BaseController
 			                while(relatedContentVersionsIterator.hasNext())
 			                {
 			                	ContentVersionVO relatedContentVersion = relatedContentVersionsIterator.next();
-			                    //ContentVO contentVO = ContentController.getContentController().getContentVOWithId(relatedContentVersion.getContentId(), db);
+			                	//ContentVO contentVO = ContentController.getContentController().getContentVOWithId(relatedContentVersion.getContentId(), db);
 				                if(relatedContentVersion != null && contentVO.getRepositoryId().intValue() == relatedContentVO.getRepositoryId().intValue())
 				                {
 				                	if(relatedContentVersion.getStateId().equals(ContentVersionVO.WORKING_STATE))
