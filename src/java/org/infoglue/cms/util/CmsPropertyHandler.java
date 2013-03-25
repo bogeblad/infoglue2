@@ -2237,5 +2237,9 @@ public class CmsPropertyHandler
         
         return useSQLServerDialect.booleanValue();
 	}
-
+	
+	public static String getExternalSearchServiceConfigs()
+	{
+		return getServerNodeDataProperty(null, "externalSearchServiceConfigs", true, null);
+	}
 }

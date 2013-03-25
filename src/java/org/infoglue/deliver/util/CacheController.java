@@ -4246,6 +4246,7 @@ public class CacheController extends Thread
 							clearServerNodeProperty(true);
 							logger.info("cleared InfoGlueAuthenticationFilter");
 							InfoGlueAuthenticationFilter.initializeProperties();
+							CacheNotificationCenter.getCenter().notify("ServerNodeProperties");
 							logger.info("initialized InfoGlueAuthenticationFilter");
 							logger.info("Shortening page stats");
 							RequestAnalyser.shortenPageStatistics();

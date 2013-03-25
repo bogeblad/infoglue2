@@ -1034,4 +1034,52 @@
             <rtexprvalue>false</rtexprvalue>
         </attribute>
 	</tag>
+	
+	<tag>
+        <name>externalSearch</name>
+        <tagclass>org.infoglue.deliver.taglib.management.ExternalSearchTag</tagclass>
+        <bodycontent>empty</bodycontent>
+        <info>Perform searches against a external search service</info>
+
+        <attribute>
+    	    <name>id</name>
+        	<required>true</required>
+	        <rtexprvalue>false</rtexprvalue>
+    	</attribute>
+        <attribute>
+    	    <name>serviceName</name>
+        	<required>true</required>
+	        <rtexprvalue>true</rtexprvalue>
+    	</attribute>
+    	<attribute>
+    	    <name>query</name>
+        	<required>true</required>
+	        <rtexprvalue>true</rtexprvalue>
+    	</attribute>
+    	<attribute>
+    	    <name>sortFields</name>
+        	<required>false</required>
+	        <rtexprvalue>true</rtexprvalue>
+    	</attribute>
+    	<attribute>
+    	    <name>sortAscending</name>
+        	<required>false</required>
+	        <rtexprvalue>true</rtexprvalue>
+    	</attribute>
+    	<attribute>
+    	    <name>resultCount</name>
+        	<required>false</required>
+	        <rtexprvalue>false</rtexprvalue>
+    	</attribute>
+    	<attribute>
+    	    <name>startIndex</name>
+        	<required>false</required>
+	        <rtexprvalue>true</rtexprvalue>
+    	</attribute>
+    	<attribute>
+    	    <name>count</name>
+        	<required>false</required>
+	        <rtexprvalue>true</rtexprvalue>
+    	</attribute>
+    </tag>
 </taglib>
