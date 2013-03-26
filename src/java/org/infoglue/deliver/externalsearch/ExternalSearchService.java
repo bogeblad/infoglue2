@@ -196,7 +196,7 @@ public class ExternalSearchService
 						{
 							Document document = hits.doc(i);
 
-							byte[] resultBytes = document.getBinaryValue(SearchResult.RESULT);
+							byte[] resultBytes = document.getBinaryValue(SearchResult.getResultLabel(new Locale("sv")));
 							if (resultBytes != null)
 							{
 								ObjectInputStream ois = new ObjectInputStream(new ByteArrayInputStream(resultBytes));

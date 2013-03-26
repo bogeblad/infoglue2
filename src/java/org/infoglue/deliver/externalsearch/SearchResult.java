@@ -4,6 +4,7 @@
 package org.infoglue.deliver.externalsearch;
 
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 /**
@@ -20,5 +21,9 @@ public class SearchResult
 	{
 		this.result = result;
 		this.totalSize = totalSize;
+	}
+	public static String getResultLabel(Locale locale)
+	{
+		return RESULT + locale.getLanguage();
 	}
 }
