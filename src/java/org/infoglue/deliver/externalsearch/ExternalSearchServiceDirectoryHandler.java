@@ -41,22 +41,20 @@ public class ExternalSearchServiceDirectoryHandler
 		{
 			File[] directories = file.listFiles();
 			File directoryCandidate = null;
-			int directoryCandidateTimeStamp = -1;
+			long directoryCandidateTimeStamp = -1;
 			List<File> oldDirectories = new LinkedList<File>();
 			int startIndex = (serviceName + "_").length();
 			int endOffset = ".directory".length();
 			for (File directory : directories)
 			{
 				String fileName = directory.getName();
-				System.out.println("file name: " + fileName);
-				System.out.println("abs file name: " + directory.getAbsolutePath());
 				if (fileName.startsWith(serviceName))
 				{
 					String timeStampString = fileName.substring(startIndex, fileName.length() - endOffset);
 					logger.debug("Directory timestamp: " + timeStampString);
 					try
 					{
-						int timeStamp = Integer.parseInt(timeStampString);
+						long timeStamp = Long.parseLong(timeStampString);
 						if (directoryCandidate == null)
 						{
 							directoryCandidate = directory;
@@ -82,7 +80,7 @@ public class ExternalSearchServiceDirectoryHandler
 					}
 					catch (NumberFormatException nfex)
 					{
-						logger.info("Failed to parse time stamp. How can this happen? Time stamp: " + timeStampString + ". File name: " + fileName);
+						logger.info("Failed to parse time stamp. How can this happen? Time stamp: '" + timeStampString + "'. File name: " + fileName);
 					}
 				}
 			}
@@ -91,9 +89,9 @@ public class ExternalSearchServiceDirectoryHandler
 			{
 				try
 				{
+					logger.info("Found old directory for service: " + serviceName + ". Directory: " + directoryCandidate.getName());
 					this.directory = FSDirectory.getDirectory(directoryCandidate);
 					this.creatingDateTime = new Date(directoryCandidateTimeStamp);
-					return getIndexSearcher(null);
 				}
 				catch (IOException e)
 				{
@@ -115,7 +113,7 @@ public class ExternalSearchServiceDirectoryHandler
 			}
 		}
 
-		return null;
+		return getIndexSearcher(null);
 	}
 
 	private String getLuceneDirectoryPath()
@@ -201,7 +199,10 @@ public class ExternalSearchServiceDirectoryHandler
 			{
 				oldReferences.add(oldIndexSearch);
 			}
-			return new IndexSearcher(directory);
+			if (this.directory != null)
+			{
+				return new IndexSearcher(directory);
+			}
 		}
 		catch (CorruptIndexException ciex)
 		{
@@ -251,7 +252,7 @@ public class ExternalSearchServiceDirectoryHandler
 		{
 			return null;
 		}
-		return Math.round((new Date().getTime() - creatingDateTime.getTime()) / 1000.0f);
+		return (int) (new Date().getTime() - creatingDateTime.getTime());
 	}
 
 	/**

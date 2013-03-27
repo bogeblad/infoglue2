@@ -3,12 +3,15 @@
  */
 package org.infoglue.deliver.taglib.management;
 
-import java.util.Collections;
+import java.util.Locale;
 
 import javax.servlet.jsp.JspException;
 
 import org.apache.log4j.Logger;
+import org.infoglue.cms.controllers.kernel.impl.simple.LanguageController;
+import org.infoglue.cms.entities.management.LanguageVO;
 import org.infoglue.cms.exception.SystemException;
+import org.infoglue.deliver.controllers.kernel.impl.simple.LanguageDeliveryController;
 import org.infoglue.deliver.externalsearch.ExternalSearchManager;
 import org.infoglue.deliver.externalsearch.ExternalSearchService;
 import org.infoglue.deliver.externalsearch.SearchParameters;
@@ -33,6 +36,21 @@ public class ExternalSearchTag extends AbstractTag
 	private String resultCount;
 	private Integer startIndex;
 	private Integer count;
+	private String exception;
+	private Locale language;
+
+	private void setReturnValuesForError(Throwable tr)
+	{
+		if (exception != null)
+		{
+			pageContext.setAttribute(exception, tr);
+		}
+		if (resultCount != null)
+		{
+			pageContext.setAttribute(resultCount, 0);
+		}
+		setResultAttribute(null);
+	}
 
 	@Override
 	public int doEndTag() throws JspException
@@ -41,31 +59,28 @@ public class ExternalSearchTag extends AbstractTag
 
 		if (service == null)
 		{
-			throw new JspException("External search service not found. Given service name: " + serviceName);
+			setReturnValuesForError(new JspException("External search service not found. Given service name: " + serviceName));
 		}
-
-		try
+		else
 		{
-			SearchParameters params = ExternalSearchService.ParametersFactory.getFactory().getParameters(query, sortFields, sortAscending, startIndex, count);
-
-			SearchResult searchResult = service.search(params);
-
-			if (resultCount != null)
+			try
 			{
-				pageContext.setAttribute(resultCount, searchResult.totalSize);
+				SearchParameters params = ExternalSearchService.ParametersFactory.getFactory().getParameters(query, sortFields, sortAscending, startIndex, count, language);
+
+				SearchResult searchResult = service.search(params);
+
+				if (resultCount != null)
+				{
+					pageContext.setAttribute(resultCount, searchResult.totalSize);
+				}
+
+				setResultAttribute(searchResult.result);
 			}
-
-			setResultAttribute(searchResult.result);
-		}
-		catch (SystemException ex)
-		{
-//			throw new JspException("Error when searching in external search service", ex);
-
-			if (resultCount != null)
+			catch (SystemException ex)
 			{
-				pageContext.setAttribute(resultCount, 0);
+				logger.warn("Error in external service search. Message: " + ex.getMessage());
+				setReturnValuesForError(ex);
 			}
-			setResultAttribute(Collections.emptyList());
 		}
 
 		return EVAL_PAGE;
@@ -115,4 +130,40 @@ public class ExternalSearchTag extends AbstractTag
 		this.count = evaluateInteger("externalSearch", "count", count);
 	}
 
+	public void setLanguage(String language) throws SystemException, Exception
+	{
+		Object languageObject = evaluate("externalSearch", "language", language, Object.class);
+		if (languageObject == null)
+		{
+			this.language = null;
+		}
+		else
+		{
+			if (languageObject instanceof Locale)
+			{
+				this.language = (Locale)languageObject;
+			}
+			else if (languageObject instanceof Integer)
+			{
+				Integer languageId = (Integer)languageObject;
+				LanguageVO languageVO = LanguageController.getController().getLanguageVOWithId(languageId);
+				this.language = languageVO.getLocale();
+			}
+			else
+			{
+				String languageCode = languageObject.toString();
+				if (logger.isInfoEnabled())
+				{
+					logger.info("Got to else case when evaluating language. Assuming language code string. Value: " + languageCode);
+				}
+				this.language = LanguageDeliveryController.getLanguageDeliveryController().getLocaleWithCode(languageCode);;
+			}
+		}
+
+		if (logger.isInfoEnabled())
+		{
+			logger.info("Language in external search tag evaluated to: " + this.language);
+		}
+	}
 }
+

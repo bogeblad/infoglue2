@@ -201,7 +201,7 @@ public class ExternalSearchManager extends ThreadedQueueCacheNotificationListene
 						}
 						else
 						{
-							services.get(config.getName()).setConfig(config);
+				services.get(config.getName()).setConfig(config);
 						}
 					}
 

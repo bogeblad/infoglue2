@@ -141,11 +141,56 @@ public class ExternalSearchServiceTest
 		config.setIndexer(new DummyIndexer());
 
 		ExternalSearchServiceDirectoryHandler handler = mock(ExternalSearchServiceDirectoryHandler.class);
+		when(handler.getDirectoryAge()).thenReturn(null);
 
 		// Execution
 		service = new ExternalSearchService(config, false, handler);
 
 		assertTrue("", service.indexHasExpired());
+	}
+
+	@Test
+	public void testIndexHasNotExpired()
+	{
+		ExternalSearchServiceConfig config = new ExternalSearchServiceConfig();
+
+		config.setName("foobar");
+		config.setMaxAge(3600);
+		config.setDataRetriever(new DummyRetriever());
+		config.setParser(new DummyParser());
+		config.setIndexer(new DummyIndexer());
+
+		ExternalSearchServiceDirectoryHandler handler = mock(ExternalSearchServiceDirectoryHandler.class);
+
+		when(handler.getDirectoryAge()).thenReturn(1800000);
+
+		// Execution
+		service = new ExternalSearchService(config, false, handler);
+
+		assertFalse("", service.indexHasExpired());
+		verify(handler).getDirectoryAge();
+	}
+
+	@Test
+	public void testIndexHasExpired()
+	{
+		ExternalSearchServiceConfig config = new ExternalSearchServiceConfig();
+
+		config.setName("foobar");
+		config.setMaxAge(3600);
+		config.setDataRetriever(new DummyRetriever());
+		config.setParser(new DummyParser());
+		config.setIndexer(new DummyIndexer());
+
+		ExternalSearchServiceDirectoryHandler handler = mock(ExternalSearchServiceDirectoryHandler.class);
+
+		when(handler.getDirectoryAge()).thenReturn(3700000);
+
+		// Execution
+		service = new ExternalSearchService(config, false, handler);
+
+		assertTrue("", service.indexHasExpired());
+		verify(handler).getDirectoryAge();
 	}
 
 	@Test

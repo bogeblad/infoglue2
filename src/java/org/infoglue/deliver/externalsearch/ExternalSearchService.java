@@ -42,6 +42,7 @@ public class ExternalSearchService
 	private AtomicBoolean running;
 	private String name;
 	private Integer maxAge;
+	private Locale defaultLanguage;
 	private List<String> dependencies;
 	private boolean startIndexing;
 
@@ -196,7 +197,7 @@ public class ExternalSearchService
 						{
 							Document document = hits.doc(i);
 
-							byte[] resultBytes = document.getBinaryValue(SearchResult.getResultLabel(new Locale("sv")));
+							byte[] resultBytes = document.getBinaryValue(SearchResult.getResultLabel(params.getLanguage()));
 							if (resultBytes != null)
 							{
 								ObjectInputStream ois = new ObjectInputStream(new ByteArrayInputStream(resultBytes));
@@ -266,7 +267,7 @@ public class ExternalSearchService
 		}
 		else
 		{
-			return new Date().getTime() > (directoryAge + this.maxAge);
+			return directoryAge > this.maxAge;
 		}
 	}
 
@@ -285,6 +286,11 @@ public class ExternalSearchService
 
 			this.maxAge = this.newConfig.getMaxAge() == null ? null : this.newConfig.getMaxAge() * 1000;
 			this.dependencies = this.newConfig.getDependencis() == null ? new LinkedList<String>() : this.newConfig.getDependencis();
+			this.defaultLanguage = this.newConfig.getDefaultLanguage();
+			if (this.defaultLanguage == null)
+			{
+				this.defaultLanguage = Locale.ENGLISH;
+			}
 
 			if (this.dataRetriever != null)
 			{
@@ -400,7 +406,7 @@ public class ExternalSearchService
 			return params;
 		}
 
-		public SearchParameters getParameters(String query, String[] sortFields, Boolean sortAscending, Integer startIndex, Integer count)
+		public SearchParameters getParameters(String query, String[] sortFields, Boolean sortAscending, Integer startIndex, Integer count, Locale language)
 		{
 			SearchParameters.SortOrder sortOrder;
 			if (sortFields == null)
@@ -426,10 +432,10 @@ public class ExternalSearchService
 				}
 			}
 
-			return getParameters(query, sortFields, sortOrder, startIndex, count);
+			return getParameters(query, sortFields, sortOrder, startIndex, count, language);
 		}
 
-		public SearchParameters getParameters(String query, String[] sortFields, SearchParameters.SortOrder sortOrder, Integer startIndex, Integer count)
+		public SearchParameters getParameters(String query, String[] sortFields, SearchParameters.SortOrder sortOrder, Integer startIndex, Integer count, Locale language)
 		{
 			SearchParameters params = new SearchParameters();
 
@@ -438,6 +444,7 @@ public class ExternalSearchService
 			params.setSortOrder(sortOrder);
 			params.setStartIndex(startIndex);
 			params.setCount(count);
+			params.setLanguage(language);
 
 			return params;
 		}
