@@ -64,6 +64,10 @@
 		<include name="*.jar"/>
 	</fileset>
 
+	<fileset id="test.libs" dir="${lib}/test">
+		<include name="*.jar"/>
+	</fileset>
+
 	<!--
 	* fileset for deliver.properties
 	-->
@@ -98,6 +102,7 @@
 		<fileset refid="core.libs"/>
 		<fileset refid="jdbc.libs"/>
 		<fileset refid="shared.libs"/>
+		<fileset refid="test.libs"/>
 	</path>
 
 	<path id="test.classpath">
@@ -105,6 +110,7 @@
 		<path refid="build.classpath"/>
 		<fileset refid="core.libs"/>
 		<fileset refid="jdbc.libs"/>
+		<fileset refid="test.libs"/>
 	</path>
 
 	<path id="build.sourcepath">
@@ -367,6 +373,7 @@
 	-->
 	<target name="deploy-cms" depends="clean,war-cms" description="Unpacks war to deploy dir" if="deploy.dir.cms">
 		<unwar src="${cms.war.file}" dest="${deploy.dir.cms}"/>
+		<copy file="${conf}/cms-rebel.xml" tofile="${deploy.dir.cms}/WEB-INF/classes/rebel.xml" overwrite="true" />
 		<copy file="${conf}/cms-web.xml" tofile="${deploy.dir.cms}/WEB-INF/web.xml" overwrite="true">
 			<filterset refid="project.filters"/>
 		</copy>
@@ -645,7 +652,7 @@
 	
 	</target>
 		
-	<target name="fast-build-clean" depends="" description="Compiles the classes if class and moves configs to the right spot">
+	<target name="fast-build-clean" depends="compile" description="Compiles the classes if class and moves configs to the right spot">
 
 		<echo message="Copying infoglueCMS/WEB-INF/lib"/>
 		<copy todir="${deploy.dir.cms}/WEB-INF/lib">
@@ -716,6 +723,8 @@
 				<include name="**/*.*"/>
 			</fileset>
 		</copy>
+
+		<copy file="${conf}/cms-rebel.xml" tofile="${deploy.dir.cms}/WEB-INF/classes/rebel.xml"  overwrite="true" />
 
 		<echo message="Copying infoglueDeliver/WEB-INF/classes"/>
 		<copy todir="${deploy.dir.working}/WEB-INF/classes" overwrite="true">
@@ -848,6 +857,10 @@
 		<copy todir="${deploy.dir.cms}/META-INF" overwrite="true">
 			<fileset dir="${conf}" includes="context.xml"/>
 		</copy>					
+
+		<echo message="Copying JRebel"/>
+		<copy file="${conf}/cms-rebel.xml" tofile="${deploy.dir.cms}/WEB-INF/classes/rebel.xml" overwrite="true"  />
+
 
 	</target>
 
