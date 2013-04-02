@@ -1,3 +1,26 @@
+/* ===============================================================================
+ *
+ * Part of the InfoGlue Content Management Platform (www.infoglue.org)
+ *
+ * ===============================================================================
+ *
+ *  Copyright (C)
+ * 
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License version 2, as published by the
+ * Free Software Foundation. See the file LICENSE.html for more information.
+ * 
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY, including the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License along with
+ * this program; if not, write to the Free Software Foundation, Inc. / 59 Temple
+ * Place, Suite 330 / Boston, MA 02111-1307 / USA.
+ *
+ * ===============================================================================
+ */
+
 package org.infoglue.deliver.externalsearch;
 
 import java.io.File;
@@ -15,7 +38,16 @@ import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.infoglue.cms.util.CmsPropertyHandler;
 
-public class ExternalSearchServiceDirectoryHandler
+/**
+ * <p>Helper class for the {@link ExternalSearchService} class. This class will most likely
+ * not provide any useful functions for classes other than the ExternalSearchService and it is
+ * therefore package-private.</p>
+ * 
+ * <p>This class handles all interaction between the Lucene directory and the external search service.</p>
+ * 
+ * @author Erik Stenbäcka
+ */
+class ExternalSearchServiceDirectoryHandler
 {
 	private static final Logger logger = Logger.getLogger(ExternalSearchServiceDirectoryHandler.class);
 
@@ -30,6 +62,15 @@ public class ExternalSearchServiceDirectoryHandler
 		this.oldReferences = new LinkedList<Object>();
 	}
 
+	/**
+	 * <p>May be called at the beginning of the service life-cycles to clear up old stuff from the last time
+	 * the service was active and also try and find an old directory that can be used to perform searches.</p>
+	 *
+	 * Using the same naming schema as {@link #getNewDirectoryFile()} the method will look for old directories on
+	 * disc and remove them, except for the newest which will be used as the current directory for this handler.
+	 *
+	 * @return If an old directory was found in disk an IndexSearcher is created for that directory and returned.
+	 */
 	IndexSearcher handleOldDirectories()
 	{
 		File file = new File(getLuceneDirectoryPath());
@@ -116,12 +157,27 @@ public class ExternalSearchServiceDirectoryHandler
 		return getIndexSearcher(null);
 	}
 
+	/**
+	 * Gets the path to where all Lucene directories should be stored.
+	 * @return
+	 */
 	private String getLuceneDirectoryPath()
 	{
 		StringBuilder sb = new StringBuilder();
 		return sb.append(CmsPropertyHandler.getContextRootPath()).append(File.separator).append("lucene").append(File.separator).toString();
 	}
 
+	/**
+	 * <p>Generates a File reference to a path that can be used to create a new directory. The intent of the method
+	 * is to create a unique path so that it does not interfere with other directories however this is not guaranteed nor
+	 * verified.</p>
+	 * 
+	 * <p>The method uses the service name combined with a unique value to created the directory name. It is therefore important
+	 * that a service name is defined (i.e. not null) for this handler before this method is called.</p>
+	 *
+	 * @return A reference to a path where a directory can be created.
+	 * @throws NullPointerException If the handle does not have a service name.
+	 */
 	File getNewDirectoryFile() throws NullPointerException
 	{
 		if (serviceName == null)
@@ -130,6 +186,7 @@ public class ExternalSearchServiceDirectoryHandler
 		}
 		String directoryFileName = getLuceneDirectoryPath() + serviceName + "_" + System.currentTimeMillis() + ".directory";
 		File directoryFile = new File(directoryFileName);
+
 		logger.info("Creating new directory. The directory will be stored in the file: " + directoryFile.getName());
 
 		if (directoryFile.exists())
@@ -140,11 +197,24 @@ public class ExternalSearchServiceDirectoryHandler
 		return directoryFile;
 	}
 
+	/**
+	 * Creates and returns a new Directory.
+	 *
+	 * @return A new directory for the handlers service.
+	 * @throws NullPointerException If no service name has been provided for this service.
+	 * @throws IOException If an error occurs when creating the directory.
+	 */
 	Directory getDirectory() throws NullPointerException, IOException
 	{
 		return FSDirectory.getDirectory(getNewDirectoryFile());
 	}
 
+	/**
+	 * Goes through all references to old objects and attempts to dispose of them.
+	 * This somewhat round about way of removing old references is used because
+	 * there has been problems with removing references due to IO related problems.
+	 * This solution keeps track of the objects until they can be removed for real.
+	 */
 	void clearOldDirectories()
 	{
 		/*
@@ -155,42 +225,70 @@ public class ExternalSearchServiceDirectoryHandler
 		 */
 		synchronized (oldReferences)
 		{
+			if (oldReferences.size() > 20)
+			{
+				logger.error("####################################################\nSomething is wrong with the old references in this directory handler. Will clear list. This is likely to leavev unwanted files on the server. References: " + oldReferences);
+				oldReferences.clear();
+			}
+
 			Iterator<Object> it = oldReferences.iterator();
 			Object reference;
 			while (it.hasNext())
 			{
 				reference = it.next();
-				if (reference == null)
+				try
 				{
-					continue;
-				}
-				if (reference instanceof FSDirectory)
-				{
-					((FSDirectory) reference).close();
-					File file = ((FSDirectory) reference).getFile();
-					boolean success = file.delete();
-					if (success)
+					if (reference == null)
 					{
-						logger.debug("Removed directory file from disc. Remove directory from old directories list. File: " + file.getAbsolutePath());
+						it.remove();
+						continue;
+					}
+					if (reference instanceof FSDirectory)
+					{
+						((FSDirectory) reference).close();
+						File file = ((FSDirectory) reference).getFile();
+						boolean success = file.delete();
+						if (success)
+						{
+							logger.debug("Removed directory file from disc. Remove directory from old directories list. File: " + file.getAbsolutePath());
+							it.remove();
+						}
+					}
+					else if (reference instanceof IndexSearcher)
+					{
+						try
+						{
+							((IndexSearcher) reference).close();
+							logger.info("Closed old IndexSearcher");
+						}
+						catch (IOException ex)
+						{
+							logger.warn("Failed to close IndexSearcher. Will try again later. Message: " + ex.getMessage());
+						}
+					}
+					else
+					{
+						logger.warn("Found not-wanted object in old references. How can this happen? Object type: " + reference.getClass() + ". Tostring: " + reference);
 						it.remove();
 					}
 				}
-				else if (reference instanceof IndexSearcher)
+				catch (Throwable tr)
 				{
-					try
-					{
-						((IndexSearcher) reference).close();
-						logger.info("Closed old IndexSearcher");
-					}
-					catch (IOException ex)
-					{
-						logger.warn("Failed to close IndexSearcher. Will try again later. Message: " + ex.getMessage());
-					}
+					logger.warn("Caught exception when trying to dispose of an old reference. Will try to remove it again later. Object type: " + reference.getClass() + ". Tostring: " + reference +
+							" Message: " + tr.getMessage() + ". Type: " + tr.getClass());
 				}
 			}
 		}
 	}
 
+	/**
+	 * Gets an IndexSearcher for the current directory. If there is no current directory or if an error occurs
+	 * null is returned. The IndexSearcher parameter provides a possibility to mark an IndexSearcher for disposal.
+	 * If null is given as the argument no IndexSearcher is marked for disposal.
+	 *
+	 * @param oldIndexSearch
+	 * @return
+	 */
 	IndexSearcher getIndexSearcher(IndexSearcher oldIndexSearch)
 	{
 		try
@@ -217,6 +315,20 @@ public class ExternalSearchServiceDirectoryHandler
 		return null;
 	}
 
+	/**
+	 * <p>Indicate to the directory handler that the service wants to change (update) directory to a new one.
+	 * The directory to change to is provided as an argument. The IndexSearcher is provided so that the directory
+	 * handler may close and delete it. It is expected but not verified that the given IndexSearcher is connected
+	 * to the current directory of this directory handler.</p>
+	 * 
+	 * <p>The old directory is closed and removed by this method and a new IndexSearcher, connected to the new
+	 * directory, is initialized and returned. Observe that this method will fail silently if the old directory can not
+	 * be deleted. However the directory handler will still keep track if it and attempt to remove it later.</p>
+	 * 
+	 * @param oldIndexSearcher If provided the directory handler will dispose of this IndexSearcher
+	 * @param newDirectory The directory to change to.
+	 * @return An IndexSearcher for the new (given) directory.
+	 */
 	IndexSearcher changeDirectory(IndexSearcher oldIndexSearcher, Directory newDirectory)
 	{
 		if (!(newDirectory instanceof FSDirectory))
@@ -231,6 +343,12 @@ public class ExternalSearchServiceDirectoryHandler
 		return getIndexSearcher(oldIndexSearcher);
 	}
 
+	/**
+	 * Marks the given directory for deletion. Observe that the directory is not delete when this method is called
+	 * but only marked for deletion. The directory is removed first when {@link #clearOldDirectories()} is called.
+	 *
+	 * @param oldDirectory The directory to mark for deletion
+	 */
 	void deleteDirectory(Directory oldDirectory)
 	{
 		synchronized (oldReferences)
@@ -241,9 +359,9 @@ public class ExternalSearchServiceDirectoryHandler
 	
 	/**
 	 * Returns the age of the directory held by this directory handler. The age is given in seconds.
-	 * 
+	 *
 	 * This value is reset when changeDirectory is called successfully.
-	 * 
+	 *
 	 * @return The age, in seconds, of the current directory. If no directory is defined null is returned.
 	 */
 	Integer getDirectoryAge()

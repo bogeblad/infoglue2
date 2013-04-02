@@ -7,8 +7,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * The class acts a intermediate between the CahceController and CacheNotificationListener.
+ * 
  * @author Erik Stenbäcka
- *
  */
 public class CacheNotificationCenter
 {

@@ -23,24 +23,28 @@
 
 package org.infoglue.deliver.externalsearch;
 
-import java.util.List;
 import java.util.Map;
 
-import org.apache.lucene.index.IndexWriter;
-
+import org.infoglue.cms.exception.ConfigurationError;
 
 /**
- * An indexer is responsible for converting the values in the <em>entities</em> list into
- * searchable documents that are written to the indexWriter.
- * 
  * @author Erik Stenbäcka
  */
-public interface Indexer extends ExternalSearchDelegate
+public interface ExternalSearchDelegate
 {
 	/**
-	 * Uses the <em>entities</em> to populate the directory behind the <em>IndexWriter</em>.
-	 * @param entities Data that may be used by the indexer when populating the index
-	 * @param indexWriter An IndexWriter to write Lucene documents to.
+	 * Called sometime before the delegate is to be used the first time. The method will only be called once
 	 */
-	void index(List<Map<String,Object>> entities, IndexWriter indexWriter);
+	void init();
+	/**
+	 * Sets the configuration for the delegate. It is up to each implementation of the interface to provide information
+	 * about what values are expected and required in the provided map.
+	 * @param config The configuration for the delegate. See implementing class for more details.
+	 * @throws ConfigurationError Thrown if a field is missing or has an unexpected format.
+	 */
+	void setConfig(Map<String, String> config) throws ConfigurationError;
+	/**
+	 * Called sometime after the last usage of the delegate and before the delegate is thrown away. The method will only be called once.
+	 */
+	void destroy();
 }

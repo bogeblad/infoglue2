@@ -1,6 +1,26 @@
-/**
+/* ===============================================================================
+ *
+ * Part of the InfoGlue Content Management Platform (www.infoglue.org)
+ *
+ * ===============================================================================
+ *
+ *  Copyright (C)
  * 
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License version 2, as published by the
+ * Free Software Foundation. See the file LICENSE.html for more information.
+ * 
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY, including the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License along with
+ * this program; if not, write to the Free Software Foundation, Inc. / 59 Temple
+ * Place, Suite 330 / Boston, MA 02111-1307 / USA.
+ *
+ * ===============================================================================
  */
+
 package org.infoglue.deliver.externalsearch;
 
 import java.util.ArrayList;
@@ -29,6 +49,18 @@ import com.google.gson.reflect.TypeToken;
 import java.lang.reflect.Type;
 
 /**
+ * <p>The ExternalSearchManager class is a singleton responsible for handling all {@link ExternalSearchService} in the system.
+ * The manager has three responsibilities:
+ * </p>
+ * <ul>
+ *   <li>Provide a way to get access to each search service (through its {@link #getService(String)} method).</li>
+ *   <li>Notify each service about updates in the external search configuration.</li>
+ *   <li>Provide the hearth beat loop for the services index updating.</li>
+ * </ul>
+ * 
+ * <p>Under normal circumstances the only method that should be of interest is the <em>getService(String)</em> method.
+ * The rest of class's API is used by other parts of the External seach architecture.</p>
+ * 
  * @author Erik Stenbäcka
  */
 public class ExternalSearchManager extends ThreadedQueueCacheNotificationListener implements Runnable, CacheNotificationListener
@@ -41,14 +73,14 @@ public class ExternalSearchManager extends ThreadedQueueCacheNotificationListene
 	private static ExternalSearchManager manager;
 
 	/** 
-	 * Used for testing
+	 * Used for testing.
 	 */
 	public static void injectManager(ExternalSearchManager fakeManager)
 	{
 		manager = fakeManager;
 	}
 
-	public synchronized static void initManager()
+	private synchronized static void initManager()
 	{
 		if (manager == null)
 		{
@@ -59,6 +91,12 @@ public class ExternalSearchManager extends ThreadedQueueCacheNotificationListene
 		}
 	}
 
+	/**
+	 * Gets a reference to the manager singleton. If this is the first time
+	 * the manager is accessed the singleton is created and the hearth beat
+	 * loop is started.
+	 * @return The external search manager singleton instance.
+	 */
 	public static ExternalSearchManager getManager()
 	{
 		if (manager == null)
@@ -81,7 +119,7 @@ public class ExternalSearchManager extends ThreadedQueueCacheNotificationListene
 
 	private void initGSon()
 	{
-		class DelegateDeserializer<T extends ConfigurableDelegate> implements JsonDeserializer<T>
+		class DelegateDeserializer<T extends ExternalSearchDelegate> implements JsonDeserializer<T>
 		{
 			Type configType = new TypeToken<Map<String, String>>() {}.getType();
 
@@ -163,6 +201,22 @@ public class ExternalSearchManager extends ThreadedQueueCacheNotificationListene
 				&& config.getIndexer() != null;
 	}
 
+	/**
+	 * <p>Converts the given String into service configurations and create, delete and notifies
+	 * services about the change of configuration. The method does not know about current configurations
+	 * and can therefore not determine if anything has changed in the configurations. It is up to each service
+	 * to determine if it needs to update its configuration.</p>
+	 * 
+	 * <p>If the given String cannot be parsed as a list of configurations the method will return without notifying
+	 * the services. Passing null as the argument has the same effect.</p>
+	 * 
+	 * <p>If a configuration object has a name that does not match any current service a new service it initiated
+	 * based on the configuration. Similarly if an existing service does not match any of the configurations
+	 * that service will be removed. Otherwise the service with a name matching the configurations is notified
+	 * of the new configuration object by a call to its {@link ExternalSearchService#setConfig(ExternalSearchServiceConfig)}.</p>
+	 * 
+	 * @param configsString A String representation of an external search service configuration array.
+	 */
 	protected void updateConfigurations(String configsString)
 	{
 		if (configsString == null)
@@ -201,7 +255,7 @@ public class ExternalSearchManager extends ThreadedQueueCacheNotificationListene
 						}
 						else
 						{
-				services.get(config.getName()).setConfig(config);
+							services.get(config.getName()).setConfig(config);
 						}
 					}
 
@@ -225,6 +279,11 @@ public class ExternalSearchManager extends ThreadedQueueCacheNotificationListene
 			}
 		}
 	}
+	/**
+	 * Support method for initializing new services. The new service is added to list
+	 * if available services.
+	 * @param config The configuration the new service should be based on.
+	 */
 	protected void initService(ExternalSearchServiceConfig config)
 	{
 		logger.info("Initing new service");
@@ -232,6 +291,11 @@ public class ExternalSearchManager extends ThreadedQueueCacheNotificationListene
 		services.put(config.getName(), newService);
 	}
 
+	/**
+	 * Initiates an update of the external search configuration. The configuration
+	 * is read from the <em>CmsPropertyHandler</em>. This method is called automatically
+	 * by the system whenever the application is notified of a change in the ServerNodeProperties.
+	 */
 	public void updateConfigurations()
 	{
 		String configsString = CmsPropertyHandler.getExternalSearchServiceConfigs();
@@ -239,21 +303,42 @@ public class ExternalSearchManager extends ThreadedQueueCacheNotificationListene
 		updateConfigurations(configsString);
 	}
 
+	/**
+	 * Returns a list of all available services. The returned values are not deep copies so operations
+	 * done on the services will affect the managed services.
+	 * @return A list of all the current services.
+	 */
 	public Collection<ExternalSearchService> getAllServices()
 	{
 		return services.values();
 	}
 
+	/**
+	 * Attempts to get a service with the given <em>serviceName</em>.  If the service does not exist
+	 * null is returned.
+	 * 
+	 * @param serviceName The service to look for
+	 * @return The service, if found.
+	 */
 	public ExternalSearchService getService(String serviceName)
 	{
 		return services.get(serviceName);
 	}
 
-	public void stopService()
+	/**
+	 * Halts the hearth beat loop of the manager. When the manager is stopped the services
+	 * will still be searchable but they will never have their indexes updated again. If the manager
+	 * is in the process of notifying the services it will finish that task before stopping.
+	 */
+	public void stopServices()
 	{
 		this.stopped = true;
 	}
 
+	/**
+	 * Indicates if the manager has stopped the hearth beat loop.
+	 * @return True if the manager has stopped, false otherwise.
+	 */
 	public boolean isStopped()
 	{
 		return this.stopped;
@@ -293,6 +378,7 @@ public class ExternalSearchManager extends ThreadedQueueCacheNotificationListene
 				logger.warn("Error in external search manager loop.", tr);
 			}
 		}
+		logger.warn("The external search manager was stopped!");
 	}
 
 	@Override

@@ -1,18 +1,13 @@
 
 package org.infoglue.deliver.externalsearch;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
-
-
-import java.io.InputStream;
 import java.util.List;
-import java.util.Map;
 
-import org.infoglue.deliver.externalsearch.DataRetriever;
-import org.infoglue.deliver.externalsearch.ExternalSearchManager;
-import org.infoglue.deliver.externalsearch.ExternalSearchService;
-import org.infoglue.deliver.externalsearch.ExternalSearchServiceConfig;
 import org.junit.Before;
 import org.junit.Test;
 
