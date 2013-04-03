@@ -146,6 +146,7 @@ public class ExternalSearchService
 			}
 		}
 
+		logger.debug("It is not time to start service. Service name: " + name);
 		return false;
 	}
 
@@ -280,15 +281,21 @@ public class ExternalSearchService
 	{
 		if (this.maxAge == null)
 		{
+			logger.debug("Service has no max age => the index has not expired. Service: " + name);
 			return false;
 		}
 		Integer directoryAge = this.directoryHandler.getDirectoryAge();
 		if (directoryAge == null)
 		{
+			logger.debug("No directory age => the index has expired. Service: " + name);
 			return true;
 		}
 		else
 		{
+			if (logger.isTraceEnabled())
+			{
+				logger.trace("Comparing directory age. Diractory age: " + directoryAge + ", max age: " + maxAge + ". Service: " + name);
+			}
 			return directoryAge > this.maxAge;
 		}
 	}

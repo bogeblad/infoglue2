@@ -233,6 +233,7 @@ class ExternalSearchServiceDirectoryHandler
 
 			Iterator<Object> it = oldReferences.iterator();
 			Object reference;
+			logger.info("Will try to clear " + oldReferences.size() + " from service with name: " + serviceName);
 			while (it.hasNext())
 			{
 				reference = it.next();
@@ -240,25 +241,41 @@ class ExternalSearchServiceDirectoryHandler
 				{
 					if (reference == null)
 					{
+						logger.debug("Null reference, removing from old reference list. Service: " + serviceName);
 						it.remove();
 						continue;
 					}
 					if (reference instanceof FSDirectory)
 					{
+						logger.debug("Found FSDirectory reference in old references. Service: " + serviceName);
 						((FSDirectory) reference).close();
 						File file = ((FSDirectory) reference).getFile();
-						boolean success = file.delete();
-						if (success)
+						if (file == null)
 						{
-							logger.debug("Removed directory file from disc. Remove directory from old directories list. File: " + file.getAbsolutePath());
+							logger.warn("The directory did not contain a file. Weird, lets remove it. Directory: " + reference);
 							it.remove();
+						}
+						else
+						{
+							try
+							{
+								FileUtils.deleteDirectory(file);
+								logger.debug("Removed directory file from disc. Remove directory from old directories list. File: " + file.getAbsolutePath());
+								it.remove();
+							}
+							catch (IOException ioex)
+							{
+								logger.warn("Failed to remove old directory from disk. Will keep it in the list. File: " + file.getAbsolutePath() + ". Message: " + ioex.getMessage());
+							}
 						}
 					}
 					else if (reference instanceof IndexSearcher)
 					{
+						logger.debug("Found IndexSearcher reference in old references. Service: " + serviceName);
 						try
 						{
 							((IndexSearcher) reference).close();
+							it.remove();
 							logger.info("Closed old IndexSearcher");
 						}
 						catch (IOException ex)
