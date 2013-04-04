@@ -65,6 +65,7 @@ public class ExternalSearchService
 	private String name;
 	private Integer maxAge;
 	private Locale defaultLanguage;
+	private Map<String, IndexableField> fields;
 	private List<String> dependencies;
 	private boolean startIndexing;
 
@@ -150,7 +151,7 @@ public class ExternalSearchService
 		return false;
 	}
 
-	private String[] languageAdoptFields(String[] sortFields, Locale language)
+	private String[] convertToSortableFields(String[] sortFields, Locale language)
 	{
 		if (sortFields == null)
 		{
@@ -158,7 +159,7 @@ public class ExternalSearchService
 		}
 		for (int i = 0; i < sortFields.length; i++)
 		{
-			sortFields[i] = sortFields[i] + language.getLanguage();
+			sortFields[i] = this.fields.get(sortFields[i]).getKey(language);
 		}
 		return sortFields;
 	}
@@ -183,7 +184,7 @@ public class ExternalSearchService
 					String[] sortFields = params.getSortFields();
 					if (params.getLanguage() != null)
 					{
-						sortFields = languageAdoptFields(sortFields, params.getLanguage());
+						sortFields = convertToSortableFields(sortFields, params.getLanguage());
 					}
 					if (logger.isDebugEnabled())
 					{
@@ -316,6 +317,7 @@ public class ExternalSearchService
 			this.maxAge = this.newConfig.getMaxAge() == null ? null : this.newConfig.getMaxAge() * 1000;
 			this.dependencies = this.newConfig.getDependencis() == null ? new LinkedList<String>() : this.newConfig.getDependencis();
 			this.defaultLanguage = this.newConfig.getDefaultLanguage();
+			this.fields = this.newConfig.getFields();
 			if (this.defaultLanguage == null)
 			{
 				this.defaultLanguage = Locale.ENGLISH;
@@ -364,7 +366,7 @@ public class ExternalSearchService
 			StandardAnalyzer analyzer = new StandardAnalyzer();
 			IndexWriter indexWriter = new IndexWriter(directory, analyzer, true);
 
-			this.indexer.index(entities, indexWriter);
+			this.indexer.index(entities, fields.values(), indexWriter);
 
 			indexWriter.optimize();
 			indexWriter.close();

@@ -23,8 +23,10 @@
 
 package org.infoglue.deliver.externalsearch;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 /**
  * <p>This class represents an {@link ExternalSearchService} configuration. It is a POJO with
@@ -45,10 +47,16 @@ class ExternalSearchServiceConfig
 	private Integer maxAge;
 	private List<String> dependencis;
 	private Locale defaultLanguage;
+	private Map<String, IndexableField> fields;
 	private DataRetriever dataRetriever;
 	private Parser parser;
 	private Indexer indexer;
 
+	public ExternalSearchServiceConfig()
+	{
+		this.fields = new HashMap<String, IndexableField>();
+	}
+	
 	public void setName(String name)
 	{
 		this.name = name;
@@ -107,6 +115,16 @@ class ExternalSearchServiceConfig
 	public void setIndexer(Indexer indexer)
 	{
 		this.indexer = indexer;
+	}
+
+	public Map<String, IndexableField> getFields()
+	{
+		return fields;
+	}
+	
+	public void setFields(Map<String, IndexableField> fields)
+	{
+		this.fields = fields;
 	}
 
 	public Locale getDefaultLanguage()

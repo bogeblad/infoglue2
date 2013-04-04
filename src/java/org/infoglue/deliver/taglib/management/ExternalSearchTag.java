@@ -130,6 +130,11 @@ public class ExternalSearchTag extends AbstractTag
 		this.count = evaluateInteger("externalSearch", "count", count);
 	}
 
+	public void setException(String exception) throws JspException
+	{
+		this.exception = exception;
+	}
+
 	public void setLanguage(String language) throws SystemException, Exception
 	{
 		Object languageObject = evaluate("externalSearch", "language", language, Object.class);

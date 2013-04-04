@@ -23,6 +23,7 @@
 
 package org.infoglue.deliver.externalsearch;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -46,7 +47,6 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
-import java.lang.reflect.Type;
 
 /**
  * <p>The ExternalSearchManager class is a singleton responsible for handling all {@link ExternalSearchService} in the system.
@@ -151,6 +151,7 @@ public class ExternalSearchManager extends ThreadedQueueCacheNotificationListene
 
 		GsonBuilder gson = new GsonBuilder();
 
+		gson.registerTypeAdapter(IndexableField.class, new IndexableField.Deserializer());
 		gson.registerTypeAdapter(DataRetriever.class, new DelegateDeserializer<DataRetriever>());
 		gson.registerTypeAdapter(Parser.class, new DelegateDeserializer<Parser>());
 		gson.registerTypeAdapter(Indexer.class, new DelegateDeserializer<Indexer>());

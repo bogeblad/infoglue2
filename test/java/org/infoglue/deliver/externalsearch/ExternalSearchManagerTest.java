@@ -7,6 +7,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.List;
+import java.util.Locale;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -44,6 +45,65 @@ public class ExternalSearchManagerTest
 
 		assertEquals("There should be two items in the list", 2, configs.size());
 		assertTrue("The list should contain two items with names, persons and enhet.", configs.get(0).getName().equals("persons") && configs.get(1).getName().equals("enhet") || configs.get(1).getName().equals("persons") && configs.get(0).getName().equals("enhet"));
+	}
+
+	@Test
+	public void testParseLanguage()
+	{
+		String configsString = "[" +
+				"{\"defaultLanguage\":\"en\"}" +
+				",{\"defaultLanguage\":\"sv\"}" +
+				"]";
+		List<ExternalSearchServiceConfig> configs = manager.parseConfiguartions(configsString);
+
+		Locale firstServiceLanguage = configs.get(0).getDefaultLanguage();
+		Locale secondServiceLanguage = configs.get(1).getDefaultLanguage();
+		assertEquals("", firstServiceLanguage, new Locale("en"));
+		assertEquals("", secondServiceLanguage, new Locale("sv"));
+	}
+
+	@Test
+	public void testParseFieldsWithoutLanguages()
+	{
+		String configsString = "[" +
+				"{\"fields\":{\"foo\":{\"name\":\"foobar\"}}}" +
+				"]";
+		List<ExternalSearchServiceConfig> configs = manager.parseConfiguartions(configsString);
+
+		ExternalSearchServiceConfig config = configs.get(0);
+		assertNotNull("", config.getFields());
+		assertNotNull("", config.getFields().get("foo"));
+		assertEquals("", config.getFields().get("foo").getKey(), "foobar");
+	}
+
+	@Test
+	public void testParseFieldsWithLanguages()
+	{
+		String configsString = "[" +
+				"{\"fields\":{\"foo\":{\"name\":{\"sv\":\"foobar\"}}}}" +
+				"]";
+		List<ExternalSearchServiceConfig> configs = manager.parseConfiguartions(configsString);
+
+		ExternalSearchServiceConfig config = configs.get(0);
+		assertNotNull("", config.getFields());
+		assertNotNull("", config.getFields().get("foo"));
+		assertEquals("", config.getFields().get("foo").getKey(), "foobar");
+	}
+
+	@Test
+	public void testParseManyFieldsWithoutLanguages()
+	{
+		String configsString = "[" +
+				"{\"fields\":{\"foo\":{\"name\":\"foobar\"},\"bar\":{\"name\":\"barfoo\"}}}" +
+				"]";
+		List<ExternalSearchServiceConfig> configs = manager.parseConfiguartions(configsString);
+
+		ExternalSearchServiceConfig config = configs.get(0);
+		assertNotNull("", config.getFields());
+		assertNotNull("", config.getFields().get("foo"));
+		assertNotNull("", config.getFields().get("bar"));
+		assertEquals("", config.getFields().get("foo").getKey(), "foobar");
+		assertEquals("", config.getFields().get("bar").getKey(), "barfoo");
 	}
 
 	@Test
