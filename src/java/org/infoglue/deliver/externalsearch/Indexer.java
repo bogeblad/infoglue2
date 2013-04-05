@@ -43,5 +43,5 @@ public interface Indexer extends ExternalSearchDelegate
 	 * @param entities Data that may be used by the indexer when populating the index
 	 * @param indexWriter An IndexWriter to write Lucene documents to.
 	 */
-	void index(List<Map<String,Object>> entities, Collection<IndexableField> fields, IndexWriter indexWriter);
+	void index(List<Map<String,Object>> entities, Map<String, IndexableField> fields, IndexWriter indexWriter);
 }

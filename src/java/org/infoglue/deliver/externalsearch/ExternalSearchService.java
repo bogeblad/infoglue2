@@ -159,7 +159,7 @@ public class ExternalSearchService
 		}
 		for (int i = 0; i < sortFields.length; i++)
 		{
-			sortFields[i] = this.fields.get(sortFields[i]).getKey(language);
+			sortFields[i] = this.fields.get(sortFields[i]).getFieldName(language);//this.fields.get(sortFields[i]).getKey(language);
 		}
 		return sortFields;
 	}
@@ -366,7 +366,7 @@ public class ExternalSearchService
 			StandardAnalyzer analyzer = new StandardAnalyzer();
 			IndexWriter indexWriter = new IndexWriter(directory, analyzer, true);
 
-			this.indexer.index(entities, fields.values(), indexWriter);
+			this.indexer.index(entities, fields, indexWriter);
 
 			indexWriter.optimize();
 			indexWriter.close();

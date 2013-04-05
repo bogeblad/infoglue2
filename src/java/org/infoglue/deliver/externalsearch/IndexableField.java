@@ -13,28 +13,36 @@ import com.google.gson.JsonParseException;
 import com.google.gson.JsonPrimitive;
 import com.google.gson.reflect.TypeToken;
 
-class IndexableField
+public class IndexableField
 {
 	private Map<Locale, String> keys;
 	private String defaultKey;
-	
+	private boolean languageDependent;
+
+	public IndexableField()
+	{
+		this.languageDependent = true;
+		this.keys = new HashMap<Locale, String>();
+	}
+
 	public IndexableField(String defaultKey)
 	{
+		this.languageDependent = false;
 		this.defaultKey = defaultKey;
 		this.keys = new HashMap<Locale, String>();
 	}
-	
+
 	void addKey(Locale language, String key)
 	{
 		this.keys.put(language, key);
 	}
 
-	String getKey()
+	public String getKey()
 	{
 		return getKey(null);
 	}
 
-	String getKey(Locale language)
+	public String getKey(Locale language)
 	{
 		String key = keys.get(language);
 		if (key == null)
@@ -42,6 +50,18 @@ class IndexableField
 			key = defaultKey;
 		}
 		return key;
+	}
+	
+	public String getFieldName(Locale language)
+	{
+		if (!languageDependent)
+		{
+			return getKey();
+		}
+		else
+		{
+			return getKey() + language.getLanguage();
+		}
 	}
 
 	@Override

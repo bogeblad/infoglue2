@@ -3,6 +3,7 @@
  */
 package org.infoglue.deliver.externalsearch;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -35,7 +36,7 @@ public class DummyIndexer implements Indexer
 	}
 
 	@Override
-	public void index(List<Map<String,Object>> entities, IndexWriter indexWriter)
+	public void index(List<Map<String,Object>> entities, Map<String, IndexableField> fields, IndexWriter indexWriter)
 	{
 		// TODO Auto-generated method stub
 
