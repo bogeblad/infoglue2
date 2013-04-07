@@ -10,121 +10,155 @@ import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
-import com.google.gson.JsonPrimitive;
-import com.google.gson.reflect.TypeToken;
 
 public class IndexableField
 {
-	private Map<Locale, String> keys;
-	private String defaultKey;
+//	private Map<Locale, String> keys;
+//	private String defaultKey;
 	private boolean languageDependent;
+	private String name;
 
 	public IndexableField()
 	{
-		this.languageDependent = true;
-		this.keys = new HashMap<Locale, String>();
+//		this.name = name;
+//		this.languageDependent = false;
+//		this.keys = new HashMap<Locale, String>();
+	}
+	
+	IndexableField(String name, boolean languageDependent)
+	{
+		this.name = name;
+		this.languageDependent = languageDependent;
 	}
 
-	public IndexableField(String defaultKey)
+//	public IndexableField(String defaultKey)
+//	{
+//		this.languageDependent = false;
+//		this.defaultKey = defaultKey;
+//		this.keys = new HashMap<Locale, String>();
+//	}
+	
+	void setLanguageDependent(boolean languageDependent)
 	{
-		this.languageDependent = false;
-		this.defaultKey = defaultKey;
-		this.keys = new HashMap<Locale, String>();
+		this.languageDependent = languageDependent;
 	}
 
-	void addKey(Locale language, String key)
+	public boolean isLanguageDependent()
 	{
-		this.keys.put(language, key);
+		return this.languageDependent;
 	}
 
-	public String getKey()
+	void setName(String name)
 	{
-		return getKey(null);
+		this.name = name;
 	}
+	
+	public String getName()
+	{
+		return name;
+	}
+//
+//	void addKey(Locale language, String key)
+//	{
+//		this.keys.put(language, key);
+//	}
+//
+//	public String getKey()
+//	{
+//		return getKey(null);
+//	}
 
-	public String getKey(Locale language)
-	{
-		String key = keys.get(language);
-		if (key == null)
-		{
-			key = defaultKey;
-		}
-		return key;
-	}
+//	public String getKey(Locale language)
+//	{
+//		if (language == null)
+//		{
+//			return name;
+//		}
+//		else
+//		{
+//			return new StringBuilder().append(name).append("$$").append(language.getLanguage()).toString();
+//		}
+//	}
 	
 	public String getFieldName(Locale language)
 	{
-		if (!languageDependent)
+		if (language == null || !languageDependent)
 		{
-			return getKey();
+			return name;
 		}
 		else
 		{
-			return getKey() + language.getLanguage();
+			return new StringBuilder().append(name).append("$$").append(language.getLanguage()).toString();
 		}
 	}
 
 	@Override
 	public String toString()
 	{
-		return "IndexableField. Default: " + defaultKey + ". Values: " + keys;
+		return "IndexableField. Name: " + name + ". LanguageDependent: " + languageDependent;
 	}
 
 
-
-	static class Deserializer implements JsonDeserializer<IndexableField>
+	public static void registerField(Map<String, IndexableField> fields, String name, Boolean languageDependent)
 	{
-		Type configType = new TypeToken<Map<String, String>>() {}.getType();
+		IndexableField field = new IndexableField(name, languageDependent);
+		fields.put(name, field);
+	}
 
+	static class Deserializer implements JsonDeserializer<Map<String, IndexableField>>
+	{
 		@Override
-		public IndexableField deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException
+		public Map<String, IndexableField> deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException
 		{
-			IndexableField field = null;
+//			IndexableField field = null;
+			Map<String, IndexableField> result = new HashMap<String, IndexableField>();
 			try
 			{
 				JsonObject obj = (JsonObject) json;
 
-				JsonElement nameElement = obj.get("name");
+				for (Map.Entry<String, JsonElement> entry : obj.entrySet())
+				{
+					IndexableField field = context.deserialize(entry.getValue(), IndexableField.class);
+					field.setName(entry.getKey());
+					result.put(entry.getKey(), field);
+				}
 
-				if (nameElement.isJsonPrimitive() && ((JsonPrimitive)nameElement).isString())
-				{
-					field = new IndexableField(nameElement.getAsString());
-				}
-				else if (nameElement.isJsonObject())
-				{
-					JsonObject nameObject = (JsonObject)nameElement;
-					if (nameObject.has("default"))
-					{
-						field = new IndexableField(nameObject.get("default").getAsString());
-					}
-					else
-					{
-						for (Map.Entry<String, JsonElement> entry : nameObject.entrySet())
-						{
-							if (!entry.getValue().isJsonPrimitive() || !((JsonPrimitive)entry.getValue()).isString())
-							{
-								throw new JsonParseException("Value of member in name must be a String");
-							}
-							if (field == null)
-							{
-								field = new IndexableField(entry.getValue().getAsString());
-							}
-							field.addKey(new Locale(entry.getKey()), entry.getValue().getAsString());
-						}
-					}
-				}
+//				JsonElement nameElement = obj.get("name");
+//
+//				if (nameElement.isJsonPrimitive() && ((JsonPrimitive)nameElement).isString())
+//				{
+//					field = new IndexableField(nameElement.getAsString());
+//				}
+//				else if (nameElement.isJsonObject())
+//				{
+//					JsonObject nameObject = (JsonObject)nameElement;
+//					if (nameObject.has("default"))
+//					{
+//						field = new IndexableField(nameObject.get("default").getAsString());
+//					}
+//					else
+//					{
+//						for (Map.Entry<String, JsonElement> entry : nameObject.entrySet())
+//						{
+//							if (!entry.getValue().isJsonPrimitive() || !((JsonPrimitive)entry.getValue()).isString())
+//							{
+//								throw new JsonParseException("Value of member in name must be a String");
+//							}
+//							if (field == null)
+//							{
+//								field = new IndexableField(entry.getValue().getAsString());
+//							}
+//							field.addKey(new Locale(entry.getKey()), entry.getValue().getAsString());
+//						}
+//					}
+//				}
 			}
 			catch (Throwable ex)
 			{
 				throw new JsonParseException("Failed to deserialize element. Exception message: " + ex.getMessage(), ex);
 			}
 
-			if (field == null)
-			{
-				throw new JsonParseException("Failed to deserialize IndexableField. The object should be a JSON-string or a JSON-object with a name member.");
-			}
-
-			return field;
+			return result;
 		}
 	}
 }

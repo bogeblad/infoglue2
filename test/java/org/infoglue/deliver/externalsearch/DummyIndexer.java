@@ -3,7 +3,6 @@
  */
 package org.infoglue.deliver.externalsearch;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -33,6 +32,12 @@ public class DummyIndexer implements Indexer
 	{
 		// TODO Auto-generated method stub
 
+	}
+
+	@Override
+	public void registerFields(Map<String, IndexableField> fields)
+	{
+		
 	}
 
 	@Override

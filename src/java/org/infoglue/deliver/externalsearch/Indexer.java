@@ -23,7 +23,6 @@
 
 package org.infoglue.deliver.externalsearch;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -38,6 +37,8 @@ import org.apache.lucene.index.IndexWriter;
  */
 public interface Indexer extends ExternalSearchDelegate
 {
+	void registerFields(Map<String, IndexableField> fields);
+	
 	/**
 	 * Uses the <em>entities</em> to populate the directory behind the <em>IndexWriter</em>.
 	 * @param entities Data that may be used by the indexer when populating the index

@@ -14,7 +14,7 @@ import org.infoglue.cms.exception.SystemException;
 import org.infoglue.deliver.controllers.kernel.impl.simple.LanguageDeliveryController;
 import org.infoglue.deliver.externalsearch.ExternalSearchManager;
 import org.infoglue.deliver.externalsearch.ExternalSearchService;
-import org.infoglue.deliver.externalsearch.SearchParameters;
+import org.infoglue.deliver.externalsearch.SearchRequest;
 import org.infoglue.deliver.externalsearch.SearchResult;
 import org.infoglue.deliver.taglib.AbstractTag;
 
@@ -30,14 +30,22 @@ public class ExternalSearchTag extends AbstractTag
 	private static final Logger logger = Logger.getLogger(ExternalSearchTag.class);
 
 	private String serviceName;
-	private String query;
-	private String[] sortFields;
-	private Boolean sortAscending;
+//	private String query;
+//	private String[] sortFields;
+//	private Boolean sortAscending;
 	private String resultCount;
 	private Integer startIndex;
 	private Integer count;
 	private String exception;
 	private Locale language;
+
+	private SearchRequest searchRequest;
+	private ExternalSearchService service;
+
+	public SearchRequest getSearchRequest()
+	{
+		return searchRequest;
+	}
 
 	private void setReturnValuesForError(Throwable tr)
 	{
@@ -53,21 +61,35 @@ public class ExternalSearchTag extends AbstractTag
 	}
 
 	@Override
-	public int doEndTag() throws JspException
+	public int doStartTag() throws JspException
 	{
-		ExternalSearchService service = ExternalSearchManager.getManager().getService(serviceName);
+		service = ExternalSearchManager.getManager().getService(serviceName);
 
 		if (service == null)
 		{
 			setReturnValuesForError(new JspException("External search service not found. Given service name: " + serviceName));
+			return SKIP_BODY;
 		}
 		else
 		{
+			searchRequest = service.getSearchRequest(language);
+			searchRequest.setCount(count);
+			searchRequest.setStartIndex(startIndex);
+		}
+
+		return EVAL_BODY_INCLUDE;
+	}
+
+	@Override
+	public int doEndTag() throws JspException
+	{
+		if (service != null)
+		{
 			try
 			{
-				SearchParameters params = ExternalSearchService.ParametersFactory.getFactory().getParameters(query, sortFields, sortAscending, startIndex, count, language);
+//				SearchRequest params = ExternalSearchService.ParametersFactory.getFactory().getParameters(query, sortFields, sortAscending, startIndex, count, language);
 
-				SearchResult searchResult = service.search(params);
+				SearchResult searchResult = service.search(searchRequest);
 
 				if (resultCount != null)
 				{
@@ -91,29 +113,29 @@ public class ExternalSearchTag extends AbstractTag
 		this.serviceName = evaluateString("externalSearch", "serviceName", serviceName);
 	}
 
-	public void setQuery(String query) throws JspException
-	{
-		this.query = evaluateString("externalSearch", "query", query);
-	}
-
-	public void setSortFields(String sortFields) throws JspException
-	{
-		String sortFieldsString = evaluateString("externalSearch", "serviceName", sortFields);
-
-		if (sortFieldsString == null || sortFieldsString.length() == 0)
-		{
-			this.sortFields = null;
-		}
-		else
-		{
-			this.sortFields = sortFieldsString.split(",");
-		}
-	}
-
-	public void setSortAscending(String sortAscending) throws JspException
-	{
-		this.sortAscending = (Boolean) evaluate("externalSearch", "sortAscending", sortAscending, Boolean.class);
-	}
+//	public void setQuery(String query) throws JspException
+//	{
+//		this.query = evaluateString("externalSearch", "query", query);
+//	}
+//
+//	public void setSortFields(String sortFields) throws JspException
+//	{
+//		String sortFieldsString = evaluateString("externalSearch", "serviceName", sortFields);
+//
+//		if (sortFieldsString == null || sortFieldsString.length() == 0)
+//		{
+//			this.sortFields = null;
+//		}
+//		else
+//		{
+//			this.sortFields = sortFieldsString.split(",");
+//		}
+//	}
+//
+//	public void setSortAscending(String sortAscending) throws JspException
+//	{
+//		this.sortAscending = (Boolean) evaluate("externalSearch", "sortAscending", sortAscending, Boolean.class);
+//	}
 
 	public void setResultCount(String resultCount) throws JspException
 	{
@@ -170,5 +192,6 @@ public class ExternalSearchTag extends AbstractTag
 			logger.info("Language in external search tag evaluated to: " + this.language);
 		}
 	}
+
 }
 

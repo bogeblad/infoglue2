@@ -373,7 +373,6 @@
 	-->
 	<target name="deploy-cms" depends="clean,war-cms" description="Unpacks war to deploy dir" if="deploy.dir.cms">
 		<unwar src="${cms.war.file}" dest="${deploy.dir.cms}"/>
-		<copy file="${conf}/cms-rebel.xml" tofile="${deploy.dir.cms}/WEB-INF/classes/rebel.xml" overwrite="true" />
 		<copy file="${conf}/cms-web.xml" tofile="${deploy.dir.cms}/WEB-INF/web.xml" overwrite="true">
 			<filterset refid="project.filters"/>
 		</copy>
@@ -724,8 +723,6 @@
 			</fileset>
 		</copy>
 
-		<copy file="${conf}/cms-rebel.xml" tofile="${deploy.dir.cms}/WEB-INF/classes/rebel.xml"  overwrite="true" />
-
 		<echo message="Copying infoglueDeliver/WEB-INF/classes"/>
 		<copy todir="${deploy.dir.working}/WEB-INF/classes" overwrite="true">
 			<fileset dir="${build.classes}">
@@ -859,7 +856,6 @@
 		</copy>					
 
 		<echo message="Copying JRebel"/>
-		<copy file="${conf}/cms-rebel.xml" tofile="${deploy.dir.cms}/WEB-INF/classes/rebel.xml" overwrite="true"  />
 
 
 	</target>

@@ -1038,8 +1038,8 @@
 	<tag>
         <name>externalSearch</name>
         <tagclass>org.infoglue.deliver.taglib.management.ExternalSearchTag</tagclass>
-        <bodycontent>empty</bodycontent>
-        <info>Perform searches against a external search service</info>
+        <bodycontent>JSP</bodycontent>
+        <info>Perform searches against an external search service</info>
 
         <attribute>
     	    <name>id</name>
@@ -1087,4 +1087,48 @@
 	        <rtexprvalue>true</rtexprvalue>
     	</attribute>
     </tag>
+
+    <tag>
+        <name>externalSearchQuery</name>
+        <tagclass>org.infoglue.deliver.taglib.management.ExternalSearchFieldTag</tagclass>
+        <bodycontent>JSP</bodycontent>
+        <info>Defines the search query for the search. Must be a child of externalSearch.</info>
+
+        <attribute>
+    	    <name>query</name>
+        	<required>false</required>
+	        <rtexprvalue>true</rtexprvalue>
+    	</attribute>
+    </tag>
+
+    <tag>
+        <name>externalSearchOrdering</name>
+        <tagclass>org.infoglue.deliver.taglib.management.ExternalSearchOrderingTag</tagclass>
+        <bodycontent>JSP</bodycontent>
+        <info>Defines the sort fields for the search. Must be a child of externalSearch.</info>
+    </tag>
+
+    <tag>
+        <name>externalSearchField</name>
+        <tagclass>org.infoglue.deliver.taglib.management.ExternalSearchFieldTag</tagclass>
+        <bodycontent>JSP</bodycontent>
+        <info>Defines a indexed field for a search query or the sort fields</info>
+
+        <attribute>
+    	    <name>name</name>
+        	<required>true</required>
+	        <rtexprvalue>true</rtexprvalue>
+    	</attribute>
+        <attribute>
+    	    <name>value</name>
+        	<required>false</required>
+	        <rtexprvalue>true</rtexprvalue>
+    	</attribute>
+        <attribute>
+    	    <name>ascending</name>
+        	<required>false</required>
+	        <rtexprvalue>true</rtexprvalue>
+    	</attribute>
+    </tag>
 </taglib>
+

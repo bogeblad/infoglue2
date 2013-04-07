@@ -30,7 +30,7 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -42,13 +42,11 @@ import org.apache.log4j.Logger;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexWriter;
+import org.apache.lucene.index.IndexReader.FieldOption;
 import org.apache.lucene.queryParser.ParseException;
-import org.apache.lucene.queryParser.QueryParser;
 import org.apache.lucene.search.Hits;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
-import org.apache.lucene.search.Sort;
-import org.apache.lucene.search.SortField;
 import org.apache.lucene.store.Directory;
 import org.infoglue.cms.exception.ConfigurationError;
 import org.infoglue.cms.exception.SystemException;
@@ -151,20 +149,20 @@ public class ExternalSearchService
 		return false;
 	}
 
-	private String[] convertToSortableFields(String[] sortFields, Locale language)
-	{
-		if (sortFields == null)
-		{
-			return null;
-		}
-		for (int i = 0; i < sortFields.length; i++)
-		{
-			sortFields[i] = this.fields.get(sortFields[i]).getFieldName(language);//this.fields.get(sortFields[i]).getKey(language);
-		}
-		return sortFields;
-	}
+//	private String[] convertToSortableFields(String[] sortFields, Locale language)
+//	{
+//		if (sortFields == null)
+//		{
+//			return null;
+//		}
+//		for (int i = 0; i < sortFields.length; i++)
+//		{
+//			sortFields[i] = this.fields.get(sortFields[i]).getFieldName(language);//this.fields.get(sortFields[i]).getKey(language);
+//		}
+//		return sortFields;
+//	}
 
-	public SearchResult search(SearchParameters params) throws SystemException
+	public SearchResult search(SearchRequest params) throws SystemException
 	{
 		List<Object> result = new ArrayList<Object>();
 		if (isSearchable())
@@ -175,27 +173,28 @@ public class ExternalSearchService
 				// searcher = new IndexSearcher(directory);
 				StandardAnalyzer analyzer = new StandardAnalyzer();
 				// Build a Query object
-				Query query = new QueryParser("", analyzer).parse(params.getQuery());
+				Query query = params.getQuery(analyzer);//new QueryParser("", analyzer).parse(params.getQuery());
 
 				// Search for the query
 				Hits hits;
 				if (params.shouldSort())
 				{
-					String[] sortFields = params.getSortFields();
-					if (params.getLanguage() != null)
-					{
-						sortFields = convertToSortableFields(sortFields, params.getLanguage());
-					}
-					if (logger.isDebugEnabled())
-					{
-						logger.debug("Searching with sort. Using the following fields for sorting: " + Arrays.toString(sortFields));
-					}
-					SortField[] sorts = new SortField[params.getSortFields().length];
-					for (int i = 0; i < sortFields.length; i++)
-					{
-						sorts[i] = new SortField(sortFields[i], params.getSortOrder().equals(SearchParameters.SortOrder.DESC));
-					}
-					hits = indexSearcher.search(query, new Sort(sorts));
+//					String[] sortFields = params.getSortFields();
+//					if (params.getLanguage() != null)
+//					{
+//						sortFields = convertToSortableFields(sortFields, params.getLanguage());
+//					}
+//					if (logger.isDebugEnabled())
+//					{
+//						logger.debug("Searching with sort. Using the following fields for sorting: " + Arrays.toString(sortFields));
+//					}
+//					SortField[] sorts = new SortField[params.getSortFields().length];
+//					for (int i = 0; i < sortFields.length; i++)
+//					{
+//						sorts[i] = new SortField(sortFields[i], params.getSortOrder().equals(SearchRequest.SortOrder.DESC));
+//					}
+					logger.debug("Searching with sort");
+					hits = indexSearcher.search(query, params.getOrdering()); // new Sort(sorts)
 				}
 				else
 				{
@@ -207,7 +206,7 @@ public class ExternalSearchService
 				int hitCount = hits.length();
 				if (logger.isDebugEnabled())
 				{
-					logger.debug("hit count: " + hitCount + " for query: " + params.getQuery());
+					logger.debug("hit count: " + hitCount + " for query: " + query.toString());
 				}
 				if (hitCount > 0)
 				{
@@ -412,72 +411,45 @@ public class ExternalSearchService
 		return name;
 	}
 
-	public static class ParametersFactory
+	public SearchRequest getSearchRequest()
 	{
-		private static ParametersFactory factory;
+		return getSearchRequest(null);
+	}
 
-		public static ParametersFactory getFactory()
+	public SearchRequest getSimpleSearchRequest(String field, String query)
+	{
+		return getSimpleSearchRequest(null, field, query);
+	}
+
+	public SearchRequest getSearchRequest(Locale language)
+	{
+		if (language == null)
 		{
-			if (factory == null)
-			{
-				factory = new ParametersFactory();
-			}
-			return factory;
+			language = defaultLanguage;
+		}
+		return new SearchRequest(fields, language);
+	}
+
+	public SearchRequest getSimpleSearchRequest(Locale language, String field, String query)
+	{
+		SearchRequest request = getSearchRequest(language);
+		request.addSearchParameter(field, query);
+		return request;
+	}
+
+	public SearchRequest getFreeTextSearchRequest(Locale language, String query)
+	{
+		SearchRequest request = getSearchRequest(language);
+		Collection<?> fieldNames = indexSearcher.getIndexReader().getFieldNames(FieldOption.INDEXED);
+
+		for (Object obj : fieldNames)
+		{
+			request.addSearchParameter(obj.toString(), query);
 		}
 
-		public SearchParameters getParameters()
-		{
-			return new SearchParameters();
-		}
-
-		public SearchParameters getSimpleSearchParameters(String query)
-		{
-			SearchParameters params = new SearchParameters();
-			params.setQuery(query);
-			return params;
-		}
-
-		public SearchParameters getParameters(String query, String[] sortFields, Boolean sortAscending, Integer startIndex, Integer count, Locale language)
-		{
-			SearchParameters.SortOrder sortOrder;
-			if (sortFields == null)
-			{
-				sortOrder = null;
-			}
-			else
-			{
-				if (sortAscending == null)
-				{
-					sortOrder = SearchParameters.SortOrder.ASC;
-				}
-				else
-				{
-					if (sortAscending)
-					{
-						sortOrder = SearchParameters.SortOrder.ASC;
-					}
-					else
-					{
-						sortOrder = SearchParameters.SortOrder.DESC;
-					}
-				}
-			}
-
-			return getParameters(query, sortFields, sortOrder, startIndex, count, language);
-		}
-
-		public SearchParameters getParameters(String query, String[] sortFields, SearchParameters.SortOrder sortOrder, Integer startIndex, Integer count, Locale language)
-		{
-			SearchParameters params = new SearchParameters();
-
-			params.setQuery(query);
-			params.setSortFields(sortFields);
-			params.setSortOrder(sortOrder);
-			params.setStartIndex(startIndex);
-			params.setCount(count);
-			params.setLanguage(language);
-
-			return params;
-		}
+		return request;
 	}
 }
+
+
+
