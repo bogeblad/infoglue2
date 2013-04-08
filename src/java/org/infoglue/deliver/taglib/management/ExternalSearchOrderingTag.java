@@ -6,7 +6,6 @@ package org.infoglue.deliver.taglib.management;
 import javax.servlet.jsp.JspException;
 
 import org.apache.log4j.Logger;
-import org.infoglue.deliver.externalsearch.SearchRequest;
 import org.infoglue.deliver.taglib.AbstractTag;
 
 
@@ -20,7 +19,8 @@ public class ExternalSearchOrderingTag extends AbstractTag
 	private static final long serialVersionUID = -4562505238121718003L;
 	private static final Logger logger = Logger.getLogger(ExternalSearchOrderingTag.class);
 
-	private SearchRequest request;
+	private ExternalSearchTag parent;
+//	private SearchRequest request;
 
 	public void addField(String name, boolean ascending)
 	{
@@ -28,23 +28,30 @@ public class ExternalSearchOrderingTag extends AbstractTag
 		{
 			logger.debug("Adding sort field. Name: " + name + ". Ascending: " + ascending);
 		}
-		request.addSortParameter(name, ascending);
+		parent.getSearchRequest().addSortParameter(name, ascending);
 	}
-	
+
 	@Override
 	public int doStartTag() throws JspException
 	{
-		Object parent = findAncestorWithClass(this, ExternalSearchTag.class);
-		if (parent == null)
+		Object parentObject = findAncestorWithClass(this, ExternalSearchTag.class);
+		if (parentObject == null)
 		{
 			throw new JspException("Could not find parent external search tag for query tag");
 		}
 		else
 		{
-			request = ((ExternalSearchTag)parent).getSearchRequest();
+			this.parent = (ExternalSearchTag)parentObject;
 		}
 
-		return super.doStartTag();
+		return EVAL_BODY_INCLUDE;
+	}
+
+	@Override
+	public int doEndTag() throws JspException
+	{
+		this.parent = null;
+		return EVAL_PAGE;
 	}
 
 }

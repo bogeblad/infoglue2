@@ -45,6 +45,11 @@ public class ExternalSearchFieldTag extends AbstractTag
 			}
 		}
 
+		name = null;
+		value = null;
+		ascending = null;
+
+
 		return EVAL_PAGE;
 	}
 

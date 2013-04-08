@@ -1052,21 +1052,6 @@
 	        <rtexprvalue>true</rtexprvalue>
     	</attribute>
     	<attribute>
-    	    <name>query</name>
-        	<required>true</required>
-	        <rtexprvalue>true</rtexprvalue>
-    	</attribute>
-    	<attribute>
-    	    <name>sortFields</name>
-        	<required>false</required>
-	        <rtexprvalue>true</rtexprvalue>
-    	</attribute>
-    	<attribute>
-    	    <name>sortAscending</name>
-        	<required>false</required>
-	        <rtexprvalue>true</rtexprvalue>
-    	</attribute>
-    	<attribute>
     	    <name>resultCount</name>
         	<required>false</required>
 	        <rtexprvalue>false</rtexprvalue>
@@ -1090,12 +1075,22 @@
 
     <tag>
         <name>externalSearchQuery</name>
-        <tagclass>org.infoglue.deliver.taglib.management.ExternalSearchFieldTag</tagclass>
+       <tagclass>org.infoglue.deliver.taglib.management.ExternalSearchQueryTag</tagclass>
         <bodycontent>JSP</bodycontent>
         <info>Defines the search query for the search. Must be a child of externalSearch.</info>
 
         <attribute>
     	    <name>query</name>
+        	<required>false</required>
+	        <rtexprvalue>true</rtexprvalue>
+    	</attribute>
+        <attribute>
+    	    <name>freeTextSearch</name>
+        	<required>false</required>
+	        <rtexprvalue>true</rtexprvalue>
+    	</attribute>
+        <attribute>
+    	    <name>listAll</name>
         	<required>false</required>
 	        <rtexprvalue>true</rtexprvalue>
     	</attribute>

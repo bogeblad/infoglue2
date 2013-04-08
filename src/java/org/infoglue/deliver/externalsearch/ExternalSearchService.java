@@ -30,6 +30,7 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
@@ -41,12 +42,13 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import org.apache.log4j.Logger;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
-import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexReader.FieldOption;
+import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.queryParser.ParseException;
 import org.apache.lucene.search.Hits;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
+import org.apache.lucene.search.Sort;
 import org.apache.lucene.store.Directory;
 import org.infoglue.cms.exception.ConfigurationError;
 import org.infoglue.cms.exception.SystemException;
@@ -167,34 +169,20 @@ public class ExternalSearchService
 		List<Object> result = new ArrayList<Object>();
 		if (isSearchable())
 		{
-			// Searcher searcher = null;
 			try
 			{
-				// searcher = new IndexSearcher(directory);
 				StandardAnalyzer analyzer = new StandardAnalyzer();
-				// Build a Query object
-				Query query = params.getQuery(analyzer);//new QueryParser("", analyzer).parse(params.getQuery());
+				Query query = params.getQuery(analyzer);
 
-				// Search for the query
 				Hits hits;
 				if (params.shouldSort())
 				{
-//					String[] sortFields = params.getSortFields();
-//					if (params.getLanguage() != null)
-//					{
-//						sortFields = convertToSortableFields(sortFields, params.getLanguage());
-//					}
-//					if (logger.isDebugEnabled())
-//					{
-//						logger.debug("Searching with sort. Using the following fields for sorting: " + Arrays.toString(sortFields));
-//					}
-//					SortField[] sorts = new SortField[params.getSortFields().length];
-//					for (int i = 0; i < sortFields.length; i++)
-//					{
-//						sorts[i] = new SortField(sortFields[i], params.getSortOrder().equals(SearchRequest.SortOrder.DESC));
-//					}
-					logger.debug("Searching with sort");
-					hits = indexSearcher.search(query, params.getOrdering()); // new Sort(sorts)
+					Sort sort = params.getOrdering();
+					if (logger.isDebugEnabled())
+					{
+						logger.debug("Searching with sort. Sort: " + Arrays.toString(sort.getSort()));
+					}
+					hits = indexSearcher.search(query, sort);
 				}
 				else
 				{
@@ -219,6 +207,16 @@ public class ExternalSearchService
 						try
 						{
 							Document document = hits.doc(i);
+
+							if (logger.isDebugEnabled())
+							{
+								StringBuilder sb = new StringBuilder();
+								for (Object field : document.getFields())
+								{
+									sb.append(document.get(field.toString())).append(", ");
+								}
+								logger.debug("Search found document: " + sb);
+							}
 
 							byte[] resultBytes = document.getBinaryValue(SearchResult.getResultLabel(params.getLanguage()));
 							if (resultBytes != null)
@@ -444,9 +442,16 @@ public class ExternalSearchService
 
 		for (Object obj : fieldNames)
 		{
-			request.addSearchParameter(obj.toString(), query);
+			request.addParameter(obj.toString(), query);
 		}
 
+		return request;
+	}
+
+	public SearchRequest getListAllQuery(Locale language)
+	{
+		SearchRequest request = getSearchRequest(language);
+		request.listAll();
 		return request;
 	}
 }

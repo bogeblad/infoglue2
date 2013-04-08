@@ -51,6 +51,7 @@ public abstract class BaseIndexer implements Indexer
 		try
 		{
 			String key = field.getFieldName(language);
+			value = value.toLowerCase();
 			if (logger.isDebugEnabled())
 			{
 				logger.debug("Adding field to index. Field: " + field + ". Value: " + value);

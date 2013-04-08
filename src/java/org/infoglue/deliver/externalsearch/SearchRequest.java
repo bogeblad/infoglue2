@@ -23,6 +23,7 @@
 
 package org.infoglue.deliver.externalsearch;
 
+import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -44,11 +45,11 @@ public class SearchRequest
 {
 	private static final Logger logger = Logger.getLogger(SearchRequest.class);
 	static final String ANY_FIELD = "$$any";
+	static final String ANY_QUERY = "true";
 
 	private String queryString;
 	private Integer startIndex;
 	private Integer count;
-//	private String[] sortFields;
 	private Locale language;
 
 	private Map<String, String> searchFields;
@@ -73,7 +74,16 @@ public class SearchRequest
 	{
 		this.queryString = query;
 	}
-	
+
+	public void addParameter(String fieldName, String query)
+	{
+		if (fieldName.equals(ANY_FIELD))
+		{
+			return;
+		}
+		searchFields.put(fieldName, query);
+	}
+
 	public void addSearchParameter(String fieldName, String query)
 	{
 		IndexableField field = serviceFields.get(fieldName);
@@ -132,7 +142,13 @@ public class SearchRequest
 	{
 		return language;
 	}
-	
+
+	public void listAll()
+	{
+		searchFields.clear();
+		searchFields.put(ANY_FIELD, ANY_QUERY);
+	}
+
 	public Query getQuery(Analyzer analyzer) throws ParseException
 	{
 		if (queryString != null)
@@ -150,6 +166,11 @@ public class SearchRequest
 				fields[i] = entries.getKey();
 				queries[i] = entries.getValue();
 				i++;
+			}
+			
+			if (logger.isDebugEnabled())
+			{
+				logger.debug("Generating search query with fields: " + Arrays.toString(fields) + " for language: " + language);
 			}
 
 			return MultiFieldQueryParser.parse(queries, fields, analyzer);
@@ -171,6 +192,11 @@ public class SearchRequest
 			for (Map.Entry<String, Boolean> entry : sortFields.entrySet())
 			{
 				sorts[i++] = new SortField(entry.getKey(), !entry.getValue());
+			}
+
+			if (logger.isDebugEnabled())
+			{
+				logger.debug("Generating sort with fields: " + Arrays.toString(sorts) + " for language: " + language);
 			}
 
 			return new Sort(sorts);

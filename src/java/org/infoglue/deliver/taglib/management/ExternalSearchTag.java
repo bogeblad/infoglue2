@@ -30,9 +30,6 @@ public class ExternalSearchTag extends AbstractTag
 	private static final Logger logger = Logger.getLogger(ExternalSearchTag.class);
 
 	private String serviceName;
-//	private String query;
-//	private String[] sortFields;
-//	private Boolean sortAscending;
 	private String resultCount;
 	private Integer startIndex;
 	private Integer count;
@@ -44,7 +41,26 @@ public class ExternalSearchTag extends AbstractTag
 
 	public SearchRequest getSearchRequest()
 	{
+		if (searchRequest == null)
+		{
+			searchRequest = service.getSearchRequest(language);
+		}
 		return searchRequest;
+	}
+
+	public void setFreeTextSearchString(String query)
+	{
+		searchRequest = service.getFreeTextSearchRequest(language, query);
+	}
+
+	public void setQuery(String query)
+	{
+		getSearchRequest().setQuery(query);
+	}
+
+	public void listAll()
+	{
+		searchRequest = service.getListAllQuery(language);
 	}
 
 	private void setReturnValuesForError(Throwable tr)
@@ -70,12 +86,6 @@ public class ExternalSearchTag extends AbstractTag
 			setReturnValuesForError(new JspException("External search service not found. Given service name: " + serviceName));
 			return SKIP_BODY;
 		}
-		else
-		{
-			searchRequest = service.getSearchRequest(language);
-			searchRequest.setCount(count);
-			searchRequest.setStartIndex(startIndex);
-		}
 
 		return EVAL_BODY_INCLUDE;
 	}
@@ -87,9 +97,12 @@ public class ExternalSearchTag extends AbstractTag
 		{
 			try
 			{
+				SearchRequest request = getSearchRequest();
+				searchRequest.setCount(count);
+				searchRequest.setStartIndex(startIndex);
 //				SearchRequest params = ExternalSearchService.ParametersFactory.getFactory().getParameters(query, sortFields, sortAscending, startIndex, count, language);
 
-				SearchResult searchResult = service.search(searchRequest);
+				SearchResult searchResult = service.search(request);
 
 				if (resultCount != null)
 				{
@@ -104,6 +117,13 @@ public class ExternalSearchTag extends AbstractTag
 				setReturnValuesForError(ex);
 			}
 		}
+
+		this.searchRequest = null;
+		this.service = null;
+		this.startIndex = null;
+		this.count = null;
+		this.exception = null;
+		this.language = null;
 
 		return EVAL_PAGE;
 	}
