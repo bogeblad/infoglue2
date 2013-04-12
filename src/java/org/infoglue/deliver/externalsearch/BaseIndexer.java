@@ -56,7 +56,7 @@ public abstract class BaseIndexer implements Indexer
 			{
 				logger.debug("Adding field to index. Field: " + field + ". Value: " + value);
 			}
-			document.add(new Field(key, value, Field.Store.NO, Field.Index.UN_TOKENIZED));
+			document.add(new Field(key, value, Field.Store.NO, Field.Index.TOKENIZED));
 		}
 		catch (NullPointerException nex)
 		{

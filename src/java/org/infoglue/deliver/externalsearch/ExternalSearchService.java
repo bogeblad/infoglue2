@@ -340,7 +340,8 @@ public class ExternalSearchService
 			}
 			this.indexer = this.newConfig.getIndexer();
 			this.indexer.init();
-
+			this.indexer.registerFields(fields);
+			
 			this.newConfig = null;
 			startIndexing = true;
 		}
