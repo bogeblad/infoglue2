@@ -258,6 +258,7 @@ public class ExternalSearchManager extends ThreadedQueueCacheNotificationListene
 						}
 						else
 						{
+							logger.debug("Updating config for service. Name: " + config.getName());
 							services.get(config.getName()).setConfig(config);
 						}
 					}
@@ -289,7 +290,7 @@ public class ExternalSearchManager extends ThreadedQueueCacheNotificationListene
 	 */
 	protected void initService(ExternalSearchServiceConfig config)
 	{
-		logger.info("Initing new service");
+		logger.info("Initing new service. Name: " + config.getName());
 		ExternalSearchService newService = new ExternalSearchService(config);
 		services.put(config.getName(), newService);
 	}
@@ -365,9 +366,12 @@ public class ExternalSearchManager extends ThreadedQueueCacheNotificationListene
 				{
 					for (final ExternalSearchService service : services.values())
 					{
+						logger.debug("Requesting service indexing start. Service: " + service);
 						service.startIndexing();
 					}
 				}
+
+				logger.info("Did go through external search services");
 
 				try
 				{
