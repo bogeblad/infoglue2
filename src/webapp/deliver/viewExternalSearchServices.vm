@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "DTD/xhtml1-strict.dtd">
+
+<html>
+<head>
+	<title>External search services</title>
+
+	<style>
+	<!--
+		table
+		{
+			width : 900px;
+			margin-right: auto;
+			margin-left: auto;
+			border: 1px solid #ccc;
+			background-color: #f1f1f1;
+		}
+		.header
+		{
+			font-family : Tahoma, Arial;
+			font-size 	: 14pt;
+			font-weight : bold;
+		}
+		.label
+		{
+			font-family		 : Tahoma, Arial;
+			font-size		 : 8pt;
+			font-weight 	 : bold;
+			background-color : #CCCCCC;
+		}
+		.labelsub
+		{
+			font-family		 : Tahoma, Arial;
+			font-size		 : 8pt;
+			font-weight 	 : bold;
+			background-color : #FFFFFF;
+		}
+		.text
+		{
+			font-family	:Tahoma, Arial;
+			font-size	:8pt;
+		}
+		.texttrue
+		{
+			font-family	:Tahoma, Arial;
+			font-size	:8pt;
+		}
+		.textfalse
+		{
+			font-family	:Tahoma, Arial;
+			font-size	:8pt;
+			color  		:red;
+		}
+		.fullymarginalized
+		{
+			margin-left	: 50px;
+			margin-right: 50px;
+			margin-top	: 10%;
+		}
+
+	-->
+	</style>
+	<script type="text/javascript">
+	<!--
+		function toggleDiv(id)
+		{
+			var div = document.getElementById(id);
+			if (navigator.appName == "Microsoft Internet Explorer")
+			{
+				if(div && div.style.display == 'block')
+					div.style.display = "none";
+				else
+					div.style.display = "block";
+			}
+			else
+			{
+				if(div && div.style.display == 'table-row')
+					div.style.display = 'none';
+				else
+					div.style.display = 'table-row';
+			}
+		}
+	-->
+	</script>
+</head>
+
+<body>
+
+<table cellpadding="5" cellspacing="0">
+  <tr>
+    <td colspan="5" class="header">External search services</td>
+  </tr>
+  <tr>
+    <td colspan="5" class="label">Stats</td>
+  </tr>
+  <tr>
+    <td colspan="5" class="text">Number of services: $services.size()</td>
+  </tr>
+  <tr>
+    <td colspan="5" class="text">&nbsp;</td>
+  </tr>
+  <tr>
+    <td colspan="1" class="label">Name</td>
+    <td colspan="1" class="label">Index age</td>
+    <td colspan="1" class="label">Time to next indexing</td>
+    <td colspan="1" class="label">Number of entries</td>
+    <td colspan="1" class="label">Actions</td>
+  </tr>
+  #foreach($service in $services)
+  <tr>
+    <td colspan="1" class="text">$service.getName()#if($service.isIndexing()) (indexing...)#end</td>
+    <td colspan="1" class="text">$!this.getIndexAge($service)</td>
+    <td colspan="1" class="text">$!this.getTimeToReindex($service)</td>
+    <td colspan="1" class="text">$service.getNumberEntries()</td>
+    <td colspan="1" class="text" align="left">
+    	<a href="ViewExternalSearchService!search.action?serviceName=$service.getName()">Search</a> |
+    	<a href="ViewExternalSearchService.action?serviceName=$service.getName()">Config details</a> |
+    	#if( $service.getStartIndexing() )
+    	Reindex request registered
+    	#else
+    	<a href="ViewExternalSearchService!reindex.action?serviceName=$service.getName()">Reindex</a>
+    	#end
+    </td>
+  </tr>
+  #end
+  <tr>
+    <td colspan="5" class="text">&nbsp;</td>
+  </tr>
+  #if( "$!service" != "" )
+  <tr>
+    <td colspan="5" class="label">Service details ($service.getName()) <a href="ViewExternalSearchService.action">Clear view</a></td>
+  </tr>
+  <tr>
+    <td colspan="5" class="text"><pre style="width:860px;overflow:auto;">$service.getConfigDetails()</pre></td>
+  </tr>
+  #end
+</table>
+
+</body>
+
+</html>

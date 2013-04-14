@@ -335,6 +335,7 @@
     	<li><a href="jsp/BlockedThread.jsp">Suspected thread locks (On Java 5-setups only).</a></li>
 		<li><a href="jsp/ThreadAnalysis.jsp">List of all active threads (On Java 5-setups only).</a></li>
 		<li><a href="jsp/PermGen.jsp">Detailed memory info (On Java 5-setups only).</a></li>
+		<li><a href="ViewExternalSearchService.action">External Search Services</a></li>
 	</ul>
 	</td>
   </tr>

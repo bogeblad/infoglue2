@@ -47,4 +47,11 @@ public interface ExternalSearchDelegate
 	 * Called sometime after the last usage of the delegate and before the delegate is thrown away. The method will only be called once.
 	 */
 	void destroy();
+
+	/**
+	 * Returns a String containing information about this delegates configuration. This method is primarily intended for debugging.
+	 * @param rowPrefix For formatting purposes this value will be prepended to each line in the returned String.
+	 * @return Information about this delegates configuration
+	 */
+	String getConfigDetails(String rowPrefix);
 }

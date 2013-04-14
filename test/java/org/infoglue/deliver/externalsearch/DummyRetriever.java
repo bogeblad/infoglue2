@@ -48,4 +48,10 @@ public class DummyRetriever implements DataRetriever
 		this.config = config;
 	}
 
+	@Override
+	public String getConfigDetails(String rowPrefix)
+	{
+		return null;
+	}
+
 }

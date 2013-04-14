@@ -126,4 +126,10 @@ public class LocalFileDataRetriever implements DataRetriever
 	public void destroy()
 	{
 	}
+
+	@Override
+	public String getConfigDetails(String rowPrefix)
+	{
+		return rowPrefix + "File path: " + filePath;
+	}
 }

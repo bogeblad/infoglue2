@@ -18,8 +18,6 @@ import org.infoglue.deliver.externalsearch.SearchRequest;
 import org.infoglue.deliver.externalsearch.SearchResult;
 import org.infoglue.deliver.taglib.AbstractTag;
 
-
-
 /**
  * @author Erik Stenbäcka
  *

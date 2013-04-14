@@ -223,4 +223,12 @@
 		<view name="error">/deliver/error.vm</view>
 	</action>
 
+	<!-- External search service view - debug views for external search services -->
+	<action name="org.infoglue.deliver.applications.actions.ViewExternalSearchServiceAction" alias="ViewExternalSearchService">
+		<view name="success">/deliver/viewExternalSearchServices.vm</view>
+		<view name="search">/deliver/viewExternalSearch.vm</view>
+		<view name="backToList">org.infoglue.cms.applications.common.actions.ExtendedRedirect.action?url=ViewExternalSearchService.action</view>
+		<view name="error">/deliver/error.vm</view>
+	</action>
+
 </actions>

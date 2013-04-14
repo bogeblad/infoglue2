@@ -26,6 +26,7 @@ package org.infoglue.deliver.externalsearch;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.reflect.Type;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -80,6 +81,10 @@ public class GSonBackedJSONParser implements Parser
 	@Override
 	public List<Map<String, Object>> parse(InputStream input)
 	{
+		if (input == null)
+		{
+			return Collections.emptyList();
+		}
 		return gson.fromJson(new InputStreamReader(input), listType);
 	}
 
@@ -90,6 +95,12 @@ public class GSonBackedJSONParser implements Parser
 		{
 			this.gson = null;
 		}
+	}
+
+	@Override
+	public String getConfigDetails(String rowPrefix)
+	{
+		return "";
 	}
 
 	private static class RecursiveMapDeserializer implements JsonDeserializer<Object>

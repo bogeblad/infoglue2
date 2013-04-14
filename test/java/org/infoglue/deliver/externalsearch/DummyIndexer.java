@@ -54,4 +54,11 @@ public class DummyIndexer implements Indexer
 
 	}
 
+	@Override
+	public String getConfigDetails(String rowPrefix)
+	{
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }

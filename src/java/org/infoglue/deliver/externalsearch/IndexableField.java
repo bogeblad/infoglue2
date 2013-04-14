@@ -13,31 +13,26 @@ import com.google.gson.JsonParseException;
 
 public class IndexableField
 {
+	public enum IndexingType {TOKENIZED,UN_TOKENIZED};
+	
 //	private Map<Locale, String> keys;
 //	private String defaultKey;
 	private boolean languageDependent;
 	private String name;
+	private IndexingType indexingType;
 
 	public IndexableField()
 	{
-//		this.name = name;
-//		this.languageDependent = false;
-//		this.keys = new HashMap<Locale, String>();
+		this.indexingType = IndexingType.TOKENIZED;
 	}
-	
+
 	IndexableField(String name, boolean languageDependent)
 	{
+		this();
 		this.name = name;
 		this.languageDependent = languageDependent;
 	}
 
-//	public IndexableField(String defaultKey)
-//	{
-//		this.languageDependent = false;
-//		this.defaultKey = defaultKey;
-//		this.keys = new HashMap<Locale, String>();
-//	}
-	
 	void setLanguageDependent(boolean languageDependent)
 	{
 		this.languageDependent = languageDependent;
@@ -57,29 +52,17 @@ public class IndexableField
 	{
 		return name;
 	}
-//
-//	void addKey(Locale language, String key)
-//	{
-//		this.keys.put(language, key);
-//	}
-//
-//	public String getKey()
-//	{
-//		return getKey(null);
-//	}
 
-//	public String getKey(Locale language)
-//	{
-//		if (language == null)
-//		{
-//			return name;
-//		}
-//		else
-//		{
-//			return new StringBuilder().append(name).append("$$").append(language.getLanguage()).toString();
-//		}
-//	}
+	void setIndexingType(IndexingType indexingType)
+	{
+		this.indexingType = indexingType;
+	}
 	
+	public IndexingType getIndexingType()
+	{
+		return indexingType;
+	}
+
 	public String getFieldName(Locale language)
 	{
 		if (language == null || !languageDependent)
@@ -110,7 +93,6 @@ public class IndexableField
 		@Override
 		public Map<String, IndexableField> deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException
 		{
-//			IndexableField field = null;
 			Map<String, IndexableField> result = new HashMap<String, IndexableField>();
 			try
 			{
@@ -122,36 +104,6 @@ public class IndexableField
 					field.setName(entry.getKey());
 					result.put(entry.getKey(), field);
 				}
-
-//				JsonElement nameElement = obj.get("name");
-//
-//				if (nameElement.isJsonPrimitive() && ((JsonPrimitive)nameElement).isString())
-//				{
-//					field = new IndexableField(nameElement.getAsString());
-//				}
-//				else if (nameElement.isJsonObject())
-//				{
-//					JsonObject nameObject = (JsonObject)nameElement;
-//					if (nameObject.has("default"))
-//					{
-//						field = new IndexableField(nameObject.get("default").getAsString());
-//					}
-//					else
-//					{
-//						for (Map.Entry<String, JsonElement> entry : nameObject.entrySet())
-//						{
-//							if (!entry.getValue().isJsonPrimitive() || !((JsonPrimitive)entry.getValue()).isString())
-//							{
-//								throw new JsonParseException("Value of member in name must be a String");
-//							}
-//							if (field == null)
-//							{
-//								field = new IndexableField(entry.getValue().getAsString());
-//							}
-//							field.addKey(new Locale(entry.getKey()), entry.getValue().getAsString());
-//						}
-//					}
-//				}
 			}
 			catch (Throwable ex)
 			{

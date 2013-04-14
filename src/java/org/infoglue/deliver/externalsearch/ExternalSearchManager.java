@@ -150,7 +150,7 @@ public class ExternalSearchManager extends ThreadedQueueCacheNotificationListene
 		}
 
 		GsonBuilder gson = new GsonBuilder();
-		
+
 		Type fieldsType = new TypeToken<Map<String, IndexableField>>() {}.getType();
 
 		gson.registerTypeAdapter(fieldsType, new IndexableField.Deserializer());

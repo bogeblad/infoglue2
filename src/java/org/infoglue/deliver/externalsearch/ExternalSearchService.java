@@ -27,6 +27,7 @@
 package org.infoglue.deliver.externalsearch;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.util.ArrayList;
@@ -104,6 +105,72 @@ public class ExternalSearchService
 		this.indexSearcher = this.directoryHandler.handleOldDirectories();
 	}
 
+	public String getName()
+	{
+		return name;
+	}
+
+	public Integer getIndexAge()
+	{
+		return directoryHandler.getDirectoryAge();
+	}
+
+	public Integer getMaxAge()
+	{
+		return maxAge;
+	}
+
+	public boolean getStartIndexing()
+	{
+		return startIndexing;
+	}
+
+	public void forceReindexing()
+	{
+		this.startIndexing = true;
+	}
+
+	public Integer getNumberEntries()
+	{
+		if (indexSearcher == null)
+		{
+			return -1;
+		}
+		try
+		{
+			return indexSearcher.maxDoc();
+		}
+		catch (IOException ex)
+		{
+			logger.warn("IOException when trying to read number of entities in service. Service : " + name, ex);
+			return -1;
+		}
+	}
+
+	public boolean isIndexing()
+	{
+		return running.get();
+	}
+
+	public String getConfigDetails()
+	{
+		StringBuilder sb = new StringBuilder();
+		sb.append("Data retreiver: ").append(this.dataRetriever.getClass()).append("\n");
+		sb.append(this.dataRetriever.getConfigDetails("  ")).append("\n");
+		sb.append("Parser: ").append(this.parser.getClass()).append("\n");
+		sb.append(this.parser.getConfigDetails("  ")).append("\n");
+		sb.append("Indexer: ").append(this.indexer.getClass()).append("\n");
+		sb.append(this.indexer.getConfigDetails("  ")).append("\n");
+		sb.append("Dependencies: ").append(this.dependencies).append("\n");
+		sb.append("Max age: ").append(this.maxAge).append("\n");
+		sb.append("Fields: ").append("\n");
+		for (IndexableField field : fields.values())
+		{
+			sb.append("  ").append(field).append("\n");
+		}
+		return sb.toString();
+	}
+
 	public void setConfig(ExternalSearchServiceConfig newConfig) throws ConfigurationError
 	{
 		logger.info("Queing new config for service: " + name);
@@ -150,19 +217,6 @@ public class ExternalSearchService
 		logger.debug("It is not time to start service. Service name: " + name);
 		return false;
 	}
-
-//	private String[] convertToSortableFields(String[] sortFields, Locale language)
-//	{
-//		if (sortFields == null)
-//		{
-//			return null;
-//		}
-//		for (int i = 0; i < sortFields.length; i++)
-//		{
-//			sortFields[i] = this.fields.get(sortFields[i]).getFieldName(language);//this.fields.get(sortFields[i]).getKey(language);
-//		}
-//		return sortFields;
-//	}
 
 	public SearchResult search(SearchRequest params) throws SystemException
 	{

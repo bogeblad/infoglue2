@@ -42,4 +42,11 @@ public class DummyParser implements Parser
 	{
 	}
 
+	@Override
+	public String getConfigDetails(String rowPrefix)
+	{
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }
