@@ -45,6 +45,7 @@ import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
+import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
 
@@ -113,16 +114,14 @@ public class ExternalSearchManager extends ThreadedQueueCacheNotificationListene
 	{
 		this.services = new HashMap<String, ExternalSearchService>();
 		this.stopped = false;
-//		updateConfigurations();
 		CacheNotificationCenter.getCenter().addListener(this);
 	}
 
 	private void initGSon()
 	{
+		final Type configType = new TypeToken<Map<String, Object>>() {}.getType();
 		class DelegateDeserializer<T extends ExternalSearchDelegate> implements JsonDeserializer<T>
 		{
-			Type configType = new TypeToken<Map<String, String>>() {}.getType();
-
 			@Override
 			public T deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException
 			{
@@ -135,11 +134,41 @@ public class ExternalSearchManager extends ThreadedQueueCacheNotificationListene
 
 		            if (obj.has("config"))
 		            {
-			            Map<String, String> config = context.deserialize(obj.get("config"), configType);
+		            	Map<String, Object> config = context.deserialize(obj.get("config"), configType);
 			            delegate.setConfig(config);
 		            }
 
 		            return delegate;
+		        }
+				catch (Exception ex)
+				{
+		            throw new JsonParseException("Failed to deserialize element. Exception message: " + ex.getMessage(), ex);
+		        }
+			}
+
+		}
+		class DelegateConfigDeserializer implements JsonDeserializer<Map<String, Object>>
+		{
+			@Override
+			public Map<String, Object> deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException
+			{
+				try
+				{
+	            	Map<String, Object> config = new HashMap<String, Object>();
+	            	JsonObject configObject = json.getAsJsonObject();
+	            	for(Map.Entry<String, JsonElement> configEntry : configObject.entrySet())
+	            	{
+						if (configEntry.getValue().isJsonObject())
+						{
+							config.put(configEntry.getKey(), context.deserialize(configEntry.getValue(), configType));
+						}
+						else if (configEntry.getValue().isJsonPrimitive() && ((JsonPrimitive)configEntry.getValue()).isString())
+						{
+							config.put(configEntry.getKey(), configEntry.getValue().getAsString());
+						}
+	            	}
+
+		            return config;
 		        }
 				catch (Exception ex)
 				{
@@ -154,6 +183,7 @@ public class ExternalSearchManager extends ThreadedQueueCacheNotificationListene
 		Type fieldsType = new TypeToken<Map<String, IndexableField>>() {}.getType();
 
 		gson.registerTypeAdapter(fieldsType, new IndexableField.Deserializer());
+		gson.registerTypeAdapter(configType, new DelegateConfigDeserializer());
 		gson.registerTypeAdapter(DataRetriever.class, new DelegateDeserializer<DataRetriever>());
 		gson.registerTypeAdapter(Parser.class, new DelegateDeserializer<Parser>());
 		gson.registerTypeAdapter(Indexer.class, new DelegateDeserializer<Indexer>());

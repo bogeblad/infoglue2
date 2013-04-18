@@ -9,6 +9,7 @@ import java.util.Map;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.queryParser.ParseException;
 import org.apache.lucene.search.Sort;
+import org.infoglue.deliver.externalsearch.SearchRequest.ParameterType;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -54,6 +55,23 @@ public class SearchRequestTest
 		assertTrue(englishQuery.contains("lol"));
 		assertTrue(swedishQuery.contains(languageIndependentField.getFieldName(swedish)));
 		assertTrue(swedishQuery.contains("lol"));
+	}
+
+	@Test
+	public void generateNonlanguageQueryMustNotCaluse() throws ParseException
+	{
+		englishRequest.addSearchParameter("foobar", "lol", ParameterType.MUST_NOT);
+		swedishRequest.addSearchParameter("foobar", "lol", ParameterType.MUST_NOT);
+
+		String englishQuery = englishRequest.getQuery(analyser).toString();
+		String swedishQuery = swedishRequest.getQuery(analyser).toString();
+
+		assertTrue(englishQuery.contains(languageIndependentField.getFieldName(english)));
+		assertTrue(englishQuery.contains("lol"));
+		assertTrue(englishQuery.contains("-"));
+		assertTrue(swedishQuery.contains(languageIndependentField.getFieldName(swedish)));
+		assertTrue(swedishQuery.contains("lol"));
+		assertTrue(swedishQuery.contains("-"));
 	}
 
 	@Test

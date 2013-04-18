@@ -53,6 +53,7 @@ import org.apache.lucene.search.Sort;
 import org.apache.lucene.store.Directory;
 import org.infoglue.cms.exception.ConfigurationError;
 import org.infoglue.cms.exception.SystemException;
+import org.infoglue.deliver.externalsearch.SearchRequest.ParameterType;
 
 /**
  * @author Erik Stenbäcka
@@ -497,7 +498,7 @@ public class ExternalSearchService
 
 		for (Object obj : fieldNames)
 		{
-			request.addParameter(obj.toString(), query);
+			request.addParameter(obj.toString(), query, ParameterType.SHOULD);
 		}
 
 		return request;

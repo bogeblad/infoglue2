@@ -25,6 +25,7 @@ package org.infoglue.deliver.externalsearch;
 
 import java.util.Arrays;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.Locale;
 import java.util.Map;
 
@@ -33,17 +34,19 @@ import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.queryParser.MultiFieldQueryParser;
 import org.apache.lucene.queryParser.ParseException;
 import org.apache.lucene.queryParser.QueryParser;
+import org.apache.lucene.search.BooleanClause;
+import org.apache.lucene.search.BooleanClause.Occur;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.Sort;
 import org.apache.lucene.search.SortField;
 
 /**
  * @author Erik Stenbäcka
- *
  */
 public class SearchRequest
 {
 	private static final Logger logger = Logger.getLogger(SearchRequest.class);
+	public enum ParameterType {MUST,MUST_NOT,SHOULD};
 	static final String ANY_FIELD = "$$any";
 	static final String ANY_QUERY = "true";
 
@@ -52,7 +55,7 @@ public class SearchRequest
 	private Integer count;
 	private Locale language;
 
-	private Map<String, String> searchFields;
+	private LinkedList<SearchFieldVars> searchFields;
 	private Map<String, Boolean> sortFields;
 
 	private Map<String, IndexableField> serviceFields;
@@ -60,7 +63,7 @@ public class SearchRequest
 	public SearchRequest(Map<String, IndexableField> serviceFields, Locale language)
 	{
 		this.serviceFields = serviceFields;
-		this.searchFields = new LinkedHashMap<String, String>();
+		this.searchFields = new LinkedList<SearchFieldVars>();
 		this.sortFields = new LinkedHashMap<String, Boolean>();
 		this.language = language;
 	}
@@ -77,21 +80,31 @@ public class SearchRequest
 
 	public void addParameter(String fieldName, String query)
 	{
+		addParameter(fieldName, query, ParameterType.MUST);
+	}
+
+	public void addParameter(String fieldName, String query, ParameterType type)
+	{
 		if (fieldName.equals(ANY_FIELD))
 		{
 			return;
 		}
-		searchFields.put(fieldName, query);
+		searchFields.addLast(new SearchFieldVars(fieldName, query, getBooleanClause(type)));
 	}
 
 	public void addSearchParameter(String fieldName, String query)
+	{
+		addSearchParameter(fieldName, query, ParameterType.MUST);
+	}
+
+	public void addSearchParameter(String fieldName, String query, ParameterType type)
 	{
 		IndexableField field = serviceFields.get(fieldName);
 		if (field == null)
 		{
 			throw new IllegalArgumentException("The given field is not searchable in this service. Field name: " + fieldName);
 		}
-		searchFields.put(field.getFieldName(language), query);
+		searchFields.addLast(new SearchFieldVars(field.getFieldName(language), query, getBooleanClause(type)));
 	}
 
 	public void addSortParameter(String fieldName, boolean ascending)
@@ -121,23 +134,21 @@ public class SearchRequest
 		this.count = count;
 	}
 
+	private BooleanClause.Occur getBooleanClause(ParameterType type)
+	{
+		switch (type)
+		{
+			case MUST:
+				return BooleanClause.Occur.MUST;
+			case SHOULD:
+				return BooleanClause.Occur.SHOULD;
+			case MUST_NOT:
+				return BooleanClause.Occur.MUST_NOT;
+			default:
+				return BooleanClause.Occur.MUST;
+		}
+	}
 
-//	public String[] getSortFields()
-//	{
-//		return sortFields;
-//	}
-//	public void setSortFields(String[] sortFields)
-//	{
-//		this.sortFields = sortFields;
-//	}
-//	public SortOrder getSortOrder()
-//	{
-//		return sortOrder;
-//	}
-//	public void setSortOrder(SortOrder sortOrder)
-//	{
-//		this.sortOrder = sortOrder;
-//	}
 	public Locale getLanguage()
 	{
 		return language;
@@ -146,7 +157,7 @@ public class SearchRequest
 	public void listAll()
 	{
 		searchFields.clear();
-		searchFields.put(ANY_FIELD, ANY_QUERY);
+		searchFields.addLast(new SearchFieldVars(ANY_FIELD, ANY_QUERY, BooleanClause.Occur.MUST));
 	}
 
 	public Query getQuery(Analyzer analyzer) throws ParseException
@@ -159,21 +170,23 @@ public class SearchRequest
 		{
 			String[] queries = new String[searchFields.size()];
 			String[] fields = new String[searchFields.size()];
+			BooleanClause.Occur[] fieldTypes = new BooleanClause.Occur[searchFields.size()];
 
 			int i = 0;
-			for (Map.Entry<String, String> entries : searchFields.entrySet())
+			for (SearchFieldVars entry : searchFields)
 			{
-				fields[i] = entries.getKey();
-				queries[i] = entries.getValue();
+				fields[i] = entry.field;
+				queries[i] = entry.query;
+				fieldTypes[i] = entry.type;
 				i++;
 			}
-			
+
 			if (logger.isDebugEnabled())
 			{
 				logger.debug("Generating search query with fields: " + Arrays.toString(fields) + " for language: " + language);
 			}
 
-			return MultiFieldQueryParser.parse(queries, fields, analyzer);
+			return MultiFieldQueryParser.parse(queries, fields, fieldTypes, analyzer);
 		}
 	}
 
@@ -200,6 +213,20 @@ public class SearchRequest
 			}
 
 			return new Sort(sorts);
+		}
+	}
+
+	private static class SearchFieldVars
+	{
+		String field;
+		String query;
+		BooleanClause.Occur type;
+		public SearchFieldVars(String field, String query, Occur type)
+		{
+			super();
+			this.field = field;
+			this.query = query;
+			this.type = type;
 		}
 	}
 }

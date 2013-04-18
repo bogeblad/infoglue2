@@ -14,15 +14,15 @@ import org.apache.lucene.index.IndexWriter;
  */
 public class DummyIndexer implements Indexer
 {
-	private Map<String, String> config;
+	private Map<String, Object> config;
 
-	public Map<String, String> getConfig()
+	public Map<String, Object> getConfig()
 	{
 		return this.config;
 	}
 
 	@Override
-	public void setConfig(Map<String, String> config)
+	public void setConfig(Map<String, Object> config)
 	{
 		this.config = config;
 	}

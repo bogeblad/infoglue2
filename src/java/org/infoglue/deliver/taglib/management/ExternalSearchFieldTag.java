@@ -5,6 +5,7 @@ package org.infoglue.deliver.taglib.management;
 
 import javax.servlet.jsp.JspException;
 
+import org.infoglue.deliver.externalsearch.SearchRequest.ParameterType;
 import org.infoglue.deliver.taglib.AbstractTag;
 
 
@@ -16,10 +17,10 @@ import org.infoglue.deliver.taglib.AbstractTag;
 public class ExternalSearchFieldTag extends AbstractTag
 {
 	private static final long serialVersionUID = -4562505278121718003L;
-//	private static final Logger logger = Logger.getLogger(ExternalSearchFieldTag.class);
 
 	private String name;
 	private String value;
+	private String type;
 	private Boolean ascending;
 
 	@Override
@@ -29,7 +30,12 @@ public class ExternalSearchFieldTag extends AbstractTag
 		if (parent != null)
 		{
 			ExternalSearchQueryTag query = (ExternalSearchQueryTag)parent;
-			query.addField(name, value);
+			ParameterType parameterType = ParameterType.MUST;
+			if (type != null)
+			{
+				parameterType = ParameterType.valueOf(type.toUpperCase());
+			}
+			query.addField(name, value, parameterType);
 		}
 		else
 		{
@@ -48,7 +54,7 @@ public class ExternalSearchFieldTag extends AbstractTag
 		name = null;
 		value = null;
 		ascending = null;
-
+		type = null;
 
 		return EVAL_PAGE;
 	}
@@ -66,6 +72,11 @@ public class ExternalSearchFieldTag extends AbstractTag
 	public void setAscending(String ascending) throws JspException
 	{
 		this.ascending = (Boolean)evaluate("externalSearchField", "ascending", ascending, Boolean.class);
+	}
+
+	public void setType(String type) throws JspException
+	{
+		this.type = evaluateString("externalSearchField", "type", type);
 	}
 
 }

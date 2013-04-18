@@ -59,7 +59,7 @@ public class GSonBackedJSONParser implements Parser
 	 * This parser does not require any configuration.
 	 */
 	@Override
-	public void setConfig(Map<String, String> config)
+	public void setConfig(Map<String, Object> config)
 	{
 	}
 

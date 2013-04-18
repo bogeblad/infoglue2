@@ -12,9 +12,9 @@ import java.util.Map;
  */
 public class DummyRetriever implements DataRetriever
 {
-	Map<String, String> config;
+	Map<String, Object> config;
 
-	public Map<String, String> getConfig()
+	public Map<String, Object> getConfig()
 	{
 		return this.config;
 	}
@@ -43,7 +43,7 @@ public class DummyRetriever implements DataRetriever
 	}
 
 	@Override
-	public void setConfig(Map<String, String> config)
+	public void setConfig(Map<String, Object> config)
 	{
 		this.config = config;
 	}

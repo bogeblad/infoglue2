@@ -1112,7 +1112,7 @@
         <name>externalSearchField</name>
         <tagclass>org.infoglue.deliver.taglib.management.ExternalSearchFieldTag</tagclass>
         <bodycontent>JSP</bodycontent>
-        <info>Defines a indexed field for a search query or the sort fields</info>
+        <info>Defines a indexed field for a search query or the sort fields. Observe that some attributes only have meaing on one context but not the other.</info>
 
         <attribute>
     	    <name>name</name>
@@ -1129,6 +1129,11 @@
         	<required>false</required>
 	        <rtexprvalue>true</rtexprvalue>
     	</attribute>
+        <attribute>
+            <name>type</name>
+            <required>false</required>
+	        <rtexprvalue>true</rtexprvalue>
+        </attribute>
     </tag>
 </taglib>
 

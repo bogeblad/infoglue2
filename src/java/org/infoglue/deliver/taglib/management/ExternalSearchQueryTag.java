@@ -6,11 +6,11 @@ package org.infoglue.deliver.taglib.management;
 import javax.servlet.jsp.JspException;
 
 import org.apache.log4j.Logger;
+import org.infoglue.deliver.externalsearch.SearchRequest.ParameterType;
 import org.infoglue.deliver.taglib.AbstractTag;
 
 /**
  * @author Erik Stenbäcka
- *
  */
 public class ExternalSearchQueryTag extends AbstractTag
 {
@@ -22,13 +22,13 @@ public class ExternalSearchQueryTag extends AbstractTag
 	private String query;
 	private Boolean listAll;
 
-	public void addField(String name, String value)
+	public void addField(String name, String value, ParameterType type)
 	{
 		if (logger.isDebugEnabled())
 		{
-			logger.debug("Adding search field. Name: " + name + ". Value: " + value);
+			logger.debug("Adding search field. Name: " + name + ". Value: " + value + ". Type: " + type);
 		}
-		parent.getSearchRequest().addSearchParameter(name, value);
+		parent.getSearchRequest().addSearchParameter(name, value, type);
 	}
 
 	@Override

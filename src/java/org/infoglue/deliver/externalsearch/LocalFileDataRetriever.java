@@ -53,15 +53,15 @@ public class LocalFileDataRetriever implements DataRetriever
 	private InputStream stream;
 
 	@Override
-	public void setConfig(Map<String, String> config)
+	public void setConfig(Map<String, Object> config)
 	{
-		if (!config.containsKey("filePath"))
+		if (!config.containsKey("filePath") || !(config.get("filePath") instanceof String))
 		{
 			throw new ConfigurationError("Must specify filePath - should be the path to the file that will be retrieved");
 		}
 		else
 		{
-			this.filePath = config.get("filePath");
+			this.filePath = (String)config.get("filePath");
 		}
 	}
 

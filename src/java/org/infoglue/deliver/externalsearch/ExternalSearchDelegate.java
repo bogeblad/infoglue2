@@ -42,7 +42,7 @@ public interface ExternalSearchDelegate
 	 * @param config The configuration for the delegate. See implementing class for more details.
 	 * @throws ConfigurationError Thrown if a field is missing or has an unexpected format.
 	 */
-	void setConfig(Map<String, String> config) throws ConfigurationError;
+	void setConfig(Map<String, Object> config) throws ConfigurationError;
 	/**
 	 * Called sometime after the last usage of the delegate and before the delegate is thrown away. The method will only be called once.
 	 */
