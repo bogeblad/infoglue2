@@ -23,7 +23,7 @@
 
 package com.frovi.ss.Tree;
 
-import java.util.HashMap;
+import java.util.HashMap; 
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
@@ -37,7 +37,6 @@ import java.util.Vector;
  */
 public abstract class BaseNode extends Object
 {
-	
 	private String title;
 	private Integer id;
 
