@@ -36,6 +36,7 @@ import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeVersionController
 import org.infoglue.cms.entities.content.ContentVO;
 import org.infoglue.cms.entities.content.ContentVersionVO;
 import org.infoglue.cms.entities.management.InterceptionPointVO;
+import org.infoglue.cms.entities.management.InterceptorVO;
 import org.infoglue.cms.entities.structure.SiteNodeVersion;
 import org.infoglue.cms.entities.structure.SiteNodeVersionVO;
 import org.infoglue.cms.exception.AccessConstraintException;
@@ -57,6 +58,11 @@ import com.opensymphony.workflow.loader.WorkflowDescriptor;
 public class InfoGlueOSWorkflowInterceptor implements InfoGlueInterceptor
 {
     private final static Logger logger = Logger.getLogger(InfoGlueOSWorkflowInterceptor.class.getName());
+
+	public void setInterceptorVO(InterceptorVO vo) 
+	{
+		//Dont need it for now
+	}
 
 	/**
 	 * This method will be called when a interceptionPoint is reached.

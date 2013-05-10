@@ -274,52 +274,6 @@ public class UnpublishContentVersionAction extends InfoGlueAbstractAction
 			    publicationVO = PublicationController.getController().createAndPublish(publicationVO, events, this.overrideVersionModifyer, this.getInfoGluePrincipal(), db);
 			}
 			
-
-        	/*
-	        for(int i=0; i < contentIds.length; i++)
-			{
-	            String contentIdString = contentIds[i];
-		        
-	            List contentVersionsVOList = ContentVersionController.getContentVersionController().getPublishedActiveContentVersionVOList(new Integer(contentIdString), db);
-		        Map checkedLanguages = new HashMap();
-				Iterator it = contentVersionsVOList.iterator();
-				while(it.hasNext())
-				{
-					ContentVersionVO contentVersionVO = (ContentVersionVO)it.next();
-					
-					if(checkedLanguages.get(contentVersionVO.getLanguageId()) == null)
-					{
-						checkedLanguages.put(contentVersionVO.getLanguageId(), new Boolean(true));
-						ContentVersionVO latestContentVersionVO = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(contentVersionVO.getContentId(), contentVersionVO.getLanguageId(), db);
-						if(contentVersionVO.getId().equals(latestContentVersionVO.getId()))
-						{
-							logger.info("Creating a new working version as there was no active working version left...:" + contentVersionVO.getLanguageName());
-							ContentStateController.changeState(contentVersionVO.getId(), ContentVersionVO.WORKING_STATE, "new working version", false, this.getInfoGluePrincipal(), contentVersionVO.getContentId(), db, events);
-						}
-					}
-					
-					EventVO eventVO = new EventVO();
-					eventVO.setDescription(this.versionComment);
-					eventVO.setEntityClass(ContentVersion.class.getName());
-					eventVO.setEntityId(contentVersionVO.getContentVersionId());
-					eventVO.setName(contentVersionVO.getContentName() + "(" + contentVersionVO.getLanguageName() + ")");
-					eventVO.setTypeId(EventVO.UNPUBLISH_LATEST);
-					eventVO = EventController.create(eventVO, this.repositoryId, this.getInfoGluePrincipal(), db);
-					events.add(eventVO);
-				}
-			}	
-			
-			if(attemptDirectPublishing.equalsIgnoreCase("true"))
-			{
-			    PublicationVO publicationVO = new PublicationVO();
-			    publicationVO.setName("Direct publication by " + this.getInfoGluePrincipal().getName());
-			    publicationVO.setDescription(getVersionComment());
-			    //publicationVO.setPublisher(this.getInfoGluePrincipal().getName());
-			    publicationVO.setRepositoryId(repositoryId);
-			    publicationVO = PublicationController.getController().createAndPublish(publicationVO, events, this.overrideVersionModifyer, this.getInfoGluePrincipal(), db);
-			}
-			*/
-			
 		    commitTransaction(db);
         }
         catch(Exception e)

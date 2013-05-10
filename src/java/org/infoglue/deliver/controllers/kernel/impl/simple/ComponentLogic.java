@@ -1236,14 +1236,6 @@ public class ComponentLogic
 	public List getChildPages(Integer siteNodeId, Integer levelsToPopulate, String nameFilter)
 	{
 		List pages = templateController.getChildPages(siteNodeId, levelsToPopulate);
-		/*
-		Iterator pagesIterator = pages.iterator();
-		while(pagesIterator.hasNext())
-		{
-			WebPage webPage = (WebPage)pagesIterator.next();
-			webPage.setUrl(getPageUrl(webPage.getSiteNodeId()));
-		}
-		*/
 	
 		return pages;
 	}

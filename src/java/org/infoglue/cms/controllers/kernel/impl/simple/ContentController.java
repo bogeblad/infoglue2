@@ -270,7 +270,7 @@ public class ContentController extends BaseController
 
 		return contentVOList;		
 	}
-	
+
 	public ContentVO getContentVOWithId(Integer contentId, boolean skipCaching) throws SystemException, Bug
     {
 		String key = "" + contentId;
@@ -899,14 +899,6 @@ public class ContentController extends BaseController
     		return getSmallContentVOWithId(contentVO.getParentContentId(), db, null);
     	else 
     		return null;
-		
-		//Content content = (Content) getObjectWithId(ContentImpl.class, contentId, db);
-		//logger.info("CONTENT:" + content.getName());
-		//Content parent = content.getParentContent();
-		//if(parent != null)
-		//	parentContentVO = parent.getValueObject();
-
-		//return parentContentVO;    	
     }
 
     
@@ -2065,12 +2057,6 @@ public class ContentController extends BaseController
         	ContentVO smallContentVO = getSmallContentVOWithId(contentId, db);
         	if(smallContentVO != null && smallContentVO.getContentTypeDefinitionId() != null)
 	        	contentTypeDefinitionVO = ContentTypeDefinitionController.getController().getContentTypeDefinitionVOWithId(smallContentVO.getContentTypeDefinitionId(), db);
-
-        	/*
-	        Content content = getReadOnlyMediumContentWithId(contentId, db);
-        	if(content != null && content.getContentTypeDefinition() != null)
-	        	contentTypeDefinitionVO = content.getContentTypeDefinition().getValueObject();
-    		*/
         	
             //If any of the validations or setMethods reported an error, we throw them up now before create.
             ceb.throwIfNotEmpty();

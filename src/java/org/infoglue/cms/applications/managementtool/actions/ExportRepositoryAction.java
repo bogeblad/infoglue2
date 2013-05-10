@@ -148,6 +148,22 @@ public class ExportRepositoryAction extends InfoGlueAbstractAction
 		return "input";
 	}
 	
+	/**
+	 * This handles the actual exporting.
+	 */
+	
+	protected String doExecuteV3() throws Exception 
+	{
+		String[] repositories = getRequest().getParameterValues("repositoryId");
+
+		String exportId = "Export_" + visualFormatter.formatDate(new Date(), "yyyy-MM-dd_HHmm");
+		ProcessBean processBean = ProcessBean.createProcessBean(ExportRepositoryAction.class.getName(), exportId);
+		processBean.setStatus(ProcessBean.RUNNING);
+		
+		OptimizedExportController.export(repositories, assetMaxSize, onlyPublishedVersions, exportFileName, processBean);
+		
+		return "successRedirectToProcesses";
+	}
 	
 	/**
 	 * This handles the actual exporting.
@@ -219,9 +235,11 @@ public class ExportRepositoryAction extends InfoGlueAbstractAction
 			    	allAccessRights.addAll(AccessRightController.getController().getAccessRightListOnlyReadOnly(interceptionPointVO.getId(), repository.getId().toString(), db));
 
 				getContentPropertiesAndAccessRights(ps, allContentProperties, allAccessRights, content, db);
-				getSiteNodePropertiesAndAccessRights(ps, allSiteNodeProperties, allAccessRights, siteNode, db);
+				if(siteNode != null)
+					getSiteNodePropertiesAndAccessRights(ps, allSiteNodeProperties, allAccessRights, siteNode, db);
 				
-				siteNodes.add(siteNode);
+				if(siteNode != null)
+					siteNodes.add(siteNode);
 				contents.add(content);
 				names = names + "_" + repository.getName();
 				allRepositoryProperties.putAll(OptimizedExportController.getRepositoryProperties(ps, repositoryId));
@@ -286,24 +304,6 @@ public class ExportRepositoryAction extends InfoGlueAbstractAction
 		return "success";
 	}
 
-	/**
-	 * This handles the actual exporting.
-	 */
-	
-	protected String doExecuteV3() throws Exception 
-	{
-		String[] repositories = getRequest().getParameterValues("repositoryId");
-
-		String exportId = "Export_" + visualFormatter.formatDate(new Date(), "yyyy-MM-dd_HHmm");
-		ProcessBean processBean = ProcessBean.createProcessBean(ExportRepositoryAction.class.getName(), exportId);
-		processBean.setStatus(ProcessBean.RUNNING);
-		
-		OptimizedExportController.export(repositories, assetMaxSize, onlyPublishedVersions, exportFileName, processBean);
-		
-		return "successRedirectToProcesses";
-	}
-
-	
 	public static void getContentPropertiesAndAccessRights(PropertySet ps, Hashtable<String, String> allContentProperties, List<AccessRight> allAccessRights, Content content, Database db) throws SystemException
 	{
 		String allowedContentTypeNames = ps.getString("content_" + content.getId() + "_allowedContentTypeNames");
@@ -443,56 +443,6 @@ public class ExportRepositoryAction extends InfoGlueAbstractAction
 	    if(keys.contains("content_" + content.getId() + "_initialLanguageId"))
 	    	allContentProperties.put("content_" + content.getId() + "_initialLanguageId", "" + ps.getString("content_" + content.getId() + "_initialLanguageId"));
 
-	    /*
-	    InterceptionPointVO interceptionPointVO = InterceptionPointController.getController().getInterceptionPointVOWithName("Content.Read", db);
-	    if(interceptionPointVO != null)
-	    	allAccessRights.addAll(AccessRightController.getController().getAccessRightListOnlyReadOnly(interceptionPointVO.getId(), content.getId().toString(), db));
-
-	    interceptionPointVO = InterceptionPointController.getController().getInterceptionPointVOWithName("Content.Write", db);
-	    if(interceptionPointVO != null)
-	    	allAccessRights.addAll(AccessRightController.getController().getAccessRightListOnlyReadOnly(interceptionPointVO.getId(), content.getId().toString(), db));
-
-	    interceptionPointVO = InterceptionPointController.getController().getInterceptionPointVOWithName("Content.Create", db);
-	    if(interceptionPointVO != null)
-	    	allAccessRights.addAll(AccessRightController.getController().getAccessRightListOnlyReadOnly(interceptionPointVO.getId(), content.getId().toString(), db));
-
-	    interceptionPointVO = InterceptionPointController.getController().getInterceptionPointVOWithName("Content.Delete", db);
-	    if(interceptionPointVO != null)
-	    	allAccessRights.addAll(AccessRightController.getController().getAccessRightListOnlyReadOnly(interceptionPointVO.getId(), content.getId().toString(), db));
-
-	    interceptionPointVO = InterceptionPointController.getController().getInterceptionPointVOWithName("Content.Move", db);
-	    if(interceptionPointVO != null)
-	    	allAccessRights.addAll(AccessRightController.getController().getAccessRightListOnlyReadOnly(interceptionPointVO.getId(), content.getId().toString(), db));
-
-	    interceptionPointVO = InterceptionPointController.getController().getInterceptionPointVOWithName("Content.SubmitToPublish", db);
-	    if(interceptionPointVO != null)
-	    	allAccessRights.addAll(AccessRightController.getController().getAccessRightListOnlyReadOnly(interceptionPointVO.getId(), content.getId().toString(), db));
-	    
-	    interceptionPointVO = InterceptionPointController.getController().getInterceptionPointVOWithName("Content.ChangeAccessRights", db);
-	    if(interceptionPointVO != null)
-	    	allAccessRights.addAll(AccessRightController.getController().getAccessRightListOnlyReadOnly(interceptionPointVO.getId(), content.getId().toString(), db));
-
-	    interceptionPointVO = InterceptionPointController.getController().getInterceptionPointVOWithName("Content.CreateVersion", db);
-	    if(interceptionPointVO != null)
-	    	allAccessRights.addAll(AccessRightController.getController().getAccessRightListOnlyReadOnly(interceptionPointVO.getId(), content.getId().toString(), db));
-
-	    interceptionPointVO = InterceptionPointController.getController().getInterceptionPointVOWithName("ContentVersion.Delete", db);
-	    if(interceptionPointVO != null)
-	    	allAccessRights.addAll(AccessRightController.getController().getAccessRightListOnlyReadOnly(interceptionPointVO.getId(), content.getId().toString(), db));
-
-	    interceptionPointVO = InterceptionPointController.getController().getInterceptionPointVOWithName("ContentVersion.Write", db);
-	    if(interceptionPointVO != null)
-	    	allAccessRights.addAll(AccessRightController.getController().getAccessRightListOnlyReadOnly(interceptionPointVO.getId(), content.getId().toString(), db));
-
-	    interceptionPointVO = InterceptionPointController.getController().getInterceptionPointVOWithName("ContentVersion.Read", db);
-	    if(interceptionPointVO != null)
-	    	allAccessRights.addAll(AccessRightController.getController().getAccessRightListOnlyReadOnly(interceptionPointVO.getId(), content.getId().toString(), db));
-
-	    interceptionPointVO = InterceptionPointController.getController().getInterceptionPointVOWithName("ContentVersion.Publish", db);
-	    if(interceptionPointVO != null)
-	    	allAccessRights.addAll(AccessRightController.getController().getAccessRightListOnlyReadOnly(interceptionPointVO.getId(), content.getId().toString(), db));
-        */
-	    
         Iterator childContents = content.getChildren().iterator();
         while(childContents.hasNext())
         {
@@ -517,45 +467,6 @@ public class ExportRepositoryAction extends InfoGlueAbstractAction
 			    allSiteNodeProperties.put("siteNode_" + siteNode.getId() + "_enabledLanguages", enabledLanguagesString);
 		}
 		
-	    /*
-        SiteNodeVersionVO latestSiteNodeVersionVO = SiteNodeVersionController.getController().getLatestActiveSiteNodeVersionVO(db, siteNode.getId());
-        
-        if(latestSiteNodeVersionVO != null)
-        {
-	        InterceptionPointVO interceptionPointVO = InterceptionPointController.getController().getInterceptionPointVOWithName("SiteNodeVersion.Read", db);
-		    if(interceptionPointVO != null)
-		    	allAccessRights.addAll(AccessRightController.getController().getAccessRightListOnlyReadOnly(interceptionPointVO.getId(), latestSiteNodeVersionVO.getId().toString(), db));
-	
-		    interceptionPointVO = InterceptionPointController.getController().getInterceptionPointVOWithName("SiteNodeVersion.Write", db);
-		    if(interceptionPointVO != null)
-		    	allAccessRights.addAll(AccessRightController.getController().getAccessRightListOnlyReadOnly(interceptionPointVO.getId(), latestSiteNodeVersionVO.getId().toString(), db));
-	
-		    interceptionPointVO = InterceptionPointController.getController().getInterceptionPointVOWithName("SiteNodeVersion.CreateSiteNode", db);
-		    if(interceptionPointVO != null)
-		    	allAccessRights.addAll(AccessRightController.getController().getAccessRightListOnlyReadOnly(interceptionPointVO.getId(), latestSiteNodeVersionVO.getId().toString(), db));
-	
-		    interceptionPointVO = InterceptionPointController.getController().getInterceptionPointVOWithName("SiteNodeVersion.DeleteSiteNode", db);
-		    if(interceptionPointVO != null)
-		    	allAccessRights.addAll(AccessRightController.getController().getAccessRightListOnlyReadOnly(interceptionPointVO.getId(), latestSiteNodeVersionVO.getId().toString(), db));
-	
-		    interceptionPointVO = InterceptionPointController.getController().getInterceptionPointVOWithName("SiteNodeVersion.MoveSiteNode", db);
-		    if(interceptionPointVO != null)
-		    	allAccessRights.addAll(AccessRightController.getController().getAccessRightListOnlyReadOnly(interceptionPointVO.getId(), latestSiteNodeVersionVO.getId().toString(), db));
-	
-		    interceptionPointVO = InterceptionPointController.getController().getInterceptionPointVOWithName("SiteNodeVersion.SubmitToPublish", db);
-		    if(interceptionPointVO != null)
-		    	allAccessRights.addAll(AccessRightController.getController().getAccessRightListOnlyReadOnly(interceptionPointVO.getId(), latestSiteNodeVersionVO.getId().toString(), db));
-	
-		    interceptionPointVO = InterceptionPointController.getController().getInterceptionPointVOWithName("SiteNodeVersion.ChangeAccessRights", db);
-		    if(interceptionPointVO != null)
-		    	allAccessRights.addAll(AccessRightController.getController().getAccessRightListOnlyReadOnly(interceptionPointVO.getId(), latestSiteNodeVersionVO.getId().toString(), db));
-	
-		    interceptionPointVO = InterceptionPointController.getController().getInterceptionPointVOWithName("SiteNodeVersion.Publish", db);
-		    if(interceptionPointVO != null)
-		    	allAccessRights.addAll(AccessRightController.getController().getAccessRightListOnlyReadOnly(interceptionPointVO.getId(), latestSiteNodeVersionVO.getId().toString(), db));
-        }
-        */
-	    
         Iterator childSiteNodes = siteNode.getChildSiteNodes().iterator();
         while(childSiteNodes.hasNext())
         {

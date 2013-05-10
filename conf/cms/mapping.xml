@@ -564,19 +564,9 @@
     <field name="siteNodeId" type="java.lang.Integer">
       <sql name="siteNodeId"/>
     </field>
-    <!-- 
-    <field name="owningSiteNode" type="org.infoglue.cms.entities.structure.impl.simple.SiteNodeImpl">
-      <sql name="siteNodeId"/>
-    </field>
-    -->
    	<field name="versionModifier" type="java.lang.String">
       <sql name="versionModifier" type="varchar" dirty="check" />
     </field>
-    <!-- 
-    <field name="serviceBindings" type="org.infoglue.cms.entities.structure.impl.simple.ServiceBindingImpl" lazy="false" collection="collection">
-      <sql many-key="siteNodeVersionId"/>
-    </field>
-    -->
   </class>
 
 <!--  Mapping for SiteNodeTypeDefinition  -->
@@ -861,14 +851,6 @@
     <field name="dnsName" type="java.lang.String">
 	    <sql name="dnsName" type="varchar" dirty="check" />
     </field>
-    <!--
-    <field name="availableContenTypeDefinition" type="org.infoglue.cms.entities.management.impl.simple.ContentTypeDefinitionImpl" lazy="true" collection="collection">
-      	<sql many-key="repositoryId" many-table="cmRepositoryContentTypeDefinition"/>
-    </field>
-    <field name="contents" type="org.infoglue.cms.entities.content.impl.simple.ContentImpl" lazy="true" collection="collection">
-      	<sql many-key="repositoryId"/>
-    </field>
-    -->
     <field name="repositoryLanguages" type="org.infoglue.cms.entities.management.impl.simple.RepositoryLanguageImpl" lazy="true" collection="collection">
       <sql many-key="repositoryId"/>
     </field>

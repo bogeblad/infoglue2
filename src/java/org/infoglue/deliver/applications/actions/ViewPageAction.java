@@ -1530,10 +1530,6 @@ public class ViewPageAction extends InfoGlueAbstractAction
 			    if(alternativePrincipal == null)
 			        alternativePrincipal = loginWithRequestArguments();
 
-			    //System.out.println("alternativePrincipal:" + alternativePrincipal);
-			    //System.out.println("anonymousPrincipal:" + getAnonymousPrincipal());
-			    //System.out.println("principal:" + principal);
-			    
 			    SiteNodeVersionVO siteNodeVersionVO = null;
 			    boolean isAlternativePrincipalAuthorized = (alternativePrincipal == null);
 				boolean isPrincipalAuthorized = true;

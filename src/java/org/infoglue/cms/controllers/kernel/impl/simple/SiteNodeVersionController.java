@@ -26,18 +26,14 @@ package org.infoglue.cms.controllers.kernel.impl.simple;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.exolab.castor.jdo.Database;
 import org.exolab.castor.jdo.OQLQuery;
@@ -781,69 +777,6 @@ public class SiteNodeVersionController extends BaseController
 		return siteNodeVersionVO;
     }
 
-	/*
-	public SiteNodeVersionVO getLatestSiteNodeVersionVO(Integer siteNodeId) throws SystemException, Bug
-    {
-    	Database db = CastorDatabaseService.getDatabase();
-        ConstraintExceptionBuffer ceb = new ConstraintExceptionBuffer();
-
-    	SiteNodeVersionVO siteNodeVersionVO = null;
-
-        beginTransaction(db);
-
-        try
-        {
-            OQLQuery oql = db.getOQLQuery( "SELECT cv FROM org.infoglue.cms.entities.structure.impl.simple.SmallSiteNodeVersionImpl cv WHERE cv.siteNodeId = $1 ORDER BY cv.siteNodeVersionId desc");
-        	oql.bind(siteNodeId);
-        	
-        	QueryResults results = oql.execute(Database.ReadOnly);
-			
-			if (results.hasMore()) 
-            {
-            	SiteNodeVersion siteNodeVersion = (SiteNodeVersion)results.next();
-            	logger.info("found one:" + siteNodeVersion.getValueObject());
-            	siteNodeVersionVO = siteNodeVersion.getValueObject();
-            }
-            
-			results.close();
-			oql.close();
-        	
-			commitTransaction(db);
-        }
-        catch(Exception e)
-        {
-            logger.error("An error occurred so we should not completes the transaction:" + e, e);
-            rollbackTransaction(db);
-            throw new SystemException(e.getMessage());
-        }
-    	
-		return siteNodeVersionVO;
-    }
-    */
-    
-	/*
-	public SiteNodeVersionVO getLatestSiteNodeVersionVO(Database db, Integer siteNodeId) throws SystemException, Bug, Exception
-    {
-    	SiteNodeVersionVO siteNodeVersionVO = null;
-
-        OQLQuery oql = db.getOQLQuery( "SELECT cv FROM org.infoglue.cms.entities.structure.impl.simple.SmallSiteNodeVersionImpl cv WHERE cv.siteNodeId = $1 ORDER BY cv.siteNodeVersionId desc");
-    	oql.bind(siteNodeId);
-    	
-    	QueryResults results = oql.execute(Database.ReadOnly);
-		
-		if (results.hasMore()) 
-        {
-        	SiteNodeVersion siteNodeVersion = (SiteNodeVersion)results.next();
-        	logger.info("found one:" + siteNodeVersion.getValueObject());
-        	siteNodeVersionVO = siteNodeVersion.getValueObject();
-        }
-    	
-		results.close();
-		oql.close();
-
-		return siteNodeVersionVO;
-    }
-    */
 
 	/**
 	 * This is a method used to get the latest site node version of a sitenode within a given transaction.

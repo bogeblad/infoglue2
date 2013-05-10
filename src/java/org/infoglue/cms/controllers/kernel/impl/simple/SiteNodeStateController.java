@@ -207,7 +207,7 @@ public class SiteNodeStateController extends BaseController
 				copyServiceBindings(oldMediumSiteNodeVersionImpl, returnSiteNodeVersionImpl, db);
 				RequestAnalyser.getRequestAnalyser().registerComponentStatistics("changeState copyServiceBindings", t.getElapsedTime());
 				
-				if(returnSiteNodeVersionImpl.getIsProtected() == SiteNodeVersionVO.YES)
+				if(returnSiteNodeVersionImpl.getIsProtected().intValue() == SiteNodeVersionVO.YES || returnSiteNodeVersionImpl.getIsProtected().intValue() == SiteNodeVersionVO.YES_WITH_INHERIT_FALLBACK)
 				{
 					copyAccessRights("SiteNodeVersion", oldMediumSiteNodeVersionImpl.getId(), returnSiteNodeVersionImpl.getId(), db);
 					RequestAnalyser.getRequestAnalyser().registerComponentStatistics("changeState copyAccessRights", t.getElapsedTime());
@@ -253,7 +253,7 @@ public class SiteNodeStateController extends BaseController
 
 				//returnSiteNodeVersionVO.setSiteNodeId(oldSiteNodeVersion.getValueObject().getSiteNodeId());
 				//copyServiceBindings(oldSiteNodeVersion, newSiteNodeVersion, db);
-				if(returnSiteNodeVersionImpl.getIsProtected() == SiteNodeVersionVO.YES)
+				if(returnSiteNodeVersionImpl.getIsProtected().intValue() == SiteNodeVersionVO.YES || returnSiteNodeVersionImpl.getIsProtected().intValue() == SiteNodeVersionVO.YES_WITH_INHERIT_FALLBACK)
 				{
 					copyAccessRights("SiteNodeVersion", oldMediumSiteNodeVersionImpl.getId(), returnSiteNodeVersionImpl.getId(), db);
 					RequestAnalyser.getRequestAnalyser().registerComponentStatistics("changeState publish copyAccessRights", t.getElapsedTime());

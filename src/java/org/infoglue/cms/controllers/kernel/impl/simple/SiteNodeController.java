@@ -2179,25 +2179,33 @@ public class SiteNodeController extends BaseController
     {
 		SiteNodeVO siteNodeVO = null;
 
-		Database db = CastorDatabaseService.getDatabase();
-        ConstraintExceptionBuffer ceb = new ConstraintExceptionBuffer();
-
-        beginTransaction(db);
-
-        try
-        {
-        	siteNodeVO = getSiteNodeVOWithMetaInfoContentId(db, contentId);
-        	
-            commitTransaction(db);
-        }
-        catch(Exception e)
-        {
-			logger.error("An error occurred so we should not complete the transaction: " + e.getMessage());
-			logger.warn("An error occurred so we should not complete the transaction: " + e.getMessage(), e);
-            rollbackTransaction(db);
-            throw new SystemException(e.getMessage());
-        }
-        
+		Integer cachedSiteNodeId = metaInfoSiteNodeIdMap.get(contentId);
+		if(cachedSiteNodeId != null)
+		{
+			siteNodeVO = getSiteNodeVOWithId(cachedSiteNodeId, false);
+		}
+		else
+		{
+			Database db = CastorDatabaseService.getDatabase();
+	        ConstraintExceptionBuffer ceb = new ConstraintExceptionBuffer();
+	
+	        beginTransaction(db);
+	
+	        try
+	        {
+	        	siteNodeVO = getSiteNodeVOWithMetaInfoContentId(db, contentId);
+	        	
+	            commitTransaction(db);
+	        }
+	        catch(Exception e)
+	        {
+				logger.error("An error occurred so we should not complete the transaction: " + e.getMessage());
+				logger.warn("An error occurred so we should not complete the transaction: " + e.getMessage(), e);
+	            rollbackTransaction(db);
+	            throw new SystemException(e.getMessage());
+	        }
+		}
+		
         return siteNodeVO;
     }       
 

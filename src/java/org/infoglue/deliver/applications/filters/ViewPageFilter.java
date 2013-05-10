@@ -190,7 +190,6 @@ public class ViewPageFilter implements Filter
 	                	logger.info("repositoryVOList:" + repositoryVOList.size());
 	                
 	            	languageId = getLanguageId(httpRequest, httpSession, repositoryVOList, requestURI, db);
-	                //languageId = getLanguageId(httpRequest, httpSession, repositoryVOList, db);
 	            
 		            Integer siteNodeId = null;
 	                if(languageId != null)
@@ -402,18 +401,6 @@ public class ViewPageFilter implements Filter
         logger.info("serverName:" + serverName);
         logger.info("repositoryName:" + repositoryName);
         String firstPath = requestURI.replaceAll(request.getContextPath(), "").replaceAll("//", "/");
-
-        /*
-        //System.out.println("firstPath:" + firstPath);
-        
-        List<LanguageVO> languageVOList = LanguageController.getController().getLanguageVOList(db);
-        for(LanguageVO languageVO : languageVOList)
-        {
-        	if(firstPath.startsWith("/" + languageVO.getLanguageCode() + "/"))
-        		firstPath = firstPath.replaceFirst("/" + languageVO.getLanguageCode() + "/", "/");
-        }
-        //System.out.println("firstPath:" + firstPath);
-        */
         
         logger.info("firstPath:" + firstPath);
         if(firstPath.startsWith("/"))
@@ -431,9 +418,7 @@ public class ViewPageFilter implements Filter
             return repositoryVOList;
         }
         
-        Timer t = new Timer();
         Set<RepositoryVO> repositories = RepositoryDeliveryController.getRepositoryDeliveryController().getRepositoryVOListFromServerName(db, serverName, portNumber, repositoryName, requestURI);
-        //System.out.println("repositories:" + repositories);
         if(logger.isInfoEnabled())
         	logger.info("repositories:" + repositories);
         

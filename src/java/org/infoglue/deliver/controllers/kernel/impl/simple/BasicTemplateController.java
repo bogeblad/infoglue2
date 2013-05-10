@@ -1,4 +1,5 @@
 
+
 /* ===============================================================================
  *
  * Part of the InfoGlue Content Management Platform (www.infoglue.org)
@@ -2078,7 +2079,7 @@ public class BasicTemplateController implements TemplateController
 		
 				String unparsedAttributeValue = ContentDeliveryController.getContentDeliveryController().getContentAttribute(getDatabase(), contentVO.getId(), this.languageId, attributeName, this.siteNodeId, USE_LANGUAGE_FALLBACK, this.deliveryContext, this.infoGluePrincipal, false);
 				logger.info("Found unparsedAttributeValue:" + unparsedAttributeValue);
-							
+			
 				templateLogicContext.put("inlineContentId", contentVO.getId());
 				
 				Map context = new HashMap();
@@ -2120,19 +2121,20 @@ public class BasicTemplateController implements TemplateController
 			{
 				String unparsedAttributeValue = ContentDeliveryController.getContentDeliveryController().getContentAttribute(getDatabase(), contentId, this.languageId, attributeName, this.siteNodeId, USE_LANGUAGE_FALLBACK, this.deliveryContext, this.infoGluePrincipal, false);
 				logger.info("Found unparsedAttributeValue:" + unparsedAttributeValue);
-				
+
 				templateLogicContext.put("inlineContentId", contentId);
 				
 				Map context = new HashMap();
 				context.put("inheritedTemplateLogic", this);
 				context.put("templateLogic", getTemplateController(this.siteNodeId, this.languageId, contentId, this.request, this.infoGluePrincipal, this.deliveryContext));
-
+				
 				// Add the templateLogicContext objects to this context. (SS - 040219)
 				context.putAll(templateLogicContext);
-				
+
 				StringWriter cacheString = new StringWriter();
 				PrintWriter cachedStream = new PrintWriter(cacheString);
 				new VelocityTemplateProcessor().renderTemplate(context, cachedStream, unparsedAttributeValue, true);
+
 				attributeValue = cacheString.toString();
 			}
 		}
@@ -2160,7 +2162,7 @@ public class BasicTemplateController implements TemplateController
 			{
 				String unparsedAttributeValue = ContentDeliveryController.getContentDeliveryController().getContentAttribute(getDatabase(), contentId, languageId, attributeName, this.siteNodeId, USE_LANGUAGE_FALLBACK, this.deliveryContext, this.infoGluePrincipal, false);
 				logger.info("Found unparsedAttributeValue:" + unparsedAttributeValue);
-				
+
 				templateLogicContext.put("inlineContentId", contentId);
 				
 				Map context = new HashMap();
@@ -2252,7 +2254,7 @@ public class BasicTemplateController implements TemplateController
 			{
 				String unparsedAttributeValue = ContentDeliveryController.getContentDeliveryController().getContentAttribute(getDatabase(), contentVersionVO, attributeName, false);
 				logger.info("Found unparsedAttributeValue:" + unparsedAttributeValue);
-				
+
 				templateLogicContext.put("inlineContentId", contentId);
 				
 				Map context = new HashMap();
@@ -3256,15 +3258,6 @@ public class BasicTemplateController implements TemplateController
 						Integer contentId = new Integer(id);
 						if(ContentDeliveryController.getContentDeliveryController().isValidContent(this.getDatabase(), contentId, this.languageId, USE_LANGUAGE_FALLBACK, true, getPrincipal(), this.deliveryContext))
 							relatedContentVOList.add(this.getContent(contentId));
-						/*
-						ContentVO content = getContent(contentId);
-						if(ContentDeliveryController.getContentDeliveryController().isValidContent(infoGluePrincipal, content, languageId, USE_LANGUAGE_FALLBACK, true, this.getDatabase(), deliveryContext, checkHasVersion, checkHasAccess))
-						{
-							relatedContentVOList.add(content);
-						}
-						*/
-						//else
-						//	System.out.println("content " + content.getName() + " was not valid");
 					}
 					catch(Exception e)
 					{
@@ -3562,7 +3555,6 @@ public class BasicTemplateController implements TemplateController
 			referencingPages = new ArrayList<SiteNodeVO>();
 			try
 			{
-				Timer t = new Timer();
 				Set<SiteNodeVO> referencingSiteNodeVOList = RegistryController.getController().getReferencingSiteNodesForContent(contentId, maxRows, this.getDatabase());
 				//List referencingObjects = RegistryController.getController().getReferencingObjectsForContent(contentId, maxRows, this.getDatabase());
 				//t.printElapsedTime("referencingObjects took");
@@ -6308,6 +6300,7 @@ public class BasicTemplateController implements TemplateController
 		
 		return page;
 	}
+
 	/**
 	 * This method takes a list of sitenodes and converts it to a page list instead.
 	 * 
@@ -6461,23 +6454,6 @@ public class BasicTemplateController implements TemplateController
 				this.getDeliveryContext().addUsedSiteNode(CacheController.getPooledString(3, page.getSiteNodeId()));
 
 		}
-		/*
-		List childPages = new ArrayList();
-		try
-		{
-			Timer t = new Timer();
-			List childNodeVOList = this.nodeDeliveryController.getChildSiteNodes(getDatabase(), siteNodeId);
-			//if(logger.isInfoEnabled())
-				RequestAnalyser.getRequestAnalyser().registerComponentStatistics("getChildSiteNodes", t.getElapsedTimeNanos() / 1000);
-			childPages = getPages(childNodeVOList, escapeHTML, hideUnauthorizedPages);
-			//if(logger.isInfoEnabled())
-				RequestAnalyser.getRequestAnalyser().registerComponentStatistics("getPages", t.getElapsedTimeNanos() / 1000);
-		}
-		catch(Exception e)
-		{
-			logger.error("An error occurred trying to get the page childPages:" + e.getMessage(), e);
-		}
-		*/
 		
 		return childPages;
 	}
@@ -7631,7 +7607,6 @@ public class BasicTemplateController implements TemplateController
 				    String cmsUserName = (String)getHttpServletRequest().getSession().getAttribute("cmsUserName");
 				    if(cmsUserName != null && !cmsUserName.equals(infoGluePrincipal.getName()))
 				    {
-				    	System.out.println("Need this be here:" + cmsUserName + "=" + infoGluePrincipal.getName());
 					    InfoGluePrincipal cmsPrincipal = getPrincipal(cmsUserName);
 					    
 					    if(cmsPrincipal != null && AccessRightController.getController().getIsPrincipalAuthorized(cmsPrincipal, interceptionPointName, extraParameters))

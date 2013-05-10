@@ -909,29 +909,6 @@ public class ContentDeliveryController extends BaseDeliveryController
 		if(contentId == null || contentId.intValue() < 1)
 			return "";
 		
-		/*
-		String metaAttributeKey = "c_" + contentId + "_" + languageId + "_" + attributeName;
-    	String candidate = (String)CacheController.getCachedObjectFromAdvancedCache("metaInfoContentAttributeCache", metaAttributeKey);
-    	if(candidate == null && useLanguageFallback)
-    	{
-			LanguageVO masterLanguageVO = LanguageDeliveryController.getLanguageDeliveryController().getMasterLanguageForSiteNode(db, siteNodeId);
-			if(!masterLanguageVO.getId().equals(languageId))
-			{
-				metaAttributeKey = "c_" + contentId + "_" + masterLanguageVO.getId() + "_" + attributeName;
-				candidate = (String)CacheController.getCachedObjectFromAdvancedCache("metaInfoContentAttributeCache", metaAttributeKey);
-			}
-    	}
-    	
-    	if(candidate != null)
-    	{
-    		//System.out.println("It was a cached meta info attribute...");
-    		return candidate;
-    	}
-    	else
-    	{
-    		//System.out.println("No cached meta info attribute:" + metaAttributeKey);
-    	}
-		*/
 		
 		boolean isTemplateQuery = false;
 		if(attributeName.equalsIgnoreCase("Template") || attributeName.equalsIgnoreCase("PreTemplate") || attributeName.equalsIgnoreCase("ComponentLabels"))
@@ -3185,11 +3162,7 @@ public class ContentDeliveryController extends BaseDeliveryController
 		{
 			return true;
 		}
-		/*
-		if(content.getContentTypeDefinitionId() != null && (content.getContentTypeDefinitionId().equals(metaInfoContentTypeId) ||
-															content.getContentTypeDefinitionId().equals(HTMLTemplateContentTypeId)))
-			return true;
-		*/
+
 		boolean validateOnDates = true;
 		String operatingMode = CmsPropertyHandler.getOperatingMode();
 		if(!deliveryContext.getOperatingMode().equals(operatingMode))

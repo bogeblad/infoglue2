@@ -24,9 +24,11 @@ package org.infoglue.deliver.util;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.exolab.castor.jdo.Database;
@@ -234,7 +236,7 @@ public class WorkingPublicationThread extends Thread
 					     	CacheController.clearCache("personalAuthorizationCache");
 				    		accessRightsFlushed = true;
 				    	}
-
+				    	//t.printElapsedTime("Access rights");
 				    	//continue;
 				    }
 				    //t.printElapsedTime("First part in working thread done...");
@@ -253,7 +255,9 @@ public class WorkingPublicationThread extends Thread
 				
 					    if(!skipOriginalEntity)
 					    	addCacheUpdateDirective(className, objectId, allIGCacheCalls);
-			
+					    
+					    //t.printElapsedTime("1.1");
+
 					    logger.info("Updating className with id:" + className + ":" + objectId);
 					    if(className != null && !typeId.equalsIgnoreCase("" + NotificationMessage.SYSTEM) && !skipOriginalEntity)
 						{
@@ -271,6 +275,7 @@ public class WorkingPublicationThread extends Thread
 						    {
 						        Object[] ids = {objectId};
 						        CacheController.clearCache(type, ids);
+						        //t.printElapsedTime("1.2");
 							}
 						    else if(!isDependsClass)
 						    {
@@ -278,6 +283,7 @@ public class WorkingPublicationThread extends Thread
 						    	{
 							        Object[] ids = {new Integer(objectId)};
 								    CacheController.clearCache(type, ids);
+								    //t.printElapsedTime("1.3");
 						    	}
 						    	catch (Exception e) 
 						    	{
@@ -316,6 +322,7 @@ public class WorkingPublicationThread extends Thread
 								Class typesExtraSmallest = SmallestContentVersionImpl.class;
 								Object[] idsExtraSmallest = {new Integer(objectId)};
 								CacheController.clearCache(typesExtraSmallest, idsExtraSmallest);
+								//t.printElapsedTime("ContentVersionImpl...");
 							}
 							else if(Class.forName(className).getName().equals(AvailableServiceBindingImpl.class.getName()))
 							{
@@ -375,15 +382,22 @@ public class WorkingPublicationThread extends Thread
 									DigitalAssetDeliveryController.getDigitalAssetDeliveryController().deleteDigitalAssets(new Integer(objectId));
 								}
 								
+								Set<String> handledVersions = new HashSet<String>();
 								List<SmallestContentVersionVO> contentVersionVOList = DigitalAssetController.getContentVersionVOListConnectedToAssetWithId(new Integer(objectId));	
 					    		Iterator<SmallestContentVersionVO> contentVersionVOListIterator = contentVersionVOList.iterator();
 					    		while(contentVersionVOListIterator.hasNext())
 					    		{
 					    			SmallestContentVersionVO contentVersionVO = contentVersionVOListIterator.next();
 					    			logger.info("Invoking clearCaches for ContentVersionImpl with id:" + contentVersionVO.getId());
-						    		CacheController.clearCaches(ContentVersionImpl.class.getName(), contentVersionVO.getId().toString(), null);		    			
-						    		CacheController.clearCaches(SmallContentVersionImpl.class.getName(), contentVersionVO.getId().toString(), null);					    			
-						    		CacheController.clearCaches(SmallestContentVersionImpl.class.getName(), contentVersionVO.getId().toString(), null);					    			
+					    			String key = contentVersionVO.getContentId() + "_" + contentVersionVO.getLanguageId();
+					    			//System.out.println("Invoking clearCaches for ContentVersionImpl with id:" + key + " " + contentVersionVO.getId());
+					    			if(!handledVersions.contains(key))
+					    			{
+							    		CacheController.clearCaches(ContentVersionImpl.class.getName(), contentVersionVO.getId().toString(), null);		    			
+							    		CacheController.clearCaches(SmallContentVersionImpl.class.getName(), contentVersionVO.getId().toString(), null);					    			
+							    		CacheController.clearCaches(SmallestContentVersionImpl.class.getName(), contentVersionVO.getId().toString(), null);
+							    		handledVersions.add(key);
+					    			}
 					    		}
 							}
 							else if(Class.forName(className).getName().equals(MediumDigitalAssetImpl.class.getName()))
@@ -404,15 +418,21 @@ public class WorkingPublicationThread extends Thread
 									DigitalAssetDeliveryController.getDigitalAssetDeliveryController().deleteDigitalAssets(new Integer(objectId));
 								}
 								
+								Set<String> handledVersions = new HashSet<String>();
 								List<SmallestContentVersionVO> contentVersionVOList = DigitalAssetController.getContentVersionVOListConnectedToAssetWithId(new Integer(objectId));	
 					    		Iterator<SmallestContentVersionVO> contentVersionVOListIterator = contentVersionVOList.iterator();
 					    		while(contentVersionVOListIterator.hasNext())
 					    		{
 					    			SmallestContentVersionVO contentVersionVO = contentVersionVOListIterator.next();
-					    			logger.info("Invoking clearCaches for ContentVersionImpl with id:" + contentVersionVO.getId());
-						    		CacheController.clearCaches(ContentVersionImpl.class.getName(), contentVersionVO.getId().toString(), null);		    			
-						    		CacheController.clearCaches(SmallContentVersionImpl.class.getName(), contentVersionVO.getId().toString(), null);					    			
-						    		CacheController.clearCaches(SmallestContentVersionImpl.class.getName(), contentVersionVO.getId().toString(), null);					    			
+					    			String key = contentVersionVO.getContentId() + "_" + contentVersionVO.getLanguageId();
+					    			//System.out.println("Invoking clearCaches for ContentVersionImpl with id:" + key + " " + contentVersionVO.getId());
+					    			if(!handledVersions.contains(key))
+					    			{
+							    		CacheController.clearCaches(ContentVersionImpl.class.getName(), contentVersionVO.getId().toString(), null);		    			
+							    		CacheController.clearCaches(SmallContentVersionImpl.class.getName(), contentVersionVO.getId().toString(), null);					    			
+							    		CacheController.clearCaches(SmallestContentVersionImpl.class.getName(), contentVersionVO.getId().toString(), null);	
+							    		handledVersions.add(key);
+					    			}
 					    		}
 							}
 							else if(Class.forName(className).getName().equals(SystemUserImpl.class.getName()))
@@ -435,10 +455,12 @@ public class WorkingPublicationThread extends Thread
 							}
 						}	
 					    
+					    // t.printElapsedTime("3");
 					    long elapsedTime = t.getElapsedTime();
 					    if(elapsedTime > 50)
 					    	RequestAnalyser.getRequestAnalyser().registerComponentStatistics("Clearing all castor caches in working publication thread took", elapsedTime);
-
+						
+					    
 					    for(Map<String,String> igCacheCall : allIGCacheCalls)
 						{
 							logger.info("Calling clear caches with:" + igCacheCall.get("className") + ":" + igCacheCall.get("objectId") + ":" + extraInformation);
@@ -453,11 +475,11 @@ public class WorkingPublicationThread extends Thread
 					    String key = "" + className + "_" + objectId + "_" + extraInformation;
 					    if(!skipOriginalEntity && handledCacheCalls.get(key) == null)
 					    {
-					    	//System.out.println("" + className + ":" + objectId + ":" + changedAttributeNames);
+					    	logger.info("" + className + ":" + objectId + ":" + extraInformation);
 						    CacheController.clearCaches(className, objectId, extraInformation, null);
 							CacheController.setForcedCacheEvictionMode(true);
-						    //elapsedTime = t.getElapsedTime();
-						    if(elapsedTime > 100)
+						   
+							if(elapsedTime > 100)
 						    	logger.warn("Clearing all caches for " + className + ":" + objectId + ":" + changedAttributeNames);
 					    }
 					    else
@@ -499,6 +521,7 @@ public class WorkingPublicationThread extends Thread
 		    		CacheController.clearCache("pageCacheExtra");
 				}
 				
+				//tTotal.printElapsedTime("Working publication thread took");
 		        RequestAnalyser.getRequestAnalyser().registerComponentStatistics("Working publication thread took", tTotal.getElapsedTime());
 			} 
 			catch (Exception e)

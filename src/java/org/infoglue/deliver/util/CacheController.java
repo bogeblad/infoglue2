@@ -671,9 +671,13 @@ public class CacheController extends Thread
 				if(cacheName != null && cacheName.equalsIgnoreCase("importTagResultCache"))
 					cacheCapacity = "500";
 				if(cacheName != null && cacheName.equalsIgnoreCase("componentPropertyCache"))
-					cacheCapacity = "20000";
+					cacheCapacity = "10000";
 				if(cacheName != null && cacheName.equalsIgnoreCase("componentPropertyVersionIdCache"))
-					cacheCapacity = "20000";
+					cacheCapacity = "10000";
+				if(cacheName != null && cacheName.equalsIgnoreCase("componentPropertyCacheRepoGroups"))
+					cacheCapacity = "5000";
+				if(cacheName != null && cacheName.equalsIgnoreCase("componentPropertyVersionIdCacheRepoGroups"))
+					cacheCapacity = "5000";
 				if(cacheName != null && cacheName.equalsIgnoreCase("componentEditorCache"))
 		    		cacheCapacity = "3000";
 				if(cacheName != null && cacheName.equalsIgnoreCase("componentEditorVersionIdCache"))
@@ -777,6 +781,13 @@ public class CacheController extends Thread
 				//logger.error("Skipping useGroups on " + cacheName + ". Groups was:" + groups.length + " for " + key);
 				useGroups = false;
 			}
+			/*
+			if(cacheName.equals("componentPropertyCache") || cacheName.equals("componentPropertyVersionIdCache"))
+			{				
+				//logger.error("Skipping useGroups on " + cacheName + ". Groups was:" + groups.length + " for " + key);
+				useGroups = false;
+			}
+			*/
 						
 			/*
 			if(cacheName.startsWith("pageCache"))
@@ -1940,24 +1951,27 @@ public class CacheController extends Thread
 		Timer t = new Timer();
 		//t.setActive(false);
 		
-		long wait = 0;
-		//while(true && !getForcedCacheEvictionMode())
-		while(!forceClear && !getForcedCacheEvictionMode() && RequestAnalyser.getRequestAnalyser().getNumberOfActiveRequests() > 0)
+		if(CmsPropertyHandler.getOperatingMode().equals("3"))
 		{
-	        //logger.warn("Number of requests: " + RequestAnalyser.getRequestAnalyser().getNumberOfCurrentRequests() + " was more than 0 - lets wait a bit.");
-	        if(wait > 1000)
+			long wait = 0;
+			//while(true && !getForcedCacheEvictionMode())
+			while(!forceClear && !getForcedCacheEvictionMode() && RequestAnalyser.getRequestAnalyser().getNumberOfActiveRequests() > 0)
 			{
-				logger.warn("The clearCache method waited over " + ((wait * 10) / 1000) + " seconds but there seems to be " + RequestAnalyser.getRequestAnalyser().getNumberOfCurrentRequests() + " requests blocking all the time. Continuing anyway.");
-				//printThreads();
-				break;
-			}
-
-	        if(wait > 100)
-				setForcedCacheEvictionMode(true);
-
-			Thread.sleep(10);
-			wait++;
-	    }
+		        logger.warn("Number of requests: " + RequestAnalyser.getRequestAnalyser().getNumberOfCurrentRequests() + " was more than 0 - lets wait a bit.");
+		        if(wait > 1000)
+				{
+					logger.warn("The clearCache method waited over " + ((wait * 10) / 1000) + " seconds but there seems to be " + RequestAnalyser.getRequestAnalyser().getNumberOfCurrentRequests() + " requests blocking all the time. Continuing anyway.");
+					//printThreads();
+					break;
+				}
+	
+		        if(wait > 100)
+					setForcedCacheEvictionMode(true);
+	
+				Thread.sleep(10);
+				wait++;
+		    }
+		}
 		
 	    logger.info("clearCaches start in " + CmsPropertyHandler.getContextRootPath());
 		if(entity == null)
@@ -2038,7 +2052,8 @@ public class CacheController extends Thread
 				System.out.println("key:" + key);
 			}
 			*/
-			RequestAnalyser.getRequestAnalyser().registerComponentStatistics("Start cache eviction", t.getElapsedTime());
+		    //t.printElapsedTime("Start cache eviction");
+		    RequestAnalyser.getRequestAnalyser().registerComponentStatistics("Start cache eviction", t.getElapsedTime());
 	    	//t.printElapsedTime("START cachesLoop:" + entity + ":" + entityId);
 
 			//synchronized(caches)
@@ -2066,7 +2081,7 @@ public class CacheController extends Thread
 						}
 					}
 					
-					//t.printElapsedTime("clearCaches 3", 10);
+					//t.printElapsedTime("clearCaches 3");
 
 					if(cacheName.equalsIgnoreCase("serviceDefinitionCache") && entity.indexOf("ServiceBinding") > 0)
 					{
@@ -2722,6 +2737,7 @@ public class CacheController extends Thread
 								}
 							    else if(selectiveCacheUpdate && entity.indexOf("ContentVersion") > 0 && useSelectivePageCacheUpdate)
 							    {
+							    	//t.printElapsedTime("CV start....");
 									logger.info("ContentVersion entity was sent: " + entity + ":" + entityId + " and cacheName:" + cacheName);
 
 							    	logger.info("Getting eventListeners...");
@@ -2745,6 +2761,7 @@ public class CacheController extends Thread
 							    	}
 							    	else if(cacheName.equals("componentPropertyCacheRepoGroups") || cacheName.equals("componentPropertyVersionIdCacheRepoGroups"))
 						    		{
+							    		Timer t2 = new Timer();
 							    		try
 								    	{
 								    		String repositoryId = sentRepositoryId;
@@ -2753,19 +2770,22 @@ public class CacheController extends Thread
 									    		String contentId = sentContentId;
 										    	if(contentId == null)
 										    		contentId = "" + ContentVersionController.getContentVersionController().getContentIdForContentVersion(new Integer(entityId));
-
 									    		ContentVO contentVO = ContentController.getContentController().getContentVOWithId(new Integer(contentId));
 									    		repositoryId = "" + contentVO.getRepositoryId();
 									    	}
 									    	
 									    	cacheInstance.flushGroup("" + repositoryId);
-									    	cacheInstance.flushGroup("selectiveCacheUpdateNonApplicable");
+									    	//t2.printElapsedTime("3");
+									    	if(cacheName.equals("componentPropertyVersionIdCacheRepoGroups"))
+									    		cacheInstance.flushGroup("selectiveCacheUpdateNonApplicable");
+									    	//t2.printElapsedTime("4");
 									    	logger.info("Clearing componentPropertyCacheRepoGroups for repo:" +repositoryId);
 								    	}
 								    	catch (Exception e2) 
 								    	{
 								    		logger.info("Error loading content with id " + entityId + ":" + e2.getMessage());
-										}				
+										}
+								    	//t.printElapsedTime("componentPropertyCacheRepoGroups");
 						    		}
 							    	else if(cacheName.equals("assetUrlCacheWithGroups"))
 						    		{
@@ -2782,10 +2802,12 @@ public class CacheController extends Thread
 							    			logger.warn("Flushing assetUrlCacheWithGroups as it was a missing entity - was probably a delete");
 							    			cacheInstance.flushAll();
 										}
+							    		//t.printElapsedTime("assetUrlCacheWithGroups");
 						    		}
 							    	else if(cacheName.equals("childPagesCache"))
 						    		{
 							    		//System.out.println("childPagesCache:" + entity + "=" + entityId);
+							    		//t.printElapsedTime("childPagesCache start");
 							    		try
 							    		{
 								    		String contentId = sentContentId;
@@ -2793,15 +2815,19 @@ public class CacheController extends Thread
 								    		if(contentId == null || contentId.equals(""))
 								    			contentId = ""+ContentVersionController.getContentVersionController().getContentIdForContentVersion(new Integer(entityId));
 								    		//System.out.println("contentId:" + contentId);
+								    		//t.printElapsedTime("childPagesCache A");
 								    		
 								    		ContentTypeDefinitionVO metaInfoContentTypeDefinitionVO = ContentTypeDefinitionController.getController().getContentTypeDefinitionVOWithName("Meta info");
+								    		//t.printElapsedTime("childPagesCache B");
 								    		ContentVO contentVO = ContentController.getContentController().getContentVOWithId(new Integer(contentId));
+								    		//t.printElapsedTime("childPagesCache C");
 								    		
 								    		if(metaInfoContentTypeDefinitionVO.getId().equals(contentVO.getContentTypeDefinitionId()))
 								    		{
 									    		try
 									    		{
 										    		SiteNodeVO siteNodeVO = SiteNodeController.getController().getSiteNodeVOWithMetaInfoContentId(new Integer(contentId));
+										    		//t.printElapsedTime("childPagesCache getSiteNodeVOWithMetaInfoContentId");
 										    		if(siteNodeVO != null)
 										    		{
 										    			cacheInstance.flushGroup("siteNode_" + siteNodeVO.getId());
@@ -2815,6 +2841,7 @@ public class CacheController extends Thread
 									    		cacheInstance.flushGroup("content_" + contentId);
 									    		cacheInstance.flushGroup("contentVersion_" + entityId);
 									    		cacheInstance.flushGroup("selectiveCacheUpdateNonApplicable");
+									    		//t.printElapsedTime("childPagesCache flush done...");
 										    	logger.info("Clearing childPagesCache for content:" + "content_" + contentId);
 								    		}
 							    		}
@@ -2823,6 +2850,7 @@ public class CacheController extends Thread
 							    			logger.warn("Flushing childPagesCache as it was a missing entity - was probably a delete");
 							    			cacheInstance.flushAll();
 										}
+							    		//t.printElapsedTime("childPagesCache");
 						    		}
 							    	else if(cacheName.equals("matchingContentsCache"))
 						    		{
@@ -2854,12 +2882,16 @@ public class CacheController extends Thread
 							    			logger.warn("Flushing all as it was a missing entity - was probably a delete:" + e2.getMessage());
 							    			cacheInstance.flushAll();
 										}
+							    		//t.printElapsedTime("matchingContentsCache");
 						    		}
 							    	else
 							    	{
+							    		//t.printElapsedTime("Before");
 							    		cacheInstance.flushGroup("contentVersion_" + entityId);
-							    		cacheInstance.flushGroup("selectiveCacheUpdateNonApplicable");
-								    	logger.info("clearing " + e.getKey() + " with selectiveCacheUpdateNonApplicable");
+							    		//if(!cacheName.equals("contentCache") && !cacheName.equals("contentVersionCache") && !cacheName.equals("contentAttributeCache") && !cacheName.equals("contentVersionIdCache") && !cacheName.equals("contentCategoryCache") && !cacheName.equals("metaInfoContentAttributeCache"))
+							    			cacheInstance.flushGroup("selectiveCacheUpdateNonApplicable");
+								    	logger.warn("clearing " + e.getKey() + " with selectiveCacheUpdateNonApplicable");
+								    	//t.printElapsedTime("clearing " + e.getKey() + " with selectiveCacheUpdateNonApplicable");
 							    	}
 							    	logger.info("clearing " + e.getKey() + " with group " + "contentVersion_" + entityId);
 									
@@ -2867,6 +2899,7 @@ public class CacheController extends Thread
 							    	
 							    	try
 							    	{
+							    		//t.printElapsedTime("Cache 3.4");
 								    	logger.info("Before contentVersionVO...");
 								    	//System.out.println("cacheName:" + cacheName);
 								    	//System.out.println("entity:" + entity);
@@ -2898,7 +2931,8 @@ public class CacheController extends Thread
 								    		contentIsProtected = ""+contentVO.getIsProtected().intValue();
 								    	}
 								    	
-										RequestAnalyser.getRequestAnalyser().registerComponentStatistics("Cache 3.5", t.getElapsedTime());
+								    	//t.printElapsedTime("Cache 3.5");
+								    	//RequestAnalyser.getRequestAnalyser().registerComponentStatistics("Cache 3.5", t.getElapsedTime());
 
 										if(contentId != null)
 							    		{
@@ -3058,12 +3092,14 @@ public class CacheController extends Thread
 									    			}
 									    		}	
 
-												RequestAnalyser.getRequestAnalyser().registerComponentStatistics("Handled page cache extra", t.getElapsedTime());	
+									    		//t.printElapsedTime("Handled page cache extra");
+									    		RequestAnalyser.getRequestAnalyser().registerComponentStatistics("Handled page cache extra", t.getElapsedTime());	
 									    		//clearFileCacheForGroup(cacheInstance, "content_" + contentId);
 									    	}
 									    	else if(cacheName.equals("pageCache"))
 									    	{
-												RequestAnalyser.getRequestAnalyser().registerComponentStatistics("Page cache start", t.getElapsedTime());
+									    		//t.printElapsedTime("Page cache start");
+									    		RequestAnalyser.getRequestAnalyser().registerComponentStatistics("Page cache start", t.getElapsedTime());
 									    		logger.info("Flushing pageCache for content type def");
 
 									    		String contentTypeDefKey = "selectiveCacheUpdateNonApplicable_contentTypeDefinitionId_" + contentTypeDefinitionId;
@@ -3108,7 +3144,8 @@ public class CacheController extends Thread
 										    			changes = ContentVersionController.getContentVersionController().getChangedAttributeNames(newContentVersionVO, oldContentVersionVO);
 									    		}
 
-												RequestAnalyser.getRequestAnalyser().registerComponentStatistics("Changes analyzed", t.getElapsedTime());
+									    		//t.printElapsedTime("Changes analyzed");
+												//RequestAnalyser.getRequestAnalyser().registerComponentStatistics("Changes analyzed", t.getElapsedTime());
 
 									    		if((changes == null || changes.size() == 0)  && CmsPropertyHandler.getOperatingMode().equals("3"))
 									    		{
@@ -3239,7 +3276,8 @@ public class CacheController extends Thread
 																	}
 													    			break outer;
 																}
-																RequestAnalyser.getRequestAnalyser().registerComponentStatistics("Handled group entries", t.getElapsedTime());
+																t.printElapsedTime("Handled group entries");
+																//RequestAnalyser.getRequestAnalyser().registerComponentStatistics("Handled group entries", t.getElapsedTime());
 										    				}
 									    				}
 									    			}
@@ -3264,7 +3302,8 @@ public class CacheController extends Thread
 									    		//cacheInstance.flushGroup(contentKey);
 									    	}
 
-											RequestAnalyser.getRequestAnalyser().registerComponentStatistics("Handled page cache", t.getElapsedTime());	
+								    		//t.printElapsedTime("Handled page cache");
+											//RequestAnalyser.getRequestAnalyser().registerComponentStatistics("Handled page cache", t.getElapsedTime());	
 									    	logger.info("After flushGroup2...");
 							    		}
 								    	//}
@@ -3663,7 +3702,7 @@ public class CacheController extends Thread
 						
 						long elapsedTime = t.getElapsedTime();
 						if(elapsedTime > 20)
-							logger.warn("Clear cache end took: " + elapsedTime);
+							logger.warn("Clear cache end took " + e.getKey() + ": " + elapsedTime);
 						logger.info("Cleared cache:" + e.getKey());
 	
 						if(!selectiveCacheUpdate)
@@ -3684,10 +3723,13 @@ public class CacheController extends Thread
     		}
 		}
 				
+		t.printElapsedTime("clearCaches stop", 100);
+		/*
 		logger.info("clearCaches stop");
 		long time = t.getElapsedTime();
 		if(time > 3000)
 			logger.warn("clearCaches took long time:" + time);
+		*/
 	}
 	
 	private static void printThreads()
@@ -3909,26 +3951,30 @@ public class CacheController extends Thread
 	
 	public static void clearCache(Class type, Object[] ids, boolean forceClear) throws Exception
 	{		
-		long wait = 0;
-		while(!forceClear && !getForcedCacheEvictionMode() && RequestAnalyser.getRequestAnalyser().getApproximateNumberOfDatabaseQueries() > 0)
+		Timer t = new Timer();
+		
+		if(CmsPropertyHandler.getOperatingMode().equals("3"))
 		{
-	        //logger.warn("Number of requests: " + RequestAnalyser.getRequestAnalyser().getNumberOfCurrentRequests() + " was more than 0 - lets wait a bit.");
-	        if(wait > 1000)
+			long wait = 0;
+			while(!forceClear && !getForcedCacheEvictionMode() && RequestAnalyser.getRequestAnalyser().getApproximateNumberOfDatabaseQueries() > 0)
 			{
-				logger.warn("The clearCache method waited over " + ((wait * 10) / 1000) + " seconds but there seems to be " + RequestAnalyser.getRequestAnalyser().getNumberOfCurrentRequests() + " requests blocking all the time. Continuing anyway.");
-				//printThreads();
-				break;
-			}
-
-	        if(wait > 100)
-				setForcedCacheEvictionMode(true);
-
-			Thread.sleep(10);
-			wait++;
-	    }
+		        logger.warn("Number of requests: " + RequestAnalyser.getRequestAnalyser().getNumberOfCurrentRequests() + " was more than 0 - lets wait a bit.");
+		        if(wait > 1000)
+				{
+					logger.warn("The clearCache method waited over " + ((wait * 10) / 1000) + " seconds but there seems to be " + RequestAnalyser.getRequestAnalyser().getNumberOfCurrentRequests() + " requests blocking all the time. Continuing anyway.");
+					//printThreads();
+					break;
+				}
+	
+		        if(wait > 100)
+					setForcedCacheEvictionMode(true);
+	
+				Thread.sleep(10);
+				wait++;
+		    }
+		}
 		
 	    Database db = CastorDatabaseService.getDatabase();
-
 		try
 		{
 		    CacheManager manager = db.getCacheManager();
@@ -4160,6 +4206,7 @@ public class CacheController extends Thread
 
     public static void evictWaitingCache() throws Exception
     {	    
+    	Timer t = new Timer();
        	String operatingMode = CmsPropertyHandler.getOperatingMode();
 	    synchronized(RequestAnalyser.getRequestAnalyser()) 
 	    {
@@ -4173,7 +4220,8 @@ public class CacheController extends Thread
 
 	       	RequestAnalyser.getRequestAnalyser().setBlockRequests(true);
 		}
-
+	    
+	    t.printElapsedTime("evict 1", 2);
 	    	
 	    logger.info("evictWaitingCache starting");
     	logger.info("blocking");
@@ -4188,7 +4236,7 @@ public class CacheController extends Thread
         	}
         }
     	logger.info("Had some notifications to handle:" + notifications.size());
-    	
+
     	WorkingPublicationThread wpt = new WorkingPublicationThread();
     	
     	SelectiveLivePublicationThread pt = null;
@@ -4207,7 +4255,7 @@ public class CacheController extends Thread
 			logger.error("Could not get livePublicationThreadClass:" + e.getMessage(), e);
 		}
     	
-    	List localNotifications = new ArrayList();
+	    List localNotifications = new ArrayList();
     	
     	boolean startedThread = false;
 
@@ -4254,9 +4302,9 @@ public class CacheController extends Thread
 						{
 							logger.warn("Could not refresh authentication filter:" + e1.getMessage(), e1);
 						}
-						catch (Throwable t) 
+						catch (Throwable throwable) 
 						{
-							logger.warn("Could not refresh authentication filter:" + t.getMessage(), t);
+							logger.warn("Could not refresh authentication filter:" + throwable.getMessage(), throwable);
 						}
 				    }
 	
@@ -4322,6 +4370,8 @@ public class CacheController extends Thread
 	    if(!startedThread)
 	    	RequestAnalyser.getRequestAnalyser().setBlockRequests(false);
 	    
+	    t.printElapsedTime("evict done");
+
         logger.info("evictWaitingCache stop");
     }
 

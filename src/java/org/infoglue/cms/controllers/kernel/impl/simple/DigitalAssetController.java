@@ -198,9 +198,9 @@ public class DigitalAssetController extends BaseController
         try
         {
         	//Timer t = new Timer();
-        	OQLQuery oql = db.getOQLQuery("CALL SQL select cv.contentVersionId, cv.stateId, cv.modifiedDateTime, cv.versionComment, cv.isCheckedOut, cv.isActive, cv.contentId, cv.languageId, cv.versionModifier as versionValue FROM cmContentVersion cv, cmContentVersionDigitalAsset cvda where cvda.contentVersionId = cv.contentVersionId AND cvda.digitalAssetId = $1 AS org.infoglue.cms.entities.content.impl.simple.SmallestContentVersionImpl");
+        	OQLQuery oql = db.getOQLQuery("CALL SQL select cv.contentVersionId, cv.stateId, cv.modifiedDateTime, cv.versionComment, cv.isCheckedOut, cv.isActive, cv.contentId, cv.languageId, cv.versionModifier as versionValue FROM cmContentVersion cv, cmContentVersionDigitalAsset cvda where cvda.contentVersionId = cv.contentVersionId AND cvda.digitalAssetId = $1 ORDER BY cv.contentVersionId DESC AS org.infoglue.cms.entities.content.impl.simple.SmallestContentVersionImpl");
         	if(CmsPropertyHandler.getUseShortTableNames() != null && CmsPropertyHandler.getUseShortTableNames().equalsIgnoreCase("true"))
-        		oql = db.getOQLQuery("CALL SQL select cv.contVerId, cv.stateId, cv.modifiedDateTime, cv.verComment, cv.isCheckedOut, cv.isActive, cv.contId, cv.languageId, cv.versionModifier as verValue FROM cmContVer cv, cmContVerDigAsset cvda where cvda.ContVerId = cv.ContVerId AND cvda.DigAssetId = $1 AS org.infoglue.cms.entities.content.impl.simple.SmallestContentVersionImpl");
+        		oql = db.getOQLQuery("CALL SQL select cv.contVerId, cv.stateId, cv.modifiedDateTime, cv.verComment, cv.isCheckedOut, cv.isActive, cv.contId, cv.languageId, cv.versionModifier as verValue FROM cmContVer cv, cmContVerDigAsset cvda where cvda.ContVerId = cv.ContVerId AND cvda.DigAssetId = $1 ORDER BY cv.ContVerId DESC AS org.infoglue.cms.entities.content.impl.simple.SmallestContentVersionImpl");
 
         	oql.bind(digitalAssetId);
         	

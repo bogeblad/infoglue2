@@ -332,20 +332,6 @@ public class ContentVersionController extends BaseController
         {
             List contentVersions = getContentVersionWithParent(contentId, db);
             resultList = toVOList(contentVersions);
-            /*
-            OQLQuery oql = db.getOQLQuery( "SELECT cv FROM org.infoglue.cms.entities.content.impl.simple.ContentVersionImpl cv WHERE cv.owningContent.contentId = $1 ORDER BY cv.contentVersionId desc");
-        	oql.bind(contentId);
-        	
-        	QueryResults results = oql.execute(Database.ReadOnly);
-			
-			while (results.hasMore()) 
-            {
-            	ContentVersion contentVersion = (ContentVersion)results.next();
-            	logger.info("found one:" + contentVersion.getValueObject());
-            	contentVersionVO = contentVersion.getValueObject();
-            	resultList.add(contentVersionVO);
-            }
-            */
             
             commitTransaction(db);
         }
@@ -522,31 +508,6 @@ public class ContentVersionController extends BaseController
 		return resultList;
 	}
 
-	/*	
-	public List<Integer> getLatestActiveContentVersionVOIfInState(Integer contentId, Integer stateId, Database db) throws SystemException, Exception
-	{
-		Timer t = new Timer();
-		
-		List<Integer> resultList = new ArrayList<Integer>();
-	    
-	    //TODO - fix
-	    List<Integer> contentVersionIds = getLatestContentVersionIdsPerLanguage(contentId, stateId, db);
-	    //List<ContentVersionVO> contentVersions = getContentVersionVOList(contentId, db);
-	    RequestAnalyser.getRequestAnalyser().registerComponentStatistics("getLatestActiveContentVersionVOIfInState.getLatestContentVersionIdsPerLanguage", t.getElapsedTime());
-		
-		Iterator<Integer> versionIdIterator = contentVersionIds.iterator();
-		while(versionIdIterator.hasNext())
-		{
-		    Integer contentVersionId = (Integer)versionIdIterator.next();	
-			resultList.add(contentVersionId);
-		}
-		
-		RequestAnalyser.getRequestAnalyser().registerComponentStatistics("getLatestActiveContentVersionVOIfInState after versions", t.getElapsedTime());
-		RequestAnalyser.getRequestAnalyser().registerComponentStatistics("getLatestActiveContentVersionVOIfInState end", t.getElapsedTime());
-		
-		return resultList;
-	}
-*/	
     
     /**
      * This method returns the latest active content version.
@@ -1268,9 +1229,7 @@ public class ContentVersionController extends BaseController
     {
     	return create(contentId, languageId, contentVersionVO, oldContentVersionId, allowBrokenAssets, duplicateAssets, null, db);
     }
-    */
 
-    /*
     public ContentVersion create(Integer contentId, Integer languageId, ContentVersionVO contentVersionVO, Integer oldContentVersionId, boolean allowBrokenAssets, boolean duplicateAssets, Integer excludedAssetId, Database db) throws ConstraintException, SystemException, Exception
     {
 		Content content   = ContentController.getContentController().getContentWithId(contentId, db);
@@ -1288,13 +1247,6 @@ public class ContentVersionController extends BaseController
     public ContentVersion create(Content content, Language language, ContentVersionVO contentVersionVO, Integer oldContentVersionId, Database db) throws ConstraintException, SystemException, Exception
     {
     	return create(content, language, contentVersionVO, oldContentVersionId, true, db);
-    }
-    */
-    /*
-    public ContentVersion create(Content content, Language language, ContentVersionVO contentVersionVO, Integer oldContentVersionId, boolean allowBrokenAssets, boolean duplicateAssets, Database db) throws ConstraintException, SystemException, Exception
-    {
-    	return create(content, language, contentVersionVO, oldContentVersionId, allowBrokenAssets, duplicateAssets, null, db);
-      
     }
     */
     
@@ -2668,131 +2620,7 @@ public class ContentVersionController extends BaseController
 		
 	}
 	
-	/*
-	public void getContentAndAffectedItemsRecursive(ContentVO contentVO, Integer stateId, List<Integer> checkedSiteNodes, List<Integer> checkedContents, Database db, Set<Integer> siteNodeVersionVOList, Set<ContentVersionVO> contentVersionVOList, boolean mustBeFirst, boolean includeMetaInfo, int maxLevels, int currentLevel) throws ConstraintException, SystemException, Exception
-	{
-		Timer t = new Timer();
-        logger.info("content:" + contentVO.getName());
 
-        //checkedSiteNodes.add(content.getId());
-        checkedContents.add(contentVO.getId());
-        
-	    //List<Integer> contentVersions = getLatestContentVersionWithParent(contentVO.getId(), stateId, db, mustBeFirst);
-	    List<Integer> contentVersions = getLatestContentVersionIdsPerLanguage(contentVO.getId(), stateId, db);
-	    RequestAnalyser.getRequestAnalyser().registerComponentStatistics("getContentAndAffectedItemsRecursive.getLatestContentVersionWithParent/getLatestContentVersionIdsPerLanguage", t.getElapsedTime());
-	    
-		Iterator<Integer> contentVersionsIterator = contentVersions.iterator();
-	    while(contentVersionsIterator.hasNext())
-	    {
-	        Integer contentVersion = contentVersionsIterator.next();
-	        contentVersionVOList.add(contentVersion);
-	        
-	        List relatedEntities = RegistryController.getController().getMatchingRegistryVOListForReferencingEntity(ContentVersion.class.getName(), contentVersion.toString(), db);
-	        RequestAnalyser.getRequestAnalyser().registerComponentStatistics("getContentAndAffectedItemsRecursive.getMatchingRegistryVOListForReferencingEntity", t.getElapsedTime());
-		    
-	        logger.info("relatedEntities:" + relatedEntities);
-	        Iterator relatedEntitiesIterator = relatedEntities.iterator();
-	        
-	        while(relatedEntitiesIterator.hasNext())
-	        {
-	            RegistryVO registryVO = (RegistryVO)relatedEntitiesIterator.next();
-	            logger.info("registryVO:" + registryVO.getEntityName() + ":" + registryVO.getEntityId());
-	            if(registryVO.getEntityName().equals(SiteNode.class.getName()) && !checkedSiteNodes.contains(new Integer(registryVO.getEntityId())))
-	            {
-	                try
-	                {
-		                SiteNodeVO relatedSiteNodeVO = SiteNodeController.getController().getSiteNodeVOWithIdNoStateCheck(new Integer(registryVO.getEntityId()), db);
-		    	        RequestAnalyser.getRequestAnalyser().registerComponentStatistics("getContentAndAffectedItemsRecursive.getSiteNodeWithId", t.getElapsedTime());
-		                //SiteNodeVersion relatedSiteNodeVersion = SiteNodeVersionController.getController().getLatestActiveSiteNodeVersionIfInState(new Integer(registryVO.getEntityId()), stateId, db);
-		                //SiteNodeVersionVO relatedSiteNodeVersion = SiteNodeVersionController.getController().getLatestActiveSiteNodeVersionVO(db, new Integer(registryVO.getEntityId()));
-		                //if(relatedSiteNodeVersion != null && relatedSiteNodeVersion.getStateId().intValue() != stateId.intValue())
-		                //	relatedSiteNodeVersion = null;
-		                
-		    	        RequestAnalyser.getRequestAnalyser().registerComponentStatistics("getContentAndAffectedItemsRecursive.getLatestActiveSiteNodeVersionIfInState", t.getElapsedTime());
-		    	        if(relatedSiteNodeVO != null && contentVO.getRepositoryId().intValue() == relatedSiteNodeVO.getRepositoryId().intValue())
-		                {
-		                    siteNodeVersionVOList.add(relatedSiteNodeVO.getSiteNodeVersionId());
-		                }
-	                }
-	                catch(Exception e)
-	                {
-	                    logger.warn("The related siteNode with id:" + registryVO.getEntityId() + " could not be loaded.", e);
-	                }
-	                
-	    		    checkedSiteNodes.add(new Integer(registryVO.getEntityId()));
-	            }
-	            else if(registryVO.getEntityName().equals(Content.class.getName()) && !checkedContents.contains(new Integer(registryVO.getEntityId())))
-	            {
-	                try
-	                {
-		                ContentVO relatedContentVO = ContentController.getContentController().getContentVOWithId(new Integer(registryVO.getEntityId()), db);
-		    	        RequestAnalyser.getRequestAnalyser().registerComponentStatistics("getContentAndAffectedItemsRecursive.getContentVOWithId", t.getElapsedTime());
-		                ContentTypeDefinitionVO contentTypeDefinitionVO = null;
-		                if(relatedContentVO.getContentTypeDefinitionId() != null)
-		                	contentTypeDefinitionVO = ContentTypeDefinitionController.getController().getContentTypeDefinitionVOWithId(relatedContentVO.getContentTypeDefinitionId(), db);
-
-		                if(includeMetaInfo || (!includeMetaInfo && (contentTypeDefinitionVO == null || !contentTypeDefinitionVO.getName().equalsIgnoreCase("Meta info"))))
-		                {
-		                	List<ContentVersionVO> relatedContentVersions = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVOIfInState(relatedContentVO.getId(), stateId, db);
-			    	        RequestAnalyser.getRequestAnalyser().registerComponentStatistics("getContentAndAffectedItemsRecursive.getLatestActiveContentVersionVOIfInState", t.getElapsedTime());
-			                logger.info("relatedContentVersions:" + relatedContentVersions.size());
-			                
-			                Iterator<ContentVersionVO> relatedContentVersionsIterator = relatedContentVersions.iterator();
-			                while(relatedContentVersionsIterator.hasNext())
-			                {
-			                	ContentVersionVO relatedContentVersionVO = relatedContentVersionsIterator.next();
-			                	//ContentVO relContentVO = ContentController.getContentController().getContentVOWithId(relatedContentVersionVO.getContentId(), db);
-				                if(relatedContentVersionVO != null && contentVO.getRepositoryId().intValue() == relatedContentVO.getRepositoryId().intValue())
-				                {
-				        	        contentVersionVOList.add(relatedContentVersionVO);
-				                    if(currentLevel < maxLevels)
-				                    	getContentAndAffectedItemsRecursive(relatedContentVO, stateId, checkedSiteNodes, checkedContents, db, siteNodeVersionVOList, contentVersionVOList, mustBeFirst, includeMetaInfo, maxLevels, currentLevel + 1);
-					            }
-			                }
-			                
-			                List relatedContentVersions = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVOIfInState(relatedContentVO.getId(), stateId, db);
-			                logger.info("relatedContentVersions:" + relatedContentVersions.size());
-			                
-			                Iterator relatedContentVersionsIterator = relatedContentVersions.iterator();
-			                while(relatedContentVersionsIterator.hasNext())
-			                {
-			                    ContentVersionVO relatedContentVersionVO = (ContentVersionVO)relatedContentVersionsIterator.next();
-				                ContentVO relContentVO = ContentController.getContentController().getContentVOWithId(relatedContentVersionVO.getContentId(), db);
-				                if(relatedContentVersionVO != null && contentVO.getRepositoryId().intValue() == relContentVO.getRepositoryId().intValue())
-				                {
-				        	        contentVersionVOList.add(relatedContentVersionVO);
-				                    logger.info("Added:" + relatedContentVersionVO.getId());
-				                    if(currentLevel < maxLevels)
-				                    	getContentAndAffectedItemsRecursive(relContentVO, stateId, checkedSiteNodes, checkedContents, db, siteNodeVersionVOList, contentVersionVOList, mustBeFirst, includeMetaInfo, maxLevels, currentLevel + 1);
-					            }
-			                }
-			                
-			            }
-	                }
-	                catch(Exception e)
-	                {
-	                    logger.warn("The related content with id:" + registryVO.getEntityId() + " could not be loaded.", e);
-	                }
-	                
-	    		    checkedContents.add(new Integer(registryVO.getEntityId()));
-	            }
-	        }	    
-
-		}
-		
-	    //	  Get the children of this content and do the recursion
-		//Collection childContentList = content.getChildren();
-		List<ContentVO> childContentList = ContentController.getContentController().getContentChildrenVOList(contentVO.getId(), null, db);
-		Iterator cit = childContentList.iterator();
-		while (cit.hasNext())
-		{
-			ContentVO citContent = (ContentVO) cit.next();
-			//if(currentLevel < maxLevels)
-			getContentAndAffectedItemsRecursive(citContent, stateId, checkedSiteNodes, checkedContents, db, siteNodeVersionVOList, contentVersionVOList, mustBeFirst, includeMetaInfo, maxLevels, currentLevel);
-		}
-		
-	}
-	*/
 
 	/**
 	 * This method are here to return all content versions that are x number of versions behind the current active version. This is for cleanup purposes.
@@ -2948,15 +2776,6 @@ public class ContentVersionController extends BaseController
 	public Map<Integer,Integer> getContentIdVersionCountMap(Integer languageId, int numberOfVersionsToKeep) throws SystemException 
 	{
 		Map<Integer,Integer> result = new HashMap<Integer,Integer>();
-		/*
-		if(true)
-		{
-			result.put(839525, 10);
-			result.put(839545, 15);
-			result.put(1031723, 9);
-			return result;
-		}
-		*/
 		Database db = CastorDatabaseService.getDatabase();
     	
 		beginTransaction(db);
@@ -3093,9 +2912,6 @@ public class ContentVersionController extends BaseController
         	while (results.hasMore())
             {
 				SmallestContentVersionImpl version = (SmallestContentVersionImpl)results.next();
-				//System.out.println("version: " + version.getId() + ":" + version.getContentId());
-				//System.out.println("versionInitialSuggestions:" + versionInitialSuggestions.size());
-
 				if(previousContentId != null && previousContentId.intValue() != version.getContentId().intValue())
 				{
 					if(minimumTimeBetweenVersionsDuringClean != -1 && versionInitialSuggestions.size() > numberOfVersionsToKeep)

@@ -220,6 +220,7 @@ public class SubscriptionsJob implements Job
 			try
 			{
 				InfoGlueInterceptor infoGlueInterceptor = (InfoGlueInterceptor)Class.forName(interceptorVO.getClassName()).newInstance();
+				infoGlueInterceptor.setInterceptorVO(interceptorVO);
 				infoGlueInterceptor.intercept(principal, interceptionPointVO, hashMap, false);
 			}
 			catch(ClassNotFoundException e)

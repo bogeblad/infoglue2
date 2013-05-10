@@ -17,6 +17,9 @@
 		<td colspan="2">#editField("Interceptor.className" "className" $!interceptorVO.className "50")</td>
 	</tr>
 	<tr>
+		<td colspan="2">#editTextArea("Interceptor.configuration" "configuration" $!configuration "50" "10" "normaltextarea")</td>
+	</tr>
+	<tr>
 		<td colspan="2">&nbsp;</td>
 	</tr>
 	<tr>

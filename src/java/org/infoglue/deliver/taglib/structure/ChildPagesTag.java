@@ -53,10 +53,7 @@ public class ChildPagesTag extends ComponentLogicTag
 		Timer t = new Timer();
 	    if(this.siteNodeId != null)
 	    {
-	    	//if(this.siteNodeId != 100081)
-	    	//	this.levelsToPopulate = 2;
 	        setResultAttribute(this.getController().getChildPages(this.siteNodeId, this.escapeHTML, this.hideUnauthorizedPages, this.levelsToPopulate, this.nameFilter));
-		    //if(logger.isInfoEnabled())
 	    	RequestAnalyser.getRequestAnalyser().registerComponentStatistics("ChildPages 1 tag(micro)", t.getElapsedTimeNanos() / 1000);	    	
 	    }
 	    else if(this.propertyName != null)

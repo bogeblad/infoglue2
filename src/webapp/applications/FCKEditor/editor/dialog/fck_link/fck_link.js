@@ -1,4 +1,4 @@
-﻿/*
+/*
  * FCKeditor - The text editor for Internet - http://www.fckeditor.net
  * Copyright (C) 2003-2009 Frederico Caldeira Knabben
  *
@@ -64,7 +64,7 @@ oRegex.UrlOnChangeProtocol = /^(http|https|ftp|news):\/\/(?=.)/gi ;
 
 //oRegex.UrlOnChangeTestOther = /^((javascript:)|[#\/\.])/gi ;
 oRegex.UrlOnChangeTestOther = /^((javascript:)|[#\/\.]|.*templateLogic|DownloadAsset)/gi ;
-
+							  
 oRegex.ReserveTarget = /^_(blank|self|top|parent)$/i ;
 
 oRegex.PopupUri = /^javascript:void\(\s*window.open\(\s*'([^']+)'\s*,\s*(?:'([^']*)'|null)\s*,\s*'([^']*)'\s*\)\s*\)\s*$/ ;

@@ -202,38 +202,6 @@ public class RepositoryDeliveryController extends BaseDeliveryController
 	            	livePath = livePath.substring(0, livePathEndIndex);
             }
             
-            /*
-            if(debug)
-            	t.printElapsedTime("Before");
-            try
-            {
-	            String enableNiceURIForLanguage = RepositoryDeliveryController.getRepositoryDeliveryController().getExtraPropertyValue(repositoryVO.getId(), "enableNiceURIForLanguage");
-	            if(debug)
-	            {
-		            //System.out.println("enableNiceURIForLanguage:" + enableNiceURIForLanguage);
-	            	//System.out.println("url:" + url);
-	            }
-			    if(enableNiceURIForLanguage != null && enableNiceURIForLanguage.equals("true"))
-			    {
-			    	List<LanguageVO> languageVOList = LanguageDeliveryController.getLanguageDeliveryController().getAvailableLanguagesForRepository(db, repositoryVO.getId());
-			    	for(LanguageVO languageVO : languageVOList)
-			    	{
-				    	if(url.startsWith("/"+languageVO.getLanguageCode()) || url.startsWith(""+languageVO.getLanguageCode()))
-				    	{
-				    		url = url.substring(url.indexOf(""+languageVO.getLanguageCode()) + languageVO.getLanguageCode().length());
-				    		break;
-				    	}
-			    	}
-			    }
-            }
-            catch (Exception e) 
-            {
-            	e.printStackTrace();
-			}
-            if(debug)
-            	t.printElapsedTime("After: " + url);
-		    */
-            
             if(CmsPropertyHandler.getOperatingMode().equals("0"))
             {
             	String workingPathAlternative1 = workingPath;

@@ -356,48 +356,4 @@ public class ViewListSiteNodeVersionAction extends InfoGlueAbstractAction
 		this.attemptDirectPublishing = attemptDirectPublishing;
 	}
 
-/*
-	public ProcessBean getProcessBean()
-	{
-		return ProcessBean.getProcessBean(ViewListSiteNodeVersionAction.class.getName(), ""+this.siteNodeId + "_" + getInfoGluePrincipal().getName());
-	}
-
-	public String getStatusAsJSON()
-	{
-		StringBuffer sb = new StringBuffer();
-		sb.append("<html><body>");
-		
-		try
-		{
-			ProcessBean processBean = getProcessBean();
-			if(processBean != null && processBean.getStatus() != ProcessBean.FINISHED)
-			{
-				sb.append("<h2>" + getLocalizedString(getLocale(), "tool.structuretool.publicationProcess.publicationProcessInfo") + "</h2>");
-
-				sb.append("<ol>");
-				for(String event : processBean.getProcessEvents())
-					sb.append("<li>" + event + "</li>");
-				sb.append("</ol>");
-				sb.append("<div style='text-align: center'><img src='images/loading.gif' /></div>");
-			}
-			else
-			{
-				sb.append("<script type='text/javascript'>hideProcessStatus();</script>");
-			}
-		}
-		catch (Throwable t)
-		{
-			logger.error("Error when generating repository export status report as JSON.", t);
-			sb.append(t.getMessage());
-		}
-		sb.append("</body></html>");
-				
-		return sb.toString();
-	}
-	
-	public String doShowProcessesAsJSON() throws Exception
-	{
-		return "successShowProcessesAsJSON";
-	}
-	*/
 }

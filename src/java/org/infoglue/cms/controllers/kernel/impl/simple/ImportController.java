@@ -24,7 +24,6 @@
 package org.infoglue.cms.controllers.kernel.impl.simple;
 
 import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
@@ -40,7 +39,6 @@ import org.apache.log4j.Logger;
 import org.exolab.castor.jdo.Database;
 import org.exolab.castor.mapping.Mapping;
 import org.exolab.castor.xml.Unmarshaller;
-import org.infoglue.cms.applications.managementtool.actions.ImportRepositoryAction;
 import org.infoglue.cms.entities.content.Content;
 import org.infoglue.cms.entities.content.ContentCategory;
 import org.infoglue.cms.entities.content.ContentVersion;
@@ -77,7 +75,6 @@ import org.infoglue.cms.entities.structure.impl.simple.ServiceBindingImpl;
 import org.infoglue.cms.entities.structure.impl.simple.SiteNodeImpl;
 import org.infoglue.cms.entities.structure.impl.simple.SiteNodeVersionImpl;
 import org.infoglue.cms.exception.SystemException;
-import org.infoglue.deliver.util.Timer;
 
 import com.opensymphony.module.propertyset.PropertySet;
 import com.opensymphony.module.propertyset.PropertySetManager;
@@ -155,7 +152,7 @@ public class ImportController extends BaseController
 		{
 			Content readContentCandidate = (Content)readContentsIteratorDebug.next();
 			repositoryContentMap.put("" + readContentCandidate.getRepositoryId(), readContentCandidate);
-			//System.out.println("readContentCandidate debug...:" + readContentCandidate.getName() + ":" + readContentCandidate.getId() + ":" + readContentCandidate.getRepositoryId());
+			//logger.info("readContentCandidate debug...:" + readContentCandidate.getName() + ":" + readContentCandidate.getId() + ":" + readContentCandidate.getRepositoryId());
 		}
 
 		Iterator readSiteNodesIterator = readSiteNodes.iterator();
@@ -173,7 +170,7 @@ public class ImportController extends BaseController
 			Content readContent = null;
 
 			readContent = (Content)repositoryContentMap.get("" + repositoryRead.getId());
-			//System.out.println("readContent:" + readContent.getName() + ":" + readContent.getId());
+			//logger.info("readContent:" + readContent.getName() + ":" + readContent.getId());
 			
 			readContent.setRepository((RepositoryImpl)repositoryRead);
 
@@ -236,7 +233,9 @@ public class ImportController extends BaseController
 			if(splittedString.length == 3)
 			{
 				String oldRepId = splittedString[1];
-				key = key.replaceAll(oldRepId, (String)repositoryIdMap.get(oldRepId));
+				String replacement = (String)repositoryIdMap.get(oldRepId);
+				if(replacement != null)
+					key = key.replaceAll(oldRepId, replacement);
 				
 				if(value != null && !value.equals("null"))
 				{
@@ -258,7 +257,9 @@ public class ImportController extends BaseController
 			if(splittedString.length == 3)
 			{
 				String oldContentId = splittedString[1];
-				key = key.replaceAll(oldContentId, (String)contentIdMap.get(oldContentId));
+				String replacement = (String)contentIdMap.get(oldContentId);
+				if(replacement != null)
+					key = key.replaceAll(oldContentId, replacement);
 				if(value != null && !value.equals("null"))
 					ps.setString(key, value);
 			}
@@ -274,7 +275,9 @@ public class ImportController extends BaseController
 			if(splittedString.length == 3)
 			{
 				String oldSiteNodeId = splittedString[1];
-				key = key.replaceAll(oldSiteNodeId, (String)siteNodeIdMap.get(oldSiteNodeId));
+				String replacement = (String)siteNodeIdMap.get(oldSiteNodeId);
+				if(replacement != null)
+					key = key.replaceAll(oldSiteNodeId, replacement);
 				if(value != null && !value.equals("null"))
 					ps.setString(key, value);
 			}
@@ -287,32 +290,35 @@ public class ImportController extends BaseController
 			AccessRight accessRight = accessRightsIterator.next();
 
 			InterceptionPoint interceptionPoint = InterceptionPointController.getController().getInterceptionPointWithName(accessRight.getInterceptionPointName(), db);
-			accessRight.setInterceptionPoint(interceptionPoint);
-			if(interceptionPoint.getName().indexOf("Content") > -1)
-				accessRight.setParameters((String)contentIdMap.get(accessRight.getParameters()));
-			else if(interceptionPoint.getName().indexOf("SiteNodeVersion") > -1)
-				accessRight.setParameters((String)siteNodeVersionIdMap.get(accessRight.getParameters()));
-			else if(interceptionPoint.getName().indexOf("SiteNode") > -1)
-				accessRight.setParameters((String)siteNodeIdMap.get(accessRight.getParameters()));
-			else if(interceptionPoint.getName().indexOf("Repository") > -1)
-				accessRight.setParameters((String)repositoryIdMap.get(accessRight.getParameters()));
-
-			db.create(accessRight);
-
-			Iterator accessRightRoleIterator = accessRight.getRoles().iterator();
-			while(accessRightRoleIterator.hasNext())
+			if(interceptionPoint != null)
 			{
-				AccessRightRole accessRightRole = (AccessRightRole)accessRightRoleIterator.next();
-				accessRightRole.setAccessRight(accessRight);
-				db.create(accessRightRole);
-			}
-
-			Iterator accessRightGroupIterator = accessRight.getGroups().iterator();
-			while(accessRightGroupIterator.hasNext())
-			{
-				AccessRightGroup accessRightGroup = (AccessRightGroup)accessRightGroupIterator.next();
-				accessRightGroup.setAccessRight(accessRight);
-				db.create(accessRightGroup);
+				accessRight.setInterceptionPoint(interceptionPoint);
+				if(interceptionPoint.getName().indexOf("Content") > -1)
+					accessRight.setParameters((String)contentIdMap.get(accessRight.getParameters()));
+				else if(interceptionPoint.getName().indexOf("SiteNodeVersion") > -1)
+					accessRight.setParameters((String)siteNodeVersionIdMap.get(accessRight.getParameters()));
+				else if(interceptionPoint.getName().indexOf("SiteNode") > -1)
+					accessRight.setParameters((String)siteNodeIdMap.get(accessRight.getParameters()));
+				else if(interceptionPoint.getName().indexOf("Repository") > -1)
+					accessRight.setParameters((String)repositoryIdMap.get(accessRight.getParameters()));
+	
+				db.create(accessRight);
+	
+				Iterator accessRightRoleIterator = accessRight.getRoles().iterator();
+				while(accessRightRoleIterator.hasNext())
+				{
+					AccessRightRole accessRightRole = (AccessRightRole)accessRightRoleIterator.next();
+					accessRightRole.setAccessRight(accessRight);
+					db.create(accessRightRole);
+				}
+	
+				Iterator accessRightGroupIterator = accessRight.getGroups().iterator();
+				while(accessRightGroupIterator.hasNext())
+				{
+					AccessRightGroup accessRightGroup = (AccessRightGroup)accessRightGroupIterator.next();
+					accessRightGroup.setAccessRight(accessRight);
+					db.create(accessRightGroup);
+				}
 			}
 		}
 	}
@@ -618,7 +624,7 @@ public class ImportController extends BaseController
 	
 	private List createContents(Content content, Map idMap, Map contentTypeDefinitionIdMap, List allContents, Collection contentTypeDefinitions, Map categoryIdMap, int version, Database db, String onlyLatestVersions, boolean isCopyAction, Map<String,String> replaceMap) throws Exception
 	{
-    	//System.out.println("createContents:" + content.getName() + ":" + content.getId());
+    	//logger.info("createContents:" + content.getName() + ":" + content.getId());
 
 		ContentTypeDefinition contentTypeDefinition = null;
 		
@@ -933,7 +939,7 @@ public class ImportController extends BaseController
             contentVersionValue = contentVersionValue.replaceAll("getPageUrl\\((\\d)", "getPageUrl\\(oldSiteNodeId_$1");
             contentVersionValue = contentVersionValue.replaceAll("entity=\"SiteNode\" entityId=\"", "entity=\"SiteNode\" entityId=\"oldSiteNodeId_");
             //contentVersionValue = contentVersionValue.replaceAll("entity='SiteNode'><id>", "entity='SiteNode'><id>old_");
-                        
+                                    
             contentVersionValue = this.prepareAllRelations(contentVersionValue);
             	            
             

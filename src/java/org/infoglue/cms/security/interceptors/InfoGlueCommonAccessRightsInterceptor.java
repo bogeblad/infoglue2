@@ -39,6 +39,7 @@ import org.infoglue.cms.entities.content.ContentVO;
 import org.infoglue.cms.entities.content.ContentVersionVO;
 import org.infoglue.cms.entities.management.AccessRight;
 import org.infoglue.cms.entities.management.InterceptionPointVO;
+import org.infoglue.cms.entities.management.InterceptorVO;
 import org.infoglue.cms.entities.structure.SiteNodeVO;
 import org.infoglue.cms.entities.structure.SiteNodeVersion;
 import org.infoglue.cms.entities.structure.SiteNodeVersionVO;
@@ -60,6 +61,11 @@ import org.infoglue.deliver.util.Timer;
 public class InfoGlueCommonAccessRightsInterceptor implements InfoGlueInterceptor
 {
     private final static Logger logger = Logger.getLogger(InfoGlueCommonAccessRightsInterceptor.class.getName());
+
+	public void setInterceptorVO(InterceptorVO vo) 
+	{
+		//Dont need it for now
+	}
 
 	public void intercept(InfoGluePrincipal infoGluePrincipal, InterceptionPointVO interceptionPointVO, Map extradata) throws ConstraintException, SystemException, Exception
 	{
