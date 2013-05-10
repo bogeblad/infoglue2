@@ -28,6 +28,7 @@ import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import javax.xml.transform.TransformerException;
 
@@ -44,6 +45,7 @@ import org.infoglue.cms.exception.ConstraintException;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.util.ConstraintExceptionBuffer;
 import org.infoglue.cms.util.XMLHelper;
+import org.omg.PortableInterceptor.USER_EXCEPTION;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -87,6 +89,7 @@ public class ViewContentTypeDefinitionAction extends InfoGlueAbstractAction
 	private String newAssetKey;
 	private String categoryKey;
 	private String newCategoryKey;
+	private Boolean isBlankAsDefault;
 	
 	private Boolean isMandatory = new Boolean(false);
 	private String description = "";
@@ -95,6 +98,7 @@ public class ViewContentTypeDefinitionAction extends InfoGlueAbstractAction
 	private String imageWidth;
 	private String imageHeight;
 	private String assetUploadTransformationsSettings = "";
+	private Map<String, Object> assetSettings;
 	
 	private List activatedName = new ArrayList();
 
@@ -117,6 +121,7 @@ public class ViewContentTypeDefinitionAction extends InfoGlueAbstractAction
         this.contentTypeDefinitionVO = ContentTypeDefinitionController.getController().getContentTypeDefinitionVOWithId(contentTypeDefinitionId);
 		this.attributes = ContentTypeDefinitionController.getController().getContentTypeAttributes(this.contentTypeDefinitionVO.getSchemaValue());
 		this.availableLanguages = LanguageController.getController().getLanguageVOList();
+		this.assetSettings = ContentTypeDefinitionController.getController().getAssetSettings(this.contentTypeDefinitionVO.getSchemaValue());
     }
 
     /**
@@ -802,6 +807,26 @@ public class ViewContentTypeDefinitionAction extends InfoGlueAbstractAction
 		return USE_EDITOR;
 	}
 
+	public String doBlankAssetKeyDefault() throws Exception
+	{
+		this.initialize(getContentTypeDefinitionId());
+
+		try
+		{
+			Document document = createDocumentFromDefinition();
+			ContentTypeDefinitionController.getController().setAssetSettingsValue(document, "blankAsDefault", isBlankAsDefault);
+			saveUpdatedDefinition(document);
+		}
+		catch(Exception ex)
+		{
+			logger.error("Error when toggling blank as default. ", ex);
+			logger.warn("Error adding asset key: ", ex);
+		}
+
+		this.initialize(getContentTypeDefinitionId());
+		return USE_EDITOR;
+	}
+
 	public String doInsertCategoryKey() throws Exception
 	{
 		this.initialize(getContentTypeDefinitionId());
@@ -1342,6 +1367,16 @@ public class ViewContentTypeDefinitionAction extends InfoGlueAbstractAction
 	public void setAssetUploadTransformationsSettings(String assetUploadTransformationsSettings)
 	{
 		this.assetUploadTransformationsSettings = assetUploadTransformationsSettings;
+	}
+
+	public void setIsBlankAsDefault(Boolean isBlankAsDefault)
+	{
+		this.isBlankAsDefault = isBlankAsDefault;
+	}
+
+	public Object getAssetSetting(String settingName)
+	{
+		return assetSettings == null ? null : assetSettings.get(settingName);
 	}
 
 }
