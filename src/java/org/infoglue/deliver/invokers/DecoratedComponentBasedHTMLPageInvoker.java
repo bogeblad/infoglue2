@@ -307,6 +307,8 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 			boolean hasAccessToDeleteComponent = AccessRightController.getController().getIsPrincipalAuthorized(templateController.getDatabase(), principal, "ComponentEditor.DeleteComponent", "" + component.getContentId() + "_" + component.getSlotName());
 			boolean hasAccessToChangeComponent = AccessRightController.getController().getIsPrincipalAuthorized(templateController.getDatabase(), principal, "ComponentEditor.ChangeComponent", "" + component.getContentId() + "_" + component.getSlotName());
 			boolean hasSaveTemplateAccess = AccessRightController.getController().getIsPrincipalAuthorized(templateController.getDatabase(), principal, "StructureTool.SaveTemplate", "");
+			boolean hasEditHtmlAccess = AccessRightController.getController().getIsPrincipalAuthorized(templateController.getDatabase(), principal, "ComponentEditor.EditHtml", "");
+			boolean hasEditInlineHtmlAccess = AccessRightController.getController().getIsPrincipalAuthorized(templateController.getDatabase(), principal, "ComponentEditor.EditInlineHtml", "");
 
 		    boolean hasSubmitToPublishAccess = AccessRightController.getController().getIsPrincipalAuthorized(templateController.getDatabase(), principal, "ComponentEditor.SubmitToPublish", "");
 		    boolean hasPageStructureAccess = AccessRightController.getController().getIsPrincipalAuthorized(templateController.getDatabase(), principal, "ComponentEditor.PageStructure", "");
@@ -420,7 +422,10 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 		    extraBody = extraBody.replaceAll("\\$deleteComponentJavascript", "var hasAccessToDeleteComponent" + component.getId() + "_" + component.getSlotName().replaceAll("[^0-9,a-z,A-Z]", "_") + " = " + hasAccessToDeleteComponent + ";");
 		    extraBody = extraBody.replaceAll("\\$changeComponentJavascript", "var hasAccessToChangeComponent" + component.getId() + "_" + component.getSlotName().replaceAll("[^0-9,a-z,A-Z]", "_") + " = " + hasAccessToChangeComponent + ";");
 		    extraBody = extraBody.replaceAll("\\$changeAccessJavascript", "var hasAccessToAccessRights" + " = " + hasAccessToAccessRights + ";");
-		    
+
+		    extraBody = extraBody.replaceAll("\\$editHtmlAccessJavascript", "var hasAccessToEditHtml" + " = " + hasEditHtmlAccess + ";");
+		    extraBody = extraBody.replaceAll("\\$editInlineHtmlAccessJavascript", "var hasAccessToEditInlineHtml" + " = " + hasEditInlineHtmlAccess + ";");
+
 		    extraBody = extraBody.replaceAll("\\$submitToPublishJavascript", "var hasAccessToSubmitToPublish = " + hasSubmitToPublishAccess + ";");
 		    extraBody = extraBody.replaceAll("\\$pageStructureJavascript", "var hasPageStructureAccess = " + hasPageStructureAccess + ";");
 		    extraBody = extraBody.replaceAll("\\$openInNewWindowJavascript", "var hasOpenInNewWindowAccess = " + hasOpenInNewWindowAccess + ";");
@@ -1734,6 +1739,8 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 	    boolean hasMySettingsAccess 		= AccessRightController.getController().getIsPrincipalAuthorized(templateController.getDatabase(), principal, "ComponentEditor.MySettings", "");
 	    boolean hasCreateSubpageAccess 		= AccessRightController.getController().getIsPrincipalAuthorized(templateController.getDatabase(), principal, "ComponentEditor.CreateSubpage", "");
 	    boolean hasEditPageMetadataAccess 	= AccessRightController.getController().getIsPrincipalAuthorized(templateController.getDatabase(), principal, "ComponentEditor.EditPageMetadata", "");
+		boolean hasEditHtmlAccess 			= AccessRightController.getController().getIsPrincipalAuthorized(templateController.getDatabase(), principal, "ComponentEditor.EditHtml", "");
+		boolean hasEditInlineHtmlAccess 	= AccessRightController.getController().getIsPrincipalAuthorized(templateController.getDatabase(), principal, "ComponentEditor.EditInlineHtml", "");
 
 	    boolean showNotifyUserOfPage 		= AccessRightController.getController().getIsPrincipalAuthorized(templateController.getDatabase(), principal, "ComponentEditor.NotifyUserOfPage", "");
 	    boolean showContentNotifications 	= AccessRightController.getController().getIsPrincipalAuthorized(templateController.getDatabase(), principal, "ComponentEditor.ContentNotifications", "");
@@ -1849,10 +1856,12 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
     	String mySettingsUrl 		= componentEditorUrl + "ViewMySettings.action"; 
 
     	String notifyUrl 			= componentEditorUrl + "CreateEmail!inputChooseRecipientsV3.action?originalUrl=" + URLEncoder.encode(templateController.getOriginalFullURL().replaceFirst("cmsUserName=.*?", ""), "utf-8") + "&returnAddress=" + URLEncoder.encode(returnAddress, "utf-8") + "&extraTextProperty=tool.managementtool.createEmailNotificationPageExtraText.text"; 
-    	String pageSubscriptionUrl 	= componentEditorUrl + "Subscriptions!input.action?interceptionPointCategory=SiteNodeVersion&entityName=" + SiteNode.class.getName() + "&entityId=" + siteNodeId + "&returnAddress=" + URLEncoder.encode(returnAddress, "utf-8");
+		String pageSubscriptionUrl 	= componentEditorUrl + "Subscriptions!input.action?interceptionPointCategory=SiteNodeVersion&entityName=" + SiteNode.class.getName() + "&entityId=" + siteNodeId + "&returnAddress=" + URLEncoder.encode(returnAddress, "utf-8");
 
-	    sb.append("<div id=\"editInlineDiv" + component.getId() + "\" class=\"igmenuitems linkEditArticle\"><a href='javascript:void(0);'>" + editInlineHTML + "</a></div>");
-		sb.append("<div id=\"editDiv" + component.getId() + "\" class=\"igmenuitems linkEditArticle\"><a href='javascript:void(0);'>" + editHTML + "</a></div>");
+		if (hasEditInlineHtmlAccess)
+			sb.append("<div id=\"editInlineDiv" + component.getId() + "\" class=\"igmenuitems linkEditArticle\"><a href='javascript:void(0);'>" + editInlineHTML + "</a></div>");
+		if (hasEditHtmlAccess)
+			sb.append("<div id=\"editDiv" + component.getId() + "\" class=\"igmenuitems linkEditArticle\"><a href='javascript:void(0);'>" + editHTML + "</a></div>");
 
 		if(hasEditPageMetadataAccess)
 			sb.append("<div class=\"igmenuitems linkMetadata\" onclick=\"openInlineDiv('" + metaDataUrl + "', 700, 750, true);\"><a href='javascript:void(0);'>" + changePageMetaDataLabel + "</a></div>");
