@@ -45,6 +45,7 @@ import org.infoglue.cms.entities.management.RoleProperties;
 import org.infoglue.cms.entities.management.RolePropertiesVO;
 import org.infoglue.cms.entities.management.UserProperties;
 import org.infoglue.cms.entities.management.UserPropertiesVO;
+import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.util.CmsSessionContextListener;
 
 
@@ -236,4 +237,18 @@ public class ViewDigitalAssetAction extends InfoGlueAbstractAction
     {
         return contentTypeDefinitionVO;
     }
+
+	public boolean getBlankAssetKeyAsDefault() throws SystemException
+	{
+		Object value = ContentTypeDefinitionController.getController().getAssetSettingValue(this.contentTypeDefinitionVO.getSchemaValue(), "blankAsDefault");
+		if (value == null)
+		{
+			return false;
+		}
+		else
+		{
+			return ((Boolean)value).booleanValue();
+		}
+	}
+
 }

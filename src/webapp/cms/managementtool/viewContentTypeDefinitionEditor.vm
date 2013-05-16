@@ -74,7 +74,15 @@
 		document.newValidatorForm.attributeToExpand.value = attributeName;
 		showDiv('newValidatorFormLayer');
 	}
-		
+
+	function submitDefaultAssetKeyForm()
+	{
+		var elm = document.getElementById('defaultAssetKeyValue');
+		if (elm)
+		{
+			window.location.href = "ViewContentTypeDefinition!blankAssetKeyDefault.action?contentTypeDefinitionId=$contentTypeDefinitionId&isBlankAsDefault=" + elm.value
+		}
+	}
 -->
 </script>
 <script type="text/javascript" src="script/jquery/jquery-1.2.6.min.js"></script>
@@ -658,6 +666,10 @@
 			<tr>
 				<td align="left"><b>Defined Asset Keys</b></td>
 				<td align="right">
+					<select id="defaultAssetKeyValue" name="isBlankAsDefault" onchange="submitDefaultAssetKeyForm();return false;">
+						<option value="false">$ui.getString("tool.managementtool.viewContentTypeDefinition.defaultAssetKey.firstKey")</option>
+						<option value="true"#if( $this.getAssetSetting('blankAsDefault') ) selected="selected"#end>$ui.getString("tool.managementtool.viewContentTypeDefinition.defaultAssetKey.blank")</option>
+					</select>
 					<a href="ViewContentTypeDefinition!insertAssetKey.action?contentTypeDefinitionId=$contentTypeDefinitionId">Add Asset Key</a>
 				</td>
 			</tr>

@@ -73,6 +73,8 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import org.w3c.dom.Text;
+import org.w3c.dom.traversal.NodeIterator;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
@@ -93,6 +95,7 @@ public class ContentTypeDefinitionController extends BaseController
 	
 	public static final String ASSET_KEYS = "assetKeys";
 	public static final String CATEGORY_KEYS = "categoryKeys";
+	public static final String ASSET_SETTINGS_KEYS = "assetKeySettings";
 
 	private static final NodeList EMPTY_NODELIST = new NodeList()
 	{
@@ -2348,5 +2351,234 @@ public class ContentTypeDefinitionController extends BaseController
 	public BaseEntityVO getNewVO()
 	{
 		return new ContentTypeDefinitionVO();
+	}
+
+	private Element getOrCreateAssetSetting(Document document, Node node, String settingName) throws TransformerException
+	{
+		String settingsXpath = "/xs:schema/xs:simpleType[@name='assetKeySettings']/xs:restriction/xs:enumeration[@value='" + settingName + "']";
+		Element settingElement = (Element)XPathAPI.selectSingleNode(document, settingsXpath);
+		Element params;
+
+		if (settingElement == null)
+		{
+			settingElement = document.createElement("xs:enumeration");
+			settingElement.setAttribute("value", settingName);
+
+			Element annotation = document.createElement("xs:annotation");
+			Element appInfo    = document.createElement("xs:appinfo");
+			params     = document.createElement("params");
+
+			settingElement.appendChild(annotation);
+			annotation.appendChild(appInfo);
+			appInfo.appendChild(params);
+
+			node.appendChild(settingElement);
+		}
+		else
+		{
+			String paramsXpath = "xs:annotation/xs:appinfo/params";
+			params = (Element)XPathAPI.selectSingleNode(settingElement, paramsXpath, settingElement.getOwnerDocument().getDocumentElement());
+		}
+		return params;
+	}
+	
+	private void removeAllChildren(Node node)
+	{
+		NodeList children = node.getChildNodes();
+		for (int i = 0; i < children.getLength(); i++)
+		{
+			node.removeChild(children.item(i));
+		}
+	}
+
+	private void setAssetSettingsParamValue(Element paramsElement, String elementName, Boolean value) throws TransformerException
+	{
+		if (!paramsElement.getNodeName().equals("params"))
+		{
+			throw new IllegalArgumentException("Set asset settings param value requires the provided element to have the name 'params'");
+		}
+		removeAllChildren(paramsElement);
+		Element booleanValue = paramsElement.getOwnerDocument().createElement("boolean");
+		booleanValue.appendChild(paramsElement.getOwnerDocument().createTextNode("" + (value == null ? false : value)));
+		paramsElement.appendChild(booleanValue);
+	}
+
+	public void setAssetSettingsValue(Document document, String setting, Boolean isBlankAsDefault) throws TransformerException
+	{
+		String assetKeysXPath = "/xs:schema/xs:simpleType[@name='assetKeySettings']/xs:restriction";
+		NodeList anl = XPathAPI.selectNodeList(document.getDocumentElement(), assetKeysXPath);
+
+		Element keyRestriction = null;
+
+		if(anl != null && anl.getLength() > 0)
+		{
+			keyRestriction = (Element)anl.item(0);
+		}
+		else
+		{
+			//The key type was not defined so we create it first.
+			String schemaXPath = "/xs:schema";
+			NodeList schemaNL = XPathAPI.selectNodeList(document.getDocumentElement(), schemaXPath);
+			if(schemaNL != null && schemaNL.getLength() > 0)
+			{
+				Element schemaElement = (Element)schemaNL.item(0);
+
+				Element keySimpleType = document.createElement("xs:simpleType");
+				keySimpleType.setAttribute("name", "assetKeySettings");
+
+				keyRestriction = document.createElement("xs:restriction");
+				keyRestriction.setAttribute("base", "xs:string");
+
+				keySimpleType.appendChild(keyRestriction);
+				schemaElement.appendChild(keySimpleType);
+			}
+		}
+
+		Element settingElement = getOrCreateAssetSetting(document, keyRestriction, setting);
+
+		setAssetSettingsParamValue(settingElement, setting, isBlankAsDefault);
+	}
+
+	public Map<String, Object> getAssetSettings(String schemaValue) throws SystemException
+	{
+		try
+		{
+			NodeList settingsNodeList = getEnumerationNodeList(schemaValue, ASSET_SETTINGS_KEYS);
+			Map<String, Object> settings = new HashMap<String, Object>();
+			Element settingElement;
+			for (int i = 0; i < settingsNodeList.getLength(); i++)
+			{
+				settingElement = (Element)settingsNodeList.item(i);
+				settings.put(settingElement.getAttribute("value"), getAssetSettingValue(settingElement));
+			}
+			return settings;
+		}
+		catch (Exception ex)
+		{
+			logger.error("Error when getting asset settings. Message: " + ex.getMessage() + ". Type: " + ex.getClass());
+			logger.warn("Error when getting asset settings.", ex);
+			throw new SystemException("Error getting asset settings");
+		}
+	}
+
+	public Object getAssetSettingValue(String schemaValue, String settingName) throws SystemException
+	{
+		try
+		{
+			InputSource xmlSource = new InputSource(new StringReader(schemaValue));
+
+			DOMParser parser = new DOMParser();
+			parser.parse(xmlSource);
+			Document document = parser.getDocument();
+			return getAssetSettingValue(document, settingName);
+		}
+		catch (Exception ex)
+		{
+			// SystemException has already been logged
+			if (ex instanceof SystemException)
+			{
+				throw (SystemException)ex;
+			}
+			else
+			{
+				logger.error("Error when reading asset setting value. Message: " + ex.getMessage());
+				throw new SystemException("Error when reading asset settings.");
+			}
+		}
+	}
+
+	public Object getAssetSettingValue(Document document, String settingName) throws SystemException
+	{
+		try
+		{
+			Object value = null;
+			String settingsXpath = "/xs:schema/xs:simpleType[@name='assetKeySettings']/xs:restriction/xs:enumeration[@value='" + settingName + "']";
+			Element settingElement;
+			settingElement = (Element)XPathAPI.selectSingleNode(document, settingsXpath);
+
+			if (settingElement != null)
+			{
+				value = getAssetSettingValue(settingElement);
+			}
+			return value;
+		}
+		catch (TransformerException ex)
+		{
+			logger.error("TransformerException when reading asset setting value. Message: " + ex.getMessage());
+			throw new SystemException("Error when reading asset settings.");
+		}
+	}
+	
+	private Object getParamsValue(Element valueElement)
+	{
+		valueElement.normalize();
+		Object value = null;
+		Text text = null;
+		NodeList children = valueElement.getChildNodes();
+		for (int i = 0; i < children.getLength(); i++)
+		{
+			Node n = children.item(i);
+			if (n.getNodeType() == Node.TEXT_NODE)
+			{
+				text = (Text)n;
+				break;
+			}
+		}
+		String elementName = valueElement.getNodeName();
+		if (elementName.equals("boolean"))
+		{
+			value = new Boolean(text.getData());
+		}
+		else if (elementName.equals("integer"))
+		{
+			try
+			{
+				value = new Integer(valueElement.getNodeValue());
+			}
+			catch (NumberFormatException nex)
+			{
+				logger.error("Error parsing asset setting value as integer. Will return null instead. Message: " + nex.getMessage());
+			}
+		}
+		else
+		{
+			value = valueElement.getNodeValue();
+		}
+		return value;
+	}
+
+	private Object getAssetSettingValue(Element settingsElement) throws SystemException
+	{
+		try
+		{
+			Object value = null;
+			String paramsXpath = "xs:annotation/xs:appinfo/params";
+			Element params = (Element)XPathAPI.selectSingleNode(settingsElement, paramsXpath);
+
+			if (params != null)
+			{
+				NodeList list = params.getChildNodes();
+				Element valueElement = null;
+				for (int i = 0; i < list.getLength(); i++)
+				{
+					Node node = list.item(i);
+					if (node.getNodeType() == Node.ELEMENT_NODE)
+					{
+						valueElement = (Element)node;
+						break;
+					}
+				}
+				if (valueElement != null)
+				{
+					value = getParamsValue(valueElement);
+				}
+			}
+			return value;
+		}
+		catch (TransformerException ex)
+		{
+			logger.error("TransformerException when reading asset setting value. Message: " + ex.getMessage());
+			throw new SystemException("Error when reading asset settings.");
+		}
 	}
 }
