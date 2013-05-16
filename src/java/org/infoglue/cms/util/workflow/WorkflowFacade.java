@@ -435,6 +435,7 @@ public class WorkflowFacade
 				}
 				if(currentWorkflows.contains(id))
 				{
+					currentWorkflows.remove(id);
 					throw new WorkflowException("The selected workflow is executing...");
 				}
 				currentWorkflows.add(id);
