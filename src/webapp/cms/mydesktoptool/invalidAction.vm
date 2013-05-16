@@ -79,7 +79,26 @@
 		</tr>	
 		<tr>
 			<td><img src="images/trans.gif" width="20" height="1"></td>
-			<td>The action you are trying to perform in invalid, most likely because someone else already did it.</td>
+			<td>
+				$ui.getString("tool.mydesktoptool.workflow.invalidAction.message")
+				#set($filter = $webwork.bean('org.infoglue.cms.util.workflow.OwnerStepFilter'))
+				#set( $currentWorkflow = $this.getCurrentWorkflow() )
+				#set( $actions = $currentWorkflow.getAvailableActions($filter) )
+				#if( "$!actions.size()" != "" )
+					$ui.getString("tool.mydesktoptool.workflow.invalidAction.chooseActionMessage")
+					<ul>
+					#foreach( $action in $actions )
+						#set( $url = "$!action.getView()" )
+						#if($url == "")
+						<li>
+							#set($actionUrl = "ViewMyDesktopToolStartPage!invoke.action?workflowId=$action.getWorkflowId()&actionId=$action.getId()&returnAddress=$URLBase/ViewMyDesktopToolStartPage!invoke.action")
+							<a href="$actionUrl">$action.getName()</a>
+						</li>
+						#end
+					#end
+					</ul>
+				#end
+			</td>
 		</tr>
 		<tr>
 			<td colspan="2">&nbsp;</td>
