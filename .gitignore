@@ -1,3 +1,9 @@
 *.class
 build/
 bin/
+.svn
+#.settings
+*.launch
+build.properties
+#.project
+rebel.xml
