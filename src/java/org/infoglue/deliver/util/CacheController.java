@@ -70,6 +70,7 @@ import org.infoglue.cms.controllers.kernel.impl.simple.ContentVersionController;
 import org.infoglue.cms.controllers.kernel.impl.simple.DigitalAssetController;
 import org.infoglue.cms.controllers.kernel.impl.simple.GroupPropertiesController;
 import org.infoglue.cms.controllers.kernel.impl.simple.InterceptionPointController;
+import org.infoglue.cms.controllers.kernel.impl.simple.PageDeliveryMetaDataController;
 import org.infoglue.cms.controllers.kernel.impl.simple.PropertiesCategoryController;
 import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeController;
 import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeVersionController;
@@ -700,6 +701,8 @@ public class CacheController extends Thread
 		    		cacheCapacity = "20000";
 				if(cacheName != null && cacheName.equalsIgnoreCase("latestSiteNodeVersionCache"))
 		    		cacheCapacity = "20000";
+				if(cacheName != null && cacheName.equalsIgnoreCase("pageDeliveryMetaDataCache"))
+		    		cacheCapacity = "50000";
 				
 				/*
 				if(cacheCapacity.length() > 4)
@@ -2285,6 +2288,10 @@ public class CacheController extends Thread
 						clear = true;
 						selectiveCacheUpdate = true;
 					}
+					if(cacheName.equalsIgnoreCase("rootContentCache") && entity.indexOf("Content") > 0)
+					{
+						clear = true;
+					}
 					if(cacheName.equalsIgnoreCase("componentContentsCache") && entity.indexOf("Content") > 0)
 					{
 						clear = true;
@@ -3012,7 +3019,6 @@ public class CacheController extends Thread
 											    					//t.printElapsedTime("Split to usedEntities " + usedEntities.length + " took");
 											    					
 													    			ContentVersionVO newContentVersionVO = ContentVersionController.getContentVersionController().getContentVersionVOWithId(new Integer(entityId));
-													    			//System.out.println("BBBBBBBBBBBBBBBBBBBBBB:" + newContentVersionVO.getModifiedDateTime().getTime());
 													    			String newComponentStructure = ContentVersionController.getContentVersionController().getAttributeValue(newContentVersionVO, "ComponentStructure", false);
 		
 													    			for(String usedEntity : usedEntities)
@@ -3194,7 +3200,6 @@ public class CacheController extends Thread
 											    					//t.printElapsedTime("Split to usedEntities " + usedEntities.length + " took");
 																	
 											    					ContentVersionVO newestContentVersionVO = ContentVersionController.getContentVersionController().getContentVersionVOWithId(new Integer(entityId));
-													    			//System.out.println("BBBBBBBBBBBBBBBBBBBBBB:" + newContentVersionVO.getModifiedDateTime().getTime());
 													    			String newComponentStructure = ContentVersionController.getContentVersionController().getAttributeValue(newestContentVersionVO, "ComponentStructure", false);
 		
 											    					for(String usedEntity : usedEntities)
@@ -4465,6 +4470,7 @@ public class CacheController extends Thread
 		caches.add("importTagResultCache");
 		caches.add("assetUrlCacheWithGroups");
 		caches.add("componentPropertyCacheRepoGroups");
+		caches.add("pageDeliveryMetaDataCache");
 
 		List<String> userCaches = CmsPropertyHandler.getExtraPublicationPersistentCacheNames();
 		logger.info("Adding ExtraPublicationPersistentCacheNames:" + userCaches);

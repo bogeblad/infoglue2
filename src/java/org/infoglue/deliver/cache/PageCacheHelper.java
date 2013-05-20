@@ -38,6 +38,7 @@ import java.util.zip.CRC32;
 
 import org.apache.log4j.Logger;
 import org.infoglue.cms.applications.common.VisualFormatter;
+import org.infoglue.cms.controllers.kernel.impl.simple.PageDeliveryMetaDataController;
 import org.infoglue.cms.io.FileHelper;
 import org.infoglue.cms.util.CmsPropertyHandler;
 import org.infoglue.deliver.util.CacheController;
@@ -98,8 +99,16 @@ public class PageCacheHelper implements Runnable
 					logger.info("Clearing page cache for");
 					for(String entity : localPageCacheEvicitionQueue)
 					{
-						logger.info("entity:" + entity);
+						System.out.println("entity:" + entity);
+						if(entity.startsWith("siteNode_"))
+							PageDeliveryMetaDataController.getController().deletePageDeliveryMetaDataByReferencingEntity(new Integer(entity.replaceAll("siteNode_", "").replaceAll("_.*", "")), null);
+						else if(entity.startsWith("content_"))
+						{
+							System.out.println("entity:" + entity.replaceAll("content_", "").replaceAll("_.*", ""));
+							PageDeliveryMetaDataController.getController().deletePageDeliveryMetaDataByReferencingEntity(null, new Integer(entity.replaceAll("content_", "").replaceAll("_.*", "")));
+						}
 					}
+					CacheController.clearCache("pageDeliveryMetaDataCache");
 					
 					List<String> existingPageKeysForEntities = getMatchingPageKeysForGroups(localPageCacheEvicitionQueue);
 					logger.info("existingPageKeysForEntities:" + existingPageKeysForEntities.size());
@@ -150,7 +159,7 @@ public class PageCacheHelper implements Runnable
 	public void notify(String entityString)
 	{
 		Timer t = new Timer();
-		//System.out.println("notify:" + entityString);
+		System.out.println("notify:" + entityString);
 		//Thread.dumpStack();
 		if(CmsPropertyHandler.getOperatingMode().equals("0"))
 		{
