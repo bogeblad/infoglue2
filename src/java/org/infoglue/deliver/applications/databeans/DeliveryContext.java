@@ -636,9 +636,7 @@ public class DeliveryContext implements UsageListener
 	public void setLastModifiedDateTime(Date lastModifiedDateTime)
 	{
 		this.lastModifiedDateTime = lastModifiedDateTime;
-		if(getHttpHeaders().containsKey("Last-Modified"))
-			System.out.println("Allready has value.... what to do");
-
+		
 		getHttpHeaders().put("Last-Modified", HTTP_DATE_FORMAT.format(lastModifiedDateTime));
 	}
 
