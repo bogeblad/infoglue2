@@ -60,6 +60,7 @@ import org.infoglue.cms.entities.content.SmallestContentVersionVO;
 import org.infoglue.cms.entities.content.impl.simple.ContentImpl;
 import org.infoglue.cms.entities.content.impl.simple.ContentVersionImpl;
 import org.infoglue.cms.entities.content.impl.simple.ExportContentVersionImpl;
+import org.infoglue.cms.entities.content.impl.simple.MediumContentImpl;
 import org.infoglue.cms.entities.content.impl.simple.MediumContentVersionImpl;
 import org.infoglue.cms.entities.content.impl.simple.MediumDigitalAssetImpl;
 import org.infoglue.cms.entities.content.impl.simple.SmallContentImpl;
@@ -1272,14 +1273,19 @@ public class ContentVersionController extends BaseController
 
     public MediumContentVersionImpl createMedium(Integer contentId, Integer languageId, ContentVersionVO contentVersionVO, Database db) throws ConstraintException, SystemException, Exception
     {
-    	//Beh�vs verkligen content h�r? M�t tiderna ocks�
-    	Timer t = new Timer();		
+		Content content = ContentController.getContentController().getMediumContentWithId(contentId, db);
+
+		Timer t = new Timer();
     	MediumContentVersionImpl contentVersion = new MediumContentVersionImpl();
+		contentVersion.setOwningContent((MediumContentImpl)content);
 		contentVersion.setValueObject(contentVersionVO);
 		contentVersion.getValueObject().setLanguageId(languageId);
 		contentVersion.getValueObject().setContentId(contentId);
-		
-		db.create(contentVersion); 
+
+		db.create(contentVersion);
+
+		content.getContentVersions().add(contentVersion);
+
 		RequestAnalyser.getRequestAnalyser().registerComponentStatistics("create 3.0", t.getElapsedTime());
 
         return contentVersion;

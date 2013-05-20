@@ -220,11 +220,15 @@ public class ViewMyDesktopToolStartPageAction extends InfoGlueAbstractAction
 					logger.info("Setting Final return address get's set to " + this.finalReturnAddress + " from properties..");
 				}
 			}
-
 			workflow = controller.invokeAction(getInfoGluePrincipal(), getWorkflowId(), actionId, WorkflowController.createWorkflowParameters(ActionContext.getRequest()));
 			return redirectToView();
 		}
 		catch (InvalidActionException e)
+		{
+			logger.error("An error occurred when invoking an action:" + e.getMessage(), e);
+			return INVALID_ACTION;
+		}
+		catch (IllegalStateException e)
 		{
 			logger.error("An error occurred when invoking an action:" + e.getMessage(), e);
 			return INVALID_ACTION;
@@ -520,6 +524,25 @@ public class ViewMyDesktopToolStartPageAction extends InfoGlueAbstractAction
 		this.getResponse().getWriter().println(sb.toString());
 		
 		return NONE;
+	}
+
+	public WorkflowVO getCurrentWorkflow() throws SystemException
+	{
+		String activeWorkflowId = getRequest().getParameter("workflowId");
+
+		populateActiveWorkflowVOList();
+
+		List currentWorkflowVOList = workflowVOList;
+		Iterator activeWorkflowVOListIterator = currentWorkflowVOList.iterator();
+		while(activeWorkflowVOListIterator.hasNext())
+		{
+			WorkflowVO workflowVO = (WorkflowVO)activeWorkflowVOListIterator.next();
+			if(activeWorkflowId.equals(workflowVO.getId().toString()))
+			{
+				return workflowVO;
+			}
+		}
+		return null;
 	}
 
 }
