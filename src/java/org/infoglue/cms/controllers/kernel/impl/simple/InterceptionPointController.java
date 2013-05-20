@@ -123,7 +123,9 @@ public class InterceptionPointController extends BaseController
 		systemInterceptionPoints.put("ComponentEditor.ViewSource", new InterceptionPointVO("ComponentEditor", "ComponentEditor.ViewSource", "This interception point limits who can see the view source menu in edit on sight", false));
 		systemInterceptionPoints.put("ComponentEditor.CreateSubpage", new InterceptionPointVO("ComponentEditor", "ComponentEditor.CreateSubpage", "This interception point limits who can see the create subpage menu in edit on sight", false));
 		systemInterceptionPoints.put("ComponentEditor.EditPageMetadata", new InterceptionPointVO("ComponentEditor", "ComponentEditor.EditPageMetadata", "This interception point limits who can see the edit page meta info menu in edit on sight", false));
-		
+		systemInterceptionPoints.put("ComponentEditor.EditHtml", new InterceptionPointVO("ComponentEditor", "ComponentEditor.EditHtml", "This interception point limits who can see the edit text menu menu in edit on sight", false));
+		systemInterceptionPoints.put("ComponentEditor.EditInlineHtml", new InterceptionPointVO("ComponentEditor", "ComponentEditor.EditInlineHtml", "This interception point limits who can see the edit text in page menu in edit on sight", false));
+
 		systemInterceptionPoints.put("ComponentEditor.NotifyUserOfPage", new InterceptionPointVO("ComponentEditor", "ComponentEditor.NotifyUserOfPage", "This interception point limits who can see the notify user menu in edit on sight", false));
 		systemInterceptionPoints.put("ComponentEditor.ContentNotifications", new InterceptionPointVO("ComponentEditor", "ComponentEditor.ContentNotifications", "This interception point limits who can see the content notification info menu in edit on sight", false));
 		systemInterceptionPoints.put("ComponentEditor.PageNotifications", new InterceptionPointVO("ComponentEditor", "ComponentEditor.PageNotifications", "This interception point limits who can see the page notification menu in edit on sight", false));

@@ -31,6 +31,7 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.log4j.Logger;
+import org.infoglue.cms.controllers.kernel.impl.simple.AccessRightController;
 import org.infoglue.cms.entities.content.ContentVO;
 import org.infoglue.cms.entities.management.ContentTypeAttribute;
 import org.infoglue.cms.entities.management.ContentTypeDefinitionVO;
@@ -114,7 +115,18 @@ public class EditOnSiteBasicTemplateController extends BasicTemplateController
             setContentItemParametersJavascript.append( requestDelim ).append( "attributeName=" ).append( attributeName );
             setContentItemParametersJavascript.append( requestDelim ).append( "forceWorkingChange=true" );
             setContentItemParametersJavascript.append( "#" + attributeName + "Anchor');" );
-            
+
+            boolean hasEditInlineHtmlAccess = false;
+            try
+			{
+				hasEditInlineHtmlAccess 	= AccessRightController.getController().getIsPrincipalAuthorized(getDatabase(), getPrincipal(), "ComponentEditor.EditInlineHtml", "");
+			}
+			catch (SystemException ex)
+			{
+				logger.error("Failed to get access status will set to false. Error message: " + ex.getMessage());
+				logger.warn("Failed to get access status will set to false.", ex);
+			}
+
             StringBuffer decoratedAttributeValue = new StringBuffer();
             decoratedAttributeValue.append("<span class=\"" + className + " attribute" + contentId + "\" id=\"attribute" + contentId + attributeName + "\" oncontextmenu=\"" + setContentItemParametersJavascript + "\">" + attributeValue + "</span>");
             decoratedAttributeValue.append("<script type=\"text/javascript\">" +
@@ -124,8 +136,7 @@ public class EditOnSiteBasicTemplateController extends BasicTemplateController
             		"editOnSightAttributeNames[\"attribute" + contentId + attributeName + "_WYSIWYGToolbar\"]=\"" + WYSIWYGToolbar + "\";" +
             		"editOnSightAttributeNames[\"attribute" + contentId + attributeName + "_WYSIWYGExtraConfig\"]=\"" + WYSIWYGExtraConfig + "\";" +
             		"var element=$(\"#attribute" + contentId + attributeName + "\");" +
-            		"element.dblclick(function(){editInline(" + this.getSiteNode().getRepositoryId() + "," + contentId + "," + languageId + ",true);" +
-            		"});" +
+            		(hasEditInlineHtmlAccess ? "element.dblclick(function(){editInline(" + this.getSiteNode().getRepositoryId() + "," + contentId + "," + languageId + ",true);});" : "") +
             		"</script>");
             
             /*
