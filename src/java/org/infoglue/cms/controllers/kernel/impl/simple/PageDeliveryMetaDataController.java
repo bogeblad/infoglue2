@@ -55,6 +55,7 @@ import org.infoglue.cms.entities.management.impl.simple.RepositoryLanguageImpl;
 import org.infoglue.cms.exception.Bug;
 import org.infoglue.cms.exception.ConstraintException;
 import org.infoglue.cms.exception.SystemException;
+import org.infoglue.cms.util.CmsPropertyHandler;
 import org.infoglue.cms.util.ConstraintExceptionBuffer;
 import org.infoglue.deliver.util.CacheController;
 
@@ -277,23 +278,27 @@ public class PageDeliveryMetaDataController extends BaseController
 		//System.out.println("siteNodeId:" + siteNodeId);
 		//System.out.println("contentId:" + contentId);
 		
+		String selectiveCacheUpdateNotApplicableColumnName = "selectiveCacheUpdateNotApplicable";
+		if(CmsPropertyHandler.getUseShortTableNames().equals("true"))
+			selectiveCacheUpdateNotApplicableColumnName = "selectiveCacheUpdateNotApplicable";
+
 		try
 		{
 			String sql = null;
 			Integer id = null;
 			if(siteNodeId != null)
 			{
-				sql = "DELETE FROM cmPageDeliveryMetaData WHERE selectiveCacheUpdateNotApplicable = 1 OR pageDeliveryMetaDataId IN (SELECT distinct pageDeliveryMetaDataId FROM cmPageDeliveryMetaDataEntity WHERE siteNodeId = ?)";
+				sql = "DELETE FROM cmPageDeliveryMetaData WHERE " + selectiveCacheUpdateNotApplicableColumnName + " = 1 OR pageDeliveryMetaDataId IN (SELECT distinct pageDeliveryMetaDataId FROM cmPageDeliveryMetaDataEntity WHERE siteNodeId = ?)";
 				id = siteNodeId;
 			}
 			if(siteNodeId == null && contentId != null)
 			{
-				sql = "DELETE FROM cmPageDeliveryMetaData WHERE selectiveCacheUpdateNotApplicable = 1 OR  pageDeliveryMetaDataId IN (SELECT distinct pageDeliveryMetaDataId FROM cmPageDeliveryMetaDataEntity WHERE contentId = ?)";
+				sql = "DELETE FROM cmPageDeliveryMetaData WHERE " + selectiveCacheUpdateNotApplicableColumnName + " = 1 OR  pageDeliveryMetaDataId IN (SELECT distinct pageDeliveryMetaDataId FROM cmPageDeliveryMetaDataEntity WHERE contentId = ?)";
 				id = contentId;
 			}
 			if(siteNodeId != null && contentId != null)
 			{
-				sql = "DELETE FROM cmPageDeliveryMetaData WHERE selectiveCacheUpdateNotApplicable = 1 OR pageDeliveryMetaDataId IN (SELECT distinct pageDeliveryMetaDataId FROM cmPageDeliveryMetaDataEntity WHERE siteNodeId = ? AND contentId = ?)";
+				sql = "DELETE FROM cmPageDeliveryMetaData WHERE " + selectiveCacheUpdateNotApplicableColumnName + " = 1 OR pageDeliveryMetaDataId IN (SELECT distinct pageDeliveryMetaDataId FROM cmPageDeliveryMetaDataEntity WHERE siteNodeId = ? AND contentId = ?)";
 				id = siteNodeId;
 			}
 			//System.out.println("sql: " + sql);
