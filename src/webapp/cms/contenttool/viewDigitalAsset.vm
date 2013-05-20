@@ -226,8 +226,15 @@
 			// Show / hide list
 			var tt = document.getElementById("tt");
 			var list = document.getElementById("dd");
-			var val = list.options[list.selectedIndex].value
-			tt.value=val;
+			if (list.selectedIndex !== -1)
+			{
+				var val = list.options[list.selectedIndex].value
+				tt.value=val;
+			}
+			else
+			{
+				tt.value = '';
+			}
 			list.style.visibility = "hidden";
 			// alert(val);
 			//alert("New assetKey:" + val + ":" + assetSizeArray["" + val + ""]);
@@ -413,13 +420,16 @@
 					  <table border="0" cellspacing="0" id="cboBoxTable">
 					    <tr>
 					      <td width="10" style="border: 1px solid black;">
-					  		<input type="text" name="digitalAssetKey" id="tt" size="20" onfocus="ddHide();" onChange="keyChanged();" style="border: 1px solid #FFFFFF" #if($definedAssetKeys.size() > 0)value="$definedAssetKeys.get(0).assetKey" #end></td>
+					  		<input type="text" name="digitalAssetKey" id="tt" size="20" onfocus="ddHide();" onChange="keyChanged();" style="border: 1px solid #FFFFFF" #if($definedAssetKeys.size() > 0 && !$blankAssetKeyAsDefault)value="$definedAssetKeys.get(0).assetKey" #end></td>
 					      	<td onClick="ddClick();" style="border: 1px solid black;">
 					      	<img border="0" src="images/combodown.gif" width="15" height="20">
 					      </td>
 					    </tr>
 					  </table>
 					  <select size="5" name="dd" id="dd" style="border:0px solid #FFFFFF; width: 163px; height: 100; visibility: hidden; z-index: 100; position: absolute;" onClick="ddListClick();">
+						#if( $blankAssetKeyAsDefault )
+							<option value=""></option>
+						#end
 						#foreach($assetKeyDefinition in $definedAssetKeys)
 							<option value="$assetKeyDefinition.assetKey">$assetKeyDefinition.assetKey</option>
 						#end
