@@ -498,24 +498,45 @@ function showComponentMenu(event, element, compId, anInsertUrl, anDeleteUrl, anC
 	var editInlineDivElement = document.getElementById("editInlineDiv" + compId);
 	var subscribeContentDivElement = document.getElementById("subscribeContent" + compId);
 
+	var editDivDefined = editDivElement !== null;
+	var editInlineDivDefined = editInlineDivElement !== null;
+
 	if(!editUrl || editUrl == "")
 	{
-		editDivElement.style.display = "none";
-		editInlineDivElement.style.display = "none";
+		if (editDivDefined)
+		{
+			editDivElement.style.display = "none";
+		}
+		if (editInlineDivDefined)
+		{
+			editInlineDivElement.style.display = "none";
+		}
 		subscribeContentDivElement.style.display = "none";
 	}
 	else
 	{
-		editDivElement.style.display = "block";
-		editInlineDivElement.style.display = "block";
+		if (editDivDefined)
+		{
+			editDivElement.style.display = "block";
+		}
+		if (editInlineDivDefined)
+		{
+			editInlineDivElement.style.display = "block";
+		}
 		//alert("Registering click to:" + editUrl);
 		var anEditUrl = editUrl;
-		$(editDivElement).click(function () { edit(anEditUrl); });
-		$(editInlineDivElement).click(function () { editInlineSimple(selectedRepositoryId); });
+		if (editDivDefined)
+		{
+			$(editDivElement).click(function () { edit(anEditUrl); });
+		}
+		if (editInlineDivDefined)
+		{
+			$(editInlineDivElement).click(function () { editInlineSimple(selectedRepositoryId); });
+		}
 		var subscriptionUrl = componentEditorUrl + "Subscriptions!input.action?interceptionPointCategory=Content&entityName=org.infoglue.cms.entities.content.Content&entityId=" + selectedContentId + "&extraParameters=" + selectedContentId + "&returnAddress=" + componentEditorUrl + "ViewInlineOperationMessages.action";
 		$(subscribeContentDivElement).click(function () { openInlineDiv(subscriptionUrl, 700, 750, true); });
 	}
-		
+
 	var componentEditorInNewWindowDivCompElement = document.getElementById("componentEditorInNewWindowDiv" + compId);
 	if(window.parent.name == "PageComponents" && componentEditorInNewWindowDivCompElement)
 		componentEditorInNewWindowDivCompElement.style.display = "none";
