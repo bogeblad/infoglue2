@@ -616,6 +616,9 @@ public class CmsPropertyHandler
 	
 	public static String getOperatingMode()
 	{
+		//if(true)
+		//	return "3";
+		
 		if(operatingMode == null)
 			return getProperty("operatingMode");
 		else

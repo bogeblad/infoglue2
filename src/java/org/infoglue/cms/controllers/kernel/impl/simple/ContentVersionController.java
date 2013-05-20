@@ -3432,6 +3432,7 @@ public class ContentVersionController extends BaseController
 		}
     }
 
+	
 	public SmallestContentVersionVO getLatestContentVersionVO(Set<String> contentVersionIds, Database db) throws SystemException, Bug, Exception
     {
 		Timer t = new Timer();
@@ -3444,12 +3445,12 @@ public class ContentVersionController extends BaseController
 	    for(int i=0; i<contentVersionIds.size(); i++)
 	    	variables.append("$" + (i+1) + (i+1!=contentVersionIds.size() ? "," : ""));
 		
-	    System.out.println("variables:" + variables);
+	    //System.out.println("variables:" + variables);
 	    //System.out.println("variables:" + variables);
 
-	    String SQL = "select cv.contentVersionId, cv.stateId, cv.modifiedDateTime, cv.versionComment, cv.isCheckedOut, cv.isActive, cv.contentId, cv.languageId, cv.versionModifier FROM cmContentVersion cv where cv.contentVersionId IN (" + variables + ") ORDER BY cv.modifiedDateTime DESC";
+	    String SQL = "select cv.contentVersionId, cv.stateId, cv.modifiedDateTime, cv.versionComment, cv.isCheckedOut, cv.isActive, cv.contentId, cv.languageId, cv.versionModifier FROM cmContentVersion cv where cv.contentVersionId IN (" + variables + ") AND cv.stateId >= " + CmsPropertyHandler.getOperatingMode() + " ORDER BY cv.modifiedDateTime DESC";
 	    if(CmsPropertyHandler.getUseShortTableNames() != null && CmsPropertyHandler.getUseShortTableNames().equalsIgnoreCase("true"))
-	    	SQL = "select cv.contVerId, cv.stateId, cv.modifiedDateTime, cv.verComment, cv.isCheckedOut, cv.isActive, cv.contId, cv.languageId, cv.versionModifier FROM cmContVer cv where cv.contVerId IN (" + variables + ") ORDER BY cv.modifiedDateTime DESC";
+	    	SQL = "select cv.contVerId, cv.stateId, cv.modifiedDateTime, cv.verComment, cv.isCheckedOut, cv.isActive, cv.contId, cv.languageId, cv.versionModifier FROM cmContVer cv where cv.contVerId IN (" + variables + ") AND cv.stateId >= " + CmsPropertyHandler.getOperatingMode() + " ORDER BY cv.modifiedDateTime DESC";
 	    
 	    //System.out.println("SQL:" + SQL);
 	    
@@ -3473,7 +3474,7 @@ public class ContentVersionController extends BaseController
 		results.close();
 		oql.close();
 		
-		t.printElapsedTime("ASSDDewffwegfwefwe");
+		t.printElapsedTime("getLatestContentVersion from ids took", 20);
 		return result;
 	}
 	
@@ -3489,12 +3490,12 @@ public class ContentVersionController extends BaseController
 	    for(int i=0; i<contentIds.size(); i++)
 	    	variables.append("$" + (i+1) + (i+1!=contentIds.size() ? "," : ""));
 		
-	    System.out.println("variables:" + variables);
+	    //System.out.println("variables:" + variables);
 	    //System.out.println("variables:" + variables);
 
-	    String SQL = "select cv.contentVersionId, cv.stateId, cv.modifiedDateTime, cv.versionComment, cv.isCheckedOut, cv.isActive, cv.contentId, cv.languageId, cv.versionModifier FROM cmContentVersion cv where cv.contentId IN (" + variables + ") ORDER BY cv.modifiedDateTime DESC";
+	    String SQL = "select cv.contentVersionId, cv.stateId, cv.modifiedDateTime, cv.versionComment, cv.isCheckedOut, cv.isActive, cv.contentId, cv.languageId, cv.versionModifier FROM cmContentVersion cv where cv.contentId IN (" + variables + ") AND cv.stateId >= " + CmsPropertyHandler.getOperatingMode() + " ORDER BY cv.modifiedDateTime DESC";
 	    if(CmsPropertyHandler.getUseShortTableNames() != null && CmsPropertyHandler.getUseShortTableNames().equalsIgnoreCase("true"))
-	    	SQL = "select cv.contVerId, cv.stateId, cv.modifiedDateTime, cv.verComment, cv.isCheckedOut, cv.isActive, cv.contId, cv.languageId, cv.versionModifier FROM cmContVer cv where cv.contId IN (" + variables + ") ORDER BY cv.modifiedDateTime DESC";
+	    	SQL = "select cv.contVerId, cv.stateId, cv.modifiedDateTime, cv.verComment, cv.isCheckedOut, cv.isActive, cv.contId, cv.languageId, cv.versionModifier FROM cmContVer cv where cv.contId IN (" + variables + ") AND cv.stateId >= " + CmsPropertyHandler.getOperatingMode() + " ORDER BY cv.modifiedDateTime DESC";
 	    
 	    //System.out.println("SQL:" + SQL);
 	    
@@ -3518,7 +3519,7 @@ public class ContentVersionController extends BaseController
 		results.close();
 		oql.close();
 		
-		t.printElapsedTime("ASSDDewffwegfwefwe");
+		t.printElapsedTime("getLatestContentVersion from content ids took", 20);
 		return result;
 	}
 }

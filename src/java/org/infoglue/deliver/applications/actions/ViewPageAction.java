@@ -186,7 +186,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
         //TODO - Can this be removed perhaps
         while(CmsPropertyHandler.getActuallyBlockOnBlockRequests() && RequestAnalyser.getRequestAnalyser().getBlockRequests())
         {
-        	//System.out.println("Queing up requests as cache eviction are taking place..");
+        	//logger.info("Queing up requests as cache eviction are taking place..");
         	Thread.sleep(10);
         }
         
@@ -194,7 +194,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
         {
 	        Integer maxActiveRequests = new Integer(CmsPropertyHandler.getMaxActiveRequests());
 	        Integer maxRequestTime = new Integer(CmsPropertyHandler.getMaxRequestTime());
-        	//System.out.println("maxActiveRequests:" + maxActiveRequests + "-" + maxRequestTime);
+        	//logger.info("maxActiveRequests:" + maxActiveRequests + "-" + maxRequestTime);
 
 	    	while(CmsPropertyHandler.getUseHighLoadLimiter().equalsIgnoreCase("true") && RequestAnalyser.getRequestAnalyser().getNumberOfActiveRequests() > maxActiveRequests.intValue() && (lastRequestProcessingTime > maxRequestTime.intValue() || maxRequestTime.intValue() < 1))
 	    	{
@@ -202,7 +202,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
 	        		logger.info("Queing up...:" + RequestAnalyser.getRequestAnalyser().getNumberOfActiveRequests() + "(" + RequestAnalyser.getRequestAnalyser().getNumberOfCurrentRequests() + ") - " + lastRequestProcessingTime);
 	        	
 	            int sleepTime = random.nextInt(300);
-	            //System.out.println("Queing up...:" + RequestAnalyser.getRequestAnalyser().getNumberOfActiveRequests() + "(" + RequestAnalyser.getRequestAnalyser().getNumberOfCurrentRequests() + ") - " + lastRequestProcessingTime + " for " + sleepTime + " ms");
+	            //logger.info("Queing up...:" + RequestAnalyser.getRequestAnalyser().getNumberOfActiveRequests() + "(" + RequestAnalyser.getRequestAnalyser().getNumberOfCurrentRequests() + ") - " + lastRequestProcessingTime + " for " + sleepTime + " ms");
 	            
 	        	Thread.sleep(sleepTime);
 	    	}
@@ -443,26 +443,26 @@ public class ViewPageAction extends InfoGlueAbstractAction
 				try
 				{
 					boolean isIfModifiedLogic = getIsIfModifiedLogicValid(deliveryContext, templateController.getPrincipal(), true); 
-					System.out.println("isIfModifiedLogic:" + isIfModifiedLogic);
+					logger.info("isIfModifiedLogic:" + isIfModifiedLogic);
 					if(isIfModifiedLogic)
 					{
 						String ifModifiedSince = this.getRequest().getHeader("If-Modified-Since");
-						pageTimer.printElapsedTime("ifModifiedSince:" + ifModifiedSince);
+						logger.info("ifModifiedSince:" + ifModifiedSince);
 						//System.out.println("pageKey:" + pageKey);
 						if(ifModifiedSince != null && !ifModifiedSince.equals(""))
 						{
 							pdmd = PageDeliveryMetaDataController.getController().getPageDeliveryMetaDataVO(dbWrapper.getDatabase(), this.siteNodeId, this.languageId, this.contentId);
-							pageTimer.printElapsedTime("pdmd A:" + (pdmd == null ? "null" : pdmd.getId()));
+							logger.info("pdmd A:" + (pdmd == null ? "null" : pdmd.getId()));
 							if(pdmd != null && pdmd.getLastModifiedDateTime() != null)
 							{
 								Date ifModifiedSinceDate = HTTP_DATE_FORMAT.parse( ifModifiedSince );
-								System.out.println("pdmd B:" + pdmd.getId() + ":" + pdmd.getLastModifiedDateTime());
-								System.out.println("*************\nCompares:" + pdmd.getLastModifiedDateTime() + "=" + ifModifiedSinceDate);
+								logger.info("pdmd B:" + pdmd.getId() + ":" + pdmd.getLastModifiedDateTime());
+								logger.info("*************\nCompares:" + pdmd.getLastModifiedDateTime() + "=" + ifModifiedSinceDate);
 								if(ifModifiedSinceDate.getTime() >= pdmd.getLastModifiedDateTime().getTime() - 1000)
 								{
-									System.out.println("Returning NOT_MODIFIED");
+									logger.info("Returning NOT_MODIFIED");
 									this.getResponse().setStatus( HttpServletResponse.SC_NOT_MODIFIED );
-									pageTimer.printElapsedTime("Delivered NOT MODIFIED IN ");
+									pageTimer.printElapsedTime("Delivered NOT MODIFIED IN", 50);
 									skipRender = true;
 									return NONE;
 								}
@@ -475,7 +475,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
 					e.printStackTrace();
 				}
 				
-				System.out.println("skipRender:" + skipRender);
+				logger.info("skipRender:" + skipRender);
 				if(!skipRender)
 				{
 					SiteNodeTypeDefinitionVO siteNodeTypeDefinitionVO = getSiteNodeTypeDefinition(this.siteNodeId, dbWrapper.getDatabase());
@@ -487,22 +487,22 @@ public class ViewPageAction extends InfoGlueAbstractAction
 				        pageInvoker.deliverPage();
 
 				        boolean isCachedResponse = deliveryContext.getIsCachedResponse();
-				        System.out.println("isCachedResponse:" + isCachedResponse);
+				        logger.info("isCachedResponse:" + isCachedResponse);
 				        
 						boolean isIfModifiedLogic = getIsIfModifiedLogicValid(deliveryContext, templateController.getPrincipal(), false); 
-						System.out.println("isIfModifiedLogic 2:" + isIfModifiedLogic);
-						System.out.println("deliveryContext.getLastModifiedDateTime():" + deliveryContext.getLastModifiedDateTime());
+						logger.info("isIfModifiedLogic 2:" + isIfModifiedLogic);
+						logger.info("deliveryContext.getLastModifiedDateTime():" + deliveryContext.getLastModifiedDateTime());
 						if(isCachedResponse && pdmd == null && isIfModifiedLogic)
 							pdmd = PageDeliveryMetaDataController.getController().getPageDeliveryMetaDataVO(dbWrapper.getDatabase(), this.siteNodeId, this.languageId, this.contentId);
 
 						
 						if(pdmd != null)
-							System.out.println("pdmd():" + pdmd.getLastModifiedDateTime());
+							logger.info("pdmd():" + pdmd.getLastModifiedDateTime());
 
 						if(isIfModifiedLogic && (!isCachedResponse || pdmd == null/* || deliveryContext.getLastModifiedDateTime().after(pdmd.getLastModifiedDateTime())*/))
 						{
 							Timer t2 = new Timer();
-							System.out.println("We should register the last modified date now. Add it to the thread which registers it: " + deliveryContext.getLastModifiedDateTime() + ":" + deliveryContext.hashCode());
+							logger.info("We should register the last modified date now. Add it to the thread which registers it: " + deliveryContext.getLastModifiedDateTime() + ":" + deliveryContext.hashCode());
 							try
 							{
 								PageDeliveryMetaDataVO pageDeliveryMetaDataVO = new PageDeliveryMetaDataVO();
@@ -548,7 +548,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
 								}
 
 								String allUsedEntitiesAsString = StringUtils.join(allUsedEntitiesFilteredCopy.iterator(), "|");
-								System.out.println("allUsedEntitiesAsString:" + allUsedEntitiesAsString);
+								logger.info("allUsedEntitiesAsString:" + allUsedEntitiesAsString);
 								//System.out.println("allUsedEntitiesAsString:" + allUsedEntitiesAsString.length());
 								
 								pageDeliveryMetaDataVO.setSiteNodeId(deliveryContext.getSiteNodeId());
@@ -562,14 +562,14 @@ public class ViewPageAction extends InfoGlueAbstractAction
 								PageDeliveryMetaDataController.getController().create(dbWrapper.getDatabase(), pageDeliveryMetaDataVO, entitiesCollection);
 								
 						    	String key = "" + pageDeliveryMetaDataVO.getSiteNodeId() + "_" + pageDeliveryMetaDataVO.getLanguageId() + "_" + pageDeliveryMetaDataVO.getContentId();
-						    	System.out.println("key on store:" + key);
+						    	logger.info("key on store:" + key);
 								CacheController.cacheObjectInAdvancedCache("pageDeliveryMetaDataCache", key, pageDeliveryMetaDataVO);
 							}
 							catch (Exception e) 
 							{
 								logger.error("Error storing page meta data: " + e.getMessage(), e);
 							}
-							t2.printElapsedTime("AAAAAAAAAAAAAAAAA");
+							t2.printElapsedTime("AAAAAAAAAAAAAAAAA",20);
 						}
 						
 						request.setAttribute("progress", "after pageInvoker was called");
@@ -797,7 +797,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
     	    			   !parameterName.toString().equalsIgnoreCase("originalRequestURI") && 
     	    			   !parameterName.toString().equalsIgnoreCase("originalQueryString"))
     			{
-    				System.out.println("parameterName:" + parameterName);
+    				logger.info("parameterName:" + parameterName);
     				return false;
     			}
     		}
