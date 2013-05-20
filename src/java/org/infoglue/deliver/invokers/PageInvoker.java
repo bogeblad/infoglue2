@@ -224,6 +224,8 @@ public abstract class PageInvoker
 			    	logger.info("No page file name in memory cache:" + this.getDeliveryContext().getPageKey());
 			    cachedExtraData = (Map)CacheController.getCachedObjectFromAdvancedCache(pageCacheExtraName, this.getDeliveryContext().getPageKey(), pageCacheTimeout.intValue());
 
+			    this.getDeliveryContext().setPageCacheTimeout(pageCacheTimeout.intValue());
+			    
 			    if(this.pageString == null)
 			    {
 			    	invokePage();

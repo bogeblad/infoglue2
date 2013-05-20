@@ -283,17 +283,17 @@ public class PageDeliveryMetaDataController extends BaseController
 			Integer id = null;
 			if(siteNodeId != null)
 			{
-				sql = "DELETE FROM cmPageDeliveryMetaData WHERE pageDeliveryMetaDataId IN (SELECT distinct pageDeliveryMetaDataId FROM cmPageDeliveryMetaDataEntity WHERE siteNodeId = ?)";
+				sql = "DELETE FROM cmPageDeliveryMetaData WHERE selectiveCacheUpdateNotApplicable = 1 OR pageDeliveryMetaDataId IN (SELECT distinct pageDeliveryMetaDataId FROM cmPageDeliveryMetaDataEntity WHERE siteNodeId = ?)";
 				id = siteNodeId;
 			}
 			if(siteNodeId == null && contentId != null)
 			{
-				sql = "DELETE FROM cmPageDeliveryMetaData WHERE pageDeliveryMetaDataId IN (SELECT distinct pageDeliveryMetaDataId FROM cmPageDeliveryMetaDataEntity WHERE contentId = ?)";
+				sql = "DELETE FROM cmPageDeliveryMetaData WHERE selectiveCacheUpdateNotApplicable = 1 OR  pageDeliveryMetaDataId IN (SELECT distinct pageDeliveryMetaDataId FROM cmPageDeliveryMetaDataEntity WHERE contentId = ?)";
 				id = contentId;
 			}
 			if(siteNodeId != null && contentId != null)
 			{
-				sql = "DELETE FROM cmPageDeliveryMetaData WHERE pageDeliveryMetaDataId IN (SELECT distinct pageDeliveryMetaDataId FROM cmPageDeliveryMetaDataEntity WHERE siteNodeId = ? AND contentId = ?)";
+				sql = "DELETE FROM cmPageDeliveryMetaData WHERE selectiveCacheUpdateNotApplicable = 1 OR pageDeliveryMetaDataId IN (SELECT distinct pageDeliveryMetaDataId FROM cmPageDeliveryMetaDataEntity WHERE siteNodeId = ? AND contentId = ?)";
 				id = siteNodeId;
 			}
 			//System.out.println("sql: " + sql);

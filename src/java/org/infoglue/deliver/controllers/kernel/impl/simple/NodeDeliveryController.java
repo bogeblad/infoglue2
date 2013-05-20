@@ -2713,7 +2713,8 @@ public class NodeDeliveryController extends BaseDeliveryController
 	    	
 	    	Integer parentSiteNodeId = null;
 	    	siteNodeVOList = new ArrayList<SiteNodeVO>();
-			CacheController.cacheObjectInAdvancedCache("childPagesCache", ""+siteNodeId, siteNodeVOList, new String[] {CacheController.getPooledString(3, siteNodeId)}, true);
+			if(CmsPropertyHandler.getOperatingMode().equals("3"))
+				CacheController.cacheObjectInAdvancedCache("childPagesCache", ""+siteNodeId, siteNodeVOList, new String[] {CacheController.getPooledString(3, siteNodeId)}, true);
 			//populatedSiteNodeVOList.put(siteNodeId, siteNodeVOList);
 
 			String groupKey1 = null;

@@ -30,6 +30,7 @@ import java.net.URLEncoder;
 import java.security.Principal;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
@@ -455,16 +456,24 @@ public class ViewPageAction extends InfoGlueAbstractAction
 							logger.info("pdmd A:" + (pdmd == null ? "null" : pdmd.getId()));
 							if(pdmd != null && pdmd.getLastModifiedDateTime() != null)
 							{
-								Date ifModifiedSinceDate = HTTP_DATE_FORMAT.parse( ifModifiedSince );
-								logger.info("pdmd B:" + pdmd.getId() + ":" + pdmd.getLastModifiedDateTime());
-								logger.info("*************\nCompares:" + pdmd.getLastModifiedDateTime() + "=" + ifModifiedSinceDate);
-								if(ifModifiedSinceDate.getTime() >= pdmd.getLastModifiedDateTime().getTime() - 1000)
+								logger.info("pdmd getLastModifiedTimeout:" + pdmd.getLastModifiedTimeout());
+								logger.info("System.currentTimeMillis:" + System.currentTimeMillis());
+								long diff = System.currentTimeMillis() - (pdmd.getLastModifiedTimeout() != null ? pdmd.getLastModifiedTimeout().getTime() : 0);
+								logger.info("diff:" + diff);
+								if(diff < 0 || pdmd.getLastModifiedTimeout() == null)
 								{
-									logger.info("Returning NOT_MODIFIED");
-									this.getResponse().setStatus( HttpServletResponse.SC_NOT_MODIFIED );
-									pageTimer.printElapsedTime("Delivered NOT MODIFIED IN", 50);
-									skipRender = true;
-									return NONE;
+									Date ifModifiedSinceDate = HTTP_DATE_FORMAT.parse( ifModifiedSince );
+									logger.info("pdmd B:" + pdmd.getId() + ":" + pdmd.getLastModifiedDateTime());
+									logger.info("*************\nCompares:" + pdmd.getLastModifiedDateTime() + "=" + ifModifiedSinceDate);
+									logger.info("pdmd.getLastModifiedTimeout():" + pdmd.getLastModifiedTimeout());
+									if(ifModifiedSinceDate.getTime() >= pdmd.getLastModifiedDateTime().getTime() - 1000)
+									{
+										logger.info("Returning NOT_MODIFIED");
+										this.getResponse().setStatus( HttpServletResponse.SC_NOT_MODIFIED );
+										pageTimer.printElapsedTime("Delivered NOT MODIFIED IN", 50);
+										skipRender = true;
+										return NONE;
+									}
 								}
 							}
 						}
@@ -556,7 +565,17 @@ public class ViewPageAction extends InfoGlueAbstractAction
 								pageDeliveryMetaDataVO.setContentId(deliveryContext.getContentId());
 								pageDeliveryMetaDataVO.setLastModifiedDateTime(deliveryContext.getLastModifiedDateTime());
 								if(deliveryContext.getPageCacheTimeout() != null && deliveryContext.getPageCacheTimeout() > -1)
-									pageDeliveryMetaDataVO.setLastModifiedTimeout(deliveryContext.getPageCacheTimeout());
+								{
+									logger.info("deliveryContext.getPageCacheTimeout(): " + deliveryContext.getPageCacheTimeout());
+									logger.info("Setting page timeout: " + deliveryContext.getPageCacheTimeout()*1000);
+									logger.info("Current time: " + System.currentTimeMillis());
+									Calendar cal = Calendar.getInstance();
+									cal.add(Calendar.SECOND, deliveryContext.getPageCacheTimeout());
+									pageDeliveryMetaDataVO.setLastModifiedTimeout(cal.getTime());
+								}
+								else
+									logger.info("AAAAAAAAAAAAAAAAAAAAA: " + deliveryContext.getPageCacheTimeout());
+
 								pageDeliveryMetaDataVO.setUsedEntities(allUsedEntitiesAsString);
 								PageDeliveryMetaDataController.getController().deletePageDeliveryMetaData(dbWrapper.getDatabase(), pageDeliveryMetaDataVO.getSiteNodeId(), null);
 								PageDeliveryMetaDataController.getController().create(dbWrapper.getDatabase(), pageDeliveryMetaDataVO, entitiesCollection);
@@ -1803,7 +1822,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
 			    if(getHttpSession().getAttribute("ssoChecked") == null || getHttpSession().getAttribute("ssoChecked").equals(""))
 			    {
 					String forceIdentityCheck = RepositoryDeliveryController.getRepositoryDeliveryController().getExtraPropertyValue(this.repositoryId, "forceIdentityCheck");
-					if(this.principal == null || CmsPropertyHandler.getAnonymousUser().equalsIgnoreCase(this.principal.getName()))
+					if(this.principal == null || CmsPropertyHandler.getAnonymousUser().equalsIgnoreCase(this.principal.getName()) || getRequest().getParameter("recheckSSO") != null)
 					{
 						if(CmsPropertyHandler.getForceIdentityCheck().equalsIgnoreCase("true") || (forceIdentityCheck != null && forceIdentityCheck.equalsIgnoreCase("true")))
 						{
