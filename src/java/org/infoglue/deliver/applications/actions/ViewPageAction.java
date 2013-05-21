@@ -889,6 +889,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
 			logger.info("Ticket:" + getRequest().getParameter("ticket"));
 			logger.info("URI:" + URI);
 		}
+
 		if(getRequest().getMethod().equalsIgnoreCase("get") && getRequest().getParameter("ticket") != null && getRequest().getParameter("ticket").length() > 0)
 		{
 			String queryString = getOriginalQueryString();
@@ -898,6 +899,8 @@ public class ViewPageAction extends InfoGlueAbstractAction
 			String remainingQueryString = HttpUtilities.removeParameter(queryString, "ticket");
 			if(remainingQueryString.indexOf("noAccess=true") == -1)
 				remainingQueryString = HttpUtilities.removeParameter(remainingQueryString, "referer");
+
+			remainingQueryString = HttpUtilities.removeParameter(remainingQueryString, "recheckSSO");
 			
 			if(logger.isInfoEnabled())
 				logger.info("remainingQueryString:" + remainingQueryString);
@@ -1554,6 +1557,14 @@ public class ViewPageAction extends InfoGlueAbstractAction
 			
 			Principal principal = (Principal)this.getHttpSession().getAttribute("infogluePrincipal");
 			logger.info("principal:" + principal);
+
+			if(getRequest().getParameter("recheckSSO") != null)
+			{
+				principal = null;
+				this.getHttpSession().removeAttribute("infogluePrincipal");
+			    this.getHttpSession().removeAttribute("infoglueRemoteUser");
+			    this.getHttpSession().removeAttribute("cmsUserName");
+			}
 
 			if(principal != null && forceCmsUser && CmsPropertyHandler.getAnonymousUser().equalsIgnoreCase(principal.getName()))
 			{
