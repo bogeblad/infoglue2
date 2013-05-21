@@ -197,13 +197,13 @@ public class OptimizedImportController extends BaseController implements Runnabl
 					String toEncoding = CmsPropertyHandler.getUploadToEncoding();
 					if(toEncoding == null)
 						toEncoding = "utf-8";
-					
-					if(replacements.indexOf("�") == -1 && 
-					   replacements.indexOf("�") == -1 && 
-					   replacements.indexOf("�") == -1 && 
-					   replacements.indexOf("�") == -1 && 
-					   replacements.indexOf("�") == -1 && 
-					   replacements.indexOf("�") == -1)
+					// Looks for Swedish characters
+					if(replacements.indexOf("\u00E5") == -1 &&
+					   replacements.indexOf("\u00E4") == -1 &&
+					   replacements.indexOf("\u00F6") == -1 &&
+					   replacements.indexOf("\u00C5") == -1 &&
+					   replacements.indexOf("\u00C4") == -1 &&
+					   replacements.indexOf("\u00D6") == -1)
 					{
 						replacements = new String(replacements.getBytes(fromEncoding), toEncoding);
 					}
@@ -211,7 +211,9 @@ public class OptimizedImportController extends BaseController implements Runnabl
 			}
 			catch(Exception e)
 			{
-				e.printStackTrace();
+				logger.error("An error occured while fixing the encoding of the replacement string. Message: " + e.getMessage() + ". Type: " + e.getClass());
+				logger.warn("An error occured while fixing the encoding of the replacement string.", e);
+				throw e;
 			}
 			
 			Properties properties = new Properties();
@@ -229,8 +231,9 @@ public class OptimizedImportController extends BaseController implements Runnabl
 			}	
 			catch(Exception e)
 			{
-			    logger.error("Error loading properties from string. Reason:" + e.getMessage());
-				e.printStackTrace();
+				logger.error("An error occured while loading properties from string. Message: " + e.getMessage() + ". Type: " + e.getClass());
+				logger.warn("An error occured while loading properties from string.", e);
+				throw e;
 			}
 
 			logger.info("replaceMap:" + replaceMap);
@@ -262,7 +265,9 @@ public class OptimizedImportController extends BaseController implements Runnabl
 					db.rollback();
 				}
 				catch(Exception e2) { e2.printStackTrace(); }
-                logger.error("An error occurred when updating content version for content: " + e.getMessage(), e);					
+                logger.error("An error occurred when updating content version for content. Message " + e.getMessage() + ". Type: " + e.getClass());
+                logger.warn("An error occurred when updating content version for content: " + e.getMessage(), e);
+                throw e;
 			}
 			finally
 			{
@@ -419,6 +424,9 @@ public class OptimizedImportController extends BaseController implements Runnabl
 		catch (Exception e) 
 		{
 			dbStructure.rollback();
+			logger.error("An error occured when working with assets. Message: " + e.getMessage() + ". Type: " + e.getClass());
+			logger.warn("An error occured when working with assets.", e);
+			throw e;
 		}
 		finally
 		{
@@ -511,32 +519,35 @@ public class OptimizedImportController extends BaseController implements Runnabl
 				AccessRight accessRight = accessRightsIterator.next();
 	
 				InterceptionPoint interceptionPoint = InterceptionPointController.getController().getInterceptionPointWithName(accessRight.getInterceptionPointName(), dbAccessRight);
-				accessRight.setInterceptionPoint(interceptionPoint);
-				if(interceptionPoint.getName().indexOf("Content") > -1)
-					accessRight.setParameters((String)contentIdMap.get(accessRight.getParameters()));
-				else if(interceptionPoint.getName().indexOf("SiteNodeVersion") > -1)
-					accessRight.setParameters((String)siteNodeVersionIdMap.get(accessRight.getParameters()));
-				else if(interceptionPoint.getName().indexOf("SiteNode") > -1)
-					accessRight.setParameters((String)siteNodeIdMap.get(accessRight.getParameters()));
-				else if(interceptionPoint.getName().indexOf("Repository") > -1)
-					accessRight.setParameters(""+repositoryIdMap.get(accessRight.getParameters()));
-	
-				dbAccessRight.create(accessRight);
-	
-				Iterator accessRightRoleIterator = accessRight.getRoles().iterator();
-				while(accessRightRoleIterator.hasNext())
+				if (interceptionPoint != null)
 				{
-					AccessRightRole accessRightRole = (AccessRightRole)accessRightRoleIterator.next();
-					accessRightRole.setAccessRight(accessRight);
-					dbAccessRight.create(accessRightRole);
-				}
+					accessRight.setInterceptionPoint(interceptionPoint);
+					if(interceptionPoint.getName().indexOf("Content") > -1)
+						accessRight.setParameters((String)contentIdMap.get(accessRight.getParameters()));
+					else if(interceptionPoint.getName().indexOf("SiteNodeVersion") > -1)
+						accessRight.setParameters((String)siteNodeVersionIdMap.get(accessRight.getParameters()));
+					else if(interceptionPoint.getName().indexOf("SiteNode") > -1)
+						accessRight.setParameters((String)siteNodeIdMap.get(accessRight.getParameters()));
+					else if(interceptionPoint.getName().indexOf("Repository") > -1)
+						accessRight.setParameters(""+repositoryIdMap.get(accessRight.getParameters()));
 	
-				Iterator accessRightGroupIterator = accessRight.getGroups().iterator();
-				while(accessRightGroupIterator.hasNext())
-				{
-					AccessRightGroup accessRightGroup = (AccessRightGroup)accessRightGroupIterator.next();
-					accessRightGroup.setAccessRight(accessRight);
-					dbAccessRight.create(accessRightGroup);
+					dbAccessRight.create(accessRight);
+	
+					Iterator accessRightRoleIterator = accessRight.getRoles().iterator();
+					while(accessRightRoleIterator.hasNext())
+					{
+						AccessRightRole accessRightRole = (AccessRightRole)accessRightRoleIterator.next();
+						accessRightRole.setAccessRight(accessRight);
+						dbAccessRight.create(accessRightRole);
+					}
+	
+					Iterator accessRightGroupIterator = accessRight.getGroups().iterator();
+					while(accessRightGroupIterator.hasNext())
+					{
+						AccessRightGroup accessRightGroup = (AccessRightGroup)accessRightGroupIterator.next();
+						accessRightGroup.setAccessRight(accessRight);
+						dbAccessRight.create(accessRightGroup);
+					}
 				}
 			}
 	
@@ -545,6 +556,9 @@ public class OptimizedImportController extends BaseController implements Runnabl
 		catch (Exception e) 
 		{
 			dbAccessRight.rollback();
+			logger.error("An error occured when working with access rights. Message: " + e.getMessage() + ". Type: " + e.getClass());
+			logger.warn("An error occured when working with access rights.", e);
+			throw e;
 		}
 		finally
 		{
@@ -671,8 +685,10 @@ public class OptimizedImportController extends BaseController implements Runnabl
 			}
 			catch (Exception e) 
 			{
-				e.printStackTrace();
+				logger.error("An error occured while creating structure. Message: " + e.getMessage() + ". Type: " + e.getClass());
+				logger.warn("An error occured while creating structure.", e);
 				db.rollback();
+				throw e;
 			}
 			finally
 			{
@@ -809,8 +825,10 @@ public class OptimizedImportController extends BaseController implements Runnabl
 			}
 			catch (Exception e) 
 			{
-				e.printStackTrace();
+				logger.error("An error occured while creating contents. Message: " + e.getMessage() + ". Type: " + e.getClass());
+				logger.warn("An error occured while creating contents.", e);
 				db.rollback();
+				throw e;
 			}
 			finally
 			{
@@ -890,8 +908,9 @@ public class OptimizedImportController extends BaseController implements Runnabl
 		}
 		catch (Exception e) 
 		{
-			e.printStackTrace();
+			logger.error("An error occured when importing repository foundation. Message: " + e.getMessage() + ". Error type: " + e.getClass());
 			db.rollback();
+			throw e;
 		}
 		finally
 		{
@@ -937,10 +956,10 @@ public class OptimizedImportController extends BaseController implements Runnabl
 		}
 	}
 
-	private void importCategories(Collection categories, CategoryVO parentCategory, Map categoryIdMap, Database db) throws SystemException
+	private void importCategories(Collection<CategoryVO> categories, CategoryVO parentCategory, Map categoryIdMap, Database db) throws SystemException
 	{
 		logger.info("We want to create a list of categories if not existing under the parent category " + parentCategory);
-		Iterator categoryIterator = categories.iterator();
+		Iterator<CategoryVO> categoryIterator = categories.iterator();
 		while(categoryIterator.hasNext())
 		{
 			CategoryVO categoryVO = (CategoryVO)categoryIterator.next();
@@ -949,7 +968,6 @@ public class OptimizedImportController extends BaseController implements Runnabl
 			List<CategoryVO> existingCategories = null;
 			if(parentCategory != null)
 				existingCategories = CategoryController.getController().getActiveCategoryVOListByParent(parentCategory.getCategoryId(), db);
-				//existingCategories = CategoryController.getController().findByParent(parentCategory.getCategoryId(), db);
 			else
 				existingCategories = CategoryController.getController().findRootCategoryVOList(db);
 				
