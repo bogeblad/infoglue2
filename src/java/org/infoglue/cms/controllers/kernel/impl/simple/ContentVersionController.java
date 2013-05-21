@@ -3442,9 +3442,18 @@ public class ContentVersionController extends BaseController
 		SmallestContentVersionVO result = null;
 		
 		StringBuilder variables = new StringBuilder();
-	    for(int i=0; i<contentVersionIds.size(); i++)
-	    	variables.append("$" + (i+1) + (i+1!=contentVersionIds.size() ? "," : ""));
-		
+	    //for(int i=0; i<contentVersionIds.size(); i++)
+		int i = 0;
+	    for(String contentVersionId : contentVersionIds)
+	    {
+	    	if(contentVersionId.indexOf("contentVersion_") > -1)
+	    	{
+	    		if(variables.length() > 0)
+	    			variables.append(",");
+		    	variables.append("$" + (i+1));
+	    		i++;
+	    	}
+	    }
 	    //System.out.println("variables:" + variables);
 	    //System.out.println("variables:" + variables);
 
@@ -3460,8 +3469,11 @@ public class ContentVersionController extends BaseController
 	
 		for(String contentVersionId : contentVersionIds)
 		{
-			//System.out.println(contentVersionId.replaceAll("contentVersion_", ""));
-			oql.bind(contentVersionId.replaceAll("contentVersion_", ""));
+	    	if(contentVersionId.indexOf("contentVersion_") > -1)
+	    	{
+	    		logger.info("contentVersionId:" +contentVersionId);
+				oql.bind(contentVersionId.replaceAll("contentVersion_", "").replaceAll("_.*", ""));
+	    	}
 		}
 		
 		QueryResults results = oql.execute(Database.ReadOnly);
@@ -3487,9 +3499,18 @@ public class ContentVersionController extends BaseController
 		SmallestContentVersionVO result = null;
 		
 		StringBuilder variables = new StringBuilder();
-	    for(int i=0; i<contentIds.size(); i++)
-	    	variables.append("$" + (i+1) + (i+1!=contentIds.size() ? "," : ""));
-		
+		int i = 0;
+	    for(String contentId : contentIds)
+	    {
+	    	if(contentId.indexOf("content") > -1)
+	    	{
+	    		if(variables.length() > 0)
+	    			variables.append(",");
+		    	variables.append("$" + (i+1));
+		    	i++;
+	    	}
+	    }
+	    
 	    //System.out.println("variables:" + variables);
 	    //System.out.println("variables:" + variables);
 
@@ -3505,8 +3526,11 @@ public class ContentVersionController extends BaseController
 	
 		for(String contentId : contentIds)
 		{
-			//System.out.println(contentId.replaceAll("content_", "").replaceAll("_.*", ""));
-			oql.bind(contentId.replaceAll("content_", "").replaceAll("_.*", ""));
+    		logger.info("contentId:" +contentId);
+    		if(contentId.indexOf("content_") > -1)
+	    	{
+    			oql.bind(contentId.replaceAll("content_", "").replaceAll("_.*", ""));
+	    	}
 		}
 		
 		QueryResults results = oql.execute(Database.ReadOnly);
