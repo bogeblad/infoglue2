@@ -2183,7 +2183,6 @@
 	   	<field name="entities" type="org.infoglue.cms.entities.management.impl.simple.PageDeliveryMetaDataEntityImpl" collection="collection">
 		  <sql many-key="pageDeliveryMetaDataId"/>
 		</field>
-	    
 	</class>
   
     <class name="org.infoglue.cms.entities.management.impl.simple.PageDeliveryMetaDataEntityImpl" identity="pageDeliveryMetaDataEntityId" key-generator="SEQUENCE">

@@ -499,8 +499,8 @@ public class ViewPageAction extends InfoGlueAbstractAction
 				        logger.info("isCachedResponse:" + isCachedResponse);
 				        
 						boolean isIfModifiedLogic = getIsIfModifiedLogicValid(deliveryContext, templateController.getPrincipal(), false); 
-						logger.info("isIfModifiedLogic 2:" + isIfModifiedLogic);
-						logger.info("deliveryContext.getLastModifiedDateTime():" + deliveryContext.getLastModifiedDateTime());
+						System.out.println("isIfModifiedLogic 2:" + isIfModifiedLogic);
+						System.out.println("deliveryContext.getLastModifiedDateTime():" + deliveryContext.getLastModifiedDateTime());
 						if(isCachedResponse && pdmd == null && isIfModifiedLogic)
 							pdmd = PageDeliveryMetaDataController.getController().getPageDeliveryMetaDataVO(dbWrapper.getDatabase(), this.siteNodeId, this.languageId, this.contentId);
 
@@ -511,7 +511,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
 						if(isIfModifiedLogic && (!isCachedResponse || pdmd == null/* || deliveryContext.getLastModifiedDateTime().after(pdmd.getLastModifiedDateTime())*/))
 						{
 							Timer t2 = new Timer();
-							logger.info("We should register the last modified date now. Add it to the thread which registers it: " + deliveryContext.getLastModifiedDateTime() + ":" + deliveryContext.hashCode());
+							System.out.println("We should register the last modified date now. Add it to the thread which registers it: " + deliveryContext.getLastModifiedDateTime() + ":" + deliveryContext.hashCode());
 							try
 							{
 								PageDeliveryMetaDataVO pageDeliveryMetaDataVO = new PageDeliveryMetaDataVO();
@@ -573,12 +573,11 @@ public class ViewPageAction extends InfoGlueAbstractAction
 									cal.add(Calendar.SECOND, deliveryContext.getPageCacheTimeout());
 									pageDeliveryMetaDataVO.setLastModifiedTimeout(cal.getTime());
 								}
-								else
-									logger.info("AAAAAAAAAAAAAAAAAAAAA: " + deliveryContext.getPageCacheTimeout());
 
 								pageDeliveryMetaDataVO.setUsedEntities(allUsedEntitiesAsString);
 								PageDeliveryMetaDataController.getController().deletePageDeliveryMetaData(dbWrapper.getDatabase(), pageDeliveryMetaDataVO.getSiteNodeId(), null);
-								PageDeliveryMetaDataController.getController().create(dbWrapper.getDatabase(), pageDeliveryMetaDataVO, entitiesCollection);
+								logger.info("Creating:" + pageDeliveryMetaDataVO + ":" + entitiesCollection);
+								PageDeliveryMetaDataController.getController().create(pageDeliveryMetaDataVO, entitiesCollection);
 								
 						    	String key = "" + pageDeliveryMetaDataVO.getSiteNodeId() + "_" + pageDeliveryMetaDataVO.getLanguageId() + "_" + pageDeliveryMetaDataVO.getContentId();
 						    	logger.info("key on store:" + key);
@@ -792,7 +791,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
     	String method = deliverContext.getHttpServletRequest().getMethod().toLowerCase();
     	//int parameterSize = deliverContext.getHttpServletRequest().getParameterMap().size();
     	//System.out.println("Method:" + method);
-    	//System.out.println("parameterSize:" + parameterSize);
+    	//System.out.println("operating mode:" + CmsPropertyHandler.getOperatingMode().equals("3"));
     	
     	if(!method.equals("get") || !CmsPropertyHandler.getOperatingMode().equals("3"))
     	{
@@ -816,7 +815,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
     	    			   !parameterName.toString().equalsIgnoreCase("originalRequestURI") && 
     	    			   !parameterName.toString().equalsIgnoreCase("originalQueryString"))
     			{
-    				logger.info("parameterName:" + parameterName);
+    				//System.out.println("parameterName:" + parameterName);
     				return false;
     			}
     		}

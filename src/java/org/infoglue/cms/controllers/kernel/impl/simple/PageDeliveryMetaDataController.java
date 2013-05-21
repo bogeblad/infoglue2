@@ -40,6 +40,8 @@ import org.exolab.castor.jdo.engine.DatabaseImpl;
 import org.infoglue.cms.entities.content.ContentVersionVO;
 import org.infoglue.cms.entities.content.impl.simple.SmallContentVersionImpl;
 import org.infoglue.cms.entities.kernel.BaseEntityVO;
+import org.infoglue.cms.entities.management.FormEntry;
+import org.infoglue.cms.entities.management.FormEntryValue;
 import org.infoglue.cms.entities.management.Language;
 import org.infoglue.cms.entities.management.LanguageVO;
 import org.infoglue.cms.entities.management.PageDeliveryMetaData;
@@ -138,21 +140,51 @@ public class PageDeliveryMetaDataController extends BaseController
         return ent.getValueObject();
     }     
 
+	/**
+	 * This method removes a Language from the system and also cleans out all depending repositoryLanguages.
+	 */
+	
+    public PageDeliveryMetaDataVO create(PageDeliveryMetaDataVO pageDeliveryMetaDataVO, Collection<PageDeliveryMetaDataEntityVO> entitiesCollection) throws ConstraintException, SystemException, Exception
+    {
+    	PageDeliveryMetaDataVO result = null;
+    	
+		Database db = CastorDatabaseService.getDatabase();
+		
+		try
+		{
+			beginTransaction(db);
+
+			result = create(db, pageDeliveryMetaDataVO, entitiesCollection);
+			
+			commitTransaction(db);
+		}
+		catch(Exception e)
+		{
+			logger.error("An error occurred so we should not complete the transaction:" + e, e);
+			rollbackTransaction(db);
+			throw new SystemException(e.getMessage());
+		}
+		
+		return result;
+    } 
+
     public PageDeliveryMetaDataVO create(Database db, PageDeliveryMetaDataVO pageDeliveryMetaDataVO, Collection<PageDeliveryMetaDataEntityVO> entitiesCollection) throws ConstraintException, SystemException, Exception
     {
     	PageDeliveryMetaData ent = new PageDeliveryMetaDataImpl();
         ent.setValueObject(pageDeliveryMetaDataVO);
-        db.create(ent);
-        
+        ent = (PageDeliveryMetaData) createEntity(ent, db);
+
         for(PageDeliveryMetaDataEntityVO entity : entitiesCollection)
         {
         	PageDeliveryMetaDataEntity ent2 = new PageDeliveryMetaDataEntityImpl();
-        	ent2.setValueObject(entity);
         	ent2.setPageDeliveryMetaData(ent);
-            db.create(ent2);
+        	ent2.setValueObject(entity);
+        	ent2 = (PageDeliveryMetaDataEntity) createEntity(ent2, db);
         }
         ent.setEntities(entitiesCollection);
-        
+
+        //db.create(ent);
+                
         return ent.getValueObject();
     }    
     
@@ -217,15 +249,15 @@ public class PageDeliveryMetaDataController extends BaseController
 				
 				PreparedStatement psmt = conn.prepareStatement(sql);
 	    		psmt.setInt(1, id);
-				System.out.println("id: " + id);
+				//System.out.println("id: " + id);
 	    		if(siteNodeId != null && contentId != null)
 	    		{
 	    			psmt.setInt(2, contentId);
-					System.out.println("contentId: " + contentId);
+	    			//System.out.println("contentId: " + contentId);
 	    		}
 	    		
 				int result = psmt.executeUpdate();
-				System.out.println("result:" + result);
+				//System.out.println("result:" + result);
 
 				String sql2 = "DELETE FROM cmPageDeliveryMetaDataEntity WHERE pageDeliveryMetaDataId NOT IN (select pageDeliveryMetaDataId from cmPageDeliveryMetaData)";
 				if(CmsPropertyHandler.getUseShortTableNames().equals("true"))

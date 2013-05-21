@@ -851,6 +851,117 @@
 
 	</target>
 
+	<target name="fast-build-clean-java" depends="" description="Compiles the classes if class and moves configs to the right spot">
+
+
+		<echo message="Copying infoglueCMS/WEB-INF/classes"/>
+		<copy todir="${deploy.dir.cms}/WEB-INF/classes" overwrite="true">
+			<fileset dir="${build.classes}">
+				<include name="**/*.*"/>
+				<exclude name="cms-web.xml"/>
+				<exclude name="deliver-web.xml"/>
+			</fileset>
+		</copy>
+
+		<echo message="Copying infoglueCMS/WEB-INF/classes"/>
+		<copy todir="${deploy.dir.cms}/WEB-INF/classes" overwrite="true">
+			<fileset dir="${conf}/data/xml">
+				<include name="portletdefinitionmapping.xml"/>
+				<include name="portletentitymapping.xml"/>
+				<include name="servletdefinitionmapping.xml"/>
+			</fileset>
+		</copy>
+		<copy todir="${deploy.dir.cms}/WEB-INF/config">
+			<fileset dir="${conf}/config">
+				<include name="**/*.*"/>
+			</fileset>
+		</copy>
+		<copy todir="${deploy.dir.cms}/WEB-INF/data">
+			<fileset dir="${conf}/data">
+				<include name="**/*.*"/>
+			</fileset>
+		</copy>
+
+		<echo message="Copying infoglueDeliver/WEB-INF/classes"/>
+		<copy todir="${deploy.dir.working}/WEB-INF/classes" overwrite="true">
+			<fileset dir="${build.classes}">
+				<include name="**/*.*"/>
+				<exclude name="cms-web.xml"/>
+				<exclude name="deliver-web.xml"/>
+			</fileset>
+		</copy>
+
+		<echo message="Copying infoglueDeliver/WEB-INF/classes"/>
+		<copy todir="${deploy.dir.working}/WEB-INF/classes" overwrite="true">
+			<fileset dir="${conf}/data/xml">
+				<include name="portletdefinitionmapping.xml"/>
+				<include name="portletentitymapping.xml"/>
+				<include name="servletdefinitionmapping.xml"/>
+			</fileset>
+		</copy>
+
+
+		<copy todir="${deploy.dir.working}/WEB-INF/tld" overwrite="true">
+			<fileset dir="${conf}/tld">
+				<include name="*.tld"/>
+			</fileset>
+		</copy>
+		<copy todir="${deploy.dir.working}/WEB-INF/config">
+			<fileset dir="${conf}/config">
+				<include name="**/*.*"/>
+			</fileset>
+		</copy>
+		<copy todir="${deploy.dir.working}/WEB-INF/data">
+			<fileset dir="${conf}/data">
+				<include name="**/*.*"/>
+			</fileset>
+		</copy>
+		<copy todir="${deploy.dir.working}/META-INF" overwrite="true">
+			<fileset dir="${conf}" includes="context.xml"/>
+		</copy>
+
+		
+		<!-- LIVE -->
+		<echo message="Copying infoglueDeliver/WEB-INF/classes"/>
+		<copy todir="${deploy.dir.live}/WEB-INF/classes" overwrite="true">
+			<fileset dir="${build.classes}">
+				<include name="**/*.*"/>
+				<exclude name="cms-web.xml"/>
+				<exclude name="deliver-web.xml"/>
+			</fileset>
+		</copy>
+
+		<echo message="Copying infoglueDeliver/WEB-INF/classes"/>
+		<copy todir="${deploy.dir.live}/WEB-INF/classes" overwrite="true">
+			<fileset dir="${conf}/data/xml">
+				<include name="portletdefinitionmapping.xml"/>
+				<include name="portletentitymapping.xml"/>
+				<include name="servletdefinitionmapping.xml"/>
+			</fileset>
+		</copy>
+
+
+		<copy todir="${deploy.dir.live}/WEB-INF/tld" overwrite="true">
+			<fileset dir="${conf}/tld">
+				<include name="*.tld"/>
+			</fileset>
+		</copy>
+		<copy todir="${deploy.dir.live}/WEB-INF/config">
+			<fileset dir="${conf}/config">
+				<include name="**/*.*"/>
+			</fileset>
+		</copy>
+		<copy todir="${deploy.dir.live}/WEB-INF/data">
+			<fileset dir="${conf}/data">
+				<include name="**/*.*"/>
+			</fileset>
+		</copy>
+		<copy todir="${deploy.dir.live}/META-INF" overwrite="true">
+			<fileset dir="${conf}" includes="context.xml"/>
+		</copy>
+
+
+	</target>
 
 	<!--
 	* Deploys all the apps: cms, working, preview, and live

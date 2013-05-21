@@ -1597,14 +1597,21 @@ public class SiteNodeVersionController extends BaseController
         while(relatedSiteNodesIterator.hasNext())
         {
             RegistryVO registryVO = relatedSiteNodesIterator.next();
-        	if(registryVO.getEntityName().equals(SiteNode.class.getName()))
+        	try
         	{
-        		localRelatedSiteNodeIdsToCheck.add(new Integer(registryVO.getEntityId()));
-            }
-            else if(registryVO.getEntityName().equals(Content.class.getName()))
-            {
-            	localRelatedContentIdsToCheck.add(new Integer(registryVO.getEntityId()));
-            }
+	            if(registryVO.getEntityName().equals(SiteNode.class.getName()))
+	        	{
+	        		localRelatedSiteNodeIdsToCheck.add(new Integer(registryVO.getEntityId()));
+	            }
+	            else if(registryVO.getEntityName().equals(Content.class.getName()))
+	            {
+	            	localRelatedContentIdsToCheck.add(new Integer(registryVO.getEntityId()));
+	            }
+        	}
+        	catch (Exception e) 
+        	{
+        		logger.warn("A faulty registry entry - skipping: " + registryVO.getId());
+			}
 		}
         
         //Now let's get all related contents
