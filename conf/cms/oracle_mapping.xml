@@ -2227,7 +2227,7 @@
     <class name="org.infoglue.cms.entities.management.impl.simple.PageDeliveryMetaDataEntityImpl" identity="pageDeliveryMetaDataEntityId" key-generator="SEQUENCE">
 		<description>PageDeliveryMetaDataEntity</description>
 	    <cache-type type="none"/>
-	    <map-to table="cmPageDeliveryMetaDataEntity"/>
+	    <map-to table="cmPageDeliveryMetaDataEnt"/>
 	    <field name="pageDeliveryMetaDataEntityId" type="java.lang.Integer">
 	      <sql name="pageDeliveryMetaDataEntityId" type="integer" dirty="check" />
 	    </field>

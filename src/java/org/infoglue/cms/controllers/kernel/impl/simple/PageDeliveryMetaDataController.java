@@ -228,6 +228,8 @@ public class PageDeliveryMetaDataController extends BaseController
 				System.out.println("result:" + result);
 
 				String sql2 = "DELETE FROM cmPageDeliveryMetaDataEntity WHERE pageDeliveryMetaDataId NOT IN (select pageDeliveryMetaDataId from cmPageDeliveryMetaData)";
+				if(CmsPropertyHandler.getUseShortTableNames().equals("true"))
+					sql2 = "DELETE FROM cmPageDeliveryMetaDataEnt WHERE pageDeliveryMetaDataId NOT IN (select pageDeliveryMetaDataId from cmPageDeliveryMetaData)";
 				//System.out.println("sql2: " + sql2);
 				PreparedStatement psmt2 = conn.prepareStatement(sql2);
 				int result2 = psmt2.executeUpdate();
@@ -282,23 +284,27 @@ public class PageDeliveryMetaDataController extends BaseController
 		if(CmsPropertyHandler.getUseShortTableNames().equals("true"))
 			selectiveCacheUpdateNotApplicableColumnName = "selectiveCacheUpdateNotAppl";
 
+		String entityTableName = "cmPageDeliveryMetaDataEntity";
+		if(CmsPropertyHandler.getUseShortTableNames().equals("true"))
+			entityTableName = "cmPageDeliveryMetaDataEnt";
+
 		try
 		{
 			String sql = null;
 			Integer id = null;
 			if(siteNodeId != null)
 			{
-				sql = "DELETE FROM cmPageDeliveryMetaData WHERE " + selectiveCacheUpdateNotApplicableColumnName + " = 1 OR pageDeliveryMetaDataId IN (SELECT distinct pageDeliveryMetaDataId FROM cmPageDeliveryMetaDataEntity WHERE siteNodeId = ?)";
+				sql = "DELETE FROM cmPageDeliveryMetaData WHERE " + selectiveCacheUpdateNotApplicableColumnName + " = 1 OR pageDeliveryMetaDataId IN (SELECT distinct pageDeliveryMetaDataId FROM " + entityTableName + " WHERE siteNodeId = ?)";
 				id = siteNodeId;
 			}
 			if(siteNodeId == null && contentId != null)
 			{
-				sql = "DELETE FROM cmPageDeliveryMetaData WHERE " + selectiveCacheUpdateNotApplicableColumnName + " = 1 OR  pageDeliveryMetaDataId IN (SELECT distinct pageDeliveryMetaDataId FROM cmPageDeliveryMetaDataEntity WHERE contentId = ?)";
+				sql = "DELETE FROM cmPageDeliveryMetaData WHERE " + selectiveCacheUpdateNotApplicableColumnName + " = 1 OR  pageDeliveryMetaDataId IN (SELECT distinct pageDeliveryMetaDataId FROM " + entityTableName + " WHERE contentId = ?)";
 				id = contentId;
 			}
 			if(siteNodeId != null && contentId != null)
 			{
-				sql = "DELETE FROM cmPageDeliveryMetaData WHERE " + selectiveCacheUpdateNotApplicableColumnName + " = 1 OR pageDeliveryMetaDataId IN (SELECT distinct pageDeliveryMetaDataId FROM cmPageDeliveryMetaDataEntity WHERE siteNodeId = ? AND contentId = ?)";
+				sql = "DELETE FROM cmPageDeliveryMetaData WHERE " + selectiveCacheUpdateNotApplicableColumnName + " = 1 OR pageDeliveryMetaDataId IN (SELECT distinct pageDeliveryMetaDataId FROM " + entityTableName + " WHERE siteNodeId = ? AND contentId = ?)";
 				id = siteNodeId;
 			}
 			//System.out.println("sql: " + sql);
@@ -319,6 +325,9 @@ public class PageDeliveryMetaDataController extends BaseController
 				//System.out.println("result:" + result);
 
 				String sql2 = "DELETE FROM cmPageDeliveryMetaDataEntity WHERE pageDeliveryMetaDataId NOT IN (select pageDeliveryMetaDataId from cmPageDeliveryMetaData)";
+				if(CmsPropertyHandler.getUseShortTableNames().equals("true"))
+					sql2 = "DELETE FROM cmPageDeliveryMetaDataEnt WHERE pageDeliveryMetaDataId NOT IN (select pageDeliveryMetaDataId from cmPageDeliveryMetaData)";
+				
 				//System.out.println("sql2: " + sql2);
 				PreparedStatement psmt2 = conn.prepareStatement(sql2);
 				int result2 = psmt2.executeUpdate();

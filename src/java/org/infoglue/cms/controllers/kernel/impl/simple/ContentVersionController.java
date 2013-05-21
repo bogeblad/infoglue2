@@ -3442,7 +3442,7 @@ public class ContentVersionController extends BaseController
 		SmallestContentVersionVO result = null;
 		
 		StringBuilder variables = new StringBuilder();
-	    //for(int i=0; i<contentVersionIds.size(); i++)
+
 		int i = 0;
 	    for(String contentVersionId : contentVersionIds)
 	    {
