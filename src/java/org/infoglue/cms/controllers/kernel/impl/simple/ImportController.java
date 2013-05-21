@@ -290,7 +290,7 @@ public class ImportController extends BaseController
 			AccessRight accessRight = accessRightsIterator.next();
 
 			InterceptionPoint interceptionPoint = InterceptionPointController.getController().getInterceptionPointWithName(accessRight.getInterceptionPointName(), db);
-			if(interceptionPoint != null)
+			if (interceptionPoint != null)
 			{
 				accessRight.setInterceptionPoint(interceptionPoint);
 				if(interceptionPoint.getName().indexOf("Content") > -1)
@@ -367,7 +367,7 @@ public class ImportController extends BaseController
 			
 			List<CategoryVO> existingCategories = null;
 			if(parentCategory != null)
-				existingCategories = CategoryController.getController().getActiveByParent(parentCategory.getCategoryId(), db);
+				existingCategories = CategoryController.getController().getActiveCategoryVOListByParent(parentCategory.getCategoryId(), db);
 				//existingCategories = CategoryController.getController().findByParent(parentCategory.getCategoryId(), db);
 			else
 				existingCategories = CategoryController.getController().findRootCategoryVOList(db);
@@ -920,14 +920,6 @@ public class ImportController extends BaseController
             ContentVersion contentVersion = (ContentVersion)contentVersionIterator.next();
             String contentVersionValue = contentVersion.getVersionValue();
 
-            Iterator<String> replaceMapIterator = replaceMap.keySet().iterator();
-            while(replaceMapIterator.hasNext())
-            {
-            	String key = replaceMapIterator.next();
-            	String value = (String)replaceMap.get(key);
-            	contentVersionValue = contentVersionValue.replaceAll(key, value);
-            }
-
             contentVersionValue = contentVersionValue.replaceAll("contentId=\"", "contentId=\"oldContentId_");
             contentVersionValue = contentVersionValue.replaceAll("\\?contentId=", "\\?contentId=oldContentId_");
             contentVersionValue = contentVersionValue.replaceAll("getInlineAssetUrl\\(", "getInlineAssetUrl\\(oldContentId_");
@@ -939,7 +931,15 @@ public class ImportController extends BaseController
             contentVersionValue = contentVersionValue.replaceAll("getPageUrl\\((\\d)", "getPageUrl\\(oldSiteNodeId_$1");
             contentVersionValue = contentVersionValue.replaceAll("entity=\"SiteNode\" entityId=\"", "entity=\"SiteNode\" entityId=\"oldSiteNodeId_");
             //contentVersionValue = contentVersionValue.replaceAll("entity='SiteNode'><id>", "entity='SiteNode'><id>old_");
-                                    
+
+            Iterator<String> replaceMapIterator = replaceMap.keySet().iterator();
+            while(replaceMapIterator.hasNext())
+			{
+				String key = replaceMapIterator.next();
+				String value = (String)replaceMap.get(key);
+				contentVersionValue = contentVersionValue.replaceAll(key, value);
+			}
+
             contentVersionValue = this.prepareAllRelations(contentVersionValue);
             	            
             
