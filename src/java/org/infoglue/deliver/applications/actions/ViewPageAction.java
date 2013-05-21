@@ -499,8 +499,8 @@ public class ViewPageAction extends InfoGlueAbstractAction
 				        logger.info("isCachedResponse:" + isCachedResponse);
 				        
 						boolean isIfModifiedLogic = getIsIfModifiedLogicValid(deliveryContext, templateController.getPrincipal(), false); 
-						System.out.println("isIfModifiedLogic 2:" + isIfModifiedLogic);
-						System.out.println("deliveryContext.getLastModifiedDateTime():" + deliveryContext.getLastModifiedDateTime());
+						logger.info("isIfModifiedLogic 2:" + isIfModifiedLogic);
+						logger.info("deliveryContext.getLastModifiedDateTime():" + deliveryContext.getLastModifiedDateTime());
 						if(isCachedResponse && pdmd == null && isIfModifiedLogic)
 							pdmd = PageDeliveryMetaDataController.getController().getPageDeliveryMetaDataVO(dbWrapper.getDatabase(), this.siteNodeId, this.languageId, this.contentId);
 
