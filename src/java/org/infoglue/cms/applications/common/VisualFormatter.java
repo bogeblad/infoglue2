@@ -657,4 +657,46 @@ public class VisualFormatter
         return fileSizeString;
     }
 
+    /**
+     * <p>Remove characters that are not allowed in XML. More formally characters in the following ranges are allowed:</p>
+     *
+     * <em>#x9 | #xA | #xD | [#x20-#xD7FF] | [#xE000-#xFFFD] | [#x10000-#x10FFFF]</em>
+     *
+     * <p>Observe that this method does NOT remove characters that can be escaped in XML (e.g. '<', '>', '&')</p>
+     *
+     * @param value The XMl value to strip. Can be any string.
+     * @return A stripped version of the given String
+     */
+    public String stripInvalidXml(String value)
+    {
+		/* http://stackoverflow.com/questions/93655/stripping-invalid-xml-characters-in-java */
+        if (value == null)
+        {
+            return null;
+        }
+        StringBuilder sb = new StringBuilder();
+
+        char[] valueBytes = value.toCharArray();
+        char c;
+        for (int i = 0; i < valueBytes.length; i++)
+        {
+            c = valueBytes[i];
+            if ((c == 0x9) || (c == 0xA) || (c == 0xD) ||
+                ((c >= 0x20) && (c <= 0xD7FF)) ||
+                ((c >= 0xE000) && (c <= 0xFFFD)) ||
+                ((c >= 0x10000) && (c <= 0x10FFFF)))
+            {
+                sb.append(c);
+            }
+        }
+        if (logger.isDebugEnabled())
+		{
+			if (valueBytes.length != sb.length())
+			{
+				String valueExcerpt = value.length() < 256 ? value : value.substring(0, 256);
+				logger.debug("Cleaned content version XML. Removed number of chars: " + (valueBytes.length - sb.length()) + " from String (excerpt): " + valueExcerpt);
+			}
+		}
+        return sb.toString();
+    }
 }

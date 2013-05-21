@@ -38,11 +38,13 @@ import java.util.zip.ZipOutputStream;
 import org.apache.log4j.Logger;
 import org.exolab.castor.jdo.Database;
 import org.exolab.castor.mapping.Mapping;
+import org.exolab.castor.xml.MarshalListener;
 import org.exolab.castor.xml.Marshaller;
 import org.infoglue.cms.applications.common.VisualFormatter;
 import org.infoglue.cms.applications.databeans.ProcessBean;
 import org.infoglue.cms.applications.managementtool.actions.ExportRepositoryAction;
 import org.infoglue.cms.entities.content.Content;
+import org.infoglue.cms.entities.content.ContentVersion;
 import org.infoglue.cms.entities.content.DigitalAsset;
 import org.infoglue.cms.entities.content.DigitalAssetVO;
 import org.infoglue.cms.entities.content.impl.simple.ExportContentVersionImpl;
@@ -322,7 +324,9 @@ public class OptimizedExportController extends BaseController implements Runnabl
 			} 
 			catch(Exception e) 
 			{ 
-				e.printStackTrace();
+				logger.error("An error occured while zipping the export folder. Message: " + e.getMessage() + ". Type: " + e.getClass());
+				logger.warn("An error occured while zipping the export folder.", e);
+				throw e;
 			} 
 			
 			logger.info("File:" + archiveFileSystemName + "_" + names + ".zip");
@@ -336,8 +340,16 @@ public class OptimizedExportController extends BaseController implements Runnabl
 			}
 			Thread.sleep(3000);
 			
-			processBean.setStatus(ProcessBean.FINISHED);
-		} 
+			// If this is a copy the process bean is not done until the importRepositories is done.
+			if (!copy)
+			{
+				processBean.setStatus(ProcessBean.FINISHED);
+			}
+			else
+			{
+				logger.debug("Export done but this is a copy so we do not mark the ProcessBean done.");
+			}
+		}
 		catch (Throwable e) 
 		{
 			processBean.setError("An error occured while exporting repository. Error message: " + e.getClass(), e);
@@ -456,6 +468,33 @@ public class OptimizedExportController extends BaseController implements Runnabl
 		            marshaller.setMapping(map);
 					marshaller.setEncoding(encoding);
 					marshaller.setValidation(false);
+
+					marshaller.setMarshalListener(new MarshalListener()
+					{
+						private final VisualFormatter vf = new VisualFormatter();
+
+						@Override
+						public boolean preMarshal(Object object)
+						{
+							if (object != null && object instanceof ExportContentVersionImpl)
+							{
+								logger.info("Found content version - cleaning");
+								ExportContentVersionImpl cv = (ExportContentVersionImpl)object;
+								String versionValue = cv.getVersionValue();
+								if (versionValue != null)
+								{
+									cv.setVersionValue(vf.stripInvalidXml(versionValue));
+								}
+							}
+							return true;
+						}
+
+						@Override
+						public void postMarshal(Object arg0)
+						{
+						}
+					});
+
 					if(type.equals("ContentVersions"))
 						DigitalAssetBytesHandler.setMaxSize(0);
 					else
@@ -479,8 +518,10 @@ public class OptimizedExportController extends BaseController implements Runnabl
 			} 
 			catch (Exception e) 
 			{
-				logger.error("An error was found exporting a repository: " + e.getMessage(), e);
+				logger.error("An error was found exporting a repository: " + e.getMessage());
+				logger.warn("An error was found exporting a repository.", e);
 				db.rollback();
+				throw e;
 			}
 			finally
 			{
