@@ -2170,7 +2170,7 @@
 	      	<sql name="lastModifiedDateTime" type="timestamp" dirty="check" />
 	    </field>
 	    <field name="selectiveCacheUpdateNotApplicable" type="java.lang.Boolean">
-	      	<sql name="selectiveCacheUpdateNotApplicable" type="integer" dirty="check" />
+	      	<sql name="selectiveCacheUpdateNotAppl" type="integer" dirty="check" />
 	    </field>
 	    <field name="lastModifiedTimeout" type="java.util.Date">
 	      	<sql name="lastModifiedTimeout" type="timestamp" dirty="check" />

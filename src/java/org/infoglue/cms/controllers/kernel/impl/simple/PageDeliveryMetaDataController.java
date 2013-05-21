@@ -280,7 +280,7 @@ public class PageDeliveryMetaDataController extends BaseController
 		
 		String selectiveCacheUpdateNotApplicableColumnName = "selectiveCacheUpdateNotApplicable";
 		if(CmsPropertyHandler.getUseShortTableNames().equals("true"))
-			selectiveCacheUpdateNotApplicableColumnName = "selectiveCacheUpdateNotApplicable";
+			selectiveCacheUpdateNotApplicableColumnName = "selectiveCacheUpdateNotAppl";
 
 		try
 		{
