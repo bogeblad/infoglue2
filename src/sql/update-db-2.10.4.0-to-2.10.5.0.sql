@@ -5,7 +5,7 @@ CREATE  TABLE cmPageDeliveryMetaData (
   contentId INT NOT NULL ,
   lastModifiedDateTime TIMESTAMP NOT NULL ,
   selectiveCacheUpdateNotApplicable TINYINT NOT NULL DEFAULT 0 ,
-  lastModifiedTimeout INT NOT NULL DEFAULT -1 ,
+  lastModifiedTimeout TIMESTAMP NULL DEFAULT NULL,
   PRIMARY KEY (pageDeliveryMetaDataId) )
 ENGINE = MyISAM;
 

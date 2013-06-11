@@ -99,12 +99,12 @@ public class PageCacheHelper implements Runnable
 					logger.info("Clearing page cache for");
 					for(String entity : localPageCacheEvicitionQueue)
 					{
-						System.out.println("entity:" + entity);
+						logger.info("entity:" + entity);
 						if(entity.startsWith("siteNode_"))
 							PageDeliveryMetaDataController.getController().deletePageDeliveryMetaDataByReferencingEntity(new Integer(entity.replaceAll("siteNode_", "").replaceAll("_.*", "")), null);
 						else if(entity.startsWith("content_"))
 						{
-							System.out.println("entity:" + entity.replaceAll("content_", "").replaceAll("_.*", ""));
+							logger.info("entity:" + entity.replaceAll("content_", "").replaceAll("_.*", ""));
 							PageDeliveryMetaDataController.getController().deletePageDeliveryMetaDataByReferencingEntity(null, new Integer(entity.replaceAll("content_", "").replaceAll("_.*", "")));
 						}
 					}
@@ -159,7 +159,7 @@ public class PageCacheHelper implements Runnable
 	public void notify(String entityString)
 	{
 		Timer t = new Timer();
-		System.out.println("notify:" + entityString);
+		//System.out.println("notify:" + entityString);
 		//Thread.dumpStack();
 		if(CmsPropertyHandler.getOperatingMode().equals("0"))
 		{

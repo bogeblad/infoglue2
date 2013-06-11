@@ -40,8 +40,6 @@ import org.exolab.castor.jdo.engine.DatabaseImpl;
 import org.infoglue.cms.entities.content.ContentVersionVO;
 import org.infoglue.cms.entities.content.impl.simple.SmallContentVersionImpl;
 import org.infoglue.cms.entities.kernel.BaseEntityVO;
-import org.infoglue.cms.entities.management.FormEntry;
-import org.infoglue.cms.entities.management.FormEntryValue;
 import org.infoglue.cms.entities.management.Language;
 import org.infoglue.cms.entities.management.LanguageVO;
 import org.infoglue.cms.entities.management.PageDeliveryMetaData;
@@ -183,8 +181,6 @@ public class PageDeliveryMetaDataController extends BaseController
         }
         ent.setEntities(entitiesCollection);
 
-        //db.create(ent);
-                
         return ent.getValueObject();
     }    
     

@@ -43,7 +43,6 @@ public class PageDeliveryMetaDataEntityVO implements BaseEntityVO
 	 * @param pageDeliveryMetaDataId the pageDeliveryMetaDataId to set
 	 */
 	public void setId(Integer id) {
-		System.out.println("id:" + id);
 		setPageDeliveryMetaDataEntityId(id);
 	}
 

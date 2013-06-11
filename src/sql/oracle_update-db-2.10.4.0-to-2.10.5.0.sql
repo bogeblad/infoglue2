@@ -5,16 +5,20 @@ CREATE TABLE cmPageDeliveryMetaData (
   contentId number NOT NULL,
   lastModifiedDateTime date NOT NULL,
   selectiveCacheUpdateNotAppl number NOT NULL,
-  lastModifiedTimeout number default -1 NOT NULL,
+  lastModifiedTimeout date NOT NULL,
   PRIMARY KEY (pageDeliveryMetaDataId) 
 );
 
-CREATE  TABLE cmPageDeliveryMetaDataEntity (
+CREATE SEQUENCE cmPageDeliveryMetaData_seq START WITH 1 INCREMENT BY 1;
+
+CREATE  TABLE cmPageDeliveryMetaDataEnt (
   pageDeliveryMetaDataEntityId number NOT NULL,
   pageDeliveryMetaDataId number NOT NULL,
-  siteNodeId number NOT NULL,
-  contentId number NOT NULL,
+  siteNodeId number,
+  contentId number,
   PRIMARY KEY (pageDeliveryMetaDataEntityId) 
 );
+
+CREATE SEQUENCE cmPageDeliveryMetaDataEnt_seq START WITH 1 INCREMENT BY 1;
 
 create index pageDeliveryMetaDataIDX on cmPageDeliveryMetaData(siteNodeId, languageId, contentId);

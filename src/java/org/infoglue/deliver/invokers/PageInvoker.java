@@ -231,10 +231,8 @@ public abstract class PageInvoker
 			    	invokePage();
 					this.pageString = getPageString();
 					
-					//TEST
 					getLastModifiedDateTime(false);
-					//END TEST
-
+				
 					pageString = decorateHeadAndPageWithVarsFromComponents(pageString);
 
 					this.getDeliveryContext().setPagePath(this.templateController.getCurrentPagePath());
