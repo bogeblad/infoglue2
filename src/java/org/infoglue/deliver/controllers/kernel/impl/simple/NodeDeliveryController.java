@@ -1787,6 +1787,7 @@ public class NodeDeliveryController extends BaseDeliveryController
 		
 		String attributeKey = "" + siteNodeId + "_" + languageId + "_" + attributeName;
     	String candidate = (String)CacheController.getCachedObjectFromAdvancedCache("metaInfoContentAttributeCache", attributeKey);
+    	/*
     	if(candidate == null && useLanguageFallback)
     	{
 			LanguageVO masterLanguageVO = LanguageDeliveryController.getLanguageDeliveryController().getMasterLanguageForRepository(db, repositoryId);
@@ -1796,6 +1797,7 @@ public class NodeDeliveryController extends BaseDeliveryController
 				candidate = (String)CacheController.getCachedObjectFromAdvancedCache("metaInfoContentAttributeCache", attributeKeyFallback);
 			}
     	}
+    	*/
     	
     	if(candidate != null)
     	{
