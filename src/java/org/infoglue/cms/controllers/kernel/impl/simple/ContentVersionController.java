@@ -3318,7 +3318,7 @@ public class ContentVersionController extends BaseController
         	logger.info("duplicateAssetsBetweenVersions:" + duplicateAssetsBetweenVersions);
     	    if(!duplicateAssetsBetweenVersions)
     	    {
-    	    	DigitalAsset oldDigitalAsset = DigitalAssetController.getController().getDigitalAssetWithId(digitalAssetId, db);
+    	    	DigitalAsset oldDigitalAsset = DigitalAssetController.getController().getMediumDigitalAssetWithId(digitalAssetId, db);
     	    	logger.info("oldDigitalAsset:" + oldDigitalAsset.getContentVersions().size());
         	    if(oldDigitalAsset.getContentVersions().size() > 1)
     	    	{
