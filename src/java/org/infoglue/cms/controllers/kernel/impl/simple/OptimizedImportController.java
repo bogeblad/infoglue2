@@ -1016,8 +1016,10 @@ public class OptimizedImportController extends BaseController implements Runnabl
 	 */
 	private void createStructure(SiteNode siteNode, Map<Integer,List<SiteNodeVersion>> allSiteNodeVersionMap, Map contentIdMap, Map siteNodeIdMap, Map siteNodeVersionIdMap, Map readAvailableServiceBindings, List allSiteNodes, Database db, String onlyLatestVersions, Map<String,String> replaceMap) throws Exception
 	{
-		logger.info("createStructure with siteNode:" + siteNode.getName());
-
+		if(siteNode != null)
+			logger.info("createStructure with siteNode:" + siteNode.getName());
+		else
+			logger.info("createStructure with siteNode:" + siteNode);
 		Integer originalSiteNodeId = siteNode.getValueObject().getSiteNodeId();
 
 		logger.info("originalSiteNodeId:" + originalSiteNodeId);

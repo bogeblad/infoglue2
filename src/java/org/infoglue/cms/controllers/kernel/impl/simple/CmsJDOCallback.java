@@ -1051,6 +1051,9 @@ public class CmsJDOCallback implements CallbackInterceptor
 				clearCache(SmallContentVersionImpl.class);
 				clearCache(SmallestContentVersionImpl.class);
 				
+				CacheController.clearCacheForGroup("contentVersionCache", "content_" + contentVersion.getOwningContent().getId());
+				CacheController.clearCacheForGroup("contentVersionCache", "contentVersion_" + contentVersion.getId());
+
 				RegistryController.getController().clearRegistryForReferencingEntityNameThreaded(ContentVersion.class.getName(), getObjectIdentity(object).toString());
 				//RegistryController.getController().clearRegistryForReferencingEntityName(ContentVersion.class.getName(), getObjectIdentity(object).toString());
 			}
@@ -1078,6 +1081,9 @@ public class CmsJDOCallback implements CallbackInterceptor
 				clearCache(SmallContentVersionImpl.class);
 				clearCache(SmallestContentVersionImpl.class);
 				clearCache(ContentImpl.class, contentVersion.getValueObject().getContentId());
+
+				CacheController.clearCacheForGroup("contentVersionCache", "content_" + contentVersion.getOwningContent().getId());
+				CacheController.clearCacheForGroup("contentVersionCache", "contentVersion_" + contentVersion.getId());
 
 				RegistryController.getController().clearRegistryForReferencingEntityNameThreaded(ContentVersion.class.getName(), getObjectIdentity(object).toString());
 				//RegistryController.getController().clearRegistryForReferencingEntityName(ContentVersion.class.getName(), getObjectIdentity(object).toString());
