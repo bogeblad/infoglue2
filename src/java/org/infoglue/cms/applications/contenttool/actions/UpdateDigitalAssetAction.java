@@ -116,6 +116,19 @@ public class UpdateDigitalAssetAction extends ViewDigitalAssetAction
     	InputStream is = null;
 		File file = null;
 		
+    	Integer myFileUploadSizeLimit = 100000;
+		
+		String fileUploadMaximumSize = getPrincipalPropertyValue("fileUploadMaximumSize", false, true);
+		try
+		{
+			myFileUploadSizeLimit = new Integer(fileUploadMaximumSize);
+			logger.info("fileUploadMaximumSize:" + myFileUploadSizeLimit);
+		}
+		catch (NumberFormatException nfe)
+		{
+			logger.error("Bad filesize in principal properties: " + fileUploadMaximumSize);
+		}
+
 		try
         {
             MultiPartRequestWrapper mpr = ActionContext.getMultiPartRequest();
@@ -169,14 +182,13 @@ public class UpdateDigitalAssetAction extends ViewDigitalAssetAction
 						digitalAssetVO.setAssetFileSize(new Integer(new Long(file.length()).intValue()));
 						is = new FileInputStream(file);    	
 						
-						String fileUploadMaximumSize = getPrincipalPropertyValue("fileUploadMaximumSize", false, true);
 						logger.info("fileUploadMaximumSize:" + fileUploadMaximumSize);
 						
-						if(!fileUploadMaximumSize.equalsIgnoreCase("-1") && new Integer(fileUploadMaximumSize).intValue() < new Long(file.length()).intValue())
+						if(myFileUploadSizeLimit.intValue() > -1 && myFileUploadSizeLimit.intValue() < new Long(file.length()).intValue())
 						{
 						    file.delete();
 						    this.reasonKey = "tool.contenttool.fileUpload.fileUploadFailedOnSizeText";
-			                this.uploadMaxSize = "(Max " + formatter.formatFileSize(fileUploadMaximumSize) + ")";
+			                this.uploadMaxSize = "(Max " + formatter.formatFileSize(myFileUploadSizeLimit) + ")";
 		                	return "uploadFailed";
 						}
 
