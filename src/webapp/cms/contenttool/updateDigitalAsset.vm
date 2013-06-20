@@ -92,9 +92,17 @@
 			else
 			{
 				if(window.opener && window.opener.parent && window.opener.parent.frames['main'])
-					window.opener.parent.frames['main'].location.reload();
+				{
+					var agt=navigator.userAgent.toLowerCase();
+		    		if(agt.indexOf("safari")!=-1)
+		    			window.opener.parent.frames[3].location.reload();
+		    		else
+		    			window.opener.parent.frames['main'].location.reload();
+				}
 				else
+				{
 					window.opener.location.reload();	
+				}
 			}
 			
 			window.close();
