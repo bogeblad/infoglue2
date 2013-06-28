@@ -66,7 +66,7 @@
   <frameset id="mainarea" cols="225,*" FRAMESPACING="0" FRAMEBORDER="NO" BORDER="0">
     <frame name="menu" id="menu" marginwidth="0" marginheight="0" scrolling="no" target="main" src="" />
 	  <frameset rows="57,*" onload="setInitialPosition();" FRAMESPACING="0" FRAMEBORDER="NO" BORDER="0">
-		<frame name="toolbar" id="toolbar" marginwidth="0" marginheight="0" scrolling="no" target="none" src="Loading!executeContent.action" />
+		<frame name="igtoolbar" id="igtoolbar" marginwidth="0" marginheight="0" scrolling="no" target="none" src="Loading!executeContent.action" />
 		<frame name="main" id="main" marginwidth="0" marginheight="0" scrolling="auto" target="none" src="Loading!executeContent.action" />
 	  </frameset>
   </frameset>

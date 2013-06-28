@@ -14,7 +14,7 @@
 
 		function showWorking()
 		{
-			var p = parent.frames["toolbar"].document.getElementById("progress");
+			var p = parent.frames["igtoolbar"].document.getElementById("progress");
 			p.style.visibility = "visible";
 			// alert("saving");
 		}

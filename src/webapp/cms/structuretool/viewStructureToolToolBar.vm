@@ -179,9 +179,9 @@
 	   		}
 	   	    else	
 	   	    {
-				if(parent.frames["toolbar"].document)
+				if(parent.frames["igtoolbar"].document)
 				{
-					parent.frames["toolbar"].location.href = context + '/ViewStructureToolToolBar.action?title=' + title + '&toolbarKey=' + toolbarKey + '&' + arguments;
+					parent.frames["igtoolbar"].location.href = context + '/ViewStructureToolToolBar.action?title=' + title + '&toolbarKey=' + toolbarKey + '&' + arguments;
 			   	    	
 					parent.frames["menu"].syncWithTree(path, repositoryId);
 				}
@@ -215,10 +215,10 @@
 		    }
 		    else	
 		    {
-				if(parent.frames["toolbar"].document)
+				if(parent.frames["igtoolbar"].document)
 				{
 					toolbarKey 	= hexcode(toolbarKey);	
-					parent.frames["toolbar"].location.href = context + '/ViewStructureToolToolBar.action?title=' + title + '&toolbarKey=' + toolbarKey + '&' + arguments;
+					parent.frames["igtoolbar"].location.href = context + '/ViewStructureToolToolBar.action?title=' + title + '&toolbarKey=' + toolbarKey + '&' + arguments;
 					
 					if(unrefreshedNodeId > 0)
 					{

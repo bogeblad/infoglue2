@@ -89,7 +89,7 @@ function InstallPackage(packId)
 	// alert("will install: " + packId);
 	var cb=document.getElementById("CB" + packId);
 	cb.checked = true;
-	parent.frames["toolbar"].submitListForm("updatePackage");
+	parent.frames["igtoolbar"].submitListForm("updatePackage");
 }
 function OpenDetails(uri)
 {

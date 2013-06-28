@@ -228,7 +228,7 @@ function refreshManagementToolBar(toolbarKey, arguments)
 		parent.frames[2].location = 'ViewManagementToolToolBar.action?title=' + toolbarKey + '&toolbarKey=' + toolbarKey + '&' + arguments;
 	}
 	else
-		parent.frames["toolbar"].location.href = 'ViewManagementToolToolBar.action?title=' + toolbarKey + '&toolbarKey=' + toolbarKey + '&' + arguments;
+		parent.frames["igtoolbar"].location.href = 'ViewManagementToolToolBar.action?title=' + toolbarKey + '&toolbarKey=' + toolbarKey + '&' + arguments;
 }
 
 
@@ -250,8 +250,8 @@ function refreshContentToolBar(title, toolbarKey, arguments, unrefreshedContentI
 	}
     else	
     {
-		if(parent.frames["toolbar"] && parent.frames["toolbar"].location)
-			parent.frames["toolbar"].location.href = 'ViewContentToolToolBar.action?title=' + title + '&toolbarKey=' + toolbarKey + '&' + arguments;
+		if(parent.frames["igtoolbar"] && parent.frames["igtoolbar"].location)
+			parent.frames["igtoolbar"].location.href = 'ViewContentToolToolBar.action?title=' + title + '&toolbarKey=' + toolbarKey + '&' + arguments;
     }
     
 	if(unrefreshedContentId > 0)
@@ -294,11 +294,11 @@ function refreshStructureToolBar(context, title, toolbarKey, arguments, unrefres
     }
     else	
     {
-		if(parent.frames["toolbar"].document)
+		if(parent.frames["igtoolbar"].document)
 		{
 			toolbarKey 	= hexcode(toolbarKey);	
 			
-			parent.frames["toolbar"].location.href = context + '/ViewStructureToolToolBar.action?title=' + title + '&toolbarKey=' + toolbarKey + '&' + arguments;
+			parent.frames["igtoolbar"].location.href = context + '/ViewStructureToolToolBar.action?title=' + title + '&toolbarKey=' + toolbarKey + '&' + arguments;
 			
 			if(unrefreshedNodeId > 0)
 			{
@@ -326,7 +326,7 @@ function refreshPublishingToolBar(title, toolbarKey, arguments)
 	}
     else	
     {
-    	parent.frames["toolbar"].location.href = 'ViewPublishingToolToolBar.action?title=' + title + '&toolbarKey=' + toolbarKey + '&' + arguments;
+    	parent.frames["igtoolbar"].location.href = 'ViewPublishingToolToolBar.action?title=' + title + '&toolbarKey=' + toolbarKey + '&' + arguments;
     }
 }
 
@@ -341,7 +341,7 @@ function refreshMyDesktopToolBar(title, toolbarKey, arguments)
 	//alert('toolbarKey:' + toolbarKey);
 	//toolbarKey 	= escape(toolbarKey);	
 	toolbarKey 	= hexcode(toolbarKey);	
-	parent.frames["toolbar"].location.href = 'ViewMyDesktopToolToolBar.action?title=' + title + '&toolbarKey=' + toolbarKey + '&' + arguments;
+	parent.frames["igtoolbar"].location.href = 'ViewMyDesktopToolToolBar.action?title=' + title + '&toolbarKey=' + toolbarKey + '&' + arguments;
 }
 
 //-----------------------------------------------

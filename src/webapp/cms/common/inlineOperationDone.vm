@@ -56,12 +56,12 @@
 			   		}
 			   	    else	
 			   	    {
-				   	    if(parent && parent.parent && parent.parent.frames["toolbar"] && parent.parent.frames["toolbar"].refreshStructureToolBar)
+				   	    if(parent && parent.parent && parent.parent.frames["igtoolbar"] && parent.parent.frames["igtoolbar"].refreshStructureToolBar)
 						{
-							var position = parent.parent.frames["toolbar"].document.location.href.indexOf("siteNodeId=${newSiteNodeId}&");
+							var position = parent.parent.frames["igtoolbar"].document.location.href.indexOf("siteNodeId=${newSiteNodeId}&");
 							if(position == -1) 
 							{
-								parent.parent.frames["toolbar"].refreshStructureToolBarAndMenu('$this.getCMSBaseUrl()', 'tool.structuretool.siteNodeComponentsHeader', 'tool.structuretool.siteNodeComponentsHeader', 'siteNodeId=$newSiteNodeId&repositoryId=$repositoryId&isBranch=true', '$unrefreshedSiteNodeId', '$changeTypeId', '$newSiteNodeId'); 
+								parent.parent.frames["igtoolbar"].refreshStructureToolBarAndMenu('$this.getCMSBaseUrl()', 'tool.structuretool.siteNodeComponentsHeader', 'tool.structuretool.siteNodeComponentsHeader', 'siteNodeId=$newSiteNodeId&repositoryId=$repositoryId&isBranch=true', '$unrefreshedSiteNodeId', '$changeTypeId', '$newSiteNodeId'); 
 							}
 						}
 					}

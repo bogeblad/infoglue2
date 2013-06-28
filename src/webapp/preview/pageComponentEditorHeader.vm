@@ -23,11 +23,11 @@
    		}
    	    else	
    	    {
-			if(parent && parent.frames["toolbar"] && parent.frames["toolbar"].refreshStructureToolBar)
+			if(parent && parent.frames["igtoolbar"] && parent.frames["igtoolbar"].refreshStructureToolBar)
 			{
-				var position = parent.frames["toolbar"].document.location.href.indexOf("siteNodeId=${siteNodeId}&");
+				var position = parent.frames["igtoolbar"].document.location.href.indexOf("siteNodeId=${siteNodeId}&");
 				if(position == -1 || reloadToolbar) 
-					parent.frames["toolbar"].refreshStructureToolBar('${componentEditorUrl}', 'tool.structuretool.siteNodeComponentsHeader', 'tool.structuretool.siteNodeComponentsHeader', 'siteNodeId=${siteNodeId}&repositoryId=${repositoryId}&isBranch=true', '${repositoryId}', '${siteNodeId}', '${path}'); 
+					parent.frames["igtoolbar"].refreshStructureToolBar('${componentEditorUrl}', 'tool.structuretool.siteNodeComponentsHeader', 'tool.structuretool.siteNodeComponentsHeader', 'siteNodeId=${siteNodeId}&repositoryId=${repositoryId}&isBranch=true', '${repositoryId}', '${siteNodeId}', '${path}'); 
 			}
 		}
 	} 
