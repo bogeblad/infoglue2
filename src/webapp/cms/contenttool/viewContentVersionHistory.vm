@@ -21,7 +21,7 @@
 
 #set($lvBorder = 0) 
 #set($lvConstraint = -1) 
-#lvHead(["Name", "Language", "State", "Date", "Modifier", "Comment" ] "Compare versions" "" "" "")
+#lvHead(["Name", "Language", "State", "Active?", "Date", "Modifier", "Comment" ] "Compare versions" "" "" "")
 
 #hiddenField("contentId" $contentId)
 #hiddenField("versionComment" $!versionComment)
@@ -43,7 +43,7 @@
 	
 	#set($nameLink = "<a href='javascript:openVersion($cv.id, $cv.languageId);'>$contentVO.name</a>")
 	#set($state = $ui.getString( $stateStrings.get( $cv.stateId ) ) )
-	#set($row = ["<input type='hidden' name='rowtitle' value='$this.getLanguageVO($cv.languageId).name ($cv.getId())'/> <img src='images/tree/contentRoot.gif'/> $nameLink", "$this.getLanguageVO($cv.languageId).name ($cv.getId())", "$state", "$formatter.formatDate($cv.modifiedDateTime, 'yyyy-MM-dd HH:mm:ss')","$displayName", "$cv.versionComment"] )
+	#set($row = ["<input type='hidden' name='rowtitle' value='$this.getLanguageVO($cv.languageId).name ($cv.getId())'/> <img src='images/tree/contentRoot.gif'/> $nameLink", "$this.getLanguageVO($cv.languageId).name ($cv.getId())", "$state", "$cv.isActive", "$formatter.formatDate($cv.modifiedDateTime, 'yyyy-MM-dd HH:mm:ss')","$displayName", "$cv.versionComment"] )
 	#set($cnt = $cnt + 1)
 	
 	#lvAddRow($row $cnt $cv.getId())

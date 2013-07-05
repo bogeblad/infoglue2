@@ -262,7 +262,8 @@ public class InconsistenciesController extends BaseController
 			if(referencingEntityName.equals(ContentVersion.class.getName()))
 			{
 				ContentVersionVO contentVersionVO = ContentVersionController.getContentVersionController().getContentVersionVOWithId(referencingEntityId);
-				if(contentVersionVO != null)
+				ContentVersionVO latestContentVersionVO = ContentVersionController.getContentVersionController().getLatestContentVersionVO(contentVersionVO.getContentId(), contentVersionVO.getLanguageId());
+				if(contentVersionVO != null && latestContentVersionVO != null && latestContentVersionVO.getId().equals(contentVersionVO.getId()))
 				{
 					String versionValue = contentVersionVO.getVersionValue();
 					
@@ -278,6 +279,7 @@ public class InconsistenciesController extends BaseController
 					contentVersionVO.setVersionModifier(infoGluePrincipal.getName());
 					contentVersionVO.setModifiedDateTime(DateHelper.getSecondPreciseDate());
 					contentVersionVO.setVersionValue(versionValue);
+					contentVersionVO.setVersionComment("New working due to used content deleted");
 					
 					ContentVersionController.getContentVersionController().update(contentVersionVO.getContentId(), contentVersionVO.getLanguageId(), contentVersionVO);
 				}

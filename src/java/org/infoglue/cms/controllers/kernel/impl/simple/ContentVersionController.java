@@ -1563,7 +1563,6 @@ public class ContentVersionController extends BaseController
     
     public ContentVersionVO update(Integer contentId, Integer languageId, ContentVersionVO contentVersionVO, InfoGluePrincipal principal, boolean skipValidate) throws ConstraintException, SystemException
     {
-    	Timer t = new Timer();
         ContentVersionVO updatedContentVersionVO;
 		
         Database db = CastorDatabaseService.getDatabase();
