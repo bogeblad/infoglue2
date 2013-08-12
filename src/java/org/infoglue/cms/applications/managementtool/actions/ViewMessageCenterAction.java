@@ -26,10 +26,12 @@ package org.infoglue.cms.applications.managementtool.actions;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang.StringEscapeUtils;
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.entities.management.Chat;
 import org.infoglue.cms.entities.management.Message;
 import org.infoglue.cms.util.CmsSessionContextListener;
+
 
 /**
  * This class represents the message center where you can chat with users
@@ -106,9 +108,9 @@ public class ViewMessageCenterAction extends InfoGlueAbstractAction
     		return ERROR;
     	
     	chat.addMessage(this.getUserName(), CHAT_MESSAGE_TYPE, this.message);
-
     	if(this.isSystemMessage)
-    	    systemMessagesChat.addMessage(this.getUserName(), SYSTEM_MESSAGE_TYPE, "openChat('" + this.message + "');");
+    		
+    	    systemMessagesChat.addMessage(this.getUserName(), SYSTEM_MESSAGE_TYPE, "openChat('" + StringEscapeUtils.escapeJavaScript(this.message) + "');");
     	
         return "successMessageSent";
     }
