@@ -612,6 +612,8 @@ public class CacheController extends Thread
 		if(cacheName == null || key == null || value == null || key.toString().length() == 0)
 			return;
 		
+		if(defeatCaches.get().getDefeatCache())
+			defeatCaches.get().setDefeatedKey("" + cacheName + "_" + key.toString());
 		/*
 		if(cacheName.equalsIgnoreCase("pageCacheExtra"))
 			System.out.println("key pageCacheExtra: " + key);
@@ -903,6 +905,9 @@ public class CacheController extends Thread
 		if(cacheName == null || key == null || value == null || key.toString().length() == 0)
 			return;
 		
+		if(defeatCaches.get().getDefeatCache())
+			defeatCaches.get().setDefeatedKey("" + cacheName + "_" + key.toString());
+
 		if(logger.isInfoEnabled())
 		{			
 			logger.info("cacheName: " + cacheName);

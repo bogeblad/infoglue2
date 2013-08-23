@@ -25,12 +25,13 @@ public class DefeatCacheParameters
 			}
 			else
 			{
-				defeatedKeys.put(key, new Boolean(true));
+				//defeatedKeys.put(key, new Boolean(true));
 				return defeatCache; 
 			}
 		}
 	}
 	public void setDefeatCache(boolean defeatCache) { this.defeatCache = defeatCache; }
+	public void setDefeatedKey(String key) { defeatedKeys.put(key, new Boolean(true)); }
 	
 	public void addEntity(Class clazz, List<Object> ids) { this.entities.put(clazz, ids); }
 	public Map<Class, List<Object>> getEntities() { return this.entities; }
