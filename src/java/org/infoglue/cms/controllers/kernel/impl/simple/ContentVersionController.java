@@ -3449,7 +3449,7 @@ public class ContentVersionController extends BaseController
 		Collection<Integer> localContentVersionIds = getIdSetFromParameterSet(contentVersionIds, "contentVersion_");
 		if (localContentVersionIds.size() >= 1000)
 		{
-			logger.debug("ContentVersionId list was to long. Shortening the list to the 200 highest values.");
+			logger.info("Got more than 1000 contentVersion-ids. Will truncate to the highest 200 contentVersion-ids.");
 			localContentVersionIds = getHighestIds(localContentVersionIds, 200);
 		}
 
@@ -3504,7 +3504,7 @@ public class ContentVersionController extends BaseController
 			}
 			catch (NumberFormatException nfex)
 			{
-				logger.warn("Got non-integer contentId. Skipping id. Please fix the content. Id: " + parameter);
+				logger.debug("Got non-integer contentId. Skipping id. Id: " + parameter);
 			}
 		}
 		return result;
