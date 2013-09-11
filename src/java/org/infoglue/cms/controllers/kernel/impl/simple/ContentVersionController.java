@@ -3436,52 +3436,48 @@ public class ContentVersionController extends BaseController
 		}
     }
 
-	
 	public SmallestContentVersionVO getLatestContentVersionVO(Set<String> contentVersionIds, Database db) throws SystemException, Bug, Exception
-    {
+	{
 		Timer t = new Timer();
 		if(contentVersionIds == null || contentVersionIds.size() == 0)
 			return null;
-		
+
 		SmallestContentVersionVO result = null;
-		
+
 		StringBuilder variables = new StringBuilder();
 
-		int i = 0;
-	    for(String contentVersionId : contentVersionIds)
-	    {
-	    	if(contentVersionId.indexOf("contentVersion_") > -1)
-	    	{
-	    		if(variables.length() > 0)
-	    			variables.append(",");
-		    	variables.append("$" + (i+1));
-	    		i++;
-	    	}
-	    }
-	    //System.out.println("variables:" + variables);
-	    //System.out.println("variables:" + variables);
-
-	    String SQL = "select cv.contentVersionId, cv.stateId, cv.modifiedDateTime, cv.versionComment, cv.isCheckedOut, cv.isActive, cv.contentId, cv.languageId, cv.versionModifier FROM cmContentVersion cv where cv.contentVersionId IN (" + variables + ") AND cv.stateId >= " + CmsPropertyHandler.getOperatingMode() + " ORDER BY cv.modifiedDateTime DESC";
-	    if(CmsPropertyHandler.getUseShortTableNames() != null && CmsPropertyHandler.getUseShortTableNames().equalsIgnoreCase("true"))
-	    	SQL = "select cv.contVerId, cv.stateId, cv.modifiedDateTime, cv.verComment, cv.isCheckedOut, cv.isActive, cv.contId, cv.languageId, cv.versionModifier FROM cmContVer cv where cv.contVerId IN (" + variables + ") AND cv.stateId >= " + CmsPropertyHandler.getOperatingMode() + " ORDER BY cv.modifiedDateTime DESC";
-	    
-	    //System.out.println("SQL:" + SQL);
-	    
-	    OQLQuery oql = db.getOQLQuery("CALL SQL " + SQL + " AS org.infoglue.cms.entities.content.impl.simple.SmallestContentVersionImpl");
-    	if(CmsPropertyHandler.getUseShortTableNames() != null && CmsPropertyHandler.getUseShortTableNames().equalsIgnoreCase("true"))
-    		oql = db.getOQLQuery("CALL SQL " + SQL + " AS org.infoglue.cms.entities.content.impl.simple.SmallestContentVersionImpl");
-	
-		for(String contentVersionId : contentVersionIds)
+		Collection<Integer> localContentVersionIds = getIdSetFromParameterSet(contentVersionIds, "contentVersion_");
+		if (localContentVersionIds.size() >= 1000)
 		{
-	    	if(contentVersionId.indexOf("contentVersion_") > -1)
-	    	{
-	    		logger.info("contentVersionId:" +contentVersionId);
-				oql.bind(contentVersionId.replaceAll("contentVersion_", "").replaceAll("_.*", ""));
-	    	}
+			logger.debug("ContentVersionId list was to long. Shortening the list to the 200 highest values.");
+			localContentVersionIds = getHighestIds(localContentVersionIds, 200);
 		}
-		
+
+		int i = 0;
+		for(Integer contentVersionId : localContentVersionIds)
+		{
+			if(variables.length() > 0)
+				variables.append(",");
+			variables.append("$" + (i+1));
+			i++;
+		}
+
+		String SQL = "select cv.contentVersionId, cv.stateId, cv.modifiedDateTime, cv.versionComment, cv.isCheckedOut, cv.isActive, cv.contentId, cv.languageId, cv.versionModifier FROM cmContentVersion cv where cv.contentVersionId IN (" + variables + ") AND cv.stateId >= " + CmsPropertyHandler.getOperatingMode() + " ORDER BY cv.modifiedDateTime DESC";
+		if(CmsPropertyHandler.getUseShortTableNames() != null && CmsPropertyHandler.getUseShortTableNames().equalsIgnoreCase("true"))
+			SQL = "select cv.contVerId, cv.stateId, cv.modifiedDateTime, cv.verComment, cv.isCheckedOut, cv.isActive, cv.contId, cv.languageId, cv.versionModifier FROM cmContVer cv where cv.contVerId IN (" + variables + ") AND cv.stateId >= " + CmsPropertyHandler.getOperatingMode() + " ORDER BY cv.modifiedDateTime DESC";
+
+		OQLQuery oql = db.getOQLQuery("CALL SQL " + SQL + " AS org.infoglue.cms.entities.content.impl.simple.SmallestContentVersionImpl");
+		if(CmsPropertyHandler.getUseShortTableNames() != null && CmsPropertyHandler.getUseShortTableNames().equalsIgnoreCase("true"))
+			oql = db.getOQLQuery("CALL SQL " + SQL + " AS org.infoglue.cms.entities.content.impl.simple.SmallestContentVersionImpl");
+
+		for(Integer contentVersionId : localContentVersionIds)
+		{
+			logger.debug("contentVersionId: " +contentVersionId);
+			oql.bind(contentVersionId);
+		}
+
 		QueryResults results = oql.execute(Database.ReadOnly);
-    	if (results.hasMore()) 
+		if (results.hasMore())
 		{
 			SmallestContentVersionImpl contentVersion = (SmallestContentVersionImpl)results.next();
 			result = contentVersion.getValueObject();
@@ -3493,7 +3489,7 @@ public class ContentVersionController extends BaseController
 		t.printElapsedTime("getLatestContentVersion from ids took", 20);
 		return result;
 	}
-	
+
 	private Set<Integer> getIdSetFromParameterSet(Set<String> parameters, String prefix)
 	{
 		Set<Integer> result = new HashSet<Integer>();
