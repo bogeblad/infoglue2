@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <applicationState>
 	<title>Delivery engine status ($serverName)</title>
-	<version>2.10.5.0 Final</version>
-	<releaseDate>2013-06-30</releaseDate>
+	<version>2.10.6.0 Final</version>
+	<releaseDate>2013-09-04</releaseDate>
 	<serverName>$serverName</serverName>
 	<items>
 	#foreach($state in $states)

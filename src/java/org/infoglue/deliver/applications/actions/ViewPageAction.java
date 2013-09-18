@@ -857,7 +857,10 @@ public class ViewPageAction extends InfoGlueAbstractAction
     				}
     				else
     				{
-    					System.out.println("We disable the IF_MODIFIED feature if not stated.");
+    					if (logger.isDebugEnabled())
+    					{
+    						System.out.println("We disable the IF_MODIFIED feature if not stated.");
+    					}
     					return false;
     				}
     			}

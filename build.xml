@@ -41,8 +41,8 @@
 	-->
 	<filterset id="project.filters" onmissingfiltersfile="warn">
 		<filter token="database.validationQuery" value="select 1 from cmInfoGlueProperties"/>
-		<filtersfile file="${local.buildfile}"/>
 		<filtersfile file="build.properties"/>
+		<filtersfile file="${local.buildfile}"/>
 	</filterset>
 
 	<!--
