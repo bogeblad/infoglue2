@@ -6439,8 +6439,8 @@ public class BasicTemplateController implements TemplateController
 
 				RequestAnalyser.getRequestAnalyser().registerComponentStatistics("getChildPages.getPages(micro)", t.getElapsedTimeNanos() / 1000);
 
-				if(CmsPropertyHandler.getOperatingMode().equals("3"))
-					CacheController.cacheObjectInAdvancedCache("childPagesCache", key, childPages, new String[] {CacheController.getPooledString(3, siteNodeId)}, true);
+				//if(CmsPropertyHandler.getOperatingMode().equals("3"))
+				//	CacheController.cacheObjectInAdvancedCache("childPagesCache", key, childPages, new String[] {CacheController.getPooledString(3, siteNodeId)}, true);
 			}
 			catch(Exception e)
 			{
