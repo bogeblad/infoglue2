@@ -39,7 +39,7 @@
 	<script type="text/javascript" src="script/infogluecommons.js"></script>
 	
 	<script type="text/javascript">
-	<!-- 
+	<!--
 		function encodeXML(string) 
 		{
 			if(!string)
@@ -117,7 +117,8 @@
 				var binding = siteNodesVector.getElementAt(i);
 				if(i > 0) 
 					path = path + ", ";
-				path 		= path + binding.getPath();
+				var cleanedPath = (binding.getPath() || '').replace(/,/g, '&#44;');
+				path 		= path + cleanedPath;
 				entityName 	= binding.getEntityName();
 				entityId   	= binding.getEntityId();
 				var attributes = "";
@@ -363,11 +364,9 @@
 				wrapperDiv.setAttribute("class", "wrapper");
 
 				var nameDiv = document.createElement("div");
+				nameDiv.innerHTML = binding.getPath();
 				nameDiv.setAttribute("class", "nameDiv");
-				nameDiv.setAttribute("title", binding.getPath());
-
-				var bindingText = document.createTextNode(binding.getPath());
-				nameDiv.appendChild(bindingText);
+				nameDiv.setAttribute("title", nameDiv.textContent); // make sure html entities don't appear in title
 
 				wrapperDiv.appendChild(nameDiv);
 
