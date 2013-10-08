@@ -70,37 +70,48 @@
 		 	document.inputForm.repositoryId.value = repositoryId;
 		 	document.inputForm.path.value = path;	
 		}
-		var markedQualifyer = {};
-	    function markQualifyer(entityId, path)
-	    {
-	    	markedQualifyer.entityId = entityId;
-	    	markedQualifyer.path = path;
-	    }
 
-	    function addQualifyer(entityId, path)
-		{
-			if(!entityId && markedQualifyer.entityId)
+		(function() {
+			var markedQualifyer = {};
+			window.markQualifyer = function(entityId, path)
 			{
-				entityId = markedQualifyer.entityId;
-	    		path = markedQualifyer.path;
+				markedQualifyer.entityId = entityId;
+				markedQualifyer.path = path;
 			}
 
+			window.addQualifyer = function(entityId, path)
+			{
+				if(!entityId && markedQualifyer.entityId)
+				{
+					entityId = markedQualifyer.entityId;
+					path = markedQualifyer.path;
+				}
 
-			if(!entityId || entityId == '' || entityId == '${select}')
-			{
-				alert("You must choose a content to add");
+				if(!entityId || entityId == '' || entityId == '${select}')
+				{
+					alert("You must choose a content to add");
+				}
+				else
+				{
+					#if ( "$!supplementingEntityType" == "")
+					var binding = new Binding("External", entityId, path);
+					#else
+					var binding = new Binding("External", entityId, path, {});
+					#end
+					siteNodesVector.addElement(binding);
+					drawList();
+				}
 			}
-			else
-			{
-				#if ( "$!supplementingEntityType" == "")
-				var binding = new Binding("External", entityId, path);
-				#else
-			    var binding = new Binding("External", entityId, path, {});
-			    #end
-				siteNodesVector.addElement(binding);
+
+			window.resyncNames = function(nameMapping) {
+				for (var i=0; i<siteNodesVector.getSize(); i++)
+				{
+					var binding = siteNodesVector.getElementAt(i);
+					binding.setPath(nameMapping[binding.entityId]);
+				}
 				drawList();
 			}
-		}
+		}());
 
 		function save()
 		{
@@ -519,7 +530,15 @@
 				siteNodesVector.addElement(binding);
 			#end
 
-			//alert("siteNodesVector:" + siteNodesVector.getSize());
+			var currentIds = [];
+			for (var i = 0; i < siteNodesVector.getSize(); i++)
+			{
+				currentIds.push(siteNodesVector.getElementAt(i).entityId);
+			}
+			var bindingIframe = document.getElementById("externalBindingIframe");
+			var bindingAction = "$!externalBindingAction";
+			bindingAction = bindingAction + (bindingAction.indexOf('?') === -1 ? "?" : "&") + "currentIds=" + currentIds.join(',');
+			(bindingIframe && (bindingIframe.src = bindingAction));
 			drawList();
 		}
 
@@ -628,7 +647,7 @@ tool.contenttool.externalBindingDialog.noServiceWarning=You have to provide an e
 						#if( "$!externalBindingAction" == "" )
 							$ui.getString("tool.contenttool.externalBindingDialog.noServiceWarning")
 						#else
-							<iframe id="externalBindingIframe" src="$!externalBindingAction"></iframe>
+							<iframe id="externalBindingIframe"></iframe>
 						#end
 					</td>
 				</tr>	
