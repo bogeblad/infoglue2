@@ -72,6 +72,7 @@
 		}
 
 		(function() {
+			var warnFunction = function(s) {console.warn ? console.warn(s) : (console.log ? console.log(s) : alert(s))};
 			var markedQualifyer = {};
 			window.markQualifyer = function(entityId, path)
 			{
@@ -110,6 +111,62 @@
 					binding.setPath(nameMapping[binding.entityId]);
 				}
 				drawList();
+			}
+
+			var MESSAGE_ADD_ENTITY = "MESSAGE_ADD_ENTITY";
+			var MESSAGE_MARK_ENTITY = "MESSAGE_MARK_ENTITY";
+			var MESSAGE_RESYNC_NAMES = "MESSAGE_RESYNC_NAMES";
+			var messageOriginURL = "$!externalBindingAction";
+			var messageOriginFirstSlash = messageOriginURL.indexOf('/', 8);
+			messageOriginURL = messageOriginURL.substring(0, messageOriginFirstSlash > 0 ? messageOriginFirstSlash : 0);
+			var messageEventListener = function(event)
+			{
+				if (event.origin !== messageOriginURL)
+				{
+					warnFunction("Message sent from invalid source. Source: " + event.origin);
+				}
+				else
+				{
+					var data = event.data;
+					if (typeof data === "string")
+					{
+						try
+						{
+							data = JSON.parse(data);
+						}
+						catch(e)
+						{
+							return;
+						}
+					}
+					var action = data && data.action || "";
+					window.foobar = data;
+					if (action === MESSAGE_ADD_ENTITY)
+					{
+						addQualifyer(data.entityId, data.path);
+					}
+					else if (action === MESSAGE_MARK_ENTITY)
+					{
+						markQualifyer(data.entityId, data.path);
+					}
+					else if (action === MESSAGE_RESYNC_NAMES)
+					{
+						resyncNames(data.nameMapping);
+					}
+					else
+					{
+						warnFunction("Unknown message action. Action: " + action, event);
+					}
+				}
+			};
+
+			if (window.addEventListener)
+			{
+				window.addEventListener('message', messageEventListener, false);
+			}
+			else if (window.attachEvent)
+			{
+				window.attachEvent('onmessage', messageEventListener);
 			}
 		}());
 
