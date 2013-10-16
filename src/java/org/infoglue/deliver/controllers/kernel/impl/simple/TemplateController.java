@@ -47,8 +47,6 @@ import org.infoglue.cms.entities.management.ContentTypeDefinitionVO;
 import org.infoglue.cms.entities.management.LanguageVO;
 import org.infoglue.cms.entities.management.RepositoryVO;
 import org.infoglue.cms.entities.structure.SiteNodeVO;
-import org.infoglue.cms.exception.Bug;
-import org.infoglue.cms.exception.ConstraintException;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.security.InfoGlueGroup;
 import org.infoglue.cms.security.InfoGluePrincipal;
@@ -539,8 +537,7 @@ public interface TemplateController
      * This method is just a dummy method used to ensure that we can ensure to not get a decorated attribute
      * value if OnSiteEdit is on.
      */
-    public abstract String getParsedContentAttribute(
-            Integer contentId, Integer languageId, String attributeName, boolean clean);
+    public abstract String getParsedContentAttribute(Integer contentId, Integer languageId, String attributeName, boolean clean);
 
     /**
      * This method is just a dummy method used to ensure that we can ensure to not get a decorated attribute

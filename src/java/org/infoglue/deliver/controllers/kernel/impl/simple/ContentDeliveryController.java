@@ -1907,6 +1907,10 @@ public class ContentDeliveryController extends BaseDeliveryController
 
 		if(!isUnprotectedAsset)
 		{
+        	DigitalAssetVO digitalAsset = DigitalAssetController.getLatestDigitalAssetVO(contentVersion.getId(), assetKey, db);
+        	if(digitalAsset == null)
+        		return "";
+
 			//SiteNodeVO siteNodeVO = getSiteNodeVO(db, siteNodeId);
 			String dnsName = CmsPropertyHandler.getWebServerAddress();
 			if(siteNodeVO != null)
