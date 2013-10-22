@@ -1818,6 +1818,7 @@ public class ViewSiteNodePageComponentsAction extends InfoGlueAbstractAction
 						else
 						{
 							path = "Out of sync";
+							logger.warn("An external binding was found to be out of sync. SiteNodeId: " + siteNodeId + ". PropertyName" + propertyName);
 						}
 					}
 					

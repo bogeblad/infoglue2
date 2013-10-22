@@ -39,7 +39,7 @@
 	<script type="text/javascript" src="script/infogluecommons.js"></script>
 	
 	<script type="text/javascript">
-	<!-- 
+	<!--
 		function encodeXML(string) 
 		{
 			if(!string)
@@ -70,37 +70,105 @@
 		 	document.inputForm.repositoryId.value = repositoryId;
 		 	document.inputForm.path.value = path;	
 		}
-		var markedQualifyer = {};
-	    function markQualifyer(entityId, path)
-	    {
-	    	markedQualifyer.entityId = entityId;
-	    	markedQualifyer.path = path;
-	    }
 
-	    function addQualifyer(entityId, path)
-		{
-			if(!entityId && markedQualifyer.entityId)
+		(function() {
+			var warnFunction = function(s) {console.warn ? console.warn(s) : (console.log ? console.log(s) : alert(s))};
+			var markedQualifyer = {};
+			window.markQualifyer = function(entityId, path)
 			{
-				entityId = markedQualifyer.entityId;
-	    		path = markedQualifyer.path;
+				markedQualifyer.entityId = entityId;
+				markedQualifyer.path = path;
 			}
 
+			window.addQualifyer = function(entityId, path)
+			{
+				if(!entityId && markedQualifyer.entityId)
+				{
+					entityId = markedQualifyer.entityId;
+					path = markedQualifyer.path;
+				}
 
-			if(!entityId || entityId == '' || entityId == '${select}')
-			{
-				alert("You must choose a content to add");
+				if(!entityId || entityId == '' || entityId == '${select}')
+				{
+					alert("You must choose a content to add");
+				}
+				else
+				{
+					#if ( "$!supplementingEntityType" == "")
+					var binding = new Binding("External", entityId, path);
+					#else
+					var binding = new Binding("External", entityId, path, {});
+					#end
+					siteNodesVector.addElement(binding);
+					drawList();
+				}
 			}
-			else
-			{
-				#if ( "$!supplementingEntityType" == "")
-				var binding = new Binding("External", entityId, path);
-				#else
-			    var binding = new Binding("External", entityId, path, {});
-			    #end
-				siteNodesVector.addElement(binding);
+
+			window.resyncNames = function(nameMapping) {
+				for (var i=0; i<siteNodesVector.getSize(); i++)
+				{
+					var binding = siteNodesVector.getElementAt(i);
+					binding.setPath(nameMapping[binding.entityId]);
+				}
 				drawList();
 			}
-		}
+
+			var MESSAGE_ADD_ENTITY = "MESSAGE_ADD_ENTITY";
+			var MESSAGE_MARK_ENTITY = "MESSAGE_MARK_ENTITY";
+			var MESSAGE_RESYNC_NAMES = "MESSAGE_RESYNC_NAMES";
+			var messageOriginURL = "$!externalBindingAction";
+			var messageOriginFirstSlash = messageOriginURL.indexOf('/', 8);
+			messageOriginURL = messageOriginURL.substring(0, messageOriginFirstSlash > 0 ? messageOriginFirstSlash : 0);
+			var messageEventListener = function(event)
+			{
+				if (event.origin !== messageOriginURL)
+				{
+					warnFunction("Message sent from invalid source. Source: " + event.origin);
+				}
+				else
+				{
+					var data = event.data;
+					if (typeof data === "string")
+					{
+						try
+						{
+							data = JSON.parse(data);
+						}
+						catch(e)
+						{
+							return;
+						}
+					}
+					var action = data && data.action || "";
+					window.foobar = data;
+					if (action === MESSAGE_ADD_ENTITY)
+					{
+						addQualifyer(data.entityId, data.path);
+					}
+					else if (action === MESSAGE_MARK_ENTITY)
+					{
+						markQualifyer(data.entityId, data.path);
+					}
+					else if (action === MESSAGE_RESYNC_NAMES)
+					{
+						resyncNames(data.nameMapping);
+					}
+					else
+					{
+						warnFunction("Unknown message action. Action: " + action, event);
+					}
+				}
+			};
+
+			if (window.addEventListener)
+			{
+				window.addEventListener('message', messageEventListener, false);
+			}
+			else if (window.attachEvent)
+			{
+				window.attachEvent('onmessage', messageEventListener);
+			}
+		}());
 
 		function save()
 		{
@@ -117,7 +185,8 @@
 				var binding = siteNodesVector.getElementAt(i);
 				if(i > 0) 
 					path = path + ", ";
-				path 		= path + binding.getPath();
+				var cleanedPath = (binding.getPath() || '').replace(/,/g, '&#44;');
+				path 		= path + cleanedPath;
 				entityName 	= binding.getEntityName();
 				entityId   	= binding.getEntityId();
 				var attributes = "";
@@ -363,11 +432,9 @@
 				wrapperDiv.setAttribute("class", "wrapper");
 
 				var nameDiv = document.createElement("div");
+				nameDiv.innerHTML = binding.getPath();
 				nameDiv.setAttribute("class", "nameDiv");
-				nameDiv.setAttribute("title", binding.getPath());
-
-				var bindingText = document.createTextNode(binding.getPath());
-				nameDiv.appendChild(bindingText);
+				nameDiv.setAttribute("title", nameDiv.textContent); // make sure html entities don't appear in title
 
 				wrapperDiv.appendChild(nameDiv);
 
@@ -520,7 +587,15 @@
 				siteNodesVector.addElement(binding);
 			#end
 
-			//alert("siteNodesVector:" + siteNodesVector.getSize());
+			var currentIds = [];
+			for (var i = 0; i < siteNodesVector.getSize(); i++)
+			{
+				currentIds.push(siteNodesVector.getElementAt(i).entityId);
+			}
+			var bindingIframe = document.getElementById("externalBindingIframe");
+			var bindingAction = "$!externalBindingAction";
+			bindingAction = bindingAction + (bindingAction.indexOf('?') === -1 ? "?" : "&") + "currentIds=" + currentIds.join(',');
+			(bindingIframe && (bindingIframe.src = bindingAction));
 			drawList();
 		}
 
@@ -629,7 +704,7 @@ tool.contenttool.externalBindingDialog.noServiceWarning=You have to provide an e
 						#if( "$!externalBindingAction" == "" )
 							$ui.getString("tool.contenttool.externalBindingDialog.noServiceWarning")
 						#else
-							<iframe id="externalBindingIframe" src="$!externalBindingAction"></iframe>
+							<iframe id="externalBindingIframe"></iframe>
 						#end
 					</td>
 				</tr>	
