@@ -46,6 +46,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Set;
 import java.util.Vector;
 
@@ -63,7 +64,6 @@ import org.apache.oro.text.regex.Perl5Compiler;
 import org.apache.oro.text.regex.Perl5Matcher;
 import org.exolab.castor.jdo.Database;
 import org.infoglue.cms.applications.common.VisualFormatter;
-import org.infoglue.cms.applications.databeans.ReferenceBean;
 import org.infoglue.cms.controllers.kernel.impl.simple.AccessRightController;
 import org.infoglue.cms.controllers.kernel.impl.simple.CastorDatabaseService;
 import org.infoglue.cms.controllers.kernel.impl.simple.CategoryConditions;
@@ -91,10 +91,8 @@ import org.infoglue.cms.entities.content.ContentVersionVO;
 import org.infoglue.cms.entities.content.DigitalAssetVO;
 import org.infoglue.cms.entities.management.ContentTypeAttribute;
 import org.infoglue.cms.entities.management.ContentTypeDefinitionVO;
-import org.infoglue.cms.entities.management.InterceptionPointVO;
 import org.infoglue.cms.entities.management.LanguageVO;
 import org.infoglue.cms.entities.management.RepositoryVO;
-import org.infoglue.cms.entities.structure.SiteNode;
 import org.infoglue.cms.entities.structure.SiteNodeVO;
 import org.infoglue.cms.entities.structure.SiteNodeVersionVO;
 import org.infoglue.cms.exception.SystemException;
@@ -8416,4 +8414,24 @@ public class BasicTemplateController implements TemplateController
     {
         return ( this instanceof EditOnSiteBasicTemplateController );
     }
+
+	public String getGeneralSetting(String key)
+	{
+		return getGeneralSetting(key, null);
+	}
+
+	public String getGeneralSetting(String key, String defaultValue)
+	{
+		Properties generalSettings = CmsPropertyHandler.getGeneralSettings(false);
+		String value = null;
+		if (generalSettings != null)
+		{
+			value = generalSettings.getProperty(key, defaultValue);
+		}
+		if (logger.isDebugEnabled())
+		{
+			logger.debug("Returning value <" + value + "> for general setting key <" + key + ">");
+		}
+		return value;
+	}
 }
