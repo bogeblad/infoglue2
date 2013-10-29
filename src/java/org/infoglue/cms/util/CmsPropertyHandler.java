@@ -28,8 +28,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.net.InetAddress;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -52,8 +50,6 @@ import org.infoglue.deliver.util.Timer;
 
 import com.opensymphony.module.propertyset.PropertySet;
 import com.opensymphony.module.propertyset.PropertySetManager;
-
-
 
 /**
  * CMSPropertyHandler.java
@@ -100,6 +96,7 @@ public class CmsPropertyHandler
 	private static Boolean useHashCodeInCaches 				= null;
 	private static Boolean useSynchronizationOnCaches 		= null;
 	private static Map cacheSettings						= null;
+	private static Properties generalSettings				= null;
 	
 	public static String getDigitalAssetPortletRegistryId()
 	{
@@ -243,6 +240,7 @@ public class CmsPropertyHandler
 		Boolean newUseHashCodeInCaches = getUseHashCodeInCaches(true);
 		Boolean newUseSynchronizationOnCaches = getUseSynchronizationOnCaches(true);
 		Map newCacheSettings = getCacheSettings(true);
+		Properties newGeneralSettings = getGeneralSettings(true);
 		
 		inputCharacterEncoding 				= newInputCharacterEncoding;
 		enforceRigidContentAccess 			= newEnforceRigidContentAccess;
@@ -257,7 +255,8 @@ public class CmsPropertyHandler
 		useHashCodeInCaches 				= newUseHashCodeInCaches;
 		useSynchronizationOnCaches 			= newUseSynchronizationOnCaches;
 		cacheSettings 						= newCacheSettings;
-		
+		generalSettings						= newGeneralSettings;
+
 		logger.info("Done resetting hard cached settings...");
 	}
 	
@@ -2014,6 +2013,41 @@ public class CmsPropertyHandler
 		}
 
 		return cacheSettings; 
+	}
+	
+	private static Properties loadPropertiesFromString(String propertiesString, Properties currentProperties)
+	{
+		if (propertiesString != null && !propertiesString.equals(""))
+		{
+			try
+			{
+				currentProperties = new Properties(currentProperties);
+				currentProperties.load(new ByteArrayInputStream(propertiesString.getBytes("UTF-8")));
+				return currentProperties;
+			}
+			catch(Exception ex)
+			{
+				logger.error("Error loading general settings from string. Reason:" + ex.getMessage());
+				logger.warn("Error loading general settings from string.", ex);
+			}
+		}
+		return currentProperties;
+	}
+
+	public static Properties getGeneralSettings(boolean skipCaches)
+	{
+		if (generalSettings == null || skipCaches)
+		{
+			String generalSettingsString = CmsPropertyHandler.getServerNodeDataProperty(null, "generalSettings", true, null, skipCaches);
+			CmsPropertyHandler.generalSettings = loadPropertiesFromString(generalSettingsString, null);
+			if (CmsPropertyHandler.getOperatingMode().equals("0"))
+			{
+				logger.debug("Loading extra general settings for working instance.");
+				String workingGeneralSettingsString = CmsPropertyHandler.getServerNodeDataProperty(null, "workingGeneralSettings", true, null, skipCaches);
+				CmsPropertyHandler.generalSettings = loadPropertiesFromString(workingGeneralSettingsString, CmsPropertyHandler.generalSettings);
+			}
+		}
+		return generalSettings; 
 	}
 
 	
