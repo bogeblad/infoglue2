@@ -318,7 +318,7 @@
 
   <!--  Mapping for SmallAccessRight  -->
   <class name="org.infoglue.cms.entities.management.impl.simple.SmallAccessRightImpl" identity="accessRightId" key-generator="SEQUENCE">
-    <description>AccessRight</description>
+    <description>SmallAccessRight</description>
     <cache-type type="none"/>
     <map-to table="cmAccessRight"/>
     <field name="accessRightId" type="java.lang.Integer">
