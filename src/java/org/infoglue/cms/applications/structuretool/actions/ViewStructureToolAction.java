@@ -35,9 +35,22 @@ public class ViewStructureToolAction extends ViewCMSAbstractToolAction
 { 
 	private static final long serialVersionUID = 1L;
 
+	private String siteNodeId = "-1";
+
     public String doExecute() throws Exception
     {
         return "success";
     }
+
+	public String getSiteNodeId() 
+	{
+		return siteNodeId;
+	}
+
+	public void setSiteNodeId(String siteNodeId) 
+	{
+		this.siteNodeId = siteNodeId;
+	}
+
                
 }

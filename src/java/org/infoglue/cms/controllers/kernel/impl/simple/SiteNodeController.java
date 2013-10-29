@@ -598,6 +598,15 @@ public class SiteNodeController extends BaseController
 	 * This method gets the siteNodeVO with the given id
 	 */
 	 
+    public SmallSiteNodeImpl getSmallSiteNodeWithId(Integer siteNodeId, Database db) throws SystemException, Bug, Exception
+    {
+    	return (SmallSiteNodeImpl) getObjectWithId(SmallSiteNodeImpl.class, siteNodeId, db);
+    }
+
+    /**
+	 * This method gets the siteNodeVO with the given id
+	 */
+	 
     public SiteNodeVO getSiteNodeVOWithIdIfFailed(Integer siteNodeId, Database db) throws SystemException, Bug, Exception
     {
     	try
@@ -653,12 +662,13 @@ public class SiteNodeController extends BaseController
 	 * This method deletes a siteNode and also erases all the children and all versions.
 	 */
 	    
-    public void delete(SiteNodeVO siteNodeVO, InfoGluePrincipal infogluePrincipal) throws ConstraintException, SystemException
+    public void delete(Integer siteNodeId, InfoGluePrincipal infogluePrincipal) throws ConstraintException, SystemException
     {
     	Database db = CastorDatabaseService.getDatabase();
         beginTransaction(db);
 		try
         {	
+			SiteNodeVO siteNodeVO = getSiteNodeVOWithId(siteNodeId, db);
 			delete(siteNodeVO, db, infogluePrincipal);	
 			
 	    	commitTransaction(db);
@@ -687,12 +697,113 @@ public class SiteNodeController extends BaseController
 		delete(siteNodeVO, db, false, infogluePrincipal);
 	}
 	
+	
+	public void delete(SiteNodeVO siteNodeVO, Database db, boolean forceDelete, InfoGluePrincipal infogluePrincipal) throws ConstraintException, SystemException, Exception
+	{
+		logger.error("Delete start");
+		System.out.println("Delete start");
+		//SiteNode siteNode = getSiteNodeWithId(siteNodeVO.getSiteNodeId(), db);
+		//SiteNode parent = siteNode.getParentSiteNode();
+        deleteRecursive(siteNodeVO, db, forceDelete, infogluePrincipal);
+		/*
+		if(siteNodeVO.getParentSiteNodeId() != null)
+		{
+			Iterator childSiteNodeIterator = parent.getChildSiteNodes().iterator();
+			while(childSiteNodeIterator.hasNext())
+			{
+			    SiteNode candidate = (SiteNode)childSiteNodeIterator.next();
+			    if(candidate.getId().equals(siteNodeVO.getSiteNodeId()))
+			        deleteRecursive(siteNode, childSiteNodeIterator, db, forceDelete, infogluePrincipal);
+			}
+		}
+		else
+		{
+		    deleteRecursive(siteNode, null, db, forceDelete, infogluePrincipal);
+		}
+		*/
+		System.out.println("Delete end");
+	}        
+	
+    private void deleteRecursive(SiteNodeVO siteNode, Database db, boolean forceDelete, InfoGluePrincipal infoGluePrincipal) throws ConstraintException, SystemException, Exception
+    {
+        List referenceBeanList = RegistryController.getController().getReferencingObjectsForSiteNode(siteNode.getId(), -1, db);
+		if(referenceBeanList != null && referenceBeanList.size() > 0 && !forceDelete)
+			throw new ConstraintException("SiteNode.stateId", "3405");
+		
+		Collection<SiteNodeVO> children = SiteNodeController.getController().getChildSiteNodeVOList(siteNode.getId(), db);
+        //Collection children = siteNode.getChildSiteNodes();
+		Iterator i = children.iterator();
+		for(SiteNodeVO childSiteNodeVO : children)
+		{
+			deleteRecursive(childSiteNodeVO, db, forceDelete, infoGluePrincipal);
+   		}
+		
+		if(forceDelete || getIsDeletable(siteNode, infoGluePrincipal, db))
+	    {		 
+			SiteNodeVersionController.getController().deleteVersionsForSiteNode(siteNode, db, infoGluePrincipal);
+			
+			try
+			{
+				System.out.println("Deleting meta info content..");
+				ContentVO contentVO = ContentController.getContentController().getContentVOWithId(siteNode.getMetaInfoContentId(), db);
+				ContentController.getContentController().delete(contentVO, db, true, true, true, infoGluePrincipal);
+				System.out.println("End deleting meta info content..");
+			}
+			catch (Exception e) 
+			{
+				logger.error("Error removing meta data for " + siteNode.getName() + ": " + e.getMessage(), e);
+			}
+			ServiceBindingController.getController().deleteServiceBindingsReferencingSiteNode(siteNode, db);
+			
+			SmallSiteNodeImpl siteNodeImpl = getSmallSiteNodeWithId(siteNode.getId(), db);
+			db.remove(siteNodeImpl);
+	    }
+	    else
+    	{
+    		throw new ConstraintException("SiteNodeVersion.stateId", "3400");
+    	}			
+    }        
+    
+	/**
+	 * This method returns true if the sitenode does not have any published siteNodeversions or 
+	 * are restricted in any other way.
+	 */
+	
+	private boolean getIsDeletable(SiteNodeVO siteNodeVO, InfoGluePrincipal infogluePrincipal, Database db) throws SystemException, Exception
+	{
+		boolean isDeletable = true;
+		
+		SiteNodeVersionVO latestSiteNodeVersion = SiteNodeVersionController.getController().getLatestActiveSiteNodeVersionVO(db, siteNodeVO.getId());
+		if(latestSiteNodeVersion != null && latestSiteNodeVersion.getIsProtected().equals(SiteNodeVersionVO.YES))
+		{
+			boolean hasAccess = AccessRightController.getController().getIsPrincipalAuthorized(db, infogluePrincipal, "SiteNodeVersion.DeleteSiteNode", "" + latestSiteNodeVersion.getId());
+			if(!hasAccess)
+				return false;
+		}
+		
+		Collection<SiteNodeVersionVO> siteNodeVersionVOList = SiteNodeVersionController.getController().getSiteNodeVersionVOList(db, siteNodeVO.getId());
+        if(siteNodeVersionVOList != null)
+    	{
+	       	for(SiteNodeVersionVO versionVO : siteNodeVersionVOList) 
+	        {
+	        	if(versionVO.getStateId().intValue() == SiteNodeVersionVO.PUBLISHED_STATE.intValue() && versionVO.getIsActive().booleanValue() == true)
+	        	{
+	        		logger.warn("The siteNode had a published version so we cannot delete it..");
+					isDeletable = false;
+	        		break;
+	        	}
+		    }		
+    	}
+    	
+		return isDeletable;	
+	}
 	/**
 	 * This method deletes a siteNode and also erases all the children and all versions.
 	 */
-	    
+/*	    
 	public void delete(SiteNodeVO siteNodeVO, Database db, boolean forceDelete, InfoGluePrincipal infogluePrincipal) throws ConstraintException, SystemException, Exception
 	{
+		System.out.println("Delete start");
 		SiteNode siteNode = getSiteNodeWithId(siteNodeVO.getSiteNodeId(), db);
 		SiteNode parent = siteNode.getParentSiteNode();
 		if(parent != null)
@@ -709,15 +820,16 @@ public class SiteNodeController extends BaseController
 		{
 		    deleteRecursive(siteNode, null, db, forceDelete, infogluePrincipal);
 		}
+		System.out.println("Delete end");
 	}        
-
+*/
 
 	/**
 	 * Recursively deletes all siteNodes and their versions.
 	 * This method is a mess as we had a problem with the lazy-loading and transactions. 
 	 * We have to begin and commit all the time...
 	 */
-	
+/*	
     private static void deleteRecursive(SiteNode siteNode, Iterator parentIterator, Database db, boolean forceDelete, InfoGluePrincipal infoGluePrincipal) throws ConstraintException, SystemException, Exception
     {
         List referenceBeanList = RegistryController.getController().getReferencingObjectsForSiteNode(siteNode.getId(), -1, db);
@@ -749,12 +861,13 @@ public class SiteNodeController extends BaseController
     		throw new ConstraintException("SiteNodeVersion.stateId", "3400");
     	}			
     }        
-
+*/
+	
 	/**
 	 * This method returns true if the sitenode does not have any published siteNodeversions or 
 	 * are restricted in any other way.
 	 */
-	
+/*	
 	private static boolean getIsDeletable(SiteNode siteNode, InfoGluePrincipal infogluePrincipal, Database db) throws SystemException, Exception
 	{
 		boolean isDeletable = true;
@@ -785,7 +898,7 @@ public class SiteNodeController extends BaseController
     	
 		return isDeletable;	
 	}
-
+*/
 	
 	public SiteNodeVO create(Integer parentSiteNodeId, Integer siteNodeTypeDefinitionId, InfoGluePrincipal infoGluePrincipal, Integer repositoryId, SiteNodeVO siteNodeVO) throws ConstraintException, SystemException
 	{

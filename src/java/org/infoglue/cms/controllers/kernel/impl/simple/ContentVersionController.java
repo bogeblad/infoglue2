@@ -729,6 +729,32 @@ public class ContentVersionController extends BaseController
 		return contentVersionVOList;
 	}
 
+	
+   	/**
+	 * This method returns the latest active content version.
+	 */
+    
+	public List<MediumContentVersionImpl> getMediumContentVersionImplList(Integer contentId, Database db) throws SystemException, Bug, Exception
+	{
+		List<MediumContentVersionImpl> contentVersionList = new ArrayList<MediumContentVersionImpl>();
+
+        OQLQuery oql = db.getOQLQuery( "SELECT cv FROM org.infoglue.cms.entities.content.impl.simple.MediumContentVersionImpl cv WHERE cv.contentId = $1 AND cv.isActive = $2 ORDER BY cv.contentVersionId");
+    	oql.bind(contentId);
+		oql.bind(true);
+    	
+    	QueryResults results = oql.execute();
+		while (results.hasMore()) 
+        {
+			MediumContentVersionImpl contentVersion = (MediumContentVersionImpl)results.next();
+			contentVersionList.add(contentVersion);
+        }
+		
+		results.close();
+		oql.close();
+
+		return contentVersionList;
+	}
+	
    	/**
 	 * This method returns the latest active content version.
 	 */
@@ -1384,7 +1410,7 @@ public class ContentVersionController extends BaseController
 	 */
 	
  	public void delete(MediumContentVersionImpl contentVersion, Database db, boolean forceDelete) throws ConstraintException, SystemException, Exception
-	{
+	{ 		
 		if (!forceDelete && contentVersion.getStateId().intValue() == ContentVersionVO.PUBLISHED_STATE.intValue() && contentVersion.getIsActive().booleanValue() == true)
 		{
 			throw new ConstraintException("ContentVersion.stateId", "3300", contentVersion.getOwningContent().getName());
@@ -1402,8 +1428,13 @@ public class ContentVersionController extends BaseController
 	 * The contentVersion is related to digital assets but we don't remove the asset itself in case 
 	 * other versions or contents reference the same asset.
 	 */
-	
+ 	/*
 	public void deleteVersionsForContent(Content content, Database db, InfoGluePrincipal principal) throws ConstraintException, SystemException, Bug, Exception
+    {
+	    deleteVersionsForContent(content, db, false, principal);
+    }
+    */
+	public void deleteVersionsForContent(ContentVO content, Database db, InfoGluePrincipal principal) throws ConstraintException, SystemException, Bug, Exception
     {
 	    deleteVersionsForContent(content, db, false, principal);
     }
@@ -1414,6 +1445,57 @@ public class ContentVersionController extends BaseController
 	 * other versions or contents reference the same asset.
 	 */
 	
+	public void deleteVersionsForContent(ContentVO contentVO, Database db, boolean forceDelete, InfoGluePrincipal infogluePrincipal) throws ConstraintException, SystemException, Bug, Exception
+    {
+        if(forceDelete)
+        {
+	        List contentVersionsVOList = ContentVersionController.getContentVersionController().getPublishedActiveContentVersionVOList(contentVO.getContentId(), db);
+	        
+	        List events = new ArrayList();
+			Iterator it = contentVersionsVOList.iterator();
+			while(it.hasNext())
+			{
+				ContentVersionVO contentVersionVO = (ContentVersionVO)it.next();
+				
+				EventVO eventVO = new EventVO();
+				eventVO.setDescription("Unpublished before forced deletion");
+				eventVO.setEntityClass(ContentVersion.class.getName());
+				eventVO.setEntityId(contentVersionVO.getContentVersionId());
+				eventVO.setName(contentVersionVO.getContentName() + "(" + contentVersionVO.getLanguageName() + ")");
+				eventVO.setTypeId(EventVO.UNPUBLISH_LATEST);
+				eventVO = EventController.create(eventVO, contentVO.getRepositoryId(), infogluePrincipal);
+				events.add(eventVO);
+			}
+		
+		    PublicationVO publicationVO = new PublicationVO();
+		    publicationVO.setName("Direct publication by " + infogluePrincipal.getName());
+		    publicationVO.setDescription("Unpublished all versions before forced deletion");
+		    //publicationVO.setPublisher(this.getInfoGluePrincipal().getName());
+		    publicationVO.setRepositoryId(contentVO.getRepositoryId());
+		    publicationVO = PublicationController.getController().createAndPublish(publicationVO, events, true, infogluePrincipal, db, true);
+        }
+        //TEST
+        List<MediumContentVersionImpl> contentVersionList = getMediumContentVersionImplList(contentVO.getId(), db);
+        Iterator<MediumContentVersionImpl> contentVersionListIterator = contentVersionList.iterator();
+        while (contentVersionListIterator.hasNext())
+        {
+        	MediumContentVersionImpl cv = contentVersionListIterator.next();
+        	logger.info("Deleting contentVersion:" + cv);
+			delete(cv, db, forceDelete);
+        }
+        /*
+        Collection<ContentVersionVO> contentVersionVOList = getContentVersionVOList(contentVO.getId(), db);
+        for (ContentVersionVO cvVO : contentVersionVOList)
+        {
+        	logger.info("Deleting contentVersion:" + cvVO.getId());
+        	MediumContentVersionImpl contentVersion = getMediumContentVersionWithId(cvVO.getContentVersionId(), db);
+        	System.out.println("contentVersion:" + contentVersion);
+			delete(contentVersion, db, forceDelete);
+        }
+        */
+    }
+	
+	/*
 	public void deleteVersionsForContent(Content content, Database db, boolean forceDelete, InfoGluePrincipal infogluePrincipal) throws ConstraintException, SystemException, Bug, Exception
     {
     	//TEST
@@ -1468,6 +1550,7 @@ public class ContentVersionController extends BaseController
         }
         content.setContentVersions(new ArrayList());
     }
+	*/
 
 	/**
 	 * This method deletes a digitalAsset.

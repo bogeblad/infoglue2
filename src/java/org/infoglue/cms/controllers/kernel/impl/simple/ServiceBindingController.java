@@ -34,14 +34,13 @@ import org.exolab.castor.jdo.OQLQuery;
 import org.exolab.castor.jdo.PersistenceException;
 import org.exolab.castor.jdo.QueryResults;
 import org.infoglue.cms.entities.content.Content;
-import org.infoglue.cms.entities.content.ContentVersionVO;
 import org.infoglue.cms.entities.kernel.BaseEntityVO;
 import org.infoglue.cms.entities.management.impl.simple.AvailableServiceBindingImpl;
 import org.infoglue.cms.entities.management.impl.simple.ServiceDefinitionImpl;
 import org.infoglue.cms.entities.structure.Qualifyer;
 import org.infoglue.cms.entities.structure.ServiceBinding;
 import org.infoglue.cms.entities.structure.ServiceBindingVO;
-import org.infoglue.cms.entities.structure.SiteNode;
+import org.infoglue.cms.entities.structure.SiteNodeVO;
 import org.infoglue.cms.entities.structure.SiteNodeVersion;
 import org.infoglue.cms.entities.structure.SiteNodeVersionVO;
 import org.infoglue.cms.entities.structure.impl.simple.ServiceBindingImpl;
@@ -379,7 +378,51 @@ public class ServiceBindingController extends BaseController
 	/**
 	 * This method deletes all service bindings pointing to a content.
 	 */
+    
+	public void deleteServiceBindingsReferencingContent(Integer contentId, Database db) throws ConstraintException, SystemException, Exception
+	{		
+		OQLQuery oql = db.getOQLQuery( "SELECT sb FROM org.infoglue.cms.entities.structure.impl.simple.ServiceBindingImpl sb WHERE sb.bindingQualifyers.name = $1 AND sb.bindingQualifyers.value = $2 ORDER BY sb.serviceBindingId");
+		oql.bind("contentId");
+		oql.bind(contentId.toString());
+		
+		QueryResults results = oql.execute();
+		logger.info("Fetching entity in read/write mode");
 
+		while(results.hasMore()) 
+		{
+			ServiceBinding serviceBinding = (ServiceBindingImpl)results.next();
+			//logger.info("serviceBinding:" + serviceBinding.getServiceBindingId());
+			Collection qualifyers = serviceBinding.getBindingQualifyers();
+			Iterator qualifyersIterator = qualifyers.iterator();
+			while(qualifyersIterator.hasNext())
+			{	
+				Qualifyer qualifyer = (Qualifyer)qualifyersIterator.next();
+				//logger.info("qualifyer:" + qualifyer.getName() + ":" + qualifyer.getValue() + " == " + qualifyer.getValue().equals(content.getContentId().toString()));
+				if(qualifyer.getName().equalsIgnoreCase("contentId") && qualifyer.getValue().equals(contentId.toString()))
+				{
+					//db.remove(qualifyer);
+					qualifyersIterator.remove();
+					//logger.info("Qualifyers:" + serviceBinding.getBindingQualifyers().size());
+					serviceBinding.getBindingQualifyers().remove(qualifyer);
+
+					//logger.info("Qualifyers2:" + serviceBinding.getBindingQualifyers().size());
+					if(serviceBinding.getBindingQualifyers() == null || serviceBinding.getBindingQualifyers().size() == 0)
+					{
+						//logger.info("Removing service binding...");
+						db.remove(serviceBinding);
+					}
+				}
+			}
+			
+			SiteNodeVersion siteNodeVersion = serviceBinding.getSiteNodeVersion();
+			if(siteNodeVersion.getOwningSiteNode() == null)
+			    SiteNodeVersionController.getController().delete(siteNodeVersion, db);
+		}	
+		
+		results.close();
+		oql.close();
+	} 
+    /*
 	public static void deleteServiceBindingsReferencingContent(Content content, Database db) throws ConstraintException, SystemException, Exception
 	{		
 		OQLQuery oql = db.getOQLQuery( "SELECT sb FROM org.infoglue.cms.entities.structure.impl.simple.ServiceBindingImpl sb WHERE sb.bindingQualifyers.name = $1 AND sb.bindingQualifyers.value = $2 ORDER BY sb.serviceBindingId");
@@ -423,12 +466,55 @@ public class ServiceBindingController extends BaseController
 		results.close();
 		oql.close();
 	}       
-	
+	*/
 	
 	/**
 	 * This method deletes all service bindings pointing to a content.
 	 */
 
+	public void deleteServiceBindingsReferencingSiteNode(SiteNodeVO siteNode, Database db) throws ConstraintException, SystemException, Exception
+	{		
+		OQLQuery oql = db.getOQLQuery( "SELECT sb FROM org.infoglue.cms.entities.structure.impl.simple.ServiceBindingImpl sb WHERE sb.bindingQualifyers.name = $1 AND sb.bindingQualifyers.value = $2 ORDER BY sb.serviceBindingId");
+		oql.bind("siteNodeId");
+		oql.bind(siteNode.getSiteNodeId().toString());
+		
+		QueryResults results = oql.execute();
+		logger.info("Fetching entity in read/write mode");
+
+		while(results.hasMore()) 
+		{
+			ServiceBinding serviceBinding = (ServiceBindingImpl)results.next();
+			//logger.info("serviceBinding:" + serviceBinding.getServiceBindingId());
+			Collection qualifyers = serviceBinding.getBindingQualifyers();
+			Iterator qualifyersIterator = qualifyers.iterator();
+			while(qualifyersIterator.hasNext())
+			{	
+				Qualifyer qualifyer = (Qualifyer)qualifyersIterator.next();
+				//logger.info("qualifyer:" + qualifyer.getName() + ":" + qualifyer.getValue() + " == " + qualifyer.getValue().equals(content.getContentId().toString()));
+				if(qualifyer.getName().equalsIgnoreCase("siteNodeId") && qualifyer.getValue().equals(siteNode.getSiteNodeId().toString()))
+				{
+					//db.remove(qualifyer);
+					qualifyersIterator.remove();
+					//logger.info("Qualifyers:" + serviceBinding.getBindingQualifyers().size());
+					serviceBinding.getBindingQualifyers().remove(qualifyer);
+
+					//logger.info("Qualifyers2:" + serviceBinding.getBindingQualifyers().size());
+					if(serviceBinding.getBindingQualifyers() == null || serviceBinding.getBindingQualifyers().size() == 0)
+					{
+						//logger.info("Removing service binding...");
+						db.remove(serviceBinding);
+					}
+				}
+			}
+		}
+		
+		results.close();
+		oql.close();
+	}
+	/**
+	 * This method deletes all service bindings pointing to a content.
+	 */
+/*
 	public static void deleteServiceBindingsReferencingSiteNode(SiteNode siteNode, Database db) throws ConstraintException, SystemException, Exception
 	{		
 		OQLQuery oql = db.getOQLQuery( "SELECT sb FROM org.infoglue.cms.entities.structure.impl.simple.ServiceBindingImpl sb WHERE sb.bindingQualifyers.name = $1 AND sb.bindingQualifyers.value = $2 ORDER BY sb.serviceBindingId");
@@ -468,6 +554,7 @@ public class ServiceBindingController extends BaseController
 		results.close();
 		oql.close();
 	}       
+	*/
 
 	/**
 	 * This method deletes all service bindings pointing to a site node version.

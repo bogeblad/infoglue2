@@ -71,6 +71,12 @@
 				document.cookie=cookie_name+"="+size+"; expires=Monday, 04-Apr-2010 05:00:00 GMT";
 		}
 		
+		#if($siteNodeId != "-1")
+			setTimeout(function(){
+				window.frames["main"].location.href="ViewSiteNode.action?siteNodeId=$siteNodeId";
+			}, 500);
+		#end
+		
     </script>
 </head>
 

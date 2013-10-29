@@ -5,7 +5,7 @@ CREATE TABLE cmPageDeliveryMetaData (
   contentId number NOT NULL,
   lastModifiedDateTime date NOT NULL,
   selectiveCacheUpdateNotAppl number NOT NULL,
-  lastModifiedTimeout date NOT NULL,
+  lastModifiedTimeout date,
   PRIMARY KEY (pageDeliveryMetaDataId) 
 );
 

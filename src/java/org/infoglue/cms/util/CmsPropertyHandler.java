@@ -1374,7 +1374,7 @@ public class CmsPropertyHandler
 	{
 	    return getServerNodeProperty("requestArgumentDelimiter", true, "&amp;");
 	}
-
+	
 	public static String getErrorUrl()
 	{
 	    return getServerNodeProperty("errorUrl", true);

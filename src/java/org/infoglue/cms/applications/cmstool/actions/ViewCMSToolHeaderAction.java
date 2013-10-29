@@ -37,6 +37,8 @@ import org.infoglue.cms.util.CmsPropertyHandler;
 public class ViewCMSToolHeaderAction extends InfoGlueAbstractAction
 {
 	private static final long serialVersionUID = -6699854300371586633L;
+	private String contentId = "-1";
+	private String siteNodeId = "-1";
 
 	public String getUserName()
 	{
@@ -62,5 +64,24 @@ public class ViewCMSToolHeaderAction extends InfoGlueAbstractAction
     {
         return "success";
     }
-               
+           
+	public String getContentId() 
+	{
+		return contentId;
+	}
+
+	public void setContentId(String contentId) 
+	{
+		this.contentId = contentId;
+	}
+
+	public String getSiteNodeId() 
+	{
+		return siteNodeId;
+	}
+
+	public void setSiteNodeId(String siteNodeId) 
+	{
+		this.siteNodeId = siteNodeId;
+	}
 }

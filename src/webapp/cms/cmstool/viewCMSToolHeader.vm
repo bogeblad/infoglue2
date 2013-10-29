@@ -23,16 +23,23 @@
 	
 		function changeToolArea(toolId)
 		{
+			var contentId = "$!contentId";
+			var siteNodeId = "$!siteNodeId";
+			if(siteNodeId != "" && siteNodeId != "-1")
+				 toolId = 1;
+			else if(contentId != "" && contentId != "-1")
+				 toolId = 0;
+			
 			//alert("top:" + top.frames["toolarea"].name);
 		    //alert("toolId:" + toolId);
 		    if(toolId == 0)
 		    {
-		    	top.frames["toolarea"].location.href = "ViewContentTool.action";
+		    	top.frames["toolarea"].location.href = "ViewContentTool.action?contentId=$!contentId";
 			    top.document.title = "Content - InfoGlue CMS";
 		    }
 		    else if (toolId == 1)
 			{
-			    top.frames["toolarea"].location.href = "ViewStructureTool.action";
+			    top.frames["toolarea"].location.href = "ViewStructureTool.action?siteNodeId=$!siteNodeId";
 			    top.document.title = "Structure - InfoGlue CMS";
 			}
 			else if (toolId == 2)

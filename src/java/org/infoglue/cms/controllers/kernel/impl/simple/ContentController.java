@@ -47,6 +47,7 @@ import org.infoglue.cms.entities.content.ContentVersionVO;
 import org.infoglue.cms.entities.content.SmallestContentVersionVO;
 import org.infoglue.cms.entities.content.impl.simple.ContentImpl;
 import org.infoglue.cms.entities.content.impl.simple.MediumContentImpl;
+import org.infoglue.cms.entities.content.impl.simple.MediumContentVersionImpl;
 import org.infoglue.cms.entities.content.impl.simple.SmallContentImpl;
 import org.infoglue.cms.entities.content.impl.simple.SmallStateContentImpl;
 import org.infoglue.cms.entities.kernel.BaseEntityVO;
@@ -54,16 +55,12 @@ import org.infoglue.cms.entities.management.ContentTypeDefinition;
 import org.infoglue.cms.entities.management.ContentTypeDefinitionVO;
 import org.infoglue.cms.entities.management.GeneralOQLResult;
 import org.infoglue.cms.entities.management.LanguageVO;
-import org.infoglue.cms.entities.management.Repository;
-import org.infoglue.cms.entities.management.RepositoryLanguage;
 import org.infoglue.cms.entities.management.RepositoryVO;
 import org.infoglue.cms.entities.management.ServiceDefinition;
 import org.infoglue.cms.entities.management.impl.simple.ContentTypeDefinitionImpl;
-import org.infoglue.cms.entities.management.impl.simple.RepositoryImpl;
 import org.infoglue.cms.entities.structure.Qualifyer;
 import org.infoglue.cms.entities.structure.ServiceBinding;
 import org.infoglue.cms.entities.structure.SiteNodeVO;
-import org.infoglue.cms.entities.structure.impl.simple.SmallestSiteNodeImpl;
 import org.infoglue.cms.exception.Bug;
 import org.infoglue.cms.exception.ConstraintException;
 import org.infoglue.cms.exception.SystemException;
@@ -605,6 +602,21 @@ public class ContentController extends BaseController
 	    
 	public void delete(ContentVO contentVO, Database db, boolean skipRelationCheck, boolean skipServiceBindings, boolean forceDelete, InfoGluePrincipal infogluePrincipal) throws ConstraintException, SystemException, Exception
 	{
+		ContentVO content = null;
+		try
+		{
+			content = getContentVOWithId(contentVO.getContentId(), db);
+		}
+		catch(SystemException e)
+		{
+			return;
+		}
+		
+		deleteRecursive(content, db, skipRelationCheck, skipServiceBindings, forceDelete, infogluePrincipal);
+	}        
+	/*
+	public void delete(ContentVO contentVO, Database db, boolean skipRelationCheck, boolean skipServiceBindings, boolean forceDelete, InfoGluePrincipal infogluePrincipal) throws ConstraintException, SystemException, Exception
+	{
 		Content content = null;
 		try
 		{
@@ -618,34 +630,72 @@ public class ContentController extends BaseController
 		Content parent = content.getParentContent();
 		if(parent != null)
 		{
-			/*
-			synchronized (controller)
+			Iterator childContentIterator = parent.getChildren().iterator();
+			while(childContentIterator.hasNext())
 			{
-				//db.lock(controller);
-			*/	
-				Iterator childContentIterator = parent.getChildren().iterator();
-				while(childContentIterator.hasNext())
-				{
-				    Content candidate = (Content)childContentIterator.next();
-				    if(candidate.getId().equals(contentVO.getContentId()))
-				    {
-				        deleteRecursive(content, childContentIterator, db, skipRelationCheck, skipServiceBindings, forceDelete, infogluePrincipal);
-				    }
-				}
-			/*
+			    Content candidate = (Content)childContentIterator.next();
+			    if(candidate.getId().equals(contentVO.getContentId()))
+			    {
+			        deleteRecursive(content, childContentIterator, db, skipRelationCheck, skipServiceBindings, forceDelete, infogluePrincipal);
+			    }
 			}
-			*/
 		}
 		else
 		{
 		    deleteRecursive(content, null, db, skipRelationCheck, skipServiceBindings, forceDelete, infogluePrincipal);
 		}
-	}        
-
+	}  
+	*/
 	/**
 	 * Recursively deletes all contents and their versions. Also updates related entities about the change.
 	 */
 	
+    private void deleteRecursive(ContentVO contentVO, Database db, boolean skipRelationCheck, boolean skipServiceBindings, boolean forceDelete, InfoGluePrincipal infogluePrincipal) throws ConstraintException, SystemException, Exception
+    {
+        if(!skipRelationCheck)
+        {
+	        List referenceBeanList = RegistryController.getController().getReferencingObjectsForContent(contentVO.getId(), -1, db);
+			if(referenceBeanList != null && referenceBeanList.size() > 0)
+				throw new ConstraintException("ContentVersion.stateId", "3305");
+        }
+        
+        Collection<ContentVO> childContentVOList = ContentController.getContentController().getContentChildrenVOList(contentVO.getId(), null, db);
+        for(ContentVO childContentVO : childContentVOList)
+        {
+        	deleteRecursive(childContentVO, db, skipRelationCheck, skipServiceBindings, forceDelete, infogluePrincipal);   
+        }
+		
+		boolean isDeletable = getIsDeletable(contentVO, infogluePrincipal, db);
+   		if(forceDelete || isDeletable)
+	    {
+			ContentVersionController.getContentVersionController().deleteVersionsForContent(contentVO, db, forceDelete, infogluePrincipal);    	
+			
+			if(!skipServiceBindings)
+			    ServiceBindingController.getController().deleteServiceBindingsReferencingContent(contentVO.getId(), db);
+			
+			Content mediumContent = getMediumContentWithId(contentVO.getId(), db);
+			db.remove(mediumContent);
+            
+			PropertySetController.getController().addEntryToRemove("content_" + contentVO.getId() + "_allowedContentTypeNames");
+			PropertySetController.getController().addEntryToRemove("content_" + contentVO.getId() + "_defaultContentTypeName");
+			PropertySetController.getController().addEntryToRemove("content_" + contentVO.getId() + "_initialLanguageId");
+			/*
+			Map args = new HashMap();
+            args.put("globalKey", "infoglue");
+            PropertySet ps = PropertySetManager.getInstance("jdbc", args);
+
+            ps.remove( "content_" + contentVO.getId() + "_allowedContentTypeNames");
+            ps.remove( "content_" + contentVO.getId() + "_defaultContentTypeName");
+            ps.remove( "content_" + contentVO.getId() + "_initialLanguageId");
+			*/
+	    }
+	    else
+    	{
+    		throw new ConstraintException("ContentVersion.stateId", "3300", contentVO.getName());
+    	}			
+    }        
+
+/*	
     private static void deleteRecursive(Content content, Iterator parentIterator, Database db, boolean skipRelationCheck, boolean skipServiceBindings, boolean forceDelete, InfoGluePrincipal infogluePrincipal) throws ConstraintException, SystemException, Exception
     {
         if(!skipRelationCheck)
@@ -691,13 +741,38 @@ public class ContentController extends BaseController
     		throw new ConstraintException("ContentVersion.stateId", "3300", content.getName());
     	}			
     }        
-
+*/
 	
 	/**
 	 * This method returns true if the content does not have any published contentversions or 
 	 * are restricted in any other way.
 	 */
+	private boolean getIsDeletable(ContentVO contentVO, InfoGluePrincipal infogluePrincipal, Database db) throws SystemException, Exception
+	{
+		boolean isDeletable = true;
 	
+		if(contentVO.getIsProtected().equals(ContentVO.YES))
+		{
+			boolean hasAccess = AccessRightController.getController().getIsPrincipalAuthorized(db, infogluePrincipal, "Content.Delete", "" + contentVO.getId());
+			if(!hasAccess)
+				return false;
+		}
+		
+		Collection<MediumContentVersionImpl> cvList = ContentVersionController.getContentVersionController().getMediumContentVersionImplList(contentVO.getId(), db);
+		//Collection<ContentVersionVO> cvVOList = ContentVersionController.getContentVersionController().getContentVersionVOList(contentVO.getId(), db);
+        for(MediumContentVersionImpl cv : cvList)
+        {
+        	if(cv.getStateId().intValue() == ContentVersionVO.PUBLISHED_STATE.intValue() && cv.getIsActive().booleanValue() == true)
+        	{
+        		logger.info("The content had a published version so we cannot delete it..");
+				isDeletable = false;
+        		break;
+        	}
+        }
+			
+		return isDeletable;	
+	}
+    /*
 	private static boolean getIsDeletable(Content content, InfoGluePrincipal infogluePrincipal, Database db) throws SystemException
 	{
 		boolean isDeletable = true;
@@ -724,6 +799,7 @@ public class ContentController extends BaseController
 			
 		return isDeletable;	
 	}
+	*/
 
 	
     public ContentVO update(ContentVO contentVO) throws ConstraintException, SystemException
@@ -1040,9 +1116,9 @@ public class ContentController extends BaseController
         //oldParentContent = content.getParentContent();
         //newParentContent = getContentWithId(newParentContentId, db);
                     
-		System.out.println(""+content.getValueObject().getParentContentId());
-		System.out.println(""+content.getValueObject().getParentContentId().intValue());
-		System.out.println(""+newParentContentId.intValue());
+		logger.info(""+content.getValueObject().getParentContentId());
+		logger.info(""+content.getValueObject().getParentContentId().intValue());
+		logger.info(""+newParentContentId.intValue());
         if(content.getValueObject().getParentContentId() == null || content.getValueObject().getParentContentId().intValue() == newParentContentId.intValue())
         {
         	logger.warn("You cannot specify the same folder as it originally was located in......");

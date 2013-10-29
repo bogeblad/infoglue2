@@ -126,8 +126,7 @@ public class CmsJDOCallback implements CallbackInterceptor
     	
     	//if(accessMode == 1)
     	//	logger.error("Loaded " + object.getClass().getName() + " accessMode:" + accessMode);
-    
-    	// return ( (Persistent) object ).jdoLoad(accessMode);
+        // return ( (Persistent) object ).jdoLoad(accessMode);
         return null;
     }
 
@@ -1035,6 +1034,29 @@ public class CmsJDOCallback implements CallbackInterceptor
 				RegistryController.getController().clearRegistryForReferencedEntity(Content.class.getName(), getObjectIdentity(object).toString());
 				RegistryController.getController().clearRegistryForReferencingEntityCompletingName(Content.class.getName(), getObjectIdentity(object).toString());
 			}
+			else if(object.getClass().getName().equals(MediumContentImpl.class.getName()))
+			{
+				try
+				{
+					MediumContentImpl content = (MediumContentImpl)object;
+					CacheController.clearCacheForGroup("contentCache", "content_" + content.getId());
+					CacheController.clearCacheForGroup("childContentCache", "content_" + content.getId());
+					if(content.getParentContentId() != null)
+						CacheController.clearCacheForGroup("childContentCache", "content_" + content.getParentContentId());					
+				}
+				catch (Exception e) 
+				{
+					logger.warn("Error in JDOCallback:" + e.getMessage(), e);
+				}
+				//CacheController.clearCache("childContentCache");
+				
+				clearCache(SmallContentImpl.class);
+				clearCache(SmallishContentImpl.class);
+				clearCache(ContentImpl.class);
+
+				RegistryController.getController().clearRegistryForReferencedEntity(Content.class.getName(), getObjectIdentity(object).toString());
+				RegistryController.getController().clearRegistryForReferencingEntityCompletingName(Content.class.getName(), getObjectIdentity(object).toString());
+			}
 			else if(object.getClass().getName().equals(ContentVersionImpl.class.getName()))
 			{
 				CacheController.clearCacheForGroup("contentCategoryCache", "contentVersion_" + getObjectIdentity(object).toString());
@@ -1076,13 +1098,13 @@ public class CmsJDOCallback implements CallbackInterceptor
 				{
 					logger.warn("Error in JDOCallback:" + e.getMessage(), e);
 				}
-
+				
 				clearCache(ContentVersionImpl.class);
 				clearCache(SmallContentVersionImpl.class);
 				clearCache(SmallestContentVersionImpl.class);
 				clearCache(ContentImpl.class, contentVersion.getValueObject().getContentId());
 
-				CacheController.clearCacheForGroup("contentVersionCache", "content_" + contentVersion.getOwningContent().getId());
+				CacheController.clearCacheForGroup("contentVersionCache", "content_" + contentVersion.getContentId());
 				CacheController.clearCacheForGroup("contentVersionCache", "contentVersion_" + contentVersion.getId());
 
 				RegistryController.getController().clearRegistryForReferencingEntityNameThreaded(ContentVersion.class.getName(), getObjectIdentity(object).toString());

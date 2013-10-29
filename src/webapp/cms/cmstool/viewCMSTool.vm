@@ -29,7 +29,7 @@
 </head>
 
 <frameset rows="58,*,30" FRAMESPACING="0" FRAMEBORDER="NO" BORDER="0" >
-  <frame name="header" id="header" marginwidth="0" marginheight="0" scrolling="no" noresize target="header" src="ViewCMSToolHeader.action?toolId=$!toolId"/>
+  <frame name="header" id="header" marginwidth="0" marginheight="0" scrolling="no" noresize target="header" src="ViewCMSToolHeader.action?toolId=$!toolId&siteNodeId=$!siteNodeId&contentId=$!contentId"/>
   
 	<frameset cols="4,*,4" FRAMESPACING="0" FRAMEBORDER="NO" BORDER="0">
 	  <frame name="leftmargin" id="leftmargin" marginwidth="0" marginheight="0" scrolling="no" noresize target="leftmargin" src="cmsToolBackground.html" />

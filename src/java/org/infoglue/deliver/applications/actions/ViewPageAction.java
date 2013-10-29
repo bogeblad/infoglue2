@@ -1408,6 +1408,13 @@ public class ViewPageAction extends InfoGlueAbstractAction
 		if(logger.isDebugEnabled())
 			logger.debug("principal in validateAndModifyInputParameters:" + this.principal);
 		
+		if(getSiteNodeId() != null)
+		{
+			SiteNodeVersionVO latestSiteNodeVersionVO = SiteNodeVersionController.getController().getLatestActiveSiteNodeVersionVO(db, getSiteNodeId(), new Integer(CmsPropertyHandler.getOperatingMode())); //.getLatestActiveSiteNodeVersionVO(db, getSiteNodeId(), new Integer(CmsPropertyHandler.getOperatingMode()));
+			if(latestSiteNodeVersionVO == null)
+				throw new SystemException("There was no active published version on this page");
+		}
+
 		if(getSiteNodeId() == null)
 		{
 			if(getRepositoryName() == null)

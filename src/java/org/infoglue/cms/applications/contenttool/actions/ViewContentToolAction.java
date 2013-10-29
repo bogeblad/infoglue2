@@ -35,9 +35,22 @@ public class ViewContentToolAction extends ViewCMSAbstractToolAction
 {
 	private static final long serialVersionUID = 1L;
 	
+	private String contentId = "-1";
+
+	
     public String doExecute() throws Exception
     {
         return "success";
     }
-               
+
+	public String getContentId() 
+	{
+		return contentId;
+	}
+
+	public void setContentId(String contentId) 
+	{
+		this.contentId = contentId;
+	}
+
 }

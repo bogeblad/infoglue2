@@ -58,6 +58,11 @@
 				document.cookie=cookie_name+"="+size+"; expires=Monday, 04-Apr-2010 05:00:00 GMT";
 		}
 		
+		#if($contentId != "-1")
+			setTimeout(function(){
+				window.frames["main"].location.href="ViewContent.action?contentId=$contentId#if($languageId != '-1')&languageId=$languageId#end";
+			}, 500);
+		#end
     </script>
 </head>
 
