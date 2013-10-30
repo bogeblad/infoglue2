@@ -31,6 +31,7 @@ import java.util.List;
 import org.apache.log4j.Logger;
 import org.exolab.castor.jdo.Database;
 import org.exolab.castor.jdo.OQLQuery;
+import org.exolab.castor.jdo.PersistenceException;
 import org.exolab.castor.jdo.QueryResults;
 import org.infoglue.cms.entities.content.ContentVO;
 import org.infoglue.cms.entities.kernel.BaseEntityVO;
@@ -484,38 +485,81 @@ public class RepositoryController extends BaseController
 	/**
 	 * Return the first of all repositories.
 	 */
-	
+
 	public RepositoryVO getFirstRepositoryVO()  throws SystemException, Bug
 	{
 		Database db = CastorDatabaseService.getDatabase();
 		RepositoryVO repositoryVO = null;
-		
-		try 
+
+		try
 		{
 			beginTransaction(db);
-		
+
+			repositoryVO = getFirstRepositoryVO(db);
+
+			commitTransaction(db);
+		}
+		catch ( Exception e)
+		{
+			throw new SystemException("An error occurred when we tried to fetch a list of roles in the repository. Reason:" + e.getMessage(), e);
+		}
+		return repositoryVO;
+	}
+
+	public RepositoryVO getFirstRepositoryVO(Database db)  throws SystemException, Bug, PersistenceException
+	{
+		RepositoryVO repositoryVO = null;
+		OQLQuery oql = db.getOQLQuery("SELECT r FROM org.infoglue.cms.entities.management.impl.simple.RepositoryImpl r ORDER BY r.repositoryId");
+		QueryResults results = oql.execute();
+		this.logger.info("Fetching entity in read/write mode");
+
+		if (results.hasMore())
+		{
+			Repository repository = (Repository)results.next();
+			repositoryVO = repository.getValueObject();
+		}
+
+		results.close();
+		oql.close();
+
+		return repositoryVO;
+	}
+
+	/**
+	 * Return the first of all repositories.
+	 */
+
+	public RepositoryVO getFirstRepositoryVOReadOnly()  throws SystemException, Bug
+	{
+		Database db = CastorDatabaseService.getDatabase();
+		RepositoryVO repositoryVO = null;
+
+		try
+		{
+			beginTransaction(db);
+
 			OQLQuery oql = db.getOQLQuery("SELECT r FROM org.infoglue.cms.entities.management.impl.simple.RepositoryImpl r ORDER BY r.repositoryId");
-        	QueryResults results = oql.execute();
+			QueryResults results = oql.execute(Database.ReadOnly);
 			this.logger.info("Fetching entity in read/write mode");
 
-			if (results.hasMore()) 
-            {
-                Repository repository = (Repository)results.next();
-                repositoryVO = repository.getValueObject();
-            }
-            
+			if (results.hasMore())
+			{
+				Repository repository = (Repository)results.next();
+				repositoryVO = repository.getValueObject();
+			}
+
 			results.close();
 			oql.close();
 
 			commitTransaction(db);
 		}
-		catch ( Exception e)		
+		catch ( Exception e)
 		{
-			throw new SystemException("An error occurred when we tried to fetch a list of roles in the repository. Reason:" + e.getMessage(), e);			
+			throw new SystemException("An error occurred when we tried to fetch a list of roles in the repository. Reason:" + e.getMessage(), e);
 		}
-		return repositoryVO;		
+		return repositoryVO;
 	}
-	
+
 
 
 	/**

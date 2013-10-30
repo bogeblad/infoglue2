@@ -150,6 +150,7 @@ public class ViewServerNodePropertiesAction extends InfoGluePropertiesAbstractAc
 	    populate(ps, "editOnSiteUrl");
 	    populate(ps, "useFreeMarker");
 	    populate(ps, "webServerAddress");
+	    populateData(ps, "externalSearchServiceConfigs");
 	    populate(ps, "applicationBaseAction");
 	    populate(ps, "digitalAssetBaseUrl");
 	    populate(ps, "imagesBaseUrl");

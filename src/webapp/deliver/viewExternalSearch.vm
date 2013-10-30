@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "DTD/xhtml1-strict.dtd">
+
+<html>
+<head>
+	<title>External services search view</title>
+
+	<style>
+	<!--
+		table
+		{
+			width : 900px;
+			margin-right: auto;
+			margin-left: auto;
+			border: 1px solid #ccc;
+			background-color: #f1f1f1;
+		}
+		.header
+		{
+			font-family : Tahoma, Arial;
+			font-size 	: 14pt;
+			font-weight : bold;
+		}
+		.label
+		{
+			font-family		 : Tahoma, Arial;
+			font-size		 : 8pt;
+			font-weight 	 : bold;
+			background-color : #CCCCCC;
+		}
+		.labelsub
+		{
+			font-family		 : Tahoma, Arial;
+			font-size		 : 8pt;
+			font-weight 	 : bold;
+			background-color : #FFFFFF;
+		}
+		.text
+		{
+			font-family	:Tahoma, Arial;
+			font-size	:8pt;
+		}
+		.texttrue
+		{
+			font-family	:Tahoma, Arial;
+			font-size	:8pt;
+		}
+		.textfalse
+		{
+			font-family	:Tahoma, Arial;
+			font-size	:8pt;
+			color  		:red;
+		}
+		.fullymarginalized
+		{
+			margin-left	: 50px;
+			margin-right: 50px;
+			margin-top	: 10%;
+		}
+
+	-->
+	</style>
+	<script type="text/javascript">
+	<!--
+		function toggleDiv(id)
+		{
+			var div = document.getElementById(id);
+			if (navigator.appName == "Microsoft Internet Explorer")
+			{
+				if(div && div.style.display == 'block')
+					div.style.display = "none";
+				else
+					div.style.display = "block";
+			}
+			else
+			{
+				if(div && div.style.display == 'table-row')
+					div.style.display = 'none';
+				else
+					div.style.display = 'table-row';
+			}
+		}
+	-->
+	</script>
+</head>
+
+<body>
+
+<table cellpadding="5" cellspacing="0">
+  <tr>
+    <td colspan="5" class="header">External services search view ($service.getName())</td>
+  </tr>
+  <tr>
+    <td colspan="5" class="label"><a href="ViewExternalSearchService.action">Tillbaka</a> Search</td>
+  </tr>
+  <tr>
+    <td colspan="5" class="text">
+      <form method="post">
+        <div id="searchFields">
+        #set( $i = 0 )
+        #foreach( $searchField in $searchFields.entrySet() )
+        <input type="text" name="field_$i" value="$searchField.getKey()"/> = <input type="text" name="value_$i" value="$searchField.getValue()"/><br/>
+        #set( $i = $i + 1 )
+        #end
+        </div>
+        <input type="submit" value="Search"/><button onclick="addField();return false;">Add search field</button>
+        <select name="searchLanguageCode">
+          <option #if( "$!searchLanguageCode" == "" ) selected="selected" #end></option>
+          <option #if( "$!searchLanguageCode" == "sv" ) selected="selected" #end>sv</option>
+          <option #if( "$!searchLanguageCode" == "en" ) selected="selected" #end>en</option>
+        </select>
+      </form>
+      <script type="text/javascript">
+        var fieldCounter =#if( "$!SearchFields" != "" ) $SearchFields.size()#else 0#end;
+        function addField() {
+          document.getElementById("searchFields").innerHTML += '<input type="text" name="field_' + fieldCounter + '"/> = <input type="text" name="value_' + fieldCounter + '"/><br/>';
+          fieldCounter++;
+        }
+      </script>
+    </td>
+  </tr>
+  <tr>
+    <td colspan="5" class="text">&nbsp;</td>
+  </tr>
+  <tr>
+    <td colspan="5" class="label">Hits#if( "$!searchResult" ) ($!searchResult.size())#end</td>
+  </tr>
+  #foreach($obj in $searchResult)
+  <tr>
+    <td colspan="5" style="border-bottom: 1px solid #999999;" class="text" valign="top">$obj</td>
+  </tr>
+  #end
+  <tr>
+    <td colspan="5" class="text">&nbsp;</td>
+  </tr>
+  #if( "$!service" != "" )
+  <tr>
+    <td colspan="5" class="label">Service details ($service.getName())</td>
+  </tr>
+  <tr>
+    <td colspan="5" class="text"><pre style="width:860px;overflow:auto;">$service.getConfigDetails()</pre></td>
+  </tr>
+  #end
+</table>
+
+</body>
+
+</html>

@@ -239,6 +239,7 @@
 			#editPropertyTextAreaCSS("ServerNode.property.assetUploadTransformationsSettings" "assetUploadTransformationsSettings" "$this.getDataPropertyValue('assetUploadTransformationsSettings')" "40" "6" "righttextarea" "$!serverNodeId")
 			#editPropertyTextAreaCSS("ServerNode.property.generalSettings" "generalSettings" "$this.getDataPropertyValue('generalSettings')" "40" "6" "righttextarea" "$!serverNodeId")
 			#editPropertyTextAreaCSS("ServerNode.property.workingGeneralSettings" "workingGeneralSettings" "$this.getDataPropertyValue('workingGeneralSettings')" "40" "6" "righttextarea" "$!serverNodeId")
+			#editPropertyTextAreaCSS("ServerNode.property.externalSearchServiceConfigs" "externalSearchServiceConfigs" "$this.getDataPropertyValue('externalSearchServiceConfigs')" "40" "6" "righttextarea" "$!serverNodeId")
 
 			<div class="buttonRow">
 				<input type="image" src="$ui.getString("images.managementtool.buttons.save")" width="50" height="25" style="width: 50px;">
