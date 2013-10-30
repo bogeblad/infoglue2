@@ -801,7 +801,6 @@ public class SiteNodeVersionController extends BaseController
 		    {
 		    	siteNodeVersion = (SmallSiteNodeVersionImpl)results.next();
 	        }
-			System.out.println("siteNodeVersion:" + siteNodeVersion);
 	
 			results.close();
 			oql.close();
