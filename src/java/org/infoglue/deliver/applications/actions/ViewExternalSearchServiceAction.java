@@ -32,7 +32,7 @@ public class ViewExternalSearchServiceAction extends InfoGlueAbstractAction
 	private SimpleDateFormat timeFormat;
 	private List<Object> searchResult;
 	private Map<String, String> searchFields;
-	private String languageCode;
+	private String searchLanguageCode;
 
 	private boolean checkAuthentication() throws SystemException
 	{
@@ -150,9 +150,9 @@ public class ViewExternalSearchServiceAction extends InfoGlueAbstractAction
 		parseSearchParameters();
 
 		SearchRequest sr;
-		if (languageCode != null && !languageCode.equals(""))
+		if (searchLanguageCode != null && !searchLanguageCode.equals(""))
 		{
-			sr = service.getSearchRequest(new Locale(languageCode));
+			sr = service.getSearchRequest(new Locale(searchLanguageCode));
 		}
 		else
 		{
@@ -231,14 +231,14 @@ public class ViewExternalSearchServiceAction extends InfoGlueAbstractAction
 		this.serviceName = serviceName;
 	}
 	
-	public void setLanguageCode(String languageCode)
+	public void setSearchLanguageCode(String searchLanguageCode)
 	{
-		this.languageCode = languageCode;
+		this.searchLanguageCode = searchLanguageCode;
 	}
 
-	public String getLanguageCode()
+	public String getSearchLanguageCode()
 	{
-		return this.languageCode;
+		return this.searchLanguageCode;
 	}
 
 }

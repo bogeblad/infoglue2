@@ -104,10 +104,10 @@
         #end
         </div>
         <input type="submit" value="Search"/><button onclick="addField();return false;">Add search field</button>
-        <select name="languageCode">
-          <option #if( "$!languageCode" == "" ) selected="selected" #end></option>
-          <option #if( "$!languageCode" == "sv" ) selected="selected" #end>sv</option>
-          <option #if( "$!languageCode" == "en" ) selected="selected" #end>en</option>
+        <select name="searchLanguageCode">
+          <option #if( "$!searchLanguageCode" == "" ) selected="selected" #end></option>
+          <option #if( "$!searchLanguageCode" == "sv" ) selected="selected" #end>sv</option>
+          <option #if( "$!searchLanguageCode" == "en" ) selected="selected" #end>en</option>
         </select>
       </form>
       <script type="text/javascript">
