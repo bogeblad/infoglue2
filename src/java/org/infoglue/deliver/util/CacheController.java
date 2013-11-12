@@ -489,20 +489,21 @@ public class CacheController extends Thread
 		        }
 		    }
 		//}
-	}	
-	
+	}
+
 	public static void clearServerNodeProperty(boolean reCache)
 	{
 		if(reCache)
 			InfoGlueJDBCPropertySet.reCache();
-   		else
-   			InfoGlueJDBCPropertySet.clearCaches();
+		else
+			InfoGlueJDBCPropertySet.clearCaches();
 		clearCache("serverNodePropertiesCache");
 		clearCache("encodedStringsCache");
 		clearCache("principalToolPropertiesCache");
 		CmsPropertyHandler.resetHardCachedSettings();
-   	}
-	
+		CacheNotificationCenter.getCenter().notify("ServerNodeProperties");
+	}
+
 	public static void cacheObject(String cacheName, Object key, Object value)
 	{
 		if(cacheName == null || key == null || value == null)
@@ -4304,7 +4305,6 @@ public class CacheController extends Thread
 							clearServerNodeProperty(true);
 							logger.info("cleared InfoGlueAuthenticationFilter");
 							InfoGlueAuthenticationFilter.initializeProperties();
-							CacheNotificationCenter.getCenter().notify("ServerNodeProperties");
 							logger.info("initialized InfoGlueAuthenticationFilter");
 							logger.info("Shortening page stats");
 							RequestAnalyser.shortenPageStatistics();
