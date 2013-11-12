@@ -23,7 +23,7 @@ import org.infoglue.deliver.externalsearch.SearchRequest;
 
 public class ViewExternalSearchServiceAction extends InfoGlueAbstractAction
 {
-	private static final long serialVersionUID = -4780659611171789860L;
+	private static final long serialVersionUID = -3909889909618090891L;
 	private static final Logger logger = Logger.getLogger(ViewExternalSearchServiceAction.class);
 
 	private String serviceName;
@@ -33,6 +33,8 @@ public class ViewExternalSearchServiceAction extends InfoGlueAbstractAction
 	private List<Object> searchResult;
 	private Map<String, String> searchFields;
 	private String searchLanguageCode;
+
+	private String errorMessage;
 
 	private boolean checkAuthentication() throws SystemException
 	{
@@ -146,27 +148,39 @@ public class ViewExternalSearchServiceAction extends InfoGlueAbstractAction
 		{
 			throw new SystemException("No service was found with that name");
 		}
-
-		parseSearchParameters();
-
-		SearchRequest sr;
-		if (searchLanguageCode != null && !searchLanguageCode.equals(""))
+		if (getRequest().getParameter("searchPostback") != null)
 		{
-			sr = service.getSearchRequest(new Locale(searchLanguageCode));
+			parseSearchParameters();
+
+			SearchRequest sr = null;
+			Locale locale = null;
+			if (searchLanguageCode != null && !searchLanguageCode.equals(""))
+			{
+				locale = new Locale(searchLanguageCode);
+			}
+
+			if (searchFields.size() == 0)
+			{
+				sr = service.getListAllQuery(locale);
+			}
+			else
+			{
+				sr = service.getSearchRequest(locale);
+				for (Map.Entry<String, String> fieldMap : searchFields.entrySet())
+				{
+					sr.addParameter(fieldMap.getKey(), fieldMap.getValue());
+				}
+			}
+
+			try
+			{
+				searchResult = service.search(sr).result;
+			}
+			catch (SystemException ex)
+			{
+				this.errorMessage = ex.getMessage();
+			}
 		}
-		else
-		{
-			sr = service.getSearchRequest();
-		}
-
-
-		for (Map.Entry<String, String> fieldMap : searchFields.entrySet())
-		{
-			sr.addParameter(fieldMap.getKey(), fieldMap.getValue());
-		}
-
-		searchResult = service.search(sr).result;
-
 		return "search";
 	}
 
@@ -239,6 +253,11 @@ public class ViewExternalSearchServiceAction extends InfoGlueAbstractAction
 	public String getSearchLanguageCode()
 	{
 		return this.searchLanguageCode;
+	}
+
+	public String getErrorMessage()
+	{
+		return errorMessage;
 	}
 
 }
