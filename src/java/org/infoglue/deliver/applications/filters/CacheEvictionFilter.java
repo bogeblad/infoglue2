@@ -102,7 +102,7 @@ public class CacheEvictionFilter implements Filter
         	if(tk != null && !tk.getIsDoneRunning())
 	    		tk.done();
 	    	else
-	    		logger.warn("Done had allready been run... skipping");
+	    		logger.info("Done had allready been run... skipping");
         }
         
         filterChain.doFilter(httpRequest, httpResponse);

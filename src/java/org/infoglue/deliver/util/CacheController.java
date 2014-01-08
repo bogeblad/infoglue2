@@ -1691,7 +1691,6 @@ public class CacheController extends Thread
 		    		ReentrantReadWriteLock rwl = locksCache.get(cacheName);
 		    		boolean lockSuccess = false;
 		    		try {
-		    			System.out.println("EAAAAAAAAAAAAAAAAAA");
 						lockSuccess = rwl.writeLock().tryLock(writeLockTimeout, TimeUnit.SECONDS);
 						printLockDebug(rwl);
 					} catch (InterruptedException e1) {
@@ -2564,7 +2563,6 @@ public class CacheController extends Thread
 							    }
 							    else if(selectiveCacheUpdate && entity.indexOf("SiteNodeVersion") > 0)
 							    {
-							    	//System.out.println("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
 							    	//Thread.dumpStack();
 							    	//How to solve this good
 							    	if(CmsPropertyHandler.getOperatingMode().equalsIgnoreCase("0"))

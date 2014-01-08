@@ -257,7 +257,7 @@ public class SiteNodeController extends BaseController
 		if(siteNodeVO != null)
 		{
 			if(siteNodeVO.getChildCount() == null)
-				logger.error("Fail: a siteNodeVO was read the old way...");
+				logger.info("Fail: a siteNodeVO was read the old way: " + siteNodeId);
 			//logger.info("There was an cached siteNodeVO:" + siteNodeVO);
 		}
 		else
@@ -350,7 +350,7 @@ public class SiteNodeController extends BaseController
 		if(siteNodeVO != null)
 		{
 			if(siteNodeVO.getChildCount() == null)
-				logger.error("Fail: a siteNodeVO was read the old way...");
+				logger.info("Fail: a siteNodeVO was read the old way:" + siteNodeId);
 			//logger.info("There was an cached siteNodeVO:" + siteNodeVO);
 		}
 		else
@@ -1833,7 +1833,9 @@ public class SiteNodeController extends BaseController
 	    if(siteNode.getRepository().getId().intValue() != newRepository.getId().intValue())
 	    {
 	        Integer metaInfoContentId = siteNode.getMetaInfoContentId();
-        	ContentVO metaInfoContent = ContentController.getContentController().getContentVOWithId(metaInfoContentId, db);
+        	
+	        //ContentVO metaInfoContent = ContentController.getContentController().getContentVOWithId(metaInfoContentId, db);
+	        MediumContentImpl metaInfoContent = (MediumContentImpl)ContentController.getContentController().getMediumContentWithId(metaInfoContentId, db);
         	//String previousPath = ContentController.getContentController().getContentPath(metaInfoContentId, db);
         	
         	String siteNodePath = SiteNodeController.getController().getSiteNodePath(siteNode.getId(), db);

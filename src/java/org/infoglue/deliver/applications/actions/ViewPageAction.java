@@ -277,7 +277,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
 					isUserRedirected = authenticateUser(dbWrapper.getDatabase());
 				}
 			}
-			
+
 			if(!isUserRedirected)
 			{			
 				if(logger.isInfoEnabled())
@@ -587,7 +587,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
 							{
 								logger.error("Error storing page meta data: " + e.getMessage(), e);
 							}
-							t2.printElapsedTime("AAAAAAAAAAAAAAAAA",20);
+							t2.printElapsedTimeWarning("Handling page meta data (if modified since) took a bit to long.", 20, logger);
 						}
 						
 						request.setAttribute("progress", "after pageInvoker was called");
@@ -767,7 +767,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
 	    	if(tk != null && !tk.getIsDoneRunning())
 	    		tk.done();
 	    	else
-	    		logger.warn("Done had allready been run... skipping");
+	    		logger.info("Done had allready been run... skipping");
 		
 			killUnwantedSessions();
 		}
@@ -1318,7 +1318,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
 	    	if(tk != null && !tk.getIsDoneRunning())
 	    		tk.done();
 	    	else
-	    		logger.warn("Done had allready been run... skipping");
+	    		logger.info("Done had allready been run... skipping");
 		}
 		
 		return NONE;
@@ -1585,7 +1585,8 @@ public class ViewPageAction extends InfoGlueAbstractAction
 			    this.getHttpSession().removeAttribute("infoglueRemoteUser");
 			    this.getHttpSession().removeAttribute("cmsUserName");
 			}
-							
+						
+			logger.error("principal AA:" + principal);
 			//First we check if the user is logged in to the container context
 			if(principal == null)
 			{
