@@ -1770,11 +1770,12 @@ public class ContentVersionController extends BaseController
     {
     	return update(contentVersionId, contentVersionVO, null);
     }        
-	
+
+
     public ContentVersionVO update(Integer contentVersionId, ContentVersionVO contentVersionVO, InfoGluePrincipal principal) throws ConstraintException, SystemException
     {
-        ContentVersionVO updatedContentVersionVO;
-		
+    	ContentVersionVO updatedContentVersionVO;
+		    	
         Database db = CastorDatabaseService.getDatabase();
 
         beginTransaction(db);

@@ -124,11 +124,11 @@ public abstract class WebworkAbstractAction implements Action, ServletRequestAwa
         	long memoryDiff = t.getMemoryDifferenceAsMegaBytes();
         	if(elapsedTime > 5000 || memoryDiff > 100)
         	{
-        		RequestAnalyser.getRequestAnalyser().registerComponentStatistics("" + this.getUnencodedCurrentURIWithParameters() + " (" + memoryDiff + ")", elapsedTime);
+        		//RequestAnalyser.getRequestAnalyser().registerComponentStatistics("" + this.getUnencodedCurrentURIWithParameters() + " (" + memoryDiff + ")", elapsedTime);
         		logger.warn("The " + CmsPropertyHandler.getApplicationName() + " request: " + this.getUnencodedCurrentURIWithParameters() + " took " + elapsedTime + " ms to render and seems to have allocated " + memoryDiff + " MB of memory)");
         	}
-        	else
-        		RequestAnalyser.getRequestAnalyser().registerComponentStatistics("" + this.getUnencodedCurrentURI(), elapsedTime);
+        	//else
+        	//	RequestAnalyser.getRequestAnalyser().registerComponentStatistics("" + this.getUnencodedCurrentURI(), elapsedTime);
         } 
         catch(ResultException e) 
         {

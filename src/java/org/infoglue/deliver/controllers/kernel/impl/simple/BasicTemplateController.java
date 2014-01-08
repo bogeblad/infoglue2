@@ -5297,7 +5297,6 @@ public class BasicTemplateController implements TemplateController
 				criterias.setSortOrder(sortOrder);
 				
 				final Set set = ExtendedSearchController.getController().search(criterias, getDatabase());
-				//t.printElapsedTime("AAAAAAAAAAAAAAAAAAAAAA search returning :" + set.size() + ":" + Thread.currentThread().getId());
 				final List result = new ArrayList();
 				for(Iterator i = set.iterator(); i.hasNext(); ) 
 				{

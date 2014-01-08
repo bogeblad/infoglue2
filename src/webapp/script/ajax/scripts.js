@@ -136,7 +136,6 @@ function openChat(message)
 					divHTML = divHTML + "</div>";
 					
 					div.innerHTML = divHTML;
-					//div.innerHTML = "AAAAAAAAAAAAAAAAAAAAAAAAAAA";
 					//alert("div:" + div.innerHTML);
 					systemMessagesDiv = frame.contentWindow.document.getElementById("systemMessages");
 					systemMessagesDiv.style.height = getDocumentHeight();

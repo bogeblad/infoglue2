@@ -23,6 +23,8 @@
 
 package org.infoglue.deliver.util;
 
+import org.apache.log4j.Logger;
+
 /**
  * @author Mattias Bogeblad
  *
@@ -89,6 +91,17 @@ public class Timer
 			lastPrintTime = System.currentTimeMillis();
 			if(elapsedTime > minimumTimeToPrint)
 				System.out.println(message + " - Elapsed time since last report: " + elapsedTime);
+		}
+	}
+	
+	public void printElapsedTimeWarning(String message, int minimumTimeToPrint, Logger logger)
+	{
+		if(this.isActive)
+		{
+			elapsedTime = System.currentTimeMillis() - lastPrintTime;
+			lastPrintTime = System.currentTimeMillis();
+			if(elapsedTime > minimumTimeToPrint)
+				logger.warn(message + " - Elapsed time since last report: " + elapsedTime);
 		}
 	}
 
