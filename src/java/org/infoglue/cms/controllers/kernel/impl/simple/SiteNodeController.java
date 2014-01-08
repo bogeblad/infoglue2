@@ -37,6 +37,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -2324,7 +2325,7 @@ public class SiteNodeController extends BaseController
         return siteNodeVO;
     }       
 
-    private static Map<Integer,Integer> metaInfoSiteNodeIdMap = new HashMap<Integer,Integer>();
+    private static Map<Integer,Integer> metaInfoSiteNodeIdMap = new ConcurrentHashMap<Integer, Integer>();
     
     public SiteNodeVO getSiteNodeVOWithMetaInfoContentId(Database db, Integer contentId) throws ConstraintException, SystemException, Exception
     {
