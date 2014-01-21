@@ -1586,7 +1586,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
 			    this.getHttpSession().removeAttribute("cmsUserName");
 			}
 						
-			logger.error("principal AA:" + principal);
+			logger.info("principal AA:" + principal);
 			//First we check if the user is logged in to the container context
 			if(principal == null)
 			{

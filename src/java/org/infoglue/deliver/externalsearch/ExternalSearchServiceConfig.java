@@ -45,7 +45,7 @@ class ExternalSearchServiceConfig
 {
 	private String name;
 	private Integer maxAge;
-	private List<String> dependencis;
+	private List<String> dependencies;
 	private Locale defaultLanguage;
 	private Map<String, IndexableField> fields;
 	private DataRetriever dataRetriever;
@@ -77,14 +77,14 @@ class ExternalSearchServiceConfig
 		this.maxAge = maxAge;
 	}
 
-	public List<String> getDependencis()
+	public List<String> getDependencies()
 	{
-		return dependencis;
+		return dependencies;
 	}
 
-	public void setDependencis(List<String> dependencis)
+	public void setDependencies(List<String> dependencies)
 	{
-		this.dependencis = dependencis;
+		this.dependencies = dependencies;
 	}
 
 	public DataRetriever getDataRetriever()
@@ -141,7 +141,7 @@ class ExternalSearchServiceConfig
 	public String toString()
 	{
 		StringBuilder sb = new StringBuilder();
-		sb.append("{Config {name:").append(name).append(", maxAge:").append(maxAge).append(", dependencies:").append(dependencis).append(", defaultLanguage:").append(defaultLanguage).append("}")
+		sb.append("{Config {name:").append(name).append(", maxAge:").append(maxAge).append(", dependencies:").append(dependencies).append(", defaultLanguage:").append(defaultLanguage).append("}")
 		  .append("\n\tDataRetriever:").append(dataRetriever == null ? "null" : dataRetriever.getClass())
 		  .append("\n\tParser:").append(parser == null ? "null" : parser.getClass())
 		  .append("\n\tIndexer:").append(indexer == null ? "null" : indexer.getClass())
