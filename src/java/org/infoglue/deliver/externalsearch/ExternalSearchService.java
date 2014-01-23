@@ -367,7 +367,7 @@ public class ExternalSearchService
 			}
 
 			this.maxAge = this.newConfig.getMaxAge() == null ? null : this.newConfig.getMaxAge() * 1000;
-			this.dependencies = this.newConfig.getDependencis() == null ? new LinkedList<String>() : this.newConfig.getDependencis();
+			this.dependencies = this.newConfig.getDependencies() == null ? new LinkedList<String>() : this.newConfig.getDependencies();
 			this.defaultLanguage = this.newConfig.getDefaultLanguage();
 			this.fields = this.newConfig.getFields();
 			if (this.defaultLanguage == null)
@@ -408,28 +408,51 @@ public class ExternalSearchService
 
 	private void updateIndex()
 	{
+		IndexWriter indexWriter = null;
+		Directory directory = null;
+		IndexSearcher newIndexSearcher = null;
 		try
 		{
 			InputStream input = this.dataRetriever.openConnection();
 			List<Map<String, Object>> entities = this.parser.parse(input);
 			this.dataRetriever.closeConnection();
 
-			Directory directory = this.directoryHandler.getDirectory();
+			directory = this.directoryHandler.getDirectory();
 
 			StandardAnalyzer analyzer = new StandardAnalyzer();
-			IndexWriter indexWriter = new IndexWriter(directory, analyzer, true);
+			indexWriter = new IndexWriter(directory, analyzer, true);
 
 			this.indexer.index(entities, fields, indexWriter);
 
 			indexWriter.optimize();
-			indexWriter.close();
 
-			this.indexSearcher = this.directoryHandler.changeDirectory(this.indexSearcher, directory);
+			newIndexSearcher = this.directoryHandler.changeDirectory(this.indexSearcher, directory);
 		}
 		catch (Throwable tr)
 		{
 			logger.error("Error when updating index for external search service. Service.name: " + name + ". Message: " + tr.getMessage() + ". Type: " + tr.getClass());
 			logger.warn("Error when updating index for external search service. Service.name: " + name, tr);
+			if (directory != null)
+			{
+				this.directoryHandler.deleteDirectory(directory);
+			}
+		}
+		finally
+		{
+			if (indexWriter != null)
+			{
+				try
+				{
+					indexWriter.close();
+					this.indexSearcher = newIndexSearcher;
+				}
+				catch (Throwable tr)
+				{
+					logger.error("Error when closing IndexWriter for external search service. Service.name: " + name + ". Message: " + tr.getMessage() + ". Type: " + tr.getClass());
+					logger.warn("Error when closing IndexWriter for external search service. Service.name: " + name, tr);
+					this.directoryHandler.deleteDirectory(directory);
+				}
+			}
 		}
 	}
 

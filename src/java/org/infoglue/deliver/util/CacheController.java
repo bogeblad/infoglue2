@@ -4229,9 +4229,9 @@ public class CacheController extends Thread
 
 	       	RequestAnalyser.getRequestAnalyser().setBlockRequests(true);
 		}
-	    
-	    t.printElapsedTime("evict 1", 10);
-	    	
+
+		t.printElapsedTimeWarning("evict 1", 10, logger);
+
 	    logger.info("evictWaitingCache starting");
     	logger.info("blocking");
     	
