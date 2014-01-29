@@ -35,6 +35,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Matcher;
 
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.log4j.Logger;
@@ -188,14 +189,16 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 			    	//logger.info("componentXML: " + componentXML);
 			    	logger.info("contentId" + contentId);
 			    	logger.info("pagePartString" + pagePartString);
+					pagePartString = Matcher.quoteReplacement(pagePartString);
 			    	String newComponentXML = componentXML.replaceAll("<component contentId=\"" + contentId + ".*?</component>", "" + pagePartString);
 			    	//logger.info("newComponentXML: " + newComponentXML);
 			    	resultComponentXML = newComponentXML;
 			    }
 			}
-			catch (Exception e) 
+			catch (Exception ex)
 			{
-				logger.warn("Could not append page part as the content was removed - fix on page with id: [" + siteNodeId + "]:" + e.getMessage());
+				logger.warn("Could not append page part as the content was removed - fix on page with id: [" + siteNodeId + "]:" + ex.getMessage());
+				logger.info("Could not append page part as the content was removed - fix on page with id: [" + siteNodeId + "].", ex);
 			}
 		}
 
