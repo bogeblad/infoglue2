@@ -13,6 +13,8 @@ import java.util.Map;
 import org.apache.log4j.Logger;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
+import org.apache.lucene.document.Field.Index;
+import org.infoglue.deliver.externalsearch.IndexableField.IndexingType;
 
 /**
  * @author Erik Stenbäcka
@@ -50,7 +52,16 @@ public class IndexerSupport
 			{
 				logger.debug("Adding field to index. Field: " + field + ". Value: " + value);
 			}
-			document.add(new Field(key, value, Field.Store.NO, Field.Index.TOKENIZED));
+			Index indexingType = Field.Index.TOKENIZED;
+			if (field.getIndexingType().equals(IndexingType.UN_TOKENIZED))
+			{
+				indexingType = Field.Index.UN_TOKENIZED;
+			}
+			else
+			{
+				indexingType = Field.Index.TOKENIZED;
+			}
+			document.add(new Field(key, value, Field.Store.NO, indexingType));
 		}
 		catch (NullPointerException nex)
 		{
