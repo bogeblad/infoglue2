@@ -46,14 +46,12 @@ function toggleBlock(id)
 	#foreach ($userVO in $users)
 		<input type="checkbox" name="userName" value="$userVO.name"/> $userVO.name<br/>
 	#end
-	</div>
-	<br/>
-	<input type="image" src="$ui.getString("images.contenttool.buttons.next")" width="50" height="25" border="0">
-	<a href="ViewMessageCenter.action"><img border="0" src="$ui.getString("images.managementtool.buttons.cancel")" width="50" height="25"></a>
-	
+</div>*#
+		<br/>
+		<input type="image" src="$ui.getString("images.contenttool.buttons.next")" width="50" height="25" border="0">
+		<a href="ViewMessageCenter.action"><img border="0" src="$ui.getString("images.managementtool.buttons.cancel")" width="50" height="25"></a>
 	</form>
 	</div>
 </div>
-*#
 
 #endManagementTool()
