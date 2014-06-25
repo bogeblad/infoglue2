@@ -96,6 +96,7 @@
   <tr>
     <td colspan="5" class="text">
       <form method="post">
+        <input type="hidden" name="searchPostback" value="true" />
         <div id="searchFields">
         #set( $i = 0 )
         #foreach( $searchField in $searchFields.entrySet() )
@@ -111,9 +112,19 @@
         </select>
       </form>
       <script type="text/javascript">
-        var fieldCounter =#if( "$!SearchFields" != "" ) $SearchFields.size()#else 0#end;
+        var fieldCounter =#if( "$!searchFields" != "" ) $searchFields.size()#else 0#end;
         function addField() {
-          document.getElementById("searchFields").innerHTML += '<input type="text" name="field_' + fieldCounter + '"/> = <input type="text" name="value_' + fieldCounter + '"/><br/>';
+          var searchFields = document.getElementById("searchFields");
+          var newKey = document.createElement("input");
+          newKey.type = "text";
+          newKey.name = "field_" + fieldCounter;
+          searchFields.appendChild(newKey);
+          searchFields.appendChild(document.createTextNode(" = "));
+          var newValue = document.createElement("input");
+          newValue.type = "text";
+          newValue.name = "value_" + fieldCounter;
+          searchFields.appendChild(newValue);
+          searchFields.appendChild(document.createElement("br"));
           fieldCounter++;
         }
       </script>
@@ -123,7 +134,10 @@
     <td colspan="5" class="text">&nbsp;</td>
   </tr>
   <tr>
-    <td colspan="5" class="label">Hits#if( "$!searchResult" ) ($!searchResult.size())#end</td>
+    <td colspan="5" class="label">
+      Hits#if( "$!searchResult" ) ($!searchResult.size())#end
+      #if( "$!errorMessage" != "" ) Error message: $errorMessage #end
+    </td>
   </tr>
   #foreach($obj in $searchResult)
   <tr>

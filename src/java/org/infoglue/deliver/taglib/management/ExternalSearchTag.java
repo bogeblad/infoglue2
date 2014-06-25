@@ -16,13 +16,13 @@ import org.infoglue.deliver.externalsearch.ExternalSearchManager;
 import org.infoglue.deliver.externalsearch.ExternalSearchService;
 import org.infoglue.deliver.externalsearch.SearchRequest;
 import org.infoglue.deliver.externalsearch.SearchResult;
-import org.infoglue.deliver.taglib.AbstractTag;
+import org.infoglue.deliver.taglib.TemplateControllerTag;
 
 /**
  * @author Erik Stenbäcka
  *
  */
-public class ExternalSearchTag extends AbstractTag
+public class ExternalSearchTag extends TemplateControllerTag
 {
 	private static final long serialVersionUID = -4562505238121718003L;
 	private static final Logger logger = Logger.getLogger(ExternalSearchTag.class);
@@ -77,6 +77,17 @@ public class ExternalSearchTag extends AbstractTag
 	@Override
 	public int doStartTag() throws JspException
 	{
+		if (language == null)
+		{
+			try
+			{
+				language = getController().getLocale();
+			}
+			catch (SystemException ex)
+			{
+				logger.warn("Failed to get page language in external search tag. Will send null-language parameter to service. Message: " + ex.getMessage());
+			}
+		}
 		service = ExternalSearchManager.getManager().getService(serviceName);
 
 		if (service == null)
@@ -98,7 +109,6 @@ public class ExternalSearchTag extends AbstractTag
 				SearchRequest request = getSearchRequest();
 				searchRequest.setCount(count);
 				searchRequest.setStartIndex(startIndex);
-//				SearchRequest params = ExternalSearchService.ParametersFactory.getFactory().getParameters(query, sortFields, sortAscending, startIndex, count, language);
 
 				SearchResult searchResult = service.search(request);
 

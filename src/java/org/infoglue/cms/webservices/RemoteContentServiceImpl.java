@@ -814,7 +814,7 @@ public class RemoteContentServiceImpl extends RemoteInfoGlueService
 				}
             }
             logger.info("contentVersionVO:" + contentVersionVO);
-            
+			boolean isNewlyCreatedVersion;
             if(contentVersionVO == null)
             {
             	logger.info("createVersionIfNotExists:" + createVersionIfNotExists);
@@ -825,8 +825,9 @@ public class RemoteContentServiceImpl extends RemoteInfoGlueService
             		newContentVersionVO.setModifiedDateTime(new Date());
             		newContentVersionVO.setVersionModifier("" + principalName);
 
-    	            contentVersionVO = contentVersionControllerProxy.acCreate(this.principal, contentId, languageId, newContentVersionVO);            		
-    	            logger.info("contentVersionVO:" + contentVersionVO);
+					contentVersionVO = contentVersionControllerProxy.acCreate(this.principal, contentId, languageId, newContentVersionVO);
+					isNewlyCreatedVersion = true;
+					logger.info("contentVersionVO (newly created):" + contentVersionVO);
             	}
             	else
             		return new Boolean(false);            	
@@ -836,6 +837,7 @@ public class RemoteContentServiceImpl extends RemoteInfoGlueService
 	            contentVersionVO.setVersionComment(versionComment);
 	            contentVersionVO.setModifiedDateTime(new Date());
 	            contentVersionVO.setVersionModifier("" + principalName);
+				isNewlyCreatedVersion = false;
             }
             
             Map attributes = (Map)contentVersion.get("contentVersionAttributes");
@@ -847,7 +849,7 @@ public class RemoteContentServiceImpl extends RemoteInfoGlueService
             	Element attributesRoot = null;
         		Document document = null;
         		
-            	if(keepExistingAttributes)
+				if (keepExistingAttributes && !isNewlyCreatedVersion)
             	{
             		String existingXML = contentVersionVO.getVersionValue();
             		document = domBuilder.getDocument(existingXML);
@@ -875,6 +877,10 @@ public class RemoteContentServiceImpl extends RemoteInfoGlueService
                     if(keepExistingAttributes)
 	                {
                     	Element attribute = attributesRoot.element(attributeName);
+						if (attribute == null)
+						{
+							attribute = domBuilder.addElement(attributesRoot, attributeName);
+						}
                     	attribute.clearContent();
                     	domBuilder.addCDATAElement(attribute, attributeValue);
 	                }
