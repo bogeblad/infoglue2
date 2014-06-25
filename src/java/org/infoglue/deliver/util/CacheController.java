@@ -23,11 +23,8 @@
 
 package org.infoglue.deliver.util;
 
-//import org.exolab.castor.jdo.CacheManager;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.ObjectInputStream;
 import java.io.StringReader;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -57,8 +54,6 @@ import org.apache.pluto.portalImpl.services.ServiceManager;
 import org.apache.pluto.portalImpl.services.portletentityregistry.PortletEntityRegistry;
 import org.exolab.castor.jdo.CacheManager;
 import org.exolab.castor.jdo.Database;
-import org.exolab.castor.jdo.OQLQuery;
-import org.exolab.castor.jdo.QueryResults;
 import org.infoglue.cms.applications.common.VisualFormatter;
 import org.infoglue.cms.controllers.kernel.impl.simple.AccessRightController;
 import org.infoglue.cms.controllers.kernel.impl.simple.CastorDatabaseService;
@@ -70,7 +65,6 @@ import org.infoglue.cms.controllers.kernel.impl.simple.ContentVersionController;
 import org.infoglue.cms.controllers.kernel.impl.simple.DigitalAssetController;
 import org.infoglue.cms.controllers.kernel.impl.simple.GroupPropertiesController;
 import org.infoglue.cms.controllers.kernel.impl.simple.InterceptionPointController;
-import org.infoglue.cms.controllers.kernel.impl.simple.PageDeliveryMetaDataController;
 import org.infoglue.cms.controllers.kernel.impl.simple.PropertiesCategoryController;
 import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeController;
 import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeVersionController;
@@ -92,7 +86,6 @@ import org.infoglue.cms.entities.content.impl.simple.SmallestContentVersionImpl;
 import org.infoglue.cms.entities.content.impl.simple.SmallishContentImpl;
 import org.infoglue.cms.entities.management.AccessRightVO;
 import org.infoglue.cms.entities.management.ContentTypeDefinitionVO;
-import org.infoglue.cms.entities.management.GeneralOQLResult;
 import org.infoglue.cms.entities.management.InterceptionPointVO;
 import org.infoglue.cms.entities.management.impl.simple.AccessRightGroupImpl;
 import org.infoglue.cms.entities.management.impl.simple.AccessRightImpl;
@@ -157,8 +150,6 @@ import org.infoglue.deliver.applications.actions.InfoGlueComponent;
 import org.infoglue.deliver.applications.databeans.CacheEvictionBean;
 import org.infoglue.deliver.applications.databeans.DatabaseWrapper;
 import org.infoglue.deliver.cache.PageCacheHelper;
-import org.infoglue.deliver.controllers.kernel.impl.simple.ContentDeliveryController;
-import org.infoglue.deliver.controllers.kernel.impl.simple.NodeDeliveryController;
 import org.infoglue.deliver.invokers.PageInvoker;
 import org.infoglue.deliver.portal.ServletConfigContainer;
 import org.xmlpull.v1.builder.XmlDocument;
@@ -2327,7 +2318,11 @@ public class CacheController extends Thread
 					{
 						clear = true;
 					}
-					if(cacheName.equalsIgnoreCase("groupPropertiesCache") && entity.indexOf("Group") > 0)
+					if(cacheName.equalsIgnoreCase("groupPropertiesCache") && (entity.indexOf("Group") > 0 || entity.indexOf("PropertiesCategory") > 0))
+					{
+						clear = true;
+					}
+					if(cacheName.equalsIgnoreCase("propertiesCategoryCache") && (entity.indexOf("Group") > 0 || entity.indexOf("Role") > 0 || entity.indexOf("User") > 0 || entity.indexOf("PropertiesCategory") > 0))
 					{
 						clear = true;
 					}
@@ -2339,7 +2334,7 @@ public class CacheController extends Thread
 					{
 						clear = true;
 					}
-					if(cacheName.equalsIgnoreCase("relatedCategoriesCache") && (entity.indexOf("Group") > 0 || entity.indexOf("Role") > 0 || entity.indexOf("User") > 0))
+					if(cacheName.equalsIgnoreCase("relatedCategoriesCache") && (entity.indexOf("Group") > 0 || entity.indexOf("Role") > 0 || entity.indexOf("User") > 0 || entity.indexOf("PropertiesCategory") > 0))
 					{
 						clear = true;
 					}
@@ -2900,7 +2895,7 @@ public class CacheController extends Thread
 							    		cacheInstance.flushGroup("contentVersion_" + entityId);
 							    		//if(!cacheName.equals("contentCache") && !cacheName.equals("contentVersionCache") && !cacheName.equals("contentAttributeCache") && !cacheName.equals("contentVersionIdCache") && !cacheName.equals("contentCategoryCache") && !cacheName.equals("metaInfoContentAttributeCache"))
 							    			cacheInstance.flushGroup("selectiveCacheUpdateNonApplicable");
-								    	logger.warn("clearing " + e.getKey() + " with selectiveCacheUpdateNonApplicable");
+								    	logger.info("clearing " + e.getKey() + " with selectiveCacheUpdateNonApplicable");
 								    	//t.printElapsedTime("clearing " + e.getKey() + " with selectiveCacheUpdateNonApplicable");
 							    	}
 							    	logger.info("clearing " + e.getKey() + " with group " + "contentVersion_" + entityId);
