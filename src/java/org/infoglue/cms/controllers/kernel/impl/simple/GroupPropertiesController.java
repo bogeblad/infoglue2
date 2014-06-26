@@ -1130,7 +1130,7 @@ public class GroupPropertiesController extends BaseController
 
 	
 	public List<SiteNodeVO> getReadOnlyRelatedSiteNodeVOList(String groupName, Integer languageId, String attributeName, Database db) throws SystemException, Exception
-	{
+	{ 
 		String cacheKey = "relatedSiteNodes_" + groupName + "_" + languageId + "_" + attributeName;
 		logger.info("cacheKey:" + cacheKey);
 		List<SiteNodeVO> relatedSiteNodeList = (List<SiteNodeVO>)CacheController.getCachedObject("groupPropertiesCache", cacheKey);
@@ -1141,6 +1141,8 @@ public class GroupPropertiesController extends BaseController
 		else
 		{
 			Timer t = new Timer();
+			
+			relatedSiteNodeList = new ArrayList<SiteNodeVO>();
 
 			List groupProperties = this.getGroupPropertiesVOList(groupName, languageId, db);
 		    Iterator iterator = groupProperties.iterator();
