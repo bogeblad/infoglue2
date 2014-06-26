@@ -1131,21 +1131,35 @@ public class GroupPropertiesController extends BaseController
 	
 	public List<SiteNodeVO> getReadOnlyRelatedSiteNodeVOList(String groupName, Integer languageId, String attributeName, Database db) throws SystemException, Exception
 	{
-		List<SiteNodeVO> relatedSiteNodeList = new ArrayList<SiteNodeVO>();
-
-		List groupProperties = this.getGroupPropertiesVOList(groupName, languageId, db);
-	    Iterator iterator = groupProperties.iterator();
-	    GroupPropertiesVO groupPropertyVO = null;
-	    while(iterator.hasNext())
-	    {
-	        groupPropertyVO = (GroupPropertiesVO)iterator.next();
-	        break;
-	    }
-	    
-		if(groupPropertyVO != null)
+		String cacheKey = "relatedSiteNodes_" + groupName + "_" + languageId + "_" + attributeName;
+		logger.info("cacheKey:" + cacheKey);
+		List<SiteNodeVO> relatedSiteNodeList = (List<SiteNodeVO>)CacheController.getCachedObject("groupPropertiesCache", cacheKey);
+		if(relatedSiteNodeList != null)
 		{
-			String xml = this.getAttributeValue(groupPropertyVO.getValue(), attributeName, false);
-			relatedSiteNodeList = this.getReadOnlyRelatedSiteNodeVOListFromXML(db, xml);
+			logger.info("There was an cached relatedSiteNodeList:" + relatedSiteNodeList.size());
+		}
+		else
+		{
+			Timer t = new Timer();
+
+			List groupProperties = this.getGroupPropertiesVOList(groupName, languageId, db);
+		    Iterator iterator = groupProperties.iterator();
+		    GroupPropertiesVO groupPropertyVO = null;
+		    while(iterator.hasNext())
+		    {
+		        groupPropertyVO = (GroupPropertiesVO)iterator.next();
+		        break;
+		    }
+		    
+			if(groupPropertyVO != null)
+			{
+				String xml = this.getAttributeValue(groupPropertyVO.getValue(), attributeName, false);
+				relatedSiteNodeList = this.getReadOnlyRelatedSiteNodeVOListFromXML(db, xml);
+			}
+			
+			RequestAnalyser.getRequestAnalyser().registerComponentStatistics("getReadOnlyRelatedSiteNodeVOList", t.getElapsedTime());
+			
+			CacheController.cacheObject("groupPropertiesCache", cacheKey, relatedSiteNodeList);
 		}
 
 		return relatedSiteNodeList;
