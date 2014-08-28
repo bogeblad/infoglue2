@@ -14,14 +14,13 @@
 	<script type="text/javascript" src="${root}/applications/FCKEditor/fckeditor.js"></script>
 	<script type="text/javascript" src="${root}/script/v3/infoglueWidgets.js"></script>
 	<script type="text/javascript" src="${root}/script/v3/infoglueFormUtilities.js"></script>
-	<link rel="stylesheet" type="text/css" href="${root}/css/v3/infoglueWidgets.css" /> 
+	<link rel="stylesheet" type="text/css" href="${root}/css/v3/infoglueWidgets.css" />
 	
 	<script type="text/javascript">
-				
 		#if($syncAuto == "true")
 		syncWithTree();
 		#end
-	
+
 		
 		function hotkeyS()
 		{
@@ -314,7 +313,7 @@
 	var repositoryId 		= "$repositoryId";
 	var contentId 			= "$contentId";
 	var languageId 			= "$languageId";
-	var name 				= "$formatter.cleanForJavascriptStrings($name)";
+	var contentName			= "$formatter.cleanForJavascriptStrings($name)";
 	var contentTypeDefinitionName = "$contentTypeDefinitionName";
 	
 	var count = 0;
