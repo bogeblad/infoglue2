@@ -173,20 +173,20 @@
 			toolbarKey 	= hexcode(toolbarKey);	
 
 			var agt=navigator.userAgent.toLowerCase();
-	   	    if(agt.indexOf("safari")!=-1)
+	   	    if(true || agt.indexOf("safari")!=-1)
 	   	    {
 	   	    	document.location.href = context + '/ViewStructureToolToolBar.action?title=' + title + '&toolbarKey=' + toolbarKey + '&' + arguments;
+				if(parent.frames["menu"] && parent.frames["menu"].syncWithTree)
+					parent.frames["menu"].syncWithTree(path, repositoryId);
 	   		}
 	   	    else	
 	   	    {
 				if(parent.frames["igtoolbar"].document)
 				{
 					parent.frames["igtoolbar"].location.href = context + '/ViewStructureToolToolBar.action?title=' + title + '&toolbarKey=' + toolbarKey + '&' + arguments;
-			   	    	
 					parent.frames["menu"].syncWithTree(path, repositoryId);
 				}
 	   	    }
-	   	    
 		}
 
 		//-----------------------------------------------
