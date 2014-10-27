@@ -23,6 +23,24 @@
 		parent.frames[1].syncWithTree(path);
 	}
 	
+	function showWeightList()
+    {
+	    $('#weightList').toggle();
+	}
+
+	function showWeight()
+	{
+		$('#weightText').empty().append("Loading...");
+		jQuery.get("ViewCommonAjaxServices!assetWeight.action?contentId=$contentId", function(data) {
+			//alert("Count:" + data + " on $contentId");
+			if(data != "0")
+			{
+				$('#weightText').empty().append("<b><a href='javascript:showWeightList();'>" + data.substring(0,data.indexOf(":")) + "</a></b>");
+				$('#weightList').empty().append("<b>Contents over 100Kb</b>" + data.substring(data.indexOf(":")+1) + "");
+			}
+		});
+	}
+	
 	var dirty = false;
 	//-----------------------------------------------
 	// This function changes the languageversion to edit.
@@ -92,7 +110,12 @@
 	</tr>
 	<tr>
 		<td colspan="7">
-			$ui.getString("tool.contenttool.lastUpdatedByLabel") $contentVO.creatorName <br/>Content ID: $contentVO.id
+			$ui.getString("tool.contenttool.lastUpdatedByLabel") $contentVO.creatorName <br/>
+			Content ID: $contentVO.id<br/>
+			Size (including children): <span id="weightText"><a href="javascript:showWeight();">Click to analyze</a></span>
+			<p id="weightList" style="border: 1px solid #ccc; background-color: white; display: none;">
+			
+			</p>
 		</td>
 	</tr>
 	<tr>

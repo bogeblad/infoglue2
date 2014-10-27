@@ -1752,4 +1752,9 @@
 		<view name="error">/cms/structuretool/error.vm</view>
 	</action>
 
+	<!-- AJAX-services -->
+	<action name="org.infoglue.cms.applications.common.actions.ViewCommonAjaxServicesAction" alias="ViewCommonAjaxServices">
+		<view name="error">/cms/contenttool/error.vm</view>
+	</action>
+
 </actions>

@@ -1660,7 +1660,7 @@ public class AccessRightController extends BaseController
 	 * @throws ConstraintException
 	 * @throws SystemException
 	 */
-
+	/*
 	public void delete(String roleName) throws SystemException, Exception
 	{
 		Database db = CastorDatabaseService.getDatabase();
@@ -1687,20 +1687,6 @@ public class AccessRightController extends BaseController
 						db.remove(accessRightRole);
 					}
 				}
-				/*
-				Iterator accessRightGroupsIterator = accessRight.getGroups().iterator();
-				while(accessRightGroupsIterator.hasNext())
-				{
-					AccessRightGroup accessRightGroup = (AccessRightGroup)accessRightGroupsIterator.next();
-					db.remove(accessRightGroup);
-				}
-				Iterator accessRightUsersIterator = accessRight.getUsers().iterator();
-				while(accessRightRolesIterator.hasNext())
-				{
-					AccessRightUser accessRightUser = (AccessRightUser)accessRightUsersIterator.next();
-					db.remove(accessRightUser);
-				}
-				*/
 				//db.remove(accessRight);
 			}
 			
@@ -1713,7 +1699,48 @@ public class AccessRightController extends BaseController
 			throw new SystemException(e.getMessage());
 		}
 	}        
+	*/
 
+	/**
+	 * This method deletes all occurrencies of AccessRight which has the interceptionPointId.
+	 * 
+	 * @param roleName
+	 * @throws ConstraintException
+	 * @throws SystemException
+	 */
+
+	public void deleteAccessRightGroup(String groupName, Database db) throws SystemException, Exception
+	{
+		List<AccessRightGroup> accessRightGroupList = getAccessRightGroupList(groupName, db);
+		Iterator<AccessRightGroup> accessRightGroupListIterator = accessRightGroupList.iterator();
+		while(accessRightGroupListIterator.hasNext())
+		{
+			AccessRightGroup accessRightGroup = (AccessRightGroup)accessRightGroupListIterator.next();
+			accessRightGroupListIterator.remove();
+			db.remove(accessRightGroup);
+		}
+	}  
+	
+	/**
+	 * This method deletes all occurrencies of AccessRight which has the interceptionPointId.
+	 * 
+	 * @param roleName
+	 * @throws ConstraintException
+	 * @throws SystemException
+	 */
+
+	public void deleteAccessRightRole(String roleName, Database db) throws SystemException, Exception
+	{
+		List<AccessRightRole> accessRightRoleList = getAccessRightRoleList(roleName, db, false);
+		Iterator<AccessRightRole> accessRightRoleListIterator = accessRightRoleList.iterator();
+		while(accessRightRoleListIterator.hasNext())
+		{
+			AccessRightRole accessRightRole = (AccessRightRole)accessRightRoleListIterator.next();
+			accessRightRoleListIterator.remove();
+			db.remove(accessRightRole);
+		}
+	}  
+	
 	/**
 	 * This method deletes all occurrencies of AccessRight which has the interceptionPointId.
 	 * 

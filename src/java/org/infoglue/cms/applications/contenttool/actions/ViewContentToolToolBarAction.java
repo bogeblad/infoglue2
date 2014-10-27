@@ -469,7 +469,9 @@ public class ViewContentToolToolBarAction extends InfoGlueAbstractAction
 			ImageButton importButton = new ImageButton("ImportContent!input.action?parentContentId=" + this.contentId + "&repositoryId=" + this.repositoryId, getLocalizedString(getSession().getLocale(), "images.contenttool.buttons.importContent"), "tool.contenttool.importContent.header");
 			exportButton.getSubButtons().add(importButton);
 			buttons.add(exportButton);
-		
+			
+			ImageButton cleanVersionsButton = new ImageButton("ViewArchiveTool!cleanOldVersionsForContent.action?contentId=" + contentId + "&recurse=true", getLocalizedString(getSession().getLocale(), "images.contenttool.buttons.cleanVersions"), "tool.managementtool.archiveAssets.title");
+			buttons.add(cleanVersionsButton);		
 		}
 		catch(Exception e)
 		{

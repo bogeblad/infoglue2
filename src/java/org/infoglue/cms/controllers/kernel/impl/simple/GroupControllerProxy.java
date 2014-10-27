@@ -215,8 +215,27 @@ public class GroupControllerProxy extends BaseController
 	
 	public void deleteGroup(String groupName) throws ConstraintException, SystemException, Exception
 	{
-		getAuthorizationModule().deleteInfoGlueGroup(groupName);
-		AccessRightController.getController().delete(groupName);
+		Database db = CastorDatabaseService.getDatabase();
+		
+		try 
+		{
+			beginTransaction(db);
+			
+			this.transactionObject = db;
+			getAuthorizationModule().deleteInfoGlueGroup(groupName);
+			AccessRightController.getController().deleteAccessRightGroup(groupName, db);
+			GroupPropertiesController.getController().delete(groupName, db);
+			GroupPropertiesController.getController().deleteContentTypeDefinitions(groupName, db);
+			
+			commitTransaction(db);
+		} 
+		catch (Exception e) 
+		{
+			rollbackTransaction(db);
+			throw new SystemException(e);
+		}
+		//getAuthorizationModule().deleteInfoGlueGroup(groupName);
+		//AccessRightController.getController().delete(groupName);
 	}
 	
 	public BaseEntityVO getNewVO()

@@ -480,6 +480,21 @@ public class GroupPropertiesController extends BaseController
     	deleteEntity(GroupPropertiesImpl.class, groupPropertiesVO.getGroupPropertiesId());
     }        
 
+    public void delete(String groupName, Database db) throws Exception
+    {
+    	List<LanguageVO> languages = LanguageController.getController().getLanguageVOList(db);
+    	for(LanguageVO languageVO : languages)
+    	{
+        	List<GroupProperties> groupPropertiesList = getGroupPropertiesList(groupName, languageVO.getId(), db, false);
+        	Iterator<GroupProperties> groupPropertiesIterator = groupPropertiesList.iterator();
+        	while(groupPropertiesIterator.hasNext())
+        	{
+        		GroupProperties groupProperties = groupPropertiesIterator.next();
+        		db.remove(groupProperties);
+        		groupPropertiesIterator.remove();
+        	}
+    	}
+    }        
     
 	/**
 	 * This method should return a list of those digital assets the contentVersion has.
@@ -596,6 +611,21 @@ public class GroupPropertiesController extends BaseController
 		return groupContentTypeDefinitionList;
 	}
 	
+	/**
+	 * This method deletes all content type definitions for a group
+	 */
+
+	public void deleteContentTypeDefinitions(String groupName, Database db) throws Exception
+	{
+		List groupContentTypeDefinitionList = this.getGroupContentTypeDefinitionList(groupName, db);
+		Iterator contentTypeDefinitionsIterator = groupContentTypeDefinitionList.iterator();
+		while(contentTypeDefinitionsIterator.hasNext())
+		{
+			GroupContentTypeDefinition groupContentTypeDefinition = (GroupContentTypeDefinition)contentTypeDefinitionsIterator.next();
+			db.remove(groupContentTypeDefinition);
+		}
+	}
+
 	/**
 	 * This method fetches all content types available for this group. 
 	 */

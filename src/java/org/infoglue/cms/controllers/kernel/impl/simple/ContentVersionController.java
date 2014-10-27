@@ -2820,6 +2820,56 @@ public class ContentVersionController extends BaseController
 	 * @throws SystemException 
 	 */
 	
+	public int cleanContentVersions(ContentVO contentVO, boolean recurse, int numberOfVersionsToKeep, boolean keepOnlyOldPublishedVersions, long minimumTimeBetweenVersionsDuringClean, boolean deleteVersions) throws SystemException, Exception 
+	{
+		int cleanedVersions = 0;
+		
+		int batchLimit = 20;
+		List languageVOList = LanguageController.getController().getLanguageVOList();
+		
+		Iterator<LanguageVO> languageVOListIterator = languageVOList.iterator();
+		while(languageVOListIterator.hasNext())
+		{
+			LanguageVO languageVO = languageVOListIterator.next();
+			
+			List<Integer> contentIds = new ArrayList<Integer>();
+			contentIds.add(contentVO.getId());
+			if(recurse)
+			{
+				contentIds.addAll(ContentController.getContentController().getContentIdsForAllChildren(contentVO.getId()));
+			}
+			
+			List<SmallestContentVersionVO> contentVersionVOList = getSmallestContentVersionVOListImpl(contentIds, languageVO.getId(), numberOfVersionsToKeep, keepOnlyOldPublishedVersions, minimumTimeBetweenVersionsDuringClean);
+			logger.info("numberOfVersionsToKeep:" + numberOfVersionsToKeep);
+			logger.info("Deleting " + contentVersionVOList.size() + " versions for language " + languageVO.getName());
+
+			int maxIndex = (contentVersionVOList.size() > batchLimit ? batchLimit : contentVersionVOList.size());
+			List partList = contentVersionVOList.subList(0, maxIndex);
+			while(partList.size() > 0)
+			{
+				if(deleteVersions)
+				{
+					cleanVersions(numberOfVersionsToKeep, partList);
+				}
+				cleanedVersions = cleanedVersions + partList.size();
+				//System.out.println("Cleaned " + cleanedVersions + " of " + contentVersionVOList.size());
+				partList.clear();
+				maxIndex = (contentVersionVOList.size() > batchLimit ? batchLimit : contentVersionVOList.size());
+				partList = contentVersionVOList.subList(0, maxIndex);
+			}
+		}
+		return cleanedVersions;
+	}
+	
+	
+	/**
+	 * This method are here to return all content versions that are x number of versions behind the current active version. This is for cleanup purposes.
+	 * 
+	 * @param numberOfVersionsToKeep
+	 * @return
+	 * @throws SystemException 
+	 */
+	
 	public List<SmallestContentVersionVO> getSmallestContentVersionVOList(Integer contentId) throws SystemException 
 	{
 		Database db = CastorDatabaseService.getDatabase();
@@ -2989,7 +3039,6 @@ public class ContentVersionController extends BaseController
     		for(Integer contentId : contentIdList)
     		{
     			oql.bind(contentId);
-    			//System.out.println("contentId:" + contentId);
     		}
 
         	QueryResults results = oql.execute(Database.ReadOnly);
@@ -3008,7 +3057,7 @@ public class ContentVersionController extends BaseController
 				SmallestContentVersionImpl version = (SmallestContentVersionImpl)results.next();
 				if(previousContentId != null && previousContentId.intValue() != version.getContentId().intValue())
 				{
-					if(minimumTimeBetweenVersionsDuringClean != -1 && versionInitialSuggestions.size() > numberOfVersionsToKeep)
+					if(minimumTimeBetweenVersionsDuringClean != -1 && versionInitialSuggestions.size() >= numberOfVersionsToKeep)
 					{
 						Iterator potentialContentVersionVOListIterator = potentialContentVersionVOList.iterator();
 						while(potentialContentVersionVOListIterator.hasNext())
@@ -3056,7 +3105,7 @@ public class ContentVersionController extends BaseController
 					difference = previousDate.getTime() - version.getModifiedDateTime().getTime();
 				}
 				
-				if(numberOfLaterVersions > numberOfVersionsToKeep || (keepOnlyOldPublishedVersions && numberOfLaterVersions > 0 && !version.getStateId().equals(ContentVersionVO.PUBLISHED_STATE)))
+				if(numberOfLaterVersions >= numberOfVersionsToKeep || (keepOnlyOldPublishedVersions && numberOfLaterVersions > 0 && !version.getStateId().equals(ContentVersionVO.PUBLISHED_STATE)))
             	{
 					if(version.getStateId().equals(ContentVersionVO.PUBLISHED_STATE))
 					{
@@ -3083,6 +3132,43 @@ public class ContentVersionController extends BaseController
 				previousContentId = version.getContentId();
             }
             
+			if(minimumTimeBetweenVersionsDuringClean != -1 && versionInitialSuggestions.size() >= numberOfVersionsToKeep)
+			{
+				//System.out.println("Inside again....");
+				//System.out.println("potentialContentVersionVOList:" + potentialContentVersionVOList.size());
+				Iterator potentialContentVersionVOListIterator = potentialContentVersionVOList.iterator();
+				while(potentialContentVersionVOListIterator.hasNext())
+				{
+					SmallestContentVersionVO potentialContentVersionVO = (SmallestContentVersionVO)potentialContentVersionVOListIterator.next();
+					
+					SmallestContentVersionVO firstInitialSuggestedContentVersionVO = null;
+					Iterator versionInitialSuggestionsIterator = versionInitialSuggestions.iterator();
+					while(versionInitialSuggestionsIterator.hasNext())
+					{
+						SmallestContentVersionVO initialSuggestedContentVersionVO = (SmallestContentVersionVO)versionInitialSuggestionsIterator.next();
+						if(initialSuggestedContentVersionVO.getStateId().equals(ContentVersionVO.PUBLISHED_STATE))
+						{
+							firstInitialSuggestedContentVersionVO = initialSuggestedContentVersionVO;
+							//System.out.println("Breaking...");
+							break;
+						}
+					}
+					
+					if(firstInitialSuggestedContentVersionVO != null)
+					{
+						keptContentVersionVOList.remove(potentialContentVersionVO);
+						keptContentVersionVOList.add(firstInitialSuggestedContentVersionVO);
+						versionInitialSuggestions.remove(firstInitialSuggestedContentVersionVO);
+						versionInitialSuggestions.add(potentialContentVersionVO);
+					}
+				}
+			}
+			
+			//System.out.println("versionNonPublishedSuggestions:" + versionNonPublishedSuggestions.size());
+			//System.out.println("versionInitialSuggestions:" + versionInitialSuggestions.size());
+			contentVersionsIdList.addAll(versionNonPublishedSuggestions);
+			contentVersionsIdList.addAll(versionInitialSuggestions);
+			
 			results.close();
 			oql.close();
 

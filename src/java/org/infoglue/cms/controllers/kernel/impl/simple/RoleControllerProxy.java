@@ -216,8 +216,25 @@ public class RoleControllerProxy extends BaseController
 	
 	public void deleteRole(String roleName) throws ConstraintException, SystemException, Exception
 	{
-		getAuthorizationModule().deleteInfoGlueRole(roleName);
-		AccessRightController.getController().delete(roleName);
+		Database db = CastorDatabaseService.getDatabase();
+		
+		try 
+		{
+			beginTransaction(db);
+			
+			this.transactionObject = db;
+			getAuthorizationModule().deleteInfoGlueRole(roleName);
+			AccessRightController.getController().deleteAccessRightRole(roleName, db);
+
+			commitTransaction(db);
+		} 
+		catch (Exception e) 
+		{
+			rollbackTransaction(db);
+			throw new SystemException(e);
+		}
+		//getAuthorizationModule().deleteInfoGlueRole(roleName);
+		//AccessRightController.getController().deleteAccessRightRole(roleName, db);
 	}
 	
 	public BaseEntityVO getNewVO()
