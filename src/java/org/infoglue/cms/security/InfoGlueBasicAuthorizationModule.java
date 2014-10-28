@@ -353,7 +353,7 @@ public class InfoGlueBasicAuthorizationModule extends BaseController implements 
 		}
 		else
 		{
-		    groupVO = GroupController.getController().getGroupWithName(groupName, transactionObject).getValueObject();
+		    groupVO = GroupController.getController().getSmallGroupWithName(groupName, transactionObject).getValueObject();
 		}
 
 	    infoglueGroup = new InfoGlueGroup(groupVO.getGroupName(), groupVO.getDescription(), this);
