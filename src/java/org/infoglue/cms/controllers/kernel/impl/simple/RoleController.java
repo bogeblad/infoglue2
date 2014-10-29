@@ -26,8 +26,10 @@ package org.infoglue.cms.controllers.kernel.impl.simple;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.log4j.Category;
 import org.apache.log4j.Level;
@@ -42,6 +44,7 @@ import org.infoglue.cms.entities.management.RoleVO;
 import org.infoglue.cms.entities.management.SystemUser;
 import org.infoglue.cms.entities.management.impl.simple.RoleImpl;
 import org.infoglue.cms.entities.management.impl.simple.SmallRoleImpl;
+import org.infoglue.cms.entities.management.impl.simple.SystemUserGroupImpl;
 import org.infoglue.cms.entities.management.impl.simple.SystemUserRoleImpl;
 import org.infoglue.cms.exception.Bug;
 import org.infoglue.cms.exception.ConstraintException;
@@ -468,6 +471,31 @@ public class RoleController extends BaseController
         
         return roleExists;
     }        
+    
+    public Map<String,List<String>> getSystemUserRoleMapping(Database db) throws ConstraintException, SystemException, Exception
+    {
+    	Map<String,List<String>> userRoleMapping = new HashMap<String,List<String>>();
+    	
+    	OQLQuery oql = db.getOQLQuery( "SELECT sur FROM org.infoglue.cms.entities.management.impl.simple.SystemUserRoleImpl sur ORDER BY sur.userName");
+    	
+    	QueryResults results = oql.execute(Database.ReadOnly);
+		while (results.hasMore()) 
+        {
+			SystemUserRoleImpl sur = (SystemUserRoleImpl)results.nextElement();
+			List<String> roleNames = userRoleMapping.get(sur.getUserName());
+			if(roleNames == null)
+			{
+				roleNames = new ArrayList<String>();
+				userRoleMapping.put(sur.getUserName(), roleNames);
+			}
+			roleNames.add(sur.getRoleName());
+        }
+		
+		results.close();
+		oql.close();
+		
+		return userRoleMapping;
+    }
     
     public void removeUser(String roleName, String userName) throws ConstraintException, SystemException
     {

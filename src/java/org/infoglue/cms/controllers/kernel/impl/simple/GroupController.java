@@ -25,8 +25,10 @@ package org.infoglue.cms.controllers.kernel.impl.simple;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.exolab.castor.jdo.Database;
@@ -490,6 +492,31 @@ public class GroupController extends BaseController
         }
     }        
 
+    public Map<String,List<String>> getSystemUserGroupMapping(Database db) throws ConstraintException, SystemException, Exception
+    {
+    	Map<String,List<String>> userGroupMapping = new HashMap<String,List<String>>();
+    	
+    	OQLQuery oql = db.getOQLQuery( "SELECT sur FROM org.infoglue.cms.entities.management.impl.simple.SystemUserGroupImpl sur ORDER BY sur.userName");
+    	
+    	QueryResults results = oql.execute(Database.ReadOnly);
+		while (results.hasMore()) 
+        {
+			SystemUserGroupImpl sur = (SystemUserGroupImpl)results.nextElement();
+			List<String> groupNames = userGroupMapping.get(sur.getUserName());
+			if(groupNames == null)
+			{
+				groupNames = new ArrayList<String>();
+				userGroupMapping.put(sur.getUserName(), groupNames);
+			}
+			groupNames.add(sur.getGroupName());
+        }
+		
+		results.close();
+		oql.close();
+		
+		return userGroupMapping;
+    }
+    
     public void removeUser(String groupName, String userName, Database db) throws ConstraintException, SystemException, Exception
     {
     	OQLQuery oql = db.getOQLQuery( "SELECT sur FROM org.infoglue.cms.entities.management.impl.simple.SystemUserGroupImpl sur WHERE sur.groupName = $1 AND sur.userName = $2");
