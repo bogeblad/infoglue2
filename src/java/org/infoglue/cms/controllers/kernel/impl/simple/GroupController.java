@@ -566,6 +566,38 @@ public class GroupController extends BaseController
 		results.close();
 		oql.close();
     }
+    
+    public void removeUsers(List<String[]> userNamesGroupsToDelete, Database db) throws ConstraintException, SystemException, Exception
+    {
+    	try
+    	{
+	    	String sql = "delete from cmSystemUserGroup where userName = ? AND groupName = ?";
+			Connection connection = (Connection) ((DatabaseImpl)db).getConnection();
+	    	PreparedStatement ps = connection.prepareStatement(sql);
+	    	 
+	    	final int batchSize = 1000;
+	    	int count = 0;
+	    	 
+	    	for (String[] userNameGroupPair: userNamesGroupsToDelete) 
+	    	{
+	    		if(logger.isInfoEnabled())
+	    			logger.info("Deleting " + userNameGroupPair[0] + " = " + userNameGroupPair[1]);
+	    	    ps.setString(1, userNameGroupPair[0]);
+	    		ps.setString(2, userNameGroupPair[1]);
+	    	    ps.addBatch();
+	    	     
+	    	    if(++count % batchSize == 0) {
+	    	        ps.executeBatch();
+	    	    }
+	    	}
+	    	ps.executeBatch(); // insert remaining records
+	    	ps.close();
+    	}
+    	catch (Exception e) 
+    	{
+    		logger.error("Error deleting userGroups: " + e.getMessage(), e);
+		}
+    }
 
     public void removeUsers(String groupName) throws ConstraintException, SystemException, Exception
     {
