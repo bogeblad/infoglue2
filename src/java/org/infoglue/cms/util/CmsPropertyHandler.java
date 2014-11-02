@@ -1983,6 +1983,28 @@ public class CmsPropertyHandler
 	    return customContentTypeIcons;
 	}
 	
+	public static Map<String,String> getCasCookiesBeforeRedirect()
+	{
+		Map casCookiesBeforeRedirect = new HashMap();
+		
+	    String casCookiesBeforeRedirectString = CmsPropertyHandler.getServerNodeDataProperty(null, "casCookiesBeforeRedirect", true, null);
+	    if(casCookiesBeforeRedirectString != null && !casCookiesBeforeRedirectString.equals(""))
+		{
+	    	try
+			{
+	    		Properties properties = new Properties();
+				properties.load(new ByteArrayInputStream(casCookiesBeforeRedirectString.getBytes("UTF-8")));
+				casCookiesBeforeRedirect.putAll(properties);
+			}	
+			catch(Exception e)
+			{
+			    logger.error("Error loading properties from string. Reason:" + e.getMessage());
+			}
+		}
+	    
+	    return casCookiesBeforeRedirect;
+	}
+	
 	public static Map getCacheSettings()
 	{
 		return getCacheSettings(false);

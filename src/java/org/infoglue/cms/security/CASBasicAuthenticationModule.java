@@ -39,6 +39,7 @@ import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -863,6 +864,17 @@ public class CASBasicAuthenticationModule extends AuthenticationModule//, Author
 			
 			logger.info("redirectUrl 6:" + redirectUrl);
 			
+			Map<String,String> CASCookies = CmsPropertyHandler.getCasCookiesBeforeRedirect();
+			if(CASCookies != null && CASCookies.size() > 0)
+			{
+				for(String name : CASCookies.keySet())
+				{
+				    Cookie cookie = new Cookie(name, CASCookies.get(name));
+				    logger.info("Set cookie:" + name + ": " + CASCookies.get(name));
+				    response.addCookie(cookie);	
+				}
+			}
+
 			response.sendRedirect(redirectUrl);
 			status.put("redirected", new Boolean(true));
 			return null;
@@ -884,6 +896,17 @@ public class CASBasicAuthenticationModule extends AuthenticationModule//, Author
 		
 			logger.info("redirectUrl 7:" + redirectUrl);
 		
+			Map<String,String> CASCookies = CmsPropertyHandler.getCasCookiesBeforeRedirect();
+			if(CASCookies != null && CASCookies.size() > 0)
+			{
+				for(String name : CASCookies.keySet())
+				{
+				    Cookie cookie = new Cookie(name, CASCookies.get(name));
+				    logger.info("Setting cookie: " + name + "=" + CASCookies.get(name));
+				    response.addCookie(cookie);	
+				}
+			}
+
 			response.sendRedirect(redirectUrl);
 	
 			status.put("redirected", new Boolean(true));

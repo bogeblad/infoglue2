@@ -390,6 +390,7 @@
 			#editPropertyFieldCSS("ServerNode.property.casProxyValidateUrl" "casProxyValidateUrl" "$this.getPropertyValue('casProxyValidateUrl')" "51" "$!serverNodeId")
 			#editPropertyFieldCSS("ServerNode.property.casServiceUrl" "casServiceUrl" "$this.getPropertyValue('casServiceUrl')" "51" "$!serverNodeId")
 			#editPropertyFieldCSS("ServerNode.property.casLogoutUrl" "casLogoutUrl" "$this.getPropertyValue('casLogoutUrl')" "51" "$!serverNodeId")
+			#editPropertyTextAreaCSS("ServerNode.property.casCookiesBeforeRedirect" "casCookiesBeforeRedirect" "$this.getDataPropertyValue('casCookiesBeforeRedirect')"  "50" "10" "smalltextarea" "$!serverNodeId")
 			#editPropertyFieldCSS("ServerNode.property.ipAddressesToFallbackToBasicAuth" "ipAddressesToFallbackToBasicAuth" "$this.getPropertyValue('ipAddressesToFallbackToBasicAuth')" "51" "$!serverNodeId")
 			<div class="buttonRow">
 				<input type="image" src="$ui.getString("images.managementtool.buttons.save")" width="50" height="25" style="width: 50px;">
