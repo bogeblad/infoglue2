@@ -558,7 +558,7 @@ public class InfoGlueBasicAuthorizationModule extends BaseController implements 
 				}
 				
 				Map<String,List<String>> systemRoleMapping = RoleController.getController().getSystemUserRoleMapping(db);
-				Map<String,List<String>> systemGroupMapping = GroupController.getController().getSystemUserGroupMapping(db);
+				Map<String,List<String>> systemGroupMapping = GroupController.getController().getSystemUserGroupMappingLowerCase(db);
 				
 				
 				List<SystemUserVO> systemUserVOList = SystemUserController.getController().getSystemUserVOList(db);
@@ -592,14 +592,14 @@ public class InfoGlueBasicAuthorizationModule extends BaseController implements 
 					*/
 					
 					List<InfoGlueGroup> groups = new ArrayList<InfoGlueGroup>();
-					List<String> groupNames = systemGroupMapping.get(systemUserVO.getUserName());
+					List<String> groupNames = systemGroupMapping.get(systemUserVO.getUserName().toLowerCase());
 					if(groupNames != null)
 					{
 						for(String groupName : groupNames)
 						{
-							if(groupsMap.get(groupName) != null)
+							if(groupsMap.get(groupName.toLowerCase()) != null)
 							{
-								InfoGlueGroup infoGlueGroup = new InfoGlueGroup(groupsMap.get(groupName).getGroupName(), groupsMap.get(groupName).getDescription(), this);
+								InfoGlueGroup infoGlueGroup = new InfoGlueGroup(groupsMap.get(groupName.toLowerCase()).getGroupName(), groupsMap.get(groupName.toLowerCase()).getDescription(), this);
 								groups.add(infoGlueGroup);
 							}
 						}
@@ -641,11 +641,11 @@ public class InfoGlueBasicAuthorizationModule extends BaseController implements 
 			Map<String,GroupVO> groupsMap = new HashMap<String,GroupVO>();
 			for(GroupVO group : groupVOList)
 			{
-				groupsMap.put(group.getGroupName(), group);
+				groupsMap.put(group.getGroupName().toLowerCase(), group);
 			}
 			
 			Map<String,List<String>> systemRoleMapping = RoleController.getController().getSystemUserRoleMapping(transactionObject);
-			Map<String,List<String>> systemGroupMapping = GroupController.getController().getSystemUserGroupMapping(transactionObject);
+			Map<String,List<String>> systemGroupMapping = GroupController.getController().getSystemUserGroupMappingLowerCase(transactionObject);
 			
 			List<SystemUserVO> systemUserVOList = SystemUserController.getController().getSystemUserVOList(transactionObject);
 			
@@ -678,14 +678,14 @@ public class InfoGlueBasicAuthorizationModule extends BaseController implements 
 				}
 				*/				
 				List<InfoGlueGroup> groups = new ArrayList<InfoGlueGroup>();
-				List<String> groupNames = systemGroupMapping.get(systemUser.getUserName());
+				List<String> groupNames = systemGroupMapping.get(systemUser.getUserName().toLowerCase());
 				if(groupNames != null)
 				{
 					for(String groupName : groupNames)
 					{
-						if(groupsMap.get(groupName) != null)
+						if(groupsMap.get(groupName.toLowerCase()) != null)
 						{
-							InfoGlueGroup infoGlueGroup = new InfoGlueGroup(groupsMap.get(groupName).getGroupName(), groupsMap.get(groupName).getDescription(), this);
+							InfoGlueGroup infoGlueGroup = new InfoGlueGroup(groupsMap.get(groupName.toLowerCase()).getGroupName(), groupsMap.get(groupName.toLowerCase()).getDescription(), this);
 							groups.add(infoGlueGroup);
 						}
 					}

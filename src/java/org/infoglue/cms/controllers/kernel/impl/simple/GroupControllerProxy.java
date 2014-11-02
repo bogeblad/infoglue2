@@ -175,8 +175,6 @@ public class GroupControllerProxy extends BaseController
 	
 	public InfoGlueGroup createGroup(GroupVO groupVO) throws ConstraintException, SystemException, Exception
 	{
-		InfoGlueGroup infoGlueGroup = null;
-    	
 		getAuthorizationModule().createInfoGlueGroup(groupVO);
     	
 		return getGroup(groupVO.getGroupName());

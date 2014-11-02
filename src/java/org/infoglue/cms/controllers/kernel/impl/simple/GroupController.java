@@ -23,25 +23,26 @@
 
 package org.infoglue.cms.controllers.kernel.impl.simple;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.exolab.castor.jdo.Database;
 import org.exolab.castor.jdo.OQLQuery;
 import org.exolab.castor.jdo.QueryResults;
+import org.exolab.castor.jdo.engine.DatabaseImpl;
 import org.infoglue.cms.entities.kernel.BaseEntityVO;
 import org.infoglue.cms.entities.management.Group;
 import org.infoglue.cms.entities.management.GroupVO;
-import org.infoglue.cms.entities.management.Role;
 import org.infoglue.cms.entities.management.SystemUser;
 import org.infoglue.cms.entities.management.impl.simple.GroupImpl;
 import org.infoglue.cms.entities.management.impl.simple.SmallGroupImpl;
-import org.infoglue.cms.entities.management.impl.simple.SmallRoleImpl;
 import org.infoglue.cms.entities.management.impl.simple.SystemUserGroupImpl;
 import org.infoglue.cms.exception.Bug;
 import org.infoglue.cms.exception.ConstraintException;
@@ -461,6 +462,38 @@ public class GroupController extends BaseController
     		db.create(sug);
 		}
     }
+    
+    public void addUsers(String groupName, Set<String> userNames, Database db) throws ConstraintException, SystemException, Exception
+    {
+    	try
+    	{
+	    	String sql = "insert into cmSystemUserGroup (userName, groupName) values (?, ?)";
+			Connection connection = (Connection) ((DatabaseImpl)db).getConnection();
+	    	PreparedStatement ps = connection.prepareStatement(sql);
+	    	 
+	    	final int batchSize = 1000;
+	    	int count = 0;
+	    	 
+	    	for (String userName: userNames) 
+	    	{
+	    		if(logger.isInfoEnabled())
+	    			logger.info("Adding " + groupName + " = " + userName);
+	    	    ps.setString(1, userName);
+	    		ps.setString(2, groupName);
+	    	    ps.addBatch();
+	    	     
+	    	    if(++count % batchSize == 0) {
+	    	        ps.executeBatch();
+	    	    }
+	    	}
+	    	ps.executeBatch(); // insert remaining records
+	    	ps.close();
+    	}
+    	catch (Exception e) 
+    	{
+    		logger.error("Error inserting users: " + e.getMessage(), e);
+		}
+    }
 
     public void removeUser(String groupName, String userName) throws ConstraintException, SystemException
     {
@@ -492,7 +525,7 @@ public class GroupController extends BaseController
         }
     }        
 
-    public Map<String,List<String>> getSystemUserGroupMapping(Database db) throws ConstraintException, SystemException, Exception
+    public Map<String,List<String>> getSystemUserGroupMappingLowerCase(Database db) throws ConstraintException, SystemException, Exception
     {
     	Map<String,List<String>> userGroupMapping = new HashMap<String,List<String>>();
     	
@@ -506,9 +539,9 @@ public class GroupController extends BaseController
 			if(groupNames == null)
 			{
 				groupNames = new ArrayList<String>();
-				userGroupMapping.put(sur.getUserName(), groupNames);
+				userGroupMapping.put(sur.getUserName().toLowerCase(), groupNames);
 			}
-			groupNames.add(sur.getGroupName());
+			groupNames.add(sur.getGroupName().toLowerCase());
         }
 		
 		results.close();
