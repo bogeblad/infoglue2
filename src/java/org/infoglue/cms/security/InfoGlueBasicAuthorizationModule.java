@@ -554,7 +554,7 @@ public class InfoGlueBasicAuthorizationModule extends BaseController implements 
 				Map<String,GroupVO> groupsMap = new HashMap<String,GroupVO>();
 				for(GroupVO group : groupVOList)
 				{
-					groupsMap.put(group.getGroupName(), group);
+					groupsMap.put(group.getGroupName().toLowerCase(), group);
 				}
 				
 				Map<String,List<String>> systemRoleMapping = RoleController.getController().getSystemUserRoleMapping(db);
