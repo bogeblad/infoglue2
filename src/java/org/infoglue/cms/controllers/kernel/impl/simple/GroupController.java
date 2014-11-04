@@ -567,22 +567,29 @@ public class GroupController extends BaseController
 		oql.close();
     }
     
-    public void removeUsers(List<String[]> userNamesGroupsToDelete, Database db) throws ConstraintException, SystemException, Exception
+    public void removeUsers(List<String[]> userNamesGroupsToDelete) throws ConstraintException, SystemException, Exception
     {
-    	try
-    	{
-	    	String sql = "delete from cmSystemUserGroup where userName = ? AND groupName = ?";
+    	Database db = CastorDatabaseService.getDatabase();
+        ConstraintExceptionBuffer ceb = new ConstraintExceptionBuffer();
+
+        beginTransaction(db);
+
+        try
+        {
+    		String sql = "delete from cmSystemUserGroup where userName = ? AND groupName = ?";
 			Connection connection = (Connection) ((DatabaseImpl)db).getConnection();
-	    	PreparedStatement ps = connection.prepareStatement(sql);
-	    	 
-	    	final int batchSize = 1000;
+
+			PreparedStatement ps = connection.prepareStatement(sql);
+
+	    	final int batchSize = 100;
 	    	int count = 0;
 	    	 
 	    	for (String[] userNameGroupPair: userNamesGroupsToDelete) 
 	    	{
 	    		if(logger.isInfoEnabled())
 	    			logger.info("Deleting " + userNameGroupPair[0] + " = " + userNameGroupPair[1]);
-	    	    ps.setString(1, userNameGroupPair[0]);
+
+	    		ps.setString(1, userNameGroupPair[0]);
 	    		ps.setString(2, userNameGroupPair[1]);
 	    	    ps.addBatch();
 	    	     
@@ -591,12 +598,21 @@ public class GroupController extends BaseController
 	    	    }
 	    	}
 	    	ps.executeBatch(); // insert remaining records
+	    	
 	    	ps.close();
-    	}
-    	catch (Exception e) 
-    	{
-    		logger.error("Error deleting userGroups: " + e.getMessage(), e);
-		}
+
+            //If any of the validations or setMethods reported an error, we throw them up now before create.
+            ceb.throwIfNotEmpty();
+            
+            commitTransaction(db);
+        }
+        catch(Exception e)
+        {
+            logger.error("An error occurred so we should not complete the transaction:" + e, e);
+            rollbackTransaction(db);
+            throw new SystemException(e.getMessage());
+        }
+        
     }
 
     public void removeUsers(String groupName) throws ConstraintException, SystemException, Exception

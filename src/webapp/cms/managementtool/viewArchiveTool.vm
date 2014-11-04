@@ -11,16 +11,23 @@
 	<!-- 
 		function analyzeContents()
 		{
-			jQuery.get("ViewCommonAjaxServices!heaviestContents.action?contentId=$contentId", function(data) {
+			jQuery.get("ViewCommonAjaxServices!contentsWithDeletableAssets.action?contentId=$contentId", function(data) {
 				//alert("Count:" + data + " on $contentId");
 				if(data != "0")
 				{
-					$('#contentAnalysisResult').empty().append("<b>Contents</b>" + data.substring(data.indexOf(":")+1) + "");
-					$("#contentAnalysisResult").toggle();
+					$('#contentAnalysisResult').empty().append("<b>Cleanable contents</b>" + data.substring(data.indexOf(":")+1) + "");
 				}
+				
+				jQuery.get("ViewCommonAjaxServices!heaviestContents.action?contentId=$contentId", function(data) {
+					//alert("Count:" + data + " on $contentId");
+					if(data != "0")
+					{
+						$('#contentAnalysisResult').append("<br/><br/><b>Heaviest contents</b>" + data.substring(data.indexOf(":")+1) + "");
+						$("#contentAnalysisResult").toggle();
+					}
+				});
 			});
 		}
-	
 	-->	
 	</script>
 
@@ -46,6 +53,8 @@
 				<p>
 				Number of versions to keep for each language:<br/>
 				<select id="numberOfVersionsToKeep">
+					<option value="1" #if($numberOfVersionsToKeep == 1)selected='selected'#end>1</option>
+					<option value="2" #if($numberOfVersionsToKeep == 2)selected='selected'#end>2</option>
 					<option value="3" #if($numberOfVersionsToKeep == 3)selected='selected'#end>3</option>
 					<option value="5" #if($numberOfVersionsToKeep == 5)selected='selected'#end>5</option>
 					<option value="7" #if($numberOfVersionsToKeep == 7)selected='selected'#end>7</option>
@@ -79,28 +88,37 @@
 		<!-- 
 			function analyzeContents()
 			{
+				jQuery.get("ViewCommonAjaxServices!contentsWithDeletableAssets.action?contentId=$contentId", function(data) {
+				//alert("Count:" + data + " on $contentId");
+				if(data != "0")
+				{
+					$('#contentAnalysisResult').empty().append("<b>Cleanable contents</b>" + data.substring(data.indexOf(":")+1) + "");
+				}
+				
 				jQuery.get("ViewCommonAjaxServices!heaviestContents.action?contentId=$contentId", function(data) {
 					//alert("Count:" + data + " on $contentId");
 					if(data != "0")
 					{
-						$('#contentAnalysisResult').empty().append("<b>Contents</b>" + data.substring(data.indexOf(":")+1) + "");
+						$('#contentAnalysisResult').append("<br/><br/><b>Heaviest contents</b>" + data.substring(data.indexOf(":")+1) + "");
 						$("#contentAnalysisResult").toggle();
 					}
 				});
-			}
-		
+			});
+					
 		-->	
 		</script>
 	
 	
 		<div class="fullymarginalized" style="color: black;">
 			<h2>$ui.getString("tool.managementtool.archiveTool.header")</h2>
+			#*
 			<p>
 				<a href="ViewArchiveTool!inputArchiveOldAssets.action?numberOfVersionsToKeep=3">$ui.getString("tool.managementtool.archiveAssets.title") - $ui.getString("tool.managementtool.archiveAssets.leadin")</a>
 			</p>
 			<p>
 				<a href="ViewArchiveTool!inputRestoreAssetArchive.action">$ui.getString("tool.managementtool.restoreAssetArchive.title") - $ui.getString("tool.managementtool.restoreAssetArchive.leadin")</a>
 			</p>
+			*#
 			
 			#if($numberOfCleanedContentVersions)
 			<p style="color:red;">
