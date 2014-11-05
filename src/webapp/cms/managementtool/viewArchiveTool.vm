@@ -89,21 +89,22 @@
 			function analyzeContents()
 			{
 				jQuery.get("ViewCommonAjaxServices!contentsWithDeletableAssets.action?contentId=$contentId", function(data) {
-				//alert("Count:" + data + " on $contentId");
-				if(data != "0")
-				{
-					$('#contentAnalysisResult').empty().append("<b>Cleanable contents</b>" + data.substring(data.indexOf(":")+1) + "");
-				}
-				
-				jQuery.get("ViewCommonAjaxServices!heaviestContents.action?contentId=$contentId", function(data) {
 					//alert("Count:" + data + " on $contentId");
 					if(data != "0")
 					{
-						$('#contentAnalysisResult').append("<br/><br/><b>Heaviest contents</b>" + data.substring(data.indexOf(":")+1) + "");
-						$("#contentAnalysisResult").toggle();
+						$('#contentAnalysisResult').empty().append("<b>Cleanable contents</b>" + data.substring(data.indexOf(":")+1) + "");
 					}
+					
+					jQuery.get("ViewCommonAjaxServices!heaviestContents.action?contentId=$contentId", function(data) {
+						//alert("Count:" + data + " on $contentId");
+						if(data != "0")
+						{
+							$('#contentAnalysisResult').append("<br/><br/><b>Heaviest contents</b>" + data.substring(data.indexOf(":")+1) + "");
+							$("#contentAnalysisResult").toggle();
+						}
+					});
 				});
-			});
+			}
 					
 		-->	
 		</script>

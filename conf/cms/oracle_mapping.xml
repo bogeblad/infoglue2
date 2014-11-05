@@ -34,7 +34,7 @@
 <!--  Mapping for SystemUser  -->
   <class name="org.infoglue.cms.entities.management.impl.simple.SystemUserImpl" identity="userName">
     <description>SystemUser</description>
-    <cache-type type="unlimited" capacity="10000"/>
+    <cache-type type="none"/>
     <map-to table="cmSystemUser"/>
     <field name="userName" type="java.lang.String">
       <sql name="userName" type="varchar" dirty="check" />
@@ -62,7 +62,7 @@
 <!--  Mapping for SmallSystemUser  -->
   <class name="org.infoglue.cms.entities.management.impl.simple.SmallSystemUserImpl" identity="userName">
     <description>SmallSystemUser</description>
-    <cache-type type="unlimited"/>
+    <cache-type type="none"/>
     <map-to table="cmSystemUser"/>
     <field name="userName" type="java.lang.String">
       <sql name="userName" type="varchar" dirty="check" />
@@ -84,7 +84,7 @@
 <!--  Mapping for UserProperties  -->
   <class name="org.infoglue.cms.entities.management.impl.simple.UserPropertiesImpl" identity="userPropertiesId" key-generator="SEQUENCE">
     <description>UserProperties</description>
-    <cache-type type="unlimited" capacity="1000"/>
+    <cache-type type="none"/>
     <map-to table="cmUserProperties"/>
     <field name="userPropertiesId" type="java.lang.Integer">
       <sql name="userPropertiesId" type="integer" dirty="check" />
@@ -110,7 +110,7 @@
   <!--  Mapping for UserContentTypeDefinition  -->
   <class name="org.infoglue.cms.entities.management.impl.simple.UserContentTypeDefinitionImpl" identity="userContentTypeDefinitionId" key-generator="SEQUENCE">
     <description>UserContentTypeDefinition</description>
-    <cache-type type="unlimited" capacity="1000"/>
+    <cache-type type="none"/>
     <map-to table="cmUserContentTypeDef"/>
     <field name="userContentTypeDefinitionId" type="java.lang.Integer">
       <sql name="userContentTypeDefId" type="integer" dirty="check" />
@@ -126,7 +126,7 @@
 <!--  Mapping for Role  -->
   <class name="org.infoglue.cms.entities.management.impl.simple.RoleImpl" identity="roleName">
     <description>Role</description>
-    <cache-type type="unlimited" capacity="10000"/>
+    <cache-type type="none"/>
     <map-to table="cmRole"/>
     <field name="roleName" type="java.lang.String">
       <sql name="roleName" type="varchar" dirty="check" />
@@ -142,7 +142,7 @@
   <!--  Mapping for Group  -->
   <class name="org.infoglue.cms.entities.management.impl.simple.GroupImpl" identity="groupName">
     <description>Group</description>
-    <cache-type type="unlimited" capacity="10000"/>
+    <cache-type type="none"/>
     <map-to table="cmGroup"/>
     <field name="groupName" type="java.lang.String">
       <sql name="groupName" type="varchar" dirty="check" />
@@ -158,7 +158,7 @@
   <!--  Mapping for SmallRole  -->
   <class name="org.infoglue.cms.entities.management.impl.simple.SmallRoleImpl" identity="roleName">
     <description>SmallRole</description>
-    <cache-type type="unlimited"/>
+    <cache-type type="none"/>
     <map-to table="cmRole"/>
     <field name="roleName" type="java.lang.String">
       <sql name="roleName" type="varchar" dirty="check" />
@@ -171,7 +171,7 @@
   <!--  Mapping for SmallGroup  -->
   <class name="org.infoglue.cms.entities.management.impl.simple.SmallGroupImpl" identity="groupName">
     <description>Group</description>
-    <cache-type type="unlimited"/>
+    <cache-type type="none"/>
     <map-to table="cmGroup"/>
     <field name="groupName" type="java.lang.String">
       <sql name="groupName" type="varchar" dirty="check" />
@@ -210,7 +210,7 @@
   <!--  Mapping for RoleProperties  -->
   <class name="org.infoglue.cms.entities.management.impl.simple.RolePropertiesImpl" identity="rolePropertiesId" key-generator="SEQUENCE">
     <description>RoleProperties</description>
-    <cache-type type="unlimited" capacity="1000"/>
+    <cache-type type="none"/>
     <map-to table="cmRoleProperties"/>
     <field name="rolePropertiesId" type="java.lang.Integer">
       <sql name="rolePropertiesId" type="integer" dirty="check" />
@@ -235,7 +235,7 @@
   <!--  Mapping for RoleContentTypeDefinition  -->
   <class name="org.infoglue.cms.entities.management.impl.simple.RoleContentTypeDefinitionImpl" identity="roleContentTypeDefinitionId" key-generator="SEQUENCE">
     <description>RoleContentTypeDefinition</description>
-    <cache-type type="unlimited" capacity="1000"/>
+    <cache-type type="none"/>
     <map-to table="cmRoleContentTypeDef"/>
     <field name="roleContentTypeDefinitionId" type="java.lang.Integer">
       <sql name="roleContentTypeDefId" type="integer" dirty="check" />
@@ -251,7 +251,7 @@
   <!--  Mapping for GroupProperties  -->
   <class name="org.infoglue.cms.entities.management.impl.simple.GroupPropertiesImpl" identity="groupPropertiesId" key-generator="SEQUENCE">
     <description>GroupProperties</description>
-    <cache-type type="unlimited" capacity="1000"/>
+    <cache-type type="none"/>
     <map-to table="cmGroupProperties"/>
     <field name="groupPropertiesId" type="java.lang.Integer">
       <sql name="groupPropertiesId" type="integer" dirty="check" />
@@ -277,7 +277,7 @@
   <!--  Mapping for GroupContentTypeDefinition  -->
   <class name="org.infoglue.cms.entities.management.impl.simple.GroupContentTypeDefinitionImpl" identity="groupContentTypeDefinitionId" key-generator="SEQUENCE">
     <description>GroupContentTypeDefinition</description>
-    <cache-type type="unlimited" capacity="1000"/>
+    <cache-type type="none"/>
     <map-to table="cmGroupContTypeDef"/>
     <field name="groupContentTypeDefinitionId" type="java.lang.Integer">
       <sql name="groupContTypeDefId" type="integer" dirty="check" />
@@ -294,7 +294,7 @@
 <!--  Mapping for AccessRight  -->
   <class name="org.infoglue.cms.entities.management.impl.simple.AccessRightImpl" identity="accessRightId" key-generator="SEQUENCE">
     <description>AccessRight</description>
-    <cache-type type="none" capacity="10000"/>
+    <cache-type type="none"/>
     <map-to table="cmAccessRight"/>
     <field name="accessRightId" type="java.lang.Integer">
       <sql name="accessRightId" type="integer" dirty="check" />
@@ -334,7 +334,7 @@
 
   <class name="org.infoglue.cms.entities.management.impl.simple.AccessRightRoleImpl" identity="accessRightRoleId" key-generator="SEQUENCE">
     <description>AccessRightRole</description>
-    <cache-type type="none" capacity="10000"/>
+    <cache-type type="none"/>
     <map-to table="cmAccessRightRole"/>
     <field name="accessRightRoleId" type="java.lang.Integer">
       <sql name="accessRightRoleId" type="integer" dirty="check" />
@@ -349,7 +349,7 @@
   
   <class name="org.infoglue.cms.entities.management.impl.simple.AccessRightGroupImpl" identity="accessRightGroupId" key-generator="SEQUENCE">
     <description>AccessRightGroup</description>
-    <cache-type type="none" capacity="10000"/>
+    <cache-type type="none"/>
     <map-to table="cmAccessRightGroup"/>
     <field name="accessRightGroupId" type="java.lang.Integer">
       <sql name="accessRightGroupId" type="integer" dirty="check" />
@@ -364,7 +364,7 @@
 
   <class name="org.infoglue.cms.entities.management.impl.simple.AccessRightUserImpl" identity="accessRightUserId" key-generator="SEQUENCE">
     <description>AccessRightUser</description>
-    <cache-type type="none" capacity="10000"/>
+    <cache-type type="none"/>
     <map-to table="cmAccessRightUser"/>
     <field name="accessRightUserId" type="java.lang.Integer">
       <sql name="accessRightUserId" type="integer" dirty="check" />
