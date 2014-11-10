@@ -1066,7 +1066,6 @@ public class ViewPageAction extends InfoGlueAbstractAction
 
 			if(logger.isInfoEnabled())
 				logger.info("RemoteAddress:" + getRequest().getRemoteAddr());
-			
 			//if(getRequest().getRemoteAddr().equals("127.0.0.1") || getRequest().getRemoteAddr().equals("192.168.0.1"))
 			//	protectDeliver = false;
 						
