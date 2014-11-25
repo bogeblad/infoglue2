@@ -1220,7 +1220,7 @@ public class ContentController extends BaseController
 
 	/**
 	 * <p>Gets a list of all children of the given <em>contentId</em>. The returned contents are of medium weight <em>MediumContent</em> and
-	 * are in read/write mode.</p>
+	 * are in read/write mode order on content-id (ASC).</p>
 	 *
 	 * @param contentId The contentId of the parent content.
 	 * @param db The database instance on which the operation will be performed.
