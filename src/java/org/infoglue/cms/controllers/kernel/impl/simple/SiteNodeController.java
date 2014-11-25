@@ -3216,6 +3216,30 @@ public class SiteNodeController extends BaseController
 		}
 	}
 
+	private void fixCopiedContentsContentType(ContentVO original, ContentVO copy, Database db) throws SystemException, Bug
+	{
+		do
+		{
+			if (copy.getContentTypeDefinitionId() != null)
+			{
+				if (logger.isDebugEnabled())
+				{
+					logger.debug("Copied content already has content type. Skipping. Content.id: " + copy.getContentId());
+				}
+			}
+			else
+			{
+				if (logger.isInfoEnabled())
+				{
+					logger.info("Adding content type to copied content. CopiedContent.id: <" + copy.getContentId() + ">. ContentType.id: " + original.getContentTypeDefinitionId());
+				}
+				copy.setContentTypeDefinitionId(original.getContentTypeDefinitionId());
+			}
+			original	= original.getParentContentId() == null ? null : ContentController.getContentController().getContentVOWithId(original.getParentContentId(), db);
+			copy		= copy.getParentContentId() == null ? null : ContentController.getContentController().getContentVOWithId(copy.getParentContentId(), db);
+		} while (original != null && copy != null && original.getName().equals(copy.getName()));
+	}
+
 	
 	private void copyContents(SiteNodeVO newParentSiteNode, InfoGluePrincipal principal, Set<Integer> contentIdsToCopy, /*String versionValue, */Integer oldRepositoryId, Integer newRepositoryId, Map<Integer,Integer> contentIdsMapping, List<ContentVersion> versions, Database db) throws Exception
 	{
@@ -3242,6 +3266,7 @@ public class SiteNodeController extends BaseController
 						String path = ContentController.getContentController().getContentPath(contentId, true, false, db);
 						logger.info("path:" + path);
 						ContentVO copiedContent = ContentController.getContentController().getContentVOWithPath(newRepositoryId, path, true, principal, db);
+						fixCopiedContentsContentType(contentVO, copiedContent, db);
 						logger.info("copiedContent:" + copiedContent);
 						
 			            logger.info("Mapping content " + contentVO.getId() + " to " + copiedContent.getId());
