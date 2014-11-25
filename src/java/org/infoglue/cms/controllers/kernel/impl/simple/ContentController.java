@@ -41,6 +41,7 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.exolab.castor.jdo.Database;
 import org.exolab.castor.jdo.OQLQuery;
+import org.exolab.castor.jdo.PersistenceException;
 import org.exolab.castor.jdo.QueryResults;
 import org.exolab.castor.jdo.engine.DatabaseImpl;
 import org.infoglue.cms.applications.contenttool.wizards.actions.CreateContentWizardInfoBean;
@@ -1093,9 +1094,10 @@ public class ContentController extends BaseController
 	 * This method moves a content from one parent-content to another. First we check so no illegal actions are 
 	 * in process. For example the target folder must not be the item to be moved or a child to the item.
 	 * Such actions would result in model-errors.
+	 * @throws PersistenceException
 	 */
 		
-	public void moveContent(ContentVO contentVO, Integer newParentContentId, Database db) throws ConstraintException, SystemException
+	public void moveContent(ContentVO contentVO, Integer newParentContentId, Database db) throws ConstraintException, SystemException, PersistenceException
     {
         ConstraintExceptionBuffer ceb = new ConstraintExceptionBuffer();
 
@@ -1144,12 +1146,12 @@ public class ContentController extends BaseController
         		throw new ConstraintException("Content.parentContentId", "3302");
 			}
 			parentContentId = tempContent.getParentContentId();
-		}				            
+		}
         
         //oldParentContent.getChildren().remove(content);
         //content.setParentContent((ContentImpl)newParentContent);
         content.getValueObject().setParentContentId(newParentContentId);
-        changeRepositoryRecursive(content, newParentContentVO.getRepositoryId());
+        changeRepositoryRecursive(content, newParentContentVO.getRepositoryId(), db);
         //content.setRepository(newParentContent.getRepository());
         //newParentContent.getChildren().add(content);
         
@@ -1171,22 +1173,86 @@ public class ContentController extends BaseController
 	 * Recursively sets the contents repositoryId.
 	 * @param content
 	 * @param newRepository
+	 * @throws PersistenceException
 	 */
 
-	private void changeRepositoryRecursive(Content content, Integer newRepositoryId)
+	private void changeRepositoryRecursive(Content content, Integer newRepositoryId, Database db) throws PersistenceException
 	{
-	    if(content.getValueObject().getRepositoryId().intValue() != newRepositoryId.intValue())
-	    {
-		    content.getValueObject().setRepositoryId(newRepositoryId);
-		    Iterator childContentsIterator = content.getChildren().iterator();
-		    while(childContentsIterator.hasNext())
-		    {
-		        Content childContent = (Content)childContentsIterator.next();
-		        changeRepositoryRecursive(childContent, newRepositoryId);
-		    }
-	    }
+		if(content.getValueObject().getRepositoryId().intValue() != newRepositoryId.intValue())
+		{
+			content.getValueObject().setRepositoryId(newRepositoryId);
+			List<Content> children = ContentController.getContentController().getContentChildrenWithParentId(content.getContentId(), db);
+			Iterator<Content> childContentsIterator = children.iterator();
+			if (logger.isInfoEnabled())
+			{
+				logger.info("Changing repository of underlying contents. Found " + children.size() + " contents as children to content.id: " + content.getContentId());
+			}
+			while (childContentsIterator.hasNext())
+			{
+				Content childContent = childContentsIterator.next();
+				if (logger.isDebugEnabled())
+				{
+					logger.debug("Changing repository of content.id: <" + childContent.getContentId() + "> to " + newRepositoryId);
+				}
+				changeRepositoryRecursive(childContent, newRepositoryId, db);
+			}
+		}
 	}
-	
+
+	public List<Content> getContentChildrenWithParentId(Integer contentId) throws SystemException
+	{
+		Database db = CastorDatabaseService.getDatabase();
+		beginTransaction(db);
+		try
+		{
+			List<Content> result = getContentChildrenWithParentId(contentId, db);
+			commitTransaction(db);
+			return result;
+		}
+		catch(Exception ex)
+		{
+			logger.error("An error occurred when getting the children of a content <" + contentId + ">. We should not complete the transaction. Mesage: " + ex.getMessage());
+			logger.warn("An error occurred when getting the children of a content <" + contentId + ">. We should not complete the transaction.", ex);
+			rollbackTransaction(db);
+			throw new SystemException(ex.getMessage());
+		}
+	}
+
+	/**
+	 * <p>Gets a list of all children of the given <em>contentId</em>. The returned contents are of medium weight <em>MediumContent</em> and
+	 * are in read/write mode.</p>
+	 *
+	 * @param contentId The contentId of the parent content.
+	 * @param db The database instance on which the operation will be performed.
+	 * @return A list of medium contents.
+	 * @throws PersistenceException If something goes wrong in the database operations.
+	 */
+	public List<Content> getContentChildrenWithParentId(Integer contentId, Database db) throws PersistenceException
+	{
+		List<Content> children = new ArrayList<Content>();
+
+		String query = "SELECT c FROM org.infoglue.cms.entities.content.impl.simple.MediumContentImpl c WHERE c.parentContentId = $1";
+		if (CmsPropertyHandler.getUseShortTableNames().equals("true"))
+		{
+			query = "SELECT c FROM org.infoglue.cms.entities.content.impl.simple.MediumContentImpl c WHERE c.parentContId = $1";
+		}
+
+		OQLQuery oql = db.getOQLQuery(query);
+		oql.bind(contentId);
+
+		QueryResults results = oql.execute();
+		while (results.hasMore())
+		{
+			Content content = (Content)results.next();
+			children.add(content);
+		}
+
+		results.close();
+		oql.close();
+
+		return children;
+	}
+
 	/**
 	 * Returns all Contents having the specified ContentTypeDefintion.
 	 */
