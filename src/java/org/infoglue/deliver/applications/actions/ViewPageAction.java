@@ -850,7 +850,10 @@ public class ViewPageAction extends InfoGlueAbstractAction
     			        Matcher matcher = pattern.matcher(browserBean.getUseragent());
     			        if(!matcher.find())
     			    	{
-    			        	logger.error("Not using if modified logic for:" + browserBean.getUseragent());
+							if (logger.isInfoEnabled())
+							{
+								logger.info("Not using if modified logic for user agent: " + browserBean.getUseragent() + " on request: " + deliverContext.getHttpServletRequest().getRequestURL());
+							}
     			        	return false;
     			    	}
     			    	matcher.reset();

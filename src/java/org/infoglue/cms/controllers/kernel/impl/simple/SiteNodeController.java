@@ -2338,7 +2338,10 @@ public class SiteNodeController extends BaseController
 		}
 		else
 		{
-			logger.error("Asking for heavy lookup on meta info content id:" + contentId);
+			if (logger.isInfoEnabled())
+			{
+				logger.info("Asking for heavy lookup on meta info content id: " + contentId);
+			}
 			//System.out.println("Asking for mapping:" + contentId);
 			OQLQuery oql = db.getOQLQuery("SELECT sn FROM org.infoglue.cms.entities.structure.impl.simple.SmallSiteNodeImpl sn WHERE sn.metaInfoContentId = $1 ORDER BY sn.siteNodeId");
 	    	oql.bind(contentId);
