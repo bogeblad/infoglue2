@@ -3987,9 +3987,9 @@ public class ComponentLogic
 						try
 						{
 							SupplementedComponentBinding supplementedComponentBinding = (SupplementedComponentBinding)componentBinding;
-							Integer supplementingEntityId = supplementedComponentBinding.getSupplementingEntityId();
+							String supplementingEntityId = supplementedComponentBinding.getSupplementingEntityId();
 							String supplementingAssetKey = supplementedComponentBinding.getSupplementingAssetKey();
-							DigitalAssetVO asset = this.templateController.getAsset(supplementingEntityId, supplementingAssetKey);
+							DigitalAssetVO asset = this.templateController.getAsset(new Integer(supplementingEntityId), supplementingAssetKey);
 							entity.setSupplementingEntity(asset);
 						}
 						catch (Exception ex)
@@ -4052,9 +4052,9 @@ public class ComponentLogic
 						try
 						{
 							SupplementedComponentBinding supplementedComponentBinding = (SupplementedComponentBinding)componentBinding;
-							Integer supplementingEntityId = supplementedComponentBinding.getSupplementingEntityId();
+							String supplementingEntityId = supplementedComponentBinding.getSupplementingEntityId();
 							String supplementingAssetKey = supplementedComponentBinding.getSupplementingAssetKey();
-							DigitalAssetVO asset = this.templateController.getAsset(supplementingEntityId, supplementingAssetKey);
+							DigitalAssetVO asset = this.templateController.getAsset(new Integer(supplementingEntityId), supplementingAssetKey);
 							entity.setSupplementingEntity(asset);
 						}
 						catch (Exception ex)

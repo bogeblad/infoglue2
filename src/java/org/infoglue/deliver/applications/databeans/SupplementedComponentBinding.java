@@ -8,21 +8,21 @@ package org.infoglue.deliver.applications.databeans;
  */
 public class SupplementedComponentBinding extends ComponentBinding
 {
-	private Integer supplementingEntityId;
+	private String supplementingEntityId;
 	private String supplementingAssetKey;
 
-	public SupplementedComponentBinding(Integer entityId, String assetKey)
+	public SupplementedComponentBinding(String entityId, String assetKey)
 	{
 		this.supplementingEntityId = entityId;
 		this.supplementingAssetKey = assetKey;
 	}
 
-	public Integer getSupplementingEntityId()
+	public String getSupplementingEntityId()
 	{
 		return supplementingEntityId;
 	}
 
-	public void setSupplementingEntityId(Integer supplementingEntityId)
+	public void setSupplementingEntityId(String supplementingEntityId)
 	{
 		this.supplementingEntityId = supplementingEntityId;
 	}

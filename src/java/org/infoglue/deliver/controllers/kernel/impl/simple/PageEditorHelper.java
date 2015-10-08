@@ -2206,10 +2206,10 @@ public class PageEditorHelper extends BaseDeliveryController
 									try
 									{
 										supplementingEntityIdString = supplementingBindingElement.attributeValue("entityId");
-										Integer supplementingEntityId = null;
+										String supplementingEntityId = null;
 										if (supplementingEntityIdString != null && !supplementingEntityIdString.equals(""))
 										{
-											supplementingEntityId = new Integer(supplementingEntityIdString);
+											supplementingEntityId = supplementingEntityIdString;
 										}
 										String supplementingAssetKey = supplementingBindingElement.attributeValue("assetKey");
 										componentBinding = new SupplementedComponentBinding(supplementingEntityId, supplementingAssetKey);

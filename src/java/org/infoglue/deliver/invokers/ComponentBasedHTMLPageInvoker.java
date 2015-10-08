@@ -2844,10 +2844,10 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 									try
 									{
 										supplementingEntityIdString = supplementingBindingElement.getAttributeValue(supplementingBindingElement.getNamespaceName(), "entityId");
-										Integer supplementingEntityId = null;
+										String supplementingEntityId = null;
 										if (supplementingEntityIdString != null && !supplementingEntityIdString.equals(""))
 										{
-											supplementingEntityId = new Integer(supplementingEntityIdString);
+											supplementingEntityId = supplementingEntityIdString;
 										}
 										String supplementingAssetKey = supplementingBindingElement.getAttributeValue(supplementingBindingElement.getNamespaceName(), "assetKey");
 										supplementingAssetKey = StringEscapeUtils.unescapeXml(supplementingAssetKey);
