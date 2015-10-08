@@ -1120,7 +1120,7 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 								if(componentProperty.getBindings().size() > 0)
 								{
 									ComponentBinding firstBinding = componentProperty.getBindings().get(0);
-									title = templateController.getContentPath(firstBinding.getEntityId(), true, true);
+									title = templateController.getContentPath(new Integer(firstBinding.getEntityId()), true, true);
 								}
 							}
 							else
@@ -1146,7 +1146,7 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 								if(componentProperty.getBindings().size() > 0)
 								{
 									ComponentBinding firstBinding = componentProperty.getBindings().get(0);
-									title = templateController.getContentPath(firstBinding.getEntityId(), true, true);
+									title = templateController.getContentPath(new Integer(firstBinding.getEntityId()), true, true);
 								}
 							}
 						}
@@ -1160,7 +1160,7 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 							if(componentProperty.getBindings().size() > 0)
 							{
 								ComponentBinding firstBinding = componentProperty.getBindings().get(0);
-								title = templateController.getPagePath(firstBinding.getEntityId(), languageId); // .getContentPath(firstBinding.getEntityId(), true, true);
+								title = templateController.getPagePath(new Integer(firstBinding.getEntityId()), languageId); // .getContentPath(firstBinding.getEntityId(), true, true);
 							}
 						}
 						else if(componentProperty.getEntityClass().equalsIgnoreCase("Category"))
@@ -1288,7 +1288,7 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 						sb.append("	<tr>");
 
 						ComponentBinding binding = componentProperty.getBindings().get(0);
-						List referencingPages = templateController.getReferencingPages(binding.getEntityId(), 50, new Boolean(true));
+						List referencingPages = templateController.getReferencingPages(new Integer(binding.getEntityId()), 50, new Boolean(true));
 						
 						if(referencingPages.size() == 0)
 						{
@@ -3172,7 +3172,7 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 			
 			ComponentBinding componentBinding = new ComponentBinding();
 			componentBinding.setEntityClass(entity);
-			componentBinding.setEntityId(new Integer(entityId));
+			componentBinding.setEntityId(entityId);
 			componentBinding.setAssetKey(assetKey);
 
 			componentBindings.add(componentBinding);
@@ -3283,7 +3283,7 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 				componentBinding.setId(new Integer(id));
 				componentBinding.setComponentId(componentId);
 				componentBinding.setEntityClass(entityClass);
-				componentBinding.setEntityId(new Integer(entityId));
+				componentBinding.setEntityId(entityId);
 				componentBinding.setAssetKey(assetKey);
 				componentBinding.setBindingPath(contentVO.getName());
 				

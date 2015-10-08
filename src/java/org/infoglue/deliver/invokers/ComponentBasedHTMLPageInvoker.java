@@ -964,7 +964,7 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 						//componentBinding.setId(new Integer(id));
 						//componentBinding.setComponentId(componentId);
 						componentBinding.setEntityClass(entity);
-						componentBinding.setEntityId(new Integer(entityId));
+						componentBinding.setEntityId(entityId);
 						componentBinding.setAssetKey(assetKey);
 						componentBinding.setBindingPath(path);
 						
@@ -1432,7 +1432,7 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 						//componentBinding.setId(new Integer(id));
 						//componentBinding.setComponentId(componentId);
 						componentBinding.setEntityClass(entity);
-						componentBinding.setEntityId(new Integer(entityId));
+						componentBinding.setEntityId(entityId);
 						componentBinding.setAssetKey(assetKey);
 						componentBinding.setBindingPath(path);
 						
@@ -2862,7 +2862,7 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 								//componentBinding.setId(new Integer(id));
 								//componentBinding.setComponentId(componentId);
 								componentBinding.setEntityClass(entity);
-								componentBinding.setEntityId(new Integer(entityId));
+								componentBinding.setEntityId(entityId);
 								componentBinding.setAssetKey(assetKey);
 								componentBinding.setBindingPath(path);
 								

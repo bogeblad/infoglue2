@@ -24,9 +24,10 @@
 package org.infoglue.cms.entities.content;
 
 import org.infoglue.cms.entities.kernel.BaseEntityVO;
+import org.infoglue.cms.entities.kernel.BaseGloballyIdentifyableEntity;
 import org.infoglue.cms.util.ConstraintExceptionBuffer;
 
-public class DigitalAssetVO implements BaseEntityVO, Cloneable
+public class DigitalAssetVO implements BaseEntityVO, BaseGloballyIdentifyableEntity, Cloneable
 {
 
   	private java.lang.Integer digitalAssetId;
@@ -47,7 +48,12 @@ public class DigitalAssetVO implements BaseEntityVO, Cloneable
 	{
 		return getDigitalAssetId();
 	}
-	
+
+	public String getUUId() 
+	{
+		return getId().toString();
+	}
+
 	/**
 	 * @see org.infoglue.cms.entities.kernel.BaseEntityVO#validate()
 	 */

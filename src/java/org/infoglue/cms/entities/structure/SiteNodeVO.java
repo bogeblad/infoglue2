@@ -30,13 +30,14 @@ import java.util.Map;
 import java.util.SimpleTimeZone;
 
 import org.infoglue.cms.entities.kernel.BaseEntityVO;
+import org.infoglue.cms.entities.kernel.BaseGloballyIdentifyableEntity;
 import org.infoglue.cms.exception.ConstraintException;
 import org.infoglue.cms.util.CmsPropertyHandler;
 import org.infoglue.cms.util.ConstraintExceptionBuffer;
 import org.infoglue.cms.util.DateHelper;
 import org.infoglue.cms.util.validators.ValidatorFactory;
 
-public class SiteNodeVO implements BaseEntityVO
+public class SiteNodeVO implements BaseEntityVO, BaseGloballyIdentifyableEntity
 {
 
     private java.lang.Integer siteNodeId 	= null;
@@ -193,6 +194,11 @@ public class SiteNodeVO implements BaseEntityVO
 		return getSiteNodeId();
 	}
 	
+	public String getUUId() 
+	{
+		return getId().toString();
+	}
+
 	/**
 	 * @see org.infoglue.cms.entities.kernel.BaseEntityVO#validate()
 	 */
