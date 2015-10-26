@@ -512,6 +512,11 @@
 			#editPropertyFieldCSS("ServerNode.property.protectedProtocolPort" "protectedProtocolPort" "$this.getPropertyValue('protectedProtocolPort')" "51" "$!serverNodeId")
 			#editPropertyFieldCSS("ServerNode.property.accessBasedProtocolRedirectHTTPCode" "accessBasedProtocolRedirectHTTPCode" "$this.getPropertyValue('accessBasedProtocolRedirectHTTPCode')" "51" "$!serverNodeId")
 			
+			#set($redirectMethodInclude = ["include", "HTTP INCLUDE (backend fetch)"])
+			#set($redirectMethodRedirect = ["redirect", "Redirect to page"])
+			#set($redirectMethodOptions = [$redirectMethodInclude, $redirectMethodRedirect])
+			#selectFieldCSS("ServerNode.property.responseMethodOnFullErrorURL" "responseMethodOnFullErrorURL" $this.getPropertyValue('responseMethodOnFullErrorURL') $redirectMethodOptions)
+
 			#editPropertyFieldCSS("ServerNode.property.allowedDirectLoginNames" "allowedDirectLoginNames" "$this.getPropertyValue('allowedDirectLoginNames')" "51" "$!serverNodeId")
 			
 			#yesNoDropDownWithInheritCSS("ServerNode.property.allowInternalCallsBasedOnIP" "allowInternalCallsBasedOnIP" "$this.getPropertyValue('allowInternalCallsBasedOnIP')")

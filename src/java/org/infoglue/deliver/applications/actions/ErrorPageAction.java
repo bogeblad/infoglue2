@@ -151,11 +151,31 @@ public class ErrorPageAction extends InfoGlueAbstractAction
 	            logger.error("No valid error url was defined:" + errorUrl + ". You should fix this. Defaulting to /error.jsp");
 		       	errorUrl = "/error.jsp";
 	        }
-	        
-	        if(errorUrl != null && errorUrl.indexOf("@errorUrl@") == -1)
-	        {
-	            if(errorUrl.indexOf("http") > -1)
-	                this.getResponse().sendRedirect(errorUrl);
+
+			if(errorUrl != null && errorUrl.indexOf("@errorUrl@") == -1)
+			{
+				if(errorUrl.indexOf("http") > -1)
+					if(CmsPropertyHandler.getResponseMethodOnFullErrorURL().equalsIgnoreCase("include"))
+					{
+					HttpHelper helper = new HttpHelper();
+					Map<String,String> requestParameters = new HashMap<String,String>();
+					if(e != null)
+					{
+						requestParameters.put("errorMessage", e.getMessage());
+					}
+					requestParameters.put("errorURL", errorUrl);
+					String urlContent = helper.getUrlContent(errorUrl, new HashMap(), requestParameters, "utf-8", 5000);
+
+					getResponse().setContentType("text/html; charset=utf-8");
+					getResponse().setStatus(404);
+
+						PrintWriter out = getResponse().getWriter();
+						out.println(urlContent);
+					}
+					else
+					{
+						this.getResponse().sendRedirect(errorUrl);
+					}
 	            else
 	            {
 	            	try

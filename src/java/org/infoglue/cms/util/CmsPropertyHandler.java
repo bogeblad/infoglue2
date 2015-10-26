@@ -2301,4 +2301,15 @@ public class CmsPropertyHandler
 	{
 		return getServerNodeDataProperty(null, "externalSearchServiceConfigs", true, null);
 	}
+
+	/**
+	 * If the user has set a error-url to http://www.google.se we could either sendRedirect or do a http-backend include. The include 
+	 * will be able to return the error page html AND a 404 status code. The old method will transfer the user and give robots etc the impression that 
+	 * the page just moved.
+	 * @return
+	 */
+	public static String getResponseMethodOnFullErrorURL()
+	{
+		return getServerNodeProperty("responseMethodOnFullErrorURL", true, "include");
+	}
 }
