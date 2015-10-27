@@ -342,6 +342,7 @@ public class ViewServerNodePropertiesAction extends InfoGluePropertiesAbstractAc
 	    populate(ps, "unprotectedProtocolPort");
 	    populate(ps, "protectedProtocolPort");
 	    populate(ps, "accessBasedProtocolRedirectHTTPCode");
+	    populate(ps, "responseMethodOnFullErrorURL");
 	    
 	    populate(ps, "allowedDirectLoginNames");
 

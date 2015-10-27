@@ -24,7 +24,10 @@
 
 package org.infoglue.deliver.applications.actions;
 
+import java.io.PrintWriter;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.servlet.RequestDispatcher;
@@ -34,11 +37,14 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
+import org.infoglue.cms.controllers.kernel.impl.simple.LanguageController;
+import org.infoglue.cms.entities.management.LanguageVO;
 import org.infoglue.cms.entities.management.RepositoryVO;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.util.CmsPropertyHandler;
 import org.infoglue.deliver.controllers.kernel.impl.simple.RepositoryDeliveryController;
 import org.infoglue.deliver.util.CacheController;
+import org.infoglue.deliver.util.HttpHelper;
 
 
 /**
@@ -49,37 +55,48 @@ import org.infoglue.deliver.util.CacheController;
 
 public class ErrorPageAction extends InfoGlueAbstractAction 
 {
-    private final static Logger logger = Logger.getLogger(ErrorPageAction.class.getName());
+	private final static Logger logger = Logger.getLogger(ErrorPageAction.class.getName());
 
-    private int responseCode = HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
-    
-  	private String getErrorUrl(Integer repositoryId) throws Exception 
-  	{
-  		String errorUrl = CmsPropertyHandler.getErrorUrl();
-  		
-  		String isErrorPage = getRequest().getParameter("isErrorPage");
-  		
-  		if(isErrorPage == null || isErrorPage.equals(""))
-  		{
-			String repositoryErrorUrl = RepositoryDeliveryController.getRepositoryDeliveryController().getExtraPropertyValue(repositoryId, "errorUrl");
-			if(repositoryErrorUrl != null && !repositoryErrorUrl.equals(""))
+	private int responseCode = HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
+
+	private String getErrorUrl(Integer repositoryId, LanguageVO currentLanguage) throws Exception
+	{
+		String errorUrl = CmsPropertyHandler.getErrorUrl();
+
+		String isErrorPage = getRequest().getParameter("isErrorPage");
+
+		if (isErrorPage == null || isErrorPage.equals(""))
+		{
+			String repositoryErrorUrl = RepositoryDeliveryController.getRepositoryDeliveryController().getExtraPropertyValue(repositoryId, "errorUrl_" + currentLanguage.getLanguageCode());
+			if (repositoryErrorUrl == null || repositoryErrorUrl.equals(""))
+			{
+				logger.info("Found no language specific error page. Checking for non-suffixed version.");
+				repositoryErrorUrl = RepositoryDeliveryController.getRepositoryDeliveryController().getExtraPropertyValue(repositoryId, "errorUrl");
+			}
+			if (repositoryErrorUrl != null && !repositoryErrorUrl.equals(""))
 			{
 				errorUrl = repositoryErrorUrl;
 			}
-			
+
 			if(errorUrl != null)
+			{
 				errorUrl = errorUrl + (errorUrl.indexOf("?") > -1 ? "&" : "?") + "isErrorPage=true";
-  		}
+			}
+		}
 		
 		return errorUrl;
-  	}
-	
-    
-    private Set<RepositoryVO> getRepositoryId(HttpServletRequest request) throws ServletException, SystemException, Exception 
+	}
+
+	private Set<RepositoryVO> getRepositoryId(HttpServletRequest request) throws ServletException, SystemException, Exception
     {
         String serverName = request.getServerName();
         String portNumber = new Integer(request.getServerPort()).toString();
         String repositoryName = request.getParameter("repositoryName");
+        String requestUri = (String)request.getAttribute("javax.servlet.forward.request_uri");
+        if (requestUri == null)
+        {
+			requestUri = request.getRequestURI();
+        }
         /*
         String repCacheKey = "" + serverName + "_" + portNumber + "_" + repositoryName;
         Set<RepositoryVO> repositoryVOList = (Set<RepositoryVO>)CacheController.getCachedObject("NavigationCache", repCacheKey);
@@ -89,7 +106,7 @@ public class ErrorPageAction extends InfoGlueAbstractAction
         }
         */
         
-        Set<RepositoryVO> repositories = RepositoryDeliveryController.getRepositoryDeliveryController().getRepositoryVOListFromServerName(serverName, portNumber, repositoryName, request.getRequestURI());
+        Set<RepositoryVO> repositories = RepositoryDeliveryController.getRepositoryDeliveryController().getRepositoryVOListFromServerName(serverName, portNumber, repositoryName, requestUri);
         
         //System.out.println("Caching in error page:" + repCacheKey + ":" + repositories + ":" + request.getRequestURI());
         //CacheController.cacheObject("NavigationCache", repCacheKey, repositories);
@@ -137,38 +154,100 @@ public class ErrorPageAction extends InfoGlueAbstractAction
 	        	errorUrl = errorUrlParameter;
 	        }
 
-	        Set<RepositoryVO> repositoryVOList = getRepositoryId(this.getRequest());
-	        if(repositoryVOList != null && repositoryVOList.size() > 0)
-	        {
-	        	RepositoryVO repositoryVO = (RepositoryVO)repositoryVOList.toArray()[0];
-	        	String localErrorUrl = getErrorUrl(repositoryVO.getId());
-	        	if(localErrorUrl != null)
-	        		errorUrl = localErrorUrl;
-	        }
-	        
+			Set<RepositoryVO> repositoryVOList = getRepositoryId(this.getRequest());
+			LanguageVO currentLanguage = null;
+			if(repositoryVOList != null && repositoryVOList.size() > 0)
+			{
+				if (repositoryVOList.size() > 1)
+				{
+					logger.warn("Found more than repository for the error URL. List: " + repositoryVOList.toString());
+				}
+				RepositoryVO repositoryVO = (RepositoryVO)repositoryVOList.toArray()[0];
+				Integer currentLanguageId = (Integer)this.getRequest().getAttribute("languageId");
+				if (currentLanguageId != null)
+				{
+					try
+					{
+						currentLanguage = LanguageController.getController().getLanguageVOWithId(currentLanguageId);
+					}
+					catch (Exception ex)
+					{
+						logger.warn("Failed to get the current language for error URL. Falling back to repository master language. Current language id: " + currentLanguageId);
+					}
+				}
+				if (currentLanguage == null)
+				{
+					currentLanguage = LanguageController.getController().getMasterLanguage(repositoryVO.getRepositoryId());
+				}
+
+
+				String localErrorUrl = getErrorUrl(repositoryVO.getId(), currentLanguage);
+				if(localErrorUrl != null)
+				{
+					errorUrl = localErrorUrl;
+				}
+			}
+
 	        if(errorUrl == null || errorUrl.indexOf("@errorUrl@") > -1)
 	        {
 	            logger.error("No valid error url was defined:" + errorUrl + ". You should fix this. Defaulting to /error.jsp");
 		       	errorUrl = "/error.jsp";
 	        }
-	        
-	        if(errorUrl != null && errorUrl.indexOf("@errorUrl@") == -1)
-	        {
-	            if(errorUrl.indexOf("http") > -1)
-	                this.getResponse().sendRedirect(errorUrl);
+
+			Integer closestExistingParentSiteNodeId = (Integer)this.getRequest().getAttribute("closestExistingParentSiteNodeId");
+			if(errorUrl != null && errorUrl.indexOf("@errorUrl@") == -1)
+			{
+				if(errorUrl.indexOf("http") > -1)
+					if(CmsPropertyHandler.getResponseMethodOnFullErrorURL().equalsIgnoreCase("include"))
+					{
+					HttpHelper helper = new HttpHelper();
+					Map<String,String> requestParameters = new HashMap<String,String>();
+					if(e != null)
+					{
+						requestParameters.put("errorMessage", e.getMessage());
+					}
+					requestParameters.put("errorURL", errorUrl);
+					if (currentLanguage != null)
+					{
+						requestParameters.put("languageId", currentLanguage.getLanguageId().toString());
+					}
+					if (closestExistingParentSiteNodeId != null)
+					{
+						requestParameters.put("closestExistingParentSiteNodeId", closestExistingParentSiteNodeId.toString());
+					}
+					String urlContent = helper.getUrlContent(errorUrl, new HashMap(), requestParameters, "utf-8", 5000);
+
+					getResponse().setContentType("text/html; charset=utf-8");
+					getResponse().setStatus(404);
+
+						PrintWriter out = getResponse().getWriter();
+						out.println(urlContent);
+					}
+					else
+					{
+						this.getResponse().sendRedirect(errorUrl);
+					}
 	            else
 	            {
 	            	try
 	            	{
 		                RequestDispatcher dispatch = this.getRequest().getRequestDispatcher(errorUrl);
 		                this.getRequest().setAttribute("error", e);
+		                if (closestExistingParentSiteNodeId != null)
+						{
+							this.getRequest().setAttribute("closestExistingParentSiteNodeId", closestExistingParentSiteNodeId);
+						}
+		                if (currentLanguage != null)
+		                {
+							this.getRequest().setAttribute("language", currentLanguage);
+		                }
 		                //dispatch.forward(this.getRequest(), this.getResponse());
 		                dispatch.include(this.getRequest(), this.getResponse());
 	            	}
 	            	catch(Exception e2)
 	            	{
 	            		e2.printStackTrace();
-	                    return SUCCESS;            		
+	                    return SUCCESS;
 	            	}
 	            }
 	            

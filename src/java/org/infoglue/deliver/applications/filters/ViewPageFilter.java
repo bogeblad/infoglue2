@@ -26,6 +26,7 @@ package org.infoglue.deliver.applications.filters;
 import java.io.IOException;
 import java.net.URLDecoder;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -50,7 +51,6 @@ import javax.servlet.http.HttpSession;
 import org.apache.log4j.Logger;
 import org.exolab.castor.jdo.Database;
 import org.infoglue.cms.controllers.kernel.impl.simple.CastorDatabaseService;
-import org.infoglue.cms.controllers.kernel.impl.simple.LanguageController;
 import org.infoglue.cms.controllers.kernel.impl.simple.RedirectController;
 import org.infoglue.cms.entities.management.LanguageVO;
 import org.infoglue.cms.entities.management.RepositoryVO;
@@ -66,6 +66,7 @@ import org.infoglue.deliver.controllers.kernel.impl.simple.RepositoryDeliveryCon
 import org.infoglue.deliver.util.CacheController;
 import org.infoglue.deliver.util.RequestAnalyser;
 import org.infoglue.deliver.util.Timer;
+
 
 /**
  *
@@ -156,6 +157,10 @@ public class ViewPageFilter implements Filter
         if(logger.isInfoEnabled())
         	logger.info("requestURI after encoding check:" + requestURI);
 
+		Integer languageId = null;
+		Set<RepositoryVO> repositoryVOList = null;
+		String[] nodeNames = null;
+		InfoGluePrincipal infoGluePrincipal = null;
         try
         {
         	if(requestURI.indexOf(CmsPropertyHandler.getDigitalAssetBaseUrl() + "/protected") > -1)
@@ -175,10 +180,7 @@ public class ViewPageFilter implements Filter
 	            RequestAnalyser.getRequestAnalyser().incNumberOfCurrentRequests(null);
 
 	            HttpSession httpSession = httpRequest.getSession(true);
-	
-	            Set<RepositoryVO> repositoryVOList = null;
-	            Integer languageId = null;
-	
+
 	            Database db = CastorDatabaseService.getDatabase();
 	    		
 	            BaseDeliveryController.beginTransaction(db);
@@ -194,11 +196,11 @@ public class ViewPageFilter implements Filter
 		            Integer siteNodeId = null;
 	                if(languageId != null)
 	                {
-			            String[] nodeNames = splitString(requestURI, "/");
+			            nodeNames = splitString(requestURI, "/");
 			            logger.info("nodeNames:" + nodeNames.length);
 			            
 			            List<String> nodeNameList = new ArrayList<String>();
-			            for(int i=0; i<nodeNames.length; i++)
+			            for(int i=0; i < nodeNames.length; i++)
 			            {
 			            	String nodeName = nodeNames[i];
 			            	if(nodeName.indexOf(".cid") == -1)
@@ -230,7 +232,7 @@ public class ViewPageFilter implements Filter
 			            //logger.info("LanguageId...: "+languageId);
 			            //logger.info("RequestURI...: "+requestURI);
 			
-		                InfoGluePrincipal infoGluePrincipal = (InfoGluePrincipal) httpSession.getAttribute("infogluePrincipal");
+		                infoGluePrincipal = (InfoGluePrincipal) httpSession.getAttribute("infogluePrincipal");
 		                if (infoGluePrincipal == null) 
 		                {
 		                    try 
@@ -352,6 +354,7 @@ public class ViewPageFilter implements Filter
         	{
 	            httpRequest.setAttribute("responseCode", "500");
 	            httpRequest.setAttribute("error", se);
+	            httpRequest.setAttribute("languageId", languageId);
 	            httpRequest.getRequestDispatcher("/ErrorPage.action").forward(httpRequest, httpResponse);
         	}
         	else
@@ -361,19 +364,91 @@ public class ViewPageFilter implements Filter
         {
         	if(!httpResponse.isCommitted())
         	{
-		    	httpRequest.setAttribute("responseCode", "404");
-	            httpRequest.setAttribute("error", e);
-	            httpRequest.getRequestDispatcher("/ErrorPage.action").forward(httpRequest, httpResponse);
-	        }
-	        else
-	            logger.error("Error and response was committed:" + e.getMessage(), e);
-	    }
-    }
+				httpRequest.setAttribute("responseCode", "404");
+				httpRequest.setAttribute("error", e);
+				Integer errorLanguageId = languageId;
+				Database db = null;
+				try
+				{
+					db = CastorDatabaseService.getDatabase();
+					BaseDeliveryController.beginTransaction(db);
+					Integer siteNodeId = getClosestExistingParentSiteNodeId(db, httpRequest, infoGluePrincipal, nodeNames, repositoryVOList, languageId);
+					if (siteNodeId != null)
+					{
+						httpRequest.setAttribute("closestExistingParentSiteNodeId", siteNodeId);
+						List<LanguageVO> languages = (List<LanguageVO>)LanguageDeliveryController.getLanguageDeliveryController().getLanguagesForSiteNode(db, siteNodeId, infoGluePrincipal);
+						if (languages.size() >= 1)
+						{
+							errorLanguageId = languages.get(0).getLanguageId();
+						}
+						else
+						{
+							logger.warn("Closest exisiting parent site node did not have any languages, weird. SiteNodeId: " + siteNodeId);
+						}
+					}
+				}
+				catch (Exception ex)
+				{
+					logger.warn("An error occured when trying to find parent site node for non-existing path.");
+					logger.info("An error occured when trying to find parent site node for non-existing path.", ex);
+				}
+				finally {
+					if (db != null)
+					{
+						try
+						{
+							BaseDeliveryController.rollbackTransaction(db);
+							BaseDeliveryController.closeDatabase(db);
+						}
+						catch (Exception ex2)
+						{
+							logger.error("Failed to close database connection in error page language id computation. Message: " + ex2.getMessage());
+							logger.warn("Failed to close database connection in error page language id computation.", ex2);
+						}
+					}
+				}
+				httpRequest.setAttribute("languageId", errorLanguageId);
+				httpRequest.getRequestDispatcher("/ErrorPage.action").forward(httpRequest, httpResponse);
+			}
+			else
+			{
+				logger.error("Error and response was committed:" + e.getMessage(), e);
+			}
+		}
+	}
 
     public void destroy() 
     {
         this.filterConfig = null;
     }
+
+	private Integer getClosestExistingParentSiteNodeId(Database db, HttpServletRequest httpRequest, InfoGluePrincipal infoGluePrincipal, String[] nodeNames, Set<RepositoryVO> repositoryVOList, Integer languageId) throws SystemException, Exception
+	{
+		Integer siteNodeId = null;
+
+		HttpSession httpSession = httpRequest.getSession(true);
+		Iterator<RepositoryVO> repositorVOListIterator;
+
+		while (nodeNames.length > 0)
+		{
+			nodeNames = Arrays.copyOf(nodeNames, nodeNames.length - 1);
+			repositorVOListIterator = repositoryVOList.iterator();
+			while(repositorVOListIterator.hasNext())
+			{
+				RepositoryVO repositoryVO = (RepositoryVO)repositorVOListIterator.next();
+
+				DeliveryContext deliveryContext = DeliveryContext.getDeliveryContext();
+				siteNodeId = NodeDeliveryController.getSiteNodeIdFromPath(db, infoGluePrincipal, repositoryVO, nodeNames, attributeName, deliveryContext, httpSession, languageId);
+
+				if (siteNodeId != null)
+				{
+					return siteNodeId;
+				}
+			}
+		}
+
+		return siteNodeId;
+	}
 
     private void validateCmsProperties(HttpServletRequest request) 
     {
