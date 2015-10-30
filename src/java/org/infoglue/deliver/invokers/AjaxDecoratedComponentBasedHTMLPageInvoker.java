@@ -1430,7 +1430,7 @@ public class AjaxDecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHT
 	 
 	private List getComponentProperties(Integer componentId, Document document, TemplateController templateController) throws Exception
 	{
-		//TODO - här kan vi säkert cache:a.
+		//TODO - hï¿½r kan vi sï¿½kert cache:a.
 		
 		//logger.info("componentPropertiesXML:" + componentPropertiesXML);
 		List componentProperties = new ArrayList();
@@ -1769,7 +1769,7 @@ public class AjaxDecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHT
 			
 			ComponentBinding componentBinding = new ComponentBinding();
 			componentBinding.setEntityClass(entity);
-			componentBinding.setEntityId(new Integer(entityId));
+			componentBinding.setEntityId(entityId);
 			componentBinding.setAssetKey(assetKey);
 
 			componentBindings.add(componentBinding);
@@ -1880,7 +1880,7 @@ public class AjaxDecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHT
 				componentBinding.setId(new Integer(id));
 				componentBinding.setComponentId(componentId);
 				componentBinding.setEntityClass(entityClass);
-				componentBinding.setEntityId(new Integer(entityId));
+				componentBinding.setEntityId(entityId);
 				componentBinding.setAssetKey(assetKey);
 				componentBinding.setBindingPath(contentVO.getName());
 				
