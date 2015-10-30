@@ -31,12 +31,13 @@ import java.util.Map;
 import java.util.SimpleTimeZone;
 
 import org.infoglue.cms.entities.kernel.BaseEntityVO;
+import org.infoglue.cms.entities.kernel.BaseGloballyIdentifyableEntity;
 import org.infoglue.cms.exception.ConstraintException;
 import org.infoglue.cms.util.CmsPropertyHandler;
 import org.infoglue.cms.util.ConstraintExceptionBuffer;
 import org.infoglue.cms.util.validators.ValidatorFactory;
 
-public class ContentVO implements BaseEntityVO, Serializable
+public class ContentVO implements BaseEntityVO, BaseGloballyIdentifyableEntity, Serializable
 { 
 	private static final long serialVersionUID = 1L;
 	
@@ -93,6 +94,11 @@ public class ContentVO implements BaseEntityVO, Serializable
 	{
 		return getContentId();
 	}	
+	
+	public String getUUId() 
+	{
+		return getId().toString();
+	}
   	
     public java.lang.Integer getContentId()
     {

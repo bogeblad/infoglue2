@@ -4,6 +4,7 @@
 package org.infoglue.cms.entities.content;
 
 import org.infoglue.cms.entities.kernel.BaseEntityVO;
+import org.infoglue.cms.entities.kernel.BaseGloballyIdentifyableEntity;
 import org.infoglue.cms.util.ConstraintExceptionBuffer;
 
 /**
@@ -12,22 +13,22 @@ import org.infoglue.cms.util.ConstraintExceptionBuffer;
  */
 public class EntityVOWithSupplementingEntityVO
 {
-	private BaseEntityVO entity;
-	private BaseEntityVO supplementingEntity;
+	private BaseGloballyIdentifyableEntity entity;
+	private BaseGloballyIdentifyableEntity supplementingEntity;
 
-	public BaseEntityVO getEntity()
+	public BaseGloballyIdentifyableEntity getEntity()
 	{
 		return entity;
 	}
-	public void setEntity(BaseEntityVO entity)
+	public void setEntity(BaseGloballyIdentifyableEntity entity)
 	{
 		this.entity = entity;
 	}
-	public BaseEntityVO getSupplementingEntity()
+	public BaseGloballyIdentifyableEntity getSupplementingEntity()
 	{
 		return supplementingEntity;
 	}
-	public void setSupplementingEntity(BaseEntityVO supplementingEntity)
+	public void setSupplementingEntity(BaseGloballyIdentifyableEntity supplementingEntity)
 	{
 		this.supplementingEntity = supplementingEntity;
 	}
@@ -57,7 +58,7 @@ public class EntityVOWithSupplementingEntityVO
 			sb.append("Entity: {type:");
 			sb.append(entity.getClass().getSimpleName());
 			sb.append(",");
-			sb.append(entity.getId());
+			sb.append(entity.getUUId());
 			sb.append("}");
 		}
 		else
@@ -69,7 +70,7 @@ public class EntityVOWithSupplementingEntityVO
 			sb.append(", Supplementing: {type:");
 			sb.append(supplementingEntity.getClass().getSimpleName());
 			sb.append(",");
-			sb.append(supplementingEntity.getId());
+			sb.append(supplementingEntity.getUUId());
 			sb.append("}");
 		}
 		else
@@ -81,28 +82,19 @@ public class EntityVOWithSupplementingEntityVO
 		return sb.toString();
 	}
 	
-	public static class IdOnlyBaseEntityVO implements BaseEntityVO
+	public static class IdOnlyBaseEntityVO implements BaseGloballyIdentifyableEntity
 	{
-		private Integer id;
+		private String uuId;
 
-		public IdOnlyBaseEntityVO(Integer id)
+		public IdOnlyBaseEntityVO(String uuId)
 		{
-			this.id = id;
+			this.uuId = uuId;
 		}
 
-		@Override
-		public Integer getId()
+		//@Override
+		public String getUUId()
 		{
-			return id;
-		}
-
-		/** 
-		 * Beware: does nothing;
-		 */
-		@Override
-		public ConstraintExceptionBuffer validate()
-		{
-			return null;
+			return uuId;
 		}
 		
 	}

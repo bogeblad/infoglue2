@@ -621,6 +621,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
 			getRequest().setAttribute("responseCode", "404");
 			getRequest().setAttribute("error", e);
 			getRequest().setAttribute("errorUrl", getErrorUrl());
+			getRequest().setAttribute("languageId", this.languageId);
 			getRequest().getRequestDispatcher("/ErrorPage.action").forward(getRequest(), getResponse());
 		}
 		catch(NoBaseTemplateFoundException e)

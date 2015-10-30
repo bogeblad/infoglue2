@@ -964,7 +964,7 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 						//componentBinding.setId(new Integer(id));
 						//componentBinding.setComponentId(componentId);
 						componentBinding.setEntityClass(entity);
-						componentBinding.setEntityId(new Integer(entityId));
+						componentBinding.setEntityId(entityId);
 						componentBinding.setAssetKey(assetKey);
 						componentBinding.setBindingPath(path);
 						
@@ -1432,7 +1432,7 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 						//componentBinding.setId(new Integer(id));
 						//componentBinding.setComponentId(componentId);
 						componentBinding.setEntityClass(entity);
-						componentBinding.setEntityId(new Integer(entityId));
+						componentBinding.setEntityId(entityId);
 						componentBinding.setAssetKey(assetKey);
 						componentBinding.setBindingPath(path);
 						
@@ -2844,10 +2844,10 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 									try
 									{
 										supplementingEntityIdString = supplementingBindingElement.getAttributeValue(supplementingBindingElement.getNamespaceName(), "entityId");
-										Integer supplementingEntityId = null;
+										String supplementingEntityId = null;
 										if (supplementingEntityIdString != null && !supplementingEntityIdString.equals(""))
 										{
-											supplementingEntityId = new Integer(supplementingEntityIdString);
+											supplementingEntityId = supplementingEntityIdString;
 										}
 										String supplementingAssetKey = supplementingBindingElement.getAttributeValue(supplementingBindingElement.getNamespaceName(), "assetKey");
 										supplementingAssetKey = StringEscapeUtils.unescapeXml(supplementingAssetKey);
@@ -2862,7 +2862,7 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 								//componentBinding.setId(new Integer(id));
 								//componentBinding.setComponentId(componentId);
 								componentBinding.setEntityClass(entity);
-								componentBinding.setEntityId(new Integer(entityId));
+								componentBinding.setEntityId(entityId);
 								componentBinding.setAssetKey(assetKey);
 								componentBinding.setBindingPath(path);
 								
