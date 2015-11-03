@@ -25,7 +25,7 @@
 		<td colspan="3"><img src="images/trans.gif" height="10" width="1"></td>
 	</tr>
 	<tr>
-		<td colspan="3">#editTextArea("ContentVersion.versionValue" "versionValue" $!contentVersionVO.versionValue "10" "10" "normaltextarea")</td>
+		<td colspan="3">#editTextArea("ContentVersion.versionValue" "versionValue" $formatter.escapeHTML($!contentVersionVO.versionValue) "10" "10" "normaltextarea")</td>
 	</tr>		
 	<tr>
 		<td colspan="3"><img src="images/trans.gif" height="10" width="1"></td>
