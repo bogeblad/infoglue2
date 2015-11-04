@@ -28,11 +28,14 @@ import java.util.List;
 
 import javax.servlet.jsp.JspException;
 
+import org.apache.log4j.Logger;
 import org.infoglue.cms.entities.content.ContentVO;
 import org.infoglue.deliver.taglib.TemplateControllerTag;
 
 public class IncludeTag extends TemplateControllerTag 
 {
+	private final static Logger logger = Logger.getLogger(ImportTag.class.getName());
+
 	private static final long serialVersionUID = 4050206323348354355L;
 	
 	private Integer contentId;
@@ -58,7 +61,6 @@ public class IncludeTag extends TemplateControllerTag
 		    {
 		    	if(contentPath != null && contentPath.length() > 0)
 		    	{
-		    		System.out.println("Getting by path");
 		    		if(repositoryId == null)
 		    		{
 		    			repositoryId = getController().getContent(this.getController().getComponentLogic().getInfoGlueComponent().getContentId()).getRepositoryId();
@@ -98,7 +100,7 @@ public class IncludeTag extends TemplateControllerTag
         } 
 		catch (Exception e)
         {
-            e.printStackTrace();
+            logger.error("Error doing include: " + e.getMessage());
 		    produceResult("");
         }
 		
