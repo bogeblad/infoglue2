@@ -28,16 +28,21 @@ import java.util.List;
 
 import javax.servlet.jsp.JspException;
 
+import org.apache.log4j.Logger;
 import org.infoglue.cms.entities.content.ContentVO;
 import org.infoglue.deliver.taglib.TemplateControllerTag;
 
 public class IncludeTag extends TemplateControllerTag 
 {
+	private final static Logger logger = Logger.getLogger(ImportTag.class.getName());
+
 	private static final long serialVersionUID = 4050206323348354355L;
 	
 	private Integer contentId;
 	private String relationAttributeName;
 	private String contentName;
+	private Integer repositoryId = null;
+	private String contentPath = null;
 	private String template;
 	private boolean useAttributeLanguageFallback = true;
 	private boolean useSubContext = false;
@@ -54,21 +59,34 @@ public class IncludeTag extends TemplateControllerTag
 			String renderDescription = null;
 		    if(contentId == null)
 		    {
-			    Integer componentContentId = this.getController().getComponentLogic().getInfoGlueComponent().getContentId();
-			    
-			    List relatedContents = this.getController().getRelatedContents(componentContentId, relationAttributeName, useAttributeLanguageFallback);
-
-			    Iterator i = relatedContents.iterator();
-			    while(i.hasNext())
-			    {
-			        ContentVO contentVO = (ContentVO)i.next();
-			        if(contentVO.getName().equalsIgnoreCase(contentName))
-	                {
-			        	renderDescription = ""+contentVO.getName();
-			            contentId = contentVO.getId();
-			            break;
-	                }
-			    }
+		    	if(contentPath != null && contentPath.length() > 0)
+		    	{
+		    		if(repositoryId == null)
+		    		{
+		    			repositoryId = getController().getContent(this.getController().getComponentLogic().getInfoGlueComponent().getContentId()).getRepositoryId();
+		    		}
+		    		ContentVO contentVO = getController().getContentWithPath(repositoryId, contentPath);
+		    		if(contentVO != null)
+		    			contentId = contentVO.getId();
+		    	}
+		    	else
+		    	{
+				    Integer componentContentId = this.getController().getComponentLogic().getInfoGlueComponent().getContentId();
+				    
+				    List relatedContents = this.getController().getRelatedContents(componentContentId, relationAttributeName, useAttributeLanguageFallback);
+	
+				    Iterator i = relatedContents.iterator();
+				    while(i.hasNext())
+				    {
+				        ContentVO contentVO = (ContentVO)i.next();
+				        if(contentVO.getName().equalsIgnoreCase(contentName))
+		                {
+				        	renderDescription = ""+contentVO.getName();
+				            contentId = contentVO.getId();
+				            break;
+		                }
+				    }
+		    	}
 
 			    template = this.getController().getContentAttributeUsingLanguageFallback(contentId, "Template", true);
 		    }
@@ -82,7 +100,7 @@ public class IncludeTag extends TemplateControllerTag
         } 
 		catch (Exception e)
         {
-            e.printStackTrace();
+            logger.error("Error doing include: " + e.getMessage());
 		    produceResult("");
         }
 		
@@ -92,7 +110,9 @@ public class IncludeTag extends TemplateControllerTag
 		this.template = null;
 		this.useAttributeLanguageFallback = true;
 		this.useSubContext = false;
-		
+		this.repositoryId = null;
+		this.contentPath = null;
+
         return EVAL_PAGE;
     }
 
@@ -117,6 +137,16 @@ public class IncludeTag extends TemplateControllerTag
     {
         this.contentId = null;
         this.contentName = evaluateString("includeTag", "contentName", contentName);
+    }
+
+    public void setContentPath(String contentPath) throws JspException
+    {
+        this.contentPath = evaluateString("includeTag", "contentPath", contentPath);
+    }
+
+    public void setRepositoryId(String repositoryId) throws JspException
+    {
+        this.repositoryId = evaluateInteger("includeTag", "repositoryId", repositoryId);
     }
 
     public void setUseAttributeLanguageFallback(boolean useAttributeLanguageFallback) throws JspException
