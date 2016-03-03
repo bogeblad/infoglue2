@@ -345,6 +345,7 @@ public class ViewServerNodePropertiesAction extends InfoGluePropertiesAbstractAc
 	    populate(ps, "responseMethodOnFullErrorURL");
 	    
 	    populate(ps, "allowedDirectLoginNames");
+	    populate(ps, "useWriteForAccessControlInWorking");
 
 	    try
 	    {

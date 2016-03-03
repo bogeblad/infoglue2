@@ -212,7 +212,6 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 	public void invokePage() throws SystemException, Exception
 	{
 		Timer t = new Timer();
-
 		String pageContent = "";
 		
 		NodeDeliveryController nodeDeliveryController = NodeDeliveryController.getNodeDeliveryController(this.getDeliveryContext());
@@ -286,7 +285,7 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 		*/
    		
    		String pageString = pageContent;
-   		
+
    		if(logger.isInfoEnabled())
    			logger.info("\n\nEvaluateFull:" + this.getDeliveryContext().getEvaluateFullPage());
 		if(this.getDeliveryContext().getEvaluateFullPage() && pageContent.length() < 1000000)

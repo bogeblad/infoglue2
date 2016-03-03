@@ -955,7 +955,7 @@ public class NodeDeliveryController extends BaseDeliveryController
 		try
 		{
 			Boolean honourInheritanceFallback = true;
-			if(interceptionPointName.equals("SiteNodeVersion.Read"))
+			if(interceptionPointName.equals("SiteNodeVersion.Read") || interceptionPointName.equals("SiteNodeVersion.Write"))
 				honourInheritanceFallback = false;
 			
 			InterceptionPointVO ipVO = InterceptionPointController.getController().getInterceptionPointVOWithName(interceptionPointName, db);
