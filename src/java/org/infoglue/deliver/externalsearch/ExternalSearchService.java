@@ -413,6 +413,11 @@ public class ExternalSearchService
 		IndexSearcher newIndexSearcher = null;
 		try
 		{
+			if (!this.dataRetriever.hasChanged())
+			{
+				logger.debug("Skipping indexing since the underlying data source has not changed");
+				return;
+			}
 			InputStream input = this.dataRetriever.openConnection();
 			List<Map<String, Object>> entities = this.parser.parse(input);
 			this.dataRetriever.closeConnection();

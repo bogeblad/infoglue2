@@ -31,6 +31,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Date;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
@@ -42,6 +43,7 @@ import org.infoglue.cms.exception.ConfigurationError;
  * <p>
  * <h3>Config</h3>
  * <strong>filePath</strong> &ndash; The path to the file that shall be retrieved by the DataRetriever.
+ * <strong>checkChanged</strong> &ndash; Boolean indicating whether the DataRetriever should use the <em>hasChanged</em> function.
  * </p>
  * 
  * @author Erik Stenbäcka
@@ -50,7 +52,9 @@ public class LocalFileDataRetriever implements DataRetriever
 {
 	private static final Logger logger = Logger.getLogger(LocalFileDataRetriever.class);
 	private String filePath;
+	private boolean checkChanged;
 	private InputStream stream;
+	private Date lastFetched;
 
 	@Override
 	public void setConfig(Map<String, Object> config)
@@ -62,6 +66,15 @@ public class LocalFileDataRetriever implements DataRetriever
 		else
 		{
 			this.filePath = (String)config.get("filePath");
+		}
+
+		if (config.containsKey("checkChanged"))
+		{
+			this.checkChanged = ((String)config.get("checkChanged")).equals("yes");
+		}
+		else
+		{
+			this.checkChanged = false;
 		}
 	}
 
@@ -110,6 +123,7 @@ public class LocalFileDataRetriever implements DataRetriever
 			{
 				stream.close();
 				this.stream = null;
+				this.lastFetched = new Date();
 				return true;
 			}
 			catch (IOException ex)
@@ -125,6 +139,29 @@ public class LocalFileDataRetriever implements DataRetriever
 	@Override
 	public void destroy()
 	{
+	}
+
+	@Override
+	public boolean hasChanged()
+	{
+		if (this.checkChanged)
+		{
+			File file = new File(filePath);
+			if (!file.exists())
+			{
+				logger.warn("The given file does not exist. Cannot check alst modified date. File path: " + filePath);
+				return true;
+			}
+			if (this.lastFetched == null)
+			{
+				return true;
+			}
+			return file.lastModified() > this.lastFetched.getTime();
+		}
+		else
+		{
+			return true;
+		}
 	}
 
 	@Override
