@@ -543,7 +543,7 @@ public class CacheController extends Thread
 			   !cacheName.equals("contentTypeDefinitionCache")
 			)
 			{
-				logger.warn("Missed cache:" + cacheName + " because of defeat caches");
+				logger.debug("Missed cache:" + cacheName + " because of defeat caches");
 				return null;
 			}
 		}
@@ -3691,7 +3691,7 @@ public class CacheController extends Thread
 							    {
 							    	if(entity.indexOf("EventImpl") == -1 && entity.indexOf(".Publication") == -1)
 							    	{
-								    	logger.warn("WHOOOAAAAAAAAAA.. clearing all... on " + cacheName + ":" + entity);
+								    	logger.debug("WHOOOAAAAAAAAAA.. clearing all... on " + cacheName + ":" + entity);
 								    	//System.out.println("selectiveCacheUpdate:" + selectiveCacheUpdate);
 								    	//System.out.println("entity:" + entity);
 								    	//System.out.println("cacheName:" + cacheName);

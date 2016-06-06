@@ -26,12 +26,15 @@ package org.infoglue.deliver.externalsearch;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
@@ -107,29 +110,57 @@ public class GSonBackedJSONParser implements Parser
 	{
 		private Type itemType = new TypeToken<Map<String, Object>>() {}.getType();
 
+		private Object deserializePrimitive(JsonElement element)
+		{
+			JsonPrimitive primitive = (JsonPrimitive)element.getAsJsonPrimitive();
+			if (primitive.isBoolean())
+			{
+				return primitive.getAsBoolean();
+			}
+			else if (primitive.isNumber())
+			{
+				return primitive.getAsNumber();
+			}
+			else if (primitive.isString())
+			{
+				return primitive.getAsString();
+			}
+			return null;
+		}
+
 		@Override
 		public Object deserialize(JsonElement element, Type type, JsonDeserializationContext context) throws JsonParseException
 		{
 			if (element.isJsonPrimitive())
 			{
-				JsonPrimitive primitive = (JsonPrimitive)element.getAsJsonPrimitive();
-				if (primitive.isBoolean())
-				{
-					return primitive.getAsBoolean();
-				}
-				else if (primitive.isNumber())
-				{
-					return primitive.getAsNumber();
-				}
-				else if (primitive.isString())
-				{
-					return primitive.getAsString();
-				}
+				return deserializePrimitive(element);
 			}
 			else if (element.isJsonObject())
 			{
 				JsonObject object = (JsonObject) element;
 				return context.deserialize(object, itemType);
+			}
+			else if (element.isJsonArray())
+			{
+				List<Object> result = new ArrayList<Object>();
+				JsonArray array = (JsonArray) element;
+				Iterator<JsonElement> it = array.iterator();
+				JsonElement currentElement;
+				while (it.hasNext())
+				{
+					currentElement = it.next();
+					Object listItem;
+					if (currentElement.isJsonPrimitive())
+					{
+						listItem = deserializePrimitive(currentElement);
+					}
+					else
+					{
+						listItem = context.deserialize(currentElement, itemType);
+					}
+					result.add(listItem);
+				}
+				return result;
 			}
 			return null;
 		}
