@@ -230,7 +230,7 @@ public abstract class PageInvoker
 			    {
 			    	invokePage();
 					this.pageString = getPageString();
-					
+
 					getLastModifiedDateTime(false);
 				
 					pageString = decorateHeadAndPageWithVarsFromComponents(pageString);
@@ -240,6 +240,7 @@ public abstract class PageInvoker
 			    else
 			    	this.getDeliveryContext().setIsCachedResponse(true);
 			}
+
 			
 			logger.info("this.getDeliveryContext().getIsCachedResponse():" + this.getDeliveryContext().getIsCachedResponse());
 			if(this.getDeliveryContext().getIsCachedResponse())
@@ -299,7 +300,7 @@ public abstract class PageInvoker
 		{
 			invokePage();
 			this.pageString = getPageString();
-			
+
 			//TEST
 			getLastModifiedDateTime(false);
 			//END TEST
@@ -413,7 +414,7 @@ public abstract class PageInvoker
 			    {
 			    	out = this.getResponse().getOutputStream();
 			    }
-			   
+			    
 			    if(pageString != null)
 			    	out.write(pageString.getBytes(charSet));
 			    else

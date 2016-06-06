@@ -1973,13 +1973,53 @@ public class AccessRightController extends BaseController
 	{		
 		return getIsPrincipalAuthorized(db, infoGluePrincipal, interceptionPointName, extraParameters, returnTrueIfNoAccessRightsDefined, false);
 	}
-	
+
 	public boolean getIsPrincipalAuthorized(Database db, InfoGluePrincipal infoGluePrincipal, String interceptionPointName, String extraParameters, boolean returnTrueIfNoAccessRightsDefined, boolean defeatCaches) throws SystemException
+	{		
+		return getIsPrincipalAuthorized(db, infoGluePrincipal, interceptionPointName, extraParameters, returnTrueIfNoAccessRightsDefined, defeatCaches, true);
+	}
+
+	public boolean getIsPrincipalAuthorized(Database db, InfoGluePrincipal infoGluePrincipal, String interceptionPointName, String extraParameters, boolean returnTrueIfNoAccessRightsDefined, boolean defeatCaches, boolean considerReadAndWriteForAccessControlInWorking) throws SystemException
+	{		
+		boolean isAuthorized = false;
+		
+		if(interceptionPointName.equalsIgnoreCase("SiteNodeVersion.Read"))
+		{			
+			if(CmsPropertyHandler.getOperatingMode().equals("0") && CmsPropertyHandler.getUseWriteForAccessControlInWorking())
+			{
+				interceptionPointName = "SiteNodeVersion.Write";
+				isAuthorized = getIsPrincipalAuthorizedImpl(db, infoGluePrincipal, interceptionPointName, extraParameters, returnTrueIfNoAccessRightsDefined, defeatCaches);
+				if(!isAuthorized && considerReadAndWriteForAccessControlInWorking)
+				{
+					interceptionPointName = "SiteNodeVersion.Read";
+					isAuthorized = getIsPrincipalAuthorizedImpl(db, infoGluePrincipal, interceptionPointName, extraParameters, returnTrueIfNoAccessRightsDefined, defeatCaches);
+				}
+			}
+			else
+				isAuthorized = getIsPrincipalAuthorizedImpl(db, infoGluePrincipal, interceptionPointName, extraParameters, returnTrueIfNoAccessRightsDefined, defeatCaches);
+		}
+		else
+		{
+			isAuthorized = getIsPrincipalAuthorizedImpl(db, infoGluePrincipal, interceptionPointName, extraParameters, returnTrueIfNoAccessRightsDefined, defeatCaches);			
+		}
+
+		return isAuthorized;
+	}
+	
+	public boolean getIsPrincipalAuthorizedImpl(Database db, InfoGluePrincipal infoGluePrincipal, String interceptionPointName, String extraParameters, boolean returnTrueIfNoAccessRightsDefined, boolean defeatCaches/*, boolean considerWriteForAccessControlInWorking*/) throws SystemException
 	{		
 		Timer t = new Timer();
 		if(!logger.isInfoEnabled())
 			t.setActive(false);
 
+		/*
+		if(considerWriteForAccessControlInWorking && interceptionPointName.equalsIgnoreCase("SiteNodeVersion.Read"))
+		{			
+			if(CmsPropertyHandler.getOperatingMode().equals("0") && CmsPropertyHandler.getUseWriteForAccessControlInWorking())
+				interceptionPointName = "SiteNodeVersion.Write";
+		}
+		*/
+		
 		//Map<String,Integer> cachedPrincipalAuthorizationMap = (Map<String,Integer>)CacheController.getCachedObjectFromAdvancedCache("personalAuthorizationCache", "authorizationMap_" + infoGluePrincipal.getName());
 		Map<String,Integer> cachedPrincipalAuthorizationMap = (Map<String,Integer>)CacheController.getCachedObject("userAccessCache", "authorizationMap_" + infoGluePrincipal.getName());
 		if(!infoGluePrincipal.getIsAdministrator() && cachedPrincipalAuthorizationMap == null && !preCacheInProcessForUsers.contains(infoGluePrincipal.getName()))
@@ -2046,33 +2086,7 @@ public class AccessRightController extends BaseController
 			}
 			*/
 		}
-		
-		boolean enableDebug = false;
-		/*if(interceptionPointName != null && interceptionPointName.equalsIgnoreCase("Content.Read") && 
-				extraParameters != null && (extraParameters.equalsIgnoreCase("163786") || 
-				extraParameters.equalsIgnoreCase("163787") || 
-				extraParameters.equalsIgnoreCase("163791") || 
-				extraParameters.equalsIgnoreCase("163789") ||
-				extraParameters.equalsIgnoreCase("163792") ||
-				extraParameters.equalsIgnoreCase("11268") ||
-				extraParameters.equalsIgnoreCase("6902")))
-		{
-			logger.info("Was a content we want to check...");
-			enableDebug = true;
-		}
-		*/
-		if(extraParameters.equals("108"))
-			enableDebug = true;
-	
-		if(interceptionPointName != null && interceptionPointName.equalsIgnoreCase("Content.Read") && extraParameters.equalsIgnoreCase("6902"))
-			enableDebug = true;
-	
-		String debugInfo = "";
-		if(enableDebug)
-			debugInfo += "\n	getIsPrincipalAuthorized with: " + infoGluePrincipal + ", " + interceptionPointName + ", " + extraParameters;
-		
-		//logger.info("infoGluePrincipal:" + infoGluePrincipal);
-		
+			
 		if(infoGluePrincipal == null)
 	      return false;
 	    
@@ -2083,9 +2097,6 @@ public class AccessRightController extends BaseController
 		
 	    String key = "" + infoGluePrincipal.getName() + "_" + interceptionPointName + "_" + extraParameters + "_" + returnTrueIfNoAccessRightsDefined;
 	    //logger.info("key:" + key);
-
-	    if(enableDebug)
-			debugInfo += "\n	key: " + key;
 
 	    if(logger.isInfoEnabled())
 		{
@@ -2098,11 +2109,6 @@ public class AccessRightController extends BaseController
 		Boolean cachedIsPrincipalAuthorized = (Boolean)CacheController.getCachedObjectFromAdvancedCache("personalAuthorizationCache", key);
 		if(cachedIsPrincipalAuthorized != null)
 		{
-			if(enableDebug)
-				debugInfo += "\n	Principal " + infoGluePrincipal.getName() + " was " + (!cachedIsPrincipalAuthorized ? " NOT " : "") + " allowed to " + interceptionPointName + " on " + extraParameters + " (Cached value)";
-			
-			//logger.info("\n	Principal " + infoGluePrincipal.getName() + " was " + (!cachedIsPrincipalAuthorized ? " NOT " : "") + " allowed to " + interceptionPointName + " on " + extraParameters + " (Cached value)");
-				
 			if(logger.isInfoEnabled() && !cachedIsPrincipalAuthorized.booleanValue())
 				logger.info("Principal " + infoGluePrincipal.getName() + " was not allowed to " + interceptionPointName + " on " + extraParameters + " (Cached value)");
 		    return cachedIsPrincipalAuthorized.booleanValue();
@@ -2190,15 +2196,10 @@ public class AccessRightController extends BaseController
 			return true;
 		}
 
-		if(enableDebug)
-			debugInfo += "\n  Access right debug:";
-
 		Iterator accessRightListIterator = accessRightList.iterator();
 		while(accessRightListIterator.hasNext() && !isPrincipalAuthorized)
 		{
 		    AccessRight accessRight = (AccessRight)accessRightListIterator.next();
-			if(enableDebug)
-				debugInfo += "\n	Access right: " + accessRight.getId();
 
 			Collection approvedRoles = accessRight.getRoles();
 		    Collection approvedGroups = accessRight.getGroups();
@@ -2208,8 +2209,6 @@ public class AccessRightController extends BaseController
 			while(approvedUsersIterator.hasNext())
 			{
 			    AccessRightUser accessRightUser = (AccessRightUser)approvedUsersIterator.next();
-			    if(enableDebug)
-					debugInfo += "\n		user:" + accessRightUser.getUserName();
 			    if(accessRightUser.getUserName().equals(infoGluePrincipal.getName()))
 			    {
 			        isPrincipalAuthorized = true;
@@ -2223,9 +2222,6 @@ public class AccessRightController extends BaseController
 				{
 					InfoGlueRole role = (InfoGlueRole)rolesIterator.next();
 
-					if(enableDebug)
-						debugInfo += "\n		role:" + role.getName();
-
 					if(logger.isInfoEnabled())
 					    logger.info("role:" + role.getName());
 
@@ -2234,16 +2230,10 @@ public class AccessRightController extends BaseController
 					{
 					    AccessRightRole accessRightRole = (AccessRightRole)approvedRolesIterator.next();
 					    
-						if(enableDebug)
-							debugInfo += "\n		" + role.getName() + " = " + accessRightRole.getRoleName();
-
 					    if(logger.isInfoEnabled())
 					    	logger.info("" + role.getName() + " = " + accessRightRole.getRoleName());
 					    if(accessRightRole.getRoleName().equals(role.getName()))
 					    {
-							if(enableDebug)
-								debugInfo += "\n		Principal " + infoGluePrincipal.getName() + " has role " + accessRightRole.getRoleName();
-
 					        if(logger.isInfoEnabled())
 						    	logger.info("Principal " + infoGluePrincipal.getName() + " has role " + accessRightRole.getRoleName());
 						
@@ -2257,9 +2247,6 @@ public class AccessRightController extends BaseController
 				outer:while(approvedGroupsIterator.hasNext())
 				{
 				    AccessRightGroup accessRightGroup = (AccessRightGroup)approvedGroupsIterator.next();
-					
-				    if(enableDebug)
-						debugInfo += "\n		accessRightGroup:" + accessRightGroup.getGroupName();
 
 					if(logger.isInfoEnabled())
 					    logger.info("accessRightGroup:" + accessRightGroup.getGroupName());
@@ -2270,8 +2257,6 @@ public class AccessRightController extends BaseController
 					while(groupsIterator.hasNext())
 					{
 					    InfoGlueGroup group = (InfoGlueGroup)groupsIterator.next();
-						if(enableDebug)
-							debugInfo += "\n		group:" + group.getName();
 
 						if(logger.isInfoEnabled())
 					    	logger.info("" + group.getName() + " = " + accessRightGroup.getGroupName());
@@ -2281,9 +2266,6 @@ public class AccessRightController extends BaseController
 					        if(logger.isInfoEnabled())
 						    	logger.info("Principal " + infoGluePrincipal.getName() + " has group " + accessRightGroup.getGroupName());
 
-							if(enableDebug)
-								debugInfo += "\n		Principal " + infoGluePrincipal.getName() + " has group " + accessRightGroup.getGroupName();
-
 					        principalHasGroup = true;
 					        break outer;
 					    }
@@ -2291,23 +2273,10 @@ public class AccessRightController extends BaseController
 				}
 			}
 			
-			if(enableDebug)
-			{
-				debugInfo += "\n		principalHasRole: " + principalHasRole;
-				debugInfo += "\n		principalHasGroup: " + principalHasGroup;
-				debugInfo += "\n		limitOnGroups: " + limitOnGroups;
-			}
 		}
 		
 		//getCastorCategory().setLevel(Level.WARN);
 		//getCastorJDOCategory().setLevel(Level.WARN);
-
-		if(enableDebug)
-		{
-			debugInfo += "\n		FINAL principalHasRole: " + principalHasRole;
-			debugInfo += "\n		FINAL principalHasGroup: " + principalHasGroup;
-			debugInfo += "\n		FINAL limitOnGroups: " + limitOnGroups;
-		}
 
         if(logger.isInfoEnabled())
         {

@@ -121,9 +121,9 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 		Integer repositoryId = nodeDeliveryController.getSiteNodeVO(getDatabase(), this.getDeliveryContext().getSiteNodeId()).getRepositoryId();
 		String componentXML = getPageComponentsString(getDatabase(), this.getTemplateController(), this.getDeliveryContext().getSiteNodeId(), this.getDeliveryContext().getLanguageId(), this.getDeliveryContext().getContentId());
 		//logger.info("componentXML:" + componentXML);
-		
+
 		componentXML = appendPagePartTemplates(componentXML, this.getDeliveryContext().getSiteNodeId());
-		
+
 		timer.printElapsedTime("After getPageComponentsString");
 		
 		Timer decoratorTimer = new Timer();
@@ -151,7 +151,7 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 		        XmlInfosetBuilder builder = XmlInfosetBuilder.newInstance();
 		        XmlDocument doc = builder.parseReader(new StringReader( componentXML ) );
 				List pageComponents = getPageComponentsWithXPP3(getDatabase(), componentXML, doc.getDocumentElement(), "base", this.getTemplateController(), null, unsortedPageComponents);
-	
+
 				preProcessComponents(nodeDeliveryController, repositoryId, unsortedPageComponents, pageComponents);
 				
 				if(pageComponents.size() > 0)
@@ -182,7 +182,7 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 				//}
 			}
 		}
-		
+
 		timer.printElapsedTime("After main decoration");
 
 		if(this.getDeliveryContext().getEvaluateFullPage() || !CmsPropertyHandler.getDisableDecoratedFinalRendering())
@@ -201,6 +201,7 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 			this.getTemplateController().getDeliveryContext().setUseFullUrl(oldUseFullUrl);
 			StringWriter cacheString = new StringWriter();
 			PrintWriter cachedStream = new PrintWriter(cacheString);
+
 			new VelocityTemplateProcessor().renderTemplate(context, cachedStream, decoratePageTemplate, false, baseComponent);
 			decoratePageTemplate = cacheString.toString();
 		}
@@ -553,7 +554,7 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 		try
 		{
 			String componentString = getComponentString(templateController, component.getContentId(), component); 
-
+			
 			if(component.getParentComponent() == null && templateController.getDeliveryContext().getShowSimple())
 			{
 			    templateController.getDeliveryContext().setContentType("text/html");
@@ -952,8 +953,9 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 	    if(cmsUserName != null && !CmsPropertyHandler.getAnonymousUser().equalsIgnoreCase(cmsUserName))
 		    principal = templateController.getPrincipal(cmsUserName);
 
-		//Locale locale = templateController.getLocale();
-	    Locale locale = templateController.getLocaleAvailableInTool(principal);
+	    Locale locale = templateController.getLocale();
+	    if(principal != null)
+	    	locale = templateController.getLocaleAvailableInTool(principal);
 
 		timer.printElapsedTime("After locale");
 	    

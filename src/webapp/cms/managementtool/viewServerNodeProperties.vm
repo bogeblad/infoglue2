@@ -511,6 +511,7 @@
 			#editPropertyFieldCSS("ServerNode.property.unprotectedProtocolPort" "unprotectedProtocolPort" "$this.getPropertyValue('unprotectedProtocolPort')" "51" "$!serverNodeId")
 			#editPropertyFieldCSS("ServerNode.property.protectedProtocolPort" "protectedProtocolPort" "$this.getPropertyValue('protectedProtocolPort')" "51" "$!serverNodeId")
 			#editPropertyFieldCSS("ServerNode.property.accessBasedProtocolRedirectHTTPCode" "accessBasedProtocolRedirectHTTPCode" "$this.getPropertyValue('accessBasedProtocolRedirectHTTPCode')" "51" "$!serverNodeId")
+			#yesNoDropDownWithInheritCSS("ServerNode.property.useWriteForAccessControlInWorking" "useWriteForAccessControlInWorking" "$this.getPropertyValue('useWriteForAccessControlInWorking')")
 			
 			#set($redirectMethodInclude = ["include", "HTTP INCLUDE (backend fetch)"])
 			#set($redirectMethodRedirect = ["redirect", "Redirect to page"])

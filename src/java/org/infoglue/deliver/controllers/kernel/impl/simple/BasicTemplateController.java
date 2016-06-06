@@ -7979,6 +7979,9 @@ public class BasicTemplateController implements TemplateController
 	
 	public Locale getLocaleAvailableInTool(InfoGluePrincipal principal) throws SystemException
 	{
+		if(principal == null)
+			return getLocale();
+		
 		String cacheKey = "principal_" + principal.getName() + "_locale";
 		
 		Locale locale = (Locale)CacheController.getCachedObject("principalToolPropertiesCache", cacheKey);
