@@ -48,4 +48,10 @@ public interface DataRetriever extends ExternalSearchDelegate
 	 * @return True if the connection was closed, false otherwise.
 	 */
 	boolean closeConnection();
+	/**
+	 * Returns true if the underlying data source has changed since the last time a connection was opened
+	 * by this <em>DataRetriever</em>.
+	 * @return True if the underlying data source has changed, false otherwise.
+	 */
+	boolean hasChanged();
 }
