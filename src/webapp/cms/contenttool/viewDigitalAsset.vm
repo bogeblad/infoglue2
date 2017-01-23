@@ -248,17 +248,17 @@
 		
 		function keyChanged()
 		{
-			var tt = document.getElementById("tt");
+			var tt = document.editForm.tt;
 			var val = tt.value;
-			var userMaxSize = "$formatter.formatFileSize($this.userUploadMaxSize)";
+			var userMaxSize = "$formatter.formatFileSize($this.getMaximumAssetFileSizeForAssetKey(null))";
 			var keySize = "" + assetSizeArray["" + val + ""];
 			//alert("userMaxSize: " + userMaxSize + ":" + keySize);
 			if(keySize != 'undefined')
 				document.getElementById("maxSize").innerHTML = "(Max " + keySize + ")";
 			else
-				document.getElementById("maxSize").innerHTML = "(Max " + userMaxSize + ")";			
+				document.getElementById("maxSize").innerHTML = "(Max " + userMaxSize + ")";
 		}
-		
+
 		function setAssetKey()
 		{
 			var assetKeyElement = document.getElementById("tt");
@@ -278,12 +278,17 @@
 				assetKeyElement.value = assetKey;
 			}
 		}
-		
+
 		var assetSizeArray = new Array();
+		assetSizeArray[""] = "$formatter.formatFileSize($this.getMaximumAssetFileSizeForAssetKey(null))";
 		#foreach($assetKeyDefinition in $definedAssetKeys)
-			assetSizeArray["$assetKeyDefinition.assetKey"] = "$formatter.formatFileSize($assetKeyDefinition.maximumSize)";
+			assetSizeArray["$assetKeyDefinition.assetKey"] = "$formatter.formatFileSize($this.getMaximumAssetFileSize($assetKeyDefinition))";
 		#end
-				
+
+		jQuery(document).ready(function() {
+			keyChanged();
+		});
+
 	-->
 	</script>
 	
@@ -396,7 +401,15 @@
 						$ui.getString("tool.contenttool.fileUpload.fileUploadedSoFarLabel"): $uploadedFilesCounter
 					#end
 					</strong>
-					<span id="maxSize">(Max $formatter.formatFileSize($this.userUploadMaxSize))</span>
+					#set( $maxSize = "$formatter.formatFileSize($this.getMaximumAssetFileSizeForAssetKey(null))" )
+					#if( ! $blankAssetKeyAsDefault )
+						#foreach($assetKeyDefinition in $definedAssetKeys)
+							#if($velocityCount == 1)
+								#set( $maxSize = "$formatter.formatFileSize($this.getMaximumAssetFileSize($assetKeyDefinition))" )
+							#end
+						#end
+					#end
+					<span id="maxSize">(Max $maxSize)</span>
 				</td>
 				<td rowspan="2" width="100" style="border: 1px solid black; background-color: white;" align="center" valign="middle">
 					#if($uploadedFilesCounter != 0)
@@ -417,34 +430,24 @@
 					$ui.getString("tool.contenttool.fileUpload.fileUploadKeyLabel")
 					<br/>
 					<div id="comboBox">
-					  <table border="0" cellspacing="0" id="cboBoxTable">
-					    <tr>
-					      <td width="10" style="border: 1px solid black;">
-					  		<input type="text" name="digitalAssetKey" id="tt" size="20" onfocus="ddHide();" onChange="keyChanged();" style="border: 1px solid #FFFFFF" #if($definedAssetKeys.size() > 0 && !$blankAssetKeyAsDefault)value="$definedAssetKeys.get(0).assetKey" #end></td>
-					      	<td onClick="ddClick();" style="border: 1px solid black;">
-					      	<img border="0" src="images/combodown.gif" width="15" height="20">
-					      </td>
-					    </tr>
-					  </table>
-					  <select size="5" name="dd" id="dd" style="border:0px solid #FFFFFF; width: 163px; height: 100; visibility: hidden; z-index: 100; position: absolute;" onClick="ddListClick();">
+						<table border="0" cellspacing="0" id="cboBoxTable">
+							<tr>
+								<td width="10" style="border: 1px solid black;">
+									<input type="text" name="digitalAssetKey" id="tt" size="20" onfocus="ddHide();" onChange="keyChanged();" style="border: 1px solid #FFFFFF" #if($definedAssetKeys.size() > 0 && !$blankAssetKeyAsDefault)value="$definedAssetKeys.get(0).assetKey" #end>
+								</td>
+								<td onClick="ddClick();" style="border: 1px solid black;">
+									<img border="0" src="images/combodown.gif" width="15" height="20">
+								</td>
+							</tr>
+						</table>
+						<select size="5" name="dd" id="dd" style="border:0px solid #FFFFFF; width: 163px; height: 100; visibility: hidden; z-index: 100; position: absolute;" onClick="ddListClick();">
 						#if( $blankAssetKeyAsDefault )
 							<option value=""></option>
 						#end
 						#foreach($assetKeyDefinition in $definedAssetKeys)
 							<option value="$assetKeyDefinition.assetKey">$assetKeyDefinition.assetKey</option>
 						#end
-					  </select>
-					  <script type="text/javascript">
-					  <!--	
-						var maxSize = "$formatter.formatFileSize($this.userUploadMaxSize)";
-					 	#foreach($assetKeyDefinition in $definedAssetKeys)
-					 		#if($velocityCount == 1)
-						 		maxSize = "$formatter.formatFileSize($assetKeyDefinition.maximumSize)";
-					 		#end
-					  	#end
-						document.getElementById("maxSize").innerHTML = "(Max " + maxSize + ")";
-					  -->
-					  </script>
+						</select>
 					</div>
 				</td>
 			</tr>		
@@ -484,7 +487,7 @@
 				
 			<div id="divFileProgressContainer"></div>
 			<div id="thumbnails" style="border: 1px solid #ccc; height: 100px; background-color: white; overflow: auto; margin-top: 5px;"></div>
-			
+
 			<div style="margin-top: 20px;">
 				<a href="javascript:refreshCaller();"><img border="0" src="$ui.getString("images.contenttool.buttons.close")" width="50" height="25"></a>
 			</div>

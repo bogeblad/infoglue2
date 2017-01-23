@@ -571,13 +571,12 @@ public class ContentTypeDefinitionController extends BaseController
 	/**
 	 * This method fetches any predefined assetKeys from a xml-string representing a contentTypeDefinition.
 	 */
-	public List getDefinedAssetKeys(String contentTypeDefinitionString)
+	public List<AssetKeyDefinition> getDefinedAssetKeys(String contentTypeDefinitionString)
 	{
 		NodeList nodes = getEnumerationNodeList(contentTypeDefinitionString, ASSET_KEYS);
 
 		return getEnumValues(nodes);
 	}
-
 
 	/**
 	 * This method fetches any predefined categoryKeys from a xml-string representing a contentTypeDefinition.
@@ -591,9 +590,9 @@ public class ContentTypeDefinitionController extends BaseController
 	/**
 	 * Returns a List of values fro the "value" atribute of the provided NodeList
 	 */
-	protected List getEnumValues(NodeList nodes)
+	protected List<AssetKeyDefinition> getEnumValues(NodeList nodes)
 	{
-	   List keys = new ArrayList();
+	   List<AssetKeyDefinition> keys = new ArrayList<AssetKeyDefinition>();
 		for(int i = 0; i < nodes.getLength(); i++)
 		{
 		    Node ichild = nodes.item(i);
@@ -643,7 +642,7 @@ public class ContentTypeDefinitionController extends BaseController
 			}
 			catch(Exception e)
 			{
-			    e.printStackTrace();
+				e.printStackTrace();
 			}
 		}
 		

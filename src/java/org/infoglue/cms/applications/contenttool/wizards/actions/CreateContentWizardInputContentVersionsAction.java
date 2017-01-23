@@ -25,19 +25,20 @@ package org.infoglue.cms.applications.contenttool.wizards.actions;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
 
-import org.infoglue.cms.applications.databeans.AssetKeyDefinition;
+import org.apache.log4j.Logger;
+import org.infoglue.cms.applications.common.VisualFormatter;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentTypeDefinitionController;
-import org.infoglue.cms.controllers.kernel.impl.simple.ContentVersionController;
+import org.infoglue.cms.controllers.kernel.impl.simple.ContentVersionControllerProxy;
 import org.infoglue.cms.controllers.kernel.impl.simple.DigitalAssetController;
 import org.infoglue.cms.controllers.kernel.impl.simple.LanguageController;
 import org.infoglue.cms.entities.content.ContentVersionVO;
+import org.infoglue.cms.entities.content.DigitalAssetVO;
 import org.infoglue.cms.entities.management.ContentTypeDefinitionVO;
 import org.infoglue.cms.entities.management.LanguageVO;
+import org.infoglue.cms.exception.ConstraintException;
 import org.infoglue.cms.util.CmsPropertyHandler;
-import org.infoglue.cms.util.ConstraintExceptionBuffer;
 
 /**
  * This action represents the create content versions including assets in the wizards.
@@ -45,30 +46,35 @@ import org.infoglue.cms.util.ConstraintExceptionBuffer;
 
 public class CreateContentWizardInputContentVersionsAction extends CreateContentWizardAbstractAction
 {
-	private ContentTypeDefinitionVO contentTypeDefinitionVO = null;
-	private List contentTypeAttributes						= null;
-	private String returnAddress							= null;
-	private ConstraintExceptionBuffer ceb					= new ConstraintExceptionBuffer();
+	private static final long serialVersionUID = -5460318924326071117L;
+	private static final Logger logger = Logger.getLogger(CreateContentWizardInputContentVersionsAction.class);
 
-	private String versionValue								= null;
+	private ContentTypeDefinitionVO contentTypeDefinitionVO = null;
+	private List<?> contentTypeAttributes					= null;
+
 	private Integer currentEditorId 						= null;
 	private Integer languageId 								= null;
 	private ContentVersionVO contentVersionVO 				= new ContentVersionVO();
-	private Collection digitalAssets						= new ArrayList();
-	
+	private Collection<DigitalAssetVO> digitalAssets		= new ArrayList<DigitalAssetVO>();
+
 	public CreateContentWizardInputContentVersionsAction()
 	{
 	}
-	
 
-	/**
-	 * This method presents the user with the initial input screen for creating a content.
-	 * 
-	 * @return
-	 * @throws Exception
-	 */
-	 
-	public String doInput() throws Exception
+	private String getInputResultView()
+	{
+		String wysiwygEditor = CmsPropertyHandler.getWysiwygEditor();
+		if (wysiwygEditor == null || wysiwygEditor.equalsIgnoreCase("") || wysiwygEditor.equalsIgnoreCase("HTMLArea"))
+		{
+			return "inputContentVersions";
+		}
+		else
+		{
+			return "inputContentVersionsForFCKEditor";
+		}
+	}
+
+	private void setupInputView() throws Exception
 	{
 		CreateContentWizardInfoBean createContentWizardInfoBean = getCreateContentWizardInfoBean();
 		
@@ -76,9 +82,9 @@ public class CreateContentWizardInputContentVersionsAction extends CreateContent
 		this.contentTypeDefinitionVO = ContentTypeDefinitionController.getController().getContentTypeDefinitionVOWithId(contentTypeDefinitionId);
 		
 		this.contentTypeDefinitionVO = ContentTypeDefinitionController.getController().validateAndUpdateContentType(this.contentTypeDefinitionVO);
-		List assetKeys = ContentTypeDefinitionController.getController().getDefinedAssetKeys(this.contentTypeDefinitionVO.getSchemaValue());
+		ContentTypeDefinitionController.getController().getDefinedAssetKeys(this.contentTypeDefinitionVO.getSchemaValue());
 		
-		if(this.languageId == null)
+		if (this.languageId == null)
 		{
 			this.languageId = createContentWizardInfoBean.getLanguageId();
 			if(this.languageId == null)
@@ -89,27 +95,25 @@ public class CreateContentWizardInputContentVersionsAction extends CreateContent
 		}
 		
 		if(this.contentVersionVO != null && this.contentVersionVO.getContentVersionId() != null)
-       		digitalAssets = DigitalAssetController.getDigitalAssetVOList(this.contentVersionVO.getId());
-
-		/*
-		boolean missingAsset = false;
-		Iterator assetKeysIterator = assetKeys.iterator();
-		while(assetKeysIterator.hasNext())
 		{
-			AssetKeyDefinition assetKeyDefinition = (AssetKeyDefinition)assetKeysIterator.next();
-			if(!createContentWizardInfoBean.getDigitalAssets().containsKey(assetKeyDefinition.getAssetKey() + "_" + masterLanguageVO.getId()))
-				return "inputAssets";
+			digitalAssets = DigitalAssetController.getDigitalAssetVOList(this.contentVersionVO.getId());
 		}
-		*/
-		
+
 		this.contentTypeAttributes = ContentTypeDefinitionController.getController().getContentTypeAttributes(this.contentTypeDefinitionVO.getSchemaValue());
-		
-    	String wysiwygEditor = CmsPropertyHandler.getWysiwygEditor();
-    	if(wysiwygEditor == null || wysiwygEditor.equalsIgnoreCase("") || wysiwygEditor.equalsIgnoreCase("HTMLArea"))
-    	    return "inputContentVersions";
-    	else
-    	    return "inputContentVersionsForFCKEditor";
 	}
+
+	/**
+	 * This method presents the user with the initial input screen for creating a content.
+	 *
+	 * @return
+	 * @throws Exception
+	 */
+	public String doInput() throws Exception
+	{
+		setupInputView();
+		return getInputResultView();
+	}
+
 
 	/**
 	 * This method validates the input and handles any deviations.
@@ -120,16 +124,23 @@ public class CreateContentWizardInputContentVersionsAction extends CreateContent
 	 
 	public String doExecute() throws Exception
 	{
-//		CreateContentWizardInfoBean createContentWizardInfoBean = getCreateContentWizardInfoBean();
-		
 		this.contentVersionVO.setVersionModifier(this.getInfoGluePrincipal().getName());
 
-		ContentVersionController.getContentVersionController().update(this.contentVersionVO.getId(), this.contentVersionVO, this.getInfoGluePrincipal());
+		try
+		{
+			ContentVersionControllerProxy.getController().acUpdate(this.getInfoGluePrincipal(), this.getContentId(), this.languageId, this.contentVersionVO);
+		}
+		catch (ConstraintException cex)
+		{
+			logger.info("Constraint exception when saving content verison. Message: " + cex.getMessage());
+			setupInputView();
+			return getInputResultView();
+		}
 
 		return "success";
 	}
 
-	public List getContentTypeAttributes()
+	public List<?> getContentTypeAttributes()
 	{
 		return this.contentTypeAttributes;
 	}
@@ -180,11 +191,41 @@ public class CreateContentWizardInputContentVersionsAction extends CreateContent
 		return this.contentVersionVO.getContentVersionId();
 	}
 
-
-	public Collection getDigitalAssets()
+	public Collection<DigitalAssetVO> getDigitalAssets()
 	{
 		return digitalAssets;
 	}
 
+	public String getAttributeValue(String key)
+	{
+		String value = "";
 
+		if(this.contentVersionVO != null)
+		{
+			try
+			{
+				logger.info("key:" + key);
+				logger.info("VersionValue:" + this.contentVersionVO.getVersionValue());
+
+				String xml = this.contentVersionVO.getVersionValue();
+
+				int startTagIndex = xml.indexOf("<" + key + ">");
+				int endTagIndex   = xml.indexOf("]]></" + key + ">");
+
+				if(startTagIndex > 0 && startTagIndex < xml.length() && endTagIndex > startTagIndex && endTagIndex <  xml.length())
+				{
+					value = xml.substring(startTagIndex + key.length() + 11, endTagIndex);
+					value = new VisualFormatter().escapeHTML(value);
+				}
+			}
+			catch(Exception e)
+			{
+				e.printStackTrace();
+			}
+		}
+
+		logger.info("value:" + value);
+
+		return value;
+	}
 }

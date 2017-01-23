@@ -145,7 +145,7 @@
 		{
 			var tt = document.getElementById("tt");
 			var val = tt.value;
-			var userMaxSize = "$formatter.formatFileSize($this.userUploadMaxSize)";
+			var userMaxSize = "$formatter.formatFileSize($this.getMaximumAssetFileSize())";
 			var keySize = "" + assetSizeArray["" + val + ""];
 			//alert("userMaxSize: " + userMaxSize + ":" + keySize);
 			if(keySize != 'undefined')
@@ -155,8 +155,9 @@
 		}
 		
 		var assetSizeArray = new Array();
+		assetSizeArray[""] = "$formatter.formatFileSize($this.getMaximumAssetFileSize())";
 		#foreach($assetKeyDefinition in $definedAssetKeys)
-			assetSizeArray["$assetKeyDefinition.assetKey"] = "$formatter.formatFileSize($assetKeyDefinition.maximumSize)";
+			assetSizeArray["$assetKeyDefinition.assetKey"] = "$formatter.formatFileSize($this.getMaximumAssetFileSize($assetKeyDefinition))";
 		#end
 		-->
 	</script>
@@ -191,7 +192,15 @@
 			#else
 				$ui.getString("tool.contenttool.fileUpload.fileUploadedSoFarLabel"): $uploadedFilesCounter
 			#end
-			<span id="maxSize">(Max $formatter.formatFileSize($this.userUploadMaxSize))</span>
+			#set( $maxSize = "$formatter.formatFileSize($this.getMaximumAssetFileSizeForAssetKey($currentDigitalAssetKey))" )
+			#if( ! $blankAssetKeyAsDefault )
+				#foreach($assetKeyDefinition in $definedAssetKeys)
+					#if($velocityCount == 1)
+						#set( $maxSize = "$formatter.formatFileSize($this.getMaximumAssetFileSize($assetKeyDefinition))" )
+					#end
+				#end
+			#end
+			<span id="maxSize">(Max $maxSize)</span>
 		</td>
 	</tr>		
 	#if($inputMoreAssets == "true")
@@ -206,50 +215,34 @@
 			<br/>
 			<div id="comboBox">
 				<table border="0" cellspacing="0" style="border-collapse: collapse;" bordercolor="#808080" id="cboBoxTable">
-			    <tr>
-			      <td width="10" style="border: solid 1px #000000;">
-			  		<input type="text" name="digitalAssetKey" id="tt" asize="20" onfocus="ddHide();" onChange="keyChanged();" style="width: 200px; border: 1px solid #FFFFFF;"></td>
-			      	<td onClick="ddClick();" style="border: solid 1px #000000;">
-			      	<img border="0" src="images/combodown.gif" width="15" height="20"></td>
-			    </tr>
-			  	</table>
-			  	<select size="5" name="dd" id="dd" style="border:0px solid #FFFFFF; width: 222px; height: 80px; visibility: hidden; z-index: 100; position: absolute;" onClick="ddListClick();">
+					<tr>
+						<td width="10" style="border: solid 1px #000000;">
+						<input type="text" name="digitalAssetKey" id="tt" asize="20" onfocus="ddHide();" onChange="keyChanged();" style="width: 200px; border: 1px solid #FFFFFF;" value="$!currentDigitalAssetKey">
+						</td>
+						<td onClick="ddClick();" style="border: solid 1px #000000;">
+							<img border="0" src="images/combodown.gif" width="15" height="20">
+						</td>
+					</tr>
+				</table>
+				<select size="5" name="dd" id="dd" style="border:0px solid #FFFFFF; width: 222px; height: 80px; visibility: hidden; z-index: 100; position: absolute;" onClick="ddListClick();">
+					#if( $blankAssetKeyAsDefault )
+						<option value=""></option>
+					#end
 					#foreach($assetKeyDefinition in $definedAssetKeys)
 						<option style="width: 200px;" value="$assetKeyDefinition.assetKey">$assetKeyDefinition.assetKey</option>
 					#end
-			  	</select>  
-			  	<script type="text/javascript">
-			  	<!--	
-					var maxSize = "$formatter.formatFileSize($this.userUploadMaxSize)";
-			 		#foreach($assetKeyDefinition in $definedAssetKeys)
-			 			#if($velocityCount == 1)
-				 			maxSize = "$formatter.formatFileSize($assetKeyDefinition.maximumSize)";
-			 			#end
-			  		#end
-					document.getElementById("maxSize").innerHTML = "(Max " + maxSize + ")";
-			 	-->
-			  	</script>
-			  </div>
+				</select>
+			</div>
 		</td>
 	</tr>
 	#else
 	<tr>
-		<td class="smalllabel">									   
+		<td class="smalllabel">
 			The current information type requires an asset called "$mandatoryAssetKey". Please upload it now.
 			<input type="hidden" name="digitalAssetKey" id="tt" value="$mandatoryAssetKey"></td>
-			<script type="text/javascript">
-		  	<!--	
-				var maxSize = "$formatter.formatFileSize($this.userUploadMaxSize)";
-				var mandatoryAssetMaximumSize = "$!formatter.formatFileSize($!mandatoryAssetMaximumSize)";
-				if(mandatoryAssetMaximumSize == "")
-					document.getElementById("maxSize").innerHTML = "(Max " + maxSize + ")";
-				else
-					document.getElementById("maxSize").innerHTML = "(Max " + mandatoryAssetMaximumSize + ")";
-		 	-->
-		  	</script>
 		</td>
 	</tr>
-	#end		
+	#end
 	<tr>
 		<td>
 			$ui.getString("tool.contenttool.fileUpload.fileUploadFileLabel")<br/>
@@ -258,6 +251,9 @@
 	</tr>		
 	<tr>
 		<td>
+			#if( "$!reasonKey" != "" )
+				<div class="wizard-error-message">$ui.getString("$reasonKey")</div>
+			#end
 			#if(!$mandatoryAssetKey || "$mandatoryAssetKey" == "")
 			<a href="javascript:submitForm();"><img src="$ui.getString("images.contenttool.buttons.save")" width="50" height="25" border="0"></a>
 			#end

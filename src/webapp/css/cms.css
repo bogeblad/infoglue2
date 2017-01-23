@@ -743,3 +743,9 @@ li.normalitem {
 .nokstatus {
 	background:url(../images/v3/cross.png) no-repeat left center; background-position: 4px 2px;
 }
+
+.wizard-error-message {
+	color: #cc0000;
+	display: block;
+	margin: 5px 0 15px;
+}
