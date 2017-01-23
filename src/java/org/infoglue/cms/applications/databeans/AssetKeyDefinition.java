@@ -111,4 +111,8 @@ public class AssetKeyDefinition
 		this.assetUploadTransformationsSettings = assetUploadTransformationsSettings;
 	}
 
+	@Override
+	public String toString() {
+		return "AssetKeyDefinition [assetKey=" + assetKey + "]";
+	}
 }

@@ -335,15 +335,41 @@
 		</tr>
 		<tr>
 			<td colspan="3">
-			
-				#if($attribute.inputType == "textfield")
+				#set($value = "$!this.getAttributeValue($attribute.name)")
+				#if("$!contentVersionId" == "" && "$value" == "")
+					#set($value = $attributeInitialData)
+				#end
+
+				#if($attribute.inputType == "hidden")
+					<input type="hidden" id="$attribute.name" name="$attribute.name" value="$value"/>
+				#elseif($attribute.inputType == "datefield")
+					$attributeTitle ("$attribute.name") $attributeDescription
+					#printError("ContentVersion.$attribute.name")
+					<input $readonly type="text" length="20" class="date" maxlength="20" id="$attribute.name" name="$attribute.name" value="$value"/>&nbsp;<a name="calendar_$attribute.name" id="calendar_$attribute.name"><img src="images/calendar.gif" border="0"/></a>
+					<script type="text/javascript">
+						Calendar.setup({
+						        inputField     :    "$attribute.name",     		// id of the input field
+						        ifFormat       :    "%Y-%m-%d %H:%M",      	// format of the input field
+						        button         :    "calendar_$attribute.name",  // trigger for the calendar (button ID)
+						        align          :    "BR",           		// alignment (defaults to "Bl")
+						        singleClick    :    true,
+						        firstDay  	   : 	1,
+						        showsTime	   :    true,
+						        timeFormat     :    "24"
+						});
+					</script>
+				#elseif($attribute.inputType == "textfield")
 					$attributeTitle ("$attribute.name") $attributeDescription<br/>
-					<input $readonly type="text" length="50" class="$class" maxlength="" id="$attribute.name" name="$attribute.name" value=""/>
+					#printError("ContentVersion.$attribute.name")
+					<input $readonly type="text" length="50" class="$class" maxlength="" id="$attribute.name" name="$attribute.name" value="$value"/>
 				#elseif($attribute.inputType == "textarea")
 					
 					<table cellpadding="0" cellspacing="0" border="0" width="100%">
-					    <tr>
-					    	<td align="left">$attributeTitle ("$attribute.name") $attributeDescription </td>
+						<tr>
+							<td align="left">
+								$attributeTitle ("$attribute.name") $attributeDescription
+								#printError("ContentVersion.$attribute.name")
+							</td>
 					    	<td align="right">
 					    		#if($enableFormEditor == "false" && $enableContentRelationEditor == "false"  && $enableStructureRelationEditor == "false")
 					    			<a href="javascript:changeEditor(0, '${attribute.name}');">$ui.getString("tool.contenttool.editorPlainLabel")</a> 
@@ -375,7 +401,7 @@
 						#set($wysiwygHeight = $height - 20)
 					#end
 			
-					<textarea $readonly rows="$rows" cols="$cols" style="visibility: visible; width:${width}px; height:${height}px; border: 1px solid #C2D0E2;font-family:verdana,arial,sans-serif;font-size:8pt;" id="$attribute.name" name="$attribute.name" $readonly></textarea> 
+					<textarea $readonly rows="$rows" cols="$cols" style="visibility: visible; width:${width}px; height:${height}px; border: 1px solid #C2D0E2;font-family:verdana,arial,sans-serif;font-size:8pt;" id="$attribute.name" name="$attribute.name" $readonly>$value</textarea> 
 					
 					#if($enableWYSIWYG == "true")
 						<!-- Here comes the WYSIWYG-editor layer -->

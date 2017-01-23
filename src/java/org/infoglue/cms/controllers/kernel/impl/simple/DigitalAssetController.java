@@ -24,6 +24,7 @@
 package org.infoglue.cms.controllers.kernel.impl.simple;
 
 import java.awt.Color;
+import java.awt.Image;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayInputStream;
@@ -39,9 +40,11 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipOutputStream;
@@ -51,6 +54,7 @@ import org.exolab.castor.jdo.Database;
 import org.exolab.castor.jdo.OQLQuery;
 import org.exolab.castor.jdo.QueryResults;
 import org.infoglue.cms.applications.common.VisualFormatter;
+import org.infoglue.cms.applications.databeans.AssetKeyDefinition;
 import org.infoglue.cms.entities.content.Content;
 import org.infoglue.cms.entities.content.ContentVO;
 import org.infoglue.cms.entities.content.ContentVersion;
@@ -65,6 +69,7 @@ import org.infoglue.cms.entities.content.impl.simple.SmallContentVersionImpl;
 import org.infoglue.cms.entities.content.impl.simple.SmallDigitalAssetImpl;
 import org.infoglue.cms.entities.content.impl.simple.SmallestContentVersionImpl;
 import org.infoglue.cms.entities.kernel.BaseEntityVO;
+import org.infoglue.cms.entities.management.ContentTypeDefinitionVO;
 import org.infoglue.cms.entities.management.GeneralOQLResult;
 import org.infoglue.cms.entities.management.GroupProperties;
 import org.infoglue.cms.entities.management.LanguageVO;
@@ -82,6 +87,8 @@ import org.infoglue.deliver.controllers.kernel.impl.simple.LanguageDeliveryContr
 import org.infoglue.deliver.util.CacheController;
 import org.infoglue.deliver.util.HttpHelper;
 import org.infoglue.deliver.util.Timer;
+
+import webwork.config.Configuration;
 
 /**
  * @author Mattias Bogeblad
@@ -822,41 +829,41 @@ public class DigitalAssetController extends BaseController
 	/**
 	 * This method should return a list of those digital assets the contentVersion has.
 	 */
-	   	
-	public static List getDigitalAssetVOList(Integer contentVersionId) throws SystemException, Bug
-    {
-    	Database db = CastorDatabaseService.getDatabase();
+	public static List<DigitalAssetVO> getDigitalAssetVOList(Integer contentVersionId) throws SystemException, Bug
+	{
+		Database db = CastorDatabaseService.getDatabase();
 
-    	List digitalAssetVOList = new ArrayList();
+		List<DigitalAssetVO> digitalAssetVOList = new ArrayList<DigitalAssetVO>();
 
-        beginTransaction(db);
+		beginTransaction(db);
 
-        try
-        {
-        	digitalAssetVOList = getDigitalAssetVOList(contentVersionId, db);
+		try
+		{
+			digitalAssetVOList = getDigitalAssetVOList(contentVersionId, db);
 			
-            commitTransaction(db);
-        }
-        catch(Exception e)
-        {
-            logger.info("An error occurred when we tried to fetch the list of digitalAssets belonging to this contentVersion:" + e);
-            e.printStackTrace();
-            rollbackTransaction(db);
-            throw new SystemException(e.getMessage());
-        }
-    	
+			commitTransaction(db);
+		}
+		catch(Exception ex)
+		{
+			logger.info("An error occurred when we tried to fetch the list of digitalAssets belonging to this contentVersion. Message: " + ex.getMessage());
+			logger.info("An error occurred when we tried to fetch the list of digitalAssets belonging to this contentVersion.", ex);
+			rollbackTransaction(db);
+			throw new SystemException(ex.getMessage());
+		}
+
 		return digitalAssetVOList;
-    }
+	}
 
 	/**
 	 * This method should return a list of those digital assets the contentVersion has.
 	 */
 	   	
-	public static List getDigitalAssetVOList(Integer contentVersionId, Database db) throws Exception
+	public static List<DigitalAssetVO> getDigitalAssetVOList(Integer contentVersionId, Database db) throws Exception
     {
 		String key = "all_" + contentVersionId;
 		String cacheName = "digitalAssetCache";
-		List digitalAssetVOList = (List)CacheController.getCachedObject(cacheName, key);
+		@SuppressWarnings("unchecked")
+		List<DigitalAssetVO> digitalAssetVOList = (List<DigitalAssetVO>)CacheController.getCachedObject(cacheName, key);
 		if(digitalAssetVOList != null)
 		{
 			if(logger.isInfoEnabled())
@@ -865,7 +872,7 @@ public class DigitalAssetController extends BaseController
 			return digitalAssetVOList;
 		}
 
-		digitalAssetVOList = new ArrayList();
+		digitalAssetVOList = new ArrayList<DigitalAssetVO>();
     	
 		if(logger.isInfoEnabled())
 			logger.info("Making a sql call for assets on " + contentVersionId);
@@ -2582,24 +2589,194 @@ public class DigitalAssetController extends BaseController
 	    zipFile.close();
 	}
 	
-
 	/**
 	 * Just copies the files...
 	 */
-	
 	protected void copyInputStream(InputStream in, OutputStream out) throws IOException
 	{
-	    byte[] buffer = new byte[1024];
-    	int len;
+		byte[] buffer = new byte[1024];
+		int len;
 
-    	while((len = in.read(buffer)) >= 0)
-      		out.write(buffer, 0, len);
+		while((len = in.read(buffer)) >= 0)
+			out.write(buffer, 0, len);
 
-    	in.close();
-    	out.close();    	
-  	}
+		in.close();
+		out.close();
+	}
 
+	/**
+	 * Finds the limiting (i.e. smallest) allowed file size for the given asset. The allowed size is checked against
+	 * the principal's upload setting, the asset key's setting, and the system wide setting.
+	 *
+	 * All parameters may be null. If they are the related file size limit will not be checked.
+	 *
+	 * @param principal
+	 * @param contentTypeDefinitionVO
+	 * @param digitalAssetKey
+	 * @return An integer representing the allowed asset upload size. If no value is configured it returns the max integer value.
+	 * @throws Exception
+	 */
+	public int getAssetMaxFileSize(InfoGluePrincipal principal, ContentTypeDefinitionVO contentTypeDefinitionVO, String digitalAssetKey)
+	{
+		int maxSize = Integer.MAX_VALUE;
 
+		// Check if the user's upload size is the limiting factor
+		try
+		{
+			LanguageVO languageVO = (LanguageVO)LanguageController.getController().getLanguageVOList().get(0);
+			String fileUploadMaximumSize = InfoGluePrincipalControllerProxy.getController().getPrincipalPropertyValue(principal, "fileUploadMaximumSize", languageVO.getId(), null, true, false, true);
+			logger.info("Principal max fileUploadMaximumSize: " + fileUploadMaximumSize);
+			if (fileUploadMaximumSize != null && !fileUploadMaximumSize.trim().equals(""))
+			{
+				try
+				{
+					int userMaxSize = Integer.parseInt(fileUploadMaximumSize);
+					if (userMaxSize < maxSize)
+					{
+						maxSize = userMaxSize;
+					}
+				}
+				catch (NumberFormatException nfex)
+				{
+					logger.info("Bad integer format in principal max size. Message: " + nfex.getMessage() + ", Principal: " + principal.getName());
+				}
+			}
+		}
+		catch (Exception ex)
+		{
+			logger.error("Exception when fetching principal property for file max size. Message: " + ex.getMessage());
+			logger.warn("Exception when fetching principal property for file max size.", ex);
+		}
+
+		// Check if the asset key's upload size is the limiting factor
+		if (logger.isInfoEnabled())
+		{
+			logger.info("Digital asset key in file size limit: " + digitalAssetKey + ". ContentTypeDefinitionVO: " + contentTypeDefinitionVO);
+		}
+		if (digitalAssetKey != null && contentTypeDefinitionVO != null)
+		{
+			AssetKeyDefinition assetKeyDefinition = ContentTypeDefinitionController.getController().getDefinedAssetKey(contentTypeDefinitionVO.getSchemaValue(), digitalAssetKey);
+			logger.info("Digital asset key definition in file size limit: " + assetKeyDefinition);
+			if (assetKeyDefinition != null)
+			{
+				logger.info("AssetKey max file upload size: " + assetKeyDefinition.getMaximumSize());
+				int assetKeyMaxSize = assetKeyDefinition.getMaximumSize();
+				if (assetKeyMaxSize < maxSize)
+				{
+					maxSize = assetKeyMaxSize;
+				}
+			}
+		}
+
+		// Check if the system's upload size is the limiting factor
+		String maxSizeStr = Configuration.getString("webwork.multipart.maxSize");
+		logger.info("System wide file upload size: " + maxSizeStr);
+		if (maxSizeStr != null)
+		{
+			try
+			{
+				int systemMaxSize = Integer.parseInt(maxSizeStr);
+				if (systemMaxSize < maxSize)
+				{
+					maxSize = systemMaxSize;
+				}
+			}
+			catch (NumberFormatException nfex)
+			{
+				logger.info("Bad integer format in system max size. Message: " + nfex.getMessage() + ", Value: " + maxSizeStr);
+			}
+		}
+
+		logger.info("Computed max upload size: " + maxSize);
+		return maxSize;
+	}
+
+	public List<String> validateUploadeFile(File file, String contentType, Integer contentVersionId, Integer contentTypeDefinitionId, String digitalAssetKey, InfoGluePrincipal principal) throws Exception
+	{
+		List<String> validationErrors = new ArrayList<String>();
+
+		List<DigitalAssetVO> existingAssetVOList = DigitalAssetController.getDigitalAssetVOList(contentVersionId);
+		Iterator<DigitalAssetVO> existingAssetVOListIterator = existingAssetVOList.iterator();
+		while (existingAssetVOListIterator.hasNext())
+		{
+			DigitalAssetVO existingDigitalAssetVO = existingAssetVOListIterator.next();
+			if (existingDigitalAssetVO.getAssetKey().equalsIgnoreCase(digitalAssetKey))
+			{
+				validationErrors.add("tool.contenttool.fileUpload.fileUploadFailedOnAssetKeyExistingText");
+			}
+		}
+
+		ContentTypeDefinitionVO contentTypeDefinitionVO = null;
+		if (contentTypeDefinitionId != null)
+		{
+			contentTypeDefinitionVO = ContentTypeDefinitionController.getController().getContentTypeDefinitionVOWithId(contentTypeDefinitionId);
+		}
+
+		int maxAllowedSize = getAssetMaxFileSize(principal, contentTypeDefinitionVO, digitalAssetKey);
+		if (logger.isDebugEnabled())
+		{
+			logger.debug("Checking asset file size. Allowed max: " + maxAllowedSize + ". File size: " + new Long(file.length()).intValue());
+		}
+		if (maxAllowedSize < new Long(file.length()).intValue())
+		{
+			validationErrors.add("tool.contenttool.fileUpload.fileUploadFailedOnSizeText");
+		}
+
+		AssetKeyDefinition assetKeyDefinition = ContentTypeDefinitionController.getController().getDefinedAssetKey(contentTypeDefinitionVO.getSchemaValue(), digitalAssetKey);
+		if (assetKeyDefinition != null)
+		{
+			if (assetKeyDefinition.getAllowedContentTypes().startsWith("image"))
+			{
+				if (!contentType.startsWith("image"))
+				{
+					validationErrors.add("tool.contenttool.fileUpload.fileUploadFailedOnTypeNotImageText");
+				}
+
+				Image image = javax.imageio.ImageIO.read(file);
+				int width = image.getWidth(null);
+				int height = image.getHeight(null);
+
+				String allowedWidth = assetKeyDefinition.getImageWidth();
+				String allowedHeight = assetKeyDefinition.getImageHeight();
+
+				if (!allowedWidth.equals("*"))
+				{
+					Integer allowedWidthNumber = new Integer(allowedWidth.substring(1));
+					if (allowedWidth.startsWith("<") && width >= allowedWidthNumber.intValue())
+					{
+						validationErrors.add("tool.contenttool.fileUpload.fileUploadFailedOnImageToWideText");
+					}
+					if (allowedWidth.startsWith(">") && width <= allowedWidthNumber.intValue())
+					{
+						validationErrors.add("tool.contenttool.fileUpload.fileUploadFailedOnImageNotWideEnoughText");
+					}
+					if (!allowedWidth.startsWith(">") && !allowedWidth.startsWith("<") && width != new Integer(allowedWidth).intValue())
+					{
+						validationErrors.add("tool.contenttool.fileUpload.fileUploadFailedOnImageWrongWidthText");
+					}
+				}
+
+				if (!allowedHeight.equals("*"))
+				{
+					Integer allowedHeightNumber = new Integer(allowedHeight.substring(1));
+					if (allowedHeight.startsWith("<") && height >= allowedHeightNumber.intValue())
+					{
+						validationErrors.add("tool.contenttool.fileUpload.fileUploadFailedOnImageToHighText");
+					}
+					if (allowedHeight.startsWith(">") && height <= allowedHeightNumber.intValue())
+					{
+						validationErrors.add("tool.contenttool.fileUpload.fileUploadFailedOnImageNotHighEnoughText");
+					}
+					if (!allowedHeight.startsWith(">") && !allowedHeight.startsWith("<") && height != new Integer(allowedHeight).intValue())
+					{
+						validationErrors.add("tool.contenttool.fileUpload.fileUploadFailedOnImageWrongHeightText");
+					}
+				}
+			}
+		}
+
+		return validationErrors;
+	}
 }
 
 class FilenameFilterImpl implements FilenameFilter 

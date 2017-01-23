@@ -86,9 +86,9 @@ public class CmsSessionContextListener implements HttpSessionListener
 		return activeSessions;
 	}
 
-	static public List getSessionInfoBeanList() throws Exception
+	static public List<SessionInfoBean> getSessionInfoBeanList() throws Exception
 	{
-		List stiList = new ArrayList();
+		List<SessionInfoBean> stiList = new ArrayList<SessionInfoBean>();
 
 		//A little strange solution to solve the fact that we get a lot of ConcurrentModificationExceptions - possible due to many session death.
 		int numberOfIterations = 0;

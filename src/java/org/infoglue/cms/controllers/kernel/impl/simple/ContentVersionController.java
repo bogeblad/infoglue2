@@ -1658,13 +1658,15 @@ public class ContentVersionController extends BaseController
         beginTransaction(db);
         
         try
-        {     
+        {
         	ContentVO contentVO = ContentController.getContentController().getContentVOWithId(contentId, db);
         	ContentTypeDefinitionVO contentTypeDefinitionVO = ContentTypeDefinitionController.getController().getContentTypeDefinitionVOWithId(contentVO.getContentTypeDefinitionId(), db);
         	ConstraintExceptionBuffer ceb = contentVersionVO.validateAdvanced(contentTypeDefinitionVO);
             logger.info("Skipping validate:" + skipValidate);
-        	if(!skipValidate)
-            ceb.throwIfNotEmpty();
+			if (!skipValidate)
+			{
+				ceb.throwIfNotEmpty();
+			}
             
         	MediumContentVersionImpl contentVersion = null;
             Integer contentVersionIdToUpdate = contentVersionVO.getId();

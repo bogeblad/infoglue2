@@ -32,7 +32,6 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.infoglue.cms.applications.common.VisualFormatter;
-import org.infoglue.cms.applications.contenttool.actions.ViewMultiSelectContentTreeForServiceBindingAction;
 import org.infoglue.cms.applications.databeans.AssetKeyDefinition;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentTypeDefinitionController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentVersionController;
@@ -51,188 +50,242 @@ import webwork.multipart.MultiPartRequestWrapper;
 
 public class CreateContentWizardInputAssetsAction extends CreateContentWizardAbstractAction
 {
-    private final static Logger logger = Logger.getLogger(CreateContentWizardInputAssetsAction.class.getName());
+	private static final long serialVersionUID = -2738690853533045311L;
+
+	private final static Logger logger = Logger.getLogger(CreateContentWizardInputAssetsAction.class.getName());
 
 	private String mandatoryAssetKey						= null;
 	private String mandatoryAssetMaximumSize				= null;
-	private String digitalAssetKey   						= "";
+	private String digitalAssetKey							= "";
+	private String currentDigitalAssetKey					= null;
 	private Integer uploadedFilesCounter 					= new Integer(0);
 	private ContentTypeDefinitionVO contentTypeDefinitionVO	= null;
 	private Integer languageId 								= null;
 	private Integer contentVersionId 						= null;
 	private String inputMoreAssets							= null;
-	
+	private String reasonKey								= null;
+
 	private VisualFormatter formatter = new VisualFormatter();
 
-    public CreateContentWizardInputAssetsAction()
-    {
-    }
-        	
-    public String doInput() throws Exception
-    {
-    	try
-    	{
-			CreateContentWizardInfoBean createContentWizardInfoBean = this.getCreateContentWizardInfoBean();
-	        this.contentTypeDefinitionVO = ContentTypeDefinitionController.getController().getContentTypeDefinitionVOWithId(createContentWizardInfoBean.getContentTypeDefinitionId());
-			    
-			List assetKeys = ContentTypeDefinitionController.getController().getDefinedAssetKeys(this.contentTypeDefinitionVO.getSchemaValue());
-			
+	public CreateContentWizardInputAssetsAction()
+	{
+	}
+
+	private void setupCurrentDigitalAsset()
+	{
+		if (mandatoryAssetKey != null)
+		{
+			this.currentDigitalAssetKey = mandatoryAssetKey;
+		}
+		else if (digitalAssetKey == null)
+		{
+			if (getDefinedAssetKeys().size() > 0 && !getBlankAssetKeyAsDefault())
+			{
+				this.currentDigitalAssetKey = getDefinedAssetKeys().get(0).getAssetKey();
+			}
+		}
+		else
+		{
+			this.currentDigitalAssetKey = digitalAssetKey;
+		}
+	}
+
+	private String setupView() throws Exception
+	{
+		CreateContentWizardInfoBean createContentWizardInfoBean = this.getCreateContentWizardInfoBean();
+		this.contentTypeDefinitionVO = ContentTypeDefinitionController.getController().getContentTypeDefinitionVOWithId(createContentWizardInfoBean.getContentTypeDefinitionId());
+
+		List<AssetKeyDefinition> assetKeys = ContentTypeDefinitionController.getController().getDefinedAssetKeys(this.contentTypeDefinitionVO.getSchemaValue());
+
+		if(this.languageId == null)
+		{
+			this.languageId = createContentWizardInfoBean.getLanguageId();
 			if(this.languageId == null)
 			{
-				this.languageId = createContentWizardInfoBean.getLanguageId();
-				if(this.languageId == null)
+				LanguageVO masterLanguageVO = LanguageController.getController().getMasterLanguage(createContentWizardInfoBean.getRepositoryId());
+				this.languageId = masterLanguageVO.getLanguageId();
+			}
+		}
+
+		if (this.contentVersionId == null)
+		{
+			ContentVersionVO newContentVersion = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(createContentWizardInfoBean.getContentVO().getId(), languageId);
+			this.contentVersionId = newContentVersion.getId();
+		}
+
+		boolean hasMandatoryAssets = false;
+		boolean missingAsset = false;
+		Iterator<AssetKeyDefinition> assetKeysIterator = assetKeys.iterator();
+		while (assetKeysIterator.hasNext())
+		{
+			AssetKeyDefinition assetKeyDefinition = assetKeysIterator.next();
+			if (assetKeyDefinition.getIsMandatory().booleanValue())
+			{
+				hasMandatoryAssets = true;
+				DigitalAssetVO asset = DigitalAssetController.getDigitalAssetVO(createContentWizardInfoBean.getContentVO().getId(), languageId, assetKeyDefinition.getAssetKey(), false);
+				if(asset == null)
 				{
-					LanguageVO masterLanguageVO = LanguageController.getController().getMasterLanguage(createContentWizardInfoBean.getRepositoryId());
-					this.languageId = masterLanguageVO.getLanguageId();
+					mandatoryAssetKey = assetKeyDefinition.getAssetKey();
+					mandatoryAssetMaximumSize = "" + assetKeyDefinition.getMaximumSize();
+					missingAsset = true;
+					break;
 				}
 			}
-	
-			if(this.contentVersionId == null)
+		}
+
+		if (!hasMandatoryAssets && !inputMoreAssets.equalsIgnoreCase("false"))
+		{
+			inputMoreAssets = "true";
+		}
+
+		setupCurrentDigitalAsset();
+
+		if(missingAsset)
+		{
+			inputMoreAssets = "false";
+			return "input";
+		}
+		else
+		{
+			if(inputMoreAssets != null && inputMoreAssets.equalsIgnoreCase("true"))
 			{
-				ContentVersionVO newContentVersion = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(createContentWizardInfoBean.getContentVO().getId(), languageId);
-				this.contentVersionId = newContentVersion.getId();
-			}
-	
-			boolean hasMandatoryAssets = false;
-			boolean missingAsset = false;
-			Iterator assetKeysIterator = assetKeys.iterator();
-			while(assetKeysIterator.hasNext())
-			{
-				AssetKeyDefinition assetKeyDefinition = (AssetKeyDefinition)assetKeysIterator.next();
-				if(assetKeyDefinition.getIsMandatory().booleanValue())
-				{
-					hasMandatoryAssets = true;
-					DigitalAssetVO asset = DigitalAssetController.getController().getDigitalAssetVO(createContentWizardInfoBean.getContentVO().getId(), languageId, assetKeyDefinition.getAssetKey(), false);
-					if(asset == null)
-					{
-						mandatoryAssetKey = assetKeyDefinition.getAssetKey();
-						mandatoryAssetMaximumSize = "" + assetKeyDefinition.getMaximumSize();
-						missingAsset = true;
-						break;
-					}
-				}
-			}
-	
-			if(!hasMandatoryAssets && !inputMoreAssets.equalsIgnoreCase("false"))
-				inputMoreAssets = "true";
-	
-			if(missingAsset)
-			{
-				inputMoreAssets = "false";
 				return "input";
 			}
 			else
 			{
-				if(inputMoreAssets != null && inputMoreAssets.equalsIgnoreCase("true"))
-				{
-					return "input";
-				}
-				else
-				{
-		    		return "success";
-				}
+				return "success";
 			}
-    	}
-    	catch (Throwable ex)
-    	{
-    		logger.warn("An error occured with content wizard bean. The bean will be discarded. Error type " + ex.getClass() + ". Message: " + ex.getMessage());
-    		invalidateCreateContentWizardInfoBean();
-    		throw new SystemException(ex);
-    	}
+		}
+	}
 
-    }
+	public String doInput() throws Exception
+	{
+		try
+		{
+			final String result = setupView();
+			return result;
+		}
+		catch (Throwable ex)
+		{
+			logger.warn("An error occured with content wizard bean. The bean will be discarded. Error type " + ex.getClass() + ". Message: " + ex.getMessage());
+			invalidateCreateContentWizardInfoBean();
+			throw new SystemException(ex);
+		}
+	}
 
 	public String doExecute() throws Exception
 	{
 		InputStream is = null;
-		File renamedFile = null;
+		File file = null;
 		DigitalAssetVO digitalAssetVO = null;
 		
 		try 
 		{
-			MultiPartRequestWrapper mpr = ActionContext.getContext().getMultiPartRequest();
-			if(mpr != null)
-			{ 
-				String fromEncoding = CmsPropertyHandler.getUploadFromEncoding();
-				if(fromEncoding == null)
-					fromEncoding = "iso-8859-1";
-				
-				String toEncoding = CmsPropertyHandler.getUploadToEncoding();
-				if(toEncoding == null)
-					toEncoding = "utf-8";
-				
-				this.digitalAssetKey = new String(this.digitalAssetKey.getBytes(fromEncoding), toEncoding);
+			MultiPartRequestWrapper mpr = ActionContext.getMultiPartRequest();
+			if(mpr == null)
+			{
+				this.reasonKey = "tool.contenttool.fileUpload.fileUploadFailedOnSizeText";
+				logger.info("File upload failed. Reason: " + reasonKey);
+				setupView();
+				return "input";
+			}
 
-				Enumeration names = mpr.getFileNames();
-				while (names.hasMoreElements()) 
+			String fromEncoding = CmsPropertyHandler.getUploadFromEncoding();
+			if(fromEncoding == null)
+				fromEncoding = "iso-8859-1";
+
+			String toEncoding = CmsPropertyHandler.getUploadToEncoding();
+			if(toEncoding == null)
+				toEncoding = "utf-8";
+
+			this.digitalAssetKey = new String(this.digitalAssetKey.getBytes(fromEncoding), toEncoding);
+
+			CreateContentWizardInfoBean createContentWizardInfoBean = this.getCreateContentWizardInfoBean();
+			@SuppressWarnings("unchecked")
+			Enumeration<String> names = mpr.getFileNames();
+			while (names.hasMoreElements())
+			{
+				String name = names.nextElement();
+				file = mpr.getFile(name);
+				if (file != null)
 				{
-					String name 		  = (String)names.nextElement();
-					String contentType    = mpr.getContentType(name);
-					String fileSystemName = mpr.getFilesystemName(name);
-					
-					File file = mpr.getFile(name);
+					String contentType		= mpr.getContentType(name);
+					String fileSystemName	= mpr.getFilesystemName(name);
 					String fileName = fileSystemName;
-					//String fileName = digitalAssetKey + "_" + System.currentTimeMillis() + "_" + fileSystemName;
-					//String tempFileName = "tmp_" + fileName;
-					//tempFileName = new VisualFormatter().replaceNonAscii(fileName, '_');
-					
-					String filePath = CmsPropertyHandler.getDigitalAssetPath();
-					//fileSystemName = filePath + File.separator + tempFileName;
-	            	fileName = formatter.replaceNiceURINonAsciiWithSpecifiedChars(fileName, CmsPropertyHandler.getNiceURIDefaultReplacementCharacter());
+					fileName = formatter.replaceNiceURINonAsciiWithSpecifiedChars(fileName, CmsPropertyHandler.getNiceURIDefaultReplacementCharacter());
 
-					if(file != null)
+					List<String> errors =
+							DigitalAssetController.getController().validateUploadeFile(
+								file,
+								contentType,
+								contentVersionId,
+								createContentWizardInfoBean.getContentTypeDefinitionId(),
+								digitalAssetKey,
+								getInfoGluePrincipal()
+							);
+					
+					if (!errors.isEmpty())
 					{
-						DigitalAssetVO newAsset = new DigitalAssetVO();
-						newAsset.setAssetContentType(contentType);
-						newAsset.setAssetKey(digitalAssetKey);
-						newAsset.setAssetFileName(fileName);
-						newAsset.setAssetFilePath(filePath);
-						newAsset.setAssetFileSize(new Integer(new Long(file.length()).intValue()));
-						//is = new FileInputStream(renamedFile);
-						is = new FileInputStream(file);
-						//DigitalAssetController.create(newAsset, is, this.contentVersionId);
-						//CreateContentWizardInfoBean createContentWizardInfoBean = this.getCreateContentWizardInfoBean();
-						//createContentWizardInfoBean.getDigitalAssets().put(digitalAssetKey + "_" + this.languageId, newAsset);
-					    digitalAssetVO = DigitalAssetController.create(newAsset, is, this.contentVersionId, this.getInfoGluePrincipal());
-						
-						this.uploadedFilesCounter = new Integer(this.uploadedFilesCounter.intValue() + 1);
+						this.getResponse().setContentType("text/html; charset=UTF-8");
+						this.getResponse().setHeader("sendIGError", "true");
+						file.delete();
+						this.reasonKey = errors.get(0);
+						setupView();
+						return "input";
 					}
+
+					String filePath = CmsPropertyHandler.getDigitalAssetPath();
+
+					DigitalAssetVO newAsset = new DigitalAssetVO();
+					newAsset.setAssetContentType(contentType);
+					newAsset.setAssetKey(digitalAssetKey);
+					newAsset.setAssetFileName(fileName);
+					newAsset.setAssetFilePath(filePath);
+					newAsset.setAssetFileSize(new Integer(new Long(file.length()).intValue()));
+					if (CmsPropertyHandler.getEnableDiskAssets().equals("false"))
+					{
+						is = new FileInputStream(file);
+					}
+					digitalAssetVO = DigitalAssetController.create(newAsset, is, this.contentVersionId, this.getInfoGluePrincipal());
+
+					this.uploadedFilesCounter = new Integer(this.uploadedFilesCounter.intValue() + 1);
 				}
 			}
-			else
-			{
-				logger.error("File upload failed for some reason.");
-			}
-		} 
-		catch (Exception e) 
+		}
+		catch (Exception ex)
 		{
-		    logger.error("An error occurred when we tried to upload a new asset:" + e.getMessage(), e);
+			logger.error("An error occurred when we tried to upload a new asset. Message: " + ex.getMessage());
+			logger.warn("An error occurred when we tried to upload a new asset.", ex);
 		}
 		finally
 		{
 			try
 			{
-				is.close();
-				
-			    if(CmsPropertyHandler.getEnableDiskAssets().equals("true"))
+				if (is != null)
 				{
-					//String assetFileName = "" + digitalAssetVO.getAssetFilePath() + File.separator + digitalAssetVO.getId() + "_" + digitalAssetVO.getAssetFileName();
+					is.close();
+				}
+				
+				if (CmsPropertyHandler.getEnableDiskAssets().equals("true"))
+				{
 					String folderName = "" + (digitalAssetVO.getDigitalAssetId().intValue() / 1000);
 					String assetFileName = "" + digitalAssetVO.getAssetFilePath() + File.separator + folderName + File.separator + digitalAssetVO.getId() + "_" + digitalAssetVO.getAssetFileName();
 					File assetFile = new File(assetFileName);
-					renamedFile.renameTo(assetFile);
+					file.renameTo(assetFile);
 				}
-			    else
-			    {
-			    	renamedFile.delete();
-			    }
+				else
+				{
+					file.delete();
+				}
 			}
 			catch(Exception e){}
 		}
-		
+
+		// Clear 'state' before showing input view again
+		digitalAssetKey = null;
 		return doInput();
 	}
-    
+
 	public String doFinish() throws Exception
 	{
 		return "success";
@@ -252,12 +305,11 @@ public class CreateContentWizardInputAssetsAction extends CreateContentWizardAbs
 	{
 		return this.uploadedFilesCounter;
 	}
-	   
-	public List getDefinedAssetKeys()
+
+	public List<AssetKeyDefinition> getDefinedAssetKeys()
 	{
 		return ContentTypeDefinitionController.getController().getDefinedAssetKeys(this.contentTypeDefinitionVO.getSchemaValue());
 	}
-
 
 	public String getMandatoryAssetKey()
 	{
@@ -302,6 +354,52 @@ public class CreateContentWizardInputAssetsAction extends CreateContentWizardAbs
 	public void setInputMoreAssets(String inputMoreAssets)
 	{
 		this.inputMoreAssets = inputMoreAssets;
+	}
+
+	public boolean getBlankAssetKeyAsDefault()
+	{
+		try
+		{
+			Object value = ContentTypeDefinitionController.getController().getAssetSettingValue(this.contentTypeDefinitionVO.getSchemaValue(), "blankAsDefault");
+			if (value == null)
+			{
+				return false;
+			}
+			else
+			{
+				return ((Boolean)value).booleanValue();
+			}
+		}
+		catch (SystemException ex)
+		{
+			logger.info("Error when checking blank asset key as default. Message: " + ex.getMessage());
+			return false;
+		}
+	}
+
+	public String getReasonKey()
+	{
+		return this.reasonKey;
+	}
+
+	public int getMaximumAssetFileSizeForAssetKey(String assetKey)
+	{
+		return DigitalAssetController.getController().getAssetMaxFileSize(getInfoGluePrincipal(), contentTypeDefinitionVO, assetKey);
+	}
+
+	public int getMaximumAssetFileSize()
+	{
+		return getMaximumAssetFileSizeForAssetKey((String)null);
+	}
+
+	public int getMaximumAssetFileSize(AssetKeyDefinition assetKeyDefinition)
+	{
+		return getMaximumAssetFileSizeForAssetKey(assetKeyDefinition.getAssetKey());
+	}
+
+	public String getCurrentDigitalAssetKey()
+	{
+		return this.currentDigitalAssetKey;
 	}
 
 }

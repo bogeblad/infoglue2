@@ -28,6 +28,7 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
+import org.infoglue.cms.applications.databeans.AssetKeyDefinition;
 import org.infoglue.cms.applications.databeans.SessionInfoBean;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentTypeDefinitionController;
@@ -58,9 +59,7 @@ public class ViewDigitalAssetAction extends InfoGlueAbstractAction
     private final static Logger logger = Logger.getLogger(ViewDigitalAssetAction.class.getName());
 
 	private static final long serialVersionUID = 1L;
-	
-	private List availableLanguages  = null;
-	
+
 	private String entity;
 	private Integer entityId;
 	
@@ -161,42 +160,34 @@ public class ViewDigitalAssetAction extends InfoGlueAbstractAction
     {
 	    this.contentVersionId = contentVersionId;
     }
-    
-	public List getAvailableLanguages()
-	{
-		return this.availableLanguages;
-	}	
-	
+
 	public Integer getUploadedFilesCounter()
 	{
 		return this.uploadedFilesCounter;
 	}
 
-	public List getDefinedAssetKeys()
+	public List<AssetKeyDefinition> getDefinedAssetKeys()
 	{
 		return ContentTypeDefinitionController.getController().getDefinedAssetKeys(this.contentTypeDefinitionVO.getSchemaValue());
 	}
 
-    public boolean getAllowedSessionId(String requestSessionId) throws Exception
-    {
+	public boolean getAllowedSessionId(String requestSessionId) throws Exception
+	{
 		boolean allowedSessionId = false;
-		List activeSessionBeanList = CmsSessionContextListener.getSessionInfoBeanList();
-		Iterator activeSessionsIterator = activeSessionBeanList.iterator();
-		//System.out.println("activeSessionBeanList:" + activeSessionBeanList.size());
+		List<SessionInfoBean> activeSessionBeanList = CmsSessionContextListener.getSessionInfoBeanList();
+		Iterator<SessionInfoBean> activeSessionsIterator = activeSessionBeanList.iterator();
 		while(activeSessionsIterator.hasNext())
 		{
-			SessionInfoBean sessionBean = (SessionInfoBean)activeSessionsIterator.next();
-			//System.out.println("sessionBean:" + sessionBean.getId() + "=" + sessionBean.getPrincipal().getName());
+			SessionInfoBean sessionBean = activeSessionsIterator.next();
 			if(sessionBean.getId().equals(requestSessionId))
 			{
-				//System.out.println("Found a matching sessionId");
 				allowedSessionId = true;
-		    	
+
 				break;
 			}
 		}
 		return allowedSessionId;
-    }
+	}
 
 	public Integer getDigitalAssetId()
 	{
@@ -210,7 +201,14 @@ public class ViewDigitalAssetAction extends InfoGlueAbstractAction
 	
 	public String getDigitalAssetKey()
 	{
-		return this.digitalAssetVO.getAssetKey();
+		if (this.digitalAssetVO == null)
+		{
+			return null;
+		}
+		else
+		{
+			return this.digitalAssetVO.getAssetKey();
+		}
 	}
 
     public String getEntity()
@@ -249,6 +247,16 @@ public class ViewDigitalAssetAction extends InfoGlueAbstractAction
 		{
 			return ((Boolean)value).booleanValue();
 		}
+	}
+
+	public int getMaximumAssetFileSizeForAssetKey(String assetKey)
+	{
+		return DigitalAssetController.getController().getAssetMaxFileSize(getInfoGluePrincipal(), contentTypeDefinitionVO, assetKey);
+	}
+
+	public int getMaximumAssetFileSize(AssetKeyDefinition assetKeyDefinition)
+	{
+		return getMaximumAssetFileSizeForAssetKey(assetKeyDefinition.getAssetKey());
 	}
 
 }

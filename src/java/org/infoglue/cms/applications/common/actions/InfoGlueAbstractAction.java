@@ -456,6 +456,10 @@ public abstract class InfoGlueAbstractAction extends WebworkAbstractAction
 	public final Integer getUserUploadMaxSize()
 	{
 		String userUploadMaxSize = getPrincipalPropertyValue("fileUploadMaximumSize", false, true);
+		if (logger.isInfoEnabled())
+		{
+			logger.info("Principal max file size: " + userUploadMaxSize + ". Principal: " + getInfoGluePrincipal().getName());
+		}
 		if (userUploadMaxSize != null && !userUploadMaxSize.equals("") && !userUploadMaxSize.equals("-1"))
 		{
 			try
@@ -496,11 +500,12 @@ public abstract class InfoGlueAbstractAction extends WebworkAbstractAction
 		try
 		{
 			String maxSizeStr = Configuration.getString("webwork.multipart.maxSize");
+			logger.info("Webwork file max size: " + maxSizeStr);
 			if (maxSizeStr != null)
 			{
 				maxSize = new Integer(maxSizeStr);
 			}
-		} 
+		}
 		catch (Exception e)
 		{
 			e.printStackTrace();
