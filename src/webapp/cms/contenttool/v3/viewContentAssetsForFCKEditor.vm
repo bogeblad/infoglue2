@@ -174,11 +174,15 @@
 		-->
 		<tr>
 			<td>
-		  		<select size="1" name="repositoryId" class="sitedropbox" onChange="javascript:changeRepository(this);" class="contenttool">
-				    <option value="">$ui.getString("tool.contenttool.chooseRepositoryLabel")</option>
-				    #foreach ($repositoryVO in $repositories)
-				    <option value="$repositoryVO.getRepositoryId()">$repositoryVO.getName()</option>
-				    #end
+				<select size="1" name="repositoryId" class="sitedropbox" onChange="javascript:changeRepository(this);" class="contenttool">
+					<option value="">$ui.getString("tool.contenttool.chooseRepositoryLabel")</option>
+					#foreach ($repositoryVO in $repositories)
+					#set( $selected = "" )
+					#if( "$repositoryVO.getRepositoryId()" == "$!repositoryId" )
+						#set( $selected = "selected=\"selected\"" )
+					#end
+					<option $selected value="$repositoryVO.getRepositoryId()">$repositoryVO.getName()</option>
+					#end
 				</select>
 			</td>
 		</tr>
