@@ -48,21 +48,7 @@
       		<param name="LevelMax" value="INFO" />
     	</filter>
    	</appender>
-        
-        <appender name="INFOGLUE-DEBUG-DEBUG" class="org.apache.log4j.RollingFileAppender">
-            <param name="File" value="/tmp/debug.debug.log"/>
-		<param name="Append" value="true"/>
- 		<param name="MaxFileSize" value="10MB"/>
-		<param name="MaxBackupIndex" value="5"/>
-		<param name="Threshold" value="DEBUG"/>
-		<layout class="org.apache.log4j.PatternLayout">
-			<param name="ConversionPattern" value="%d{dd MMM yyyy HH:mm:ss.SSS} [%-5p] [%t] [%c] - %m%n"/>
-		</layout>
-		<filter class="org.apache.log4j.varia.LevelRangeFilter">
-      		<param name="LevelMin" value="DEBUG" />
-      		<param name="LevelMax" value="ERROR" />
-    	</filter>
-   	</appender> 
+ 
 	<!-- Appender Chainsaw GUI Log viewer
 	<appender name="CHAINSAW" class="org.apache.log4j.net.SocketAppender">
 		<param name="remoteHost" value="localhost"/>
@@ -97,12 +83,7 @@
 	<!-- down to the package or class level	-->
 	<!-- ==================================	-->
 
-        <category name="org.infoglue">
-		<priority value="DEBUG"/>
-		<appender-ref ref="INFOGLUE-DEBUG-DEBUG"/>		
-        </category>
-
-        <category name="org.infoglue.cms">
+	<category name="org.infoglue.cms">
 		<priority value="WARN"/>
 		<appender-ref ref="INFOGLUE-FILE"/>		
 	</category>
