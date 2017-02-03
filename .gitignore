@@ -1,3 +1,22 @@
+conf/log4j.xml
+./build.properties
+build.properties
+build.*
+./*.properties
+*.log
+*.properties
+# swap
+[._]*.s[a-v][a-z]
+[._]*.sw[a-p]
+[._]s[a-v][a-z]
+[._]sw[a-p]
+# session
+Session.vim
+# temporary
+.netrwhist
+*~
+# auto-generated tag files
+tags
 *.class
 build/
 bin/
