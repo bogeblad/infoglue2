@@ -171,6 +171,7 @@ public class AccessRightController extends BaseController
 			return;
 		
 		Timer t = new Timer();
+
 		//System.out.println("Recaching all access rights for " + principal.getName() + " again....");
 		/*
 		select accessRightId from cmAccessRight ar INNER JOIN
@@ -248,7 +249,7 @@ public class AccessRightController extends BaseController
 			*/
 			//accessRightVOList.add(aru.getValueObject());
 		}
-		logger.warn("accessRightsMap:" + accessRightsMap.size() + " took " + t.getElapsedTime());
+		logger.info("accessRightsMap:" + accessRightsMap.size() + " took " + t.getElapsedTime());
 		
 		List<AccessRightVO> duplicateAccessRightVOList = new ArrayList<AccessRightVO>();
 		List<AccessRightVO> duplicateNonHarmfulAccessRightVOList = new ArrayList<AccessRightVO>();
@@ -285,14 +286,14 @@ public class AccessRightController extends BaseController
 		//logger.info("accessRightsMap:" + accessRightsMap.size());
 		//logger.info("duplicates:" + duplicates);
 		//principalAccessRights.put("" + principal.getName(), accessRightsMap);
-		logger.warn("accessRightsMap:" + accessRightsMap.size());
-		logger.warn("duplicates:" + duplicates);
+		logger.info("accessRightsMap:" + accessRightsMap.size());
+		logger.info("duplicates:" + duplicates);
 		//t.printElapsedTime("Read took:" + accessRightVOList.size());
 		
 		results.close();
 		oql.close();
 
-		logger.warn("Recaching access rights in " + CmsPropertyHandler.getContextRootPath() + " for user " + principal.getName() + " took " + t.getElapsedTime());
+		logger.info("Recaching access rights in " + CmsPropertyHandler.getContextRootPath() + " for user " + principal.getName() + " took " + t.getElapsedTime());
 	}
 	
 	
@@ -2594,7 +2595,7 @@ public class AccessRightController extends BaseController
 							beginTransaction(db);
 	
 							preCacheUserAccessRightVOList(infoGluePrincipal, db);
-							logger.warn("Done precaching all access rights for this user took:" + t.getElapsedTime());
+							logger.info("Done precaching all access rights for this user took:" + t.getElapsedTime());
 							commitTransaction(db);
 						} 
 						catch (Exception e) 

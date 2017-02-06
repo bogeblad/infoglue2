@@ -134,7 +134,8 @@ public class CreateContentWizardInputContentVersionsAction extends CreateContent
 		{
 			logger.info("Constraint exception when saving content verison. Message: " + cex.getMessage());
 			setupInputView();
-			return getInputResultView();
+			cex.setResult(getInputResultView());
+			throw cex;
 		}
 
 		return "success";
