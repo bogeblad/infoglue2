@@ -1,14 +1,17 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 
 <project name="infoglue" default="clean-deploy" basedir=".">
-	
-    <property name="ant.build.javac.target" value="1.5"/>
 
 	<!-- Use local.build.properties to set your own path to override the build.properties -->
 	<property file="${local.buildfile}" />
 	<property file="local.build.properties" />
 	<property file="build.properties" />
 	<property name="project.fullname" value="InfoGlue content management system"/>
+
+	<condition property="ant.build.javac.target" value="${javacTarget}">
+		<isset property="javacTarget"/>
+	</condition>
+	<property name="ant.build.javac.target" value="1.5"/>
 
 	<property name="src" value="src"/>
 	<property name="src.java" value="${src}/java"/>
