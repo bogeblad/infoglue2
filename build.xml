@@ -194,10 +194,10 @@
 	* for more info.
 	-->
 	<target name="compile" depends="init">
-		<javac destdir="${build.classes}" classpathref="build.classpath" encoding="ISO-8859-1" debug="true" depend="true">
+		<javac destdir="${build.classes}" classpathref="build.classpath" encoding="ISO-8859-1" debug="true">
 			<src refid="build.sourcepath"/>
 		</javac>
-		<javac destdir="${test.classes}" classpathref="build.classpath" encoding="ISO-8859-1" debug="true" depend="true">
+		<javac destdir="${test.classes}" classpathref="build.classpath" encoding="ISO-8859-1" debug="true">
 			<src refid="test.sourcepath"/>
 		</javac>
 		<copy todir="${build.classes}">
