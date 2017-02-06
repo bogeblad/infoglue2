@@ -77,7 +77,7 @@ public class CreateContentWizardInputAssetsAction extends CreateContentWizardAbs
 		{
 			this.currentDigitalAssetKey = mandatoryAssetKey;
 		}
-		else if (digitalAssetKey == null)
+		else if (digitalAssetKey == null || digitalAssetKey.equals(""))
 		{
 			if (getDefinedAssetKeys().size() > 0 && !getBlankAssetKeyAsDefault())
 			{
