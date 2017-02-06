@@ -160,7 +160,7 @@ public class ErrorPageAction extends InfoGlueAbstractAction
 			{
 				if (repositoryVOList.size() > 1)
 				{
-					logger.info("Found more than repository for the error URL. List: " + repositoryVOList.toString());
+					logger.info("Found more than repository for the error URL <" + this.getRequest().getRequestURI() + ">. List: " + repositoryVOList.toString());
 				}
 				RepositoryVO repositoryVO = (RepositoryVO)repositoryVOList.toArray()[0];
 				Integer currentLanguageId = (Integer)this.getRequest().getAttribute("languageId");
