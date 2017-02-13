@@ -2,8 +2,6 @@
 
 <project name="infoglue" default="clean-deploy" basedir=".">
 	
-    <property name="ant.build.javac.target" value="1.5"/>
-
 	<!-- Use local.build.properties to set your own path to override the build.properties -->
 	<property file="${local.buildfile}" />
 	<property file="local.build.properties" />
