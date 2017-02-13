@@ -10,6 +10,11 @@
 	<property file="build.properties" />
 	<property name="project.fullname" value="InfoGlue content management system"/>
 
+	<condition property="ant.build.javac.target" value="${javacTarget}">
+		<isset property="javacTarget"/>
+	</condition>
+	<property name="ant.build.javac.target" value="1.5"/>
+
 	<property name="src" value="src"/>
 	<property name="src.java" value="${src}/java"/>
 	<property name="src.test" value="${src}/test"/>
