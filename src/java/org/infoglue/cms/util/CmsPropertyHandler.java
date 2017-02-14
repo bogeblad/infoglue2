@@ -2312,10 +2312,15 @@ public class CmsPropertyHandler
 	{
 		return getServerNodeProperty("responseMethodOnFullErrorURL", true, "include");
 	}
-	
+
 	public static boolean getUseWriteForAccessControlInWorking() 
 	{
 		return Boolean.parseBoolean(getServerNodeProperty("useWriteForAccessControlInWorking", false, "false"));
 	}
 
+	public static boolean getDisableGapchaFileRemover()
+	{
+		String allowInternalCallsBasedOnIP = getServerNodeProperty("disableGapchaFileRemover", true, "false");
+		return Boolean.parseBoolean(allowInternalCallsBasedOnIP);
+	}
 }

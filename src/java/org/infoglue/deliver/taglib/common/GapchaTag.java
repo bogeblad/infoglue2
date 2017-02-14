@@ -150,32 +150,43 @@ public class GapchaTag extends TextRenderTag
 		return new String(pbeCipher.doFinal(Base64.decode(ticket)), "UTF-8");
 	}
 
+	private static boolean disableCleanOldFiles()
+	{
+		logger.info("disableGapchaFileRemover: " + CmsPropertyHandler.getDisableGapchaFileRemover());
+		return CmsPropertyHandler.getDisableGapchaFileRemover();
+	}
+
 	public static void cleanOldFiles()
 	{
+		if (disableCleanOldFiles())
+		{
+			logger.debug("Clean old files is disabled.");
+			return;
+		}
 		int i = 0;
-        String filePath = CmsPropertyHandler.getDigitalAssetPath0();
-        while ( filePath != null )
-        {
-            logger.info("Cleaning files...");
-            File folder = new File(filePath);
-            File[] files = folder.listFiles();
-            logger.info("files:" + files.length);
-            for(int j=0; j<files.length; j++)
-            {
-            	File file = files[j];
-                if(file.getName().startsWith("igcaptcha"))
-                {
-                	logger.info("file.getName():" + file.getName() + " - " + (System.currentTimeMillis() - file.lastModified()));
-                    if(System.currentTimeMillis() - file.lastModified() > 60000)
-                    {
-                    	logger.info("Deleting:" + file.getName());
-                        file.delete();
-                    }
-                }
-            }
-            i++;
-            filePath = CmsPropertyHandler.getProperty( "digitalAssetPath." + i );
-        }
+		String filePath = CmsPropertyHandler.getDigitalAssetPath0();
+		while ( filePath != null )
+		{
+			logger.info("Cleaning files...");
+			File folder = new File(filePath);
+			File[] files = folder.listFiles();
+			logger.info("files:" + files.length);
+			for(int j=0; j<files.length; j++)
+			{
+				File file = files[j];
+				if(file.getName().startsWith("igcaptcha"))
+				{
+					logger.info("file.getName():" + file.getName() + " - " + (System.currentTimeMillis() - file.lastModified()));
+					if(System.currentTimeMillis() - file.lastModified() > 60000)
+					{
+						logger.info("Deleting:" + file.getName());
+						file.delete();
+					}
+				}
+			}
+			i++;
+			filePath = CmsPropertyHandler.getProperty( "digitalAssetPath." + i );
+		}
 	}
 
 	/**
