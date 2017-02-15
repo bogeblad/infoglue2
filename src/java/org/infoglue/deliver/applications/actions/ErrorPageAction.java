@@ -26,7 +26,6 @@ package org.infoglue.deliver.applications.actions;
 
 import java.io.PrintWriter;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -43,7 +42,6 @@ import org.infoglue.cms.entities.management.RepositoryVO;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.util.CmsPropertyHandler;
 import org.infoglue.deliver.controllers.kernel.impl.simple.RepositoryDeliveryController;
-import org.infoglue.deliver.util.CacheController;
 import org.infoglue.deliver.util.HttpHelper;
 
 
@@ -55,6 +53,8 @@ import org.infoglue.deliver.util.HttpHelper;
 
 public class ErrorPageAction extends InfoGlueAbstractAction 
 {
+	private static final long serialVersionUID = 8789782748698688734L;
+
 	private final static Logger logger = Logger.getLogger(ErrorPageAction.class.getName());
 
 	private int responseCode = HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
@@ -88,71 +88,58 @@ public class ErrorPageAction extends InfoGlueAbstractAction
 	}
 
 	private Set<RepositoryVO> getRepositoryId(HttpServletRequest request) throws ServletException, SystemException, Exception
-    {
-        String serverName = request.getServerName();
-        String portNumber = new Integer(request.getServerPort()).toString();
-        String repositoryName = request.getParameter("repositoryName");
-        String requestUri = (String)request.getAttribute("javax.servlet.forward.request_uri");
-        if (requestUri == null)
-        {
+	{
+		String serverName = request.getServerName();
+		String portNumber = new Integer(request.getServerPort()).toString();
+		String repositoryName = request.getParameter("repositoryName");
+		String requestUri = (String)request.getAttribute("javax.servlet.forward.request_uri");
+		if (requestUri == null)
+		{
 			requestUri = request.getRequestURI();
-        }
-        /*
-        String repCacheKey = "" + serverName + "_" + portNumber + "_" + repositoryName;
-        Set<RepositoryVO> repositoryVOList = (Set<RepositoryVO>)CacheController.getCachedObject("NavigationCache", repCacheKey);
-        if (repositoryVOList != null) 
-        {
-            return repositoryVOList;
-        }
-        */
-        
-        Set<RepositoryVO> repositories = RepositoryDeliveryController.getRepositoryDeliveryController().getRepositoryVOListFromServerName(serverName, portNumber, repositoryName, requestUri);
-        
-        //System.out.println("Caching in error page:" + repCacheKey + ":" + repositories + ":" + request.getRequestURI());
-        //CacheController.cacheObject("NavigationCache", repCacheKey, repositories);
+		}
 
-        return repositories;
-    }
-    
-    /**
-     * This is the excecute method - it will send the right error codes and also show the right error message.
-     */
-    
-    public String doExecute() throws Exception
-    {
-    	try
-    	{
-	        String responseCodeAttribute = (String)this.getRequest().getAttribute("responseCode");
-	        if(responseCodeAttribute != null)
-	            responseCode = Integer.parseInt(responseCodeAttribute);
-	        
-	        String responseCodeParameter = (String)this.getRequest().getParameter("responseCode");
-	        if(responseCodeParameter != null)
-	            responseCode = Integer.parseInt(responseCodeParameter);
+		Set<RepositoryVO> repositories = RepositoryDeliveryController.getRepositoryDeliveryController().getRepositoryVOListFromServerName(serverName, portNumber, repositoryName, requestUri);
 
-	        String requestURI = this.getRequest().getServerName() + this.getRequest().getRequestURI();
-	        
-	        String errorUrlAttribute = (String)this.getRequest().getAttribute("errorUrl");
-	        String errorUrlParameter = (String)this.getRequest().getParameter("errorUrl");
-	        
-	        Exception e = (Exception)this.getRequest().getAttribute("error");
-	        if(e != null)
-	        {
-	            setError(e, e.getCause());
-	        }
-	                
-	        this.getResponse().setContentType("text/html; charset=UTF-8");
-	        this.getResponse().setStatus(responseCode);
+		return repositories;
+	}
+
+	/**
+	 * This is the excecute method - it will send the right error codes and also show the right error message.
+	 */
+
+	public String doExecute() throws Exception
+	{
+		try
+		{
+			String responseCodeAttribute = (String)this.getRequest().getAttribute("responseCode");
+			if(responseCodeAttribute != null)
+				responseCode = Integer.parseInt(responseCodeAttribute);
+
+			String responseCodeParameter = (String)this.getRequest().getParameter("responseCode");
+			if(responseCodeParameter != null)
+				responseCode = Integer.parseInt(responseCodeParameter);
+
+			String errorUrlAttribute = (String)this.getRequest().getAttribute("errorUrl");
+			String errorUrlParameter = (String)this.getRequest().getParameter("errorUrl");
+
+			Exception e = (Exception)this.getRequest().getAttribute("error");
+			if(e != null)
+			{
+				setError(e, e.getCause());
+			}
+
+			this.getResponse().setContentType("text/html; charset=UTF-8");
+			this.getResponse().setStatus(responseCode);
 	
-	        String errorUrl = CmsPropertyHandler.getErrorUrl();
-	        if(errorUrlAttribute != null && !errorUrlAttribute.equals(""))
-	        {
-	        	errorUrl = errorUrlAttribute;
-	        }
-	        else if(errorUrlParameter != null && !errorUrlParameter.equals(""))
-	        {
-	        	errorUrl = errorUrlParameter;
-	        }
+			String errorUrl = CmsPropertyHandler.getErrorUrl();
+			if(errorUrlAttribute != null && !errorUrlAttribute.equals(""))
+			{
+				errorUrl = errorUrlAttribute;
+			}
+			else if(errorUrlParameter != null && !errorUrlParameter.equals(""))
+			{
+				errorUrl = errorUrlParameter;
+			}
 
 			Set<RepositoryVO> repositoryVOList = getRepositoryId(this.getRequest());
 			LanguageVO currentLanguage = null;
@@ -188,37 +175,38 @@ public class ErrorPageAction extends InfoGlueAbstractAction
 				}
 			}
 
-	        if(errorUrl == null || errorUrl.indexOf("@errorUrl@") > -1)
-	        {
-	            logger.error("No valid error url was defined:" + errorUrl + ". You should fix this. Defaulting to /error.jsp");
-		       	errorUrl = "/error.jsp";
-	        }
+			if(errorUrl == null || errorUrl.indexOf("@errorUrl@") > -1)
+			{
+				logger.error("No valid error url was defined:" + errorUrl + ". You should fix this. Defaulting to /error.jsp");
+				errorUrl = "/error.jsp";
+			}
 
 			Integer closestExistingParentSiteNodeId = (Integer)this.getRequest().getAttribute("closestExistingParentSiteNodeId");
 			if(errorUrl != null && errorUrl.indexOf("@errorUrl@") == -1)
 			{
 				if(errorUrl.indexOf("http") > -1)
+				{
 					if(CmsPropertyHandler.getResponseMethodOnFullErrorURL().equalsIgnoreCase("include"))
 					{
-					HttpHelper helper = new HttpHelper();
-					Map<String,String> requestParameters = new HashMap<String,String>();
-					if(e != null)
-					{
-						requestParameters.put("errorMessage", e.getMessage());
-					}
-					requestParameters.put("errorURL", errorUrl);
-					if (currentLanguage != null)
-					{
-						requestParameters.put("languageId", currentLanguage.getLanguageId().toString());
-					}
-					if (closestExistingParentSiteNodeId != null)
-					{
-						requestParameters.put("closestExistingParentSiteNodeId", closestExistingParentSiteNodeId.toString());
-					}
-					String urlContent = helper.getUrlContent(errorUrl, new HashMap(), requestParameters, "utf-8", 5000);
+						HttpHelper helper = new HttpHelper();
+						Map<String,String> requestParameters = new HashMap<String,String>();
+						if(e != null)
+						{
+							requestParameters.put("errorMessage", e.getMessage());
+						}
+						requestParameters.put("errorURL", errorUrl);
+						if (currentLanguage != null)
+						{
+							requestParameters.put("languageId", currentLanguage.getLanguageId().toString());
+						}
+						if (closestExistingParentSiteNodeId != null)
+						{
+							requestParameters.put("closestExistingParentSiteNodeId", closestExistingParentSiteNodeId.toString());
+						}
+						String urlContent = helper.getUrlContent(errorUrl, new HashMap<String, String>(), requestParameters, "utf-8", 5000);
 
-					getResponse().setContentType("text/html; charset=utf-8");
-					getResponse().setStatus(404);
+						getResponse().setContentType("text/html; charset=utf-8");
+						getResponse().setStatus(404);
 
 						PrintWriter out = getResponse().getWriter();
 						out.println(urlContent);
@@ -227,92 +215,101 @@ public class ErrorPageAction extends InfoGlueAbstractAction
 					{
 						this.getResponse().sendRedirect(errorUrl);
 					}
-	            else
-	            {
-	            	try
-	            	{
-		                RequestDispatcher dispatch = this.getRequest().getRequestDispatcher(errorUrl);
-		                this.getRequest().setAttribute("error", e);
-		                if (closestExistingParentSiteNodeId != null)
+				}
+				else
+				{
+					try
+					{
+						RequestDispatcher dispatch = this.getRequest().getRequestDispatcher(errorUrl);
+						this.getRequest().setAttribute("error", e);
+						if (closestExistingParentSiteNodeId != null)
 						{
 							this.getRequest().setAttribute("closestExistingParentSiteNodeId", closestExistingParentSiteNodeId);
 						}
-		                if (currentLanguage != null)
-		                {
+						if (currentLanguage != null)
+						{
 							this.getRequest().setAttribute("language", currentLanguage);
-		                }
-		                //dispatch.forward(this.getRequest(), this.getResponse());
-		                dispatch.include(this.getRequest(), this.getResponse());
-	            	}
-	            	catch(Exception e2)
-	            	{
-	            		e2.printStackTrace();
-	                    return SUCCESS;
-	            	}
-	            }
-	            
-	            return NONE;
-	        }
-	        else
-	        {
-	            logger.error("No valid error url was defined:" + errorUrl + ". You should fix this.");
-	        	return SUCCESS;
-	        }
-	    }
-    	catch(Throwable t)
-    	{
-    		logger.error("Error executing ErrorPage action:" + t.getMessage());
-    		if(logger.isDebugEnabled())
-        		logger.debug("Error executing ErrorPage action:" + t.getMessage(), t);
-    			
-    		return SUCCESS;
-    	}
-    }
+						}
+						dispatch.include(this.getRequest(), this.getResponse());
+					}
+					catch(Exception e2)
+					{
+						e2.printStackTrace();
+						return SUCCESS;
+					}
+				}
 
-    /**
-     * This is the busy method - it will send the right error codes and also show the right error message.
-     */
-    
-    public String doBusy() throws Exception
-    {
-    	String responseCodeAttribute = (String)this.getRequest().getAttribute("responseCode");
-        if(responseCodeAttribute != null)
-            responseCode = Integer.parseInt(responseCodeAttribute);
-        
-        String responseCodeParameter = (String)this.getRequest().getParameter("responseCode");
-        if(responseCodeParameter != null)
-            responseCode = Integer.parseInt(responseCodeParameter);
+				return NONE;
+			}
+			else
+			{
+				logger.error("No valid error url was defined:" + errorUrl + ". You should fix this.");
+				return SUCCESS;
+			}
+		}
+		catch(Throwable t)
+		{
+			logger.error("Error executing ErrorPage action:" + t.getMessage());
+			if (logger.isDebugEnabled())
+			{
+				logger.debug("Error executing ErrorPage action:" + t.getMessage(), t);
+			}
 
-        Exception e = (Exception)this.getRequest().getAttribute("error");
-        if(e != null)
-        {
-            setError(e, e.getCause());
-        }
-                
-        this.getResponse().setContentType("text/html; charset=UTF-8");
-        this.getResponse().setStatus(responseCode);
+			return SUCCESS;
+		}
+	}
 
-        String errorUrl = CmsPropertyHandler.getErrorBusyUrl();
-        if(errorUrl != null && errorUrl.indexOf("@errorBusyUrl@") == -1)
-        {
-            if(errorUrl.indexOf("http") > -1)
-                this.getResponse().sendRedirect(errorUrl);
-            else
-            {
-                RequestDispatcher dispatch = this.getRequest().getRequestDispatcher(errorUrl);
-                this.getRequest().setAttribute("error", e);
-                //dispatch.forward(this.getRequest(), this.getResponse());
-                dispatch.include(this.getRequest(), this.getResponse());
-            }
-            
-            return NONE;
-        }
-        else
-            return SUCCESS;
-    }
+	/**
+	 * This is the busy method - it will send the right error codes and also show the right error message.
+	 */
+	public String doBusy() throws Exception
+	{
+		String responseCodeAttribute = (String)this.getRequest().getAttribute("responseCode");
+		if(responseCodeAttribute != null)
+		{
+			responseCode = Integer.parseInt(responseCodeAttribute);
+		}
 
-    public int getResponseCode()
-    {
-        return responseCode;
-    }
+		String responseCodeParameter = (String) this.getRequest().getParameter("responseCode");
+		if (responseCodeParameter != null)
+		{
+			responseCode = Integer.parseInt(responseCodeParameter);
+		}
+
+		Exception e = (Exception) this.getRequest().getAttribute("error");
+		if (e != null)
+		{
+			setError(e, e.getCause());
+		}
+
+		this.getResponse().setContentType("text/html; charset=UTF-8");
+		this.getResponse().setStatus(responseCode);
+
+		String errorUrl = CmsPropertyHandler.getErrorBusyUrl();
+		if (errorUrl != null && errorUrl.indexOf("@errorBusyUrl@") == -1)
+		{
+			if (errorUrl.indexOf("http") > -1)
+			{
+				this.getResponse().sendRedirect(errorUrl);
+			}
+			else
+			{
+				RequestDispatcher dispatch = this.getRequest().getRequestDispatcher(errorUrl);
+				this.getRequest().setAttribute("error", e);
+				// dispatch.forward(this.getRequest(), this.getResponse());
+				dispatch.include(this.getRequest(), this.getResponse());
+			}
+
+			return NONE;
+		}
+		else
+		{
+			return SUCCESS;
+		}
+	}
+
+	public int getResponseCode()
+	{
+		return responseCode;
+	}
 }
