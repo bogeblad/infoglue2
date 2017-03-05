@@ -1353,7 +1353,7 @@ function saveAttribute(selectedContentId, selectedLanguageId, selectedAttributeN
 			var re = new RegExp("templateLogic\\.languageId,.{0,1}\\)", "g");
 			value = value.replace(re, "templateLogic.languageId, -1)");	
 			//alert("Value: " + value);
-			value = Url.encode(value);
+			//value = Url.encode(value);
 			//alert("Value: " + value);
 		}
 		else
@@ -1363,7 +1363,14 @@ function saveAttribute(selectedContentId, selectedLanguageId, selectedAttributeN
 			value = value.replace(re, "templateLogic.languageId, -1)");	
 		}
 		
-		var data = "contentId=" + selectedContentId + "&languageId=" + selectedLanguageId + "&attributeName=" + selectedAttributeName + "&" + selectedAttributeName + "=" + value + "&deliverContext=" + currentContext;
+		var data = {
+                    "contentId": selectedContentId,
+                    "languageId": selectedLanguageId,
+                    "attributeName": selectedAttributeName,
+                    "deliverContext": currentContext
+                };
+
+                data[selectedAttributeName] = value;
 
 		$.ajax({
 		   type: "POST",
@@ -1408,6 +1415,18 @@ function saveAttribute(selectedContentId, selectedLanguageId, selectedAttributeN
 		//value = Url.encode(value);
 		//alert("Value: " + value);
 		var data = "contentId=" + selectedContentId + "&languageId=" + selectedLanguageId + "&attributeName=" + selectedAttributeName + "&" + selectedAttributeName + "=" + value;
+
+
+            var data = {
+                    "contentId": selectedContentId,
+                    "languageId": selectedLanguageId,
+                    "attributeName": selectedAttributeName,
+                    "deliverContext": currentContext
+                };
+
+            data[selectedAttributeName] = value;
+
+            console.log(data);
 	
 		$.ajax({
 			type: "POST",

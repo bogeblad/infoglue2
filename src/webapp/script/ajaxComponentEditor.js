@@ -1268,7 +1268,7 @@ function saveAttribute(selectedContentId, selectedLanguageId, selectedAttributeN
 			value = value.replace(re, "templateLogic.languageId, -1)");	
 		}
 		
-		var data = "contentId=" + selectedContentId + "&languageId=" + selectedLanguageId + "&attributeName=" + selectedAttributeName + "&" + selectedAttributeName + "=" + value + "&deliverContext=" + currentContext;
+		var data = "contentId=" + selectedContentId + "&languageId=" + selectedLanguageId + "&attributeName=" + selectedAttributeName + "&" + selectedAttributeName + "=" + encodeURIComponent(value) + "&deliverContext=" + currentContext;
 
 		$.ajax({
 		   type: "POST",
@@ -1312,7 +1312,7 @@ function saveAttribute(selectedContentId, selectedLanguageId, selectedAttributeN
 		//alert("Value: " + value);
 		//value = Url.encode(value);
 		//alert("Value: " + value);
-		var data = "contentId=" + selectedContentId + "&languageId=" + selectedLanguageId + "&attributeName=" + selectedAttributeName + "&" + selectedAttributeName + "=" + value;
+		var data = "contentId=" + selectedContentId + "&languageId=" + selectedLanguageId + "&attributeName=" + selectedAttributeName + "&" + selectedAttributeName + "=" + encodeURIComponent(value);
 	
 		$.ajax({
 			type: "POST",
