@@ -1352,9 +1352,6 @@ function saveAttribute(selectedContentId, selectedLanguageId, selectedAttributeN
 			value = oEditor.GetXHTML( true )
 			var re = new RegExp("templateLogic\\.languageId,.{0,1}\\)", "g");
 			value = value.replace(re, "templateLogic.languageId, -1)");	
-			//alert("Value: " + value);
-			value = Url.encode(value);
-			//alert("Value: " + value);
 		}
 		else
 		{
@@ -1362,77 +1359,82 @@ function saveAttribute(selectedContentId, selectedLanguageId, selectedAttributeN
 			var re = new RegExp("templateLogic\\.languageId,.{0,1}\\)", "g");
 			value = value.replace(re, "templateLogic.languageId, -1)");	
 		}
-		
-		var data = "contentId=" + selectedContentId + "&languageId=" + selectedLanguageId + "&attributeName=" + selectedAttributeName + "&" + selectedAttributeName + "=" + value + "&deliverContext=" + currentContext;
+
+		var data = {
+			contentId: selectedContentId,
+			languageId: selectedLanguageId,
+			attributeName: encodeURIComponent(selectedAttributeName),
+			deliverContext: currentContext
+		};
+		data['' + selectedAttributeName] = value;
 
 		$.ajax({
-		   type: "POST",
-		   url: "" + componentEditorUrl + "UpdateContentVersionAttribute!saveAndReturnValue.action",
-		   data: data,
-		   success: function(msg){
-		   	 //alert( "Data Saved: " + msg );
-		     if(enableWYSIWYG == "true")
-			 {	
-			     var oEditor = FCKeditorAPI.GetInstance("attribute" + selectedContentId + selectedAttributeName) ;
-				 //$(oEditor.LinkedField.parentNode.parentNode).html(msg);
-				 $(oEditor.LinkedField.parentNode).html(msg);
-			 }
-		     else
-		     {
-		     	$("#inputattribute" + selectedContentId + selectedAttributeName).replaceWith(msg);
-		     }
-		     completeEditInlineSave(selectedContentId, selectedAttributeName);
-		   },
-		   error: function (XMLHttpRequest, textStatus, errorThrown) {
-			   if(XMLHttpRequest.status == 403)
-			   {
-				   alert("You are not logged in properly to the administrative tools - please log in again.");
-				   window.open("" + componentEditorUrl + "ViewCMSTool!loginStandalone.action", "Login", "width=400,height=420");
-			   }
-			   else if(XMLHttpRequest.status == 406)
-			   {
-				   alert("The value must not be empty - update failed");
-			   }
-			   else
-			   {
-				   alert("Update failed!");
-			   }
-		   }
-		 });
+			type: "POST",
+			url: "" + componentEditorUrl + "UpdateContentVersionAttribute!saveAndReturnValue.action",
+			data: data,
+			success: function(msg) {
+				if(enableWYSIWYG == "true")
+				{
+					var oEditor = FCKeditorAPI.GetInstance("attribute" + selectedContentId + selectedAttributeName) ;
+					$(oEditor.LinkedField.parentNode).html(msg);
+				}
+				else
+				{
+					$("#inputattribute" + selectedContentId + selectedAttributeName).replaceWith(msg);
+				}
+				completeEditInlineSave(selectedContentId, selectedAttributeName);
+			},
+			error: function (XMLHttpRequest, textStatus, errorThrown) {
+				if(XMLHttpRequest.status == 403)
+				{
+					alert("You are not logged in properly to the administrative tools - please log in again.");
+					window.open("" + componentEditorUrl + "ViewCMSTool!loginStandalone.action", "Login", "width=400,height=420");
+				}
+				else if(XMLHttpRequest.status == 406)
+				{
+					alert("The value must not be empty - update failed");
+				}
+				else
+				{
+					alert("Update failed!");
+				}
+			}
+		});
 	}
 	else if(type == "textfield")
 	{
-		//alert("Saving: " + selectedContentId + " " + selectedLanguageId + " " +  selectedAttributeName);
 		var value = $("#inputattribute" + selectedContentId + selectedAttributeName).val();
-		//alert("Value: " + value);
-		//value = Url.encode(value);
-		//alert("Value: " + value);
-		var data = "contentId=" + selectedContentId + "&languageId=" + selectedLanguageId + "&attributeName=" + selectedAttributeName + "&" + selectedAttributeName + "=" + value;
-	
+
+		var data = {
+			contentId: selectedContentId,
+			languageId: selectedLanguageId,
+			attributeName: encodeURIComponent(selectedAttributeName)
+		};
+		data['' + selectedAttributeName] = value;
+
 		$.ajax({
 			type: "POST",
-		   	url: "" + componentEditorUrl + "UpdateContentVersionAttribute!saveAndReturnValue.action",
-		   	data: data,
-		   	success: function(msg){
-				//alert( "Data Saved: " + msg );
-		     	$("#spanInput" + key).replaceWith(msg);
-			    completeEditInlineSave(selectedContentId, selectedAttributeName);
-		   	},
-		   error: function (XMLHttpRequest, textStatus, errorThrown) {
-			   if(XMLHttpRequest.status == 403)
-			   {
-				   alert("You are not logged in properly to the administrative tools - please log in again.");
-				   window.open("" + componentEditorUrl + "ViewCMSTool!loginStandalone.action", "Login", "width=400,height=420");
-			   }
-			   else if(XMLHttpRequest.status == 406)
-			   {
-				   alert("The value must not be empty - update failed");
-			   }
-			   else
-			   {
-				   alert("Update failed!");
-			   }
-		   }
+			url: "" + componentEditorUrl + "UpdateContentVersionAttribute!saveAndReturnValue.action",
+			data: data,
+			success: function(msg){
+				$("#spanInput" + key).replaceWith(msg);
+				completeEditInlineSave(selectedContentId, selectedAttributeName);
+			},
+			error: function (XMLHttpRequest, textStatus, errorThrown) {
+				if(XMLHttpRequest.status == 403)
+				{
+					alert("You are not logged in properly to the administrative tools - please log in again.");
+					window.open("" + componentEditorUrl + "ViewCMSTool!loginStandalone.action", "Login", "width=400,height=420");
+				}
+				else if(XMLHttpRequest.status == 406)
+				{
+					alert("The value must not be empty - update failed");
+				}
+				else
+				{
+					alert("Update failed!");
+				}
+			}
 		});
 	}
 }
